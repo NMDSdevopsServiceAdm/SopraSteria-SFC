@@ -1,2 +1,0 @@
-[ 'Row 1: phone must be a type number',
-  'Row 2: phone must be a type number' ]
