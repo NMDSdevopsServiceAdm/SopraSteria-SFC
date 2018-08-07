@@ -5,7 +5,7 @@ var fss = require('fs-extra')
 const csv = require('csv-validator');
 var fs = require('fs');
 const AWS = require('aws-sdk');
-AWS.config.loadFromPath('config.json');
+//AWS.config.loadFromPath('config.json');
 var util = require('util');
 
 const port = process.env.PORT || 3000;
