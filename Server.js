@@ -143,7 +143,7 @@ const server = http.createServer((req, res) => {
 
 		res.write('<!DOCTYPE html><html><head></head><body>');
 		res.write('<form id="sbform" action="fileupload" method="post" enctype="multipart/form-data">');
-		res.write('<legend><b>Browse & Upload File</legend>');
+		res.write('<legend><b>Browse & Upload File (CI and CD working)</legend>');
 		res.write('<fieldset style="border: 2px solid #F37622; width: 30px">');
 		res.write('<input type="file" name="filetoupload" tabindex="1"><br>');
 		res.write('<button id="btns" type="submit" tabindex="2" >submit</>');
