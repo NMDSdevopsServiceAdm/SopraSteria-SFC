@@ -5,7 +5,7 @@ node_js:
 deploy:
   provider: cloudfoundry
   username: nasir.m@hotmail.co.uk
-   password:
+  password:
     secure: bR2/i+9xlVSs1v1Eqd6B80kFiKMViF1+100yLpdSzQHIzcvvWfRT601hqIQ0aNumAxFrad+V1MVIDwIXji5PVW6Cq9Q9gPf6r9pjKtco/Zqx7FWTF9b6TC68eIko8Uy/7mItWiv91POBUwhGtgUWqOg5lrD3AdJ/7wqlaiF6OgWEAPeHrQi/DgWyA5Um04y4CrUTnQW3ro6rB9KIosQegVmAkp4s8HdHp732SRc1b8eRJ1rfcnb5nMfW7nko8jTHgPj0KOn8QvA+ukoI2y6Uff7CkjLFGpX7J4wkmqfKfDE/kmh0IFwrfU7yALX7Ro0aRZwo9DkluIHnKYMCHdjoF9BNNBI2NBwR1skOgpB0b6Ir/h9YQ9idHTv3nihPPozVa4vGEUy5YxQCIdAeH0dPgyPjI4Rtlb/jkaN7NKo2/wEYNgWj0a7V9XWLrLWCjjkqZ7ChAHTcm0oaSTeRP1nwgoiKevEqGjyW/SumQHhm+RQEbO35BJrf1E+Ml96UmlIoIo5Qt9q33AwdhLwkotALzyVkcIqZ1Q4Nxzw3JMX20bvxibBvVPdl2lp8y/8//nrW6yvSqwqtWOGlFJ4OFYkDEtQN2IPY8D7eVBemZlFwdcs5k4K8AQQTjsc0u3Oc0Wfz6S3giKLAH1o2Hz/DkrJhFs1jOnaNQ/Ivbpckl77bBTo=
   api: https://api.cloud.service.gov.uk
   organization: dhsc-skills-for-care-nmds-sc-2
