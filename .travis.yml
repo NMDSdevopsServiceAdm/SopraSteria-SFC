@@ -3,9 +3,9 @@ node_js:
     - 'iojs'
     - '10.8'
 deploy: 
-    edge:true 
-    provider:cloudfoundry 
-    username:nasir.m@hotmail.co.uk 
-    api:https://api.cloud.service.gov.uk
-    organization:dhsc-skills-for-care-nmds-sc-2 
-    space:sandbox
+    provider: cloudfoundry 
+    username: nasir.m@hotmail.co.uk 
+    password: supersecretpassword
+    api: https://api.cloud.service.gov.uk
+    organization: dhsc-skills-for-care-nmds-sc-2 
+    space: sandbox
