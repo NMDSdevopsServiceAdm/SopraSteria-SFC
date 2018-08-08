@@ -1,11 +1,13 @@
 language: node_js
 node_js:
-    - 'iojs'
-    - '10.8'
-deploy: 
-    provider: cloudfoundry 
-    username: nasir.m@hotmail.co.uk 
-    password: supersecretpassword
-    api: https://api.cloud.service.gov.uk
-    organization: dhsc-skills-for-care-nmds-sc-2 
-    space: sandbox
+- iojs
+- '10.8'
+deploy:
+  provider: cloudfoundry
+  username: nasir.m@hotmail.co.uk  
+  api: https://api.cloud.service.gov.uk
+  organization: dhsc-skills-for-care-nmds-sc-2
+  space: sandbox
+env:
+  global:
+    secure: ZdhD5Wkhdi4g4W2fSbjukhA5SopE4SfGp6JVx7n/DM77oNXmmsAKC7xyXD+J1I4rMv5kdkIXke0ztFHBTAWCKILBPMHvnbz8VTwjzo++zwqEszYJkMQ0yqh2pPqUALldpV9mhYGRIOu8/GISvpxl5TbSdXjv/f45EDFSHLW9w8p+Aotleyu6OxpsWpomlAVi6VxKU9jRBjEAkg37VL8bDsPj/WUa20nHQKcBMkSf2Z57jG148hsccIrH/p8sZqOz1UaLHs+sCbotxhi8oTg9b4CRUAr8gjBur2Mk+l+lhOsDD7b8K0RjM463mXQP9rQDvHgMrJNuugS5h7HPsGkVq1e5LIXYxnrlCiZJJqXZ19BYRARFuNBjrDeb6yp7MK32h0FPjOwqYyBDwfD5LWtqlxBi6wZpnctqxiVbrCNvEyeyJSy5vlJ2kzWz1X1gT/NNIOGGE8a8vogbcLQPeA6uOIHExm8xy0FuATe91JakUS828yCVdJ+ZjO3RFWa3FzvjmnYjYCVrw74qBOVEcC1SsbPqWiBedzkFxpUcxxcBczdZfaRNwB86T9Dc1Z5uKOx8S4nLMau4TAttf/VbZks10HPDKm+V0qus12MtzH9fb2/GbHb/Rkjy/Twc0FDuYqT+MFQPohRQWMmeIPPJOUgNmJv/sGhAPe7qjGlqUY+be5c=
