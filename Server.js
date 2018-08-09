@@ -23,6 +23,63 @@ const server = http.createServer((req, res) => {
 	  return 
     }
   
+	if (req.url == '/cqcresult') {	
+	
+		fs.readFile('location.txt', function(err, buf) {
+		res.write(buf.toString());
+		res.end();
+	});  
+	
+	  return 
+    }
+	
+   if (req.url == '/cqc') {	
+		const https = require('https');
+		
+		res.write('<!DOCTYPE html><html><head></head><body>');	
+		res.write('<legend><b>Locations</legend>');	
+		res.write('<fieldset>');	
+		res.write('<button id="btn1">extract location</button>');
+		res.write('<div id="div2"><h2></h2></div>');
+		res.write('</fieldset></body>');
+		res.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>');
+		
+			
+		https.get('https://api.cqc.org.uk/public/v1/locations', (resp) => {
+		let data = '';
+ 
+		// A chunk of data has been recieved.
+		resp.on('data', (chunk) => {
+		data += chunk;
+		});
+ 
+		// The whole response has been received. Print out the result.
+		resp.on('end', () => {
+			console.log(JSON.parse(data).locations);
+			var logFile = fs.createWriteStream('location.txt');						
+			logFile.write(util.format(JSON.parse(data).locations));	
+			
+			//fs.readFile('location.txt', function(err, buf) {
+			//res.write(JSON.parse(data).locations);
+			//});
+
+		});
+		
+	
+		//res.write('<script>$(document).ready(function(){$("#btn1").click(function(){ $.get("location.txt", function(data1) { alert(data1) }, "text"); });});</script>');
+
+				res.write('<script>$(document).ready(function(){$("#btn1").click(function(){$.ajax({url: "http://localhost:3000/cqcresult",dataType:"text",type: "GET",success: function(data){$("#div2").html(data);}, error: function(req, st, err){alert(req + st + err);}});});});</script>');
+		res.end();
+ 
+		}).on("error", (err) => {
+		  console.log("Error: " + err.message);
+		});	
+			
+			
+	
+	
+	  return 
+    }
    if (req.url == '/fileupload') {
 	   
 	  var form = new formidable.IncomingForm();
@@ -151,9 +208,11 @@ const server = http.createServer((req, res) => {
 		res.write('</form>');
 		res.write('<legend><b>Messages</legend>');	
 		res.write('<fieldset>');	
-		res.write('<button id="btn">Click Refresh</button>');
+		res.write('<button id="btn">Click Refresh</button>');		
 		res.write('<div id="div1"><h2></h2></div>');
-		res.write('</fieldset></body>');
+		res.write('</fieldset>');
+			
+		res.write('</body>');
 		res.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>');
 		
 		//res.write('<script>$(document).ready(function(){$("#btn").click(function(){$.ajax({url: "https://serverjs.cloudapps.digital/result",dataType:"text",type: "GET",success: function(data){$("#div1").html(data);}, error: function(req, st, err){alert(req + st + err);}});});});</script>');
