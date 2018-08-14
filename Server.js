@@ -68,7 +68,7 @@ const server = http.createServer((req, res) => {
 	
 		//res.write('<script>$(document).ready(function(){$("#btn1").click(function(){ $.get("location.txt", function(data1) { alert(data1) }, "text"); });});</script>');
 
-				res.write('<script>$(document).ready(function(){$("#btn1").click(function(){$.ajax({url: "https://devtest.cloudapps.digital/cqc/result",dataType:"text",type: "GET",success: function(data){$("#div2").html(data);}, error: function(req, st, err){alert(req + st + err);}});});});</script>');
+				res.write('<script>$(document).ready(function(){$("#btn1").click(function(){$.ajax({url: "https://devtest.cloudapps.digital/cqcresult",dataType:"text",type: "GET",success: function(data){$("#div2").html(data);}, error: function(req, st, err){alert(req + st + err);}});});});</script>');
 				
 		res.end();
  
