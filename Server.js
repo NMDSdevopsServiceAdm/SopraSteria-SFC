@@ -39,7 +39,7 @@ const server = http.createServer((req, res) => {
 		res.write('<!DOCTYPE html><html><head></head><body>');	
 		res.write('<legend><b>Locations</legend>');	
 		res.write('<fieldset>');	
-		res.write('<button id="btn1">extract location</button>');
+		res.write('<button id="btn1">extract location -Master changes</button>');
 		res.write('<div id="div2"><h2></h2></div>');
 		res.write('</fieldset></body>');
 		res.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>');
