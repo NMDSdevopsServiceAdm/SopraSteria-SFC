@@ -10,3 +10,5 @@ deploy:
   api: https://api.cloud.service.gov.uk
   organization: dhsc-skills-for-care-nmds-sc-2
   space: sandbox
+ notifications:
+    slack: nmdsworkspace:iWywrkfRNuPKdFlYUZfI6Oka
