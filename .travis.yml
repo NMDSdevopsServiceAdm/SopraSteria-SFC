@@ -1,7 +1,5 @@
-language: node_js
-node_js:
-- '10.8'
 deploy:
+  edge: true
   provider: cloudfoundry
   username: nmdsdevopsserviceadm@hotmail.com
   password:
