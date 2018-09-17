@@ -1,4 +1,4 @@
 applications:
 - name: Development
-  memory: 256M
+  memory: 64M
   buildpack: staticfile_buildpack
