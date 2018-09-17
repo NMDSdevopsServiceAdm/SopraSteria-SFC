@@ -1,17 +1,14 @@
 {
-  "name": "DevTest",
+  "name": "Development",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "Index.html",
   "engines": {
     "node": ">=6.0.0",
     "npm": ">=2.0.0"
   },
   "author": "",
   "license": "ISC",
-  "scripts": {
-    "start": "node Server.js"
-  },
   "dependencies": {
     "aws-sdk": "^2.282.1",
     "csv-validator": "0.0.3",
