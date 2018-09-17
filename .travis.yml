@@ -1,5 +1,4 @@
 deploy:
-  edge: true
   provider: cloudfoundry
   username: nmdsdevopsserviceadm@hotmail.com
   password:
