@@ -1,8 +1,8 @@
 {
-  "name": "Development",
+  "name": "nmdstest",
   "version": "1.0.0",
   "description": "",
-  "main": "Index.html",  
+  "main": "Index.html",
   "author": "",
-  "license": "ISC"  
+  "license": "ISC"
 }
