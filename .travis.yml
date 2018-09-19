@@ -4,7 +4,7 @@ node_js:
 deploy:
   edge: true
   provider: cloudfoundry
-  env: test
+  env: nmdstest
   on:
     branch: master
   username: nmdsdevopsserviceadm@hotmail.com
