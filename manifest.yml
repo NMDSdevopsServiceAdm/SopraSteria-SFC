@@ -1,4 +1,4 @@
 applications:
-- name: sfcstaging
+- name: sfcuat
   memory: 64M
   buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
