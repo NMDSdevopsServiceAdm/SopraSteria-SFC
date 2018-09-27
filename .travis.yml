@@ -14,9 +14,9 @@ before_script:
     - echo $TRAVIS_BUILD_NUMBER
     - echo $B_NAME
 before_deploy:
-   - if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
-   - if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
-   - if [ "$TRAVIS_BRANCH" = develop ]; then echo "develop"; fi
+   #- if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
+   #- if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
+   #- if [ "$TRAVIS_BRANCH" = develop ]; then echo "develop"; fi
 deploy:
   edge: true
   provider: cloudfoundry
