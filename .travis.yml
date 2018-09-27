@@ -4,6 +4,8 @@ node_js:
 env:  
   global:
     - if [ "$TRAVIS_BRANCH" = develop ]; then B_NAME=develop; fi
+    - if [ "$TRAVIS_BRANCH" = master ]; then B_NAME=master; fi
+    - if [ "$TRAVIS_BRANCH" = test ]; then B_NAME=test; fi
 before_script:
     # Print build info that binary is compiled with.
     - echo $TRAVIS_COMMIT
@@ -14,11 +16,12 @@ before_script:
 before_deploy:
    - if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
    - if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
- # - if [ "$TRAVIS_BRANCH" = develop ]; then $B_NAME=develop; fi
+   - if [ "$TRAVIS_BRANCH" = develop ]; then echo "develop"; fi
 deploy:
   edge: true
+  skip_cleanup: true
   provider: cloudfoundry
-  env: sfcdev
+ # env: sfcdev
   on:
     branch: $B_NAME
   username: nmdsdevopsserviceadm@hotmail.com
