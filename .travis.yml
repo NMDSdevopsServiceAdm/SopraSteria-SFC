@@ -4,7 +4,7 @@ node_js:
 deploy:
   edge: true
   provider: cloudfoundry
-  env: sfcdev
+  env: env_name_dev
   on:
     branch: develop
   username: nmdsdevopsserviceadm@hotmail.com
