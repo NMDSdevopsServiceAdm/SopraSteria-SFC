@@ -1,6 +1,13 @@
 language: node_js
 node_js:
 - '10.8'
+before_script:
+    # Print build info that binary is compiled with.
+    - echo $TRAVIS_COMMIT
+    - echo $TRAVIS_TAG
+    - echo $TRAVIS_BRANCH
+    - echo $TRAVIS_BUILD_NUMBER
+    - echo $env_name_dev
 deploy:
   edge: true
   provider: cloudfoundry
