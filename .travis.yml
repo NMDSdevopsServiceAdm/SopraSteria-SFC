@@ -3,7 +3,7 @@ node_js:
 - '10.8'
 env:  
   global:
-    - B_NAME=developp
+    - if [ "$TRAVIS_BRANCH" = develop ]; then B_NAME=develop; fi
 before_script:
     # Print build info that binary is compiled with.
     - echo $TRAVIS_COMMIT
