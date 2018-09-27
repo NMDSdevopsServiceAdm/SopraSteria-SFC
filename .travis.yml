@@ -3,7 +3,7 @@ node_js:
 - '10.8'
 env:  
   global:
-    - B_NAME=nasir
+    - B_NAME=develop
 before_script:
     # Print build info that binary is compiled with.
     - echo $TRAVIS_COMMIT
