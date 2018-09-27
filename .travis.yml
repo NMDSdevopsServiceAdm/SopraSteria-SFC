@@ -3,7 +3,7 @@ node_js:
 - '10.8'
 env:  
   global:
-    - B_NAME=develops
+    #- B_NAME=develops
     #- if [ "$TRAVIS_BRANCH"=master]; then B_NAME=master; elif [ "$TRAVIS_BRANCH"=develop] then B_NAME=develop; else B_NAME=test; fi
     #- if [ "$TRAVIS_BRANCH"=develop]; then B_NAME=develop; fi
     #- if [ "$TRAVIS_BRANCH"=test]; then B_NAME=test; fi
