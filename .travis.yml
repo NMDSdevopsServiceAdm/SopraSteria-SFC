@@ -12,9 +12,9 @@ before_script:
     - echo $TRAVIS_BUILD_NUMBER
     - echo $B_NAME
 before_deploy:
-    - if [ "$TRAVIS_BRANCH" = master ]; then B_NAME=master; fi
+  #  - if [ "$TRAVIS_BRANCH" = master ]; then B_NAME=master; fi
     - if [ "$TRAVIS_BRANCH" = develop ]; then B_NAME=develop; fi
-    - if [ "$TRAVIS_BRANCH" = test ]; then B_NAME=test; fi
+   # - if [ "$TRAVIS_BRANCH" = test ]; then B_NAME=test; fi
     
    #- if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
    #- if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
