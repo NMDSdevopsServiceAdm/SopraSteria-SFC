@@ -4,7 +4,7 @@ node_js:
 deploy:
   edge: true
   provider: cloudfoundry
-  env: env_name_dev
+  env: $env_name_dev
   on:
     branch: TRAVIS_BRANCH
   username: nmdsdevopsserviceadm@hotmail.com
