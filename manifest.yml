@@ -1,4 +1,6 @@
+ env:
+    APP_ENV: ((APP_ENV))
 applications:
-- name: env_name_dev
+- name: APP_ENV
   memory: 64M
   buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
