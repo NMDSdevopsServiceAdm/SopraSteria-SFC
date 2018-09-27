@@ -19,9 +19,7 @@ before_deploy:
    - if [ "$TRAVIS_BRANCH" = develop ]; then echo "develop"; fi
 deploy:
   edge: true
-  skip_cleanup: true
   provider: cloudfoundry
- # env: sfcdev
   on:
     branch: $B_NAME
   username: nmdsdevopsserviceadm@hotmail.com
