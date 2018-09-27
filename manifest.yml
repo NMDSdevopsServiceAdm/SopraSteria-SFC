@@ -1,5 +1,3 @@
- env:
-    APP_ENV: ((APP_ENV))
 applications:
 - name: APP_ENV
   memory: 64M
