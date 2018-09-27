@@ -4,9 +4,9 @@ node_js:
 env:  
   global:
     #- B_NAME=develops
-    - if [ "$TRAVIS_BRANCH"=master ]; then B_NAME=master; fi
-    - if [ "$TRAVIS_BRANCH"=develop ]; then B_NAME=develop; fi
-    - if [ "$TRAVIS_BRANCH"=test ]; then B_NAME=test; fi
+    - if [ "$TRAVIS_BRANCH"=master]; then B_NAME=master; fi
+    - if [ "$TRAVIS_BRANCH"=develop]; then B_NAME=develop; fi
+    - if [ "$TRAVIS_BRANCH"=test]; then B_NAME=test; fi
 before_script:
     # Print build info that binary is compiled with.
     - echo $TRAVIS_COMMIT
