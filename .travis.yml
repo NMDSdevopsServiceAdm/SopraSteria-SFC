@@ -18,7 +18,7 @@ before_deploy:
 deploy:
   edge: true
   provider: cloudfoundry
- 
+  env: sfcdev
   on:
     branch: $B_NAME
   username: nmdsdevopsserviceadm@hotmail.com

@@ -1,4 +1,3 @@
 applications:
-- name: $env_name_dev
-  memory: 64M
+- memory: 64M
   buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
