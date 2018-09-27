@@ -1,6 +1,9 @@
 language: node_js
 node_js:
 - '10.8'
+env:  
+  global:
+    - B_NAME=nasir
 before_script:
     # Print build info that binary is compiled with.
     - echo $TRAVIS_COMMIT
@@ -9,7 +12,9 @@ before_script:
     - echo $TRAVIS_BUILD_NUMBER
     - echo $env_name_dev
 before_deploy:
-    if [ "$TRAVIS_BRANCH" = master ]; then echo "nasir"; fi
+    if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
+    if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
+    if [ "$TRAVIS_BRANCH" = develop ]; then echo $B_NAME; fi
 deploy:
   edge: true
   provider: cloudfoundry
