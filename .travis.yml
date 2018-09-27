@@ -18,7 +18,6 @@ before_deploy:
    - if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
    - if [ "$TRAVIS_BRANCH" = develop ]; then echo "develop"; fi
 deploy:
-  manifest: manifest.yml
   edge: true
   skip_cleanup: true
   provider: cloudfoundry
