@@ -10,7 +10,7 @@ before_script:
     - echo $TRAVIS_TAG
     - echo $TRAVIS_BRANCH
     - echo $TRAVIS_BUILD_NUMBER
-    - echo $env_name_dev
+    - echo $B_NAME
 before_deploy:
    - if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
    - if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
