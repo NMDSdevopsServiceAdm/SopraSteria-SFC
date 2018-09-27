@@ -12,8 +12,8 @@ before_script:
     - echo $TRAVIS_BUILD_NUMBER
     - echo $env_name_dev
 before_deploy:
-    if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
-    if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
+   - if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
+   - if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
    # if [ "$TRAVIS_BRANCH" = develop ]; then echo $B_NAME; fi
 deploy:
   edge: true
