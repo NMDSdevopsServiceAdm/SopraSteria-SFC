@@ -35,8 +35,7 @@ deploy:
     space: sandbox
     manifest: manifest.dev.yml
     on:
-        branch: develop
-        
+        branch: develop        
   - provider: cloudfoundry
     edge: true  
     username: nmdsdevopsserviceadm@hotmail.com
@@ -48,7 +47,5 @@ deploy:
     manifest: manifest.test.yml
     on:
         branch: test
-    
-    
 notifications:
     slack: nmdsworkspace:iWywrkfRNuPKdFlYUZfI6Oka
