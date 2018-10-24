@@ -1,0 +1,24 @@
+@import "styles-variables";
+
+//@import "~bootstrap/dist/css/bootstrap.css";
+@import '~bootstrap/scss/bootstrap-reboot';
+@import '~bootstrap/scss/bootstrap-grid';
+
+
+body {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+}
+
+.container {
+  max-width: 960px;
+}
+
+form {
+  input,
+  select,
+  textarea {
+    background: $white;
+    border: 1px solid $black;
+  }
+}
