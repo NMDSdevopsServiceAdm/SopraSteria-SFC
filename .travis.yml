@@ -2,11 +2,14 @@ language: node_js
 node_js:
 - '10.8'
 dist: trusty
-sudo: false
+sudo: required
 addons:
     chrome: stable
 before_install:
     - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9876 http://localhost &
+install:
+  - npm install
+  - npm install -g karma-cli
 env:  
   global:
     - B_NAME1=develop
@@ -16,6 +19,8 @@ env:
     #- if [ "$TRAVIS_BRANCH"=develop]; then B_NAME=develop; fi
     #- if [ "$TRAVIS_BRANCH"=test]; then B_NAME=test; fi
 before_script:
+    - "sudo chown root /opt/google/chrome/chrome-sandbox"
+    - "sudo chmod 4755 /opt/google/chrome/chrome-sandbox"
     # Print build info that binary is compiled with.
     - echo $TRAVIS_COMMIT
     - echo $TRAVIS_TAG
