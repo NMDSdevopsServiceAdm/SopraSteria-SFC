@@ -18,7 +18,6 @@ install:
   - npm install
   - npm install -g karma-cli
   - npm install -g bower
-  - bower install
 env:  
   global:
     - B_NAME1=develop
