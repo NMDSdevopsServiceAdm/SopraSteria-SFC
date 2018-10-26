@@ -6,7 +6,7 @@ sudo: required
 addons:
     chrome: stable
 before_install:
-    - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9876 http://localhost &
+    - google-chrome-stable --headless --no-sandbox --disable-gpu --remote-debugging-port=9876 http://localhost &
 install:
   - npm install
   - npm install -g karma-cli
