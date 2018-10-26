@@ -20,11 +20,11 @@ install:
   - npm install -g bower
   - bower install
 env:  
-  - GOOGLE_CHROME_BINARY=/usr/bin/google-chrome-beta
   global:
     - B_NAME1=develop
     - B_NAME2=master
     - B_NAME3=test
+    - GOOGLE_CHROME_BINARY=/usr/bin/google-chrome-beta
     #- if [ "$TRAVIS_BRANCH"=master]; then B_NAME=master; elif [ "$TRAVIS_BRANCH"=develop] then B_NAME=develop; else B_NAME=test; fi
     #- if [ "$TRAVIS_BRANCH"=develop]; then B_NAME=develop; fi
     #- if [ "$TRAVIS_BRANCH"=test]; then B_NAME=test; fi
