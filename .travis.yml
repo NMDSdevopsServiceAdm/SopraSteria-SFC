@@ -2,8 +2,7 @@ language: node_js
 node_js:
 - '10.8'
 dist: trusty
-sudo: required
-script: node_modules/karma/bin/karma start karma.conf.js --single-run
+sudo: true
 cache:
   directories:
     - node_modules
@@ -27,7 +26,7 @@ env:
     - B_NAME1=develop
     - B_NAME2=master
     - B_NAME3=test
-    - GOOGLE_CHROME_BINARY=/usr/bin/google-chrome-beta
+    #- GOOGLE_CHROME_BINARY=/usr/bin/google-chrome-beta
     #- if [ "$TRAVIS_BRANCH"=master]; then B_NAME=master; elif [ "$TRAVIS_BRANCH"=develop] then B_NAME=develop; else B_NAME=test; fi
     #- if [ "$TRAVIS_BRANCH"=develop]; then B_NAME=develop; fi
     #- if [ "$TRAVIS_BRANCH"=test]; then B_NAME=test; fi
@@ -41,6 +40,11 @@ before_script:
     - echo $TRAVIS_BRANCH
     - echo $TRAVIS_BUILD_NUMBER
     - echo $B_NAME
+script:
+  - npm run lint
+  - npm run test:headless
+  - npm run build
+  - xvfb-run npm run e2e
 before_deploy:    
     #- if [ "$TRAVIS_BRANCH"=master ]; then B_NAME=master; fi
     #- if [ "$TRAVIS_BRANCH"=develop ]; then B_NAME=develop; fi
