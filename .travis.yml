@@ -42,7 +42,7 @@ before_script:
     - echo $B_NAME
 script:
   - npm run lint
-  - npm run test:headless
+  - npm run test
   - npm run build
   - xvfb-run npm run e2e
 before_deploy:    
