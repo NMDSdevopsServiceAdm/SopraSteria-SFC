@@ -3,6 +3,7 @@ node_js:
 - '10.8'
 dist: trusty
 sudo: required
+script: node_modules/karma/bin/karma start karma.conf.js --single-run
 cache:
   directories:
     - node_modules
