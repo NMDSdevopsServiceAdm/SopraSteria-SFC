@@ -64,7 +64,7 @@ deploy:
     space: sandbox
     manifest: manifest.dev.yml
     on:
-        branch: non-functional-login-page 
+        branch: non-functional-login-page
   - provider: cloudfoundry
     edge: true  
     username: nmdsdevopsserviceadm@hotmail.com
