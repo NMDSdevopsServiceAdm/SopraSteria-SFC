@@ -20,7 +20,6 @@ before_install:
 install:
   - npm install
   - npm install -g karma-cli
-  - bower install
 #  - npm install -g bower
 env:  
   global:
