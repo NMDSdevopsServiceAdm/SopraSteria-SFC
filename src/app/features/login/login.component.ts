@@ -7,8 +7,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  public title: string;
 
-  constructor() { }
+  constructor() {
+    this.title = 'Sign in';
+  }
 
   ngOnInit() {
   }
