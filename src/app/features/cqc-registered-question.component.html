@@ -1,0 +1,57 @@
+<div class="col-12 p-0">
+
+  <p class="h5">Question 1 of 6</p>
+  <h1 class="h1">Care Quality Commission regulation</h1>
+
+  <form [formGroup]="cqcRegisteredQuestionForm">
+
+    <div class="row mb-5 form-group">
+      <div class="col-12">
+        <label class="main-body-text-bold mb-3 d-block">Are you regulated by the Care Quality Commission (CQC)?</label>
+
+        <div class="row mb-2">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="reqQuestionYes" [(ngModel)]="model.yes" value="yes" (change)="regQuestionMethodChanged('yes')">
+              <label class="main-body-text p-0" for="radio-inline-1">Yes</label>
+            </div>
+          </div>
+
+          <div *ngIf="regQuestionMethod.type === 'yes'" class="row m-0 mb-5">
+            <div class="col-12 left-text-border align-middle">
+
+              <label class="main-body-text-bold mb-3 d-block">Email address 1</label>
+
+              <input class="col-12 col-md-10" type="text" placeholder=" EMail" />
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="regQuestionNo" [(ngModel)]="model.no" value="no" (change)="regQuestionMethodChanged('no')">
+              <label class="main-body-text p-0" for="radio-inline-2">No</label>
+            </div>
+          </div>
+
+          <div *ngIf="regQuestionMethod.type === 'no'" class="row m-0 mb-5">
+            <div class="col-12 left-text-border align-middle">
+
+              <label class="main-body-text-bold mb-3 d-block">Email address 2</label>
+
+              <input class="col-12 col-md-10" type="text" placeholder=" EMail" />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </form>
+
+  <ul class="login-nav-list">
+    <li><a routerLink="/">Forgot your password?</a></li>
+  </ul>
+
+</div>
