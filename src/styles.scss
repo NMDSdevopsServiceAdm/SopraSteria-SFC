@@ -82,16 +82,16 @@ form,
     input,
     textarea,
     select {
-      border: 2px solid black;
+      border: 2px solid $black;
       background: $white;
       border-radius: 0;
+      outline: none;
     }
 
     input:focus,
     textarea:focus,
     select:focus {
-      //border: 2px solid $focus-yellow;
-      @include box-shadow(-2px, -2px, 2px, 0, $focus-yellow);
+      @include box-shadow(0, 0, 0, 0.2rem, $focus-yellow);
       border: 2px solid $black;
 
       &.file-upload-input {
