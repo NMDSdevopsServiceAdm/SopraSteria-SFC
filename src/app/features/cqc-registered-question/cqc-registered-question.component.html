@@ -3,7 +3,7 @@
   <p class="h5">Question 1 of 6</p>
   <h1 class="h1">Care Quality Commission regulation</h1>
 
-  <form [formGroup]="cqcRegisteredQuestionForm">
+  <form #CqcRegisteredQuestionModule="ngForm">
 
     <div class="row mb-5 form-group">
       <div class="col-12">
@@ -12,17 +12,16 @@
         <div class="row mb-2">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="reqQuestionYes" [(ngModel)]="regQuestionMethod.type" formControlName="regQuestionMethod" value="yes" (change)="regQuestionMethodChanged('yes')">
+              <input type="radio" id="reqQuestionYes" [(ngModel)]="registeredQuestionSelected" value="yes" name="yes">
               <label class="main-body-text p-0" for="radio-inline-1">Yes</label>
             </div>
           </div>
 
-          <div *ngIf="regQuestionMethod.type === 'yes'" class="panel panel-border-narrow col-10 col-lg-6">
+          <div *ngIf="registeredQuestionSelected === 'yes'" class="panel panel-border-narrow col-10 col-lg-6">
 
             <div class="field-group">
               <label class="form-label" for="postcode">Enter your postcode</label>
               <input name="postcode1" placeholder="postcode" type="text" id="postcode1" class="form-control col-12" />
-
             </div>
             <div class="field-group">
               <p class="form-block">or</p>
@@ -37,12 +36,12 @@
         <div class="row">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="regQuestionNo" [(ngModel)]="regQuestionMethod.type" formControlName="regQuestionMethod" value="no" (change)="regQuestionMethodChanged('no')">
+              <input type="radio" id="regQuestionNo" [(ngModel)]="registeredQuestionSelected" value="no" name="no">
               <label class="main-body-text p-0" for="radio-inline-2">No</label>
             </div>
           </div>
 
-          <div *ngIf="regQuestionMethod.type === 'no'" class="panel panel-border-narrow col-10 col-lg-6">
+          <div *ngIf="registeredQuestionSelected === 'no'" class="panel panel-border-narrow col-10 col-lg-6">
             <div class="field-group">
 
               <label class="main-body-text-bold mb-3 d-block">Email address 2</label>
