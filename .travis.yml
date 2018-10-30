@@ -20,6 +20,7 @@ before_install:
 install:
   - npm install
   - npm install -g karma-cli
+  - bower install
 #  - npm install -g bower
 env:  
   global:
@@ -42,8 +43,8 @@ before_script:
     - echo $B_NAME
 script:
   - npm run build
-  - npm run test
-  - npm run lint
+  - npm run test test-single
+   #- npm run lint
 
  # - xvfb-run npm run e2e
 before_deploy:    
