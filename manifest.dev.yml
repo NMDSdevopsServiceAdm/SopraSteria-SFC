@@ -1,4 +1,4 @@
 applications:
 - name: sfcdev
   memory: 64M
-  buildpacks: https://github.com/cloudfoundry/nodejs-buildpack
+  buildpack: nodejs_buildpack
