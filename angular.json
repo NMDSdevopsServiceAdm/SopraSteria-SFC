@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ng-sfc-v2",
+            "outputPath": "dist",
             "index": "index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -66,6 +66,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
+            "host": "0.0.0.0",
+            "port": 8080,
             "browserTarget": "ng-sfc-v2:build"
           },
           "configurations": {
