@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '10.8'
+- '10.10.0'
 dist: trusty
 sudo: true
 cache:
@@ -41,9 +41,10 @@ before_script:
     - echo $TRAVIS_BUILD_NUMBER
     - echo $B_NAME
 script:
-  - npm run lint
-  - npm run test
   - npm run build
+  #- npm run test
+   #- npm run lint
+
  # - xvfb-run npm run e2e
 before_deploy:    
     #- if [ "$TRAVIS_BRANCH"=master ]; then B_NAME=master; fi
@@ -64,7 +65,7 @@ deploy:
     space: sandbox
     manifest: manifest.dev.yml
     on:
-        branch: non-functional-login-page
+        branch: fix_deploy
   - provider: cloudfoundry
     edge: true  
     username: nmdsdevopsserviceadm@hotmail.com
