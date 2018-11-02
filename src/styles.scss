@@ -35,6 +35,8 @@ ul {
 }
 
 #main-content {
+  min-height: calc(100vh - 194px);
+
   padding: 60px 0;
 
   h1 {

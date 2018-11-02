@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpModule } from '@angular/http';
+
+import { LocationService } from '../../core/services/location.service';
 
 import {
   CqcRegisteredQuestionComponent,
@@ -9,12 +12,14 @@ import { CqcRegisteredQuestionRoutingModule } from './cqc-registered-question-ro
 
 @NgModule({
   imports: [
-    CqcRegisteredQuestionRoutingModule
+    CqcRegisteredQuestionRoutingModule,
+    HttpModule
   ],
   declarations: [
     CqcRegisteredQuestionComponent
   ],
   providers: [
+    LocationService
   ]
 })
 export class CqcRegisteredQuestionModule { }
