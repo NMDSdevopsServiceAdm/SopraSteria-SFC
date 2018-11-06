@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 //import { HttpClient, HttpHeaders } from '@angular/common/http';
 //import { FormGroup, Validators, FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { LocationService } from '../../core/services/location.service';
- // import { ApiService } from './api.service';
 
-//import { CqcRegisteredCheck } from './cqc-regsitered-check';
+import { CqcRegisteredCheck } from './cqc-regsitered-check';
 
 @Component({
   selector: 'app-cqc-registered-question',
@@ -15,27 +15,59 @@ import { LocationService } from '../../core/services/location.service';
 
 export class CqcRegisteredQuestionComponent {
 
-  //questionCheck = new CqcRegisteredCheck('', '');
-
-  constructor(private locationService: LocationService) { }
-
-  ngOnInit() {
-    this.locationService.getLocations();
-  }
-
-  /*
+  questionCheck = new CqcRegisteredCheck('', '', '');
   submitted = false;
 
-  getLocation() {
-    return this.http.get('<!--https://api.cqc.org.uk/public/v1/locations-->');
+  constructor(private locationService: LocationService, private router: Router) { }
+
+  ngOnInit() {
+   // this.locationService.getLocationApi();
+  }
+
+  getLocations() {
+    //return this.http.get('<!--https://api.cqc.org.uk/public/v1/locations-->');
 
     //1-1000210669 testable locationID
     //1-1000401911
+
+    //this.tests();
+    //console.log(this.locationService.getLocationApi());
   }
+
+  
 
   onSubmit() {
     this.submitted = true;
+
+    routeQuestionCheck(this.questionCheck, this.router);
   }
-  */
+
+  // Simple check to see which input field they enter and route to appropriate component
+  var routeQuestionCheck = function (input: any, router) {
+    console.log(input);
+
+    var postcodeYesCheck = input.postcodeYes.length,
+        locationIdCheck = input.locationId.length,
+        postcodeNoCheck = input.postcodeNo.length;
+
+    if (postcodeYesCheck) {
+      router.navigate(['/select-workplace']);
+      console.log(postcodeYesCheck);
+    }
+    else if (locationIdCheck) {
+      router.navigate(['/confirm-workplace-details']);
+      console.log(locationIdCheck);
+    }
+    else if (postcodeNoCheck) {
+      router.navigate(['/select-workplace-address']);
+      console.log(postcodeNoCheck);
+    }
+    
+  }
+  
+
+  
+
+
   
 }

@@ -1,30 +1,36 @@
-<div class="col-12 p-0">
+<div class="sub-page-container col-12">
 
-  <p class="h5">Question 1 of 6</p>
+  <div id="back" class="back-link">
+    <a routerLink="/">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <p class="h5">Section 1 of 6</p>
   <h1 class="h1">Care Quality Commission regulation</h1>
 
   <form (ngSubmit)="onSubmit()" #CqcRegisteredQuestionModule="ngForm">
 
-    <div class="row mb-5 form-group">
-      <div class="col-12">
+    <div class="form-group mb-5">
+      <div class="col-12 p-0">
         <label class="main-body-text-bold mb-3 d-block">Are you regulated by the Care Quality Commission (CQC)?</label>
 
-        <div class="row mb-2">
+        <div class="row mb-5">
           <div class="col-12">
             <div class="multiple-choice">
               <input type="radio" id="reqQuestionYes" [(ngModel)]="registeredQuestionSelected" value="yes" name="yes">
-              <label class="main-body-text p-0" for="radio-inline-1">Yes</label>
+              <label class="main-body-text p-0" for="reqQuestionYes">Yes</label>
             </div>
           </div>
 
           <div *ngIf="registeredQuestionSelected === 'yes'" class="panel panel-border-narrow col-10 col-lg-6">
 
             <div class="field-group">
-              <label class="form-label" for="postcode">Enter your postcode</label>
-              <input name="postcode" [(ngModel)]="questionCheck.postcode" placeholder="postcode" type="text" id="postcode1" class="form-control col-12" />
+              <label class="form-label" for="postcodeYes">Enter your postcode</label>
+              <input name="postcodeYes" [(ngModel)]="questionCheck.postcodeYes" placeholder="postcode" type="text" id="postcodeYes" class="form-control col-12" />
             </div>
-            <div class="field-group">
-              <p class="form-block">or</p>
+            <div class="field-group mt-2">
+              <p class="label mt-4">or</p>
 
               <label class="form-label" for="locationId">Enter your location ID number</label>
               <input name="locationId" [(ngModel)]="questionCheck.locationId" placeholder="location" type="text" id="location" class="form-control col-12" />
@@ -37,15 +43,15 @@
           <div class="col-12">
             <div class="multiple-choice">
               <input type="radio" id="regQuestionNo" [(ngModel)]="registeredQuestionSelected" value="no" name="no">
-              <label class="main-body-text p-0" for="radio-inline-2">No</label>
+              <label class="main-body-text p-0" for="regQuestionNo">No</label>
             </div>
           </div>
 
           <div *ngIf="registeredQuestionSelected === 'no'" class="panel panel-border-narrow col-10 col-lg-6">
             <div class="field-group">
 
-              <label class="main-body-text-bold mb-3 d-block">Enter your postcode<</label>
-              <input name="postcode2" placeholder="postcode" type="text" id="postcode2" class="form-control col-12" />
+              <label class="main-body-text-bold mb-3 d-block" for="postcodeNo">Enter your postcode</label>
+              <input name="postcodeNo" [(ngModel)]="questionCheck.postcodeNo" placeholder="postcode" type="text" id="postcodeNo" class="form-control col-12" />
             </div>
           </div>
 
@@ -59,31 +65,5 @@
 
   </form>
 
-  <br />
-  <br />
-
-  <div [hidden]="!submitted">
-    <h2>Submitted Customer</h2>
-    <hr>
-    <div><span class="badge badge-info">Id</span> -> {{//questionCheck.postcode}}</div>
-    <div><span class="badge badge-info">locationId</span> -> {{//questionCheck.locationId}}</div>
-    <br>
-    <button class="btn btn-primary" (click)="submitted=false">Edit</button>
-  </div>
-
-
-  <br />
-  <br />
-  <!--
-      <div>
-    /*{{// questionCheck | json */}}
-  </div>
-      -->
-
-  <br />
-  <br />
-  <ul class="login-nav-list">
-    <li><a routerLink="/">Back to login</a></li>
-  </ul>
 
 </div>

@@ -14,6 +14,12 @@ import { FooterComponent } from './core/footer/footer.component';
 
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
 import { LocationService } from './core/services/location.service';
+import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
+import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
+import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
+import { UserDetailsComponent } from './features/user-details/user-details.component';
+import { CreateUsernameComponent } from './features/create-username/create-username.component';
+import { SecurityQuestionComponent } from './features/security-question/security-question.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +28,13 @@ import { LocationService } from './core/services/location.service';
     RegisterComponent,
     HeaderComponent,
     FooterComponent,
-    CqcRegisteredQuestionComponent
+    CqcRegisteredQuestionComponent,
+    ConfirmWorkplaceDetailsComponent,
+    SelectWorkplaceComponent,
+    SelectWorkplaceAddressComponent,
+    UserDetailsComponent,
+    CreateUsernameComponent,
+    SecurityQuestionComponent
   ],
   imports: [
     BrowserModule,

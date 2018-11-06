@@ -4,6 +4,12 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './features/login/login.component';
 import { RegisterComponent } from './features/register/register.component';
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
+import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
+import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
+import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
+import { UserDetailsComponent } from './features/user-details/user-details.component';
+import { CreateUsernameComponent } from './features/create-username/create-username.component';
+import { SecurityQuestionComponent } from './features/security-question/security-question.component';
 
 const routes: Routes = [
 
@@ -12,8 +18,28 @@ const routes: Routes = [
     component: CqcRegisteredQuestionComponent
   },
   {
-    path: 'register',
-    component: RegisterComponent
+    path: 'select-workplace',
+    component: SelectWorkplaceComponent
+  },
+  {
+    path: 'confirm-workplace-details',
+    component: ConfirmWorkplaceDetailsComponent
+  },
+  {
+    path: 'select-workplace-address',
+    component: SelectWorkplaceAddressComponent
+  },
+  {
+    path: 'user-details',
+    component: UserDetailsComponent
+  },
+  {
+    path: 'create-username',
+    component: CreateUsernameComponent
+  },
+  {
+    path: 'security-question',
+    component: SecurityQuestionComponent
   }
 ];
 

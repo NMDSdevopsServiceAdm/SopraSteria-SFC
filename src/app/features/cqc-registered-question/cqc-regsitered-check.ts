@@ -1,6 +1,7 @@
 export class CqcRegisteredCheck {
   constructor(
-    public postcode: string,
-    public locationId: string
+    public postcodeYes: string,
+    public locationId: string,
+    public postcodeNo: string
   ) {}
 }
