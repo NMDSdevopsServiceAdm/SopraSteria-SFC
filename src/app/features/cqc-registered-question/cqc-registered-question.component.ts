@@ -39,11 +39,11 @@ export class CqcRegisteredQuestionComponent {
   onSubmit() {
     this.submitted = true;
 
-    routeQuestionCheck(this.questionCheck, this.router);
+    this.routeQuestionCheck(this.questionCheck, this.router);
   }
 
   // Simple check to see which input field they enter and route to appropriate component
-  var routeQuestionCheck = function (input: any, router) {
+  routeQuestionCheck = function (input: any, router) {
     console.log(input);
 
     var postcodeYesCheck = input.postcodeYes.length,
