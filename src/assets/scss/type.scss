@@ -1,0 +1,30 @@
+// Text
+h1, .h1 {
+  font-weight: 700;
+  margin: 0;
+
+  @include rem(padding, 0 0 50px 0);
+  @include rem(font-size, 48px);
+  @include rem(line-height, 48px);
+}
+
+h5, .h5 {
+  color: $light-grey-text;
+
+  @include rem(font-size, 27px);
+}
+
+.main-text {
+
+  @include rem(font-size, 16px);
+}
+
+.main-body-text-bold {
+  font-weight: bold;
+
+  @include rem(font-size, 16px);
+}
+
+strong {
+  font-weight: bold;
+}
