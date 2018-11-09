@@ -1,0 +1,94 @@
+{
+  "locationId": "1-1000210669",
+  "providerId": "1-877912132",
+  "organisationType": "Location",
+  "type": "Social Care Org",
+  "name": "Kingswood House Nursing Home",
+  "registrationStatus": "Registered",
+  "registrationDate": "2013-12-12",
+  "registeredManagerAbsentDate": "2018-05-31",
+  "numberOfBeds": 22,
+  "postalAddressLine1": "21-23 Chapel Park Road",
+  "postalAddressTownCity": "St Leonards On Sea",
+  "postalAddressCounty": "East Sussex",
+  "region": "South East",
+  "postalCode": "TN37 6HR",
+  "mainPhoneNumber": "01424716303",
+  "constituency": "Hastings and Rye",
+  "localAuthority": "East Sussex",
+  "lastInspection": {
+    "date": "2018-04-18"
+  },
+  "lastReport": {
+    "publicationDate": "2018-08-04"
+  },
+  "relationships": [
+    {
+      "relatedLocationId": "1-112758739",
+      "relatedLocationName": "Kingswood House Nursing Home",
+      "type": "HSCA Predecessor",
+      "reason": "New Provider"
+    }
+  ],
+  "locationTypes": [],
+  "regulatedActivities": [
+    {
+      "name": "Accommodation for persons who require nursing or personal care",
+      "code": "RA2",
+      "contacts": []
+    },
+    {
+      "name": "Treatment of disease, disorder or injury",
+      "code": "RA5",
+      "contacts": []
+    }
+  ],
+  "gacServiceTypes": [
+    {
+      "name": "Nursing homes"
+    }
+  ],
+  "specialisms": [
+    {
+      "name": "Caring for adults under 65 yrs"
+    },
+    {
+      "name": "Mental health conditions"
+    }
+  ],
+  "currentRatings": {
+    "overall": {
+      "rating": "Requires improvement",
+      "reportDate": "2018-08-04",
+      "keyQuestionRatings": [
+        {
+          "name": "Safe",
+          "rating": "Requires improvement",
+          "reportDate": "2018-08-04"
+        },
+        {
+          "name": "Well-led",
+          "rating": "Requires improvement",
+          "reportDate": "2018-08-04"
+        },
+        {
+          "name": "Caring",
+          "rating": "Good",
+          "reportDate": "2018-08-04"
+        },
+        {
+          "name": "Responsive",
+          "rating": "Good",
+          "reportDate": "2018-08-04"
+        },
+        {
+          "name": "Effective",
+          "rating": "Good",
+          "reportDate": "2018-08-04"
+        }
+      ]
+    },
+    "reportDate": "2018-08-04"
+  }
+}
+

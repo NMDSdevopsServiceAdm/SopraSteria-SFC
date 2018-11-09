@@ -1,0 +1,37 @@
+.btn-container {
+
+  //@include rem(padding, 30px 0 0 0);
+}
+
+.btn {
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  height: 40px;
+
+  @include rem(padding, 0 26px);
+  @include box-shadow(0, 2px, 0, 0, $sfc-btn-primary-purple-hover);
+
+  @include rem(font-size, 13px);
+
+  @media only screen and (min-width: 576px) {
+    font-size: 19px !important;
+  }
+
+  @media only screen and (min-width: 992px) {
+    width: auto;
+  }
+
+  &.btn-primary {
+    background-color: $sfc-btn-primary-purple;
+
+    &:hover {
+      background-color: $sfc-btn-primary-purple-hover;
+    }
+
+    &:disabled,
+    &.disabled {
+      background-color: $light-grey-text;
+    }
+  }
+}

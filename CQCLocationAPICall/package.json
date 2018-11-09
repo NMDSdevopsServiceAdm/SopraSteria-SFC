@@ -1,0 +1,22 @@
+{
+  "name": "cqc-location-call",
+  "version": "1.0.0",
+  "description": "Call CQC Location API and populate our own location database.",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "devDependencies": {
+    "serverless-offline": "^3.30.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "pg": "^7.6.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.41.0",
+    "sequelize-cli": "^5.2.0"
+  }
+}
