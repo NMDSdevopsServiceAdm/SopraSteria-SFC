@@ -1,6 +1,13 @@
 #header-container {
   background: $white;
 
+  .container {
+
+    @media (min-width: 961px) {
+      padding: 0;
+    }
+  }
+
   .main-header {
     border-bottom: 5px solid $sfc-blue;
 

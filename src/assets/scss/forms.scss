@@ -25,11 +25,13 @@ form,
 
     input,
     textarea,
+    .textarea,
     select {
       border: 2px solid $black;
       background: $white;
       border-radius: 0;
       outline: none;
+      color: $black;
 
       @include rem(font-size, 16px);
     }
@@ -38,6 +40,7 @@ form,
     textarea:focus,
     select:focus {
       border: 2px solid $black;
+      color: $black;
 
       @include box-shadow(0, 0, 0, 0.2rem, $focus-yellow);
 
