@@ -1,0 +1,88 @@
+<div class="sub-page-container col-12">
+
+  <div id="back" class="back-link">
+    <a routerLink="/select-workplace-address">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <p class="h5">Section 3 of 8</p>
+  <h1 class="h1">Select your main service</h1>
+
+  <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">We need some details about where you work. You need to answer these questions before we can create your account.</p>
+
+  <form (ngSubmit)="onSubmit()" #SelectMainServiceModule="ngForm">
+
+    <div class="form-group">
+      <div class="field-group col-12 p-0 pb-4">
+        <label class="main-body-text-bold mb-3 d-block">Adult residential</label>
+
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="adult-residential-1" value="adult-residential-1" name="adult-residential">
+              <label class="main-body-text p-0" for="adult-residential-1">Care home services with nursing</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="adult-residential-2" value="adult-residential-2" name="adult-residential">
+              <label class="main-body-text p-0" for="adult-residential-2">Care home services without nursing</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group col-12 p-0 pb-4">
+        <label class="main-body-text-bold mb-3 d-block">Adult domiciliary</label>
+
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="adult-domiciliary-1" value="adult-domiciliary-1" name="adult-domiciliary">
+              <label class="main-body-text p-0" for="adult-domiciliary-1">Domiciliary care services</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="adult-domiciliary-2" value="adult-domiciliary-2" name="adult-domiciliary">
+              <label class="main-body-text p-0" for="adult-domiciliary-2">Nurses agency</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="adult-domiciliary-3" value="adult-domiciliary-3" name="adult-domiciliary">
+              <label class="main-body-text p-0" for="adult-domiciliary-3">Extra care housing services</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="adult-domiciliary-4" value="adult-domiciliary-4" name="adult-domiciliary">
+              <label class="main-body-text p-0" for="adult-domiciliary-4">Supported living services</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="btn-container">
+      <button class="btn btn-primary" type="submit" routerLink="/confirm-workplace-details">Continue</button>
+    </div>
+
+  </form>
+
+
+</div>

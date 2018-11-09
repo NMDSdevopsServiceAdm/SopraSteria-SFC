@@ -1,3 +1,38 @@
-<p>
-  security-question works!
-</p>
+<div class="sub-page-container col-12">
+
+  <div id="back" class="back-link">
+    <a routerLink="/create-username">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <p class="h5">Section 6 of 7</p>
+  <h1 class="h1">Security question</h1>
+
+  <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">You will need this if you forget your username or if you speak to Skills for Care about your account.</p>
+
+  <form (ngSubmit)="onSubmit()" #securityQuestionModule="ngForm">
+
+    <div class="form-group mb-5">
+      <div class="col-12 col-md-6 p-0">
+
+        <div class="field-group">
+          <label class="form-label" for="security-question">Enter a security question</label>
+          <input name="security-question" placeholder="" type="text" id="security-question" class="form-control col-12" />
+        </div>
+        <div class="field-group mt-5">
+          <label class="form-label" for="security-question-answer">Enter the answer to the security question</label>
+          <input name="security-question-answer" placeholder="" type="text" id="security-question-answer" class="form-control col-12" />
+        </div>
+      </div>
+
+    </div>
+
+    <div class="btn-container">
+      <button class="btn btn-primary" type="submit" routerLink="/confirm-account-details">Continue</button>
+    </div>
+
+  </form>
+
+
+</div>

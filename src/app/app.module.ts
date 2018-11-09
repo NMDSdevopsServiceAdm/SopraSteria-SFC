@@ -20,6 +20,11 @@ import { SelectWorkplaceAddressComponent } from './features/select-workplace-add
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { CreateUsernameComponent } from './features/create-username/create-username.component';
 import { SecurityQuestionComponent } from './features/security-question/security-question.component';
+import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
+import { RegistrationCompleteComponent } from './features/registration-complete/registration-complete.component';
+import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
+import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
+import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +39,12 @@ import { SecurityQuestionComponent } from './features/security-question/security
     SelectWorkplaceAddressComponent,
     UserDetailsComponent,
     CreateUsernameComponent,
-    SecurityQuestionComponent
+    SecurityQuestionComponent,
+    ConfirmAccountDetailsComponent,
+    RegistrationCompleteComponent,
+    EnterWorkplaceAddressComponent,
+    SelectMainServiceComponent,
+    ContinueCreatingAccountComponent
   ],
   imports: [
     BrowserModule,

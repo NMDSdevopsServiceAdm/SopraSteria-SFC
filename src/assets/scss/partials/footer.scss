@@ -9,13 +9,21 @@
     .container {
       position: relative;
 
+      @media (min-width: 961px) {
+        padding: 0;
+      }
+
       .footer-tagline {
         background: $sfc-blue;
         color: $white;
         font-weight: bold;
         position: absolute;
         top: -45px;
-        left: -15px;
+        left: 15px;
+
+        @media (min-width: 961px) {
+          left: 0;
+        }
 
         @include rem(padding, 6px 6px);
         @include rem(line-height, 16px);
@@ -23,14 +31,22 @@
       }
 
       .logo {
-        border-left: 3px solid $sfc-btn-primary-green;
 
-        @include rem(padding, 0 0 0 7px);
+        @include rem(margin-top, 10px);
+        @include rem(padding, 0);
+
+        img {
+          border-left: 3px solid $sfc-btn-primary-green;
+
+          @include rem(padding, 0 0 0 10px);
+          @include rem(margin, 0 0 0 15px);
+        }
       }
 
       .footer-nav-list {
+        text-align: left;
 
-        @media only screen and (min-width: 768px) {
+        @media (min-width: 961px) {
           text-align: right;
         }
 

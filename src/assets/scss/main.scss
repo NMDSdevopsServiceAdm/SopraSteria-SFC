@@ -27,24 +27,25 @@ ul {
 a {
   text-decoration: underline;
 
-  @include rem(font-size, 16px);
+  @include rem(font-size, 19px);
 }
 
 p {
 
-  @include rem(font-size, 16px);
+  @include rem(font-size, 19px);
 }
 
 // Structure
 
 .container {
-  max-width: 1050px;
+  max-width: 960px;
 }
 
 #main-content {
   min-height: calc(100vh - 351px);
 
-  h1 {
+  @media (min-width: 961px) {
+    padding: 0;
   }
 
   .main-page-container {
@@ -95,4 +96,10 @@ p {
   border-bottom: 1px solid $headerline-border-grey;
 }
 
+.completion-message {
+  background: $mint-green;
+  color: $white;
+  text-align: center;
 
+  @include rem(padding, 40px 0);
+}
