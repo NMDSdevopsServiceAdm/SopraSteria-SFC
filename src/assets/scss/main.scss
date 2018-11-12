@@ -90,6 +90,21 @@ p {
 
   @include rem(padding, 0 0 0 30px);
   @include rem(margin, 20px 0 0 0);
+
+  &.has-error {
+    border-left: 10px solid $error-red;
+
+    .error-message {
+      color: $error-red;
+    }
+
+    input {
+
+      &.input-error {
+        border-color: $error-red;
+      }
+    }
+  }
 }
 
 .border-line-bottom {
