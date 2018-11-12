@@ -33,10 +33,10 @@
               <div class="form-control-feedback"
                    *ngIf="postcodeYes.errors && (postcodeYes.dirty || postcodeYes.touched)">
                 <!--<p *ngIf="postcodeYes.errors.required" class="error-message">Email is required</p>-->
-                <p *ngIf="postcodeYes.errors.minlength" class="error-message">Postcode should be at least 8 characters long</p>
+                <p *ngIf="postcodeYes.errors.minlength" class="error-message">Postcode should be at least 6 characters long</p>
               </div>
 
-              <input placeholder="postcode" type="text" id="postcodeYes" class="form-control col-12" name="postcodeYes" minlength="8" [(ngModel)]="model.postcodeYes" #postcodeYes="ngModel"
+              <input placeholder="postcode" type="text" id="postcodeYes" class="form-control col-12" name="postcodeYes" minlength="6" [(ngModel)]="model.postcodeYes" #postcodeYes="ngModel"
                      [ngClass]="{'input-error': postcodeYes.invalid}"
                />
             </div>
