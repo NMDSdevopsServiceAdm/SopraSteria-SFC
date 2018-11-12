@@ -11,10 +11,15 @@
 
   <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">We couldn’t find your workplace from CQC, select the appropriate address below</p>
 
-  <form (ngSubmit)="onSubmit()" #selectWorkplaceModule="ngForm">
+  <form (ngSubmit)="onSubmit()" #selectWorkplaceAddressModule="ngForm">
 
     <div class="form-group mb-5">
       <div class="col-12 col-md-7 p-0">
+
+        <div class="field-group row">
+            <div class="main-body-text-bold col-5 col-sm-3 pb-5">SW3 8FG</div>
+            <div class="main-body-text col-5 col-sm-3 pb-5 pl-0"><a routerLink="/" title="Edit postcode">Change</a></div>
+        </div>
 
         <div class="field-group">
           <select class="col-12 col-md-10 pl-2 pr-2">
