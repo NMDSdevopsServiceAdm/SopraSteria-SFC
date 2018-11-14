@@ -4,7 +4,7 @@ const models = require('./models/index');
 module.exports.handler =  async (event, context) => {
 
     //CQC Endpoint
-    const url = 'https://api.cqc.org.uk/public/v1-nonsense';
+    const url = 'https://api.cqc.org.uk/public/v1';
 
     try{
         let locations= await getAllLocations(url);
