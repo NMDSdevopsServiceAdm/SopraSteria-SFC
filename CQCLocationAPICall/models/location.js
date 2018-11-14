@@ -1,12 +1,41 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
-  const Location = sequelize.define('Location', {
-    locationId: DataTypes.STRING,
-    name: DataTypes.STRING,
-    postalCode: DataTypes.STRING
-  }, {});
-  Location.associate = function(models) {
+  const location = sequelize.define('location', {
+    cqcid: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    locationname: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    postalcod: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    createdat: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updatedat: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    locationid: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      unique: true
+    }
+  }, {
+    schema: 'cqc',
+    createdAt: 'createdat',
+    updatedAt: 'updatedat',
+    freezeTableName: true
+  });
+  location.associate = function(models) {
     // associations can be defined here
   };
-  return Location;
+  return location;
 };
