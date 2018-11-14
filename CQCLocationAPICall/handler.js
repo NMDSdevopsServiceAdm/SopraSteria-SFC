@@ -4,7 +4,7 @@ const models = require('./models/index');
 module.exports.handler =  async (event, context) => {
 
     //CQC Endpoint
-    const url = 'https://api.cqc.org.uk/public/v1';
+    const url = 'https://api.cqc.org.uk/public/v1-nonsense';
 
     try{
         let locations= await getAllLocations(url);
@@ -33,13 +33,12 @@ module.exports.handler =  async (event, context) => {
         return {status: 200,
                 body: "Call Successful"};
     } catch (e) {
-      console.error(e);
+        //Get Error message and write to Log Table
         await models.cqclog.create({
           success:false,
-
-        //To Do: Get meaningful Error Message.
-        //  message: JSON.stringify(e)
+          message: e.message
         });
+      return  e.message;
     }
 
     async function getAllLocations(url){
