@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -13,6 +13,7 @@ import { HeaderComponent } from './core/header/header.component';
 import { FooterComponent } from './core/footer/footer.component';
 
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
+import { CqcRegisteredQuestionEditComponent } from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
 import { LocationService } from './core/services/location.service';
 import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
 import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
@@ -25,6 +26,7 @@ import { RegistrationCompleteComponent } from './features/registration-complete/
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
+import { RegistrationComponent } from './features/registration/registration.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,7 @@ import { ContinueCreatingAccountComponent } from './features/continue-creating-a
     HeaderComponent,
     FooterComponent,
     CqcRegisteredQuestionComponent,
+    CqcRegisteredQuestionEditComponent,
     ConfirmWorkplaceDetailsComponent,
     SelectWorkplaceComponent,
     SelectWorkplaceAddressComponent,
@@ -44,12 +47,12 @@ import { ContinueCreatingAccountComponent } from './features/continue-creating-a
     RegistrationCompleteComponent,
     EnterWorkplaceAddressComponent,
     SelectMainServiceComponent,
-    ContinueCreatingAccountComponent
+    ContinueCreatingAccountComponent,
+    RegistrationComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
     RouterModule.forRoot([

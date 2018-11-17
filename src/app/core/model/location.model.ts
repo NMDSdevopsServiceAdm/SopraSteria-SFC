@@ -7,7 +7,7 @@
 //  }
 //}
 
-export class CqcRegisteredQuestion {
+export class allLocations {
   registeredQuestionSelected: string;
   postcodeYes: string;
   locationId: string;

@@ -11,7 +11,9 @@
 
   <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">We couldn’t find your workplace from CQC, select the appropriate address below</p>
 
-  <form (ngSubmit)="onSubmit()" #selectWorkplaceAddressModule="ngForm">
+  <form novalidate
+        (ngSubmit)="save()"
+        [formGroup]="selectWorkplaceAddressForm">
 
     <div class="form-group mb-5">
       <div class="col-12 col-md-7 p-0">

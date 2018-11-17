@@ -20,7 +20,7 @@ const routes: Routes = [
 
   {
     path: 'registered-question',
-    component: CqcRegisteredQuestionComponent
+    component: CqcRegisteredQuestionComponent,
   },
   {
     path: 'select-workplace',
