@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 //import { FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { LocationService } from '../../core/services/location.service';
+import { LocationService } from '../../../core/services/location.service';
 
 //import { allLocations } from '../../core/model/location.model';
 
@@ -17,19 +17,31 @@ import { LocationService } from '../../core/services/location.service';
 export class CqcRegisteredQuestionComponent implements OnInit {
 
   //
-  allLocations: Location[];
+  //allLocations: Location[];
 
-  constructor(private locationService: LocationService, private router: Router) { }
+  
+
+  constructor(private router: Router) { }
 
   ngOnInit() {
 
-    //Call getAllLocations() from location.service
-    this.locationService.getAllLocations()
-      .subscribe(
-      (data: Location[]) => this.allLocations = data,
-        (err: any) => console.log(err),
-        () => console.log('All done getting locations')
-      );
+    ////Call getAllLocations() from location.service
+    //this.locationService.getAllLocations()
+    //  .subscribe(
+    //  (data: Location[]) => this.displayLocations(data),
+    //    (err: any) => console.log(err),
+    //    () => console.log('All done getting locations')
+    //   );
   }
 
+  
+  
+
+  
+  
+
+  
+
+
+  
 }

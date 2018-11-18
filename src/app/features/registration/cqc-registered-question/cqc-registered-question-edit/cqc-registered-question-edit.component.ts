@@ -5,7 +5,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { LocationService } from '../../../core/services/location.service';
+import { LocationService } from '../../../../core/services/location.service';
 
 import { CqcRegisteredQuestionEnteredLocation } from './cqc-regsitered-check';
 
@@ -37,15 +37,12 @@ function checkInputValues(c: AbstractControl): { [key: string]: boolean } | null
   templateUrl: './cqc-registered-question-edit.component.html',
   styleUrls: ['./cqc-registered-question-edit.component.scss']
 })
-
 export class CqcRegisteredQuestionEditComponent implements OnInit {
   cqcRegisteredQuestionForm: FormGroup;
   CqcRegisteredQuestionEnteredLocation = new CqcRegisteredQuestionEnteredLocation();
 
   registeredQuestionSelectedValue: string;
   emailMessage: string;
-
-  allLocations: Location[];
 
   //private validationMessages = {
   //  bothContent: 'Both inputs contain content',
@@ -72,41 +69,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
   save() {
     //console.log('Selected:' + JSON.stringify(this.cqcRegisteredQuestionForm.value) );
-    console.log(this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').value);
+    //console.log(this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').value);
 
-    let cqcRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').value;
-    let locationIdValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').value;
-    let notRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode').value;
-
-    if (cqcRegisteredPostcodeValue.length > 0) {
-      
-      this.locationService.getLocationByPostCode(cqcRegisteredPostcodeValue)
-        .subscribe(
-          (data: Location[]) => this.allLocations = data,
-          (err: any) => console.log(err),
-          () => console.log('All done getting locations by postalCode')
-        );
-
-    }
-    else if (locationIdValue.length > 0) {
-
-      console.log("Start Getting data");
-
-      this.locationService.getLocationByLocationId(locationIdValue)
-        .subscribe(
-          (data: Location[]) => this.allLocations = data,
-          (err: any) => console.log(err),
-          () => console.log('All done getting locations by locationId')
-        );
-
-    }
-    else if (notRegisteredPostcodeValue.length > 0) {
-
-      console.log("No API yet");
-
-    }
-
-    //this.routeQuestionCheck(this.cqcRegisteredQuestionForm, this.router);
+    this.routeQuestionCheck(this.cqcRegisteredQuestionForm, this.router);
   }
 
   // Check which inputs have been entered to determine the route

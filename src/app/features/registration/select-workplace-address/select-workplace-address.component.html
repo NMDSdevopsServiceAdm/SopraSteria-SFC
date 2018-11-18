@@ -1,0 +1,49 @@
+<div class="sub-page-container col-12">
+
+  <div id="back" class="back-link">
+    <a routerLink="/registered-question">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <p class="h5">Section 2 of 8</p>
+  <h1 class="h1">Select your workplace address</h1>
+
+  <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">We couldn’t find your workplace from CQC, select the appropriate address below</p>
+
+  <form novalidate
+        (ngSubmit)="save()"
+        [formGroup]="selectWorkplaceAddressForm">
+
+    <div class="form-group mb-5">
+      <div class="col-12 col-md-7 p-0">
+
+        <div class="field-group row">
+            <div class="main-body-text-bold col-5 col-sm-3 pb-5">SW3 8FG</div>
+            <div class="main-body-text col-5 col-sm-3 pb-5 pl-0"><a routerLink="/" title="Edit postcode">Change</a></div>
+        </div>
+
+        <div class="field-group">
+          <select class="col-12 col-md-10 pl-2 pr-2">
+            <option value="" disabled>Please select your workplace address</option>
+            <option value="option1">Sunset Homes - Harlesden SW3 8FG</option>
+            <option value="option2">Rotherley Meadows - Harlesden SW3 8FG</option>
+          </select>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="col-12  mt-4 mb-5 p-0">
+      <a class="text-link" routerLink="/enter-workplace-address" title="I can't find my address">I can't find my address</a>
+    </div>
+
+    <div class="btn-container">
+      <button class="btn btn-primary" type="submit" routerLink="/select-main-service">Continue</button>
+    </div>
+
+  </form>
+
+
+</div>

@@ -1,0 +1,52 @@
+<div class="sub-page-container col-12">
+
+  <div id="back" class="back-link">
+    <a routerLink="/registered-question">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <p class="h5">Section 2 of 7</p>
+  <h1 class="h1">Select your workplace</h1>
+
+  <form novalidate
+        (ngSubmit)="save()"
+        [formGroup]="SelectWorkplaceForm">
+
+    <div class="form-group mb-5">
+      <div class="col-12 p-0">
+        <label class="main-body-text-bold mb-3 d-block">Select your workplace from the following:</label>
+
+        <div class="row mb-5">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="reqQuestionYes" formControlName="workplacePostcodeSelected" value="Sunset Homes - Harlesden SW3 8FG" />
+              <label class="main-body-text p-0" for="reqQuestionYes">Sunset Homes - Harlesden SW3 8FG</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" id="address2" formControlName="workplacePostcodeSelected" value="Rotherley Meadows - Harlesden SW3 8FG" />
+              <label class="main-body-text p-0" for="address2">Rotherley Meadows - Harlesden SW3 8FG</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12  mt-4 mb-5 p-0">
+      <a class="text-link" routerLink="/select-workplace-address" title="My workplace isn’t displayed">My workplace isn’t displayed</a>
+    </div>
+
+    <div class="btn-container">
+      <button class="btn btn-primary" type="submit">Continue</button>
+    </div>
+
+  </form>
+
+
+</div>

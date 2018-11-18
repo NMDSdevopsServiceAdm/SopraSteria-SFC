@@ -12,17 +12,41 @@ export class LocationService {
   constructor(private http: HttpClient) {}
 
   getAllLocations(): Observable<Location[]> {
-    console.log("getAllLocations");
+    console.log("getAllLocations from local server");
     return this.http.get<Location[]>('/api/locations');
   }
 
-  getLocationById(id: string): Observable<Location[]> {
+  geLocationByid(id: string): Observable<Location[]> {
     //let getHeaders: HttpHeaders = new HttpHeaders({
     //  'Accept': 'application/json',
     //  'Authorization': 'my-token'
     //});
 
-    return this.http.get<Location[]>('/api/locations/${id}');
+    const $value = id;
+
+    return this.http.get<Location[]>('/api/locations/' + $value);
+  }
+
+  getLocationByLocationId(id: string): Observable<Location[]> {
+    //let getHeaders: HttpHeaders = new HttpHeaders({
+    //  'Accept': 'application/json',
+    //  'Authorization': 'my-token'
+    //});
+
+    const $value = id;
+
+    return this.http.get<Location[]>('/api/locations/lid/' + $value);
+  }
+
+  getLocationByPostCode(id: string): Observable<Location[]> {
+    //let getHeaders: HttpHeaders = new HttpHeaders({
+    //  'Accept': 'application/json',
+    //  'Authorization': 'my-token'
+    //});
+
+    const $value = id;
+
+    return this.http.get<Location[]>('/api/locations/pc/' + $value);
   }
 
   //this.LocationService.getAllLocations()
