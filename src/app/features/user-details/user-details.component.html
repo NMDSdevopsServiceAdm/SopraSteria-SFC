@@ -9,7 +9,9 @@
   <p class="h5">Section 4 of 7</p>
   <h1 class="h1">Your details</h1>
 
-  <form (ngSubmit)="onSubmit()" #userDetailsModule="ngForm">
+  <form novalidate
+        (ngSubmit)="save()"
+        [formGroup]="userDetailsForm">
 
     <div class="form-group mb-5">
       <div class="col-12 col-md-6 p-0">

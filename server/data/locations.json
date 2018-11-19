@@ -1,0 +1,73 @@
+ [
+  {
+    "uid": 1,
+    "locationId": "123456",
+    "locationName": "Kingswood House Nursing Home",
+    "addressLine1": "21-23",
+    "addressLine2": "Chapel Park Road",
+    "townCity": "St Leonards On Sea",
+    "county": "East Sussex",
+    "postalCode": "NR18 0NF",
+    "gacServiceTypes": [
+      {
+        "name": "Nursing homes"
+      }
+    ]
+  },
+  {
+    "uid": 2,
+    "locationId": "654321",
+    "locationName": "Red Kite Home Care",
+    "addressLine1": "14",
+    "addressLine2": "Chapel Park Road",
+    "townCity": "St Leonards On Sea",
+    "county": "East Sussex",
+    "postalCode": "NR18 0NF",
+    "gacServiceTypes": []
+  },
+  {
+    "uid": 3,
+    "locationId": "1-1000312641",
+    "locationName": "Human Support Group Limited - Sale",
+    "addressLine1": "59",
+    "addressLine2": "Cross Street",
+    "townCity": "Sale",
+    "county": "Cheshire",
+    "postalCode": "M33 7HF",
+    "gacServiceTypes": [
+      {
+        "name": "Carers support"
+      }
+    ]
+  },
+  {
+    "uid": 4,
+    "locationId": "1-1000401911",
+    "locationName": "Little Haven",
+    "addressLine1": "133",
+    "addressLine2": "Wellmeadow Road",
+    "townCity": "London",
+    "county": "London",
+    "postalCode": "SE6 1HP",
+    "gacServiceTypes": [
+      {
+        "name": "Community support and outreach"
+      }
+    ]
+  },
+  {
+    "uid": 5,
+    "locationId": "1-1000587219",
+    "locationName": "Highlands Borders Care Home",
+    "addressLine1": "22 Salutary Mount",
+    "addressLine2": "Heavitree",
+    "townCity": "Exeter",
+    "county": "Devon",
+    "postalCode": "EX1 2QE",
+    "gacServiceTypes": [
+      {
+        "name": "Live-in care"
+      }
+    ]
+  }
+ ]

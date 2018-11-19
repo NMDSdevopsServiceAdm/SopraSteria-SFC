@@ -9,7 +9,9 @@
   <p class="h5">Section 2 of 8</p>
   <h1 class="h1">Enter your workplace address</h1>
 
-  <form (ngSubmit)="onSubmit()" #enterWorkplaceAddressModule="ngForm">
+  <form novalidate
+        (ngSubmit)="save()"
+        [formGroup]="enterWorkplaceAddressForm">
 
     <div class="form-group mb-5">
       <div class="col-12 col-md-6 p-0">

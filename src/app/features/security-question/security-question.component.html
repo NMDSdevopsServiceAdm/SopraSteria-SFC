@@ -11,7 +11,9 @@
 
   <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">You will need this if you forget your username or if you speak to Skills for Care about your account.</p>
 
-  <form (ngSubmit)="onSubmit()" #securityQuestionModule="ngForm">
+  <form novalidate
+        (ngSubmit)="save()"
+        [formGroup]="securityQuestionAnswerForm">
 
     <div class="form-group mb-5">
       <div class="col-12 col-md-6 p-0">

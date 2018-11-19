@@ -1,18 +1,50 @@
 
 <div class="main-page-container col-12">
 
-  <h1 class="h1">{{ title }}</h1>
+  <h1 class="h1">Sign in</h1>
 
-  <form>
+  <form novalidate
+        (ngSubmit)="save()"
+        [formGroup]="loginForm">
 
     <div class="form-group mb-5">
       <div class="field-group mb-5">
         <label for="username" class="d-block">Username</label>
-        <input type="text" placeholder="username" id="username" class="col-12 col-lg-6" />
+        <input type="text"
+               placeholder=""
+               id="username"
+               formControlName="username"
+               class="form-control col-12 col-lg-6"
+               [ngClass]="{'is-invalid': (loginForm.get('username').touched ||
+                                            loginForm.get('username').dirty) &&
+                                            !loginForm.get('username').valid }" />
+        <span class="invalid-feedback">
+          <span *ngIf="loginForm.get('username').errors?.required" class="main-body-text">
+            Please enter your Username.
+          </span>
+          <span *ngIf="loginForm.get('username').errors?.maxlength" class="main-body-text">
+            The Username must be no longer than 3 characters.
+          </span>
+        </span>
       </div>
       <div class="field-group">
         <label for="password" class="d-block">Password</label>
-        <input type="text" placeholder="password" id="password" class="col-12 col-lg-6" />
+        <input type="text"
+               placeholder="password"
+               id="password"
+               formControlName="password"
+               class="form-control col-12 col-lg-6"
+               [ngClass]="{'is-invalid': (loginForm.get('password').touched ||
+                                            loginForm.get('password').dirty) &&
+                                            !loginForm.get('password').valid }" />
+        <span class="invalid-feedback">
+          <span *ngIf="loginForm.get('password').errors?.required" class="main-body-text">
+            Please enter your Username.
+          </span>
+          <span *ngIf="loginForm.get('password').errors?.maxlength" class="main-body-text">
+            The Password must be no longer than 3 characters.
+          </span>
+        </span>
       </div>
     </div>
 
