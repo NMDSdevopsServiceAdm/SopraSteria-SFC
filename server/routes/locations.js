@@ -24,6 +24,7 @@ router.route('/')
             townCity: req.body.townCity,
             county: req.body.county,
             postalCode: req.body.postalCode,
+            serviceType: req.body.gacServiceTypes
         };
 
         data.push(newLocation);
@@ -93,6 +94,7 @@ router.route('/:id')
           LocationToUpdate.townCity = req.body.townCity,
           LocationToUpdate.county = req.body.county,
           LocationToUpdate.postalCode = req.body.postalCode,
+          LocationToUpdate.serviceType = req.body.gacServiceTypes
 
           saveLocationData(data);
           res.sendStatus(204);

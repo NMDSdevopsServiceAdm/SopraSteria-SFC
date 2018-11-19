@@ -2,15 +2,15 @@ var express = require('express');
 var fs = require('fs');
 var router = express.Router();
 
-/* GET all books and POST new readers */
+/* GET all location and POST new locations */
 router.route('/500')
     .get(function(req, res) {
-        res.status(500).send('Book Tracker server error.');
+        res.status(500).send('Location Tracker server error.');
     });
 
 router.route('/401')
     .get(function(req, res) {
-        res.status(401).send('Book Tracker unauthorized.');
+        res.status(401).send('Location Tracker unauthorized.');
     });
 
 module.exports = router;

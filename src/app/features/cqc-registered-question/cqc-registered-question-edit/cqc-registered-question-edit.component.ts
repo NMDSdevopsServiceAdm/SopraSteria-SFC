@@ -82,10 +82,15 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       
       this.locationService.getLocationByPostCode(cqcRegisteredPostcodeValue)
         .subscribe(
-          (data: Location[]) => this.allLocations = data,
+        (data: Location[]) => {
+          this.allLocations = data;
+          console.log("DATA" + JSON.stringify(data))
+        },
           (err: any) => console.log(err),
-          () => console.log('All done getting locations by postalCode')
-        );
+        () => console.log('All done getting locations by postalCode')
+      );
+
+      
 
     }
     else if (locationIdValue.length > 0) {

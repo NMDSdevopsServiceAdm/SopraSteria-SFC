@@ -6,8 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./server/routes/index');
-var readers = require('./server/routes/readers');
-var books = require('./server/routes/books');
 var locations = require('./server/routes/locations');
 var errors = require('./server/routes/errors');
 
@@ -25,8 +23,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // app.use('/', routes);
-app.use('/api/readers', readers);
-app.use('/api/books', books);
 app.use('/api/locations', locations);
 app.use('/api/errors', errors);
 app.get('*', function(req, res) {

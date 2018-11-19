@@ -26,7 +26,6 @@ import { RegistrationCompleteComponent } from './features/registration-complete/
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
-import { RegistrationComponent } from './features/registration/registration.component';
 
 @NgModule({
   declarations: [
@@ -47,8 +46,7 @@ import { RegistrationComponent } from './features/registration/registration.comp
     RegistrationCompleteComponent,
     EnterWorkplaceAddressComponent,
     SelectMainServiceComponent,
-    ContinueCreatingAccountComponent,
-    RegistrationComponent
+    ContinueCreatingAccountComponent
   ],
   imports: [
     BrowserModule,

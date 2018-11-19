@@ -7,17 +7,23 @@
     "addressLine2": "Chapel Park Road",
     "townCity": "St Leonards On Sea",
     "county": "East Sussex",
-    "postalCode": "SL1 7JZ"
+    "postalCode": "NR18 0NF",
+    "gacServiceTypes": [
+      {
+        "name": "Nursing homes"
+      }
+    ]
   },
   {
     "uid": 2,
-    "locationId": "1-1000270393",
+    "locationId": "654321",
     "locationName": "Red Kite Home Care",
     "addressLine1": "14",
-    "addressLine2": "111 High Street",
-    "townCity": "Slough",
-    "county": "Berkshire",
-    "postalCode": "SL1 7JZ"
+    "addressLine2": "Chapel Park Road",
+    "townCity": "St Leonards On Sea",
+    "county": "East Sussex",
+    "postalCode": "NR18 0NF",
+    "gacServiceTypes": []
   },
   {
     "uid": 3,
@@ -27,7 +33,12 @@
     "addressLine2": "Cross Street",
     "townCity": "Sale",
     "county": "Cheshire",
-    "postalCode": "M33 7HF"
+    "postalCode": "M33 7HF",
+    "gacServiceTypes": [
+      {
+        "name": "Carers support"
+      }
+    ]
   },
   {
     "uid": 4,
@@ -37,7 +48,12 @@
     "addressLine2": "Wellmeadow Road",
     "townCity": "London",
     "county": "London",
-    "postalCode": "SE6 1HP"
+    "postalCode": "SE6 1HP",
+    "gacServiceTypes": [
+      {
+        "name": "Community support and outreach"
+      }
+    ]
   },
   {
     "uid": 5,
@@ -47,6 +63,11 @@
     "addressLine2": "Heavitree",
     "townCity": "Exeter",
     "county": "Devon",
-    "postalCode": "EX1 2QE"
+    "postalCode": "EX1 2QE",
+    "gacServiceTypes": [
+      {
+        "name": "Live-in care"
+      }
+    ]
   }
  ]
