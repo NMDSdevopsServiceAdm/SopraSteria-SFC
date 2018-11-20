@@ -23,6 +23,7 @@
     "@angular/router": "~7.0.0",
     "@ng-bootstrap/ng-bootstrap": "^3.3.1",
     "bootstrap": "^4.0.0",
+    "concurrently": "^4.1.0",
     "cookie-parser": "^1.4.3",
     "core-js": "^2.5.4",
     "jade": "^1.11.0",
