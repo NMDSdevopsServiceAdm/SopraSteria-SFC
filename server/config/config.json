@@ -1,10 +1,10 @@
 {
   "development": {
-    "username": "test",
-    "password": "test",
-    "database": "test",
-    "host": "127.0.0.1",
-    "port": 5433,
+    "username": "sfcadmin",
+    "password": "sfcadmin123",
+    "database": "sfcdevdb",
+    "host": "3.8.78.161",
+    "port": 5432,
     "dialect": "postgres"
   },
   "test": {
