@@ -1,7 +1,6 @@
  [
-  {
-    "uid": 1,
-    "locationId": "123456",
+   {"uid": 1,
+    "cqcLocationId": "123456",
     "locationName": "Kingswood House Nursing Home",
     "addressLine1": "21-23",
     "addressLine2": "Chapel Park Road",
@@ -14,6 +13,9 @@
       }
     ]
   },
+
+
+
   {
     "uid": 2,
     "locationId": "654321",
