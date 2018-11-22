@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./server/routes/index');
 var locations = require('./server/routes/locations');
+var postcodes = require('./server/routes/postcodes');
 var errors = require('./server/routes/errors');
 
 var app = express();
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 // app.use('/', routes);
 app.use('/api/locations', locations);
+app.use('/api/postcodes', postcodes);
 app.use('/api/errors', errors);
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

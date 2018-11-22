@@ -10,6 +10,7 @@ module.exports.handler =  async (event, context) => {
         let locations= await getAllLocations(url);
 
         //Empty Location Table
+
         models.location.destroy({
           where:{},
           truncate:true
