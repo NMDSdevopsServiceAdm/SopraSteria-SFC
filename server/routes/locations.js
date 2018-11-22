@@ -5,8 +5,8 @@ var router = express.Router();
 
 /* GET all locations and POST new locations */
 router.route('/')
-    .get(async function(req, res) {
-        var data = await getLocationData();
+    .get(function(req, res) {
+        var data = getLocationData();
         res.send(data);
     })
 
