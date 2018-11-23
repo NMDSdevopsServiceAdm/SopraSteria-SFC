@@ -1,11 +1,17 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const location = sequelize.define('location', {
+/* jshint indent: 2 */
+
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define('location', {
     cqcid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
+    },
+    locationid: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      unique: true
     },
     locationname: {
       type: DataTypes.TEXT,
@@ -42,20 +48,11 @@ module.exports = (sequelize, DataTypes) => {
     updatedat: {
       type: DataTypes.DATE,
       allowNull: true
-    },
-    locationid: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      unique: true
     }
   }, {
+    tableName: 'location',
     schema: 'cqc',
-    createdAt: 'createdat',
-    updatedAt: 'updatedat',
-    freezeTableName: true
+    createdAt: false,
+    updatedAt: false
   });
-  location.associate = function(models) {
-    // associations can be defined here
-  };
-  return location;
 };
