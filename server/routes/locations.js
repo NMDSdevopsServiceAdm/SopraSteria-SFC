@@ -66,9 +66,7 @@ function createLocationDetailsObject(data){
     townCity: data.towncity,
     county: data.county,
     postalCode: data.postalcode,
-    gacServiceTypes: [
-      {name:data.mainservice}
-    ]
+    mainService: data.mainservice
   };
 
   return myObject;
