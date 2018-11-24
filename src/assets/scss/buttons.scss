@@ -10,7 +10,7 @@
   height: 40px;
 
   @include rem(padding, 0 26px);
-  @include box-shadow(0, 2px, 0, 0, $sfc-btn-primary-purple-hover);
+  @include box-shadow(0, 2px, 0, 0, $sfc-btn-primary-green-hover);
 
   @include rem(font-size, 13px);
 
@@ -23,10 +23,15 @@
   }
 
   &.btn-primary {
-    background-color: $sfc-btn-primary-purple;
+    background-color: $sfc-btn-primary-green;
 
-    &:hover {
-      background-color: $sfc-btn-primary-purple-hover;
+    &:hover,
+    &:active {
+      background-color: $sfc-btn-primary-green-hover !important;
+    }
+
+    &:focus {
+      border: 2px solid $focus-yellow !important;
     }
 
     &:disabled,

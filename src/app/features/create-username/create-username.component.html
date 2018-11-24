@@ -17,25 +17,79 @@
       <div class="col-12 col-md-6 p-0">
 
         <div class="field-group">
-          <label class="form-label" for="username">Username</label>
+          <label class="form-label" for="createUsername">Username</label>
           <p class="field-comment-text">You will use this to sign in. It should be unique to you</p>
-          <input name="username" placeholder="Enter full name" type="text" id="username" class="form-control col-12" />
+
+          <div class="form-control-feedback">
+
+            <input placeholder=""
+                   type="text"
+                   id="createUsername"
+                   class="form-control col-12"
+                   formControlName="createUsernameInput"
+                   [ngClass]="{'is-invalid': (createUserNamePasswordForm.get('createUsernameInput').touched ||
+                                                createUserNamePasswordForm.get('createUsernameInput').dirty) &&
+                                                !createUserNamePasswordForm.get('createUsernameInput').valid }" />
+
+            <span class="invalid-feedback">
+              <span *ngIf="createUserNamePasswordForm.get('createUsernameInput').errors?.maxlength" class="main-body-text">
+                The Username must be no longer than 120 characters.
+              </span>
+
+            </span>
+          </div>
         </div>
         <div class="field-group mt-5">
-          <label class="form-label" for="password">Password</label>
+          <label class="form-label" for="createPassword">Password</label>
           <p class="field-comment-text">This should be at least 8 characters long, contain at least one uppercase and one lowercase letter and a number</p>
-          <input name="password" placeholder="Enter password" type="text" id="password" class="form-control col-12" />
+
+          <div class="form-control-feedback">
+
+            <input placeholder=""
+                   type="text"
+                   id="createPassword"
+                   class="form-control col-12"
+                   formControlName="createPasswordInput"
+                   [ngClass]="{'is-invalid': (createUserNamePasswordForm.get('createPasswordInput').touched ||
+                                                createUserNamePasswordForm.get('createPasswordInput').dirty) &&
+                                                !createUserNamePasswordForm.get('createPasswordInput').valid }" />
+
+            <span class="invalid-feedback">
+              <span *ngIf="createUserNamePasswordForm.get('createPasswordInput').errors?.maxlength" class="main-body-text">
+                The Password must be no longer than 120 characters.
+              </span>
+
+            </span>
+          </div>
         </div>
         <div class="field-group mt-5">
-          <label class="form-label" for="confirm-password">Confirm password</label>
-          <input name="confirm-password" placeholder="Confirm password" type="text" id="confirm-password" class="form-control col-12" />
+          <label class="form-label" for="confirmPassword">Confirm password</label>
+
+          <div class="form-control-feedback">
+
+            <input placeholder=""
+                   type="text"
+                   id="confirmPassword"
+                   class="form-control col-12"
+                   formControlName="confirmPasswordInput"
+                   [ngClass]="{'is-invalid': (createUserNamePasswordForm.get('confirmPasswordInput').touched ||
+                                                createUserNamePasswordForm.get('confirmPasswordInput').dirty) &&
+                                                !createUserNamePasswordForm.get('confirmPasswordInput').valid }" />
+
+            <span class="invalid-feedback">
+              <span *ngIf="createUserNamePasswordForm.get('confirmPasswordInput').errors?.maxlength" class="main-body-text">
+                The Password must be no longer than 120 characters.
+              </span>
+
+            </span>
+          </div>
         </div>
       </div>
 
     </div>
 
     <div class="btn-container">
-      <button class="btn btn-primary" type="submit" routerLink="/security-question">Continue</button>
+      <button class="btn btn-primary" type="submit">Continue</button>
     </div>
 
   </form>

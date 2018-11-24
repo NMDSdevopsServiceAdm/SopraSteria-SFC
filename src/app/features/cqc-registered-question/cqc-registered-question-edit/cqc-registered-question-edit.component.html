@@ -10,12 +10,12 @@
       <div class="row mb-5">
         <div class="col-12">
           <div class="multiple-choice">
-            <input type="radio" id="reqQuestionYes" value="yes" formControlName="registeredQuestionSelected" />
+            <input type="radio" id="reqQuestionYes" value="true" formControlName="registeredQuestionSelected" />
             <label class="main-body-text p-0" for="reqQuestionYes">Yes</label>
           </div>
         </div>
 
-        <div *ngIf="registeredQuestionSelectedValue === 'yes'" class="panel panel-border-narrow col-10 col-lg-6">
+        <div *ngIf="registeredQuestionSelectedValue === 'true'" class="panel panel-border-narrow col-10 col-lg-6">
 
           <div formGroupName="cqcRegisteredGroup">
             <div class="form-group">
@@ -77,13 +77,13 @@
       <div class="row">
         <div class="col-12">
           <div class="multiple-choice">
-            <input type="radio" id="regQuestionNo" value="no" formControlName="registeredQuestionSelected" />
+            <input type="radio" id="regQuestionNo" value="false" formControlName="registeredQuestionSelected" />
 
             <label class="main-body-text p-0" for="regQuestionNo">No</label>
           </div>
         </div>
 
-        <div *ngIf="registeredQuestionSelectedValue === 'no'" class="panel panel-border-narrow col-10 col-lg-6">
+        <div *ngIf="registeredQuestionSelectedValue === 'false'" class="panel panel-border-narrow col-10 col-lg-6">
           <div class="field-group">
 
             <label class="main-body-text mb-3 d-block" for="postcodeNo">What is your postcode?</label>
@@ -117,7 +117,7 @@
 
 </form>
 
-<br>Dirty: {{ cqcRegisteredQuestionForm.dirty }}
+<!--<br>Dirty: {{ cqcRegisteredQuestionForm.dirty }}
 <br>Touched: {{ cqcRegisteredQuestionForm.touched }}
 <br>Valid: {{ cqcRegisteredQuestionForm.valid }}
-<br>Value: {{ cqcRegisteredQuestionForm.value | json }}
+<br>Value: {{ cqcRegisteredQuestionForm.value | json }}-->

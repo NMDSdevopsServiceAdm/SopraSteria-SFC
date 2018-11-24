@@ -14,7 +14,7 @@ import { FooterComponent } from './core/footer/footer.component';
 
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
 import { CqcRegisteredQuestionEditComponent } from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
-import { LocationService } from './core/services/location.service';
+
 import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
 import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
 import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
@@ -26,6 +26,9 @@ import { RegistrationCompleteComponent } from './features/registration-complete/
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
+
+import { LocationService } from './core/services/location.service';
+import { RegistrationService } from './core/services/registration.service';
 
 @NgModule({
   declarations: [
@@ -66,7 +69,8 @@ import { ContinueCreatingAccountComponent } from './features/continue-creating-a
     ])
   ],
   providers: [
-    LocationService
+    LocationService,
+    RegistrationService
   ],
   bootstrap: [AppComponent]
 })

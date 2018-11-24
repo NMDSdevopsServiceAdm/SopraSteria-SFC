@@ -17,27 +17,100 @@
       <div class="col-12 col-md-6 p-0">
 
         <div class="field-group">
-          <label class="form-label" for="user-fullname">Your full name</label>
-          <input name="user-fullname" placeholder="Enter full name" type="text" id="user-fullname" class="form-control col-12" />
+          <label class="form-label" for="userFullname">Your full name</label>
+
+          <div class="form-control-feedback">
+
+            <input placeholder=""
+                   type="text"
+                   id="userFullname"
+                   class="form-control col-12"
+                   formControlName="userFullnameInput"
+                   [ngClass]="{'is-invalid': (userDetailsForm.get('userFullnameInput').touched ||
+                                                userDetailsForm.get('userFullnameInput').dirty) &&
+                                                !userDetailsForm.get('userFullnameInput').valid }" />
+
+            <span class="invalid-feedback">
+              <span *ngIf="userDetailsForm.get('userFullnameInput').errors?.maxlength" class="main-body-text">
+                The full name must be no longer than 120 characters.
+              </span>
+
+            </span>
+          </div>
+          
         </div>
         <div class="field-group mt-5">
-          <label class="form-label" for="user-title">Your job title</label>
-          <input name="user-title" placeholder="Enter job title" type="text" id="user-title" class="form-control col-12" />
+          <label class="form-label" for="userJobTitle">Your job title</label>
+
+          <div class="form-control-feedback">
+
+            <input placeholder=""
+                   type="text"
+                   id="userJobTitle"
+                   class="form-control col-12"
+                   formControlName="userJobTitleInput"
+                   [ngClass]="{'is-invalid': (userDetailsForm.get('userJobTitleInput').touched ||
+                                                userDetailsForm.get('userJobTitleInput').dirty) &&
+                                                !userDetailsForm.get('userJobTitleInput').valid }" />
+
+            <span class="invalid-feedback">
+              <span *ngIf="userDetailsForm.get('userJobTitleInput').errors?.maxlength" class="main-body-text">
+                The job title must be no longer than 120 characters.
+              </span>
+
+            </span>
+          </div>
         </div>
         <div class="field-group mt-5">
-          <label class="form-label" for="user-email">Your email address</label>
-          <input name="user-email" placeholder="Enter email address" type="text" id="user-email" class="form-control col-12" />
+          <label class="form-label" for="userEmail">Your email address</label>
+
+          <div class="form-control-feedback">
+
+            <input placeholder=""
+                   type="text"
+                   id="userEmail"
+                   class="form-control col-12"
+                   formControlName="userEmailInput"
+                   [ngClass]="{'is-invalid': (userDetailsForm.get('userEmailInput').touched ||
+                                                userDetailsForm.get('userEmailInput').dirty) &&
+                                                !userDetailsForm.get('userEmailInput').valid }" />
+
+            <span class="invalid-feedback">
+              <span *ngIf="userDetailsForm.get('userEmailInput').errors?.maxlength" class="main-body-text">
+                The job title must be no longer than 120 characters.
+              </span>
+
+            </span>
+          </div>
         </div>
         <div class="field-group mt-5">
-          <label class="form-label" for="user-phone">Contact phone number</label>
-          <input name="user-phone" placeholder="Enter contact phone number" type="text" id="user-phone" class="form-control col-7" />
+          <label class="form-label" for="userPhone">Contact phone number</label>
+
+          <div class="form-control-feedback">
+
+            <input placeholder=""
+                   type="text"
+                   id="userPhone"
+                   class="form-control col-12"
+                   formControlName="userPhoneInput"
+                   [ngClass]="{'is-invalid': (userDetailsForm.get('userPhoneInput').touched ||
+                                                userDetailsForm.get('userPhoneInput').dirty) &&
+                                                !userDetailsForm.get('userPhoneInput').valid }" />
+
+            <span class="invalid-feedback">
+              <span *ngIf="userDetailsForm.get('userPhoneInput').errors?.maxlength" class="main-body-text">
+                The job title must be no longer than 120 characters.
+              </span>
+
+            </span>
+          </div>
         </div>
       </div>
 
     </div>
 
     <div class="btn-container">
-      <button class="btn btn-primary" type="submit" routerLink="/create-username">Continue</button>
+      <button class="btn btn-primary" type="submit">Continue</button>
     </div>
 
   </form>

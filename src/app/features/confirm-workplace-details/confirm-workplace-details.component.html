@@ -15,24 +15,24 @@
     <div class="main-text col-12 col-md-7 p-0">
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>CQC Location ID</strong></div>
-        <div class="tb-cell col-7 pt-3 pb-3">123456</div>
+        <div class="tb-cell col-7 pt-3 pb-3">{{ registration[0].locationId }}</div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>Workplace name</strong></div>
-        <div class="tb-cell col-7 pt-3 pb-3">Sunset Homes</div>
+        <div class="tb-cell col-7 pt-3 pb-3">{{ registration[0].locationName }}</div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>Address</strong></div>
         <div class="tb-cell col-7 pt-3 pb-3">
-          28A Parkway<br />
-          10 Main street<br />
-          Harlseden<br />
-          SW3 8FG
+          {{ registration[0].addressLine1 }} {{ registration[0].addressLine2 }},<br />
+          {{ registration[0].townCity }}<br />
+          {{ registration[0].county }}<br />
+          {{ registration[0].postalCode }}
         </div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>Main service provided</strong></div>
-        <div class="tb-cell col-7 pt-3 pb-3">Care home with nursing</div>
+        <div class="tb-cell col-7 pt-3 pb-3">{{ registration[0].mainService }}</div>
       </div>
     </div>
   </div>
