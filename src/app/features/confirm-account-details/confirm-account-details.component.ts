@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
+import { Router, ActivatedRoute } from '@angular/router';
+
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
 
@@ -11,12 +13,19 @@ import { RegistrationModel } from '../../core/model/registration.model';
 export class ConfirmAccountDetailsComponent implements OnInit {
   registration: RegistrationModel[];
 
-  constructor(private _registrationService: RegistrationService) { }
+  constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     console.log(this.registration);
+  }
+
+  submit() {
+
+    this._registrationService.postRegistration(this.registration);
+    debugger;
+    this.router.navigate(['/registration-complete']);
   }
 
 }

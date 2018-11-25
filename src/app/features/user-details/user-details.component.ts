@@ -13,7 +13,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class UserDetailsComponent implements OnInit {
   userDetailsForm: FormGroup;
-  registration: RegistrationModel;
+  registration: RegistrationModel[];
 
   constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
 
@@ -26,7 +26,7 @@ export class UserDetailsComponent implements OnInit {
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    console.log(this.registration);
+    //console.log(this.registration);
   }
 
   save() {
@@ -35,12 +35,16 @@ export class UserDetailsComponent implements OnInit {
     let userEmailValue = this.userDetailsForm.get('userEmailInput').value;
     let userPhoneValue = this.userDetailsForm.get('userPhoneInput').value;
 
-    debugger;
-    this.registration.user[0].fullname = userFullnameValue;
-    this.registration.user[0].jobTitle = userJobTitleValue;
-    this.registration.user[0].emailAddress = userEmailValue;
-    this.registration.user[0].contactNumber = userPhoneValue;
+    //this._registrationService.registration$.subscribe(registration => this.registration = registration);
+
     console.log(this.registration);
+    debugger;
+
+    this.registration[0]['user'] = [];
+    this.registration[0].user['fullname'] = userFullnameValue;
+    this.registration[0].user['jobTitle'] = userJobTitleValue;
+    this.registration[0].user['emailAddress'] = userEmailValue;
+    this.registration[0].user['contactNumber'] = userPhoneValue;
 
     this._registrationService.updateState(this.registration);
     debugger;

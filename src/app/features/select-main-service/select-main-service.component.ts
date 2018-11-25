@@ -14,7 +14,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class SelectMainServiceComponent implements OnInit {
   SelectMainServiceForm: FormGroup;
-  registration: RegistrationModel;
+  registration: RegistrationModel[];
   selectedAddressId: string;
   //storeCopy: RegistrationModel;
 
@@ -35,13 +35,6 @@ export class SelectMainServiceComponent implements OnInit {
   }
 
   selectMainServiceChanged(value: string): void {
-    //this.selectedAddressId = this.registration.mainService;
-    //
-
-    //JSONObject mainService = jsonArray.getJSONObject(0).getJSONObject("mainService");
-    //mainService.put("mainService", "Sammie");
-    //this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    //this.storeCopy = this.registration;
 
     this.registration[0].mainService = value;
 

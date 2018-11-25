@@ -1,33 +1,37 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Locations', {
-      id: {
+    return queryInterface.createTable('cqc.location', {
+      cqcid: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        autoIncrement: true
       },
-      locationId: {
-        type: Sequelize.STRING
+      locationname: {
+        type: DataTypes.TEXT,
+        allowNull: true
       },
-      name: {
-        type: Sequelize.STRING
+      postalcod: {
+        type: DataTypes.TEXT,
+        allowNull: true
       },
-      postalCode: {
-        type: Sequelize.STRING
+      createdat: {
+        type: DataTypes.DATE,
+        allowNull: false
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      updatedat: {
+        type: DataTypes.DATE,
+        allowNull: true
       },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      locationid: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        unique: true
       }
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Locations');
+    return queryInterface.dropTable('cqc.location');
   }
 };

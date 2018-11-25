@@ -24,10 +24,9 @@
         </div>
 
         <div class="field-group">
-          <select class="col-12 col-md-10 pl-2 pr-2">
+          <select class="col-12 col-md-10 pl-2 pr-2" id="selectWorkplaceAddress" formControlName="selectWorkplaceAddressSelected">
             <option value="" disabled>Please select your workplace address</option>
-            <option value="option1">Sunset Homes - Harlesden SW3 8FG</option>
-            <option value="option2">Rotherley Meadows - Harlesden SW3 8FG</option>
+            <option value="{{i}}" *ngFor="let item of registration; let i = index;">{{ item.addressLine1 }} - {{ item.townCity }} {{ item.postalCode }}</option>
           </select>
         </div>
 
@@ -40,7 +39,7 @@
     </div>
 
     <div class="btn-container">
-      <button class="btn btn-primary" type="submit" routerLink="/select-main-service">Continue</button>
+      <button class="btn btn-primary" type="submit">Continue</button>
     </div>
 
   </form>

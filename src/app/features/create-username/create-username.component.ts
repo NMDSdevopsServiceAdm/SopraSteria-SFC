@@ -13,7 +13,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class CreateUsernameComponent implements OnInit {
   createUserNamePasswordForm: FormGroup;
-  registration: RegistrationModel;
+  registration: RegistrationModel[];
 
   constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
 
@@ -34,8 +34,9 @@ export class CreateUsernameComponent implements OnInit {
     //let confirmPasswordValue = this.createUserNamePasswordForm.get('confirmPasswordInput').value;
 
     debugger;
-    this.registration.user[0].username = createUsernameValue;
-    this.registration.user[0].password = createPasswordValue;
+    this.registration[0].user['username'] = createUsernameValue;
+    this.registration[0].user['password'] = createPasswordValue;
+
     console.log(this.registration);
 
     this._registrationService.updateState(this.registration);

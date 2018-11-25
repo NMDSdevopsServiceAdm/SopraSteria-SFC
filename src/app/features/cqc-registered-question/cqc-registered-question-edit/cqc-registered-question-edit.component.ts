@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/fo
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { RegistrationService } from '../../../core/services/registration.service';
+import { RegistrationModel } from '../../../core/model/registration.model';
 import { CqcRegisteredQuestionEnteredLocation } from './cqc-regsitered-check';
 
 
@@ -15,6 +16,7 @@ import { CqcRegisteredQuestionEnteredLocation } from './cqc-regsitered-check';
 
 export class CqcRegisteredQuestionEditComponent implements OnInit {
   cqcRegisteredQuestionForm: FormGroup;
+  registration: RegistrationModel[];
   CqcRegisteredQuestionEnteredLocation = new CqcRegisteredQuestionEnteredLocation();
   registeredQuestionSelectedValue: string;
 
@@ -35,6 +37,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     this.cqcRegisteredQuestionForm.get('registeredQuestionSelected').valueChanges.subscribe(
       value => this.registeredQuestionChanged(value)
     );
+
+    this._registrationService.registration$.subscribe(registration => this.registration = registration);
   }
 
   save() {
@@ -51,7 +55,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     }
     else if (notRegisteredPostcodeValue.length > 0) {
 
-      console.log("No API yet");
+      this._registrationService.getAddressByPostCode(notRegisteredPostcodeValue);
 
     }
   }
@@ -61,6 +65,10 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   registeredQuestionChanged(value: string): void {
     this.registeredQuestionSelectedValue = value;
     const notRegisteredPostcode = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode');
+
+    //Update state with isRegulated value
+    //this.registration[0].isRegulated = value;
+    //this._registrationService.updateState(this.registration);
 
     if (this.registeredQuestionSelectedValue === "false") {
       notRegisteredPostcode.setValidators([Validators.required, Validators.maxLength(8)]);

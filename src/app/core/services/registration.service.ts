@@ -7,33 +7,25 @@ import { map } from 'rxjs/operators';
 
 import { RegistrationModel } from '../model/registration.model';
 
-const initialRegistration: RegistrationModel = 
+const initialRegistration: RegistrationModel[] = 
 
   //Example initial dummy data
 
+  [
     {
-      "locationId": "123",
-      "locationName": "Blue Kite Home Care",
-      "addressLine1": "14",
-      "addressLine2": "Chapel Park Road",
-      "townCity": "St Leonards On Sea",
-      "county": "East Sussex",
-      "postalCode": "sw154ja",
-      "mainService": "",
-      "isRegulated": true,
-      "user": [
-        {
-          "fullname": "Brendan Newbanks",
-          "jobTitle": "Care assistant",
-          "emailAddress": "brendan@gmail.com",
-          "contactNumber": "07777777772",
-          "username": "brendannewbanks",
-          "password": "password1",
-          "securityQuestion": "If I could be any transformer, who would I be?",
-          "securityAnswer": "Soundwave"
-        }
-      ]
+      addressLine1: "14 Shepherd's Court",
+      addressLine2: "111 High Street",
+      county: "Berkshire",
+      locationId: "1-1000270393",
+      locationName: "Red Kite Home Care",
+      mainService: "Homecare agencies",
+      postalCode: "SL1 7JZ",
+      townCity: "Slough",
+      isRegulated: true,
+      user: []
     }
+  ]
+
   
 
 
@@ -50,35 +42,14 @@ export class RegistrationService {
   //registrationModel: RegistrationModel[];
 
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient, private router: Router) { }
 
-    //this.http.get('/api/locations/', { responseType: 'json' })
-    //  .subscribe((data: RegistrationModel) => {
+  postRegistration(id: any) {
+    const $value = id;
 
-    //    const registration: RegistrationModel = {
-
-    //      locationId: data.locationId,
-    //      locationName: data.locationName,
-    //      addressLine1: data.addressLine1,
-    //      addressLine2: data.addressLine2,
-    //      townCity: data.townCity,
-    //      county: data.county,
-    //      postalCode: data.postalCode,
-    //      mainService: data.mainService,
-    //      isRegulated: data.isRegulated,
-
-    //      fullname: data.fullname,
-    //      jobTitle: data.jobTitle,
-    //      emailAddress: data.emailAddress,
-    //      contactNumber: data.contactNumber,
-    //      username: data.username,
-    //      password: data.password,
-    //      securityQuestion: data.securityQuestion,
-    //      securityAnswer: data.securityAnswer
-    //    }
-
-    //    this._registration$.next(registration);
-    //  });
+    const options = { headers: { 'Content-type': 'application/json' } };
+    debugger;
+    this.http.post<RegistrationModel[]>('/api/registration/', $value, options);
 
   }
 
@@ -103,9 +74,9 @@ export class RegistrationService {
 
     const $value = id;
 
-    this.http.get<RegistrationModel[]>('/api/locations/lid/' + $value)
+    this.http.get<RegistrationModel>('/api/locations/lid/' + $value)
       .subscribe(
-        (data: RegistrationModel[]) => {
+        (data: RegistrationModel) => {
 
           this.updateState(data);
           this.routingCheck(data);
@@ -117,35 +88,43 @@ export class RegistrationService {
       );
   }
 
+  getAddressByPostCode(id: string) {
+    const $value = id;
+
+    this.http.get<RegistrationModel>('/api/postcodes/' + $value).subscribe(
+      (data: RegistrationModel) => {
+        this.updateState(data);
+        this.router.navigate(['/select-workplace-address']);
+
+      },
+      (err: any) => console.log(err),
+      () => {
+        console.log("Get location by postcode complete");
+      }
+    )
+  }
+
   routingCheck(data) {
-    debugger;
 
     if (data.length > 1) {
-      debugger;
       this.router.navigate(['/select-workplace']);
     }
     else {
       if (data[0].mainService === '') {
-        debugger;
         this.router.navigate(['/select-main-service']);
       }
       else {
-        debugger;
         this.router.navigate(['/confirm-workplace-details']);
       }
         
     }
-
   }
 
   updateState(data) {
-    debugger;
     if (data.length > 1) {
-      debugger;
       this._registration$.next(data);
     }
     else {
-      debugger;
       this._registration$.next(data);
     }
 

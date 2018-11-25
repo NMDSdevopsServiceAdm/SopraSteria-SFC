@@ -1,6 +1,6 @@
 
 export interface RegistrationModel {
-[
+
   locationId: string,
   locationName: string,
   addressLine1: string,
@@ -10,16 +10,16 @@ export interface RegistrationModel {
   postalCode: string,
   mainService: string,
   isRegulated: boolean,
-  user: [{
-    fullname: string;
-    jobTitle: string;
-    emailAddress: string;
-    contactNumber: string;
-    username: string;
-    password: string;
-    securityQuestion: string;
-    securityAnswer: string;
-  }],
-]
+  user: []
+  //  fullname: string;
+  //  jobTitle: string;
+  //  emailAddress: string;
+  //  contactNumber: string;
+  //  username: string;
+  //  password: string;
+  //  securityQuestion: string;
+  //  securityAnswer: string;
+  //}],
+
 }
 

@@ -4,7 +4,7 @@ import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/fo
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model'
+import { RegistrationModel } from '../../core/model/registration.model';
 
 @Component({
   selector: 'app-security-question',
@@ -13,7 +13,7 @@ import { RegistrationModel } from '../../core/model/registration.model'
 })
 export class SecurityQuestionComponent implements OnInit {
   securityQuestionAnswerForm: FormGroup;
-  registration: RegistrationModel;
+  registration: RegistrationModel[];
 
   constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
 
@@ -32,9 +32,8 @@ export class SecurityQuestionComponent implements OnInit {
     let securityAnswerValue = this.securityQuestionAnswerForm.get('securityAnswerInput').value;
 
     debugger;
-    this.registration.user[0].securityQuestion = securityQuestionValue;
-    this.registration.user[0].securityAnswer = securityAnswerValue;
-    console.log(this.registration);
+    this.registration[0].user['securityQuestion'] = securityQuestionValue;
+    this.registration[0].user['securityAnswer'] = securityAnswerValue;
 
     this._registrationService.updateState(this.registration);
     debugger;

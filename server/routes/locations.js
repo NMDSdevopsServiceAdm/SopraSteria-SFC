@@ -1,176 +1,75 @@
 var express = require('express');
-var fs = require('fs');
-var datafile = 'server/data/locations.json';
 var router = express.Router();
-
-/* GET all locations and POST new locations */
-router.route('/')
-  .get(function (req, res) {
-    var data = getLocationData();
-    res.send(data);
-  })
-
-  .post(function (req, res) {
-
-    var data = getLocationData();
-    var nextID = getNextAvailableID(data);
-
-    var newLocation = {
-      uid: nextID,
-      locationId: req.body.locationId,
-      locationName: req.body.locationName,
-      addressLine1: req.body.addressLine1,
-      addressLine2: req.body.addressLine2,
-      townCity: req.body.townCity,
-      county: req.body.county,
-      postalCode: req.body.postalCode,
-      serviceType: req.body.gacServiceTypes
-    };
-
-    data.push(newLocation);
-
-    saveLocationData(data);
-
-    //        res.set('Content-Type', 'application/json');
-    res.status(201).send(newLocation);
-  });
+const models = require('../models/index');
 
 
-/* CRUD locations API by uid */
-router.route('/:id')
-
-  .get(function (req, res) {
-
-    //console.log(res);
-
-    var data = getLocationData();
-
-    var matchingLocations = data.filter(function (item) {
-      return item.uid == req.params.id;
-    });
-
-    if (matchingLocations.length === 0) {
-      res.sendStatus(404);
-    } else {
-      res.send(matchingLocations[0]);
-    }
-  })
-
-  .delete(function (req, res) {
-
-    var data = getLocationData();
-
-    var pos = data.map(function (e) {
-      return e.uid;
-    }).indexOf(parseInt(req.params.id, 10));
-
-    if (pos > -1) {
-      data.splice(pos, 1);
-    } else {
-      res.sendStatus(404);
-    }
-
-    saveLocationsData(data);
-    res.sendStatus(204);
-
-  })
-
-  .put(function (req, res) {
-
-    var data = getLocationData();
-
-    var matchingLocations = data.filter(function (item) {
-      return item.uid == req.params.id;
-    });
-
-    if (matchingLocations.length === 0) {
-      res.sendStatus(404);
-    } else {
-
-      var LocationToUpdate = matchingLocations[0];
-      LocationToUpdate.locationName = req.body.locationName,
-        LocationToUpdate.addressLine1 = req.body.addressLine1,
-        LocationToUpdate.addressLine2 = req.body.addressLine2,
-        LocationToUpdate.townCity = req.body.townCity,
-        LocationToUpdate.county = req.body.county,
-        LocationToUpdate.postalCode = req.body.postalCode,
-        LocationToUpdate.serviceType = req.body.gacServiceTypes
-
-      saveLocationData(data);
-      res.sendStatus(204);
-
-    }
-  });
-
-// CRUD Location API by locationId
+// GET Location API by locationId
 router.route('/lid/:locationId')
 
-  .get(function (req, res) {
+  .get(async function (req, res) {
 
-    //console.log(res);
+    let locationData = [];
 
-    var data = getLocationData();
-
-    var matchingLocationIDs = data.filter(function (item) {
-      return item.locationId == req.params.locationId;
+    //Find matching location data
+    let result = await models.location.findOne({
+      where: {
+        locationid: req.params.locationId
+      }
     });
 
-    if (matchingLocationIDs.length === 0) {
+    let data = result.dataValues;
+    locationData.push(createLocationDetailsObject(data));
+
+    if (locationData.length === 0) {
       res.sendStatus(404);
     } else {
-      res.send(matchingLocationIDs);
+      res.send(locationData);
     }
   })
 
 
-// CRUD Location API by postalCode
+// // GET Location API by postalCode
 router.route('/pc/:postcode')
+  .get(async function (req, res) {
 
-  .get(function (req, res) {
+    let locationData = [];
 
-    //console.log(res);
-
-    var data = getLocationData();
-
-    var matchingPostCodes = data.filter(function (item) {
-      return item.postalCode == req.params.postcode;
+    //Find matching postcode data
+    let results = await models.location.findAll({
+      where: {
+        postalcode: req.params.postcode
+      }
     });
 
-    if (matchingPostCodes.length === 0) {
+    for (let i = 0, len = results.length; i < len; i++) {
+
+      let data = results[i].dataValues;
+      locationData.push(createLocationDetailsObject(data));
+
+    }
+
+    if (locationData.length === 0) {
       res.sendStatus(404);
     } else {
-      res.send(matchingPostCodes);
+      res.send(locationData);
     }
   })
 
+function createLocationDetailsObject(data) {
 
-function getNextAvailableID(allLocations) {
+  //Map DB fields to expected JSON output
+  let myObject = {
+    locationId: data.locationid,
+    locationName: data.locationname,
+    addressLine1: data.addressline1,
+    addressLine2: data.addressline2,
+    townCity: data.towncity,
+    county: data.county,
+    postalCode: data.postalcode,
+    mainService: data.mainservice
+  };
 
-  var maxID = 0;
-
-  allLocations.forEach(function (element, index, array) {
-
-    if (element.uid > maxID) {
-      maxID = element.uid;
-    }
-
-  });
-
-  return ++maxID;
-
-}
-
-function getLocationData() {
-  var data = fs.readFileSync(datafile, 'utf8');
-  return JSON.parse(data);
-}
-
-function saveLocationData(data) {
-  fs.writeFile(datafile, JSON.stringify(data, null, 4), function (err) {
-    if (err) {
-      console.log(err);
-    }
-  });
+  return myObject;
 }
 
 module.exports = router;

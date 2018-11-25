@@ -10,6 +10,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class RegistrationCompleteComponent implements OnInit {
   registration: RegistrationModel[];
+  isRegulated: boolean;
 
   constructor(private _registrationService: RegistrationService) { }
 
@@ -17,6 +18,13 @@ export class RegistrationCompleteComponent implements OnInit {
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     console.log(this.registration);
+
+    if (this.registration[0].isRegulated) {
+      this.isRegulated = true;
+    }
+    else {
+      this.isRegulated = false;
+    }
   }
 
 }

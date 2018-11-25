@@ -91,19 +91,34 @@ p {
   @include rem(padding, 0 0 0 30px);
   @include rem(margin, 20px 0 0 0);
 
-  &.has-error {
+  &.is-invalid {
     border-left: 10px solid $error-red;
 
-    .error-message {
+    .invalid-feedback {
+      display: block;
       color: $error-red;
+      font-weight: 700;
+      margin: 0;
+
+      span {
+        display: block;
+      }
     }
 
-    input {
+    input,
+    select,
+    textarea {
 
-      &.input-error {
+      &.ng-invalid {
         border-color: $error-red;
       }
     }
+    /*input {
+
+      &.input {
+        border-color: $error-red;
+      }
+    }*/
   }
 }
 
