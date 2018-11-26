@@ -45,7 +45,14 @@ export class RegistrationService {
     const $value = id;
 
     const options = { headers: { 'Content-type': 'application/json' } };
-    this.http.post<RegistrationModel[]>('/api/registration/', $value, options);
+    this.http.post<RegistrationModel[]>('/api/registration/', $value, options).subscribe(
+      (data) => console.log("this"),
+      (error) => console.log(error)
+    );
+
+  }
+
+  handleError() {
 
   }
 

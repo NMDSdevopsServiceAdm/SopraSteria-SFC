@@ -11,7 +11,7 @@ export interface RegistrationModel {
   mainService: string,
   isRegulated: boolean,
   user: [],
-  detailsChanged: boolean
+  //detailsChanged: boolean
   //  fullname: string;
   //  jobTitle: string;
   //  emailAddress: string;
