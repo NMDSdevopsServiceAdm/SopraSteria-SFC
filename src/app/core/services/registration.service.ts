@@ -22,7 +22,7 @@ const initialRegistration: RegistrationModel[] =
       postalCode: "SL1 7JZ",
       townCity: "Slough",
       isRegulated: true,
-      user: [],
+      user: {},
       detailsChanged: false
     }
   ]
