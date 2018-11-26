@@ -65,7 +65,7 @@ deploy:
     space: sandbox
     manifest: manifest.dev.yml
     on:
-        branch: fix_deploy
+        branch: registrationapi
   - provider: cloudfoundry
     edge: true  
     username: nmdsdevopsserviceadm@hotmail.com
