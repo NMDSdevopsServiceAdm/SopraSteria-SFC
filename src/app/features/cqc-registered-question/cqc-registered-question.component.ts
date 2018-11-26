@@ -17,19 +17,19 @@ import { LocationService } from '../../core/services/location.service';
 export class CqcRegisteredQuestionComponent implements OnInit {
 
   //
-  allLocations: Location[];
+  //allLocations: Location[];
 
-  constructor(private locationService: LocationService, private router: Router) { }
+  constructor(/*private locationService: LocationService, private router: Router*/) { }
 
   ngOnInit() {
 
-    //Call getAllLocations() from location.service
-    this.locationService.getAllLocations()
-      .subscribe(
-        (data: Location[]) => this.allLocations = data,
-        (err: any) => console.log(err),
-        () => console.log('All done getting locations')
-      );
+    ////Call getAllLocations() from location.service
+    //this.locationService.getAllLocations()
+    //  .subscribe(
+    //    (data: Location[]) => this.allLocations = data,
+    //    (err: any) => console.log(err),
+    //    () => console.log('All done getting locations')
+    //  );
   }
 
 }

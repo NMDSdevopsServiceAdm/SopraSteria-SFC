@@ -23,7 +23,7 @@ export class CreateUsernameComponent implements OnInit {
       passwordGroup: this.fb.group({
         createPasswordInput: ['', [Validators.required, Validators.maxLength(120)]],
         confirmPasswordInput: ['', [Validators.required, Validators.maxLength(120)]]
-      }, { validator: checkInputValues }),
+      }, { validator: checkPasswordConfirm }),
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
@@ -51,15 +51,15 @@ export class CreateUsernameComponent implements OnInit {
 }
 
 // Check for content in both CQC registered input fields
-function checkInputValues(c: AbstractControl): { [key: string]: boolean } | null {
+function checkPasswordConfirm(c: AbstractControl): { [key: string]: boolean } | null {
   const passwordControl = c.get('createPasswordInput');
   const confirmPasswordControl = c.get('confirmPasswordInput');
 
-  if (passwordControl.pristine || confirmPasswordControl.pristine) {
+  if (confirmPasswordControl.pristine) {
     return null;
   }
 
-  if (passwordControl.value == confirmPasswordControl.value) {
+  if (passwordControl.value === confirmPasswordControl.value) {
     return null;
   }
 

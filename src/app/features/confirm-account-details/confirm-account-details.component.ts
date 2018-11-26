@@ -25,7 +25,7 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
     this._registrationService.postRegistration(this.registration);
     debugger;
-    this.router.navigate(['/registration-complete']);
+    //this.router.navigate(['/registration-complete']);
   }
 
   changeDetails() {
