@@ -33,7 +33,7 @@ export class ConfirmAccountDetailsComponent implements OnInit {
     this.registration[0]['detailsChanged'] = true;
     console.log(this.registration);
 
-    this._registrationService.updateState(this.registration);
+    this._registrationService.updateState(this.registration[0]);
 
     //if (this.registration[0].hasOwnProperty('detailsChanged')) {
     //  this.registration[0]['detailsChanged'] = true;
