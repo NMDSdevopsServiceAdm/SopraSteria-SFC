@@ -16,7 +16,7 @@
       <div class="row border-line-bottom">
         <div class="tb-cell col-4 pt-3 pb-3"><strong>Fullname</strong></div>
         <div class="tb-cell col-5 pt-3 pb-3">{{ registration[0].user.fullname }}</div>
-        <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/user-details" title="Edit Fullname">Change</a></div>
+        <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/user-details" title="Edit Fullname" (click)="changeDetails()">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-4 pt-3 pb-3"><strong>Job title</strong></div>

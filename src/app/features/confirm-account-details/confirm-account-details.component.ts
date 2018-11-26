@@ -28,4 +28,23 @@ export class ConfirmAccountDetailsComponent implements OnInit {
     this.router.navigate(['/registration-complete']);
   }
 
+  changeDetails() {
+
+    this.registration[0]['detailsChanged'] = true;
+    console.log(this.registration);
+
+    this._registrationService.updateState(this.registration);
+
+    //if (this.registration[0].hasOwnProperty('detailsChanged')) {
+    //  this.registration[0]['detailsChanged'] = true;
+    //}
+    //else {
+    //  this.registration[0]['isRegulated'] = false;
+    //}
+
+    //this._registrationService.updateState(this.registration);
+    debugger;
+
+  }
+
 }

@@ -14,20 +14,11 @@ import { RegistrationModel } from '../../core/model/registration.model';
 export class UserDetailsComponent implements OnInit {
   userDetailsForm: FormGroup;
   registration: RegistrationModel[];
+  detailsChanged: boolean;
 
   constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
 
-  ngOnInit() {
-    this.userDetailsForm = this.fb.group({
-      userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]],
-      userJobTitleInput: ['', [Validators.required, Validators.maxLength(120)]],
-      userEmailInput: ['', [Validators.required, Validators.maxLength(120)]],
-      userPhoneInput: ['', [Validators.required, Validators.maxLength(50)]]
-    });
-
-    this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    //console.log(this.registration);
-  }
+ 
 
   save() {
     let userFullnameValue = this.userDetailsForm.get('userFullnameInput').value;
@@ -51,6 +42,28 @@ export class UserDetailsComponent implements OnInit {
     //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/create-username']);
 
+  }
+
+  changeDetails() {
+
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+      
+    }
+    
+  }
+
+  ngOnInit() {
+    this.userDetailsForm = this.fb.group({
+      userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]],
+      userJobTitleInput: ['', [Validators.required, Validators.maxLength(120)]],
+      userEmailInput: ['', [Validators.required, Validators.maxLength(120)]],
+      userPhoneInput: ['', [Validators.required, Validators.maxLength(50)]]
+    });
+
+    this._registrationService.registration$.subscribe(registration => this.registration = registration);
+    //console.log(this.registration);
+
+    this.changeDetails();
   }
 
 }
