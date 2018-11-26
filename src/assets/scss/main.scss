@@ -24,10 +24,17 @@ ul {
   }
 }
 
-a {
+a,
+.text-link {
   text-decoration: underline;
+  color: #007bff;
+  cursor: pointer;
 
   @include rem(font-size, 19px);
+
+  &:hover {
+    color: #0056b3;
+  }
 }
 
 p {
@@ -90,36 +97,36 @@ p {
 
   @include rem(padding, 0 0 0 30px);
   @include rem(margin, 20px 0 0 0);
+}
 
-  &.is-invalid {
-    border-left: 10px solid $error-red;
+.is-invalid {
+  border-left: 10px solid $error-red;
 
-    .invalid-feedback {
+  .invalid-feedback {
+    display: block;
+    color: $error-red;
+    font-weight: 700;
+    margin: 0;
+
+    span {
       display: block;
-      color: $error-red;
-      font-weight: 700;
-      margin: 0;
-
-      span {
-        display: block;
-      }
     }
+  }
 
-    input,
-    select,
-    textarea {
+  input,
+  select,
+  textarea {
 
-      &.ng-invalid {
-        border-color: $error-red;
-      }
+    &.ng-invalid {
+      border-color: $error-red;
     }
-    /*input {
+  }
+  /*input {
 
       &.input {
         border-color: $error-red;
       }
     }*/
-  }
 }
 
 .border-line-bottom {

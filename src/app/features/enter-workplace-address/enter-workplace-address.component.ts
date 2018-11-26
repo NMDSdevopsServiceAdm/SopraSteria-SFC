@@ -19,12 +19,12 @@ export class EnterWorkplaceAddressComponent implements OnInit {
 
   ngOnInit() {
     this.enterWorkplaceAddressForm = this.fb.group({
-      postcodeInput: ['', Validators.maxLength(8)],
-      address1Input: ['', Validators.maxLength(40)],
-      address2Input: ['', Validators.maxLength(40)],
-      townCityInput: ['', Validators.maxLength(40)],
-      countyInput: ['', Validators.maxLength(40)],
-      wpNameInput: ['', Validators.maxLength(120)]
+      postcodeInput: ['', [Validators.required, Validators.maxLength(8)]],
+      address1Input: ['', [Validators.required, Validators.maxLength(40)]],
+      address2Input: ['', [Validators.required, Validators.maxLength(40)]],
+      townCityInput: ['', [Validators.required, Validators.maxLength(40)]],
+      countyInput: ['', [Validators.required, Validators.maxLength(40)]],
+      wpNameInput: ['', [Validators.required, Validators.maxLength(120)]]
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
@@ -15,12 +15,14 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   selectWorkplaceAddressForm: FormGroup;
   registration: RegistrationModel[];
   selectedAddress: string;
+  editPostcode: boolean;
 
   constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
 
   ngOnInit() {
     this.selectWorkplaceAddressForm = this.fb.group({
-      selectWorkplaceAddressSelected: ''
+      selectWorkplaceAddressSelected: '',
+      postcodeInput: ['', Validators.maxLength(8)]
     });
 
     // Watch selectWorkplaceSelected
@@ -30,21 +32,34 @@ export class SelectWorkplaceAddressComponent implements OnInit {
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     console.log(this.registration);
+
+    this.editPostcode = false;
   }
 
   selectWorkplaceAddressChanged(value: string): void {
-    debugger;
     this.selectedAddress = this.registration[value];
   }
 
   save() {
     //this._registrationService.getLocationByLocationId(this.selectedAddressId);
     console.log(this.registration[this.selectedAddress]);
-    debugger;
     this._registrationService.updateState([this.selectedAddress]);
-    debugger;
+
     //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/select-main-service']);
+  }
+
+  postcodeChange() {
+    this.editPostcode = true;
+  }
+
+  updatePostcode() {
+    let postcodeValue = this.selectWorkplaceAddressForm.get('postcodeInput').value;
+
+    this._registrationService.getUpdatedAddressByPostCode(postcodeValue);
+
+    this.editPostcode = false;
+    console.log(this.registration);
   }
 
 }

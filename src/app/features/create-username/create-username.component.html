@@ -9,84 +9,93 @@
   <p class="h5">Section 5 of 7</p>
   <h1 class="h1">Create a username</h1>
 
-  <form novalidate
-        (ngSubmit)="save()"
+  <form (ngSubmit)="save()"
         [formGroup]="createUserNamePasswordForm">
 
     <div class="form-group mb-5">
       <div class="col-12 col-md-6 p-0">
 
-        <div class="field-group">
+        <div class="field-group"
+             [ngClass]="{'is-invalid': (createUserNamePasswordForm.get('createUsernameInput').touched ||
+                                                createUserNamePasswordForm.get('createUsernameInput').dirty) &&
+                                                !createUserNamePasswordForm.get('createUsernameInput').valid }">
           <label class="form-label" for="createUsername">Username</label>
           <p class="field-comment-text">You will use this to sign in. It should be unique to you</p>
 
+          <span class="invalid-feedback">
+            <span *ngIf="createUserNamePasswordForm.get('createUsernameInput').errors?.maxlength" class="main-body-text mb-2">
+              The Username must be no longer than 120 characters.
+            </span>
+            <span *ngIf="createUserNamePasswordForm.get('createUsernameInput').errors?.required" class="main-body-text mb-2">
+              Please enter your Username.
+            </span>
+          </span>
+
           <div class="form-control-feedback">
 
-            <input placeholder=""
-                   type="text"
-                   id="createUsername"
-                   class="form-control col-12"
-                   formControlName="createUsernameInput"
-                   [ngClass]="{'is-invalid': (createUserNamePasswordForm.get('createUsernameInput').touched ||
-                                                createUserNamePasswordForm.get('createUsernameInput').dirty) &&
-                                                !createUserNamePasswordForm.get('createUsernameInput').valid }" />
+            <input placeholder="" type="text" id="createUsername" class="form-control col-12" formControlName="createUsernameInput" />
 
-            <span class="invalid-feedback">
-              <span *ngIf="createUserNamePasswordForm.get('createUsernameInput').errors?.maxlength" class="main-body-text">
-                The Username must be no longer than 120 characters.
-              </span>
-
-            </span>
           </div>
         </div>
-        <div class="field-group mt-5">
-          <label class="form-label" for="createPassword">Password</label>
-          <p class="field-comment-text">This should be at least 8 characters long, contain at least one uppercase and one lowercase letter and a number</p>
 
-          <div class="form-control-feedback">
-
-            <input placeholder=""
-                   type="text"
-                   id="createPassword"
-                   class="form-control col-12"
-                   formControlName="createPasswordInput"
-                   [ngClass]="{'is-invalid': (createUserNamePasswordForm.get('createPasswordInput').touched ||
-                                                createUserNamePasswordForm.get('createPasswordInput').dirty) &&
-                                                !createUserNamePasswordForm.get('createPasswordInput').valid }" />
+        <div formGroupName="passwordGroup">
+          <div class="field-group mt-5"
+               [ngClass]="{'is-invalid':  createUserNamePasswordForm.get('passwordGroup').errors ||
+                                          ((createUserNamePasswordForm.get('passwordGroup.createPasswordInput').touched ||
+                                                createUserNamePasswordForm.get('passwordGroup.createPasswordInput').dirty) &&
+                                                !createUserNamePasswordForm.get('passwordGroup.createPasswordInput').valid) }">
+            <label class="form-label" for="createPassword">Password</label>
+            <p class="field-comment-text">This should be at least 8 characters long, contain at least one uppercase and one lowercase letter and a number</p>
 
             <span class="invalid-feedback">
-              <span *ngIf="createUserNamePasswordForm.get('createPasswordInput').errors?.maxlength" class="main-body-text">
+              <span *ngIf="createUserNamePasswordForm.get('passwordGroup.createPasswordInput').errors?.maxlength" class="main-body-text mb-2">
                 The Password must be no longer than 120 characters.
               </span>
-
+              <span *ngIf="createUserNamePasswordForm.get('passwordGroup.createPasswordInput').errors?.required" class="main-body-text mb-2">
+                Please enter your Password.
+              </span>
+              <span *ngIf="createUserNamePasswordForm.get('passwordGroup').errors?.notMatched" class="main-body-text mb-2">
+                Password and Confirm Password do not match.
+              </span>
             </span>
+
+            <div class="form-control-feedback">
+
+              <input placeholder="" type="text" id="createPassword" class="form-control col-12" formControlName="createPasswordInput" />
+
+            </div>
           </div>
-        </div>
-        <div class="field-group mt-5">
-          <label class="form-label" for="confirmPassword">Confirm password</label>
-
-          <div class="form-control-feedback">
-
-            <input placeholder=""
-                   type="text"
-                   id="confirmPassword"
-                   class="form-control col-12"
-                   formControlName="confirmPasswordInput"
-                   [ngClass]="{'is-invalid': (createUserNamePasswordForm.get('confirmPasswordInput').touched ||
-                                                createUserNamePasswordForm.get('confirmPasswordInput').dirty) &&
-                                                !createUserNamePasswordForm.get('confirmPasswordInput').valid }" />
+          <div class="field-group mt-5"
+               [ngClass]="{'is-invalid': createUserNamePasswordForm.get('passwordGroup').errors ||
+                                          ((createUserNamePasswordForm.get('passwordGroup.confirmPasswordInput').touched ||
+                                                createUserNamePasswordForm.get('passwordGroup.confirmPasswordInput').dirty) &&
+                                                !createUserNamePasswordForm.get('passwordGroup.confirmPasswordInput').valid) }">
+            <label class="form-label" for="confirmPassword">Confirm password</label>
 
             <span class="invalid-feedback">
-              <span *ngIf="createUserNamePasswordForm.get('confirmPasswordInput').errors?.maxlength" class="main-body-text">
+              <span *ngIf="createUserNamePasswordForm.get('passwordGroup.confirmPasswordInput').errors?.maxlength" class="main-body-text mb-2">
                 The Password must be no longer than 120 characters.
               </span>
-
+              <span *ngIf="createUserNamePasswordForm.get('passwordGroup.confirmPasswordInput').errors?.required" class="main-body-text mb-2">
+                Please confirm your Password.
+              </span>
+              <span *ngIf="createUserNamePasswordForm.get('passwordGroup').errors?.notMatched" class="main-body-text mb-2 mb-2">
+                Password and Confirm Password do not match.
+              </span>
             </span>
+
+            <div class="form-control-feedback">
+
+              <input placeholder="" type="text" id="confirmPassword" class="form-control col-12" formControlName="confirmPasswordInput" />
+
+            </div>
           </div>
+
         </div>
+
+        </div>
+
       </div>
-
-    </div>
 
     <div class="btn-container">
       <button class="btn btn-primary" type="submit">Continue</button>

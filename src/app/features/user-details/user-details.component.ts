@@ -19,10 +19,10 @@ export class UserDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.userDetailsForm = this.fb.group({
-      userFullnameInput: ['', Validators.maxLength(120)],
-      userJobTitleInput: ['', Validators.maxLength(120)],
-      userEmailInput: ['', Validators.maxLength(120)],
-      userPhoneInput: ['', Validators.maxLength(50)]
+      userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]],
+      userJobTitleInput: ['', [Validators.required, Validators.maxLength(120)]],
+      userEmailInput: ['', [Validators.required, Validators.maxLength(120)]],
+      userPhoneInput: ['', [Validators.required, Validators.maxLength(50)]]
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);

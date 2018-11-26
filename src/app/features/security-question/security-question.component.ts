@@ -19,8 +19,8 @@ export class SecurityQuestionComponent implements OnInit {
 
   ngOnInit() {
     this.securityQuestionAnswerForm = this.fb.group({
-      securityQuestionInput: ['', Validators.maxLength(120)],
-      securityAnswerInput: ['', Validators.maxLength(120)]
+      securityQuestionInput: ['', [Validators.required, Validators.maxLength(120)]],
+      securityAnswerInput: ['', [Validators.required, Validators.maxLength(120)]]
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);

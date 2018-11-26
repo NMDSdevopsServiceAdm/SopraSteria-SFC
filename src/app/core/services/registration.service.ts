@@ -26,9 +26,6 @@ const initialRegistration: RegistrationModel[] =
     }
   ]
 
-  
-
-
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +45,6 @@ export class RegistrationService {
     const $value = id;
 
     const options = { headers: { 'Content-type': 'application/json' } };
-    debugger;
     this.http.post<RegistrationModel[]>('/api/registration/', $value, options);
 
   }
@@ -90,7 +86,6 @@ export class RegistrationService {
 
   getAddressByPostCode(id: string) {
     const $value = id;
-
     this.http.get<RegistrationModel>('/api/postcodes/' + $value).subscribe(
       (data: RegistrationModel) => {
         this.updateState(data);
@@ -100,6 +95,23 @@ export class RegistrationService {
       (err: any) => console.log(err),
       () => {
         console.log("Get location by postcode complete");
+      }
+    )
+  }
+
+  getUpdatedAddressByPostCode(id: string) {
+    const $value = id;
+    this.http.get<RegistrationModel>('/api/postcodes/' + $value).subscribe(
+      (data: RegistrationModel) => {
+        this.updateState(data);
+
+        //this.router.navigate(['/select-workplace-address']);
+
+      },
+      (err: any) => console.log(err),
+      () => {
+        console.log("Updated locations by postcode complete");
+        console.log(this._registration$);
       }
     )
   }
@@ -121,12 +133,8 @@ export class RegistrationService {
   }
 
   updateState(data) {
-    if (data.length > 1) {
+
       this._registration$.next(data);
-    }
-    else {
-      this._registration$.next(data);
-    }
 
   }
 

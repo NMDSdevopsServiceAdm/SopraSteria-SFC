@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
 import { Router, ActivatedRoute } from '@angular/router';
+import { debounceTime } from 'rxjs/operators';
 
 import { RegistrationService } from '../../../core/services/registration.service';
 import { RegistrationModel } from '../../../core/model/registration.model';
@@ -19,6 +20,10 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   registration: RegistrationModel[];
   CqcRegisteredQuestionEnteredLocation = new CqcRegisteredQuestionEnteredLocation();
   registeredQuestionSelectedValue: string;
+
+  //privateValidationMessages = {
+  //  required: ''
+  //}
 
   constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
 
@@ -56,6 +61,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     else if (notRegisteredPostcodeValue.length > 0) {
 
       this._registrationService.getAddressByPostCode(notRegisteredPostcodeValue);
+      this.router.navigate(['/select-workplace-address']);
 
     }
   }

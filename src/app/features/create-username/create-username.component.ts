@@ -19,9 +19,11 @@ export class CreateUsernameComponent implements OnInit {
 
   ngOnInit() {
     this.createUserNamePasswordForm = this.fb.group({
-      createUsernameInput: ['', Validators.maxLength(120)],
-      createPasswordInput: ['', Validators.maxLength(120)],
-      confirmPasswordInput: ['', Validators.maxLength(120)]
+      createUsernameInput: ['', [Validators.required, Validators.maxLength(120)]],
+      passwordGroup: this.fb.group({
+        createPasswordInput: ['', [Validators.required, Validators.maxLength(120)]],
+        confirmPasswordInput: ['', [Validators.required, Validators.maxLength(120)]]
+      }, { validator: checkInputValues }),
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
@@ -29,21 +31,37 @@ export class CreateUsernameComponent implements OnInit {
   }
 
   save() {
+
     let createUsernameValue = this.createUserNamePasswordForm.get('createUsernameInput').value;
-    let createPasswordValue = this.createUserNamePasswordForm.get('createPasswordInput').value;
+    let createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
     //let confirmPasswordValue = this.createUserNamePasswordForm.get('confirmPasswordInput').value;
 
-    debugger;
     this.registration[0].user['username'] = createUsernameValue;
     this.registration[0].user['password'] = createPasswordValue;
 
     console.log(this.registration);
 
     this._registrationService.updateState(this.registration);
-    debugger;
+
     //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/security-question']);
 
     //routerLink = "/security-question"
   }
+}
+
+// Check for content in both CQC registered input fields
+function checkInputValues(c: AbstractControl): { [key: string]: boolean } | null {
+  const passwordControl = c.get('createPasswordInput');
+  const confirmPasswordControl = c.get('confirmPasswordInput');
+
+  if (passwordControl.pristine || confirmPasswordControl.pristine) {
+    return null;
+  }
+
+  if (passwordControl.value == confirmPasswordControl.value) {
+    return null;
+  }
+
+  return { 'notMatched': true };
 }
