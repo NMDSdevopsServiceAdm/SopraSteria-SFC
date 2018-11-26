@@ -31,7 +31,7 @@ export class UserDetailsComponent implements OnInit {
     console.log(this.registration);
     debugger;
 
-    this.registration[0]['user'] = [];
+    this.registration[0]['user'] = {};
     this.registration[0].user['fullname'] = userFullnameValue;
     this.registration[0].user['jobTitle'] = userJobTitleValue;
     this.registration[0].user['emailAddress'] = userEmailValue;
