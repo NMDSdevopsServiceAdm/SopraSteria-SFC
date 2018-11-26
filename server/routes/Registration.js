@@ -38,39 +38,39 @@ router.route('/')
 	  	}
 
     //validate has to be 1 user
-    if(JSON.stringify(req.body.user.length) >= 2) {
-			res.status(404);
-			res.json({
-				"success" : 0,
-				"message" : "More than 2 users found"
-			});
-			return false;
-	  	}
+    // if(JSON.stringify(req.body.user.length) >= 2) {
+		// 	res.status(404);
+		// 	res.json({
+		// 		"success" : 0,
+		// 		"message" : "More than 2 users found"
+		// 	});
+		// 	return false;
+	  // 	}
       //check for duplicate establisment and user.
 
      var Estblistmentdata = {
-         Name : req.body.locationName,
-         Address : req.body.addressLine1 + " " + req.body.addressLine2 + " " + req.body.towncity + " " + req.body.county,
-         LocationID: req.body.locationId,
-         PostCode: req.body.postalCode,
-         MainService: req.body.mainService,
-         IsRegulated: req.body.isRegulated
+         Name : req.body[0].locationName,
+         Address : req.body[0].addressLine1 + " " + req.body[0].addressLine2 + " " + req.body[0].towncity + " " + req.body[0].county,
+         LocationID: req.body[0].locationId,
+         PostCode: req.body[0].postalCode,
+         MainService: req.body[0].mainService,
+         IsRegulated: req.body[0].isRegulated
       } 
      var Userdata = {
-        FullName : req.body.user[0].fullname,
-        JobTitle : req.body.user[0].jobTitle,
-        Email    : req.body.user[0].emailAddress,
-        Phone    : req.body.user[0].contactNumber,
+        FullName : req.body[0].user.fullname,
+        JobTitle : req.body[0].user.jobTitle,
+        Email    : req.body[0].user.emailAddress,
+        Phone    : req.body[0].user.contactNumber,
         DateCreated: new Date(),
         EstablishmentID:0,
         AdminUser: true
       }
      var Logindata = {
         RegistrationId:0,
-        UserName: req.body.user[0].username,
-        Password: req.body.user[0].password,
-        SecurityQuestion: req.body.user[0].securityQuestion,
-        SecurityQuestionAnswer: req.body.user[0].securityAnswer,
+        UserName: req.body[0].user.username,
+        Password: req.body[0].user.password,
+        SecurityQuestion: req.body[0].user.securityQuestion,
+        SecurityQuestionAnswer: req.body[0].user.securityAnswer,
         Active:true,
         InvalidAttempt:0
       }
@@ -144,7 +144,7 @@ router.route('/')
           "message" : err.message
         });
       });
-     
+     client.end
   });    
     // client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainService,Estblistmentdata.IsRegulated])
     // .then(function(){
