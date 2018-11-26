@@ -7,32 +7,36 @@
   </div>
 
   <p class="h5">Section 3 of 7</p>
-  <h1 class="h1">Confirm your details</h1>
+  <h1 class="h1">Confirm your workplace details</h1>
 
   <p class="main-body-text-bold mb-3 d-block">Are these details correct?</p>
 
-  <div class="panel panel-border-narrow col-12 pt-4 pb-4">
-    <div class="main-text col-12 col-md-7 p-0">
+  <div class="panel panel-border-narrow col-12 pt-4 pb-4 pr-4">
+    <div class="main-text col-12 col-lg-7 p-0">
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>CQC Location ID</strong></div>
-        <div class="tb-cell col-7 pt-3 pb-3">123456</div>
+        <div class="tb-cell col-4 pt-3 pb-3">{{ registration[0].locationId }}</div>
+        <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/registered-question" title="Edit CQC Location ID">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>Workplace name</strong></div>
-        <div class="tb-cell col-7 pt-3 pb-3">Sunset Homes</div>
+        <div class="tb-cell col-4 pt-3 pb-3">{{ registration[0].locationName }}</div>
+        <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/registered-question" title="Edit Workplace name">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>Address</strong></div>
-        <div class="tb-cell col-7 pt-3 pb-3">
-          28A Parkway<br />
-          10 Main street<br />
-          Harlseden<br />
-          SW3 8FG
+        <div class="tb-cell col-4 pt-3 pb-3">
+          {{ registration[0].addressLine1 }} {{ registration[0].addressLine2 }},<br />
+          {{ registration[0].townCity }}<br />
+          {{ registration[0].county }}<br />
+          {{ registration[0].postalCode }}
         </div>
+        <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/registered-question" title="Edit Address">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>Main service provided</strong></div>
-        <div class="tb-cell col-7 pt-3 pb-3">Care home with nursing</div>
+        <div class="tb-cell col-4 pt-3 pb-3">{{ registration[0].mainService }}</div>
+        <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/select-main-service" title="Edit Main service">Change</a></div>
       </div>
     </div>
   </div>
@@ -42,7 +46,7 @@
   </div>
 
   <div class="btn-container">
-    <button class="btn btn-primary" type="submit" routerLink="/user-details">Continue</button>
+    <button class="btn btn-primary" type="submit" (click)="save()">Continue</button>
   </div>
 
 

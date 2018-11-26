@@ -65,6 +65,13 @@ form,
       @include rem(font-size, 19px);
     }
   }
+
+  .field-group {
+    &.is-invalid {
+      @include rem(padding, 0 0 0 30px);
+      @include rem(margin, 0 0 20px 0);
+    }
+  }
 }
 
 // Multiple choice styles

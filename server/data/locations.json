@@ -1,73 +1,91 @@
- [
+[
   {
-    "uid": 1,
+    "uid": 0,
     "locationId": "123456",
     "locationName": "Kingswood House Nursing Home",
     "addressLine1": "21-23",
     "addressLine2": "Chapel Park Road",
     "townCity": "St Leonards On Sea",
     "county": "East Sussex",
-    "postalCode": "NR18 0NF",
-    "gacServiceTypes": [
+    "postalCode": "nr180nf",
+    "mainService": "",
+    "isRegulated": true,
+    "user": [
       {
-        "name": "Nursing homes"
+        "uid": 0,
+        "locationId": "123456",
+        "fullname": "John Smith",
+        "jobTitle": "Care assistant",
+        "emailAddress": "john@gmail.com",
+        "contactNumber": "07777777770",
+        "username": "johnsmith",
+        "password": "password1",
+        "securityQuestion": "How much wood could a wood chuck chuck if a woodchuck could chuck wood?",
+        "securityAnswer": "3"
+      },
+      {
+        "uid": 1,
+        "fullname": "Carol Henderson",
+        "jobTitle": "Care co-ordinator",
+        "emailAddress": "carol@gmail.com",
+        "contactNumber": "07777777771",
+        "username": "carolhenderson",
+        "password": "password1",
+        "securityQuestion": "How old is my oldest pet?",
+        "securityAnswer": "As of 2018 he is 7"
       }
     ]
   },
   {
-    "uid": 2,
+    "uid": 1,
     "locationId": "654321",
     "locationName": "Red Kite Home Care",
     "addressLine1": "14",
     "addressLine2": "Chapel Park Road",
     "townCity": "St Leonards On Sea",
     "county": "East Sussex",
-    "postalCode": "NR18 0NF",
-    "gacServiceTypes": []
-  },
-  {
-    "uid": 3,
-    "locationId": "1-1000312641",
-    "locationName": "Human Support Group Limited - Sale",
-    "addressLine1": "59",
-    "addressLine2": "Cross Street",
-    "townCity": "Sale",
-    "county": "Cheshire",
-    "postalCode": "M33 7HF",
-    "gacServiceTypes": [
+    "postalCode": "nr180nf",
+    "mainService": "Nursing homes",
+    "isRegulated": true,
+    "user": [
       {
-        "name": "Carers support"
+        "uid": 0,
+        "fullname": "John Smith",
+        "jobTitle": "Care assistant",
+        "emailAddress": "john2@gmail.com",
+        "contactNumber": "07777777770",
+        "username": "johnsmith2",
+        "password": "password1",
+        "securityQuestion": "How much wood could a wood chuck chuck if a woodchuck could chuck wood?",
+        "securityAnswer": "7"
       }
     ]
   },
   {
-    "uid": 4,
-    "locationId": "1-1000401911",
-    "locationName": "Little Haven",
-    "addressLine1": "133",
-    "addressLine2": "Wellmeadow Road",
-    "townCity": "London",
-    "county": "London",
-    "postalCode": "SE6 1HP",
-    "gacServiceTypes": [
+    "uid": 2,
+    "locationId": "098765",
+    "locationName": "Blue Kite Home Care",
+    "addressLine1": "14",
+    "addressLine2": "Chapel Park Road",
+    "townCity": "St Leonards On Sea",
+    "county": "East Sussex",
+    "postalCode": "sw154ja",
+    "mainService": "Nursing homes",
+    "isRegulated": true,
+    "user": [
       {
-        "name": "Community support and outreach"
-      }
-    ]
-  },
-  {
-    "uid": 5,
-    "locationId": "1-1000587219",
-    "locationName": "Highlands Borders Care Home",
-    "addressLine1": "22 Salutary Mount",
-    "addressLine2": "Heavitree",
-    "townCity": "Exeter",
-    "county": "Devon",
-    "postalCode": "EX1 2QE",
-    "gacServiceTypes": [
-      {
-        "name": "Live-in care"
+        "uid": 0,
+        "fullname": "Brendan Newbanks",
+        "jobTitle": "Care assistant",
+        "emailAddress": "brendan@gmail.com",
+        "contactNumber": "07777777772",
+        "username": "brendannewbanks",
+        "password": "password1",
+        "securityQuestion": "If I could be any transformer, who would I be?",
+        "securityAnswer": "Soundwave"
       }
     ]
   }
- ]
+
+]
+

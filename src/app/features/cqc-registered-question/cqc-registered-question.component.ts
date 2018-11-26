@@ -26,7 +26,7 @@ export class CqcRegisteredQuestionComponent implements OnInit {
     //Call getAllLocations() from location.service
     this.locationService.getAllLocations()
       .subscribe(
-      (data: Location[]) => this.allLocations = data,
+        (data: Location[]) => this.allLocations = data,
         (err: any) => console.log(err),
         () => console.log('All done getting locations')
       );
