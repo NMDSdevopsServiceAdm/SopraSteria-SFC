@@ -40,10 +40,9 @@
 
         <div formGroupName="passwordGroup">
           <div class="field-group mt-5"
-               [ngClass]="{'is-invalid':  createUserNamePasswordForm.get('passwordGroup').errors ||
-                                          ((createUserNamePasswordForm.get('passwordGroup.createPasswordInput').touched ||
+               [ngClass]="{'is-invalid':  (createUserNamePasswordForm.get('passwordGroup.createPasswordInput').touched ||
                                                 createUserNamePasswordForm.get('passwordGroup.createPasswordInput').dirty) &&
-                                                !createUserNamePasswordForm.get('passwordGroup.createPasswordInput').valid) }">
+                                                !createUserNamePasswordForm.get('passwordGroup.createPasswordInput').valid }">
             <label class="form-label" for="createPassword">Password</label>
             <p class="field-comment-text">This should be at least 8 characters long, contain at least one uppercase and one lowercase letter and a number</p>
 
@@ -54,14 +53,14 @@
               <span *ngIf="createUserNamePasswordForm.get('passwordGroup.createPasswordInput').errors?.required" class="main-body-text mb-2">
                 Please enter your Password.
               </span>
-              <span *ngIf="createUserNamePasswordForm.get('passwordGroup').errors?.notMatched" class="main-body-text mb-2">
+              <!--<span *ngIf="createUserNamePasswordForm.get('passwordGroup').errors?.notMatched" class="main-body-text mb-2">
                 Password and Confirm Password do not match.
-              </span>
+              </span>-->
             </span>
 
             <div class="form-control-feedback">
 
-              <input placeholder="" type="text" id="createPassword" class="form-control col-12" formControlName="createPasswordInput" />
+              <input placeholder="" type="password" id="createPassword" class="form-control col-12" formControlName="createPasswordInput" />
 
             </div>
           </div>
@@ -80,13 +79,13 @@
                 Please confirm your Password.
               </span>
               <span *ngIf="createUserNamePasswordForm.get('passwordGroup').errors?.notMatched" class="main-body-text mb-2 mb-2">
-                Password and Confirm Password do not match.
+                Confirm Password does not match.
               </span>
             </span>
 
             <div class="form-control-feedback">
 
-              <input placeholder="" type="text" id="confirmPassword" class="form-control col-12" formControlName="confirmPasswordInput" />
+              <input placeholder="" type="password" id="confirmPassword" class="form-control col-12" formControlName="confirmPasswordInput" />
 
             </div>
           </div>
@@ -98,7 +97,7 @@
       </div>
 
     <div class="btn-container">
-      <button class="btn btn-primary" type="submit">Continue</button>
+      <button class="btn btn-primary" type="submit" [disabled]="!createUserNamePasswordForm.valid">Continue</button>
     </div>
 
   </form>

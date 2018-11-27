@@ -44,16 +44,15 @@ export class RegistrationService {
 
   postRegistration(id: any) {
     const $value = id;
-
+    debugger;
     const options = { headers: { 'Content-type': 'application/json' } };
     this.http.post<RegistrationModel[]>('/api/registration/', $value, options).subscribe(
-      (data) => console.log("this"),
-      (error) => console.log(error)
+      (data) => console.log(data),
+      (error) => console.log(error),
+      () => {
+        this.router.navigate(['/registration-complete'])
+      }
     );
-
-  }
-
-  handleError() {
 
   }
 
@@ -141,8 +140,8 @@ export class RegistrationService {
   }
 
   updateState(data) {
-
-      this._registration$.next(data);
+    debugger;
+    this._registration$.next(data);
 
   }
 

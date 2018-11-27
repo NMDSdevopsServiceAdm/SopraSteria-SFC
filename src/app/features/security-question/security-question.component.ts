@@ -22,9 +22,27 @@ export class SecurityQuestionComponent implements OnInit {
       securityQuestionInput: ['', [Validators.required, Validators.maxLength(120)]],
       securityAnswerInput: ['', [Validators.required, Validators.maxLength(120)]]
     });
-
+    debugger;
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     console.log(this.registration);
+    debugger;
+    this.changeDetails();
+  }
+
+  changeDetails(): void {
+
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+      debugger;
+      let createSecurityQuestionValue = this.registration[0].user.securityQuestion;
+      let createsecurityAnswerValue = this.registration[0].user.securityAnswer;
+
+      this.securityQuestionAnswerForm.setValue({
+        securityQuestionInput: createSecurityQuestionValue,
+        securityAnswerInput: createsecurityAnswerValue,
+      });
+
+    }
+
   }
 
   save() {
