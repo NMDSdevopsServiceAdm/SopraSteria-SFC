@@ -140,8 +140,8 @@ export class RegistrationService {
   }
 
   updateState(data) {
-
-      this._registration$.next(data);
+    debugger;
+    this._registration$.next(data);
 
   }
 

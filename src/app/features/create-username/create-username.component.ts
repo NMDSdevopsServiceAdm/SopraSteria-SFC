@@ -28,6 +28,27 @@ export class CreateUsernameComponent implements OnInit {
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     console.log(this.registration);
+
+    this.changeDetails();
+  }
+
+  changeDetails(): void {
+
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+      debugger;
+      let createUsernameValue = this.registration[0].user.username;
+      let createPasswordValue = this.registration[0].user.password;
+
+      this.createUserNamePasswordForm.setValue({
+        createUsernameInput: createUsernameValue,
+        passwordGroup: {
+          createPasswordInput: createPasswordValue,
+          confirmPasswordInput: createPasswordValue
+        }
+      });
+
+    }
+
   }
 
   save() {
@@ -36,15 +57,33 @@ export class CreateUsernameComponent implements OnInit {
     let createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
     //let confirmPasswordValue = this.createUserNamePasswordForm.get('confirmPasswordInput').value;
 
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+      // Get updated form results
+      debugger;
+      let createSecurityQuestionValue = this.registration[0].user.securityQuestion;
+      let createsecurityAnswerValue = this.registration[0].user.securityAnswer;
+    }
+
     this.registration[0].user['username'] = createUsernameValue;
     this.registration[0].user['password'] = createPasswordValue;
 
-    console.log(this.registration);
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+      // Get updated form results
+      this.registration[0].user['securityQuestion'] = createSecurityQuestionValue;
+      this.registration[0].user['securityAnswer'] = createsecurityAnswerValue;
+    }
 
     this._registrationService.updateState(this.registration);
 
     //this._registrationService.routingCheck(this.registration);
-    this.router.navigate(['/security-question']);
+
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+      this.router.navigate(['/confirm-account-details']);
+    }
+    else {
+      this.router.navigate(['/security-question']);
+    }
+    
 
     //routerLink = "/security-question"
   }
