@@ -15,6 +15,9 @@ export class CreateUsernameComponent implements OnInit {
   createUserNamePasswordForm: FormGroup;
   registration: RegistrationModel[];
 
+  createSecurityQuestionValue: string;
+  createsecurityAnswerValue: string;
+
   constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
 
   ngOnInit() {
@@ -35,7 +38,6 @@ export class CreateUsernameComponent implements OnInit {
   changeDetails(): void {
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      debugger;
       let createUsernameValue = this.registration[0].user.username;
       let createPasswordValue = this.registration[0].user.password;
 
@@ -59,9 +61,12 @@ export class CreateUsernameComponent implements OnInit {
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       // Get updated form results
-      debugger;
-      let createSecurityQuestionValue = this.registration[0].user.securityQuestion;
-      let createsecurityAnswerValue = this.registration[0].user.securityAnswer;
+      if (this.registration[0].user.hasOwnProperty('securityQuestion')) {
+        this.createSecurityQuestionValue = this.registration[0].user.securityQuestion;
+      }
+      if (this.registration[0].user.hasOwnProperty('securityAnswer')) {
+        this.createsecurityAnswerValue = this.registration[0].user.securityAnswer;
+      }
     }
 
     this.registration[0].user['username'] = createUsernameValue;
@@ -69,8 +74,12 @@ export class CreateUsernameComponent implements OnInit {
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       // Get updated form results
-      this.registration[0].user['securityQuestion'] = createSecurityQuestionValue;
-      this.registration[0].user['securityAnswer'] = createsecurityAnswerValue;
+      if (this.registration[0].user.hasOwnProperty('securityQuestion')) {
+        this.registration[0].user['securityQuestion'] = this.createSecurityQuestionValue;
+      }
+      if (this.registration[0].user.hasOwnProperty('securityAnswer')) {
+        this.registration[0].user['securityAnswer'] = this.createsecurityAnswerValue;
+      }
     }
 
     this._registrationService.updateState(this.registration);

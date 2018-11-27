@@ -10,7 +10,16 @@ export interface RegistrationModel {
   postalCode: string,
   mainService: string,
   isRegulated: boolean,
-  user: {},
+  user: {
+    fullname: string,
+    jobTitle: string,
+    emailAddress: string,
+    contactNumber: string,
+    username: string,
+    password: string,
+    securityQuestion: string,
+    securityAnswer: string,
+  },
   detailsChanged: boolean
   //  fullname: string;
   //  jobTitle: string;

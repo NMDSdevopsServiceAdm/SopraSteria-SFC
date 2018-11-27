@@ -36,7 +36,6 @@ export class UserDetailsComponent implements OnInit {
   changeDetails(): void {
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      debugger;
       let userFullnameValue = this.registration[0].user.fullname;
       let userJobTitleValue = this.registration[0].user.jobTitle;
       let userEmailValue = this.registration[0].user.emailAddress;
@@ -63,11 +62,9 @@ export class UserDetailsComponent implements OnInit {
     //this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     console.log(this.registration);
-    debugger;
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       // Get updated form results
-      debugger;
       let createUsernameValue = this.registration[0].user.username;
       let createPasswordValue = this.registration[0].user.password;
       let createSecurityQuestionValue = this.registration[0].user.securityQuestion;
@@ -88,7 +85,6 @@ export class UserDetailsComponent implements OnInit {
     }
 
     this._registrationService.updateState(this.registration);
-    debugger;
     //this._registrationService.routingCheck(this.registration);
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {

@@ -19,12 +19,17 @@ export class ConfirmAccountDetailsComponent implements OnInit {
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     console.log(this.registration);
+
+    if (this.registration[0].hasOwnProperty('detailsChanged')) {
+      delete this.registration[0].detailsChanged;
+      console.log(this.registration);
+    }
+    //this.registration[0]['detailsChanged'] = undefined;
   }
 
   submit() {
 
     this._registrationService.postRegistration(this.registration);
-    //debugger;
     //this.router.navigate(['/registration-complete']);
   }
 
@@ -43,7 +48,6 @@ export class ConfirmAccountDetailsComponent implements OnInit {
     //}
 
     //this._registrationService.updateState(this.registration);
-    debugger;
 
   }
 

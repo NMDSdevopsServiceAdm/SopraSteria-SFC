@@ -46,7 +46,6 @@ export class SelectMainServiceComponent implements OnInit {
     //routerLink = "/confirm-workplace-details"
     console.log(this.registration);
     this._registrationService.updateState(this.registration);
-    debugger;
     //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/confirm-workplace-details']);
   }

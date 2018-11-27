@@ -22,7 +22,16 @@ const initialRegistration: RegistrationModel[] =
       postalCode: "SL1 7JZ",
       townCity: "Slough",
       isRegulated: true,
-      user: {},
+      user: {
+        fullname: "Mike Wizowski",
+        jobTitle: "Scaring assistant",
+        emailAddress: "mike.wazowski@monsters.inc",
+        contactNumber: "07828732666",
+        username: "cyclops",
+        password: "password1",
+        securityQuestion: "Who is my partner",
+        securityAnswer: "James P.Sulivan"
+      },
       detailsChanged: false
     }
   ]
@@ -44,7 +53,6 @@ export class RegistrationService {
 
   postRegistration(id: any) {
     const $value = id;
-    debugger;
     const options = { headers: { 'Content-type': 'application/json' } };
     this.http.post<RegistrationModel[]>('/api/registration/', $value, options).subscribe(
       (data) => console.log(data),
@@ -140,9 +148,7 @@ export class RegistrationService {
   }
 
   updateState(data) {
-    debugger;
     this._registration$.next(data);
-
   }
 
 
