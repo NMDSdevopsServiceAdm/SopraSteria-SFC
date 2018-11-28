@@ -23,7 +23,7 @@ const initialRegistration: RegistrationModel[] =
       townCity: "Slough",
       isRegulated: true,
       user: {
-        fullname: "Mike Wizowski",
+        fullname: "Mike Wazowski",
         jobTitle: "Scaring assistant",
         emailAddress: "mike.wazowski@monsters.inc",
         contactNumber: "07828732666",
