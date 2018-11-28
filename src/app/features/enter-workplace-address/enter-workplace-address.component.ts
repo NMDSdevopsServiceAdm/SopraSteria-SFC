@@ -41,7 +41,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     //this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     console.log(this.registration);
-    debugger;
 
     this.registration[0]['postalCode'] = postcodeValue;
     this.registration[0]['addressLine1'] = address1Value;
@@ -55,7 +54,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     const updateRegistration = this.registration[0];
 
     this._registrationService.updateState([updateRegistration]);
-    debugger;
     //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/select-main-service']);
 

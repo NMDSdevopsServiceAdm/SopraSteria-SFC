@@ -16,6 +16,11 @@ export class UserDetailsComponent implements OnInit {
   registration: RegistrationModel[];
   //displayValues: boolean;
 
+  createUsernameValue: string;
+  createPasswordValue: string;
+  createSecurityQuestionValue: string;
+  createsecurityAnswerValue: string;
+
   constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
 
   ngOnInit() {
@@ -36,7 +41,6 @@ export class UserDetailsComponent implements OnInit {
   changeDetails(): void {
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      debugger;
       let userFullnameValue = this.registration[0].user.fullname;
       let userJobTitleValue = this.registration[0].user.jobTitle;
       let userEmailValue = this.registration[0].user.emailAddress;
@@ -63,32 +67,45 @@ export class UserDetailsComponent implements OnInit {
     //this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     console.log(this.registration);
-    debugger;
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       // Get updated form results
-      debugger;
-      let createUsernameValue = this.registration[0].user.username;
-      let createPasswordValue = this.registration[0].user.password;
-      let createSecurityQuestionValue = this.registration[0].user.securityQuestion;
-      let createsecurityAnswerValue = this.registration[0].user.securityAnswer;
+      if (this.registration[0].user.hasOwnProperty('username')) {
+        let createUsernameValue = this.registration[0].user.username;
+      }
+      if (this.registration[0].user.hasOwnProperty('password')) {
+        let createPasswordValue = this.registration[0].user.password;
+      }
+      if (this.registration[0].user.hasOwnProperty('securityQuestion')) {
+        let createSecurityQuestionValue = this.registration[0].user.securityQuestion;
+      }
+      if (this.registration[0].user.hasOwnProperty('securityAnswer')) {
+        let createsecurityAnswerValue = this.registration[0].user.securityAnswer;
+      }
     }
 
-    this.registration[0]['user'] = {};
+    this.registration[0]['user'];
     this.registration[0].user['fullname'] = userFullnameValue;
     this.registration[0].user['jobTitle'] = userJobTitleValue;
     this.registration[0].user['emailAddress'] = userEmailValue;
     this.registration[0].user['contactNumber'] = userPhoneValue;
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      this.registration[0].user['username'] = createUsernameValue;
-      this.registration[0].user['password'] = createPasswordValue;
-      this.registration[0].user['securityQuestion'] = createSecurityQuestionValue;
-      this.registration[0].user['securityAnswer'] = createsecurityAnswerValue;
+      if (this.registration[0].user.hasOwnProperty('username')) {
+        this.registration[0].user['username'] = this.createUsernameValue;
+      }
+      if (this.registration[0].user.hasOwnProperty('password')) {
+        this.registration[0].user['password'] = this.createPasswordValue;
+      }
+      if (this.registration[0].user.hasOwnProperty('securityQuestion')) {
+        this.registration[0].user['securityQuestion'] = this.createSecurityQuestionValue;
+      }
+      if (this.registration[0].user.hasOwnProperty('securityAnswer')) {
+        this.registration[0].user['securityAnswer'] = this.createsecurityAnswerValue;
+      }
     }
 
     this._registrationService.updateState(this.registration);
-    debugger;
     //this._registrationService.routingCheck(this.registration);
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
