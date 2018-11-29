@@ -46,6 +46,26 @@ router.route('/:cqcRegistered')
     }
   });
 
+  router.route('/id/:id')
+
+  .get(async function (req, res) {
+
+    //Find matching postcode data
+    let results = await models.services.findAll({
+      where: {
+        id: req.params.id
+      }
+    });
+
+    let servicesData = await createServicesJSON(results);
+
+    if (servicesData.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.send(servicesData);
+    }
+  });
+
 async function createServicesJSON(results){
 
   let servicesData =[];
