@@ -1,22 +1,28 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { RegistrationService } from './registration.service';
+import { RegistrationModel } from '../model/registration.model';
 
 //import { HttpClient } from '@angular/common/http';
 
 
 @Injectable()
 export class LocationService {
-  tests : any;
+  //tests: any;
 
   constructor(private http: HttpClient) {}
 
   getAllLocations(): Observable<Location[]> {
     console.log("getAllLocations from local server");
-    return this.http.get<Location[]>('/api/locations');
+    return this.http.get<Location[]>('/api/locations').pipe(
+      map(res => res)
+    );
   }
 
-  geLocationByid(id: string): Observable<Location[]> {
+  getLocationByid(id: string): Observable<Location> {
     //let getHeaders: HttpHeaders = new HttpHeaders({
     //  'Accept': 'application/json',
     //  'Authorization': 'my-token'
@@ -24,19 +30,19 @@ export class LocationService {
 
     const $value = id;
 
-    return this.http.get<Location[]>('/api/locations/' + $value);
+    return this.http.get<Location>('/api/locations/' + $value);
   }
 
-  getLocationByLocationId(id: string): Observable<Location[]> {
-    //let getHeaders: HttpHeaders = new HttpHeaders({
-    //  'Accept': 'application/json',
-    //  'Authorization': 'my-token'
-    //});
+  //getLocationByLocationId(id: string): Observable<RegistrationModel> {
+  //  //let getHeaders: HttpHeaders = new HttpHeaders({
+  //  //  'Accept': 'application/json',
+  //  //  'Authorization': 'my-token'
+  //  //});
 
-    const $value = id;
+  //  const $value = id;
 
-    return this.http.get<Location[]>('/api/locations/lid/' + $value);
-  }
+  //  return this.http.get<RegistrationModel>('/api/locations/lid/' + $value);
+  //}
 
   getLocationByPostCode(id: string): Observable<Location[]> {
     //let getHeaders: HttpHeaders = new HttpHeaders({
@@ -46,7 +52,13 @@ export class LocationService {
 
     const $value = id;
 
+    //return this.http.get<Location[]>('/api/locations/pc/' + $value);
+
     return this.http.get<Location[]>('/api/locations/pc/' + $value);
+
+    //for (location of locationAPI) {
+    //  console.log("For each " + JSON.stringify(locationAPI));
+    //}
   }
 
   //this.LocationService.getAllLocations()

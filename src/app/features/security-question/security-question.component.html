@@ -11,27 +11,60 @@
 
   <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">You will need this if you forget your username or if you speak to Skills for Care about your account.</p>
 
-  <form novalidate
-        (ngSubmit)="save()"
+  <form (ngSubmit)="save()"
         [formGroup]="securityQuestionAnswerForm">
 
     <div class="form-group mb-5">
       <div class="col-12 col-md-6 p-0">
 
-        <div class="field-group">
-          <label class="form-label" for="security-question">Enter a security question</label>
-          <input name="security-question" placeholder="" type="text" id="security-question" class="form-control col-12" />
+        <div class="field-group"
+             [ngClass]="{'is-invalid': (securityQuestionAnswerForm.get('securityQuestionInput').touched ||
+                                              securityQuestionAnswerForm.get('securityQuestionInput').dirty) &&
+                                              !securityQuestionAnswerForm.get('securityQuestionInput').valid }">
+          <label class="form-label" for="securityQuestion">Enter a security question</label>
+
+          <span class="invalid-feedback">
+            <span *ngIf="securityQuestionAnswerForm.get('securityQuestionInput').errors?.maxlength" class="main-body-text mb-2">
+              The security question must be no longer than 120 characters.
+            </span>
+            <span *ngIf="securityQuestionAnswerForm.get('securityQuestionInput').errors?.required" class="main-body-text mb-2">
+              Please enter your Security question.
+            </span>
+          </span>
+
+          <div class="form-control-feedback">
+
+            <input placeholder="" type="text" id="securityQuestion" class="form-control col-12" formControlName="securityQuestionInput" />
+
+          </div>
         </div>
-        <div class="field-group mt-5">
-          <label class="form-label" for="security-question-answer">Enter the answer to the security question</label>
-          <input name="security-question-answer" placeholder="" type="text" id="security-question-answer" class="form-control col-12" />
+        <div class="field-group mt-5"
+             [ngClass]="{'is-invalid': (securityQuestionAnswerForm.get('securityAnswerInput').touched ||
+                                              securityQuestionAnswerForm.get('securityAnswerInput').dirty) &&
+                                              !securityQuestionAnswerForm.get('securityAnswerInput').valid }">
+          <label class="form-label" for="securityAnswer">Enter the answer to the security question</label>
+
+          <span class="invalid-feedback">
+            <span *ngIf="securityQuestionAnswerForm.get('securityAnswerInput').errors?.maxlength" class="main-body-text mb-2">
+              The security answer must be no longer than 120 characters.
+            </span>
+            <span *ngIf="securityQuestionAnswerForm.get('securityAnswerInput').errors?.required" class="main-body-text mb-2">
+              Please enter your Security answer.
+            </span>
+          </span>
+
+          <div class="form-control-feedback">
+
+            <input placeholder="" type="text" id="securityAnswer" class="form-control col-12" formControlName="securityAnswerInput" />
+
+          </div>
         </div>
       </div>
 
     </div>
 
     <div class="btn-container">
-      <button class="btn btn-primary" type="submit" routerLink="/confirm-account-details">Continue</button>
+      <button class="btn btn-primary" type="submit" [disabled]="!securityQuestionAnswerForm.valid">Continue</button>
     </div>
 
   </form>

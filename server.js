@@ -9,6 +9,8 @@ var routes = require('./server/routes/index');
 var locations = require('./server/routes/locations');
 var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
+var registration = require('./server/routes/registration');
+
 var errors = require('./server/routes/errors');
 
 var app = express();
@@ -28,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'dist')));
 app.use('/api/locations', locations);
 app.use('/api/postcodes', postcodes);
 app.use('/api/services', services);
+app.use('/api/registration', registration);
 app.use('/api/errors', errors);
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

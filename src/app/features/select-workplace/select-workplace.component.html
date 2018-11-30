@@ -11,30 +11,30 @@
 
   <form novalidate
         (ngSubmit)="save()"
-        [formGroup]="SelectWorkplaceForm">
+        [formGroup]="selectWorkplaceForm">
 
     <div class="form-group mb-5">
       <div class="col-12 p-0">
         <label class="main-body-text-bold mb-3 d-block">Select your workplace from the following:</label>
 
-        <div class="row mb-5">
+        <div class="row mb-5" *ngFor="let item of registration; let i = index">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="reqQuestionYes" formControlName="workplacePostcodeSelected" value="Sunset Homes - Harlesden SW3 8FG" />
-              <label class="main-body-text p-0" for="reqQuestionYes">Sunset Homes - Harlesden SW3 8FG</label>
+              <input type="radio" id="selectWorkplace-{{i}}" formControlName="selectWorkplaceSelected" value="{{i}}" />
+              <label class="main-body-text p-0" for="selectWorkplace-{{i}}">{{ item.locationName }} - {{ item.townCity }} {{ item.postalCode }}</label>
             </div>
           </div>
         </div>
 
-        <div class="row">
+        <!--<div class="row">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="address2" formControlName="workplacePostcodeSelected" value="Rotherley Meadows - Harlesden SW3 8FG" />
-              <label class="main-body-text p-0" for="address2">Rotherley Meadows - Harlesden SW3 8FG</label>
+              <input type="radio" id="selectWorkplace2" formControlName="selectWorkplace" value="Rotherley Meadows - Harlesden SW3 8FG" />
+              <label class="main-body-text p-0" for="address2">{{ //registration[1].locationName }} Rotherley Meadows - Harlesden SW3 8FG</label>
             </div>
           </div>
+        </div>-->
 
-        </div>
       </div>
     </div>
 
@@ -43,7 +43,7 @@
     </div>
 
     <div class="btn-container">
-      <button class="btn btn-primary" type="submit">Continue</button>
+      <button class="btn btn-primary" type="submit" [disabled]="!selectWorkplaceForm.valid">Continue</button>
     </div>
 
   </form>

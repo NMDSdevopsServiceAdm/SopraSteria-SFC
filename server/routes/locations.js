@@ -8,7 +8,7 @@ router.route('/lid/:locationId')
 
   .get(async function (req, res) {
 
-    let locationData =[];
+    let locationData = [];
 
     //Find matching location data
     let result = await models.location.findOne({
@@ -17,7 +17,7 @@ router.route('/lid/:locationId')
       }
     });
 
-    let data=result.dataValues;
+    let data = result.dataValues;
     locationData.push(createLocationDetailsObject(data));
 
     if (locationData.length === 0) {
@@ -29,10 +29,10 @@ router.route('/lid/:locationId')
 
 
 // // GET Location API by postalCode
-  router.route('/pc/:postcode')
+router.route('/pc/:postcode')
   .get(async function (req, res) {
 
-    let locationData =[];
+    let locationData = [];
 
     //Find matching postcode data
     let results = await models.location.findAll({
@@ -41,7 +41,7 @@ router.route('/lid/:locationId')
       }
     });
 
-    for (let i=0, len=results.length; i<len; i++) {
+    for (let i = 0, len = results.length; i < len; i++) {
 
       let data = results[i].dataValues;
       locationData.push(createLocationDetailsObject(data));
@@ -55,7 +55,7 @@ router.route('/lid/:locationId')
     }
   })
 
-function createLocationDetailsObject(data){
+function createLocationDetailsObject(data) {
 
   //Map DB fields to expected JSON output
   let myObject = {
