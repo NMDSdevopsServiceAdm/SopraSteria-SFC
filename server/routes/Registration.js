@@ -7,11 +7,31 @@ const bodyParser = require('body-parser');
 const { Pool, Client } = require('pg')
 const client = new Client({
   user: 'sfcadmin',
-  host: '3.8.78.161',
+  host: '35.178.185.248',
   database: 'sfcdevdb',
   password: 'sfcadmin123',
   port: 5432,
 })
+
+// RETURNS ALL THE USERS IN THE DATABASE
+router.get('/username/:username', function (req, res) {
+  client.connect()
+  var UserNameSelect = 'SELECT * FROM cqc."Login" where "Username" = $1 Limit 1'
+
+  client.query(UserNameSelect,[req.params.username],function(err,result) {         
+        if (result.rowCount == 0) {
+          res.json({
+            status: '0',
+            message: 'Username not found',
+          });
+        } else {
+          res.json({
+            status: '1',
+            message: 'Username found',
+          });
+        }          
+  })
+});
 
 
 router.route('/')
