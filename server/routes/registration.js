@@ -13,6 +13,26 @@ const client = new Client({
   port: 5432,
 })
 
+// RETURNS ALL THE USERS IN THE DATABASE
+router.get('/username/:username', function (req, res) {
+  client.connect()
+  var UserNameSelect = 'SELECT * FROM cqc."Login" where "Username" = $1 Limit 1'
+
+  client.query(UserNameSelect,[req.params.username],function(err,result) {         
+        if (result.rowCount == 0) {
+          res.json({
+            status: '0',
+            message: 'Username not found',
+          });
+        } else {
+          res.json({
+            status: '1',
+            message: 'Username found',
+          });
+        }          
+  })
+});
+
 
 router.route('/')
     .get(async function(req, res) {
