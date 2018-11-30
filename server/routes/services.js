@@ -78,9 +78,9 @@ async function createServicesJSON(results){
       serviceId: data.id,
       category: data.category,
       name: data.name,
-      cqcRegistered: data.iscqcregistered,
-      capacityQuestion: data.capacityquestion,
-      currentUptakeQuestion: data.currentuptakequestion
+      // cqcRegistered: data.iscqcregistered,
+      // capacityQuestion: data.capacityquestion,
+      // currentUptakeQuestion: data.currentuptakequestion
     };
 
     servicesData.push(myObject);
