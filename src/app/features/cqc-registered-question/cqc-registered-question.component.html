@@ -9,72 +9,7 @@
   <p class="h5">Section 1 of 6</p>
   <h1 class="h1">Care Quality Commission regulation</h1>
 
-  <form (ngSubmit)="CqcRegisteredQuestionModule.form.valid && onSubmit()" #CqcRegisteredQuestionModule="ngForm">
-
-    <div class="form-group mb-5">
-      <div class="col-12 p-0">
-        <label class="main-body-text-bold mb-3 d-block">Are you regulated by the Care Quality Commission (CQC)?</label>
-
-        <div class="row mb-5">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="reqQuestionYes" value="yes" name="registeredQuestionSelected" [(ngModel)]="model.registeredQuestionSelected" />
-              <label class="main-body-text p-0" for="reqQuestionYes">Yes</label>
-            </div>
-          </div>
-
-          <div *ngIf="model.registeredQuestionSelected === 'yes'" class="panel panel-border-narrow col-10 col-lg-6"
-               [ngClass]="{'has-error': postcodeYes.invalid}">
-
-            <div class="field-group">
-
-              <label class="form-label" for="postcodeYes">Enter your postcode</label>
-
-              <div class="form-control-feedback"
-                   *ngIf="postcodeYes.errors && (postcodeYes.dirty || postcodeYes.touched)">
-                <!--<p *ngIf="postcodeYes.errors.required" class="error-message">Email is required</p>-->
-                <p *ngIf="postcodeYes.errors.minlength" class="error-message">Postcode should be at least 6 characters long</p>
-              </div>
-
-              <input placeholder="postcode" type="text" id="postcodeYes" class="form-control col-12" name="postcodeYes" minlength="6" [(ngModel)]="model.postcodeYes" #postcodeYes="ngModel"
-                     [ngClass]="{'input-error': postcodeYes.invalid}"
-               />
-            </div>
-            <div class="field-group mt-2">
-              <p class="label mt-4">or</p>
-
-              <label class="form-label" for="locationId">Enter your location ID number</label>
-              <input placeholder="location" type="text" id="location" class="form-control col-12" name="locationId" [(ngModel)]="model.locationId" #locationId="ngModel" />
-            </div>
-
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="regQuestionNo" value="no" name="registeredQuestionSelected" [(ngModel)]="model.registeredQuestionSelected" />
-              <label class="main-body-text p-0" for="regQuestionNo">No</label>
-            </div>
-          </div>
-
-          <div *ngIf="model.registeredQuestionSelected === 'no'" class="panel panel-border-narrow col-10 col-lg-6">
-            <div class="field-group">
-
-              <label class="main-body-text mb-3 d-block" for="postcodeNo">What is your postcode?</label>
-              <input placeholder="postcode" type="text" id="postcodeNo" class="form-control col-12" name="postcodeNo" [(ngModel)]="model.postcodeNo" #postcodeNo="ngModel" />
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-
-    <div class="btn-container">
-      <button class="btn btn-primary" type="submit">Continue</button>
-    </div>
-
-  </form>
+  <app-cqc-registered-question-edit></app-cqc-registered-question-edit>
 
 
   <!--<pre>{{CqcRegisteredQuestionModule.value | json}}</pre>-->

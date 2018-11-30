@@ -1,12 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\ng-sfc-v2",
-    "\\ng-sfc-v2\\src",
-    "\\ng-sfc-v2\\src\\app",
-    "\\ng-sfc-v2\\src\\app\\login",
-    "\\ng-sfc-v2\\src\\environments"
+    "\\server",
+    "\\server\\config"
   ],
-  "SelectedNode": "\\ng-sfc-v2\\src\\app\\app.module.ts",
+  "SelectedNode": "\\server\\routes",
   "PreviewInSolutionExplorer": false
 }

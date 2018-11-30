@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 
 import { LocationService } from '../../core/services/location.service';
 
-import { CqcRegisteredQuestion } from './cqc-regsitered-check';
+//import { allLocations } from '../../core/model/location.model';
+
 
 @Component({
   selector: 'app-cqc-registered-question',
@@ -15,69 +16,20 @@ import { CqcRegisteredQuestion } from './cqc-regsitered-check';
 
 export class CqcRegisteredQuestionComponent implements OnInit {
 
-  model: CqcRegisteredQuestion = new CqcRegisteredQuestion('', '', '', '');
+  //
+  //allLocations: Location[];
 
-  submitted = false;
-
-  constructor(private locationService: LocationService, private router: Router) { }
+  constructor(/*private locationService: LocationService, private router: Router*/) { }
 
   ngOnInit() {
-   // this.locationService.getLocationApi();
+
+    ////Call getAllLocations() from location.service
+    //this.locationService.getAllLocations()
+    //  .subscribe(
+    //    (data: Location[]) => this.allLocations = data,
+    //    (err: any) => console.log(err),
+    //    () => console.log('All done getting locations')
+    //  );
   }
 
-  getLocations() {
-    //return this.http.get('<!--https://api.cqc.org.uk/public/v1/locations-->');
-
-    //1-1000210669 testable locationID
-    //1-1000401911
-
-    //this.tests();
-    //console.log(this.locationService.getLocationApi());
-  }
-
-  
-
-  onSubmit() {
-    this.submitted = true;
-
-    //alert(JSON.stringify(this.model));
-    this.routeQuestionCheck(this.model, this.router);
-  }
-
-  // Simple check to see which input field they enter and route to appropriate component
-  routeQuestionCheck = function (input: any, router) {
-    console.log(input);
-
-
-    var registeredQuestionSelectedCheck = input.registeredQuestionSelected, 
-        postcodeYesCheck = input.postcodeYes,
-        locationIdCheck = input.locationId,
-        postcodeNoCheck = input.postcodeNo;
-
-    if (registeredQuestionSelectedCheck === 'yes') {
-      if (postcodeYesCheck) {
-        router.navigate(['/select-workplace']);
-        console.log(postcodeYesCheck);
-      }
-      else if (locationIdCheck) {
-        router.navigate(['/confirm-workplace-details']);
-        console.log(locationIdCheck);
-      }
-    }
-    else {
-      if (postcodeNoCheck) {
-        router.navigate(['/select-workplace-address']);
-        console.log(postcodeNoCheck);
-      }
-    }
-    
-    
-    
-  }
-  
-
-  
-
-
-  
 }

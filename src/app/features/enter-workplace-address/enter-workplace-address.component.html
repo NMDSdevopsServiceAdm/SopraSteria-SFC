@@ -9,38 +9,147 @@
   <p class="h5">Section 2 of 8</p>
   <h1 class="h1">Enter your workplace address</h1>
 
-  <form (ngSubmit)="onSubmit()" #enterWorkplaceAddressModule="ngForm">
+  <form novalidate
+        (ngSubmit)="save()"
+        [formGroup]="enterWorkplaceAddressForm">
 
     <div class="form-group mb-5">
       <div class="col-12 col-md-6 p-0">
 
-        <div class="field-group">
+        <div class="field-group"
+             [ngClass]="{'is-invalid': (enterWorkplaceAddressForm.get('postcodeInput').touched ||
+                                                enterWorkplaceAddressForm.get('postcodeInput').dirty) &&
+                                                !enterWorkplaceAddressForm.get('postcodeInput').valid }">
           <label class="form-label" for="postcode">Postcode</label>
-          <input name="user-fullname" placeholder="" type="text" id="postcode" value="SW3 8FG" class="form-control col-12 col-md-3" />
+
+          <span class="invalid-feedback">
+            <span *ngIf="enterWorkplaceAddressForm.get('postcodeInput').errors?.maxlength" class="main-body-text mb-2">
+              The Postcode must be no longer than 8 characters.
+            </span>
+            <span *ngIf="enterWorkplaceAddressForm.get('postcodeInput').errors?.required" class="main-body-text mb-2">
+              Please enter your Postcode address.
+            </span>
+          </span>
+
+          <div class="form-control-feedback">
+
+            <input placeholder="" type="text" id="postcode" class="form-control col-12 col-md-3" formControlName="postcodeInput" />
+
+          </div>
         </div>
-        <div class="field-group mt-5">
+        <div class="field-group mt-5"
+             [ngClass]="{'is-invalid': (enterWorkplaceAddressForm.get('address1Input').touched ||
+                                                enterWorkplaceAddressForm.get('address1Input').dirty) &&
+                                                !enterWorkplaceAddressForm.get('address1Input').valid }">
           <label class="form-label" for="address-1-1">Building and street</label>
-          <input name="address-1-1" placeholder="" type="text" id="address-1-1" class="form-control col-12 mb-4" />
-          <input name="address-1-2" placeholder="" type="text" id="address-1-2" class="form-control col-12" />
+
+          <span class="invalid-feedback">
+            <span *ngIf="enterWorkplaceAddressForm.get('address1Input').errors?.maxlength" class="main-body-text mb-2">
+              The Address must be no longer than 40 characters.
+            </span>
+            <span *ngIf="enterWorkplaceAddressForm.get('address1Input').errors?.required" class="main-body-text mb-2">
+              Please enter your Address.
+            </span>
+          </span>
+
+          <div class="form-control-feedback">
+
+            <input placeholder="" type="text" id="address1" class="form-control col-12 mb-4" formControlName="address1Input" />
+
+          </div>
         </div>
-        <div class="field-group mt-5">
-          <label class="form-label" for="address-2">Town or city</label>
-          <input name="address-2" placeholder="" type="text" id="address-2" class="form-control col-12 col-md-7" />
+
+        <div class="field-group mt-4"
+             [ngClass]="{'is-invalid': (enterWorkplaceAddressForm.get('address2Input').touched ||
+                                                enterWorkplaceAddressForm.get('address2Input').dirty) &&
+                                                !enterWorkplaceAddressForm.get('address2Input').valid }">
+
+          <span class="invalid-feedback">
+            <span *ngIf="enterWorkplaceAddressForm.get('address2Input').errors?.maxlength" class="main-body-text mb-2">
+              The Address must be no longer than 40 characters.
+            </span>
+            <span *ngIf="enterWorkplaceAddressForm.get('address2Input').errors?.required" class="main-body-text mb-2">
+              Please enter your Address.
+            </span>
+          </span>
+
+          <div class="form-control-feedback">
+
+            <input placeholder="" type="text" id="address2" class="form-control col-12" formControlName="address2Input" />
+
+          </div>
         </div>
-        <div class="field-group mt-5">
-          <label class="form-label" for="address-3">County</label>
-          <input name="address-3" placeholder="" type="text" id="address-3" class="form-control col-12 col-md-7" />
+
+        <div class="field-group mt-5"
+             [ngClass]="{'is-invalid': (enterWorkplaceAddressForm.get('townCityInput').touched ||
+                                                enterWorkplaceAddressForm.get('townCityInput').dirty) &&
+                                                !enterWorkplaceAddressForm.get('townCityInput').valid }">
+          <label class="form-label" for="townCity">Town or city</label>
+
+          <span class="invalid-feedback">
+            <span *ngIf="enterWorkplaceAddressForm.get('townCityInput').errors?.maxlength" class="main-body-text mb-2">
+              The Town or City must be no longer than 40 characters.
+            </span>
+            <span *ngIf="enterWorkplaceAddressForm.get('townCityInput').errors?.required" class="main-body-text mb-2">
+              Please enter your Town or city.
+            </span>
+          </span>
+
+          <div class="form-control-feedback">
+
+            <input placeholder="" type="text" id="townCity" class="form-control col-12 col-md-7" formControlName="townCityInput" />
+
+          </div>
         </div>
-        <div class="field-group mt-5">
-          <label class="form-label" for="wp-name">Workplace name</label>
-          <input name="wp-name" placeholder="" type="text" id="wp-name" class="form-control col-12 col-md-9" />
+
+        <div class="field-group mt-5"
+             [ngClass]="{'is-invalid': (enterWorkplaceAddressForm.get('countyInput').touched ||
+                                                enterWorkplaceAddressForm.get('countyInput').dirty) &&
+                                                !enterWorkplaceAddressForm.get('countyInput').valid }">
+          <label class="form-label" for="county">County</label>
+
+          <span class="invalid-feedback">
+            <span *ngIf="enterWorkplaceAddressForm.get('countyInput').errors?.maxlength" class="main-body-text mb-2">
+              The County must be no longer than 40 characters.
+            </span>
+            <span *ngIf="enterWorkplaceAddressForm.get('countyInput').errors?.required" class="main-body-text mb-2">
+              Please enter your County.
+            </span>
+          </span>
+
+          <div class="form-control-feedback">
+
+            <input placeholder="" type="text" id="county" class="form-control col-12 col-md-7" formControlName="countyInput" />
+
+          </div>
+        </div>
+        <div class="field-group mt-5"
+             [ngClass]="{'is-invalid': (enterWorkplaceAddressForm.get('wpNameInput').touched ||
+                                                enterWorkplaceAddressForm.get('wpNameInput').dirty) &&
+                                                !enterWorkplaceAddressForm.get('wpNameInput').valid }">
+          <label class="form-label" for="wpName">Workplace name</label>
+
+          <span class="invalid-feedback">
+            <span *ngIf="enterWorkplaceAddressForm.get('wpNameInput').errors?.maxlength" class="main-body-text mb-2">
+              The Workplace name must be no longer than 40 characters.
+            </span>
+            <span *ngIf="enterWorkplaceAddressForm.get('wpNameInput').errors?.required" class="main-body-text mb-2">
+              Please enter your Workplace name.
+            </span>
+          </span>
+
+          <div class="form-control-feedback">
+
+            <input placeholder="" type="text" id="wpName" class="form-control col-12 col-md-9" formControlName="wpNameInput" />
+
+          </div>
         </div>
       </div>
 
     </div>
 
     <div class="btn-container">
-      <button class="btn btn-primary" type="submit" routerLink="/select-main-service">Continue</button>
+      <button class="btn btn-primary" type="submit">Continue</button>
     </div>
 
   </form>

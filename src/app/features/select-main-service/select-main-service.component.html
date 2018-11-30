@@ -11,7 +11,9 @@
 
   <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">We need some details about where you work. You need to answer these questions before we can create your account.</p>
 
-  <form (ngSubmit)="onSubmit()" #SelectMainServiceModule="ngForm">
+  <form novalidate
+        (ngSubmit)="save()"
+        [formGroup]="SelectMainServiceForm">
 
     <div class="form-group">
       <div class="field-group col-12 p-0 pb-4">
@@ -20,7 +22,7 @@
         <div class="row mb-4">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="adult-residential-1" value="adult-residential-1" name="adult-residential">
+              <input type="radio" id="adult-residential-1" value="Care home services with nursing" formControlName="mainServiceSelected">
               <label class="main-body-text p-0" for="adult-residential-1">Care home services with nursing</label>
             </div>
           </div>
@@ -29,7 +31,7 @@
         <div class="row mb-4">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="adult-residential-2" value="adult-residential-2" name="adult-residential">
+              <input type="radio" id="adult-residential-2" value="Care home services without nursing" formControlName="mainServiceSelected">
               <label class="main-body-text p-0" for="adult-residential-2">Care home services without nursing</label>
             </div>
           </div>
@@ -42,7 +44,7 @@
         <div class="row mb-4">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="adult-domiciliary-1" value="adult-domiciliary-1" name="adult-domiciliary">
+              <input type="radio" id="adult-domiciliary-1" value="Domiciliary care services" formControlName="mainServiceSelected">
               <label class="main-body-text p-0" for="adult-domiciliary-1">Domiciliary care services</label>
             </div>
           </div>
@@ -51,7 +53,7 @@
         <div class="row mb-4">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="adult-domiciliary-2" value="adult-domiciliary-2" name="adult-domiciliary">
+              <input type="radio" id="adult-domiciliary-2" value="Nurses agency" formControlName="mainServiceSelected">
               <label class="main-body-text p-0" for="adult-domiciliary-2">Nurses agency</label>
             </div>
           </div>
@@ -60,7 +62,7 @@
         <div class="row mb-4">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="adult-domiciliary-3" value="adult-domiciliary-3" name="adult-domiciliary">
+              <input type="radio" id="adult-domiciliary-3" value="Extra care housing services" formControlName="mainServiceSelected">
               <label class="main-body-text p-0" for="adult-domiciliary-3">Extra care housing services</label>
             </div>
           </div>
@@ -69,7 +71,7 @@
         <div class="row mb-4">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="adult-domiciliary-4" value="adult-domiciliary-4" name="adult-domiciliary">
+              <input type="radio" id="adult-domiciliary-4" value="Supported living services" formControlName="mainServiceSelected">
               <label class="main-body-text p-0" for="adult-domiciliary-4">Supported living services</label>
             </div>
           </div>
@@ -79,7 +81,7 @@
     </div>
 
     <div class="btn-container">
-      <button class="btn btn-primary" type="submit" routerLink="/confirm-workplace-details">Continue</button>
+      <button class="btn btn-primary" type="submit">Continue</button>
     </div>
 
   </form>

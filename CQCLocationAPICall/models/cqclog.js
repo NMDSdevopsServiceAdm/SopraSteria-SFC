@@ -1,0 +1,16 @@
+'use strict';
+module.exports = (sequelize, DataTypes) => {
+  const cqclog = sequelize.define('cqclog', {
+    success: DataTypes.BOOLEAN,
+    message: DataTypes.STRING
+  }, {
+    schema: 'cqc',
+    createdAt: 'createdat',
+    updatedAt: false,
+    freezeTableName: true
+  });
+  cqclog.associate = function(models) {
+    // associations can be defined here
+  };
+  return cqclog;
+};

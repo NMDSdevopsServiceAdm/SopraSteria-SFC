@@ -56,9 +56,9 @@ provider:
 
 functions:
   hello:
-    handler: handler.hello
+    handler: handler.handler
     name: postBook
-    timeout: 600
+    timeout: 900
     events:
       - http:
           path: /

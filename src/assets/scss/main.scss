@@ -24,10 +24,17 @@ ul {
   }
 }
 
-a {
+a,
+.text-link {
   text-decoration: underline;
+  color: #007bff;
+  cursor: pointer;
 
   @include rem(font-size, 19px);
+
+  &:hover {
+    color: #0056b3;
+  }
 }
 
 p {
@@ -90,21 +97,36 @@ p {
 
   @include rem(padding, 0 0 0 30px);
   @include rem(margin, 20px 0 0 0);
+}
 
-  &.has-error {
-    border-left: 10px solid $error-red;
+.is-invalid {
+  border-left: 10px solid $error-red;
 
-    .error-message {
-      color: $error-red;
-    }
+  .invalid-feedback {
+    display: block;
+    color: $error-red;
+    font-weight: 700;
+    margin: 0;
 
-    input {
-
-      &.input-error {
-        border-color: $error-red;
-      }
+    span {
+      display: block;
     }
   }
+
+  input,
+  select,
+  textarea {
+
+    &.ng-invalid {
+      border-color: $error-red;
+    }
+  }
+  /*input {
+
+      &.input {
+        border-color: $error-red;
+      }
+    }*/
 }
 
 .border-line-bottom {
