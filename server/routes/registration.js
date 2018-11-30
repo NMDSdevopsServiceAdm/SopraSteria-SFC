@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const { Pool, Client } = require('pg')
 const client = new Client({
   user: 'sfcadmin',
-  host: '3.8.78.161',
+  host: '35.178.185.248',
   database: 'sfcdevdb',
   password: 'sfcadmin123',
   port: 5432,
