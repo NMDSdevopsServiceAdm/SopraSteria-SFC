@@ -16,6 +16,12 @@ export class UserDetailsComponent implements OnInit {
   userDetailsForm: FormGroup;
   registration: RegistrationModel[];
 
+  //submitted = false;
+  submittedfullname = false;
+  submittedJobTitle = false;
+  submittedEmail = false;
+  submittedPhone = false;
+
   createUsernameValue: string;
   createPasswordValue: string;
   createSecurityQuestionValue: string;
@@ -28,24 +34,24 @@ export class UserDetailsComponent implements OnInit {
   phoneMessage: string;
 
   private fullnameMessages = {
-    maxlength: 'The Full name must be no longer than 120 characters.',
-    required: 'Please enter your Full name.'
+    maxlength: 'Your fullname must be no longer than 120 characters.',
+    required: 'Please enter your fullname.'
   };
 
   private jobTitleMessages = {
-    maxlength: 'The job title must be no longer than 120 characters.',
-    required: 'Please enter your Job title.'
+    maxlength: 'Your job title must be no longer than 120 characters.',
+    required: 'Please enter your job title.'
   };
 
   private emailMessages = {
-    maxlength: 'The Email address must be no longer than 120 characters.',
-    required: 'Please enter your Email address.',
-    email: 'Please enter valid Email address.'
+    maxlength: 'Your email address must be no longer than 120 characters.',
+    required: 'Please enter your email address.',
+    email: 'Please enter a valid email address.'
   };
 
   private phoneMessages = {
-    maxlength: 'The Contact phone number must be no longer than 50 characters.',
-    required: 'Please enter your Contact phone number.'
+    maxlength: 'Your contact phone number must be no longer than 50 characters.',
+    required: 'Please enter your contact phone number.'
   };
 
 
@@ -88,7 +94,9 @@ export class UserDetailsComponent implements OnInit {
     emailControl.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => this.setEmailMessage(emailControl)
+      value => {
+        this.setEmailMessage(emailControl);
+      }
     );
 
     // phone watcher
@@ -127,8 +135,9 @@ export class UserDetailsComponent implements OnInit {
 
     if ((c.touched || c.dirty) && c.errors) {
       this.fullnameMessage = Object.keys(c.errors).map(
-        key => this.fullnameMessage += this.fullnameMessages[key]).join('');
+        key => this.fullnameMessage += this.fullnameMessages[key]).join('<br />');
     }
+    this.submittedfullname = false;
   }
 
   setJobTitleMessage(c: AbstractControl): void {
@@ -136,8 +145,9 @@ export class UserDetailsComponent implements OnInit {
 
     if ((c.touched || c.dirty) && c.errors) {
       this.jobTitleMessage = Object.keys(c.errors).map(
-        key => this.jobTitleMessage += this.jobTitleMessages[key]).join('');
+        key => this.jobTitleMessage += this.jobTitleMessages[key]).join('<br />');
     }
+    this.submittedJobTitle = false;
   }
 
   setEmailMessage(c: AbstractControl): void {
@@ -145,8 +155,9 @@ export class UserDetailsComponent implements OnInit {
 
     if ((c.touched || c.dirty) && c.errors) {
       this.emailMessage = Object.keys(c.errors).map(
-        key => this.emailMessage += this.emailMessages[key]).join('');
+        key => this.emailMessage += this.emailMessages[key]).join('<br />');
     }
+    this.submittedEmail = false;
   }
 
   setPhoneMessage(c: AbstractControl): void {
@@ -154,8 +165,26 @@ export class UserDetailsComponent implements OnInit {
 
     if ((c.touched || c.dirty) && c.errors) {
       this.phoneMessage = Object.keys(c.errors).map(
-        key => this.phoneMessage += this.phoneMessages[key]).join('');
+        key => this.phoneMessage += this.phoneMessages[key]).join('<br />');
     }
+    this.submittedPhone = false;
+  }
+
+  // convenience getter for easy access to form fields
+  get f() { return this.userDetailsForm.controls; }
+
+  onSubmit() {
+      //this.submitted = true;
+      this.submittedfullname = true;
+      this.submittedJobTitle = true;
+      this.submittedEmail = true;
+      this.submittedPhone = true;
+
+      // stop here if form is invalid
+      if (this.userDetailsForm.invalid) {
+          return;
+      }
+      alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.userDetailsForm.value));
   }
 
   save() {

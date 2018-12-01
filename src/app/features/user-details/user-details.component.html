@@ -9,17 +9,33 @@
   <p class="h5">Section 4 of 7</p>
   <h1 class="h1">Your details</h1>
 
-  <form novalidate (ngSubmit)="save()" [formGroup]="userDetailsForm">
+  <form novalidate (ngSubmit)="onSubmit()" [formGroup]="userDetailsForm">
 
     <div class="form-group mb-5">
       <div class="col-12 col-md-6 p-0">
 
-        <div class="field-group" [ngClass]="{'is-invalid': fullnameMessage}">
+        <div class="field-group"
+          [ngClass]="{'is-invalid': fullnameMessage || (submittedfullname && f.userFullnameInput.errors) }">
+
           <label class="form-label" for="userFullname">Your full name</label>
 
           <span class="invalid-feedback">
-            <span class="main-body-text mb-2">{{ fullnameMessage }}</span>
+            <span class="main-body-text mb-2"*ngIf="!submittedfullname">{{ fullnameMessage }}</span>
+            <span class="main-body-text mb-2" *ngIf="submittedfullname && f.userFullnameInput.errors.required">
+              Please enter your fullname.
+            </span>
+            <span class="main-body-text mb-2" *ngIf="submittedfullname && f.userFullnameInput.errors.maxlength">
+              Your fullname must be no longer than 120 characters.
+            </span>
           </span>
+          <!-- <span class="invalid-feedback" *ngIf="submitted && f.userFullnameInput.errors">
+              <span class="main-body-text mb-2" *ngIf="f.userFullnameInput.errors.required">
+                Please enter your fullname.
+              </span>
+              <span class="main-body-text mb-2" *ngIf="f.userFullnameInput.errors.maxlength">
+                Your fullname must be no longer than 120 characters.
+              </span>
+            </span> -->
 
           <div class="form-control-feedback">
 
@@ -29,11 +45,18 @@
 
         </div>
         <div class="field-group mt-5"
-             [ngClass]="{'is-invalid': jobTitleMessage }">
+          [ngClass]="{'is-invalid': jobTitleMessage || (submittedJobTitle && f.userJobTitleInput.errors) }">
+
           <label class="form-label" for="userJobTitle">Your job title</label>
 
           <span class="invalid-feedback">
-            <span class="main-body-text mb-2">{{ jobTitleMessage }}</span>
+            <span class="main-body-text mb-2" *ngIf="!submittedJobTitle">{{ jobTitleMessage }}</span>
+            <span class="main-body-text mb-2" *ngIf="submittedJobTitle && f.userJobTitleInput.errors.required">
+              Please enter your job title.
+            </span>
+            <span class="main-body-text mb-2" *ngIf="submittedJobTitle && f.userJobTitleInput.errors.maxlength">
+              Your job title must be no longer than 120 characters.
+            </span>
           </span>
 
           <div class="form-control-feedback">
@@ -43,11 +66,21 @@
           </div>
         </div>
         <div class="field-group mt-5"
-             [ngClass]="{'is-invalid': emailMessage }">
+          [ngClass]="{'is-invalid': emailMessage || (submittedEmail && f.userEmailInput.errors) }">
+
           <label class="form-label" for="userEmail">Your email address</label>
 
           <span class="invalid-feedback">
-            <span class="main-body-text mb-2">{{ emailMessage }}</span>
+            <span class="main-body-text mb-2" *ngIf="!submittedEmail">{{ emailMessage }}</span>
+            <span class="main-body-text mb-2" *ngIf="submittedEmail && f.userEmailInput.errors.required">
+              Please enter your email address.
+            </span>
+            <span class="main-body-text mb-2" *ngIf="submittedEmail && f.userEmailInput.errors.maxlength">
+              Your email address must be no longer than 120 characters.
+            </span>
+            <span class="main-body-text mb-2" *ngIf="submittedEmail && f.userEmailInput.errors.email">
+              Please enter a valid email address.
+            </span>
           </span>
 
           <div class="form-control-feedback">
@@ -57,11 +90,18 @@
           </div>
         </div>
         <div class="field-group mt-5"
-             [ngClass]="{'is-invalid': phoneMessage }">
+          [ngClass]="{'is-invalid': phoneMessage || (submittedPhone && f.userPhoneInput.errors) }">
+
           <label class="form-label" for="userPhone">Contact phone number</label>
 
           <span class="invalid-feedback">
-            <span class="main-body-text mb-2">{{ phoneMessage }}</span>
+            <span class="main-body-text mb-2" *ngIf="!submittedPhone">{{ phoneMessage }}</span>
+            <span class="main-body-text mb-2" *ngIf="submittedPhone && f.userPhoneInput.errors.required">
+              Please enter your contact phone number.
+            </span>
+            <span class="main-body-text mb-2" *ngIf="submittedPhone && f.userPhoneInput.errors.maxlength">
+              Your contact phone number must be no longer than 50 characters.
+            </span>
           </span>
 
           <div class="form-control-feedback">
