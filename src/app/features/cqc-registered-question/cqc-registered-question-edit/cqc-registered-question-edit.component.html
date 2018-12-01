@@ -87,9 +87,6 @@
             <label class="form-label" for="postcodeNo">What is your postcode?</label>
 
             <span class="invalid-feedback">
-              <span *ngIf="cqcRegisteredQuestionForm.get('notRegisteredPostcode').errors?.required" class="main-body-text mb-2">
-                Please enter your Postcode.
-              </span>
               <span *ngIf="cqcRegisteredQuestionForm.get('notRegisteredPostcode').errors?.maxlength" class="main-body-text mb-2">
                 The Postcode must be no longer than 8 characters.
               </span>

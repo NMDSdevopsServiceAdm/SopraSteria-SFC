@@ -21,11 +21,15 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   CqcRegisteredQuestionEnteredLocation = new CqcRegisteredQuestionEnteredLocation();
   registeredQuestionSelectedValue: string;
 
-  //privateValidationMessages = {
+  // privateValidationMessages = {
   //  required: ''
-  //}
+  // }
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
+  constructor(
+    private _registrationService: RegistrationService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private fb: FormBuilder) { }
 
   ngOnInit() {
     this.cqcRegisteredQuestionForm = this.fb.group({
@@ -48,21 +52,19 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
   save() {
 
-    let cqcRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').value;
-    let locationIdValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').value;
-    let notRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode').value;
+    const cqcRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').value;
+    const locationIdValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').value;
+    const notRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode').value;
 
     if (cqcRegisteredPostcodeValue.length > 0) {
       this._registrationService.getLocationByPostCode(cqcRegisteredPostcodeValue);
     }
     else if (locationIdValue.length > 0) {
-      this._registrationService.getLocationByLocationId(locationIdValue);   
+      this._registrationService.getLocationByLocationId(locationIdValue);
     }
     else if (notRegisteredPostcodeValue.length > 0) {
-
       this._registrationService.getAddressByPostCode(notRegisteredPostcodeValue);
       this.router.navigate(['/select-workplace-address']);
-
     }
   }
 
@@ -72,15 +74,13 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     this.registeredQuestionSelectedValue = value;
     const notRegisteredPostcode = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode');
 
-    //Update state with isRegulated value
-    //this.registration[0].isRegulated = value;
-    //this._registrationService.updateState(this.registration);
-
-    if (this.registeredQuestionSelectedValue === "false") {
+    if (this.registeredQuestionSelectedValue === 'false') {
       notRegisteredPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
     }
+    else if (this.registeredQuestionSelectedValue === 'true') {
+      notRegisteredPostcode.setValidators(Validators.maxLength(8));
+    }
     notRegisteredPostcode.updateValueAndValidity();
-
   }
 }
 
@@ -97,19 +97,13 @@ function checkInputValues(c: AbstractControl): { [key: string]: boolean } | null
     return null;
   }
 
-  if ((postcodeControl.value.length < 1 && locationIdControl.value.length > 0) || (postcodeControl.value.length > 0 && locationIdControl.value.length < 1)) {
+  if ((postcodeControl.value.length < 1 && locationIdControl.value.length > 0) ||
+      (postcodeControl.value.length > 0 && locationIdControl.value.length < 1)) {
     return null;
   }
 
   return { 'containsContent': true };
 }
-
-//export class CustomValidators {
-//  static emailFormat(control: Control): [[key: string]: boolean] {
-//    let pattern: RegExp = /\S+@\S+\.\S+/;
-//    return pattern.test(control.value) ? null : { "emailFormat": true };
-//  }
-//}
 
 
 

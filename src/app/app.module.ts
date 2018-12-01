@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { RouterModule } from '@angular/router';
@@ -53,6 +54,7 @@ import { RegistrationService } from './core/services/registration.service';
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
