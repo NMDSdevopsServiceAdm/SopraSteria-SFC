@@ -117,7 +117,7 @@ p {
   select,
   textarea {
 
-    &.ng-invalid {
+    &.ng-dirty.ng-invalid {
       border-color: $error-red;
     }
   }

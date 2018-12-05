@@ -1,6 +1,6 @@
 
 <form novalidate
-      (ngSubmit)="save($event)"
+      (ngSubmit)="onSubmit()"
       [formGroup]="cqcRegisteredQuestionForm">
 
   <div class="form-group mb-5">
@@ -16,26 +16,30 @@
         </div>
 
         <div *ngIf="registeredQuestionSelectedValue === 'true'" class="panel panel-border-narrow col-10 col-lg-6"
-             [ngClass]="{'is-invalid': cqcRegisteredQuestionForm.get('cqcRegisteredGroup').errors ||
-                                          ((cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').touched ||
-                                          cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').dirty) &&
-                                          !cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').valid)
-                                  || ((cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').touched ||
-                                               cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').dirty) &&
-                                               !cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').valid) }">
+             [ngClass]="{'is-invalid': (!isSubmitted && (cqcRegPostcodeMessage || cqcRegLocationIdMessage)) ||
+                                      (isSubmitted && (!this.submittedCqcRegPostcode || !this.submittedCqcRegLocationId)) }">
 
           <div formGroupName="cqcRegisteredGroup">
             <div class="form-group">
               <label class="form-label" for="postcodeYes">Enter your postcode</label>
 
               <span class="invalid-feedback">
-                <span *ngIf="cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').errors?.maxlength" class="main-body-text mb-2">
+                <span *ngIf="!isSubmitted && cqcRegisteredPostcode.errors" class="main-body-text mb-2">{{ cqcRegPostcodeMessage }}</span>
+                <span *ngIf="isSubmitted && !submittedCqcRegPostcode && !submittedCqcRegLocationId" class="main-body-text mb-2">
+                    Please enter a postcode or Location ID.
+                </span>
+                <span *ngIf="isSubmitted && submittedCqcRegPostcode && !submittedCqcRegLocationId" class="main-body-text mb-2">
+                    Your postcode must be no longer than 8 characters.
+                </span>
+                <!-- <span *ngIf="cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').errors.bothHaveContent" class="main-body-text mb-2">
+                  Both have content.
+                </span> -->
+                <!-- <span *ngIf="cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').errors?.maxlength" class="main-body-text mb-2">
                   The Postcode must be no longer than 8 characters.
                 </span>
-                <span *ngIf="cqcRegisteredQuestionForm.get('cqcRegisteredGroup').errors?.containsContent" class="main-body-text mb-2">
+                <span *ngIf="cqcRegisteredQuestionForm.get('cqcRegisteredGroup').errors?.bothHaveContent" class="main-body-text mb-2">
                   Both content
-                </span>
-
+                </span> -->
               </span>
 
               <div class="form-control-feedback">
@@ -52,12 +56,19 @@
               <label class="form-label" for="locationId">Enter your location ID number</label>
 
               <span class="invalid-feedback">
-                <span *ngIf="cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').errors?.maxlength" class="main-body-text mb-2">
+                <span *ngIf="!isSubmitted && cqcRegisteredLocationId.errors" class="main-body-text mb-2">{{ cqcRegLocationIdMessage }}</span>
+                <span *ngIf="isSubmitted && !submittedCqcRegPostcode && !submittedCqcRegLocationId" class="main-body-text mb-2">
+                    Please enter a postcode or Location ID.
+                </span>
+                <span *ngIf="isSubmitted && !submittedCqcRegPostcode && submittedCqcRegLocationId" class="main-body-text mb-2">
+                    Your Location ID must be no longer than 50 characters.
+                </span>
+                <!-- <span *ngIf="cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').errors?.maxlength" class="main-body-text mb-2">
                   The Location ID must be no longer than 50 characters.
                 </span>
                 <span *ngIf="cqcRegisteredQuestionForm.get('cqcRegisteredGroup').errors?.containsContent" class="main-body-text mb-2">
                   Both content
-                </span>
+                </span> -->
               </span>
 
               <input placeholder="location" type="text" id="location" class="form-control col-12" formControlName="locationId" />
@@ -79,17 +90,16 @@
         </div>
 
         <div *ngIf="registeredQuestionSelectedValue === 'false'" class="panel panel-border-narrow col-10 col-lg-6"
-             [ngClass]="{'is-invalid': (cqcRegisteredQuestionForm.get('notRegisteredPostcode').touched ||
-                                            cqcRegisteredQuestionForm.get('notRegisteredPostcode').dirty) &&
-                                            !cqcRegisteredQuestionForm.get('notRegisteredPostcode').valid }">
+             [ngClass]="{'is-invalid': nonCqcRegPostcodeMessage }">
           <div class="field-group">
 
             <label class="form-label" for="postcodeNo">What is your postcode?</label>
 
             <span class="invalid-feedback">
-              <span *ngIf="cqcRegisteredQuestionForm.get('notRegisteredPostcode').errors?.maxlength" class="main-body-text mb-2">
+              <span *ngIf="nonCqcRegPostcodeMessage" class="main-body-text mb-2">{{ nonCqcRegPostcodeMessage }}</span>
+              <!-- <span *ngIf="cqcRegisteredQuestionForm.get('notRegisteredPostcode').errors?.maxlength" class="main-body-text mb-2">
                 The Postcode must be no longer than 8 characters.
-              </span>
+              </span> -->
             </span>
 
             <input placeholder="postcode" type="text" id="postcodeNo" class="form-control col-12" formControlName="notRegisteredPostcode"  />
@@ -102,12 +112,20 @@
   </div>
 
   <div class="btn-container">
-    <button class="btn btn-primary" type="submit" [disabled]="!cqcRegisteredQuestionForm.valid">Continue</button>
+    <button class="btn btn-primary" type="submit">Continue</button>
   </div>
 
 </form>
 
-<!--<br>Dirty: {{ cqcRegisteredQuestionForm.dirty }}
-<br>Touched: {{ cqcRegisteredQuestionForm.touched }}
-<br>Valid: {{ cqcRegisteredQuestionForm.valid }}
-<br>Value: {{ cqcRegisteredQuestionForm.value | json }}-->
+<!-- <br>Dirty: {{ this.cqcRegisteredQuestionForm.dirty }}
+<br>Touched: {{ this.cqcRegisteredQuestionForm.touched }}
+<br>Valid: {{ this.cqcRegisteredQuestionForm.valid }}
+<br>Value: {{ this.cqcRegisteredQuestionForm.value | json }}
+<br>isSubmitted {{ this.isSubmitted }}
+<br>submittedCqcRegPostcode: {{ this.submittedCqcRegPostcode }}
+<br>submittedCqcRegLocationId: {{ this.submittedCqcRegLocationId }}
+<br>cqcRegPostcodeMessage: {{ this.cqcRegPostcodeMessage }}
+<br >cqcRegLocationIdMessage: {{ this.cqcRegLocationIdMessage }}
+<br>postcode errors: {{ cqcRegisteredPostcode.errors | json }}
+<br>location ID errors: {{ cqcRegisteredLocationId.errors | json }} -->
+

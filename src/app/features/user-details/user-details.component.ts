@@ -184,7 +184,9 @@ export class UserDetailsComponent implements OnInit {
       if (this.userDetailsForm.invalid) {
           return;
       }
-      alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.userDetailsForm.value));
+      else {
+        this.save();
+      }
   }
 
   save() {

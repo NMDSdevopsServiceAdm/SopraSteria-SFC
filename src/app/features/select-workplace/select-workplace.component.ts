@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
@@ -18,11 +18,13 @@ export class SelectWorkplaceComponent implements OnInit {
   selectedAddressId: string;
   mainService: string;
 
+  isSubmitted = false;
+
   constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
 
   ngOnInit() {
     this.selectWorkplaceForm = this.fb.group({
-      selectWorkplaceSelected: ''
+      selectWorkplaceSelected: ['', Validators.required]
     });
 
     // Watch selectWorkplaceSelected
@@ -33,10 +35,6 @@ export class SelectWorkplaceComponent implements OnInit {
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
   }
 
-  onSubmit() {
-    this.router.navigate(['/confirm-workplace-details']);
-  }
-
   selectWorkplaceChanged(value: string): void {
     this.selectedAddressId = this.registration[value].locationId;
     this.mainService = this.registration[value].mainService;
@@ -44,18 +42,16 @@ export class SelectWorkplaceComponent implements OnInit {
     console.log(this.mainService);
   }
 
-  save() {
-    //if (this.mainService === '') {
-    //  this._registrationService.getLocationByLocationId(this.selectedAddressId);
-    //  this.router.navigate(['/select-main-service']);
-    //}
-    //else {
-    this._registrationService.getLocationByLocationId(this.selectedAddressId);
+  onSubmit() {
+    this.isSubmitted = true;
 
-    //}
+    if (this.selectedAddressId) {
+      this.save(this.selectedAddressId);
+    }
+  }
 
-    
-    
+  save(selectedAddressId) {
+    this._registrationService.getLocationByLocationId(selectedAddressId);
   }
 
 }

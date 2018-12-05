@@ -1,6 +1,6 @@
 
 export interface RegistrationModel {
-
+  locationId: string;
   locationName: string;
   addressLine1: string;
   addressLine2: string;
