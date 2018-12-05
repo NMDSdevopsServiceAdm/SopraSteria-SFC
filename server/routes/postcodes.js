@@ -56,7 +56,7 @@ router.route('/:postcode')
       res.status(200);
       return res.json({
         "success" : 1,
-        "message" : "Postcode Found",
+        "message" : "Addresses Found",
         "postcodedata": postcodeData
       });
     }
