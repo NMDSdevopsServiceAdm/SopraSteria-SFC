@@ -40,13 +40,28 @@ router.route('/:postcode')
       }
     } else {
       console.log('Bad Postcode');
-      return res.sendStatus(404);
+          res.status(400);
+      return res.send({
+            "success" : 0,
+            "message" : 'Invalid Postcode'
+          });
     }
 
     if (postcodeData.length === 0) {
       console.log('Nothing found');
-     return res.sendStatus(404);
+      res.status(404);
+      return res.send({
+        "success" : 0,
+        "message" : 'No addresses found'
+      });
     } else {
+
+      res.status(200);
+      res.json({
+        "success" : 1,
+        "message" : "Postcode Found",
+        "postcodedata": postcodeData
+      });
       return res.send(postcodeData);
     }
   });
