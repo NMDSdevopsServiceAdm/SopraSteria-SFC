@@ -256,10 +256,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
           this.submittedCqcRegLocationId = false;
         }
         else {
-
           this.isSubmitted = true;
           this.submittedCqcRegLocationId = true;
-          this.save(locationId.value);
+          this.save();
         }
       }
       if (!locationId.value || !cqcRegisteredPostcode.value)  {

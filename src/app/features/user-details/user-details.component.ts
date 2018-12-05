@@ -60,6 +60,26 @@ export class UserDetailsComponent implements OnInit {
     private router: Router, private route: ActivatedRoute,
     private fb: FormBuilder) { }
 
+  // Get user fullname
+  get getUserFullnameInput() {
+    return this.userDetailsForm.get('userFullnameInput');
+  }
+
+  // Get user job title
+  get getUserJobTitle() {
+    return this.userDetailsForm.get('userJobTitleInput');
+  }
+
+  // Get user email input
+  get getUserEmailInput() {
+    return this.userDetailsForm.get('userEmailInput');
+  }
+
+  // Get user email input
+  get getUserPhoneInput() {
+    return this.userDetailsForm.get('userPhoneInput');
+  }
+
   ngOnInit() {
     this.userDetailsForm = this.fb.group({
       userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]], updateOn: 'blur',
@@ -71,39 +91,39 @@ export class UserDetailsComponent implements OnInit {
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     // Check validation on each field
-    const fullnameControl = this.userDetailsForm.get('userFullnameInput');
-    const jobTitleControl = this.userDetailsForm.get('userJobTitleInput');
-    const emailControl = this.userDetailsForm.get('userEmailInput');
-    const phoneControl = this.userDetailsForm.get('userPhoneInput');
+    // const fullnameControl = this.userDetailsForm.get('userFullnameInput');
+    // const jobTitleControl = this.userDetailsForm.get('userJobTitleInput');
+    // const emailControl = this.userDetailsForm.get('userEmailInput');
+    // const phoneControl = this.userDetailsForm.get('userPhoneInput');
 
     // fullname watcher
-    fullnameControl.valueChanges.pipe(
+    this.getUserFullnameInput.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => this.setFullnameMessage(fullnameControl)
+      value => this.setFullnameMessage(this.getUserFullnameInput)
     );
 
     // jobTitle watcher
-    jobTitleControl.valueChanges.pipe(
+    this.getUserJobTitle.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => this.setJobTitleMessage(jobTitleControl)
+      value => this.setJobTitleMessage(this.getUserJobTitle)
     );
 
     // email watcher
-    emailControl.valueChanges.pipe(
+    this.getUserEmailInput.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
       value => {
-        this.setEmailMessage(emailControl);
+        this.setEmailMessage(this.getUserEmailInput);
       }
     );
 
     // phone watcher
-    phoneControl.valueChanges.pipe(
+    this.getUserPhoneInput.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => this.setPhoneMessage(phoneControl)
+      value => this.setPhoneMessage(this.getUserPhoneInput)
     );
 
     // Check if come from Account details confirmation page
@@ -112,7 +132,7 @@ export class UserDetailsComponent implements OnInit {
   }
 
   changeDetails(): void {
-
+    debugger;
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       const userFullnameValue = this.registration[0].user.fullname;
       const userJobTitleValue = this.registration[0].user.jobTitle;
@@ -132,31 +152,34 @@ export class UserDetailsComponent implements OnInit {
 
   setFullnameMessage(c: AbstractControl): void {
     this.fullnameMessage = '';
-
+    debugger;
     if ((c.touched || c.dirty) && c.errors) {
       this.fullnameMessage = Object.keys(c.errors).map(
         key => this.fullnameMessage += this.fullnameMessages[key]).join('<br />');
     }
+    debugger;
     this.submittedfullname = false;
   }
 
   setJobTitleMessage(c: AbstractControl): void {
     this.jobTitleMessage = '';
-
+    debugger;
     if ((c.touched || c.dirty) && c.errors) {
       this.jobTitleMessage = Object.keys(c.errors).map(
         key => this.jobTitleMessage += this.jobTitleMessages[key]).join('<br />');
     }
+    debugger;
     this.submittedJobTitle = false;
   }
 
   setEmailMessage(c: AbstractControl): void {
     this.emailMessage = '';
-
+    debugger;
     if ((c.touched || c.dirty) && c.errors) {
       this.emailMessage = Object.keys(c.errors).map(
         key => this.emailMessage += this.emailMessages[key]).join('<br />');
     }
+    debugger;
     this.submittedEmail = false;
   }
 
@@ -174,19 +197,23 @@ export class UserDetailsComponent implements OnInit {
   get f() { return this.userDetailsForm.controls; }
 
   onSubmit() {
-      //this.submitted = true;
-      this.submittedfullname = true;
-      this.submittedJobTitle = true;
-      this.submittedEmail = true;
-      this.submittedPhone = true;
+    //this.submitted = true;
+    this.submittedfullname = true;
+    this.submittedJobTitle = true;
+    this.submittedEmail = true;
+    this.submittedPhone = true;
 
-      // stop here if form is invalid
-      if (this.userDetailsForm.invalid) {
-          return;
-      }
-      else {
-        this.save();
-      }
+    debugger;
+
+    // stop here if form is invalid
+    if (this.userDetailsForm.invalid) {
+      debugger;
+        return;
+    }
+    else {
+      debugger;
+      this.save();
+    }
   }
 
   save() {
@@ -197,9 +224,11 @@ export class UserDetailsComponent implements OnInit {
     const userPhoneValue = this.userDetailsForm.get('userPhoneInput').value;
 
     console.log(this.registration);
+    debugger;
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       // Get updated form results
+      debugger;
       if (this.registration[0].user.hasOwnProperty('username')) {
         const createUsernameValue = this.registration[0].user.username;
       }
