@@ -21,11 +21,59 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   CqcRegisteredQuestionEnteredLocation = new CqcRegisteredQuestionEnteredLocation();
   registeredQuestionSelectedValue: string;
 
-  //privateValidationMessages = {
-  //  required: ''
-  //}
+  // Set up Messages
+  isSubmitted = false;
+  submittedCqcRegPostcode = false;
+  submittedCqcRegLocationId = false;
+  submittedCqcRegPostcodeMessage = false;
+  submittedNonCqcRegPostcodeMessage = false;
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
+  cqcRegPostcodeMessage: string;
+  cqcRegLocationIdMessage: string;
+  nonCqcRegPostcodeMessage: string;
+
+  private cqcRegPostcodeMessages = {
+    maxlength: 'TS - Your postcode must be no longer than 8 characters.',
+    //bothHaveContent: 'TS - Both have content.',
+    required: 'TS - Please enter a postcode or Location ID.'
+  };
+
+  private cqcRegLocationIdMessages = {
+    maxlength: 'TS - Your Location ID must be no longer than 50 characters.',
+    //bothHaveContent: 'TS - Both have content.',
+    required: 'TS - Please enter a postcode or Location ID.'
+  };
+
+  private nonCqcRegPostcodeMessages = {
+    maxlength: 'TS - Your postcode must be no longer than 8 characters.',
+    required: 'TS - Please enter your postcode.'
+  };
+
+  constructor(
+    private _registrationService: RegistrationService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private fb: FormBuilder) { }
+
+  // Get registered question
+  get registeredQuestion() {
+    return this.cqcRegisteredQuestionForm.get('registeredQuestionSelected');
+  }
+
+  // Get registered question
+  get cqcRegisteredPostcode() {
+    return this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode');
+  }
+
+  // Get registered location Id
+  get cqcRegisteredLocationId() {
+    return this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId');
+  }
+
+  // Get registered location Id
+  get notRegisteredPostcode() {
+    return this.cqcRegisteredQuestionForm.get('notRegisteredPostcode');
+  }
 
   ngOnInit() {
     this.cqcRegisteredQuestionForm = this.fb.group({
@@ -34,35 +82,212 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       cqcRegisteredGroup: this.fb.group({
         cqcRegisteredPostcode: ['', Validators.maxLength(8)],
         locationId: ['', Validators.maxLength(50)],
-      }, { validator: checkInputValues }),
+      }),
       notRegisteredPostcode: ''
     });
 
+    // -- START -- Validation check watchers
     // Watch registeredQuestionSelected
     this.cqcRegisteredQuestionForm.get('registeredQuestionSelected').valueChanges.subscribe(
       value => this.registeredQuestionChanged(value)
     );
 
+    // CQC Registered Postcode watcher
+    this.cqcRegisteredPostcode.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => {
+
+        if (value.length > 0) {
+
+          if (this.cqcRegisteredPostcode.errors) {
+            this.isSubmitted = false;
+            this.submittedCqcRegPostcode = false;
+            this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+          }
+          else if (this.cqcRegisteredLocationId.errors) {
+            this.isSubmitted = true;
+            this.submittedCqcRegLocationId = true;
+            this.submittedCqcRegPostcode = true;
+          }
+          if (!this.cqcRegisteredPostcode.errors && !this.cqcRegisteredLocationId.errors) {
+            this.isSubmitted = true;
+            this.submittedCqcRegPostcode = true;
+            this.submittedCqcRegLocationId = true;
+          }
+        }
+        else {
+          this.isSubmitted = false;
+          this.submittedCqcRegPostcode = false;
+          this.submittedCqcRegLocationId = false;
+          this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+        }
+      }
+    );
+
+    // CQC Registered Postcode watcher
+    this.cqcRegisteredLocationId.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => {
+        if (value.length > 0) {
+
+          if (this.cqcRegisteredLocationId.errors) {
+            this.isSubmitted = false;
+            this.submittedCqcRegLocationId = false;
+            this.setCqcRegisteredLocationIdMessage(this.cqcRegisteredLocationId);
+          }
+          else if (this.cqcRegisteredPostcode.errors) {
+            this.isSubmitted = true;
+            this.submittedCqcRegPostcode = true;
+            this.submittedCqcRegLocationId = true;
+          }
+          if (!this.cqcRegisteredPostcode.errors && !this.cqcRegisteredLocationId.errors) {
+            this.isSubmitted = true;
+            this.submittedCqcRegPostcode = true;
+            this.submittedCqcRegLocationId = true;
+          }
+
+        }
+        else {
+          this.isSubmitted = false;
+          this.submittedCqcRegPostcode = false;
+          this.submittedCqcRegLocationId = false;
+          this.setCqcRegisteredLocationIdMessage(this.cqcRegisteredLocationId);
+        }
+      }
+    );
+
+    // Non CQC registered postcode watcher
+    this.notRegisteredPostcode.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => this.setNonCqcRegPostcodeMessage(this.notRegisteredPostcode)
+    );
+    // -- END -- Validation check watchers
+
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
+  }
+
+  // -- START -- Set validation handlers
+  setCqcRegPostcodeMessage(c: AbstractControl): void {
+    this.cqcRegPostcodeMessage = '';
+
+    if (c.errors) {
+      this.cqcRegPostcodeMessage = Object.keys(c.errors).map(
+        key => this.cqcRegPostcodeMessage += this.cqcRegPostcodeMessages[key]).join(' ');
+    }
+    else {
+      if (this.cqcRegisteredLocationId.errors) {
+        this.isSubmitted = false;
+      }
+      else if (!this.cqcRegisteredPostcode.errors) {
+        this.isSubmitted = true;
+        this.submittedCqcRegPostcode = true;
+        this.submittedCqcRegLocationId = true;
+      }
+      else if (this.isSubmitted && !this.cqcRegisteredLocationId.errors) {
+        this.save();
+      }
+    }
+  }
+
+  setCqcRegisteredLocationIdMessage(c: AbstractControl): void {
+    this.cqcRegLocationIdMessage = '';
+
+    if (c.errors) {
+      this.cqcRegLocationIdMessage = Object.keys(c.errors).map(
+        key => this.cqcRegLocationIdMessage += this.cqcRegLocationIdMessages[key]).join('<br />');
+    }
+    else {
+      if (this.cqcRegisteredPostcode.errors) {
+        this.isSubmitted = false;
+      }
+      else if (!this.cqcRegisteredLocationId.errors) {
+        this.isSubmitted = true;
+        this.submittedCqcRegPostcode = true;
+        this.submittedCqcRegLocationId = true;
+      }
+      else if (this.isSubmitted && !this.cqcRegisteredPostcode.errors) {
+        this.save();
+      }
+    }
+  }
+
+  setNonCqcRegPostcodeMessage(c: AbstractControl): void {
+    this.nonCqcRegPostcodeMessage = '';
+
+    if ((c.touched || c.dirty) && c.errors) {
+      this.nonCqcRegPostcodeMessage = Object.keys(c.errors).map(
+        key => this.nonCqcRegPostcodeMessage += this.nonCqcRegPostcodeMessages[key]).join('<br />');
+    }
+  }
+  // -- END -- Set validation handlers
+
+  // -- START -- convenience getter for easy access to form fields
+  get f() {
+    return this.cqcRegisteredQuestionForm.controls;
+  }
+  // -- END -- convenience getter for easy access to form fields
+
+  onSubmit() {
+
+    const isRegulated = this.cqcRegisteredQuestionForm.get('registeredQuestionSelected').value;
+
+    if (isRegulated === 'true') {
+      const cqcRegisteredPostcode = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode');
+      const locationId = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId');
+
+      if (cqcRegisteredPostcode.value.length > 0) {
+        if (this.cqcRegisteredPostcode.errors) {
+          this.isSubmitted = true;
+          this.submittedCqcRegPostcode = false;
+        }
+        else {
+          this.isSubmitted = true;
+          this.submittedCqcRegPostcode = true;
+          this.save();
+        }
+      }
+      if (locationId.value.length > 0) {
+        if (this.cqcRegisteredLocationId.errors) {
+
+          this.isSubmitted = true;
+          this.submittedCqcRegLocationId = false;
+        }
+        else {
+          this.isSubmitted = true;
+          this.submittedCqcRegLocationId = true;
+          this.save();
+        }
+      }
+      if (!locationId.value || !cqcRegisteredPostcode.value)  {
+        cqcRegisteredPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
+        locationId.setValidators([Validators.required, Validators.maxLength(50)]);
+        cqcRegisteredPostcode.updateValueAndValidity();
+        locationId.updateValueAndValidity();
+      }
+    }
+    else if (isRegulated === 'false') {
+      this.save();
+    }
   }
 
   save() {
 
-    let cqcRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').value;
-    let locationIdValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').value;
-    let notRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode').value;
+    const cqcRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').value;
+    const locationIdValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').value;
+    const notRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode').value;
 
     if (cqcRegisteredPostcodeValue.length > 0) {
       this._registrationService.getLocationByPostCode(cqcRegisteredPostcodeValue);
     }
     else if (locationIdValue.length > 0) {
-      this._registrationService.getLocationByLocationId(locationIdValue);   
+      this._registrationService.getLocationByLocationId(locationIdValue);
     }
     else if (notRegisteredPostcodeValue.length > 0) {
-
       this._registrationService.getAddressByPostCode(notRegisteredPostcodeValue);
       this.router.navigate(['/select-workplace-address']);
-
     }
   }
 
@@ -72,15 +297,13 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     this.registeredQuestionSelectedValue = value;
     const notRegisteredPostcode = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode');
 
-    //Update state with isRegulated value
-    //this.registration[0].isRegulated = value;
-    //this._registrationService.updateState(this.registration);
-
-    if (this.registeredQuestionSelectedValue === "false") {
+    if (this.registeredQuestionSelectedValue === 'false') {
       notRegisteredPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
     }
+    else if (this.registeredQuestionSelectedValue === 'true') {
+      notRegisteredPostcode.setValidators(Validators.maxLength(8));
+    }
     notRegisteredPostcode.updateValueAndValidity();
-
   }
 }
 
@@ -97,19 +320,13 @@ function checkInputValues(c: AbstractControl): { [key: string]: boolean } | null
     return null;
   }
 
-  if ((postcodeControl.value.length < 1 && locationIdControl.value.length > 0) || (postcodeControl.value.length > 0 && locationIdControl.value.length < 1)) {
-    return null;
+  if ((postcodeControl.value.length < 1 && locationIdControl.value.length > 0) ||
+      (postcodeControl.value.length > 0 && locationIdControl.value.length < 1)) {
+
+        return null;
   }
-
-  return { 'containsContent': true };
+  return { 'bothHaveContent': true };
 }
-
-//export class CustomValidators {
-//  static emailFormat(control: Control): [[key: string]: boolean] {
-//    let pattern: RegExp = /\S+@\S+\.\S+/;
-//    return pattern.test(control.value) ? null : { "emailFormat": true };
-//  }
-//}
 
 
 

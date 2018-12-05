@@ -13,6 +13,88 @@ const client = new Client({
   port: 5432,
 })
 
+// RETURNS ALL THE USERS IN THE DATABASE
+router.get('/username/:username', function (req, res) {
+  client.connect()
+  var UserNameSelect = 'SELECT * FROM cqc."Login" where "Username" = $1 Limit 1'
+
+  client.query(UserNameSelect,[req.params.username],function(err,result) {         
+        if (result.rowCount == 0) {
+          res.json({
+            status: '0',
+            message: 'Username not found',
+          });
+
+        } else {
+          res.json({
+            status: '1',
+            message: 'Username found',
+          });
+        }                 
+  })
+
+});
+
+// RETURNS ALL THE USERS IN THE DATABASE
+router.get('/estbname/:name', function (req, res) {
+  client.connect()
+  var UserNameSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 Limit 1'   
+  client.query(UserNameSelect,[req.params.name],function(err,result) {         
+        if (result.rowCount == 0) {
+          res.json({
+            status: '0',
+            message: 'Establishment name not found',
+          });
+
+        } else {
+          res.json({
+            status: '1',
+            message: 'Establishment name found',
+          });
+        }          
+     
+  })
+
+});
+
+// RETURNS ALL THE USERS IN THE DATABASE
+router.get('/estb/:name&:locationid', function (req, res) {
+  client.connect()
+  var UserNameSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 and "LocationID" = $2 Limit 1'
+  var Userdata = {
+    Name : req.params.name,
+    locationid : req.params.locationid,
+  }
+
+  client.query(UserNameSelect, [Userdata.Name,Userdata.locationid],function(err,result) {
+    if (result.rows.length == 0) {
+      res.json({
+        status: '0',
+        message: 'Establishment not found',
+      });
+
+    } else {
+      res.json({
+        status: '1',
+        message: 'Establishment found',
+      });
+    }              
+  })
+  
+  // .then(function(err,res){    
+    
+  //  })
+  // // .catch(function(err) {
+  // //   res.status(404);
+  // //   res.json({
+  // //     "success" : 0,
+  // //     "message" : err.message
+  // //   });
+  // });
+  // client.end
+
+
+});
 
 router.route('/')
     .get(async function(req, res) {

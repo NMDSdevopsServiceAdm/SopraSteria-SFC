@@ -7,46 +7,46 @@ import { map } from 'rxjs/operators';
 
 import { RegistrationModel } from '../model/registration.model';
 
-const initialRegistration: RegistrationModel[] = 
+const initialRegistration: RegistrationModel[] =
 
-  //Example initial dummy data
+  // Example initial dummy data
 
   [
     {
-      addressLine1: "14 Shepherd's Court",
-      addressLine2: "111 High Street",
-      county: "Berkshire",
-      locationId: "1-1000270393",
-      locationName: "Red Kite Home Care",
-      mainService: "Homecare agencies",
-      postalCode: "SL1 7JZ",
-      townCity: "Slough",
+      addressLine1: '14 Shepherd\'s Court',
+      addressLine2: '111 High Street',
+      county: 'Berkshire',
+      locationId: '1-1000270393',
+      locationName: 'Red Kite Home Care',
+      mainService: 'Homecare agencies',
+      postalCode: 'SL1 7JZ',
+      townCity: 'Slough',
       isRegulated: true,
       user: {
-        fullname: "Mike Wazowski",
-        jobTitle: "Scaring assistant",
-        emailAddress: "mike.wazowski@monsters.inc",
-        contactNumber: "07828732666",
-        username: "cyclops",
-        password: "password1",
-        securityQuestion: "Who is my partner",
-        securityAnswer: "James P.Sulivan"
+        fullname: 'Mike Wazowski',
+        jobTitle: 'Scaring assistant',
+        emailAddress: 'mike.wazowski@monsters.inc',
+        contactNumber: '07828732666',
+        username: 'cyclops',
+        password: 'password1',
+        securityQuestion: 'Who is my partner',
+        securityAnswer: 'James P.Sulivan'
       },
       detailsChanged: false
     }
-  ]
+  ];
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegistrationService {
-  //Observable registration source
+  // Observable registration source
   private _registration$: BehaviorSubject<RegistrationModel[]> = new BehaviorSubject<RegistrationModel[]>(initialRegistration);
 
-  //Observable registration stream
+  // Observable registration stream
   public registration$: Observable<RegistrationModel[]> = this._registration$.asObservable();
-  //registrationModel: RegistrationModel[];
+  // registrationModel: RegistrationModel[];
 
 
   constructor(private http: HttpClient, private router: Router) { }
@@ -58,7 +58,7 @@ export class RegistrationService {
       (data) => console.log(data),
       (error) => console.log(error),
       () => {
-        this.router.navigate(['/registration-complete'])
+        this.router.navigate(['/registration-complete']);
       }
     );
 
@@ -76,9 +76,9 @@ export class RegistrationService {
       },
       (err: any) => console.log(err),
       () => {
-        console.log("Get location by postcode complete");
+        console.log('Get location by postcode complete');
       }
-    )
+    );
   }
 
   getLocationByLocationId(id: string) {
@@ -91,11 +91,11 @@ export class RegistrationService {
 
           this.updateState(data);
           this.routingCheck(data);
-          //this.router.navigate(['/confirm-workplace-details']);
+          // this.router.navigate(['/confirm-workplace-details']);
 
         },
         (err: any) => console.log(err),
-        () => console.log("Get location by id sucessful")
+        () => console.log('Get location by id sucessful')
       );
   }
 
@@ -109,9 +109,9 @@ export class RegistrationService {
       },
       (err: any) => console.log(err),
       () => {
-        console.log("Get location by postcode complete");
+        console.log('Get location by postcode complete');
       }
-    )
+    );
   }
 
   getUpdatedAddressByPostCode(id: string) {
@@ -120,30 +120,29 @@ export class RegistrationService {
       (data: RegistrationModel) => {
         this.updateState(data);
 
-        //this.router.navigate(['/select-workplace-address']);
+        // this.router.navigate(['/select-workplace-address']);
 
       },
       (err: any) => console.log(err),
       () => {
-        console.log("Updated locations by postcode complete");
+        console.log('Updated locations by postcode complete');
         console.log(this._registration$);
       }
-    )
+    );
   }
 
   routingCheck(data) {
 
     if (data.length > 1) {
       this.router.navigate(['/select-workplace']);
-    }
-    else {
+    } else {
+
       if (data[0].mainService === '') {
         this.router.navigate(['/select-main-service']);
-      }
-      else {
+      } else {
         this.router.navigate(['/confirm-workplace-details']);
       }
-        
+
     }
   }
 
@@ -153,7 +152,7 @@ export class RegistrationService {
 
 
 
- 
+
 
 
 }

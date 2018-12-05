@@ -10,40 +10,42 @@
   <h1 class="h1">Select your workplace</h1>
 
   <form novalidate
-        (ngSubmit)="save()"
+        (ngSubmit)="onSubmit()"
         [formGroup]="selectWorkplaceForm">
 
     <div class="form-group mb-5">
       <div class="col-12 p-0">
         <label class="main-body-text-bold mb-3 d-block">Select your workplace from the following:</label>
 
-        <div class="row mb-5" *ngFor="let item of registration; let i = index">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="selectWorkplace-{{i}}" formControlName="selectWorkplaceSelected" value="{{i}}" />
-              <label class="main-body-text p-0" for="selectWorkplace-{{i}}">{{ item.locationName }} - {{ item.townCity }} {{ item.postalCode }}</label>
-            </div>
-          </div>
-        </div>
+        <div [ngClass]="{'is-invalid panel col-10': this.isSubmitted && !selectWorkplaceForm.valid }">
 
-        <!--<div class="row">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="selectWorkplace2" formControlName="selectWorkplace" value="Rotherley Meadows - Harlesden SW3 8FG" />
-              <label class="main-body-text p-0" for="address2">{{ //registration[1].locationName }} Rotherley Meadows - Harlesden SW3 8FG</label>
+          <span class="invalid-feedback">
+            <span *ngIf="!selectWorkplaceForm.valid" class="main-body-text mb-2">
+              Please select an address
+            </span>
+          </span>
+
+          <div class="row mb-4" *ngFor="let item of registration; let i = index">
+            <div class="col-12">
+              <div class="multiple-choice">
+                <input type="radio" id="selectWorkplace-{{i}}" formControlName="selectWorkplaceSelected" value="{{i}}" />
+                <label class="main-body-text p-0" for="selectWorkplace-{{i}}">{{ item.locationName }} - {{ item.townCity }} {{ item.postalCode }}</label>
+              </div>
             </div>
           </div>
-        </div>-->
+
+        </div>
 
       </div>
     </div>
+
 
     <div class="col-12  mt-4 mb-5 p-0">
       <a class="text-link" routerLink="/select-workplace-address" title="My workplace isn’t displayed">My workplace isn’t displayed</a>
     </div>
 
     <div class="btn-container">
-      <button class="btn btn-primary" type="submit" [disabled]="!selectWorkplaceForm.valid">Continue</button>
+      <button class="btn btn-primary" type="submit">Continue</button>
     </div>
 
   </form>
