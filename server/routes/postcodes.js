@@ -39,8 +39,7 @@ router.route('/:postcode')
         postcodeData.push(myObject);
       }
     } else {
-      console.log('Bad Postcode');
-          res.status(400);
+      res.status(400);
       return res.send({
             "success" : 0,
             "message" : 'Invalid Postcode'
@@ -48,21 +47,18 @@ router.route('/:postcode')
     }
 
     if (postcodeData.length === 0) {
-      console.log('Nothing found');
       res.status(404);
       return res.send({
         "success" : 0,
         "message" : 'No addresses found'
       });
     } else {
-
       res.status(200);
-      res.json({
+      return res.json({
         "success" : 1,
         "message" : "Postcode Found",
         "postcodedata": postcodeData
       });
-      return res.send(postcodeData);
     }
   });
 
