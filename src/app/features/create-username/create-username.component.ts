@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
 import { Router, ActivatedRoute } from '@angular/router';
+import { debounceTime } from 'rxjs/operators';
 
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
@@ -18,7 +19,52 @@ export class CreateUsernameComponent implements OnInit {
   createSecurityQuestionValue: string;
   createsecurityAnswerValue: string;
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
+  isSubmitted = false;
+  submittedUsername = false;
+  submittedPassword = false;
+  submittedConfirmPassword = false;
+
+  // Set up Validation messages
+  usernameMessage: string;
+  passwordMessage: string;
+  confirmPasswordMessage: string;
+
+  private usernameMessages = {
+    maxlength: 'Your fullname must be no longer than 120 characters.',
+    required: 'Please enter your fullname.'
+  };
+
+  private passwordMessages = {
+    maxlength: 'Your fullname must be no longer than 120 characters.',
+    required: 'Please enter your fullname.'
+  };
+
+  private confirmPasswordMessages = {
+    maxlength: 'Your fullname must be no longer than 120 characters.',
+    required: 'Please enter your fullname.'
+  };
+
+  constructor(
+    private _registrationService: RegistrationService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private fb: FormBuilder
+  ) { }
+
+  // Get create username
+  get getCreateUsernameInput() {
+    return this.createUserNamePasswordForm.get('createUsernameInput');
+  }
+
+  // Get create password
+  get getPasswordInput() {
+    return this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput');
+  }
+
+  // Get confirm password
+  get getConfirmPasswordInput() {
+    return this.createUserNamePasswordForm.get('passwordGroup.confirmPasswordInput');
+  }
 
   ngOnInit() {
     this.createUserNamePasswordForm = this.fb.group({
@@ -33,13 +79,67 @@ export class CreateUsernameComponent implements OnInit {
     console.log(this.registration);
 
     this.changeDetails();
+
+    // Create username watcher
+    this.getCreateUsernameInput.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => this.setCreateUsernameMessage(this.getCreateUsernameInput)
+    );
+
+    // Create password watcher
+    this.getPasswordInput.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => this.setPasswordMessage(this.getPasswordInput)
+    );
+
+    // Confirm password watcher
+    this.getConfirmPasswordInput.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => this.setConfirmPasswordMessage(this.getConfirmPasswordInput)
+    );
+  }
+
+  setCreateUsernameMessage(c: AbstractControl): void {
+    this.usernameMessage = '';
+    debugger;
+    if ((c.touched || c.dirty) && c.errors) {
+      this.usernameMessage = Object.keys(c.errors).map(
+        key => this.usernameMessage += this.usernameMessages[key]).join('<br />');
+    }
+    debugger;
+    this.submittedUsername = false;
+  }
+
+  setPasswordMessage(c: AbstractControl): void {
+    this.passwordMessage = '';
+    debugger;
+    if ((c.touched || c.dirty) && c.errors) {
+      this.passwordMessage = Object.keys(c.errors).map(
+        key => this.passwordMessage += this.passwordMessages[key]).join('<br />');
+    }
+    debugger;
+    this.submittedUsername = false;
+  }
+
+  setConfirmPasswordMessage(c: AbstractControl): void {
+    this.confirmPasswordMessage = '';
+    debugger;
+    if ((c.touched || c.dirty) && c.errors) {
+      this.confirmPasswordMessage = Object.keys(c.errors).map(
+        key => this.confirmPasswordMessage += this.confirmPasswordMessages[key]).join('<br />');
+    }
+    debugger;
+    this.submittedUsername = false;
   }
 
   changeDetails(): void {
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      let createUsernameValue = this.registration[0].user.username;
-      let createPasswordValue = this.registration[0].user.password;
+      const createUsernameValue = this.registration[0].user.username;
+      const createPasswordValue = this.registration[0].user.password;
 
       this.createUserNamePasswordForm.setValue({
         createUsernameInput: createUsernameValue,
@@ -53,10 +153,30 @@ export class CreateUsernameComponent implements OnInit {
 
   }
 
+  onSubmit() {
+    debugger;
+    this.isSubmitted = true;
+    this.submittedUsername = true;
+    this.submittedPassword = true;
+    this.submittedConfirmPassword = true;
+
+    debugger;
+
+    // stop here if form is invalid
+    if (this.createUserNamePasswordForm.invalid) {
+      debugger;
+        return;
+    }
+    else {
+      debugger;
+      this.save();
+    }
+  }
+
   save() {
 
-    let createUsernameValue = this.createUserNamePasswordForm.get('createUsernameInput').value;
-    let createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
+    const createUsernameValue = this.createUserNamePasswordForm.get('createUsernameInput').value;
+    const createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
     //let confirmPasswordValue = this.createUserNamePasswordForm.get('confirmPasswordInput').value;
 
     if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
@@ -92,7 +212,7 @@ export class CreateUsernameComponent implements OnInit {
     else {
       this.router.navigate(['/security-question']);
     }
-    
+
 
     //routerLink = "/security-question"
   }
