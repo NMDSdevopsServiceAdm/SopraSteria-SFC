@@ -68,13 +68,13 @@
 
             <span class="invalid-feedback">
               <span class="main-body-text mb-2" *ngIf="!submittedPassword">{{ confirmPasswordMessage }}</span>
-              <span *ngIf="submittedPassword && getPasswordInput.errors.maxlength" class="main-body-text mb-2">
+              <span *ngIf="submittedPassword && getConfirmPasswordInput.errors.maxlength" class="main-body-text mb-2">
                 The Password must be no longer than 120 characters.
               </span>
-              <span *ngIf="submittedPassword && getPasswordInput.errors.required" class="main-body-text mb-2">
+              <span *ngIf="submittedPassword && getConfirmPasswordInput.errors.required" class="main-body-text mb-2">
                 Please confirm your Password.
               </span>
-              <span *ngIf="submittedPassword && createUserNamePasswordForm.get('passwordGroup').errors?.notMatched" class="main-body-text mb-2 mb-2">
+              <span *ngIf="submittedPassword && getConfirmPasswordInput.errors.notMatched" class="main-body-text mb-2 mb-2">
                 Confirm Password does not match.
               </span>
             </span>
