@@ -2,7 +2,8 @@
 module.exports = (sequelize, DataTypes) => {
   const cqclog = sequelize.define('cqclog', {
     success: DataTypes.BOOLEAN,
-    message: DataTypes.STRING
+    message: DataTypes.STRING,
+    lastUpdatedAt: DataTypes.STRING
   }, {
     schema: 'cqc',
     createdAt: 'createdat',
