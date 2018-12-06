@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser');
 
-//var connectionString = 'tcp://sfcadmin:sfcadmin123@3.8.78.161:5432/sfcdevdb';
 
 const { Pool, Client } = require('pg')
 const client = new Client({
