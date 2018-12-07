@@ -319,7 +319,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         (data: RegistrationModel) => {
           if (data.success === 1) {
             debugger;
-            data = data.locationdata;
+            //data = data.locationdata;
             this._registrationService.updateState(data);
             this._registrationService.routingCheck(data);
           }
@@ -340,7 +340,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         (data: RegistrationModel) => {
           if (data.success === 1) {
             debugger;
-            data = data.locationdata;
+            //data = data.locationdata;
             this._registrationService.updateState(data);
             this._registrationService.routingCheck(data);
           }
@@ -361,7 +361,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         (data: RegistrationModel) => {
           if (data.success === 1) {
             debugger;
-            data = data.postcodedata;
+            //data = data.postcodedata;
             this._registrationService.updateState(data);
             //this.routingCheck(data);
           }

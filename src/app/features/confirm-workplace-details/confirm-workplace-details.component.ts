@@ -33,7 +33,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
 
   save() {
     //this._registrationService.getLocationByLocationId(this.selectedAddressId);
-    const isRegulatedAddress = [this.registration[0].locationId];
+    const isRegulatedAddress = [this.registration[0].locationdata.locationId];
     this.isRegulatedCheck(this.registration);
 
     //console.log(isRegulatedAddress);
@@ -44,7 +44,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
     this.router.navigate(['/user-details']);
   }
 
-  
+
 
 }
 

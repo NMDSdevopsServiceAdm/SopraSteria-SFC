@@ -29,9 +29,9 @@ export class SecurityQuestionComponent implements OnInit {
 
   changeDetails(): void {
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      let createSecurityQuestionValue = this.registration[0].user.securityQuestion;
-      let createsecurityAnswerValue = this.registration[0].user.securityAnswer;
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+      const createSecurityQuestionValue = this.registration[0].locationdata.user.securityQuestion;
+      const createsecurityAnswerValue = this.registration[0].locationdata.user.securityAnswer;
 
       this.securityQuestionAnswerForm.setValue({
         securityQuestionInput: createSecurityQuestionValue,
@@ -43,11 +43,11 @@ export class SecurityQuestionComponent implements OnInit {
   }
 
   save() {
-    let securityQuestionValue = this.securityQuestionAnswerForm.get('securityQuestionInput').value;
-    let securityAnswerValue = this.securityQuestionAnswerForm.get('securityAnswerInput').value;
+    const securityQuestionValue = this.securityQuestionAnswerForm.get('securityQuestionInput').value;
+    const securityAnswerValue = this.securityQuestionAnswerForm.get('securityAnswerInput').value;
 
-    this.registration[0].user['securityQuestion'] = securityQuestionValue;
-    this.registration[0].user['securityAnswer'] = securityAnswerValue;
+    this.registration[0].locationdata.user['securityQuestion'] = securityQuestionValue;
+    this.registration[0].locationdata.user['securityAnswer'] = securityAnswerValue;
 
     this._registrationService.updateState(this.registration);
 

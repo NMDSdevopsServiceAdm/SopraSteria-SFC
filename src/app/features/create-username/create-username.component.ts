@@ -164,9 +164,9 @@ export class CreateUsernameComponent implements OnInit {
 
   changeDetails(): void {
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      const createUsernameValue = this.registration[0].user.username;
-      const createPasswordValue = this.registration[0].user.password;
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+      const createUsernameValue = this.registration[0].locationdata.user.username;
+      const createPasswordValue = this.registration[0].locationdata.user.password;
 
       this.createUserNamePasswordForm.setValue({
         createUsernameInput: createUsernameValue,
@@ -206,26 +206,26 @@ export class CreateUsernameComponent implements OnInit {
     const createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
     //let confirmPasswordValue = this.createUserNamePasswordForm.get('confirmPasswordInput').value;
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
       // Get updated form results
-      if (this.registration[0].user.hasOwnProperty('securityQuestion')) {
-        this.createSecurityQuestionValue = this.registration[0].user.securityQuestion;
+      if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
+        this.createSecurityQuestionValue = this.registration[0].locationdata.user.securityQuestion;
       }
-      if (this.registration[0].user.hasOwnProperty('securityAnswer')) {
-        this.createsecurityAnswerValue = this.registration[0].user.securityAnswer;
+      if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
+        this.createsecurityAnswerValue = this.registration[0].locationdata.user.securityAnswer;
       }
     }
 
-    this.registration[0].user['username'] = createUsernameValue;
-    this.registration[0].user['password'] = createPasswordValue;
+    this.registration[0].locationdata.user['username'] = createUsernameValue;
+    this.registration[0].locationdata.user['password'] = createPasswordValue;
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
       // Get updated form results
-      if (this.registration[0].user.hasOwnProperty('securityQuestion')) {
-        this.registration[0].user['securityQuestion'] = this.createSecurityQuestionValue;
+      if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
+        this.registration[0].locationdata.user['securityQuestion'] = this.createSecurityQuestionValue;
       }
-      if (this.registration[0].user.hasOwnProperty('securityAnswer')) {
-        this.registration[0].user['securityAnswer'] = this.createsecurityAnswerValue;
+      if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
+        this.registration[0].locationdata.user['securityAnswer'] = this.createsecurityAnswerValue;
       }
     }
 
@@ -233,7 +233,7 @@ export class CreateUsernameComponent implements OnInit {
 
     //this._registrationService.routingCheck(this.registration);
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
       this.router.navigate(['/confirm-account-details']);
     }
     else {
