@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser');
 
-//var connectionString = 'tcp://sfcadmin:sfcadmin123@3.8.78.161:5432/sfcdevdb';
 
 const { Pool, Client } = require('pg')
 const client = new Client({
@@ -136,6 +135,7 @@ router.route('/')
          LocationID: req.body[0].locationId,
          PostCode: req.body[0].postalCode,
          MainService: req.body[0].mainService,
+         MainServiceId : 1,
          IsRegulated: req.body[0].isRegulated
       } 
      var Userdata = {
@@ -158,7 +158,7 @@ router.route('/')
       }
    
     //sql
-    var EstablishmentInsert = 'INSERT INTO cqc."Establishment" ("Name", "Address", "LocationID", "PostCode", "MainService", "IsRegulated") VALUES ($1,$2,$3,$4,$5,$6)'
+    var EstablishmentInsert = 'INSERT INTO cqc."Establishment" ("Name", "Address", "LocationID", "PostCode", "MainServiceId", "IsRegulated") VALUES ($1,$2,$3,$4,$5,$6)'
     var EstablishmentSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 Limit 1'
     var UserInsert = 'INSERT INTO cqc."User"("FullName", "JobTitle", "Email", "Phone", "DateCreated", "EstablishmentID", "AdminUser") VALUES ($1,$2,$3,$4,$5,$6,$7)'
     var UserSelect = 'SELECT * FROM cqc."User" where "FullName" = $1 Limit 1'
@@ -166,7 +166,7 @@ router.route('/')
 
      //db connection
     client.connect()
-    client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainService,Estblistmentdata.IsRegulated])
+    client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainServiceId,Estblistmentdata.IsRegulated])
     .then(function(){
      
       client.query(EstablishmentSelect, [Estblistmentdata.Name],function(err,result) {
