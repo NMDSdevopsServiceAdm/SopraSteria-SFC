@@ -11,6 +11,8 @@ router.route('/lid/:locationId')
 
     let locationData = [];
 
+    console.log(locationData);
+
     //Find matching location data
     let result = await models.location.findOne({
       where: {
@@ -18,8 +20,12 @@ router.route('/lid/:locationId')
       }
     });
 
-    let data = result.dataValues;
-    locationData.push(createLocationDetailsObject(data));
+    console.log('out of db call');
+
+    if(result != null){
+      let data = result.dataValues;
+      locationData.push(createLocationDetailsObject(data));
+    }
 
     if (locationData.length === 0) {
       res.status(404);
