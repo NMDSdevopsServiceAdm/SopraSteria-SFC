@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
+import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
 import { RegistrationModel } from '../model/registration.model';
+import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
 const initialRegistration: RegistrationModel[] =
 
@@ -67,51 +69,28 @@ export class RegistrationService {
   getLocationByPostCode(id: string) {
     const $value = id;
 
-    this.http.get<RegistrationModel>('/api/locations/pc/' + $value).subscribe(
-      (data: RegistrationModel) => {
-
-        this.updateState(data);
-        return this.routingCheck(data);
-
-      },
-      (err: any) => console.log(err),
-      () => {
-        console.log('Get location by postcode complete');
-      }
-    );
+    return this.http.get<RegistrationModel>('/api/locations/pc/' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
+      );
   }
 
   getLocationByLocationId(id: string) {
-
     const $value = id;
 
-    this.http.get<RegistrationModel>('/api/locations/lid/' + $value)
-      .subscribe(
-        (data: RegistrationModel) => {
-
-          this.updateState(data);
-          this.routingCheck(data);
-          // this.router.navigate(['/confirm-workplace-details']);
-
-        },
-        (err: any) => console.log(err),
-        () => console.log('Get location by id sucessful')
+    return this.http.get<RegistrationModel>('/api/locations/lid/' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
       );
   }
 
   getAddressByPostCode(id: string) {
     const $value = id;
-    this.http.get<RegistrationModel>('/api/postcodes/' + $value).subscribe(
-      (data: RegistrationModel) => {
-        this.updateState(data);
-        this.router.navigate(['/select-workplace-address']);
 
-      },
-      (err: any) => console.log(err),
-      () => {
-        console.log('Get location by postcode complete');
-      }
-    );
+    return this.http.get<RegistrationModel>('/api/postcodes/' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
+      );
   }
 
   getUpdatedAddressByPostCode(id: string) {
@@ -132,7 +111,7 @@ export class RegistrationService {
   }
 
   routingCheck(data) {
-
+    debugger;
     if (data.length > 1) {
       this.router.navigate(['/select-workplace']);
     } else {
@@ -148,6 +127,14 @@ export class RegistrationService {
 
   updateState(data) {
     this._registration$.next(data);
+  }
+
+  private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
+    const dataError = new RegistrationTrackerError();
+    dataError.message = error.message;
+    dataError.success = error.error.success;
+    dataError.friendlyMessage = error.error.message;
+    return ErrorObservable.create(dataError);
   }
 
 

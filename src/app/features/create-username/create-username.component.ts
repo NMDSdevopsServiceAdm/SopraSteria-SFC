@@ -6,6 +6,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
+import { CustomValidators } from './../../shared/custom-form-validators';
 
 @Component({
   selector: 'app-create-username',
@@ -31,7 +32,8 @@ export class CreateUsernameComponent implements OnInit {
 
   private usernameMessages = {
     maxlength: 'Your fullname must be no longer than 120 characters.',
-    required: 'Please enter your fullname.'
+    required: 'Please enter your fullname.',
+    bothHaveContent: 'Both have content.',
   };
 
   private passwordMessages = {
@@ -41,7 +43,8 @@ export class CreateUsernameComponent implements OnInit {
 
   private confirmPasswordMessages = {
     maxlength: 'Your fullname must be no longer than 120 characters.',
-    required: 'Please enter your fullname.'
+    required: 'Please enter your fullname.',
+    notMatched: 'Confirm Password does not match.'
   };
 
   constructor(
@@ -50,6 +53,11 @@ export class CreateUsernameComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder
   ) { }
+
+  // Get password group
+  get getPasswordGroup() {
+    return this.createUserNamePasswordForm.get('passwordGroup');
+  }
 
   // Get create username
   get getCreateUsernameInput() {
@@ -72,7 +80,7 @@ export class CreateUsernameComponent implements OnInit {
       passwordGroup: this.fb.group({
         createPasswordInput: ['', [Validators.required, Validators.maxLength(120)]],
         confirmPasswordInput: ['', [Validators.required, Validators.maxLength(120)]]
-      }, { validator: checkPasswordConfirm }),
+      }, { validator: CustomValidators.matchInputValues }),
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
@@ -98,14 +106,28 @@ export class CreateUsernameComponent implements OnInit {
     this.getConfirmPasswordInput.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => this.setConfirmPasswordMessage(this.getConfirmPasswordInput)
+      value => {
+        if (value.length > 0) {
+          if (this.getPasswordGroup.errors) {
+            this.setConfirmPasswordMessage(this.getPasswordGroup);
+          }
+          if (this.getConfirmPasswordInput.errors) {
+            this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
+          }
+        }
+        // else {
+        //   this.isSubmitted = false;
+        //   this.submittedConfirmPassword = false;
+        //   this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
+        // }
+      }
     );
   }
 
   setCreateUsernameMessage(c: AbstractControl): void {
     this.usernameMessage = '';
     debugger;
-    if ((c.touched || c.dirty) && c.errors) {
+    if (c.errors) {
       this.usernameMessage = Object.keys(c.errors).map(
         key => this.usernameMessage += this.usernameMessages[key]).join('<br />');
     }
@@ -116,23 +138,28 @@ export class CreateUsernameComponent implements OnInit {
   setPasswordMessage(c: AbstractControl): void {
     this.passwordMessage = '';
     debugger;
-    if ((c.touched || c.dirty) && c.errors) {
+    if (c.errors) {
       this.passwordMessage = Object.keys(c.errors).map(
         key => this.passwordMessage += this.passwordMessages[key]).join('<br />');
     }
     debugger;
-    this.submittedUsername = false;
+    this.submittedPassword = false;
   }
 
   setConfirmPasswordMessage(c: AbstractControl): void {
     this.confirmPasswordMessage = '';
     debugger;
-    if ((c.touched || c.dirty) && c.errors) {
+    if (c.errors) {
       this.confirmPasswordMessage = Object.keys(c.errors).map(
         key => this.confirmPasswordMessage += this.confirmPasswordMessages[key]).join('<br />');
     }
+    else {
+      if (!this.getConfirmPasswordInput.errors) {
+        this.save();
+      }
+    }
     debugger;
-    this.submittedUsername = false;
+    //this.submittedConfirmPassword = false;
   }
 
   changeDetails(): void {
@@ -219,17 +246,17 @@ export class CreateUsernameComponent implements OnInit {
 }
 
 // Check for content in both CQC registered input fields
-function checkPasswordConfirm(c: AbstractControl): { [key: string]: boolean } | null {
-  const passwordControl = c.get('createPasswordInput');
-  const confirmPasswordControl = c.get('confirmPasswordInput');
+// function matchInputValues(c: AbstractControl): { [key: string]: boolean } | null {
+//   const passwordControl = c.get('createPasswordInput');
+//   const confirmPasswordControl = c.get('confirmPasswordInput');
 
-  if (confirmPasswordControl.pristine) {
-    return null;
-  }
+//   if (confirmPasswordControl.pristine) {
+//     return null;
+//   }
 
-  if (passwordControl.value === confirmPasswordControl.value) {
-    return null;
-  }
+//   if (passwordControl.value === confirmPasswordControl.value) {
+//     return null;
+//   }
 
-  return { 'notMatched': true };
-}
+//   return { 'notMatched': true };
+// }

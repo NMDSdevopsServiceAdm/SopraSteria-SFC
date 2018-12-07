@@ -54,7 +54,7 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   }
 
   updatePostcode() {
-    let postcodeValue = this.selectWorkplaceAddressForm.get('postcodeInput').value;
+    const postcodeValue = this.selectWorkplaceAddressForm.get('postcodeInput').value;
 
     this._registrationService.getUpdatedAddressByPostCode(postcodeValue);
 

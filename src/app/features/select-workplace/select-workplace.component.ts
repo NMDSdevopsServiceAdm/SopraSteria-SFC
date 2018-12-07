@@ -44,14 +44,35 @@ export class SelectWorkplaceComponent implements OnInit {
 
   onSubmit() {
     this.isSubmitted = true;
+    debugger;
 
     if (this.selectedAddressId) {
+      debugger;
       this.save(this.selectedAddressId);
     }
   }
 
   save(selectedAddressId) {
-    this._registrationService.getLocationByLocationId(selectedAddressId);
+    debugger;
+    this._registrationService.getLocationByLocationId(selectedAddressId).subscribe(
+      (data: RegistrationModel) => {
+        if (data.success === 1) {
+          debugger;
+          data = data.locationdata;
+          this._registrationService.updateState(data);
+          this._registrationService.routingCheck(data);
+        }
+      },
+      (err: RegistrationTrackerError) => {
+        debugger;
+        console.log(err);
+        this.cqcPostcodeApiError = err.friendlyMessage;
+        this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+      },
+      () => {
+        console.log('Get location by postcode complete');
+      }
+    );
   }
 
 }

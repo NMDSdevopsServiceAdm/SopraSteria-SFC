@@ -22,10 +22,10 @@
 
           <span class="invalid-feedback">
             <span class="main-body-text mb-2"*ngIf="!submittedUsername">{{ usernameMessage }}</span>
-            <span *ngIf="submittedUsername && getCreateUsernameInput.errors.maxlength" class="main-body-text mb-2">
+            <span *ngIf="submittedUsername && getCreateUsernameInput.hasError('maxlength')" class="main-body-text mb-2">
               The Username must be no longer than 120 characters.
             </span>
-            <span *ngIf="submittedUsername && getCreateUsernameInput.errors.required" class="main-body-text mb-2">
+            <span *ngIf="submittedUsername && getCreateUsernameInput.hasError('required')" class="main-body-text mb-2">
               Please enter your Username.
             </span>
           </span>
@@ -39,7 +39,7 @@
 
         <div formGroupName="passwordGroup">
           <div class="field-group mt-5"
-               [ngClass]="{'is-invalid': passwordMessage || (isSubmitted && !getPasswordInput.valid) }">
+               [ngClass]="{'is-invalid': passwordMessage || (isSubmitted && !getPasswordInput.valid)}">
             <label class="form-label" for="createPassword">Password</label>
             <p class="field-comment-text">This should be at least 8 characters long, contain at least one uppercase and one lowercase letter and a number</p>
 
@@ -63,18 +63,19 @@
             </div>
           </div>
           <div class="field-group mt-5"
-               [ngClass]="{'is-invalid': confirmPasswordMessage || (isSubmitted && !getConfirmPasswordInput.valid) }">
+               [ngClass]="{'is-invalid': confirmPasswordMessage || (isSubmitted && !getConfirmPasswordInput.valid) ||
+                            getPasswordGroup.hasError('notMatched') }">
             <label class="form-label" for="confirmPassword">Confirm password</label>
 
             <span class="invalid-feedback">
-              <span class="main-body-text mb-2" *ngIf="!submittedPassword">{{ confirmPasswordMessage }}</span>
-              <span *ngIf="submittedPassword && getConfirmPasswordInput.errors.maxlength" class="main-body-text mb-2">
+              <span class="main-body-text mb-2" *ngIf="!submittedConfirmPassword">{{ confirmPasswordMessage }}</span>
+              <span *ngIf="submittedConfirmPassword && getConfirmPasswordInput.errors.maxlength" class="main-body-text mb-2">
                 The Password must be no longer than 120 characters.
               </span>
-              <span *ngIf="submittedPassword && getConfirmPasswordInput.errors.required" class="main-body-text mb-2">
+              <span *ngIf="submittedConfirmPassword && getConfirmPasswordInput.errors.required" class="main-body-text mb-2">
                 Please confirm your Password.
               </span>
-              <span *ngIf="submittedPassword && getConfirmPasswordInput.errors.notMatched" class="main-body-text mb-2 mb-2">
+              <span *ngIf="submittedConfirmPassword && getPasswordGroup.hasError('notMatched')" class="main-body-text mb-2 mb-2">
                 Confirm Password does not match.
               </span>
             </span>
@@ -100,3 +101,19 @@
 
 
 </div>
+
+<br>Dirty: {{ this.createUserNamePasswordForm.dirty }}
+<br>Touched: {{ this.createUserNamePasswordForm.touched }}
+<br>Valid: {{ this.createUserNamePasswordForm.valid }}
+<br>Value: {{ this.createUserNamePasswordForm.value | json }}
+<br>isSubmitted {{ this.isSubmitted }}
+<br>submitted username: {{ this.submittedUsername }}
+<br>submitted password: {{ this.submittedPassword }}
+<br>submitted confirm password: {{ this.submittedConfirmPassword }}
+<br>usernameMessage: {{ this.usernameMessage }}
+<br>passwordMessage: {{ this.passwordMessage }}
+<br>confirmPasswordMessage: {{ this.confirmPasswordMessage }}
+<br>getPasswordGroup errors: {{ getPasswordGroup.errors | json }}
+<br>getCreateUsernameInput errors: {{ getCreateUsernameInput.errors | json }}
+<br>getPasswordInput errors: {{ getPasswordInput.errors | json }}
+<br>getConfirmPasswordInput errors: {{ getConfirmPasswordInput.errors | json }}
