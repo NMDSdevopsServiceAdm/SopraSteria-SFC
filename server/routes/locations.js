@@ -11,16 +11,12 @@ router.route('/lid/:locationId')
 
     let locationData = [];
 
-    console.log(locationData);
-
     //Find matching location data
     let result = await models.location.findOne({
       where: {
         locationid: req.params.locationId
       }
     });
-
-    console.log('out of db call');
 
     if(result != null){
       let data = result.dataValues;
