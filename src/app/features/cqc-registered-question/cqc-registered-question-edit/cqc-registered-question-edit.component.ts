@@ -242,7 +242,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       const cqcRegisteredPostcode = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode');
       const locationId = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId');
       // Clear value of not cqc registered postcode if previously entered
-      this.notRegisteredPostcode.value = '';
+      //this.notRegisteredPostcode.value = '';
       debugger;
 
       if ((cqcRegisteredPostcode.value.length > 0) || (locationId.value.length > 0)) {
@@ -257,8 +257,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     }
     else {
       // Clear value of cqc registered postcode and location Id if previously entered
-      this.cqcRegisteredPostcode.value = '';
-      this.cqcRegisteredLocationId.value = '';
+      //this.cqcRegisteredPostcode.value = '';
+      //this.cqcRegisteredLocationId.value = '';
 
       if (this.notRegisteredPostcode.errors) {
         return;
