@@ -18,8 +18,10 @@ router.route('/lid/:locationId')
       }
     });
 
-    let data = result.dataValues;
-    locationData.push(createLocationDetailsObject(data));
+    if(result != null){
+      let data = result.dataValues;
+      locationData.push(createLocationDetailsObject(data));
+    }
 
     if (locationData.length === 0) {
       res.status(404);
