@@ -14,7 +14,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class UserDetailsComponent implements OnInit {
   userDetailsForm: FormGroup;
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
 
   //submitted = false;
   submittedfullname = false;
@@ -133,11 +133,11 @@ export class UserDetailsComponent implements OnInit {
 
   changeDetails(): void {
     debugger;
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      const userFullnameValue = this.registration[0].locationdata.user.fullname;
-      const userJobTitleValue = this.registration[0].locationdata.user.jobTitle;
-      const userEmailValue = this.registration[0].locationdata.user.emailAddress;
-      const userPhoneValue = this.registration[0].locationdata.user.contactNumber;
+    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
+      const userFullnameValue = this.registration.locationdata[0].user.fullname;
+      const userJobTitleValue = this.registration.locationdata[0].user.jobTitle;
+      const userEmailValue = this.registration.locationdata[0].user.emailAddress;
+      const userPhoneValue = this.registration.locationdata[0].user.contactNumber;
 
       this.userDetailsForm.setValue({
         userFullnameInput: userFullnameValue,
@@ -224,24 +224,24 @@ export class UserDetailsComponent implements OnInit {
     console.log(this.registration);
     debugger;
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       // Get updated form results
       debugger;
-      if (this.registration[0].locationdata.user.hasOwnProperty('username')) {
-        this.createUsernameValue = this.registration[0].locationdata.user.username;
+      if (this.registration.locationdata[0].user.hasOwnProperty('username')) {
+        this.createUsernameValue = this.registration.locationdata[0].user.username;
       }
-      if (this.registration[0].locationdata.user.hasOwnProperty('password')) {
-        this.createPasswordValue = this.registration[0].locationdata.user.password;
+      if (this.registration.locationdata[0].user.hasOwnProperty('password')) {
+        this.createPasswordValue = this.registration.locationdata[0].user.password;
       }
-      if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
-        this.createSecurityQuestionValue = this.registration[0].locationdata.user.securityQuestion;
+      if (this.registration.locationdata[0].user.hasOwnProperty('securityQuestion')) {
+        this.createSecurityQuestionValue = this.registration.locationdata[0].user.securityQuestion;
       }
-      if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
-        this.createsecurityAnswerValue = this.registration[0].locationdata.user.securityAnswer;
+      if (this.registration.locationdata[0].user.hasOwnProperty('securityAnswer')) {
+        this.createsecurityAnswerValue = this.registration.locationdata[0].user.securityAnswer;
       }
     }
 
-    this.registration[0].locationdata['user'] = {} as {
+    this.registration.locationdata[0]['user'] = {} as {
       fullname: string,
       jobTitle: string,
       emailAddress: string,
@@ -251,36 +251,35 @@ export class UserDetailsComponent implements OnInit {
       securityQuestion: string,
       securityAnswer: string,
     };
-    this.registration[0].locationdata.user['fullname'] = userFullnameValue;
-    this.registration[0].locationdata.user['jobTitle'] = userJobTitleValue;
-    this.registration[0].locationdata.user['emailAddress'] = userEmailValue;
-    this.registration[0].locationdata.user['contactNumber'] = userPhoneValue;
+    this.registration.locationdata[0].user['fullname'] = userFullnameValue;
+    this.registration.locationdata[0].user['jobTitle'] = userJobTitleValue;
+    this.registration.locationdata[0].user['emailAddress'] = userEmailValue;
+    this.registration.locationdata[0].user['contactNumber'] = userPhoneValue;
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       //if (this.registration[0].locationdata.user.hasOwnProperty('username')) {
-        this.registration[0].locationdata.user['username'] = this.createUsernameValue;
+        this.registration.locationdata[0].user['username'] = this.createUsernameValue;
       //}
       //if (this.registration[0].locationdata.user.hasOwnProperty('password')) {
-        this.registration[0].locationdata.user['password'] = this.createPasswordValue;
+        this.registration.locationdata[0].user['password'] = this.createPasswordValue;
       ///}
       //if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
-        this.registration[0].locationdata.user['securityQuestion'] = this.createSecurityQuestionValue;
+        this.registration.locationdata[0].user['securityQuestion'] = this.createSecurityQuestionValue;
       //}
       //if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
-        this.registration[0].locationdata.user['securityAnswer'] = this.createsecurityAnswerValue;
+        this.registration.locationdata[0].user['securityAnswer'] = this.createsecurityAnswerValue;
       //}
     }
     debugger;
 
     this._registrationService.updateState(this.registration);
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       this.router.navigate(['/confirm-account-details']);
     } else {
       this.router.navigate(['/create-username']);
     }
 
   }
-
 
 }

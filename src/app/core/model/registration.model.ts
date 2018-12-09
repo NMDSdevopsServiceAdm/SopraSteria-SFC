@@ -2,7 +2,8 @@
 export interface RegistrationModel {
   success: number;
   message: string;
-  locationdata: {
+  detailsChanged: boolean;
+  locationdata: [{
     locationId: string;
     locationName: string;
     addressLine1: string;
@@ -13,17 +14,16 @@ export interface RegistrationModel {
     mainService: string;
     isRegulated: boolean;
     user: {
-      fullname: string,
-      jobTitle: string,
-      emailAddress: string,
-      contactNumber: string,
-      username: string,
-      password: string,
-      securityQuestion: string,
-      securityAnswer: string
-    };
-    detailsChanged: boolean;
-  };
+      fullname: string;
+      jobTitle: string;
+      emailAddress: string;
+      contactNumber: string;
+      username: string;
+      password: string;
+      securityQuestion: string;
+      securityAnswer: string;
+    }
+  }];
   //  fullname: string;
   //  jobTitle: string;
   //  emailAddress: string;

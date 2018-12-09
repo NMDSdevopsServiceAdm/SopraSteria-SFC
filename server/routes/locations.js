@@ -98,7 +98,8 @@ function createLocationDetailsObject(data) {
     townCity: data.towncity,
     county: data.county,
     postalCode: data.postalcode,
-    mainService: data.mainservice
+    mainService: data.mainservice,
+    isRegulated: data.isRegulated
   };
 
   return myObject;

@@ -13,11 +13,10 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class SelectMainServiceComponent implements OnInit {
   SelectMainServiceForm: FormGroup;
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
   selectedAddressId: string;
-  isRegulated: boolean;
+  regulatedCheck: boolean;
   //storeCopy: RegistrationModel;
-
   allCategoriesArray: {};
   uniqueCategoriesArray: any[];
   newObject: [];
@@ -37,7 +36,7 @@ export class SelectMainServiceComponent implements OnInit {
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
-    this.isRegulated = this.registration[0].locationdata.isRegulated;
+
 
     // Get main services
     this.getMainServices();
@@ -49,7 +48,20 @@ export class SelectMainServiceComponent implements OnInit {
   }
 
   getMainServices() {
-    this._registrationService.getMainServices(this.isRegulated)
+    debugger
+    //this.regulatedCheck = this.registration[0].locationdata.isRegulated;
+
+    if (this.registration.locationdata[0].isRegulated === true) {
+      this.regulatedCheck = true;
+    }
+    else if (this.registration.locationdata[0].locationId) {
+      this.regulatedCheck = true;
+    }
+    else {
+      this.regulatedCheck = true;
+    }
+
+    this._registrationService.getMainServices(this.regulatedCheck)
       .subscribe(
         // value => this.getUniqueServiceCategories(value)
         value => {
@@ -139,7 +151,8 @@ export class SelectMainServiceComponent implements OnInit {
 
 
   selectMainServiceChanged(value: string): void {
-    this.registration[0].locationdata.mainService = value;
+    debugger;
+    this.registration.locationdata[0].mainService = value;
 
     console.log(this.registration[0]);
   }

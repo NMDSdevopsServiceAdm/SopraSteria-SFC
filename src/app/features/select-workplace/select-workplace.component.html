@@ -25,7 +25,7 @@
             </span>
           </span>
 
-          <div class="row mb-4" *ngFor="let item of registration; let i = index">
+          <div class="row mb-4" *ngFor="let item of registration.locationdata; let i = index">
             <div class="col-12">
               <div class="multiple-choice">
                 <input type="radio" id="selectWorkplace-{{i}}" formControlName="selectWorkplaceSelected" value="{{i}}" />

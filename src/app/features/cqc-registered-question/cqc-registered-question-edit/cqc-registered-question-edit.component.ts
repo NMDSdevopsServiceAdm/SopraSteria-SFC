@@ -19,9 +19,10 @@ import { CustomValidators } from '../../../shared/custom-form-validators';
 
 export class CqcRegisteredQuestionEditComponent implements OnInit {
   cqcRegisteredQuestionForm: FormGroup;
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
   CqcRegisteredQuestionEnteredLocation = new CqcRegisteredQuestionEnteredLocation();
   registeredQuestionSelectedValue: string;
+  isRegulated: boolean;
 
   // Set up Messages
   isSubmitted = false;
@@ -236,9 +237,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
   onSubmit() {
 
-    const isRegulated = this.cqcRegisteredQuestionForm.get('registeredQuestionSelected').value;
+    this.isRegulated = this.cqcRegisteredQuestionForm.get('registeredQuestionSelected').value;
     debugger;
-    if (isRegulated === 'true') {
+    if (this.isRegulated === true) {
       const cqcRegisteredPostcode = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode');
       const locationId = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId');
       // Clear value of not cqc registered postcode if previously entered

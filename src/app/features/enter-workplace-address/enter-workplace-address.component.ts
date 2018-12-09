@@ -13,9 +13,14 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class EnterWorkplaceAddressComponent implements OnInit {
   enterWorkplaceAddressForm: FormGroup;
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
+  constructor(
+    private _registrationService: RegistrationService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private fb: FormBuilder
+  ) { }
 
   ngOnInit() {
     this.enterWorkplaceAddressForm = this.fb.group({
@@ -31,29 +36,29 @@ export class EnterWorkplaceAddressComponent implements OnInit {
   }
 
   save() {
-    let postcodeValue = this.enterWorkplaceAddressForm.get('postcodeInput').value;
-    let address1Value = this.enterWorkplaceAddressForm.get('address1Input').value;
-    let address2Value = this.enterWorkplaceAddressForm.get('address2Input').value;
-    let townCityValue = this.enterWorkplaceAddressForm.get('townCityInput').value;
-    let countyValue = this.enterWorkplaceAddressForm.get('countyInput').value;
-    let wpNameValue = this.enterWorkplaceAddressForm.get('wpNameInput').value;
+    const postcodeValue = this.enterWorkplaceAddressForm.get('postcodeInput').value;
+    const address1Value = this.enterWorkplaceAddressForm.get('address1Input').value;
+    const address2Value = this.enterWorkplaceAddressForm.get('address2Input').value;
+    const townCityValue = this.enterWorkplaceAddressForm.get('townCityInput').value;
+    const countyValue = this.enterWorkplaceAddressForm.get('countyInput').value;
+    const wpNameValue = this.enterWorkplaceAddressForm.get('wpNameInput').value;
 
     //this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     console.log(this.registration);
 
-    this.registration[0]['postalCode'] = postcodeValue;
-    this.registration[0]['addressLine1'] = address1Value;
-    this.registration[0]['addressLine2'] = address2Value;
-    this.registration[0]['townCity'] = townCityValue;
-    this.registration[0]['county'] = countyValue;
-    this.registration[0]['locationName'] = wpNameValue;
+    this.registration.locationdata[0]['postalCode'] = postcodeValue;
+    this.registration.locationdata[0]['addressLine1'] = address1Value;
+    this.registration.locationdata[0]['addressLine2'] = address2Value;
+    this.registration.locationdata[0]['townCity'] = townCityValue;
+    this.registration.locationdata[0]['county'] = countyValue;
+    this.registration.locationdata[0]['locationName'] = wpNameValue;
 
-    console.log(this.registration.length);
+    console.log(this.registration.locationdata.length);
 
-    const updateRegistration = this.registration[0];
+    const updateRegistration = this.registration.locationdata[0];
 
-    this._registrationService.updateState([updateRegistration]);
+    this._registrationService.updateState(updateRegistration);
     //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/select-main-service']);
 

@@ -13,7 +13,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class SelectWorkplaceAddressComponent implements OnInit {
   selectWorkplaceAddressForm: FormGroup;
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
   selectedAddress: string;
   editPostcode: boolean;
 
@@ -42,7 +42,7 @@ export class SelectWorkplaceAddressComponent implements OnInit {
 
   save() {
     //this._registrationService.getLocationByLocationId(this.selectedAddressId);
-    console.log(this.registration[this.selectedAddress]);
+    //console.log(this.registration[this.selectedAddress]);
     this._registrationService.updateState([this.selectedAddress]);
 
     //this._registrationService.routingCheck(this.registration);
@@ -59,7 +59,7 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     this._registrationService.getUpdatedAddressByPostCode(postcodeValue);
 
     this.editPostcode = false;
-    console.log(this.registration);
+    //console.log(this.registration);
   }
 
 }
