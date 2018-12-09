@@ -53,7 +53,7 @@ export class RegistrationService {
   constructor(private http: HttpClient, private router: Router) { }
 
   postRegistration(id: any) {
-    const $value = id;
+    const $value = id.locationdata;
     const options = { headers: { 'Content-type': 'application/json' } };
     debugger;
     this.http.post<RegistrationModel>('/api/registration/', $value, options).subscribe(
