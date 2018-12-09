@@ -14,7 +14,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class SecurityQuestionComponent implements OnInit {
   securityQuestionAnswerForm: FormGroup;
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
 
   // Set up Validation messages
   securityQuestionMessage: string;
@@ -83,7 +83,7 @@ export class SecurityQuestionComponent implements OnInit {
         key => this.securityQuestionMessage += this.securityQuestionMessages[key]).join('<br />');
     }
     debugger;
-    this.submittedSecurityQ = false;
+    //this.submittedSecurityQ = false;
   }
 
   setSecurityAnswerMessage(c: AbstractControl): void {
@@ -94,14 +94,14 @@ export class SecurityQuestionComponent implements OnInit {
         key => this.securityAnswerMessage += this.securityAnswerMessages[key]).join('<br />');
     }
     debugger;
-    this.submittedSecurityA = false;
+    //this.submittedSecurityA = false;
   }
 
   changeDetails(): void {
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      const createSecurityQuestionValue = this.registration[0].locationdata.user.securityQuestion;
-      const createsecurityAnswerValue = this.registration[0].locationdata.user.securityAnswer;
+    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
+      const createSecurityQuestionValue = this.registration.locationdata[0].user.securityQuestion;
+      const createsecurityAnswerValue = this.registration.locationdata[0].user.securityAnswer;
 
       this.securityQuestionAnswerForm.setValue({
         securityQuestionInput: createSecurityQuestionValue,
@@ -121,9 +121,9 @@ export class SecurityQuestionComponent implements OnInit {
     // stop here if form is invalid
     if (this.securityQuestionAnswerForm.invalid) {
       debugger;
-      this.isSubmitted = false;
-      this.submittedSecurityQ = false;
-      this.submittedSecurityA = false;
+      // this.isSubmitted = false;
+      // this.submittedSecurityQ = false;
+      // this.submittedSecurityA = false;
       return;
     }
     else {
@@ -136,8 +136,8 @@ export class SecurityQuestionComponent implements OnInit {
     const securityQuestionValue = this.securityQuestionAnswerForm.get('securityQuestionInput').value;
     const securityAnswerValue = this.securityQuestionAnswerForm.get('securityAnswerInput').value;
 
-    this.registration[0].locationdata.user['securityQuestion'] = securityQuestionValue;
-    this.registration[0].locationdata.user['securityAnswer'] = securityAnswerValue;
+    this.registration.locationdata[0].user['securityQuestion'] = securityQuestionValue;
+    this.registration.locationdata[0].user['securityAnswer'] = securityAnswerValue;
 
     this._registrationService.updateState(this.registration);
 

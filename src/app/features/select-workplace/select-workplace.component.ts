@@ -16,9 +16,13 @@ import { RegistrationTrackerError } from './../../core/model/registrationTracker
 })
 export class SelectWorkplaceComponent implements OnInit {
   selectWorkplaceForm: FormGroup;
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
   selectedAddressId: string;
   mainService: string;
+
+  cqcPostcodeApiError: string;
+  cqclocationApiError: string;
+  nonCqcPostcodeApiError: string;
 
   isSubmitted = false;
 
@@ -38,10 +42,9 @@ export class SelectWorkplaceComponent implements OnInit {
   }
 
   selectWorkplaceChanged(value: string): void {
-    this.selectedAddressId = this.registration[value].locationId;
-    this.mainService = this.registration[value].mainService;
-
-    console.log(this.mainService);
+    this.selectedAddressId = this.registration.locationdata[value].locationId;
+    this.mainService = this.registration.locationdata[value].mainService;
+    debugger;
   }
 
   onSubmit() {
@@ -56,26 +59,26 @@ export class SelectWorkplaceComponent implements OnInit {
 
   save(selectedAddressId) {
     debugger;
-    this._registrationService.getLocationByLocationId(selectedAddressId);
-    // .subscribe(
-    //   (data: RegistrationModel) => {
-    //     if (data.success === 1) {
-    //       debugger;
-    //       data = data.locationdata;
-    //       this._registrationService.updateState(data);
-    //       this._registrationService.routingCheck(data);
-    //     }
-    //   },
-    //   (err: RegistrationTrackerError) => {
-    //     debugger;
-    //     console.log(err);
-    //     this.cqcPostcodeApiError = err.friendlyMessage;
-    //     this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
-    //   },
-    //   () => {
-    //     console.log('Get location by postcode complete');
-    //   }
-    // );
+    this._registrationService.getLocationByLocationId(selectedAddressId)
+    .subscribe(
+      (data: RegistrationModel) => {
+        if (data.success === 1) {
+          debugger;
+          //data = data.locationdata;
+          this._registrationService.updateState(data);
+          this._registrationService.routingCheck(data);
+        }
+      },
+      (err: RegistrationTrackerError) => {
+        debugger;
+        console.log(err);
+        this.cqcPostcodeApiError = err.friendlyMessage;
+        //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+      },
+      () => {
+        console.log('Get location by postcode complete');
+      }
+    );
   }
 
 }

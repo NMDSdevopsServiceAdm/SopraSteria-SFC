@@ -9,12 +9,12 @@ import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 import { RegistrationModel } from '../model/registration.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
-const initialRegistration: RegistrationModel[] =
-[{
+const initialRegistration: RegistrationModel = {
   // Example initial dummy data
   success: 1,
   message: 'Successful',
-  locationdata: {
+  detailsChanged: false,
+  locationdata: [{
     addressLine1: '14 Shepherd\'s Court',
     addressLine2: '111 High Street',
     county: 'Berkshire',
@@ -34,9 +34,8 @@ const initialRegistration: RegistrationModel[] =
       securityQuestion: 'Who is my partner',
       securityAnswer: 'James P.Sulivan'
     },
-    detailsChanged: false
-  }
-}];
+  }]
+};
 
 
 @Injectable({
@@ -44,20 +43,20 @@ const initialRegistration: RegistrationModel[] =
 })
 export class RegistrationService {
   // Observable registration source
-  private _registration$: BehaviorSubject<RegistrationModel[]> = new BehaviorSubject<RegistrationModel[]>(initialRegistration);
+  private _registration$: BehaviorSubject<RegistrationModel> = new BehaviorSubject<RegistrationModel>(initialRegistration);
 
   // Observable registration stream
-  public registration$: Observable<RegistrationModel[]> = this._registration$.asObservable();
+  public registration$: Observable<RegistrationModel> = this._registration$.asObservable();
   // registrationModel: RegistrationModel[];
 
 
   constructor(private http: HttpClient, private router: Router) { }
 
   postRegistration(id: any) {
-    const $value = id;
+    const $value = id.locationdata;
     const options = { headers: { 'Content-type': 'application/json' } };
     debugger;
-    this.http.post<RegistrationModel[]>('/api/registration/', $value, options).subscribe(
+    this.http.post<RegistrationModel>('/api/registration/', $value, options).subscribe(
       (data) => console.log(data),
       (error) => console.log(error),
       () => {
@@ -121,7 +120,7 @@ export class RegistrationService {
 
   routingCheck(data) {
     debugger;
-    if (data.length > 1) {
+    if (data.locationdata.length > 1) {
       this.router.navigate(['/select-workplace']);
     } else {
       debugger;

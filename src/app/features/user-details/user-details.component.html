@@ -21,10 +21,10 @@
 
           <span class="invalid-feedback">
             <span class="main-body-text mb-2"*ngIf="!submittedfullname">{{ fullnameMessage }}</span>
-            <span class="main-body-text mb-2" *ngIf="submittedfullname && getUserFullnameInput.errors.required">
+            <span class="main-body-text mb-2" *ngIf="submittedfullname && getUserFullnameInput.hasError('required')">
               Please enter your fullname.
             </span>
-            <span class="main-body-text mb-2" *ngIf="submittedfullname && getUserFullnameInput.errors.maxlength">
+            <span class="main-body-text mb-2" *ngIf="submittedfullname && getUserFullnameInput.hasError('maxlength')">
               Your fullname must be no longer than 120 characters.
             </span>
           </span>
@@ -51,10 +51,10 @@
 
           <span class="invalid-feedback">
             <span class="main-body-text mb-2" *ngIf="!submittedJobTitle">{{ jobTitleMessage }}</span>
-            <span class="main-body-text mb-2" *ngIf="submittedJobTitle && getUserJobTitle.errors.required">
+            <span class="main-body-text mb-2" *ngIf="submittedJobTitle && getUserJobTitle.hasError('required')">
               Please enter your job title.
             </span>
-            <span class="main-body-text mb-2" *ngIf="submittedJobTitle && getUserJobTitle.errors.maxlength">
+            <span class="main-body-text mb-2" *ngIf="submittedJobTitle && getUserJobTitle.hasError('maxlength')">
               Your job title must be no longer than 120 characters.
             </span>
           </span>
@@ -72,13 +72,13 @@
 
           <span class="invalid-feedback">
             <span class="main-body-text mb-2" *ngIf="!submittedEmail">{{ emailMessage }}</span>
-            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.errors.required">
+            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.hasError('required')">
               Please enter your email address.
             </span>
-            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.errors.maxlength">
+            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.hasError('maxlength')">
               Your email address must be no longer than 120 characters.
             </span>
-            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.errors.email">
+            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.hasError('email')">
               Please enter a valid email address.
             </span>
           </span>
@@ -96,10 +96,10 @@
 
           <span class="invalid-feedback">
             <span class="main-body-text mb-2" *ngIf="!submittedPhone">{{ phoneMessage }}</span>
-            <span class="main-body-text mb-2" *ngIf="submittedPhone && getUserPhoneInput.errors.required">
+            <span class="main-body-text mb-2" *ngIf="submittedPhone && getUserPhoneInput.hasError('required')">
               Please enter your contact phone number.
             </span>
-            <span class="main-body-text mb-2" *ngIf="submittedPhone && getUserPhoneInput.errors.maxlength">
+            <span class="main-body-text mb-2" *ngIf="submittedPhone && getUserPhoneInput.hasError('maxlength')">
               Your contact phone number must be no longer than 50 characters.
             </span>
           </span>

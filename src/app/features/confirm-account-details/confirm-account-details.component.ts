@@ -11,7 +11,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
   styleUrls: ['./confirm-account-details.component.scss']
 })
 export class ConfirmAccountDetailsComponent implements OnInit {
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
 
   constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute) { }
 
@@ -20,8 +20,8 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
     console.log(this.registration);
 
-    if (this.registration[0].hasOwnProperty('detailsChanged')) {
-      delete this.registration[0].locationdata.detailsChanged;
+    if (this.registration.hasOwnProperty('detailsChanged')) {
+      delete this.registration.detailsChanged;
       console.log(this.registration);
     }
     //this.registration[0]['detailsChanged'] = undefined;
@@ -35,7 +35,7 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
   changeDetails() {
 
-    this.registration[0]['detailsChanged'] = true;
+    this.registration['detailsChanged'] = true;
     console.log(this.registration);
 
     this._registrationService.updateState(this.registration);
