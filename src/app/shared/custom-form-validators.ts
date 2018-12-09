@@ -1,4 +1,5 @@
 import { FormControl, Validators, AbstractControl } from '@angular/forms';
+import { debug } from 'util';
 
 // setup simple regex for white listed characters
 // const validCharacters = /[^\s\w,.:&\/()+%'`@-]/;
@@ -30,14 +31,15 @@ export class CustomValidators extends Validators {
     const confirmPasswordControl = c.get('confirmPasswordInput');
 
     if (passwordControl.pristine || confirmPasswordControl.pristine) {
-      return;
+      return null;
     }
 
-    if (passwordControl.value === confirmPasswordControl.value) {
-      debugger;
-      return;
+    //debugger;
+    if (passwordControl.value !== confirmPasswordControl.value) {
+      //debugger;
+      return { 'notMatched': true };
     }
-    return { 'notMatched': true };
+
   }
 
   // static apiErrorSet(c: AbstractControl): { [key: string]: boolean } | null {

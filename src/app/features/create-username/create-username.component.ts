@@ -31,19 +31,18 @@ export class CreateUsernameComponent implements OnInit {
   confirmPasswordMessage: string;
 
   private usernameMessages = {
-    maxlength: 'Your fullname must be no longer than 120 characters.',
-    required: 'Please enter your fullname.',
-    bothHaveContent: 'Both have content.',
+    maxlength: 'Your username must be no longer than 120 characters.',
+    required: 'Please enter your username.'
   };
 
   private passwordMessages = {
-    maxlength: 'Your fullname must be no longer than 120 characters.',
-    required: 'Please enter your fullname.'
+    minlength: 'Your password must be a minimum of 8 characters.',
+    maxlength: 'Your password must be no longer than 120 characters.',
+    required: 'Please enter your password.'
   };
 
   private confirmPasswordMessages = {
-    maxlength: 'Your fullname must be no longer than 120 characters.',
-    required: 'Please enter your fullname.',
+    required: 'Please confirm your password.',
     notMatched: 'Confirm Password does not match.'
   };
 
@@ -78,9 +77,9 @@ export class CreateUsernameComponent implements OnInit {
     this.createUserNamePasswordForm = this.fb.group({
       createUsernameInput: ['', [Validators.required, Validators.maxLength(120)]],
       passwordGroup: this.fb.group({
-        createPasswordInput: ['', [Validators.required, Validators.maxLength(120)]],
-        confirmPasswordInput: ['', [Validators.required, Validators.maxLength(120)]]
-      }, { validator: CustomValidators.matchInputValues }),
+        createPasswordInput: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(120)]],
+        confirmPasswordInput: ['', [Validators.required]]
+      }, { validator: CustomValidators.matchInputValues })
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
@@ -107,19 +106,25 @@ export class CreateUsernameComponent implements OnInit {
       debounceTime(1000)
     ).subscribe(
       value => {
+        debugger;
         if (value.length > 0) {
+          this.isSubmitted = false;
+          this.submittedConfirmPassword = false;
           if (this.getPasswordGroup.errors) {
             this.setConfirmPasswordMessage(this.getPasswordGroup);
           }
-          if (this.getConfirmPasswordInput.errors) {
+          else if (this.getConfirmPasswordInput.errors) {
+            this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
+          }
+          else if ((!this.getPasswordGroup.errors) && (!this.getConfirmPasswordInput.errors)) {
             this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
           }
         }
-        // else {
-        //   this.isSubmitted = false;
-        //   this.submittedConfirmPassword = false;
-        //   this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
-        // }
+        else {
+          this.isSubmitted = false;
+          this.submittedConfirmPassword = false;
+          this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
+        }
       }
     );
   }
@@ -129,7 +134,7 @@ export class CreateUsernameComponent implements OnInit {
     debugger;
     if (c.errors) {
       this.usernameMessage = Object.keys(c.errors).map(
-        key => this.usernameMessage += this.usernameMessages[key]).join('<br />');
+        key => this.usernameMessage += this.usernameMessages[key]).join(' ');
     }
     debugger;
     this.submittedUsername = false;
@@ -140,7 +145,7 @@ export class CreateUsernameComponent implements OnInit {
     debugger;
     if (c.errors) {
       this.passwordMessage = Object.keys(c.errors).map(
-        key => this.passwordMessage += this.passwordMessages[key]).join('<br />');
+        key => this.passwordMessage += this.passwordMessages[key]).join(' ');
     }
     debugger;
     this.submittedPassword = false;
@@ -151,20 +156,20 @@ export class CreateUsernameComponent implements OnInit {
     debugger;
     if (c.errors) {
       this.confirmPasswordMessage = Object.keys(c.errors).map(
-        key => this.confirmPasswordMessage += this.confirmPasswordMessages[key]).join('<br />');
+        key => this.confirmPasswordMessage += this.confirmPasswordMessages[key]).join(' ');
     }
     else {
-      if (!this.getConfirmPasswordInput.errors) {
+      if (this.submittedConfirmPassword && !this.getConfirmPasswordInput.errors) {
         this.save();
       }
     }
     debugger;
-    //this.submittedConfirmPassword = false;
+    this.submittedConfirmPassword = false;
   }
 
   changeDetails(): void {
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       const createUsernameValue = this.registration[0].locationdata.user.username;
       const createPasswordValue = this.registration[0].locationdata.user.password;
 
@@ -192,7 +197,11 @@ export class CreateUsernameComponent implements OnInit {
     // stop here if form is invalid
     if (this.createUserNamePasswordForm.invalid) {
       debugger;
-        return;
+      this.isSubmitted = false;
+      this.submittedUsername = false;
+      this.submittedPassword = false;
+      this.submittedConfirmPassword = false;
+      return;
     }
     else {
       debugger;
@@ -206,7 +215,7 @@ export class CreateUsernameComponent implements OnInit {
     const createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
     //let confirmPasswordValue = this.createUserNamePasswordForm.get('confirmPasswordInput').value;
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       // Get updated form results
       if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
         this.createSecurityQuestionValue = this.registration[0].locationdata.user.securityQuestion;
@@ -219,7 +228,7 @@ export class CreateUsernameComponent implements OnInit {
     this.registration[0].locationdata.user['username'] = createUsernameValue;
     this.registration[0].locationdata.user['password'] = createPasswordValue;
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       // Get updated form results
       if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
         this.registration[0].locationdata.user['securityQuestion'] = this.createSecurityQuestionValue;
@@ -233,7 +242,7 @@ export class CreateUsernameComponent implements OnInit {
 
     //this._registrationService.routingCheck(this.registration);
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       this.router.navigate(['/confirm-account-details']);
     }
     else {

@@ -56,6 +56,7 @@ export class RegistrationService {
   postRegistration(id: any) {
     const $value = id;
     const options = { headers: { 'Content-type': 'application/json' } };
+    debugger;
     this.http.post<RegistrationModel[]>('/api/registration/', $value, options).subscribe(
       (data) => console.log(data),
       (error) => console.log(error),
@@ -110,13 +111,21 @@ export class RegistrationService {
     );
   }
 
+  getMainServices(id: boolean) {
+    const $value = id;
+    return this.http.get('/api/services/' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
+      );
+  }
+
   routingCheck(data) {
     debugger;
     if (data.length > 1) {
       this.router.navigate(['/select-workplace']);
     } else {
       debugger;
-      if (data.locationdata[0].mainService === '') {
+      if ((data.locationdata[0].mainService === '') || (data.locationdata[0].mainService === null)) {
         this.router.navigate(['/select-main-service']);
       } else {
         this.router.navigate(['/confirm-workplace-details']);

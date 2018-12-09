@@ -16,29 +16,30 @@
         [formGroup]="SelectMainServiceForm">
 
     <div class="form-group">
-      <div class="field-group col-12 p-0 pb-4">
-        <label class="main-body-text-bold mb-3 d-block">Adult residential</label>
+      <div class="field-group col-12 p-0 pb-4" *ngFor="let item of allCategoriesArray; let i = index">
+      <!-- <div class="field-group col-12 p-0 pb-4" ng-repeat="item in allCategoriesArray | unique='category'; let i = index"> -->
+        <label class="main-body-text-bold mb-3 d-block" *ngIf="item.category">{{ item.category }}</label>
 
         <div class="row mb-4">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" id="adult-residential-1" value="Care home services with nursing" formControlName="mainServiceSelected">
-              <label class="main-body-text p-0" for="adult-residential-1">Care home services with nursing</label>
+              <input type="radio" id="{{ item.serviceId }}" value="{{ item.name }}" formControlName="mainServiceSelected">
+              <label class="main-body-text p-0" for="{{ item.serviceId }}">{{ item.name }}</label>
             </div>
           </div>
         </div>
 
-        <div class="row mb-4">
+        <!-- <div class="row mb-4">
           <div class="col-12">
             <div class="multiple-choice">
               <input type="radio" id="adult-residential-2" value="Care home services without nursing" formControlName="mainServiceSelected">
               <label class="main-body-text p-0" for="adult-residential-2">Care home services without nursing</label>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
-      <div class="field-group col-12 p-0 pb-4">
+      <!-- <div class="field-group col-12 p-0 pb-4">
         <label class="main-body-text-bold mb-3 d-block">Adult domiciliary</label>
 
         <div class="row mb-4">
@@ -76,7 +77,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
     </div>
 

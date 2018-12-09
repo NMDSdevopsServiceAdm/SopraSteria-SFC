@@ -23,10 +23,10 @@
           <span class="invalid-feedback">
             <span class="main-body-text mb-2"*ngIf="!submittedUsername">{{ usernameMessage }}</span>
             <span *ngIf="submittedUsername && getCreateUsernameInput.hasError('maxlength')" class="main-body-text mb-2">
-              The Username must be no longer than 120 characters.
+              Your username must be no longer than 120 characters.
             </span>
             <span *ngIf="submittedUsername && getCreateUsernameInput.hasError('required')" class="main-body-text mb-2">
-              Please enter your Username.
+              Please enter your username.
             </span>
           </span>
 
@@ -45,6 +45,9 @@
 
             <span class="invalid-feedback">
               <span class="main-body-text mb-2" *ngIf="!submittedPassword">{{ passwordMessage }}</span>
+              <span *ngIf="submittedPassword && getPasswordInput.errors.minlength" class="main-body-text mb-2">
+                Your password must be a minimum of 8 characters.
+              </span>
               <span *ngIf="submittedPassword && getPasswordInput.errors.maxlength" class="main-body-text mb-2">
                 The Password must be no longer than 120 characters.
               </span>
@@ -63,15 +66,16 @@
             </div>
           </div>
           <div class="field-group mt-5"
-               [ngClass]="{'is-invalid': confirmPasswordMessage || (isSubmitted && !getConfirmPasswordInput.valid) ||
+               [ngClass]="{'is-invalid': confirmPasswordMessage ||
+                            (isSubmitted && !getConfirmPasswordInput.valid) ||
                             getPasswordGroup.hasError('notMatched') }">
             <label class="form-label" for="confirmPassword">Confirm password</label>
 
             <span class="invalid-feedback">
-              <span class="main-body-text mb-2" *ngIf="!submittedConfirmPassword">{{ confirmPasswordMessage }}</span>
-              <span *ngIf="submittedConfirmPassword && getConfirmPasswordInput.errors.maxlength" class="main-body-text mb-2">
+              <span class="main-body-text mb-2" *ngIf="!isSubmitted && !submittedConfirmPassword">{{ confirmPasswordMessage }}</span>
+              <!-- <span *ngIf="submittedConfirmPassword && getConfirmPasswordInput.errors.maxlength" class="main-body-text mb-2">
                 The Password must be no longer than 120 characters.
-              </span>
+              </span> -->
               <span *ngIf="submittedConfirmPassword && getConfirmPasswordInput.errors.required" class="main-body-text mb-2">
                 Please confirm your Password.
               </span>
