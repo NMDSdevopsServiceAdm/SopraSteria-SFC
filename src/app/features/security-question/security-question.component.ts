@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
 import { Router, ActivatedRoute } from '@angular/router';
+import { debounceTime } from 'rxjs/operators';
 
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
@@ -15,7 +16,39 @@ export class SecurityQuestionComponent implements OnInit {
   securityQuestionAnswerForm: FormGroup;
   registration: RegistrationModel[];
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
+  // Set up Validation messages
+  securityQuestionMessage: string;
+  securityAnswerMessage: string;
+
+  isSubmitted = false;
+  submittedSecurityQ = false;
+  submittedSecurityA = false;
+
+  private securityQuestionMessages = {
+    maxlength: 'The security question must be no longer than 120 characters.',
+    required: 'Please enter your Security question.'
+  };
+
+  private securityAnswerMessages = {
+    maxlength: 'The security answer must be no longer than 120 characters.',
+    required: 'Please enter your Security answer.'
+  };
+
+  constructor(
+    private _registrationService: RegistrationService,
+    private router: Router, private route: ActivatedRoute,
+    private fb: FormBuilder
+  ) { }
+
+  // Get user security question
+  get getSecurityQuestionInput() {
+    return this.securityQuestionAnswerForm.get('securityQuestionInput');
+  }
+
+  // Get user security answer
+  get getSecurityAnswerInput() {
+    return this.securityQuestionAnswerForm.get('securityAnswerInput');
+  }
 
   ngOnInit() {
     this.securityQuestionAnswerForm = this.fb.group({
@@ -24,12 +57,49 @@ export class SecurityQuestionComponent implements OnInit {
     });
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     console.log(this.registration);
+
+    // security question watcher
+    this.getSecurityQuestionInput.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => this.setSecurityQuestionMessage(this.getSecurityQuestionInput)
+    );
+
+    // security answer watcher
+    this.getSecurityAnswerInput.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => this.setSecurityAnswerMessage(this.getSecurityAnswerInput)
+    );
+
     this.changeDetails();
+  }
+
+  setSecurityQuestionMessage(c: AbstractControl): void {
+    this.securityQuestionMessage = '';
+    debugger;
+    if ((c.touched || c.dirty) && c.errors) {
+      this.securityQuestionMessage = Object.keys(c.errors).map(
+        key => this.securityQuestionMessage += this.securityQuestionMessages[key]).join('<br />');
+    }
+    debugger;
+    this.submittedSecurityQ = false;
+  }
+
+  setSecurityAnswerMessage(c: AbstractControl): void {
+    this.securityAnswerMessage = '';
+    debugger;
+    if ((c.touched || c.dirty) && c.errors) {
+      this.securityAnswerMessage = Object.keys(c.errors).map(
+        key => this.securityAnswerMessage += this.securityAnswerMessages[key]).join('<br />');
+    }
+    debugger;
+    this.submittedSecurityA = false;
   }
 
   changeDetails(): void {
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       const createSecurityQuestionValue = this.registration[0].locationdata.user.securityQuestion;
       const createsecurityAnswerValue = this.registration[0].locationdata.user.securityAnswer;
 
@@ -37,9 +107,29 @@ export class SecurityQuestionComponent implements OnInit {
         securityQuestionInput: createSecurityQuestionValue,
         securityAnswerInput: createsecurityAnswerValue,
       });
-
     }
+  }
 
+  onSubmit() {
+    debugger;
+    this.isSubmitted = true;
+    this.submittedSecurityQ = true;
+    this.submittedSecurityA = true;
+
+    debugger;
+
+    // stop here if form is invalid
+    if (this.securityQuestionAnswerForm.invalid) {
+      debugger;
+      this.isSubmitted = false;
+      this.submittedSecurityQ = false;
+      this.submittedSecurityA = false;
+      return;
+    }
+    else {
+      debugger;
+      this.save();
+    }
   }
 
   save() {

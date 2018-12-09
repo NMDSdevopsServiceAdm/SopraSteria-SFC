@@ -82,7 +82,7 @@ export class UserDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.userDetailsForm = this.fb.group({
-      userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]], updateOn: 'blur',
+      userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]],
       userJobTitleInput: ['', [Validators.required, Validators.maxLength(120)]],
       userEmailInput: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
       userPhoneInput: ['', [Validators.required, Validators.maxLength(50)]]
@@ -133,7 +133,7 @@ export class UserDetailsComponent implements OnInit {
 
   changeDetails(): void {
     debugger;
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       const userFullnameValue = this.registration[0].locationdata.user.fullname;
       const userJobTitleValue = this.registration[0].locationdata.user.jobTitle;
       const userEmailValue = this.registration[0].locationdata.user.emailAddress;
@@ -145,9 +145,7 @@ export class UserDetailsComponent implements OnInit {
         userEmailInput: userEmailValue,
         userPhoneInput: userPhoneValue
       });
-
     }
-
   }
 
   setFullnameMessage(c: AbstractControl): void {
@@ -226,20 +224,20 @@ export class UserDetailsComponent implements OnInit {
     console.log(this.registration);
     debugger;
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       // Get updated form results
       debugger;
       if (this.registration[0].locationdata.user.hasOwnProperty('username')) {
-        const createUsernameValue = this.registration[0].locationdata.user.username;
+        this.createUsernameValue = this.registration[0].locationdata.user.username;
       }
       if (this.registration[0].locationdata.user.hasOwnProperty('password')) {
-        const createPasswordValue = this.registration[0].locationdata.user.password;
+        this.createPasswordValue = this.registration[0].locationdata.user.password;
       }
       if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
-        const createSecurityQuestionValue = this.registration[0].locationdata.user.securityQuestion;
+        this.createSecurityQuestionValue = this.registration[0].locationdata.user.securityQuestion;
       }
       if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
-        const createsecurityAnswerValue = this.registration[0].locationdata.user.securityAnswer;
+        this.createsecurityAnswerValue = this.registration[0].locationdata.user.securityAnswer;
       }
     }
 
@@ -258,24 +256,25 @@ export class UserDetailsComponent implements OnInit {
     this.registration[0].locationdata.user['emailAddress'] = userEmailValue;
     this.registration[0].locationdata.user['contactNumber'] = userPhoneValue;
 
-    if (this.registration[0].locationdata.hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
-      if (this.registration[0].locationdata.user.hasOwnProperty('username')) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+      //if (this.registration[0].locationdata.user.hasOwnProperty('username')) {
         this.registration[0].locationdata.user['username'] = this.createUsernameValue;
-      }
-      if (this.registration[0].locationdata.user.hasOwnProperty('password')) {
+      //}
+      //if (this.registration[0].locationdata.user.hasOwnProperty('password')) {
         this.registration[0].locationdata.user['password'] = this.createPasswordValue;
-      }
-      if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
+      ///}
+      //if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
         this.registration[0].locationdata.user['securityQuestion'] = this.createSecurityQuestionValue;
-      }
-      if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
+      //}
+      //if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
         this.registration[0].locationdata.user['securityAnswer'] = this.createsecurityAnswerValue;
-      }
+      //}
     }
+    debugger;
 
     this._registrationService.updateState(this.registration);
 
-    if (this.registration[0].locationdata.hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
       this.router.navigate(['/confirm-account-details']);
     } else {
       this.router.navigate(['/create-username']);
