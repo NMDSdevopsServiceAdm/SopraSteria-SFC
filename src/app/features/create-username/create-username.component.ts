@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
 import { Router, ActivatedRoute } from '@angular/router';
+import { debounceTime } from 'rxjs/operators';
 
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
+import { CustomValidators } from './../../shared/custom-form-validators';
 
 @Component({
   selector: 'app-create-username',
@@ -18,7 +20,59 @@ export class CreateUsernameComponent implements OnInit {
   createSecurityQuestionValue: string;
   createsecurityAnswerValue: string;
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute, private fb: FormBuilder) { }
+  isSubmitted = false;
+  submittedUsername = false;
+  submittedPassword = false;
+  submittedConfirmPassword = false;
+
+  // Set up Validation messages
+  usernameMessage: string;
+  passwordMessage: string;
+  confirmPasswordMessage: string;
+
+  private usernameMessages = {
+    maxlength: 'Your fullname must be no longer than 120 characters.',
+    required: 'Please enter your fullname.',
+    bothHaveContent: 'Both have content.',
+  };
+
+  private passwordMessages = {
+    maxlength: 'Your fullname must be no longer than 120 characters.',
+    required: 'Please enter your fullname.'
+  };
+
+  private confirmPasswordMessages = {
+    maxlength: 'Your fullname must be no longer than 120 characters.',
+    required: 'Please enter your fullname.',
+    notMatched: 'Confirm Password does not match.'
+  };
+
+  constructor(
+    private _registrationService: RegistrationService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private fb: FormBuilder
+  ) { }
+
+  // Get password group
+  get getPasswordGroup() {
+    return this.createUserNamePasswordForm.get('passwordGroup');
+  }
+
+  // Get create username
+  get getCreateUsernameInput() {
+    return this.createUserNamePasswordForm.get('createUsernameInput');
+  }
+
+  // Get create password
+  get getPasswordInput() {
+    return this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput');
+  }
+
+  // Get confirm password
+  get getConfirmPasswordInput() {
+    return this.createUserNamePasswordForm.get('passwordGroup.confirmPasswordInput');
+  }
 
   ngOnInit() {
     this.createUserNamePasswordForm = this.fb.group({
@@ -26,20 +80,93 @@ export class CreateUsernameComponent implements OnInit {
       passwordGroup: this.fb.group({
         createPasswordInput: ['', [Validators.required, Validators.maxLength(120)]],
         confirmPasswordInput: ['', [Validators.required, Validators.maxLength(120)]]
-      }, { validator: checkPasswordConfirm }),
+      }, { validator: CustomValidators.matchInputValues }),
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     console.log(this.registration);
 
     this.changeDetails();
+
+    // Create username watcher
+    this.getCreateUsernameInput.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => this.setCreateUsernameMessage(this.getCreateUsernameInput)
+    );
+
+    // Create password watcher
+    this.getPasswordInput.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => this.setPasswordMessage(this.getPasswordInput)
+    );
+
+    // Confirm password watcher
+    this.getConfirmPasswordInput.valueChanges.pipe(
+      debounceTime(1000)
+    ).subscribe(
+      value => {
+        if (value.length > 0) {
+          if (this.getPasswordGroup.errors) {
+            this.setConfirmPasswordMessage(this.getPasswordGroup);
+          }
+          if (this.getConfirmPasswordInput.errors) {
+            this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
+          }
+        }
+        // else {
+        //   this.isSubmitted = false;
+        //   this.submittedConfirmPassword = false;
+        //   this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
+        // }
+      }
+    );
+  }
+
+  setCreateUsernameMessage(c: AbstractControl): void {
+    this.usernameMessage = '';
+    debugger;
+    if (c.errors) {
+      this.usernameMessage = Object.keys(c.errors).map(
+        key => this.usernameMessage += this.usernameMessages[key]).join('<br />');
+    }
+    debugger;
+    this.submittedUsername = false;
+  }
+
+  setPasswordMessage(c: AbstractControl): void {
+    this.passwordMessage = '';
+    debugger;
+    if (c.errors) {
+      this.passwordMessage = Object.keys(c.errors).map(
+        key => this.passwordMessage += this.passwordMessages[key]).join('<br />');
+    }
+    debugger;
+    this.submittedPassword = false;
+  }
+
+  setConfirmPasswordMessage(c: AbstractControl): void {
+    this.confirmPasswordMessage = '';
+    debugger;
+    if (c.errors) {
+      this.confirmPasswordMessage = Object.keys(c.errors).map(
+        key => this.confirmPasswordMessage += this.confirmPasswordMessages[key]).join('<br />');
+    }
+    else {
+      if (!this.getConfirmPasswordInput.errors) {
+        this.save();
+      }
+    }
+    debugger;
+    //this.submittedConfirmPassword = false;
   }
 
   changeDetails(): void {
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
-      let createUsernameValue = this.registration[0].user.username;
-      let createPasswordValue = this.registration[0].user.password;
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
+      const createUsernameValue = this.registration[0].locationdata.user.username;
+      const createPasswordValue = this.registration[0].locationdata.user.password;
 
       this.createUserNamePasswordForm.setValue({
         createUsernameInput: createUsernameValue,
@@ -53,32 +180,52 @@ export class CreateUsernameComponent implements OnInit {
 
   }
 
+  onSubmit() {
+    debugger;
+    this.isSubmitted = true;
+    this.submittedUsername = true;
+    this.submittedPassword = true;
+    this.submittedConfirmPassword = true;
+
+    debugger;
+
+    // stop here if form is invalid
+    if (this.createUserNamePasswordForm.invalid) {
+      debugger;
+        return;
+    }
+    else {
+      debugger;
+      this.save();
+    }
+  }
+
   save() {
 
-    let createUsernameValue = this.createUserNamePasswordForm.get('createUsernameInput').value;
-    let createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
+    const createUsernameValue = this.createUserNamePasswordForm.get('createUsernameInput').value;
+    const createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
     //let confirmPasswordValue = this.createUserNamePasswordForm.get('confirmPasswordInput').value;
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
       // Get updated form results
-      if (this.registration[0].user.hasOwnProperty('securityQuestion')) {
-        this.createSecurityQuestionValue = this.registration[0].user.securityQuestion;
+      if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
+        this.createSecurityQuestionValue = this.registration[0].locationdata.user.securityQuestion;
       }
-      if (this.registration[0].user.hasOwnProperty('securityAnswer')) {
-        this.createsecurityAnswerValue = this.registration[0].user.securityAnswer;
+      if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
+        this.createsecurityAnswerValue = this.registration[0].locationdata.user.securityAnswer;
       }
     }
 
-    this.registration[0].user['username'] = createUsernameValue;
-    this.registration[0].user['password'] = createPasswordValue;
+    this.registration[0].locationdata.user['username'] = createUsernameValue;
+    this.registration[0].locationdata.user['password'] = createPasswordValue;
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
       // Get updated form results
-      if (this.registration[0].user.hasOwnProperty('securityQuestion')) {
-        this.registration[0].user['securityQuestion'] = this.createSecurityQuestionValue;
+      if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
+        this.registration[0].locationdata.user['securityQuestion'] = this.createSecurityQuestionValue;
       }
-      if (this.registration[0].user.hasOwnProperty('securityAnswer')) {
-        this.registration[0].user['securityAnswer'] = this.createsecurityAnswerValue;
+      if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
+        this.registration[0].locationdata.user['securityAnswer'] = this.createsecurityAnswerValue;
       }
     }
 
@@ -86,30 +233,30 @@ export class CreateUsernameComponent implements OnInit {
 
     //this._registrationService.routingCheck(this.registration);
 
-    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].detailsChanged === true) {
+    if (this.registration[0].hasOwnProperty('detailsChanged') && this.registration[0].locationdata.detailsChanged === true) {
       this.router.navigate(['/confirm-account-details']);
     }
     else {
       this.router.navigate(['/security-question']);
     }
-    
+
 
     //routerLink = "/security-question"
   }
 }
 
 // Check for content in both CQC registered input fields
-function checkPasswordConfirm(c: AbstractControl): { [key: string]: boolean } | null {
-  const passwordControl = c.get('createPasswordInput');
-  const confirmPasswordControl = c.get('confirmPasswordInput');
+// function matchInputValues(c: AbstractControl): { [key: string]: boolean } | null {
+//   const passwordControl = c.get('createPasswordInput');
+//   const confirmPasswordControl = c.get('confirmPasswordInput');
 
-  if (confirmPasswordControl.pristine) {
-    return null;
-  }
+//   if (confirmPasswordControl.pristine) {
+//     return null;
+//   }
 
-  if (passwordControl.value === confirmPasswordControl.value) {
-    return null;
-  }
+//   if (passwordControl.value === confirmPasswordControl.value) {
+//     return null;
+//   }
 
-  return { 'notMatched': true };
-}
+//   return { 'notMatched': true };
+// }

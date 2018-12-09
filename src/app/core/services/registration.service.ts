@@ -1,40 +1,42 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
+import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
 import { RegistrationModel } from '../model/registration.model';
+import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
 const initialRegistration: RegistrationModel[] =
-
+[{
   // Example initial dummy data
-
-  [
-    {
-      addressLine1: '14 Shepherd\'s Court',
-      addressLine2: '111 High Street',
-      county: 'Berkshire',
-      locationId: '1-1000270393',
-      locationName: 'Red Kite Home Care',
-      mainService: 'Homecare agencies',
-      postalCode: 'SL1 7JZ',
-      townCity: 'Slough',
-      isRegulated: true,
-      user: {
-        fullname: 'Mike Wazowski',
-        jobTitle: 'Scaring assistant',
-        emailAddress: 'mike.wazowski@monsters.inc',
-        contactNumber: '07828732666',
-        username: 'cyclops',
-        password: 'password1',
-        securityQuestion: 'Who is my partner',
-        securityAnswer: 'James P.Sulivan'
-      },
-      detailsChanged: false
-    }
-  ];
+  success: 1,
+  message: 'Successful',
+  locationdata: {
+    addressLine1: '14 Shepherd\'s Court',
+    addressLine2: '111 High Street',
+    county: 'Berkshire',
+    locationId: '1-1000270393',
+    locationName: 'Red Kite Home Care',
+    mainService: 'Homecare agencies',
+    postalCode: 'SL1 7JZ',
+    townCity: 'Slough',
+    isRegulated: true,
+    user: {
+      fullname: 'Mike Wazowski',
+      jobTitle: 'Scaring assistant',
+      emailAddress: 'mike.wazowski@monsters.inc',
+      contactNumber: '07828732666',
+      username: 'cyclops',
+      password: 'password1',
+      securityQuestion: 'Who is my partner',
+      securityAnswer: 'James P.Sulivan'
+    },
+    detailsChanged: false
+  }
+}];
 
 
 @Injectable({
@@ -67,51 +69,28 @@ export class RegistrationService {
   getLocationByPostCode(id: string) {
     const $value = id;
 
-    this.http.get<RegistrationModel>('/api/locations/pc/' + $value).subscribe(
-      (data: RegistrationModel) => {
-
-        this.updateState(data);
-        return this.routingCheck(data);
-
-      },
-      (err: any) => console.log(err),
-      () => {
-        console.log('Get location by postcode complete');
-      }
-    );
+    return this.http.get<RegistrationModel>('/api/locations/pc/' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
+      );
   }
 
   getLocationByLocationId(id: string) {
-
     const $value = id;
 
-    this.http.get<RegistrationModel>('/api/locations/lid/' + $value)
-      .subscribe(
-        (data: RegistrationModel) => {
-
-          this.updateState(data);
-          this.routingCheck(data);
-          // this.router.navigate(['/confirm-workplace-details']);
-
-        },
-        (err: any) => console.log(err),
-        () => console.log('Get location by id sucessful')
+    return this.http.get<RegistrationModel>('/api/locations/lid/' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
       );
   }
 
   getAddressByPostCode(id: string) {
     const $value = id;
-    this.http.get<RegistrationModel>('/api/postcodes/' + $value).subscribe(
-      (data: RegistrationModel) => {
-        this.updateState(data);
-        this.router.navigate(['/select-workplace-address']);
 
-      },
-      (err: any) => console.log(err),
-      () => {
-        console.log('Get location by postcode complete');
-      }
-    );
+    return this.http.get<RegistrationModel>('/api/postcodes/' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
+      );
   }
 
   getUpdatedAddressByPostCode(id: string) {
@@ -132,12 +111,12 @@ export class RegistrationService {
   }
 
   routingCheck(data) {
-
+    debugger;
     if (data.length > 1) {
       this.router.navigate(['/select-workplace']);
     } else {
-
-      if (data[0].mainService === '') {
+      debugger;
+      if (data.locationdata[0].mainService === '') {
         this.router.navigate(['/select-main-service']);
       } else {
         this.router.navigate(['/confirm-workplace-details']);
@@ -148,6 +127,14 @@ export class RegistrationService {
 
   updateState(data) {
     this._registration$.next(data);
+  }
+
+  private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
+    const dataError = new RegistrationTrackerError();
+    dataError.message = error.message;
+    dataError.success = error.error.success;
+    dataError.friendlyMessage = error.error.message;
+    return ErrorObservable.create(dataError);
   }
 
 

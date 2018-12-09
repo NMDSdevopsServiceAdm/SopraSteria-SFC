@@ -21,7 +21,7 @@ export class ConfirmAccountDetailsComponent implements OnInit {
     console.log(this.registration);
 
     if (this.registration[0].hasOwnProperty('detailsChanged')) {
-      delete this.registration[0].detailsChanged;
+      delete this.registration[0].locationdata.detailsChanged;
       console.log(this.registration);
     }
     //this.registration[0]['detailsChanged'] = undefined;

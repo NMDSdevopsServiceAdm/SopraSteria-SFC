@@ -36,10 +36,10 @@ export class SelectMainServiceComponent implements OnInit {
 
   selectMainServiceChanged(value: string): void {
 
-    this.registration[0].mainService = value;
+    this.registration[0].locationdata.mainService = value;
 
     console.log(this.registration[0]);
-    
+
   }
 
   save() {

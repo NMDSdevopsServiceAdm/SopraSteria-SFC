@@ -19,7 +19,7 @@ export class RegistrationCompleteComponent implements OnInit {
 
     console.log(this.registration);
 
-    if (this.registration[0].isRegulated) {
+    if (this.registration[0].locationdata.isRegulated) {
       this.isRegulated = true;
     }
     else {

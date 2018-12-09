@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
@@ -6,8 +7,9 @@ import { debounceTime } from 'rxjs/operators';
 
 import { RegistrationService } from '../../../core/services/registration.service';
 import { RegistrationModel } from '../../../core/model/registration.model';
+import { RegistrationTrackerError } from '../../../core/model/registrationTrackerError.model';
 import { CqcRegisteredQuestionEnteredLocation } from './cqc-regsitered-check';
-
+import { CustomValidators } from '../../../shared/custom-form-validators';
 
 @Component({
   selector: 'app-cqc-registered-question-edit',
@@ -25,28 +27,30 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   isSubmitted = false;
   submittedCqcRegPostcode = false;
   submittedCqcRegLocationId = false;
-  submittedCqcRegPostcodeMessage = false;
-  submittedNonCqcRegPostcodeMessage = false;
 
   cqcRegPostcodeMessage: string;
   cqcRegLocationIdMessage: string;
   nonCqcRegPostcodeMessage: string;
 
+  cqcPostcodeApiError: string;
+  cqclocationApiError: string;
+  nonCqcPostcodeApiError: string;
+
   private cqcRegPostcodeMessages = {
-    maxlength: 'TS - Your postcode must be no longer than 8 characters.',
-    //bothHaveContent: 'TS - Both have content.',
-    required: 'TS - Please enter a postcode or Location ID.'
+    maxlength: 'Your postcode must be no longer than 8 characters.',
+    bothHaveContent: 'Both have content.',
+    //required: 'TS - Please enter a postcode or Location ID.'
   };
 
   private cqcRegLocationIdMessages = {
-    maxlength: 'TS - Your Location ID must be no longer than 50 characters.',
-    //bothHaveContent: 'TS - Both have content.',
-    required: 'TS - Please enter a postcode or Location ID.'
+    maxlength: 'Your Location ID must be no longer than 50 characters.',
+    bothHaveContent: 'Both have content.'
+    //required: 'TS - Please enter a postcode or Location ID.'
   };
 
   private nonCqcRegPostcodeMessages = {
-    maxlength: 'TS - Your postcode must be no longer than 8 characters.',
-    required: 'TS - Please enter your postcode.'
+    maxlength: 'Your postcode must be no longer than 8 characters.',
+    required: 'Please enter your postcode.'
   };
 
   constructor(
@@ -58,6 +62,11 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   // Get registered question
   get registeredQuestion() {
     return this.cqcRegisteredQuestionForm.get('registeredQuestionSelected');
+  }
+
+  // Get registered group
+  get cqcRegisteredGroup() {
+    return this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup');
   }
 
   // Get registered question
@@ -81,8 +90,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       radioSelect: 'registeredQuestionSelected',
       cqcRegisteredGroup: this.fb.group({
         cqcRegisteredPostcode: ['', Validators.maxLength(8)],
-        locationId: ['', Validators.maxLength(50)],
-      }),
+        locationId: ['', Validators.maxLength(50)]
+      }, { validator: CustomValidators.multipleValuesValidator }),
       notRegisteredPostcode: ''
     });
 
@@ -97,23 +106,13 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       debounceTime(1000)
     ).subscribe(
       value => {
-
         if (value.length > 0) {
 
+          if (this.cqcRegisteredGroup.errors) {
+            this.setCqcRegPostcodeMessage(this.cqcRegisteredGroup);
+          }
           if (this.cqcRegisteredPostcode.errors) {
-            this.isSubmitted = false;
-            this.submittedCqcRegPostcode = false;
             this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
-          }
-          else if (this.cqcRegisteredLocationId.errors) {
-            this.isSubmitted = true;
-            this.submittedCqcRegLocationId = true;
-            this.submittedCqcRegPostcode = true;
-          }
-          if (!this.cqcRegisteredPostcode.errors && !this.cqcRegisteredLocationId.errors) {
-            this.isSubmitted = true;
-            this.submittedCqcRegPostcode = true;
-            this.submittedCqcRegLocationId = true;
           }
         }
         else {
@@ -132,21 +131,25 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       value => {
         if (value.length > 0) {
 
+          if (this.cqcRegisteredGroup.errors) {
+            //this.setCqcRegPostcodeMessage(this.cqcRegisteredGroup);
+            this.setCqcRegisteredLocationIdMessage(this.cqcRegisteredGroup);
+          }
           if (this.cqcRegisteredLocationId.errors) {
-            this.isSubmitted = false;
-            this.submittedCqcRegLocationId = false;
+            //this.isSubmitted = false;
+            //this.submittedCqcRegLocationId = false;
             this.setCqcRegisteredLocationIdMessage(this.cqcRegisteredLocationId);
           }
-          else if (this.cqcRegisteredPostcode.errors) {
-            this.isSubmitted = true;
-            this.submittedCqcRegPostcode = true;
-            this.submittedCqcRegLocationId = true;
-          }
-          if (!this.cqcRegisteredPostcode.errors && !this.cqcRegisteredLocationId.errors) {
-            this.isSubmitted = true;
-            this.submittedCqcRegPostcode = true;
-            this.submittedCqcRegLocationId = true;
-          }
+          // else if (this.cqcRegisteredPostcode.errors) {
+          //   this.isSubmitted = true;
+          //   this.submittedCqcRegPostcode = true;
+          //   this.submittedCqcRegLocationId = true;
+          // }
+          // if (!this.cqcRegisteredPostcode.errors && !this.cqcRegisteredLocationId.errors) {
+          //   this.isSubmitted = true;
+          //   this.submittedCqcRegPostcode = true;
+          //   this.submittedCqcRegLocationId = true;
+          // }
 
         }
         else {
@@ -178,15 +181,15 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         key => this.cqcRegPostcodeMessage += this.cqcRegPostcodeMessages[key]).join(' ');
     }
     else {
-      if (this.cqcRegisteredLocationId.errors) {
-        this.isSubmitted = false;
-      }
-      else if (!this.cqcRegisteredPostcode.errors) {
-        this.isSubmitted = true;
-        this.submittedCqcRegPostcode = true;
-        this.submittedCqcRegLocationId = true;
-      }
-      else if (this.isSubmitted && !this.cqcRegisteredLocationId.errors) {
+      // if (this.cqcRegisteredLocationId.errors) {
+      //   this.isSubmitted = false;
+      // }
+      // else if (!this.cqcRegisteredPostcode.errors) {
+      //   // this.isSubmitted = true;
+      //   // this.submittedCqcRegPostcode = true;
+      //   // this.submittedCqcRegLocationId = true;
+      // }
+      if (this.isSubmitted && !this.cqcRegisteredLocationId.errors) {
         this.save();
       }
     }
@@ -200,15 +203,16 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         key => this.cqcRegLocationIdMessage += this.cqcRegLocationIdMessages[key]).join('<br />');
     }
     else {
-      if (this.cqcRegisteredPostcode.errors) {
-        this.isSubmitted = false;
-      }
-      else if (!this.cqcRegisteredLocationId.errors) {
-        this.isSubmitted = true;
-        this.submittedCqcRegPostcode = true;
-        this.submittedCqcRegLocationId = true;
-      }
-      else if (this.isSubmitted && !this.cqcRegisteredPostcode.errors) {
+      // if (this.cqcRegisteredPostcode.errors) {
+      //   this.isSubmitted = false;
+      // }
+      // else if (!this.cqcRegisteredLocationId.errors) {
+      //   debugger;
+      //   // this.isSubmitted = true;
+      //   // this.submittedCqcRegPostcode = true;
+      //   // this.submittedCqcRegLocationId = true;
+      // }
+      if (this.isSubmitted && !this.cqcRegisteredPostcode.errors) {
         this.save();
       }
     }
@@ -233,45 +237,76 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   onSubmit() {
 
     const isRegulated = this.cqcRegisteredQuestionForm.get('registeredQuestionSelected').value;
-
+    debugger;
     if (isRegulated === 'true') {
       const cqcRegisteredPostcode = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode');
       const locationId = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId');
+      // Clear value of not cqc registered postcode if previously entered
+      //this.notRegisteredPostcode.value = '';
+      debugger;
 
-      if (cqcRegisteredPostcode.value.length > 0) {
-        if (this.cqcRegisteredPostcode.errors) {
-          this.isSubmitted = true;
-          this.submittedCqcRegPostcode = false;
+      if ((cqcRegisteredPostcode.value.length > 0) || (locationId.value.length > 0)) {
+        debugger;
+        if ((this.cqcRegisteredPostcode.errors) || (this.cqcRegisteredLocationId.errors) || this.cqcRegisteredGroup.errors) {
+          return;
         }
         else {
-          this.isSubmitted = true;
-          this.submittedCqcRegPostcode = true;
           this.save();
         }
-      }
-      if (locationId.value.length > 0) {
-        if (this.cqcRegisteredLocationId.errors) {
-
-          this.isSubmitted = true;
-          this.submittedCqcRegLocationId = false;
-        }
-        else {
-          this.isSubmitted = true;
-          this.submittedCqcRegLocationId = true;
-          this.save();
-        }
-      }
-      if (!locationId.value || !cqcRegisteredPostcode.value)  {
-        cqcRegisteredPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
-        locationId.setValidators([Validators.required, Validators.maxLength(50)]);
-        cqcRegisteredPostcode.updateValueAndValidity();
-        locationId.updateValueAndValidity();
       }
     }
-    else if (isRegulated === 'false') {
-      this.save();
+    else {
+      // Clear value of cqc registered postcode and location Id if previously entered
+      //this.cqcRegisteredPostcode.value = '';
+      //this.cqcRegisteredLocationId.value = '';
+
+      if (this.notRegisteredPostcode.errors) {
+        return;
+      }
+      else {
+        this.save();
+      }
     }
   }
+        // if (this.cqcRegisteredPostcode.errors) {
+        //   debugger;
+        //   this.isSubmitted = true;
+        //   this.submittedCqcRegPostcode = false;
+        // }
+        // else {
+        //   debugger;
+        //   this.isSubmitted = true;
+        //   this.submittedCqcRegPostcode = true;
+        //   this.save();
+        // }
+      //}
+      // if (locationId.value.length > 0) {
+      //   debugger;
+      //   if (this.cqcRegisteredLocationId.errors) {
+      //     debugger;
+      //     this.isSubmitted = true;
+      //     this.submittedCqcRegLocationId = false;
+      //   }
+      //   else {
+      //     debugger;
+      //     this.isSubmitted = true;
+      //     this.submittedCqcRegLocationId = true;
+      //     this.save();
+      //   }
+      // }
+
+      // if (!locationId.value && !cqcRegisteredPostcode.value)  {
+      //   cqcRegisteredPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
+      //   locationId.setValidators([Validators.required, Validators.maxLength(50)]);
+      //   cqcRegisteredPostcode.updateValueAndValidity();
+      //   locationId.updateValueAndValidity();
+      // }
+    //}
+    // else if (isRegulated === 'false') {
+    //   debugger;
+    //   this.save();
+    // }
+
 
   save() {
 
@@ -280,14 +315,69 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     const notRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode').value;
 
     if (cqcRegisteredPostcodeValue.length > 0) {
-      this._registrationService.getLocationByPostCode(cqcRegisteredPostcodeValue);
+      this._registrationService.getLocationByPostCode(cqcRegisteredPostcodeValue).subscribe(
+        (data: RegistrationModel) => {
+          if (data.success === 1) {
+            debugger;
+            //data = data.locationdata;
+            this._registrationService.updateState(data);
+            this._registrationService.routingCheck(data);
+          }
+        },
+        (err: RegistrationTrackerError) => {
+          debugger;
+          console.log(err);
+          this.cqcPostcodeApiError = err.friendlyMessage;
+          this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+        },
+        () => {
+          console.log('Get location by postcode complete');
+        }
+      );
     }
     else if (locationIdValue.length > 0) {
-      this._registrationService.getLocationByLocationId(locationIdValue);
+      this._registrationService.getLocationByLocationId(locationIdValue).subscribe(
+        (data: RegistrationModel) => {
+          if (data.success === 1) {
+            debugger;
+            //data = data.locationdata;
+            this._registrationService.updateState(data);
+            this._registrationService.routingCheck(data);
+          }
+        },
+        (err: RegistrationTrackerError) => {
+          debugger;
+          console.log(err);
+          this.cqclocationApiError = err.friendlyMessage;
+          this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+        },
+        () => {
+          console.log('Get location by id sucessful');
+        }
+      );
     }
     else if (notRegisteredPostcodeValue.length > 0) {
-      this._registrationService.getAddressByPostCode(notRegisteredPostcodeValue);
-      this.router.navigate(['/select-workplace-address']);
+      this._registrationService.getAddressByPostCode(notRegisteredPostcodeValue).subscribe(
+        (data: RegistrationModel) => {
+          if (data.success === 1) {
+            debugger;
+            //data = data.postcodedata;
+            this._registrationService.updateState(data);
+            //this.routingCheck(data);
+          }
+        },
+        (err: RegistrationTrackerError) => {
+          debugger;
+          console.log(err);
+          this.nonCqcPostcodeApiError = err.friendlyMessage;
+          this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+        },
+        () => {
+          console.log('Get location by postcode complete');
+          this.router.navigate(['/select-workplace-address']);
+        }
+      );
+
     }
   }
 
@@ -305,27 +395,22 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     }
     notRegisteredPostcode.updateValueAndValidity();
   }
-}
 
-// Check for content in both CQC registered input fields
-function checkInputValues(c: AbstractControl): { [key: string]: boolean } | null {
-  const postcodeControl = c.get('cqcRegisteredPostcode');
-  const locationIdControl = c.get('locationId');
+  // Routing check
+  routingCheck(data) {
+    debugger;
+    if (data.length > 1) {
+      this.router.navigate(['/select-workplace']);
+    } else {
 
-  if (postcodeControl.pristine || locationIdControl.pristine) {
-    return null;
+      if (data[0].mainService === '') {
+        this.router.navigate(['/select-main-service']);
+      } else {
+        this.router.navigate(['/confirm-workplace-details']);
+      }
+
+    }
   }
-
-  if (postcodeControl.value.length < 1 && locationIdControl.value.length < 1) {
-    return null;
-  }
-
-  if ((postcodeControl.value.length < 1 && locationIdControl.value.length > 0) ||
-      (postcodeControl.value.length > 0 && locationIdControl.value.length < 1)) {
-
-        return null;
-  }
-  return { 'bothHaveContent': true };
 }
 
 
