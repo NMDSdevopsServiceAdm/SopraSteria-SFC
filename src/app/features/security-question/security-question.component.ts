@@ -77,23 +77,23 @@ export class SecurityQuestionComponent implements OnInit {
 
   setSecurityQuestionMessage(c: AbstractControl): void {
     this.securityQuestionMessage = '';
-    debugger;
+
     if ((c.touched || c.dirty) && c.errors) {
       this.securityQuestionMessage = Object.keys(c.errors).map(
         key => this.securityQuestionMessage += this.securityQuestionMessages[key]).join('<br />');
     }
-    debugger;
+
     //this.submittedSecurityQ = false;
   }
 
   setSecurityAnswerMessage(c: AbstractControl): void {
     this.securityAnswerMessage = '';
-    debugger;
+
     if ((c.touched || c.dirty) && c.errors) {
       this.securityAnswerMessage = Object.keys(c.errors).map(
         key => this.securityAnswerMessage += this.securityAnswerMessages[key]).join('<br />');
     }
-    debugger;
+
     //this.submittedSecurityA = false;
   }
 
@@ -111,23 +111,23 @@ export class SecurityQuestionComponent implements OnInit {
   }
 
   onSubmit() {
-    debugger;
+
     this.isSubmitted = true;
     this.submittedSecurityQ = true;
     this.submittedSecurityA = true;
 
-    debugger;
+
 
     // stop here if form is invalid
     if (this.securityQuestionAnswerForm.invalid) {
-      debugger;
+
       // this.isSubmitted = false;
       // this.submittedSecurityQ = false;
       // this.submittedSecurityA = false;
       return;
     }
     else {
-      debugger;
+
       this.save();
     }
   }

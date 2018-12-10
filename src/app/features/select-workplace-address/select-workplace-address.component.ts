@@ -34,14 +34,14 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     // Watch selectWorkplaceSelected
     this.selectWorkplaceAddressForm.get('selectWorkplaceAddressSelected').valueChanges.subscribe(
       value => {
-        debugger;
+
         this.selectWorkplaceAddressChanged(value);
       }
     );
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     console.log(this.registration);
-    debugger;
+
     this.editPostcode = false;
   }
 
@@ -61,7 +61,7 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     this._registrationService.updateState(this.locationdata[0]);
 
     if (this.registration.locationdata[0].locationName === '') {
-      debugger;
+
       this.router.navigate(['/enter-workplace-address']);
     }
     else {

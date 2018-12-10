@@ -52,7 +52,7 @@ export class SelectWorkplaceComponent implements OnInit {
     const currentpage = this.registration.locationdata[0].currentPage;
 
     this.currentSection = currentpage + 1;
-    debugger;
+
 
     if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
       //this.currentSection = '2';
@@ -63,34 +63,34 @@ export class SelectWorkplaceComponent implements OnInit {
   selectWorkplaceChanged(value: string): void {
     this.selectedAddressId = this.registration.locationdata[value].locationId;
     this.mainService = this.registration.locationdata[value].mainService;
-    debugger;
+
   }
 
   onSubmit() {
     this.isSubmitted = true;
-    debugger;
+
 
     if (this.selectedAddressId) {
-      debugger;
+
       this.save(this.selectedAddressId);
     }
   }
 
   save(selectedAddressId) {
-    debugger;
+
     this._registrationService.getLocationByLocationId(selectedAddressId)
     .subscribe(
       (data: RegistrationModel) => {
         if (data.success === 1) {
           data.locationdata[0].prevPage = 'select-workplace';
           data.locationdata[0].currentPage = this.currentSection;
-          debugger;
+
           this._registrationService.updateState(data);
           this._registrationService.routingCheck(data);
         }
       },
       (err: RegistrationTrackerError) => {
-        debugger;
+
         console.log(err);
         this.cqcPostcodeApiError = err.friendlyMessage;
         //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);

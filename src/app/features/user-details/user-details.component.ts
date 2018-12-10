@@ -143,7 +143,7 @@ export class UserDetailsComponent implements OnInit {
     const currentpage = this.registration.locationdata[0].currentPage;
 
     this.currentSection = currentpage + 1;
-    debugger;
+
 
     if (this.prevPage === 'confirm-workplace-details') {
       if (this.currentSection === 3) {
@@ -160,7 +160,7 @@ export class UserDetailsComponent implements OnInit {
   }
 
   changeDetails(): void {
-    debugger;
+
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       const userFullnameValue = this.registration.locationdata[0].user.fullname;
       const userJobTitleValue = this.registration.locationdata[0].user.jobTitle;
@@ -178,34 +178,34 @@ export class UserDetailsComponent implements OnInit {
 
   setFullnameMessage(c: AbstractControl): void {
     this.fullnameMessage = '';
-    debugger;
+
     if ((c.touched || c.dirty) && c.errors) {
       this.fullnameMessage = Object.keys(c.errors).map(
         key => this.fullnameMessage += this.fullnameMessages[key]).join('<br />');
     }
-    debugger;
+
     this.submittedfullname = false;
   }
 
   setJobTitleMessage(c: AbstractControl): void {
     this.jobTitleMessage = '';
-    debugger;
+
     if ((c.touched || c.dirty) && c.errors) {
       this.jobTitleMessage = Object.keys(c.errors).map(
         key => this.jobTitleMessage += this.jobTitleMessages[key]).join('<br />');
     }
-    debugger;
+
     this.submittedJobTitle = false;
   }
 
   setEmailMessage(c: AbstractControl): void {
     this.emailMessage = '';
-    debugger;
+
     if ((c.touched || c.dirty) && c.errors) {
       this.emailMessage = Object.keys(c.errors).map(
         key => this.emailMessage += this.emailMessages[key]).join('<br />');
     }
-    debugger;
+
     this.submittedEmail = false;
   }
 
@@ -229,15 +229,15 @@ export class UserDetailsComponent implements OnInit {
     this.submittedEmail = true;
     this.submittedPhone = true;
 
-    debugger;
+
 
     // stop here if form is invalid
     if (this.userDetailsForm.invalid) {
-      debugger;
+
         return;
     }
     else {
-      debugger;
+
       this.save();
     }
   }
@@ -250,11 +250,11 @@ export class UserDetailsComponent implements OnInit {
     const userPhoneValue = this.userDetailsForm.get('userPhoneInput').value;
 
     console.log(this.registration);
-    debugger;
+
 
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       // Get updated form results
-      debugger;
+
       if (this.registration.locationdata[0].user.hasOwnProperty('username')) {
         this.createUsernameValue = this.registration.locationdata[0].user.username;
       }
@@ -301,7 +301,7 @@ export class UserDetailsComponent implements OnInit {
 
     this.registration.locationdata[0].prevPage = 'user-details';
     this.registration.locationdata[0].currentPage = this.currentSection;
-    debugger;
+
     this._registrationService.updateState(this.registration);
 
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {

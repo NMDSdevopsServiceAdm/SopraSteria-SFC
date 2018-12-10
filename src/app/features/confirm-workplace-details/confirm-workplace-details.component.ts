@@ -30,7 +30,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
     const currentpage = this.registration.locationdata[0].currentPage;
 
     this.currentSection = currentpage + 1;
-    debugger;
+
 
     if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
       //this.currentSection = '2';
@@ -46,7 +46,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   }
 
   isRegulatedCheck(id: any) {
-    debugger;
+
     if (id.locationdata[0].hasOwnProperty('locationId')) {
       this.registration.locationdata[0]['isRegulated'] = true;
     }
@@ -64,7 +64,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
     //console.log(isRegulatedAddress);
     this.registration.locationdata[0].prevPage = 'confirm-workplace-details';
     this.registration.locationdata[0].currentPage = this.currentSection;
-    debugger;
+
     this._registrationService.updateState(this.registration);
 
     //this._registrationService.routingCheck(this.registration);

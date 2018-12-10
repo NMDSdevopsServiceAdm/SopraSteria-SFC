@@ -56,7 +56,7 @@ export class SelectMainServiceComponent implements OnInit {
     const currentpage = this.registration.locationdata[0].currentPage;
 
     this.currentSection = currentpage + 1;
-    debugger;
+
 
     if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
       //this.currentSection = '2';
@@ -95,7 +95,7 @@ export class SelectMainServiceComponent implements OnInit {
 
   // getUniqueServiceCategories(value) {
   //   const data = value;
-  //   //debugger;
+  //   //
   //   //const allCategories = [];
   //   //const uniqueCategories = [];
 
@@ -172,7 +172,7 @@ export class SelectMainServiceComponent implements OnInit {
 
 
   selectMainServiceChanged(value: string): void {
-    debugger;
+
     this.registration.locationdata[0].mainService = value;
 
     //console.log(this.registration[0]);
@@ -182,7 +182,7 @@ export class SelectMainServiceComponent implements OnInit {
     //routerLink = "/confirm-workplace-details"
     this.registration.locationdata[0].prevPage = 'select-main-service';
     this.registration.locationdata[0].currentPage = this.currentSection;
-    debugger;
+
     console.log(this.registration);
     this._registrationService.updateState(this.registration);
     //this._registrationService.routingCheck(this.registration);
