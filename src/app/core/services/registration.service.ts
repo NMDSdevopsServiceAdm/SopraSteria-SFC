@@ -34,6 +34,8 @@ const initialRegistration: RegistrationModel = {
       securityQuestion: 'Who is my partner',
       securityAnswer: 'James P.Sulivan'
     },
+    prevPage: '',
+    currentPage: 1
   }],
   postcodedata: [{
     locationName: '',

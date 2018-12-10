@@ -24,6 +24,10 @@ export class SelectWorkplaceComponent implements OnInit {
   cqclocationApiError: string;
   nonCqcPostcodeApiError: string;
 
+  currentSection: number;
+  lastSection: number;
+  prevPage: string;
+
   isSubmitted = false;
 
   constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
@@ -39,38 +43,54 @@ export class SelectWorkplaceComponent implements OnInit {
     );
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
+
+    this.setSectionNumbers();
+  }
+
+  setSectionNumbers() {
+    this.prevPage = this.registration.locationdata[0].prevPage;
+    const currentpage = this.registration.locationdata[0].currentPage;
+
+    this.currentSection = currentpage + 1;
+
+
+    if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
+      //this.currentSection = '2';
+      this.lastSection = 7;
+    }
   }
 
   selectWorkplaceChanged(value: string): void {
     this.selectedAddressId = this.registration.locationdata[value].locationId;
     this.mainService = this.registration.locationdata[value].mainService;
-    debugger;
+
   }
 
   onSubmit() {
     this.isSubmitted = true;
-    debugger;
+
 
     if (this.selectedAddressId) {
-      debugger;
+
       this.save(this.selectedAddressId);
     }
   }
 
   save(selectedAddressId) {
-    debugger;
+
     this._registrationService.getLocationByLocationId(selectedAddressId)
     .subscribe(
       (data: RegistrationModel) => {
         if (data.success === 1) {
-          debugger;
-          //data = data.locationdata;
+          data.locationdata[0].prevPage = 'select-workplace';
+          data.locationdata[0].currentPage = this.currentSection;
+
           this._registrationService.updateState(data);
           this._registrationService.routingCheck(data);
         }
       },
       (err: RegistrationTrackerError) => {
-        debugger;
+
         console.log(err);
         this.cqcPostcodeApiError = err.friendlyMessage;
         //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);

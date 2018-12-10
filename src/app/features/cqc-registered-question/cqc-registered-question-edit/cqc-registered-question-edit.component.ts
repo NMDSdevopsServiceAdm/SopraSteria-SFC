@@ -319,6 +319,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       this._registrationService.getLocationByPostCode(cqcRegisteredPostcodeValue).subscribe(
         (data: RegistrationModel) => {
           if (data.success === 1) {
+            data.locationdata['prevPage'] = 'registered-question';
+            data.locationdata['currentPage'] = 1;
             debugger;
             //data = data.locationdata;
             this._registrationService.updateState(data);

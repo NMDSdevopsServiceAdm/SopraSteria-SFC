@@ -22,6 +22,10 @@ export class SelectMainServiceComponent implements OnInit {
   newObject: [];
   //temp = [];
 
+  currentSection: number;
+  lastSection: number;
+  prevPage: string;
+
   servicesData = [];
   testObject: [{}];
 
@@ -36,8 +40,6 @@ export class SelectMainServiceComponent implements OnInit {
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
-
-
     // Get main services
     this.getMainServices();
 
@@ -45,6 +47,25 @@ export class SelectMainServiceComponent implements OnInit {
     this.SelectMainServiceForm.get('mainServiceSelected').valueChanges.subscribe(
       value => this.selectMainServiceChanged(value)
     );
+
+    this.setSectionNumbers();
+  }
+
+  setSectionNumbers() {
+    this.prevPage = this.registration.locationdata[0].prevPage;
+    const currentpage = this.registration.locationdata[0].currentPage;
+
+    this.currentSection = currentpage + 1;
+
+
+    if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
+      //this.currentSection = '2';
+      this.lastSection = 7;
+    }
+    else if ((this.prevPage === 'select-workplace') && (this.currentSection === 3)) {
+      //this.currentSection = '3';
+      this.lastSection = 8;
+    }
   }
 
   getMainServices() {
@@ -74,7 +95,7 @@ export class SelectMainServiceComponent implements OnInit {
 
   // getUniqueServiceCategories(value) {
   //   const data = value;
-  //   //debugger;
+  //   //
   //   //const allCategories = [];
   //   //const uniqueCategories = [];
 
@@ -151,14 +172,17 @@ export class SelectMainServiceComponent implements OnInit {
 
 
   selectMainServiceChanged(value: string): void {
-    debugger;
+
     this.registration.locationdata[0].mainService = value;
 
-    console.log(this.registration[0]);
+    //console.log(this.registration[0]);
   }
 
   save() {
     //routerLink = "/confirm-workplace-details"
+    this.registration.locationdata[0].prevPage = 'select-main-service';
+    this.registration.locationdata[0].currentPage = this.currentSection;
+
     console.log(this.registration);
     this._registrationService.updateState(this.registration);
     //this._registrationService.routingCheck(this.registration);
