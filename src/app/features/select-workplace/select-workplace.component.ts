@@ -24,6 +24,10 @@ export class SelectWorkplaceComponent implements OnInit {
   cqclocationApiError: string;
   nonCqcPostcodeApiError: string;
 
+  currentSection: number;
+  lastSection: number;
+  prevPage: string;
+
   isSubmitted = false;
 
   constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
@@ -39,6 +43,21 @@ export class SelectWorkplaceComponent implements OnInit {
     );
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
+
+    this.setSectionNumbers();
+  }
+
+  setSectionNumbers() {
+    this.prevPage = this.registration.locationdata[0].prevPage;
+    const currentpage = this.registration.locationdata[0].currentPage;
+
+    this.currentSection = currentpage + 1;
+    debugger;
+
+    if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
+      //this.currentSection = '2';
+      this.lastSection = 7;
+    }
   }
 
   selectWorkplaceChanged(value: string): void {
@@ -63,8 +82,9 @@ export class SelectWorkplaceComponent implements OnInit {
     .subscribe(
       (data: RegistrationModel) => {
         if (data.success === 1) {
+          data.locationdata[0].prevPage = 'select-workplace';
+          data.locationdata[0].currentPage = this.currentSection;
           debugger;
-          //data = data.locationdata;
           this._registrationService.updateState(data);
           this._registrationService.routingCheck(data);
         }
