@@ -248,7 +248,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
       if ((cqcRegisteredPostcode.value.length > 0) || (locationId.value.length > 0)) {
         debugger;
-        if ((this.cqcRegisteredPostcode.errors) || (this.cqcRegisteredLocationId.errors) || this.cqcRegisteredGroup.errors) {
+        if (this.cqcRegisteredQuestionForm.invalid || this.cqcRegisteredGroup.errors) {
           return;
         }
         else {
@@ -261,7 +261,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       //this.cqcRegisteredPostcode.value = '';
       //this.cqcRegisteredLocationId.value = '';
 
-      if (this.notRegisteredPostcode.errors) {
+      if (this.cqcRegisteredQuestionForm.invalid) {
         return;
       }
       else {

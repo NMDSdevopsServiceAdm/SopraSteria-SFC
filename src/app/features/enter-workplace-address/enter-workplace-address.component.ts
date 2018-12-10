@@ -112,6 +112,8 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     debugger;
 
+    this.loadExistingValues();
+
     // -- START -- Validation check watchers
     // Watch registeredQuestionSelected
     this.getPostcode.valueChanges.pipe(
@@ -341,6 +343,26 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     //this.submittedWpNameInput = false;
   }
   // -- END -- Set validation handlers
+
+  loadExistingValues() {
+    debugger;
+    if ((this.registration.locationdata[0].hasOwnProperty('locationName')) && (this.registration.locationdata[0].locationName === '')) {
+      const postcodeValue = this.registration.locationdata[0].postalCode;
+      const address1Value = this.registration.locationdata[0].addressLine1;
+      const address2Value = this.registration.locationdata[0].addressLine2;
+      const townCityValue = this.registration.locationdata[0].townCity;
+      const countyValue = this.registration.locationdata[0].county;
+
+      this.enterWorkplaceAddressForm.setValue({
+        postcodeInput: postcodeValue,
+        address1Input: address1Value,
+        address2Input: address2Value,
+        townCityInput: townCityValue,
+        countyInput: countyValue,
+        wpNameInput: '',
+      });
+    }
+  }
 
   onSubmit() {
     //this.isSubmitted = false;
