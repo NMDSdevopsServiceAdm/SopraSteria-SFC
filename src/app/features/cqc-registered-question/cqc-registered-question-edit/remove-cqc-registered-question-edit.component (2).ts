@@ -101,7 +101,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
     // If Yes / Postcode is entered
     if (cqcRegisteredPostcodeValue.length > 0) {
-      
+
       this.registrationService.getLocationByPostCode(cqcRegisteredPostcodeValue);
 
       //  .subscribe(
@@ -201,7 +201,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   //  }
   //}
 
-  
+
 
 }
 
