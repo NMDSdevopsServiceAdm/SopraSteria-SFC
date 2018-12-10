@@ -34,6 +34,14 @@ const initialRegistration: RegistrationModel = {
       securityQuestion: 'Who is my partner',
       securityAnswer: 'James P.Sulivan'
     },
+  }],
+  postcodedata: [{
+    locationName: '',
+    addressLine1: '14 Shepherd\'s Court',
+    addressLine2: '111 High Street',
+    townCity: 'Slough',
+    county: 'Berkshire',
+    postalCode: 'SL1 7JZ'
   }]
 };
 
@@ -85,6 +93,7 @@ export class RegistrationService {
   }
 
   getAddressByPostCode(id: string) {
+    debugger;
     const $value = id;
 
     return this.http.get<RegistrationModel>('/api/postcodes/' + $value)
@@ -95,19 +104,23 @@ export class RegistrationService {
 
   getUpdatedAddressByPostCode(id: string) {
     const $value = id;
-    this.http.get<RegistrationModel>('/api/postcodes/' + $value).subscribe(
-      (data: RegistrationModel) => {
-        this.updateState(data);
+    return this.http.get<RegistrationModel>('/api/postcodes/' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
+      );
+    // .subscribe(
+    //   (data: RegistrationModel) => {
+    //     this.updateState(data);
 
-        // this.router.navigate(['/select-workplace-address']);
+    //     // this.router.navigate(['/select-workplace-address']);
 
-      },
-      (err: any) => console.log(err),
-      () => {
-        console.log('Updated locations by postcode complete');
-        console.log(this._registration$);
-      }
-    );
+    //   },
+    //   (err: any) => console.log(err),
+    //   () => {
+    //     console.log('Updated locations by postcode complete');
+    //     console.log(this._registration$);
+    //   }
+    // );
   }
 
   getMainServices(id: boolean) {

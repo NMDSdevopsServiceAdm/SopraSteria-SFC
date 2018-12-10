@@ -58,7 +58,7 @@ export class SelectMainServiceComponent implements OnInit {
       this.regulatedCheck = true;
     }
     else {
-      this.regulatedCheck = true;
+      this.regulatedCheck = false;
     }
 
     this._registrationService.getMainServices(this.regulatedCheck)

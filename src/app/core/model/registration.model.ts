@@ -24,6 +24,14 @@ export interface RegistrationModel {
       securityAnswer: string;
     }
   }];
+  postcodedata: [{
+    locationName: string;
+    addressLine1: string;
+    addressLine2: string;
+    townCity: string;
+    county: string;
+    postalCode: string;
+  }];
   //  fullname: string;
   //  jobTitle: string;
   //  emailAddress: string;
