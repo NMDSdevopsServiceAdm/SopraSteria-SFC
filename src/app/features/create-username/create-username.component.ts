@@ -38,7 +38,8 @@ export class CreateUsernameComponent implements OnInit {
   private passwordMessages = {
     minlength: 'Your password must be a minimum of 8 characters.',
     maxlength: 'Your password must be no longer than 120 characters.',
-    required: 'Please enter your password.'
+    required: 'Please enter your password.',
+    pattern: 'Invalid password'
   };
 
   private confirmPasswordMessages = {
@@ -77,7 +78,7 @@ export class CreateUsernameComponent implements OnInit {
     this.createUserNamePasswordForm = this.fb.group({
       createUsernameInput: ['', [Validators.required, Validators.maxLength(120)]],
       passwordGroup: this.fb.group({
-        createPasswordInput: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(120)]],
+        createPasswordInput: ['', [Validators.required, Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}')]],
         confirmPasswordInput: ['', [Validators.required]]
       }, { validator: CustomValidators.matchInputValues })
     });

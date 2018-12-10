@@ -50,8 +50,9 @@ export class UserDetailsComponent implements OnInit {
   };
 
   private phoneMessages = {
-    maxlength: 'Your contact phone number must be no longer than 50 characters.',
-    required: 'Please enter your contact phone number.'
+    //maxlength: 'Your contact phone number must be no longer than 50 characters.',
+    required: 'Please enter your contact phone number.',
+    pattern: 'Invalid contact phone number'
   };
 
 
@@ -85,9 +86,9 @@ export class UserDetailsComponent implements OnInit {
       userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]],
       userJobTitleInput: ['', [Validators.required, Validators.maxLength(120)]],
       userEmailInput: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
-      userPhoneInput: ['', [Validators.required, Validators.maxLength(50)]]
+      userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9]{8,50}$')]]
     });
-
+    
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     // Check validation on each field

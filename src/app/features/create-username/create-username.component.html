@@ -45,14 +45,17 @@
 
             <span class="invalid-feedback">
               <span class="main-body-text mb-2" *ngIf="!submittedPassword">{{ passwordMessage }}</span>
-              <span *ngIf="submittedPassword && getPasswordInput.hasError('minlength')" class="main-body-text mb-2">
+              <!-- <span *ngIf="isSubmitted && submittedPassword && getPasswordInput.hasError('minlength')" class="main-body-text mb-2">
                 Your password must be a minimum of 8 characters.
               </span>
-              <span *ngIf="submittedPassword && getPasswordInput.hasError('maxlength')" class="main-body-text mb-2">
+              <span *ngIf="isSubmitted && submittedPassword && getPasswordInput.hasError('maxlength')" class="main-body-text mb-2">
                 The Password must be no longer than 120 characters.
-              </span>
-              <span *ngIf="submittedPassword && getPasswordInput.hasError('required')" class="main-body-text mb-2">
+              </span> -->
+              <span *ngIf="isSubmitted && submittedPassword && getPasswordInput.hasError('required')" class="main-body-text mb-2">
                 Please enter your Password.
+              </span>
+              <span *ngIf="submittedPassword && getPasswordInput.hasError('pattern')" class="main-body-text mb-2">
+                Invalid Password.
               </span>
               <!--<span *ngIf="createUserNamePasswordForm.get('passwordGroup').errors?.notMatched" class="main-body-text mb-2">
                 Password and Confirm Password do not match.

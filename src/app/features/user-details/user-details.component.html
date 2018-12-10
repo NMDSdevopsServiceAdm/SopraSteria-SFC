@@ -99,8 +99,8 @@
             <span class="main-body-text mb-2" *ngIf="submittedPhone && getUserPhoneInput.hasError('required')">
               Please enter your contact phone number.
             </span>
-            <span class="main-body-text mb-2" *ngIf="submittedPhone && getUserPhoneInput.hasError('maxlength')">
-              Your contact phone number must be no longer than 50 characters.
+            <span class="main-body-text mb-2" *ngIf="submittedPhone && getUserPhoneInput.hasError('pattern')">
+              Invalid contact phone number.
             </span>
           </span>
 
