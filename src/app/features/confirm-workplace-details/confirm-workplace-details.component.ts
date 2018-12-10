@@ -12,16 +12,41 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class ConfirmWorkplaceDetailsComponent implements OnInit {
   registration: RegistrationModel;
-  //isRegulatedAddress: any;
+
+  currentSection: number;
+  lastSection: number;
+  prevPage: string;
 
   constructor(private _registrationService: RegistrationService, private router: Router) {}
 
   ngOnInit() {
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
+
+    this.setSectionNumbers();
+  }
+
+  setSectionNumbers() {
+    this.prevPage = this.registration.locationdata[0].prevPage;
+    const currentpage = this.registration.locationdata[0].currentPage;
+
+    this.currentSection = currentpage + 1;
+
+
+    if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
+      //this.currentSection = '2';
+      this.lastSection = 7;
+    }
+    else if ((this.prevPage === 'select-workplace') && (this.currentSection === 3)) {
+      //this.currentSection = '3';
+      this.lastSection = 7;
+    }
+    else if ((this.prevPage === 'select-main-service') && (this.currentSection === 4)) {
+      this.lastSection = 8;
+    }
   }
 
   isRegulatedCheck(id: any) {
-    debugger;
+
     if (id.locationdata[0].hasOwnProperty('locationId')) {
       this.registration.locationdata[0]['isRegulated'] = true;
     }
@@ -37,6 +62,8 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
     this.isRegulatedCheck(this.registration);
 
     //console.log(isRegulatedAddress);
+    this.registration.locationdata[0].prevPage = 'confirm-workplace-details';
+    this.registration.locationdata[0].currentPage = this.currentSection;
 
     this._registrationService.updateState(this.registration);
 

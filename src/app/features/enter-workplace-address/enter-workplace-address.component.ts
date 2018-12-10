@@ -110,7 +110,7 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    debugger;
+    ;
 
     this.loadExistingValues();
 
@@ -271,7 +271,7 @@ export class EnterWorkplaceAddressComponent implements OnInit {
       this.postcodeMessage = Object.keys(c.errors).map(
         key => this.postcodeMessage += this.postcodeMessages[key]).join(' ');
     }
-    debugger;
+    ;
     //this.submittedPostcodeInput = false;
   }
 
@@ -345,7 +345,7 @@ export class EnterWorkplaceAddressComponent implements OnInit {
   // -- END -- Set validation handlers
 
   loadExistingValues() {
-    debugger;
+    ;
     if ((this.registration.locationdata[0].hasOwnProperty('locationName')) && (this.registration.locationdata[0].locationName === '')) {
       const postcodeValue = this.registration.locationdata[0].postalCode;
       const address1Value = this.registration.locationdata[0].addressLine1;
@@ -373,7 +373,7 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     this.submittedCountyInput = true;
     this.submittedWpNameInput = true;
 
-    debugger;
+    ;
 
     // stop here if form is invalid
     if (this.enterWorkplaceAddressForm.invalid) {
@@ -389,11 +389,11 @@ export class EnterWorkplaceAddressComponent implements OnInit {
       // this.setTownCityMessage(this.getTownCity);
       // this.setCountyMessage(this.getCounty);
       // this.setWpNameMessage(this.getWpName);
-      debugger;
+      ;
         return;
     }
     else {
-      debugger;
+      ;
       this.save();
     }
   }

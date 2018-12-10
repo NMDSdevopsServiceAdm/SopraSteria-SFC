@@ -107,7 +107,7 @@ export class CreateUsernameComponent implements OnInit {
       debounceTime(1000)
     ).subscribe(
       value => {
-        debugger;
+
         if (value.length > 0) {
           this.isSubmitted = false;
           this.submittedConfirmPassword = false;
@@ -132,29 +132,29 @@ export class CreateUsernameComponent implements OnInit {
 
   setCreateUsernameMessage(c: AbstractControl): void {
     this.usernameMessage = '';
-    debugger;
+
     if (c.errors) {
       this.usernameMessage = Object.keys(c.errors).map(
         key => this.usernameMessage += this.usernameMessages[key]).join(' ');
     }
-    debugger;
+
     //this.submittedUsername = false;
   }
 
   setPasswordMessage(c: AbstractControl): void {
     this.passwordMessage = '';
-    debugger;
+
     if (c.errors) {
       this.passwordMessage = Object.keys(c.errors).map(
         key => this.passwordMessage += this.passwordMessages[key]).join(' ');
     }
-    debugger;
+
     //this.submittedPassword = false;
   }
 
   setConfirmPasswordMessage(c: AbstractControl): void {
     this.confirmPasswordMessage = '';
-    debugger;
+
     if (c.errors) {
       this.confirmPasswordMessage = Object.keys(c.errors).map(
         key => this.confirmPasswordMessage += this.confirmPasswordMessages[key]).join(' ');
@@ -164,7 +164,7 @@ export class CreateUsernameComponent implements OnInit {
         this.save();
       }
     }
-    debugger;
+
     //this.submittedConfirmPassword = false;
   }
 
@@ -187,17 +187,17 @@ export class CreateUsernameComponent implements OnInit {
   }
 
   onSubmit() {
-    debugger;
+
     this.isSubmitted = true;
     this.submittedUsername = true;
     this.submittedPassword = true;
     this.submittedConfirmPassword = true;
 
-    debugger;
+
 
     // stop here if form is invalid
     if (this.createUserNamePasswordForm.invalid) {
-      debugger;
+
       //this.isSubmitted = false;
       //this.submittedUsername = false;
       //this.submittedPassword = false;
@@ -205,7 +205,7 @@ export class CreateUsernameComponent implements OnInit {
       //return;
     }
     else {
-      debugger;
+
       this.save();
     }
   }

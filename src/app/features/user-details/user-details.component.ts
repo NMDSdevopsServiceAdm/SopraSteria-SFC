@@ -16,6 +16,10 @@ export class UserDetailsComponent implements OnInit {
   userDetailsForm: FormGroup;
   registration: RegistrationModel;
 
+  currentSection: number;
+  lastSection: number;
+  prevPage: string;
+
   //submitted = false;
   submittedfullname = false;
   submittedJobTitle = false;
@@ -88,8 +92,10 @@ export class UserDetailsComponent implements OnInit {
       userEmailInput: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
       userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9]{8,50}$')]]
     });
-    
+
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
+
+    this.setSectionNumbers();
 
     // Check validation on each field
     // const fullnameControl = this.userDetailsForm.get('userFullnameInput');
@@ -132,8 +138,29 @@ export class UserDetailsComponent implements OnInit {
 
   }
 
+  setSectionNumbers() {
+    this.prevPage = this.registration.locationdata[0].prevPage;
+    const currentpage = this.registration.locationdata[0].currentPage;
+
+    this.currentSection = currentpage + 1;
+
+
+    if (this.prevPage === 'confirm-workplace-details') {
+      if (this.currentSection === 3) {
+        this.lastSection = 6;
+      }
+      else if (this.currentSection === 4) {
+        this.lastSection = 7;
+      }
+      else if (this.currentSection === 5) {
+        this.lastSection = 8;
+      }
+
+    }
+  }
+
   changeDetails(): void {
-    debugger;
+
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       const userFullnameValue = this.registration.locationdata[0].user.fullname;
       const userJobTitleValue = this.registration.locationdata[0].user.jobTitle;
@@ -151,34 +178,34 @@ export class UserDetailsComponent implements OnInit {
 
   setFullnameMessage(c: AbstractControl): void {
     this.fullnameMessage = '';
-    debugger;
+
     if ((c.touched || c.dirty) && c.errors) {
       this.fullnameMessage = Object.keys(c.errors).map(
         key => this.fullnameMessage += this.fullnameMessages[key]).join('<br />');
     }
-    debugger;
+
     this.submittedfullname = false;
   }
 
   setJobTitleMessage(c: AbstractControl): void {
     this.jobTitleMessage = '';
-    debugger;
+
     if ((c.touched || c.dirty) && c.errors) {
       this.jobTitleMessage = Object.keys(c.errors).map(
         key => this.jobTitleMessage += this.jobTitleMessages[key]).join('<br />');
     }
-    debugger;
+
     this.submittedJobTitle = false;
   }
 
   setEmailMessage(c: AbstractControl): void {
     this.emailMessage = '';
-    debugger;
+
     if ((c.touched || c.dirty) && c.errors) {
       this.emailMessage = Object.keys(c.errors).map(
         key => this.emailMessage += this.emailMessages[key]).join('<br />');
     }
-    debugger;
+
     this.submittedEmail = false;
   }
 
@@ -202,15 +229,15 @@ export class UserDetailsComponent implements OnInit {
     this.submittedEmail = true;
     this.submittedPhone = true;
 
-    debugger;
+
 
     // stop here if form is invalid
     if (this.userDetailsForm.invalid) {
-      debugger;
+
         return;
     }
     else {
-      debugger;
+
       this.save();
     }
   }
@@ -223,11 +250,11 @@ export class UserDetailsComponent implements OnInit {
     const userPhoneValue = this.userDetailsForm.get('userPhoneInput').value;
 
     console.log(this.registration);
-    debugger;
+
 
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       // Get updated form results
-      debugger;
+
       if (this.registration.locationdata[0].user.hasOwnProperty('username')) {
         this.createUsernameValue = this.registration.locationdata[0].user.username;
       }
@@ -258,20 +285,22 @@ export class UserDetailsComponent implements OnInit {
     this.registration.locationdata[0].user['contactNumber'] = userPhoneValue;
 
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-      //if (this.registration[0].locationdata.user.hasOwnProperty('username')) {
-        this.registration.locationdata[0].user['username'] = this.createUsernameValue;
-      //}
-      //if (this.registration[0].locationdata.user.hasOwnProperty('password')) {
-        this.registration.locationdata[0].user['password'] = this.createPasswordValue;
-      ///}
-      //if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
-        this.registration.locationdata[0].user['securityQuestion'] = this.createSecurityQuestionValue;
-      //}
-      //if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
-        this.registration.locationdata[0].user['securityAnswer'] = this.createsecurityAnswerValue;
-      //}
+      // if (this.registration[0].locationdata.user.hasOwnProperty('username')) {
+      this.registration.locationdata[0].user['username'] = this.createUsernameValue;
+      // }
+      // if (this.registration[0].locationdata.user.hasOwnProperty('password')) {
+      this.registration.locationdata[0].user['password'] = this.createPasswordValue;
+      // }
+      // if (this.registration[0].locationdata.user.hasOwnProperty('securityQuestion')) {
+      this.registration.locationdata[0].user['securityQuestion'] = this.createSecurityQuestionValue;
+      // }
+      // if (this.registration[0].locationdata.user.hasOwnProperty('securityAnswer')) {
+      this.registration.locationdata[0].user['securityAnswer'] = this.createsecurityAnswerValue;
+      // }
     }
-    debugger;
+
+    this.registration.locationdata[0].prevPage = 'user-details';
+    this.registration.locationdata[0].currentPage = this.currentSection;
 
     this._registrationService.updateState(this.registration);
 

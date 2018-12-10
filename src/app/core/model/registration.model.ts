@@ -22,7 +22,9 @@ export interface RegistrationModel {
       password: string;
       securityQuestion: string;
       securityAnswer: string;
-    }
+    };
+    prevPage: string;
+    currentPage: number;
   }];
   postcodedata: [{
     locationName: string;
