@@ -23,7 +23,7 @@
           <span class="invalid-feedback">
             <span class="main-body-text mb-2"*ngIf="!submittedUsername">{{ usernameMessage }}</span>
             <span *ngIf="submittedUsername && getCreateUsernameInput.hasError('maxlength')" class="main-body-text mb-2">
-              Your username must be no longer than 120 characters.
+              Your username must be no longer than 50 characters.
             </span>
             <span *ngIf="submittedUsername && getCreateUsernameInput.hasError('required')" class="main-body-text mb-2">
               Please enter your username.

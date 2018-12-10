@@ -34,32 +34,32 @@ export class EnterWorkplaceAddressComponent implements OnInit {
 
   private postcodeMessages = {
     maxlength: 'Your postcode must be no longer than 8 characters.',
-    required: 'TS - Please enter your postcode.'
+    required: 'Please enter your postcode.'
   };
 
   private address1Messages = {
     maxlength: 'Your address must be no longer than 40 characters.',
-    required: 'TS - Please enter your address'
+    required: 'Please enter your address'
   };
 
   private address2Messages = {
     maxlength: 'Your address must be no longer than 40 characters.',
-    required: 'TS - Please enter your address'
+    required: 'Please enter your address'
   };
 
   private townCityMessages = {
     maxlength: 'Your town/city must be no longer than 40 characters.',
-    required: 'TS - Please enter your town/city'
+    required: 'Please enter your town/city'
   };
 
   private countyMessages = {
     maxlength: 'Your county must be no longer than 40 characters.',
-    required: 'TS - Please enter your county'
+    required: 'Please enter your county'
   };
 
   private wpNameMessages = {
     maxlength: 'Your workplace name must be no longer than 120 characters.',
-    required: 'TS - Please enter a workplace name'
+    required: 'Please enter a workplace name'
   };
 
   constructor(

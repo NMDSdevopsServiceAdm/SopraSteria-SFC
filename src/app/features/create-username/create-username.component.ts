@@ -31,13 +31,13 @@ export class CreateUsernameComponent implements OnInit {
   confirmPasswordMessage: string;
 
   private usernameMessages = {
-    maxlength: 'Your username must be no longer than 120 characters.',
+    maxlength: 'Your username must be no longer than 50 characters.',
     required: 'Please enter your username.'
   };
 
   private passwordMessages = {
     minlength: 'Your password must be a minimum of 8 characters.',
-    maxlength: 'Your password must be no longer than 120 characters.',
+    maxlength: 'Your password must be no longer than 50 characters.',
     required: 'Please enter your password.',
     pattern: 'Invalid password'
   };
@@ -76,9 +76,9 @@ export class CreateUsernameComponent implements OnInit {
 
   ngOnInit() {
     this.createUserNamePasswordForm = this.fb.group({
-      createUsernameInput: ['', [Validators.required, Validators.maxLength(120)]],
+      createUsernameInput: ['', [Validators.required, Validators.maxLength(50)]],
       passwordGroup: this.fb.group({
-        createPasswordInput: ['', [Validators.required, Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}')]],
+        createPasswordInput: ['', [Validators.required, Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,50}')]],
         confirmPasswordInput: ['', [Validators.required]]
       }, { validator: CustomValidators.matchInputValues })
     });

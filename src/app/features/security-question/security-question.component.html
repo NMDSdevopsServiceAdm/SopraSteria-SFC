@@ -24,7 +24,7 @@
           <span class="invalid-feedback">
             <span class="main-body-text mb-2"*ngIf="!submittedSecurityQ">{{ securityQuestionMessage }}</span>
             <span *ngIf="submittedSecurityQ && getSecurityQuestionInput.hasError('maxlength')" class="main-body-text mb-2">
-              The security question must be no longer than 120 characters.
+              The security question must be no longer than 255 characters.
             </span>
             <span *ngIf="submittedSecurityQ && getSecurityQuestionInput.hasError('required')" class="main-body-text mb-2">
               Please enter your Security question.
