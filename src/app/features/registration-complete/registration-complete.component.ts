@@ -9,7 +9,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
   styleUrls: ['./registration-complete.component.scss']
 })
 export class RegistrationCompleteComponent implements OnInit {
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
   isRegulated: boolean;
 
   constructor(private _registrationService: RegistrationService) { }
@@ -19,7 +19,7 @@ export class RegistrationCompleteComponent implements OnInit {
 
     console.log(this.registration);
 
-    if (this.registration[0].isRegulated) {
+    if (this.registration.locationdata[0].isRegulated) {
       this.isRegulated = true;
     }
     else {

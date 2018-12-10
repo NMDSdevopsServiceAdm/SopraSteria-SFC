@@ -11,7 +11,7 @@ import { RegistrationModel } from '../../core/model/registration.model';
   styleUrls: ['./confirm-workplace-details.component.scss']
 })
 export class ConfirmWorkplaceDetailsComponent implements OnInit {
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
   //isRegulatedAddress: any;
 
   constructor(private _registrationService: RegistrationService, private router: Router) {}
@@ -21,19 +21,19 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   }
 
   isRegulatedCheck(id: any) {
-
-    if (id[0].hasOwnProperty('locationId')) {
-      this.registration[0]['isRegulated'] = true;
+    debugger;
+    if (id.locationdata[0].hasOwnProperty('locationId')) {
+      this.registration.locationdata[0]['isRegulated'] = true;
     }
     else {
-      this.registration[0]['isRegulated'] = false;
+      this.registration.locationdata[0]['isRegulated'] = false;
     }
 
   }
 
   save() {
     //this._registrationService.getLocationByLocationId(this.selectedAddressId);
-    const isRegulatedAddress = [this.registration[0].locationId];
+    //const isRegulatedAddress = [this.registration[0].locationdata[0].locationId];
     this.isRegulatedCheck(this.registration);
 
     //console.log(isRegulatedAddress);
@@ -44,7 +44,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
     this.router.navigate(['/user-details']);
   }
 
-  
+
 
 }
 

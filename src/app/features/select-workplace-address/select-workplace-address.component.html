@@ -23,15 +23,15 @@
             <button class="btn btn-secondary d-inline-block align-top ml-4" (click)="updatePostcode()">Update</button>
           </div>
           <div class="row" *ngIf="!editPostcode">
-            <div class="main-body-text-bold col-5 col-sm-3 pb-5">{{ registration[0].postalCode }}</div>
+            <div class="main-body-text-bold col-5 col-sm-3 pb-5">{{ registration.postcodedata[0].postalCode }}</div>
             <div class="main-body-text col-5 col-sm-3 pb-5 pl-0"><span class="text-link" title="Edit postcode" (click)="postcodeChange()">Change</span></div>
           </div>
         </div>
 
         <div class="field-group">
           <select class="col-12 col-md-10 pl-2 pr-2" id="selectWorkplaceAddress" formControlName="selectWorkplaceAddressSelected">
-            <option value="" disabled>Please select your workplace address</option>
-            <option value="{{i}}" *ngFor="let item of registration; let i = index;">{{ item.addressLine1 }} - {{ item.townCity }} {{ item.postalCode }}</option>
+            <option value="" hidden disabled>Please select your workplace address</option>
+            <option value="{{i}}" *ngFor="let item of registration.postcodedata; let i = index;">{{ item.addressLine1 }}, {{ item.addressLine2 }} - {{ item.townCity }} {{ item.postalCode }}</option>
           </select>
         </div>
 

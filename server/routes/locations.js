@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models/index');
 
 
@@ -17,13 +18,24 @@ router.route('/lid/:locationId')
       }
     });
 
-    let data = result.dataValues;
-    locationData.push(createLocationDetailsObject(data));
+    if(result != null){
+      let data = result.dataValues;
+      locationData.push(createLocationDetailsObject(data));
+    }
 
     if (locationData.length === 0) {
-      res.sendStatus(404);
+      res.status(404);
+      return res.send({
+        "success": 0,
+        "message": 'No location found'
+      })
     } else {
-      res.send(locationData);
+      res.status(200);
+      return res.json({
+        "success" : 1,
+        "message" : "Location Found",
+        "locationdata": locationData
+      });
     }
   })
 
@@ -34,26 +46,46 @@ router.route('/pc/:postcode')
 
     let locationData = [];
 
-    //Find matching postcode data
-    let results = await models.location.findAll({
-      where: {
-        postalcode: req.params.postcode
+    //Clean user submitted postcode
+    let cleanPostcode= pCodeCheck.sanitisePostcode(req.params.postcode);
+
+    if (cleanPostcode != null) {
+      //Find matching postcode data
+      let results = await models.location.findAll({
+        where: {
+          postalcode: cleanPostcode
+        }
+      });
+
+      for (let i = 0, len = results.length; i < len; i++) {
+
+        let data = results[i].dataValues;
+        locationData.push(createLocationDetailsObject(data));
+
       }
-    });
-
-    for (let i = 0, len = results.length; i < len; i++) {
-
-      let data = results[i].dataValues;
-      locationData.push(createLocationDetailsObject(data));
-
+    } else {
+      res.status(400);
+      return res.send({
+        "success" : 0,
+        "message" : 'Invalid Postcode'
+      });
     }
 
     if (locationData.length === 0) {
-      res.sendStatus(404);
+      res.status(404);
+      return res.send({
+        "success" : 0,
+        "message" : 'No location found'
+      });
     } else {
-      res.send(locationData);
+      res.status(200);
+      return res.json({
+        "success" : 1,
+        "message" : "Location(s) Found",
+        "locationdata": locationData
+      });
     }
-  })
+  });
 
 function createLocationDetailsObject(data) {
 
@@ -66,7 +98,8 @@ function createLocationDetailsObject(data) {
     townCity: data.towncity,
     county: data.county,
     postalCode: data.postalcode,
-    mainService: data.mainservice
+    mainService: data.mainservice,
+    isRegulated: data.isRegulated
   };
 
   return myObject;

@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser');
 
-//var connectionString = 'tcp://sfcadmin:sfcadmin123@3.8.78.161:5432/sfcdevdb';
 
 const { Pool, Client } = require('pg')
 const client = new Client({
@@ -12,6 +11,27 @@ const client = new Client({
   password: 'sfcadmin123',
   port: 5432,
 })
+
+// Check if service exists
+router.get('/service/:name', function (req, res) {
+  client.connect() 
+  var serviceNameSelect = 'SELECT * FROM cqc."services" where "name" = $1 Limit 1'
+  client.query(serviceNameSelect,[req.params.name],function(err,result) {         
+        if (result.rowCount == 0) {
+          res.json({
+            status: '0',
+            message: 'name not found',
+          });
+
+        } else {
+          res.json({
+            status: '1',
+            message: 'name found',
+          });
+        }                 
+  })
+
+});
 
 // RETURNS ALL THE USERS IN THE DATABASE
 router.get('/username/:username', function (req, res) {
@@ -81,19 +101,6 @@ router.get('/estb/:name&:locationid', function (req, res) {
     }              
   })
   
-  // .then(function(err,res){    
-    
-  //  })
-  // // .catch(function(err) {
-  // //   res.status(404);
-  // //   res.json({
-  // //     "success" : 0,
-  // //     "message" : err.message
-  // //   });
-  // });
-  // client.end
-
-
 });
 
 router.route('/')
@@ -117,18 +124,7 @@ router.route('/')
 				"message" : "Parameters missing"
 			});
 			return false;
-	  	}
-
-    //validate has to be 1 user
-    // if(JSON.stringify(req.body.user.length) >= 2) {
-		// 	res.status(404);
-		// 	res.json({
-		// 		"success" : 0,
-		// 		"message" : "More than 2 users found"
-		// 	});
-		// 	return false;
-	  // 	}
-      //check for duplicate establisment and user.
+	  	}    
 
      var Estblistmentdata = {
          Name : req.body[0].locationName,
@@ -136,6 +132,7 @@ router.route('/')
          LocationID: req.body[0].locationId,
          PostCode: req.body[0].postalCode,
          MainService: req.body[0].mainService,
+         MainServiceId : null,
          IsRegulated: req.body[0].isRegulated
       } 
      var Userdata = {
@@ -158,7 +155,7 @@ router.route('/')
       }
    
     //sql
-    var EstablishmentInsert = 'INSERT INTO cqc."Establishment" ("Name", "Address", "LocationID", "PostCode", "MainService", "IsRegulated") VALUES ($1,$2,$3,$4,$5,$6)'
+    var EstablishmentInsert = 'INSERT INTO cqc."Establishment" ("Name", "Address", "LocationID", "PostCode", "MainServiceId", "IsRegulated") VALUES ($1,$2,$3,$4,$5,$6)'
     var EstablishmentSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 Limit 1'
     var UserInsert = 'INSERT INTO cqc."User"("FullName", "JobTitle", "Email", "Phone", "DateCreated", "EstablishmentID", "AdminUser") VALUES ($1,$2,$3,$4,$5,$6,$7)'
     var UserSelect = 'SELECT * FROM cqc."User" where "FullName" = $1 Limit 1'
@@ -166,7 +163,33 @@ router.route('/')
 
      //db connection
     client.connect()
-    client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainService,Estblistmentdata.IsRegulated])
+
+    var serviceNameSelect = 'SELECT * FROM cqc."services" where "name" = $1 Limit 1'
+    // let asynct = () => client.query(serviceNameSelect,[Estblistmentdata.MainService],function(err,result) {         
+    //       if (result.rowCount == 0) {
+    //         Estblistmentdata.MainServiceId = null
+    //         console.log('no')
+    //       } else {
+    //         Estblistmentdata.MainServiceId = result.rows[0].id
+    //         console.log('yes')
+    //       }                 
+    // })
+
+    // asynct();
+
+    client.query(serviceNameSelect,[Estblistmentdata.MainService],function(err,result) {         
+      if(err)
+      {
+        res.status(400).send(err);
+      }
+        if (result.rowCount == 0) {
+                Estblistmentdata.MainServiceId = null
+                
+              } else {
+                Estblistmentdata.MainServiceId = result.rows[0].id
+                
+              } 
+    client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainServiceId,Estblistmentdata.IsRegulated])
     .then(function(){
      
       client.query(EstablishmentSelect, [Estblistmentdata.Name],function(err,result) {
@@ -208,16 +231,9 @@ router.route('/')
             // "message" : "Record added Sucessfully"
 
             });     
-         });
-         //res.send(result.rows);
+         });         
      }); 
-    })//end of then without semi
-       //do not return here till all finish 
-      // res.status(201);
-      // res.json({
-      //   "success" : 1,
-      //   "message" : "Record added Sucessfully"
-      // });  
+    })//end of then without semi       
 
     .catch(function(err) {
         res.status(404);
@@ -226,78 +242,8 @@ router.route('/')
           "message" : err.message
         });
       });
+    });
      client.end
   });    
-    // client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainService,Estblistmentdata.IsRegulated])
-    // .then(function(){
-    
-    //   client.query(EstablishmentSelect,[Estblistmentdata.Name], function (err, result) {
-    //       if (err) throw err; 
-    //       console.log(result)
-          
-    //   });   
-
-    //   res.status(201);
-    //   res.json({
-    //     "success" : 1,
-    //     "message" : "Record added Sucessfully"
-    //   });
-    // })
-    // .catch( function(err) {
-    //     res.status(404);
-    //     res.send({
-    //       "success" : 0,
-    //       "message" : err.message
-    //     });
-    //   });
-
-
-      ///////////working
-
-      // client.query('INSERT INTO cqc."TestTable" values($1)', [data.text])
-      // .then(function(){
-      //     res.status(201);
-      //     res.json({
-      //       "success" : 1,
-      //       "message" : "Record added Sucessfully"
-      //     });
-      //   })
-      //   .catch( function(err) {
-      //     res.status(404);
-      //     res.send({
-      //       "success" : 0,
-      //       "message" : err.message
-      //     });
-      //   });
-      
-  
-
-
-      //working one
-      // client.query('SELECT * from cqc."pcodedata"', (err, res) => {
-      //   if (err) {
-      //     console.log(err.stack)
-      //   } else {
-      //     console.log(res.rows[0].uprn)
-      //   }
-      // })
-      //  // console.log(req);
-      //   res.send(201, req.body.name);
-
-
-// // Set default API response
-// router.get('/', function (req, res) {
-//   res.json({
-//      status: 'API id Working',
-//      message: 'Registration API',
-//   });
-
-
-// });
-
-// router.post('/', function(req, res){
-//   console.log(req);
-//   res.send(201, req.body);
-// });
 
 module.exports = router;

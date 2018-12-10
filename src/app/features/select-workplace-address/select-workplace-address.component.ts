@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationTrackerError } from './../../core/model/registrationTrackerError.model';
 
 @Component({
   selector: 'app-select-workplace-address',
@@ -13,9 +14,14 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class SelectWorkplaceAddressComponent implements OnInit {
   selectWorkplaceAddressForm: FormGroup;
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
   selectedAddress: string;
   editPostcode: boolean;
+  locationdata = [];
+
+  cqcPostcodeApiError: string;
+  cqclocationApiError: string;
+  nonCqcPostcodeApiError: string;
 
   constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
 
@@ -27,26 +33,41 @@ export class SelectWorkplaceAddressComponent implements OnInit {
 
     // Watch selectWorkplaceSelected
     this.selectWorkplaceAddressForm.get('selectWorkplaceAddressSelected').valueChanges.subscribe(
-      value => this.selectWorkplaceAddressChanged(value)
+      value => {
+        debugger;
+        this.selectWorkplaceAddressChanged(value);
+      }
     );
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     console.log(this.registration);
-
+    debugger;
     this.editPostcode = false;
   }
 
   selectWorkplaceAddressChanged(value: string): void {
-    this.selectedAddress = this.registration[value];
+    this.selectedAddress = this.registration.postcodedata[value];
   }
 
   save() {
-    //this._registrationService.getLocationByLocationId(this.selectedAddressId);
-    console.log(this.registration[this.selectedAddress]);
-    this._registrationService.updateState([this.selectedAddress]);
+    const locationdata = [this.selectedAddress];
 
-    //this._registrationService.routingCheck(this.registration);
-    this.router.navigate(['/select-main-service']);
+    const postcodeObj = {
+      locationdata
+    };
+
+    this.locationdata.push(postcodeObj);
+
+    this._registrationService.updateState(this.locationdata[0]);
+
+    if (this.registration.locationdata[0].locationName === '') {
+      debugger;
+      this.router.navigate(['/enter-workplace-address']);
+    }
+    else {
+      this.router.navigate(['/select-main-service']);
+    }
+
   }
 
   postcodeChange() {
@@ -54,12 +75,25 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   }
 
   updatePostcode() {
-    let postcodeValue = this.selectWorkplaceAddressForm.get('postcodeInput').value;
+    const postcodeValue = this.selectWorkplaceAddressForm.get('postcodeInput').value;
 
-    this._registrationService.getUpdatedAddressByPostCode(postcodeValue);
+    this._registrationService.getUpdatedAddressByPostCode(postcodeValue)
+      .subscribe(
+        (data: RegistrationModel) => {
+          this._registrationService.updateState(data);
+
+          // this.router.navigate(['/select-workplace-address']);
+
+        },
+        (err: any) => console.log(err),
+        () => {
+          console.log('Updated locations by postcode complete');
+          console.log(this._registrationService);
+        }
+      );
 
     this.editPostcode = false;
-    console.log(this.registration);
+    //console.log(this.registration);
   }
 
 }

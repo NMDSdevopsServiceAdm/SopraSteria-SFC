@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
@@ -5,6 +6,7 @@ import { Router } from '@angular/router';
 
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationTrackerError } from './../../core/model/registrationTrackerError.model';
 
 
 @Component({
@@ -14,9 +16,13 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class SelectWorkplaceComponent implements OnInit {
   selectWorkplaceForm: FormGroup;
-  registration: RegistrationModel[];
+  registration: RegistrationModel;
   selectedAddressId: string;
   mainService: string;
+
+  cqcPostcodeApiError: string;
+  cqclocationApiError: string;
+  nonCqcPostcodeApiError: string;
 
   isSubmitted = false;
 
@@ -36,22 +42,43 @@ export class SelectWorkplaceComponent implements OnInit {
   }
 
   selectWorkplaceChanged(value: string): void {
-    this.selectedAddressId = this.registration[value].locationId;
-    this.mainService = this.registration[value].mainService;
-
-    console.log(this.mainService);
+    this.selectedAddressId = this.registration.locationdata[value].locationId;
+    this.mainService = this.registration.locationdata[value].mainService;
+    debugger;
   }
 
   onSubmit() {
     this.isSubmitted = true;
+    debugger;
 
     if (this.selectedAddressId) {
+      debugger;
       this.save(this.selectedAddressId);
     }
   }
 
   save(selectedAddressId) {
-    this._registrationService.getLocationByLocationId(selectedAddressId);
+    debugger;
+    this._registrationService.getLocationByLocationId(selectedAddressId)
+    .subscribe(
+      (data: RegistrationModel) => {
+        if (data.success === 1) {
+          debugger;
+          //data = data.locationdata;
+          this._registrationService.updateState(data);
+          this._registrationService.routingCheck(data);
+        }
+      },
+      (err: RegistrationTrackerError) => {
+        debugger;
+        console.log(err);
+        this.cqcPostcodeApiError = err.friendlyMessage;
+        //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+      },
+      () => {
+        console.log('Get location by postcode complete');
+      }
+    );
   }
 
 }

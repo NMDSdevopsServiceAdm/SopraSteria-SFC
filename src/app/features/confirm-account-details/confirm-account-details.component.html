@@ -15,37 +15,37 @@
     <div class="main-text col-12 col-md-7 p-0">
       <div class="row border-line-bottom">
         <div class="tb-cell col-4 pt-3 pb-3"><strong>Fullname</strong></div>
-        <div class="tb-cell col-5 pt-3 pb-3">{{ registration[0].user.fullname }}</div>
+        <div class="tb-cell col-5 pt-3 pb-3">{{ registration.locationdata[0].user.fullname }}</div>
         <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/user-details" title="Edit Fullname" (click)="changeDetails()">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-4 pt-3 pb-3"><strong>Job title</strong></div>
-        <div class="tb-cell col-5 pt-3 pb-3">{{ registration[0].user.jobTitle }}</div>
+        <div class="tb-cell col-5 pt-3 pb-3">{{ registration.locationdata[0].user.jobTitle }}</div>
         <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/user-details" title="Edit job title" (click)="changeDetails()">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-4 pt-3 pb-3"><strong>Email address</strong></div>
-        <div class="tb-cell col-5 pt-3 pb-3">{{ registration[0].user.emailAddress }}</div>
+        <div class="tb-cell col-5 pt-3 pb-3">{{ registration.locationdata[0].user.emailAddress }}</div>
         <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/user-details" title="Edit email address" (click)="changeDetails()">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-4 pt-3 pb-3"><strong>Contact phone</strong></div>
-        <div class="tb-cell col-5 pt-3 pb-3">{{ registration[0].user.contactNumber }}</div>
+        <div class="tb-cell col-5 pt-3 pb-3">{{ registration.locationdata[0].user.contactNumber }}</div>
         <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/user-details" title="Edit contact phone number" (click)="changeDetails()">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-4 pt-3 pb-3"><strong>Username</strong></div>
-        <div class="tb-cell col-5 pt-3 pb-3">{{ registration[0].user.username }}</div>
+        <div class="tb-cell col-5 pt-3 pb-3">{{ registration.locationdata[0].user.username }}</div>
         <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/create-username" title="Edit Username" (click)="changeDetails()">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-4 pt-3 pb-3"><strong>Security question</strong></div>
-        <div class="tb-cell col-5 pt-3 pb-3">{{ registration[0].user.securityQuestion }}</div>
+        <div class="tb-cell col-5 pt-3 pb-3">{{ registration.locationdata[0].user.securityQuestion }}</div>
         <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/security-question" title="Edit security question" (click)="changeDetails()">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-4 pt-3 pb-3"><strong>Security answer</strong></div>
-        <div class="tb-cell col-5 pt-3 pb-3">{{ registration[0].user.securityAnswer }}</div>
+        <div class="tb-cell col-5 pt-3 pb-3">{{ registration.locationdata[0].user.securityAnswer }}</div>
         <div class="tb-cell text-right col-3 pt-3 pb-3"><a routerLink="/security-question" title="Edit security question answer" (click)="changeDetails()">Change</a></div>
       </div>
     </div>
