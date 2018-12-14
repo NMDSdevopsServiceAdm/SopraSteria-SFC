@@ -213,7 +213,7 @@ router.route('/')
       try {
         await client.query('BEGIN');
         // forced error - in absence of unit tests
-        throw new Error("Totally forced")
+        //throw new Error("Totally forced")
         const result = await client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainServiceId,Estblistmentdata.IsRegulated]);
         establishmentID = result.rows[0].EstablishmentID;
 
