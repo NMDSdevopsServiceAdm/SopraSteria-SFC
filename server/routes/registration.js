@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var concatenateAddress = require('../utils/concatenateAddress');
 const bodyParser = require('body-parser');
 
 
@@ -128,7 +129,7 @@ router.route('/')
 
      var Estblistmentdata = {
          Name : req.body[0].locationName,
-         Address : req.body[0].addressLine1 + " " + req.body[0].addressLine2 + " " + req.body[0].towncity + " " + req.body[0].county,
+         Address : concatenateAddress(req.body[0].addressLine1, req.body[0].addressLine2, req.body[0].towncity, req.body[0].county),
          LocationID: req.body[0].locationId,
          PostCode: req.body[0].postalCode,
          MainService: req.body[0].mainService,
