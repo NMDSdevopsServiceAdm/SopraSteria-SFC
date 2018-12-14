@@ -31,7 +31,6 @@ router.route('/byCategory')
     });
 
     let servicesData = createServicesByCategoryJSON(results);
-    console.log("services by group: ", servicesData)
 
     if (servicesData.length === 0) {
       res.sendStatus(404);
