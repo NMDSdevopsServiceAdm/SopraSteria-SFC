@@ -1,17 +1,29 @@
 var express = require('express');
 var router = express.Router();
-var concatenateAddress = require('../utils/concatenateAddress');
+var concatenateAddress = require('../utils/concatenateAddress').concatenateAddress;
 const bodyParser = require('body-parser');
 
 
-const { Pool, Client } = require('pg')
+const { Client } = require('pg');
+
+// TODO - copied from model/index.js; this will be removed when registration is refactored to using sequelize''
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.json')[env];
+// allow override of any config value from environment variable
+config.host = process.env.DB_HOST ?  process.env.DB_HOST : config.host;
+config.port = process.env.DB_PORT ?  process.env.DB_PORT : config.port;
+config.database = process.env.DB_NAME ?  process.env.DB_NAME : config.database;
+config.username = process.env.DB_USER ?  process.env.DB_USER : config.username;
+config.password = process.env.DB_PASS ?  process.env.DB_PASS : config.password;
+
+
 const client = new Client({
-  user: 'sfcadmin',
-  host: '35.178.185.248',
-  database: 'sfcdevdb',
-  password: 'sfcadmin123',
-  port: 5432,
-})
+  user: config.username,
+  host: config.host,
+  database: config.database,
+  password: config.password,
+  port: config.port,
+});
 
 // Check if service exists
 router.get('/service/:name', function (req, res) {
@@ -105,29 +117,28 @@ router.get('/estb/:name&:locationid', function (req, res) {
 });
 
 router.route('/')
-    .get(async function(req, res) {
-      res.json({
-              status: 'API id Working',
-              message: 'Registration API',
-           });
-    })
+  .get(async function(req, res) {
+    res.json({
+      status: 'API id Working',
+      message: 'Registration API',
+    });
+  })
 
-    .post(function(req, res) {
+  .post(async function(req, res) {
+    //retrieve the incoming json //skipping the model generation and mapping
+    // var  insertModel = req.body;
 
-      //retrieve the incoming json //skipping the model generation and mapping
-     // var  insertModel = req.body;
-
-     //basic validation
-     if(JSON.stringify(req.body) == '{}') {
+    //basic validation
+    if(JSON.stringify(req.body) == '{}') {
 			res.status(404);
 			res.json({
 				"success" : 0,
 				"message" : "Parameters missing"
 			});
 			return false;
-	  	}    
+	  }
 
-     var Estblistmentdata = {
+    var Estblistmentdata = {
          Name : req.body[0].locationName,
          Address : concatenateAddress(req.body[0].addressLine1, req.body[0].addressLine2, req.body[0].towncity, req.body[0].county),
          LocationID: req.body[0].locationId,
@@ -135,8 +146,8 @@ router.route('/')
          MainService: req.body[0].mainService,
          MainServiceId : null,
          IsRegulated: req.body[0].isRegulated
-      } 
-     var Userdata = {
+    };
+    var Userdata = {
         FullName : req.body[0].user.fullname,
         JobTitle : req.body[0].user.jobTitle,
         Email    : req.body[0].user.emailAddress,
@@ -144,8 +155,8 @@ router.route('/')
         DateCreated: new Date(),
         EstablishmentID:0,
         AdminUser: true
-      }
-     var Logindata = {
+    };
+    var Logindata = {
         RegistrationId:0,
         UserName: req.body[0].user.username,
         Password: req.body[0].user.password,
@@ -153,98 +164,114 @@ router.route('/')
         SecurityQuestionAnswer: req.body[0].user.securityAnswer,
         Active:true,
         InvalidAttempt:0
-      }
+    };
    
     //sql
-    var EstablishmentInsert = 'INSERT INTO cqc."Establishment" ("Name", "Address", "LocationID", "PostCode", "MainServiceId", "IsRegulated") VALUES ($1,$2,$3,$4,$5,$6)'
-    var EstablishmentSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 Limit 1'
-    var UserInsert = 'INSERT INTO cqc."User"("FullName", "JobTitle", "Email", "Phone", "DateCreated", "EstablishmentID", "AdminUser") VALUES ($1,$2,$3,$4,$5,$6,$7)'
-    var UserSelect = 'SELECT * FROM cqc."User" where "FullName" = $1 Limit 1'
-    var LoginInsert = 'INSERT INTO cqc."Login"("RegistrationID", "Username", "Password", "SecurityQuestion", "SecurityQuestionAnswer", "Active", "InvalidAttempt") VALUES ($1,$2,$3,$4,$5,$6,$7)'
+    var EstablishmentInsert = 'INSERT INTO cqc."Establishment" ("Name", "Address", "LocationID", "PostCode", "MainServiceId", "IsRegulated") VALUES ($1,$2,$3,$4,$5,$6) RETURNING "EstablishmentID"';
+    var EstablishmentSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 Limit 1';
+    var UserInsert = 'INSERT INTO cqc."User"("FullName", "JobTitle", "Email", "Phone", "DateCreated", "EstablishmentID", "AdminUser") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "RegistrationID"';
+    var UserSelect = 'SELECT * FROM cqc."User" where "FullName" = $1 Limit 1';
+    var LoginInsert = 'INSERT INTO cqc."Login"("RegistrationID", "Username", "Password", "SecurityQuestion", "SecurityQuestionAnswer", "Active", "InvalidAttempt") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "ID"';
 
      //db connection
-    client.connect()
+    client.connect();
 
-    var serviceNameSelect = 'SELECT * FROM cqc."services" where "name" = $1 Limit 1'
-    // let asynct = () => client.query(serviceNameSelect,[Estblistmentdata.MainService],function(err,result) {         
-    //       if (result.rowCount == 0) {
-    //         Estblistmentdata.MainServiceId = null
-    //         console.log('no')
-    //       } else {
-    //         Estblistmentdata.MainServiceId = result.rows[0].id
-    //         console.log('yes')
-    //       }                 
-    // })
+    // there are multiple steps to regiastering a new user/establishment. They must be done in entirety (all or nothing).
+    // 1. looking the main service; to get ID
+    // 2. Create Establishment record, to get Establishment ID
+    // 3. Create User record (using Establishment ID) to get Registration ID
+    // 4. Create Login record (using Registration ID)
 
-    // asynct();
+    // if any part fails, it all fails. So wrap into a single transaction; commit on success and rollback on failure.
 
-    client.query(serviceNameSelect,[Estblistmentdata.MainService],function(err,result) {         
-      if(err)
-      {
-        res.status(400).send(err);
+    // this could fail because:
+    //  1. Unexpected error - database connection/database state
+    //  2. Establishment table constraints fail - name is not unique
+    //  3. Login table constraints fail - username is not unique
+    const errOnService = new Error("Registration: Failed to identify main service");
+    const errOnEstablishment = new Error("Registration: Failed to create Establishment");
+    const errOnUser = new Error("Registration: Failed to create User");
+    const errOnLogin = new Error("Registration: Failed to create Login");
+
+    try {
+      const serviceNameSelect = 'SELECT * FROM cqc."services" where "name" = $1 Limit 1';
+
+      let serviceResults = null;
+      try {
+        serviceResults = await client.query(serviceNameSelect,[Estblistmentdata.MainService]);
+
+        if (serviceResults.rowCount > 0) {
+          Estblistmentdata.MainServiceId = serviceResults.rows[0].id
+        }
+      } catch (err) {
+        // TODO: need a better method of handling error
+        console.err(err);
+        throw errOnService;
       }
-        if (result.rowCount == 0) {
-                Estblistmentdata.MainServiceId = null
-                
-              } else {
-                Estblistmentdata.MainServiceId = result.rows[0].id
-                
-              } 
-    client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainServiceId,Estblistmentdata.IsRegulated])
-    .then(function(){
-     
-      client.query(EstablishmentSelect, [Estblistmentdata.Name],function(err,result) {
-        // done(); // closing the connection;
-         if(err){             
-             res.status(400).send(err);
-         }
-          client.query(UserInsert,[Userdata.FullName,Userdata.JobTitle,Userdata.Email,Userdata.Phone,Userdata.DateCreated,result.rows[0].EstablishmentID,1],function(err,result) {
-            // done(); // closing the connection;
-           // estid = result.rows[0].EstablishmentID;
-            if(err){             
-                res.status(400).send(err);
-            } 
+      
+      let establishmentID = null;
+      try {
+        await client.query('BEGIN');
+        // forced error - in absence of unit tests
+        throw new Error("Totally forced")
+        const result = await client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainServiceId,Estblistmentdata.IsRegulated]);
+        establishmentID = result.rows[0].EstablishmentID;
 
-                //login // retrive user by name and establisment ;;could be issue as we dont know the if fullname is unique
-                client.query(UserSelect, [Userdata.FullName],function(err,result) {               
-                if(err){             
-                    res.status(400).send(err);
-                }
-                
-                client.query(LoginInsert,[result.rows[0].RegistrationID, Logindata.UserName, Logindata.Password,Logindata.SecurityQuestion,Logindata.SecurityQuestionAnswer,1,0],function(err,result) {
-                  // done(); // closing the connection;
-                  if(err){             
-                      res.status(400).send(err);
-                  }
-                    res.status(200);
-                    res.json({
-                    "success" : 1,
-                    "message" : "Record added Successfully"
-                    });  
-                });
+      } catch (err) {
+        // TODO: need a better method of handling error
+        console.error(err);
+        throw errOnEstablishment;
+      }
 
-                //login end
-           
-            // user insert
-            // res.status(200);
-            // res.json({
-            // "success" : 1,
-            // "message" : "Record added Sucessfully"
+      let registrationID = null;
+      try {
+        // forced error - in absence of unit tests
+        //throw new Error("Totally forced")
+        const result = await client.query(UserInsert,[Userdata.FullName,Userdata.JobTitle,Userdata.Email,Userdata.Phone,Userdata.DateCreated,establishmentID,1]);
+        registrationID = result.rows[0].RegistrationID;
 
-            });     
-         });         
-     }); 
-    })//end of then without semi       
+      } catch (err) {
+        // TODO: need a better method of handling error
+        console.error(err);
+        throw errOnUser;
+      }
 
-    .catch(function(err) {
-        res.status(404);
-        res.json({
-          "success" : 0,
-          "message" : err.message
-        });
+      let loginID = null;
+      try {
+        // forced error - in absence of unit tests
+        //throw new Error("Totally forced")
+        const result = await client.query(LoginInsert,[registrationID, Logindata.UserName, Logindata.Password,Logindata.SecurityQuestion,Logindata.SecurityQuestionAnswer,1,0]);
+        loginID = result.rows[0].ID;
+
+        // gets this far with no error
+        await client.query('COMMIT');
+
+      } catch (err) {
+        // TODO: need a better method of handling error
+        console.error(err);
+        throw errOnLogin;
+      }
+
+      // gets here on success
+      res.status(200);
+      res.json({
+        "success" : 1,
+        "message" : "Record added Successfully"
       });
-    });
-     client.end
-  });    
+
+    } catch (err) {
+      // failed to fully register a new user/establishment - full rollback
+      console.error("Registration: rolling back all changes");
+      await client.query('ROLLBACK');
+      res.status(500);
+      res.json({
+        "success" : 0,
+        "message" : err.message
+      });
+    } finally {
+      client.end;
+    }
+  })
+;  // ends router.route('/')
 
 module.exports = router;
