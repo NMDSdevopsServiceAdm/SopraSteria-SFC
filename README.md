@@ -31,4 +31,11 @@ Unfortunately, the backend server code is part of the client project & repo. Unt
 * `npm run build`
 * `node server` or `PORT=<p1> node server`
 
+Database connection parameters can be overridden using environment variables:
+* `DB_HOST` - hostname or IP address
+* `DB_PORT` - port number
+* `DB_NAME` - name of database
+* `DB_USER` - database username
+* `DB_PASS` - database password
+
 This launches the backend up on default port 3000 (or P1 of your designation). Open web browser and try: `http://localhost:<port>/api/postcodes/<your  postcode without spaces>
