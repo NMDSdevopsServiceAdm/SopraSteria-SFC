@@ -9,6 +9,14 @@ const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 let sequelize;
+
+// allow override of any config value from environment variable
+config.host = process.env.DB_HOST ?  process.env.DB_HOST : config.host;
+config.port = process.env.DB_PORT ?  process.env.DB_PORT : config.port;
+config.database = process.env.DB_NAME ?  process.env.DB_NAME : config.database;
+config.username = process.env.DB_USER ?  process.env.DB_USER : config.username;
+config.password = process.env.DB_PASS ?  process.env.DB_PASS : config.password;
+
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {

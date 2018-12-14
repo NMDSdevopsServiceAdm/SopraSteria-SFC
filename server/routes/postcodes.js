@@ -18,7 +18,10 @@ router.route('/:postcode')
       let results = await models.pcodedata.findAll({
         where: {
           postcode: cleanPostcode
-        }
+        },
+        order: [
+          ['uprn', 'ASC']
+        ]
       });
 
       //Go through any results found from DB and map to JSON

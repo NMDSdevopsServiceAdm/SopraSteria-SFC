@@ -1,0 +1,137 @@
+{
+    "$id" : "establishment_types.schema.json",
+	"description" : "Describes the entities used in Establishments API; in both the requests and responses.",
+	"title" : "ASCWDS Establishment API Schema - Primary Types",
+	"definitions" : {
+        "id" : {
+            "type" : "integer",
+            "minimum" : 0
+        },
+        "Username" : {
+            "type" : "string"
+        },
+        "Password" : {
+            "type" : "string"
+        },
+        "Fullname" : {
+            "description" : "The fullname of a user",
+            "type" : "string",
+            "minLength" : 3
+        },
+        "EstablishmentName" : {
+            "description": "the name of the Establishment",
+            "type" : "string",
+            "minLength" : 3
+        },
+        "ServiceName" : {
+            "description": "the name of the Service",
+            "type" : "string",
+            "minLength" : 3
+        },
+        "ServiceCategory" : {
+            "description": "the category associated with the Service",
+            "type" : "string",
+            "minLength" : 3
+        },
+		"EmployerType" : {
+			"description" : "The type of employer",
+			"type" : "object",
+			"properties" : {
+				"value" : {
+					"description" : "the textual representation of Employer; enumerated because known values",
+                    "type" : "string",
+                    "enum" : ["Private Sector", "Voluntary or Charity", "Other"]
+				},
+				"id" : {
+					"description" : "Optional integer representing the employer type",
+					"$ref" : "#/definitions/ID"
+				}
+			},
+			"required" : ["value"]
+        },
+        "Service" : {
+            "description" : "The Service that can be performed at an Establishment",
+            "properties" : {
+                "id" : {
+                    "description" : "the unique reference of the service type",
+                    "$ref" : "#/definitions/ID"
+                },
+                "key" : {
+                    "description": "a textual representation of the service type; replacing spaces 'value' with underscores and capitalising",
+                    "type" : "string",
+                    "minLength" : 3
+                },
+                "name" : {
+                    "description" : "the display name of the service type",
+                    "type" : "string",
+                    "minLength" : 3
+                },
+                "category" : {
+                    "description"  : "the category of this service"
+                },
+                "isCQC" : {
+                    "description": "if true, this service is defined by CQC",
+                    "type" : "boolean"
+                },
+                "isMyService" : {
+                    "description" : "optional flag that when true identifies this service being one of the services provided by the Establishment (returned by api/myServices)",
+                    "type" : "boolean"
+                },
+                "capacity" : {
+                    "description" : "optional set of capacity questions and, if relevant (associated to a known Establishment), the answers",
+                    "type" : "array",
+                    "items" : {
+                        "$ref" : "#/definitions/ServiceCapacity"
+                    },
+                    "minItems" : 1
+                },
+                "isMainService" : {
+                    "description" : "optional flag, that if true, highlights this service is the main service for a given establishment"
+                }
+            },
+            "required" : ["id"]
+        },
+        "ServiceCapacity" : {
+            "description" : "Optionally associated to a Service, is one or more questions around capacity",
+            "type" : "object",
+            "properties" : {
+                "id": {
+                    "description" : "the unique reference of the service capacity",
+                    "$ref" : "#/definitions/ID"
+                },
+                "sequence" : {
+                    "description" : "if there is more than one capacity question, this sequence defines the order in which they should be prompted",
+                    "type" : "number",
+                    "minimum": 1
+                },
+                "question" : {
+                    "description": "The capacity question context",
+                    "type" : "string",
+                    "minLength" : 3
+                },
+                "answer" : {
+                    "description": "Optional: If a known establishment, the answer to this capacity question",
+                    "type" : "integer",
+                    "minimum": 0
+                }
+            }
+        },
+        "ServiceGroup" : {
+            "description" : "A collection of services having the same cateogory",
+            "type" : "object",
+            "properties" : {
+                "category" : {
+                    "$ref" : "#/definitions/ServiceCategory"
+                },
+                "services" : {
+                    "description" : "All the services attributed to this service category",
+                    "type" : "array",
+                    "items" : {
+                        "$ref" : "#/definitions/Service"
+                    },
+                    "minItems": 1
+                }
+            }
+        }
+    }
+}
