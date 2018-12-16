@@ -1,7 +1,8 @@
 /* jshint indent: 2 */
+const models = require('./index');
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('login', {
+  const Login = sequelize.define('login', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -11,28 +12,29 @@ module.exports = function(sequelize, DataTypes) {
     },
     registrationId: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       unique: true,
       field: '"RegistrationID"'
     },
     username: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
+      unique: true,
       field: '"Username"'
     },
     password: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       field: "Password"
     },
     securityQuestion: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       field: '"SecurityQuestion"'
     },
     securityAnswer: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
       field: '"SecurityQuestionAnswer"'
     },
     isActive: {
@@ -42,7 +44,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     invalidAttempt: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       field: '"InvalidAttempt"'
     }
   }, {
@@ -51,4 +53,13 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
+
+  Login.associate = (models) => {
+    Login.belongsTo(models.user, {
+      foreignKey: 'registrationId',
+      targetKey: 'id'
+    });
+  };
+
+  return Login;
 };

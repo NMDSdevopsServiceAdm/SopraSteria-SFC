@@ -19,14 +19,18 @@ router.route('/').post(async (req, res) => {
           username,
           isActive: true
         },
-        attributes: ['id', 'isActive', 'registrationId']
+        attributes: ['id', 'isActive', 'registrationId'],
+        include: [ {
+          model: models.user,
+          attributes: ['fullname', 'establishmentId']
+        }]
       });
 
-      if (results.registrationId && results.registrationId > 0) {
+      if (results && results.registrationId !== 'undefined' && results.registrationId > 0) {
         const registrationId = results.registrationId;
 
         // found user
-        console.log('WA DEBUG: found user with registration ID: ', registrationId);
+        console.log('WA DEBUG: found user with registration ID and full name: ', registrationId, ' ', results.user.fullname);
 
         res.status(200);
         return res.json({
