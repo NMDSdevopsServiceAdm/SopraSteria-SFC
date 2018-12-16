@@ -29,7 +29,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 # Backend Server
 Unfortunately, the backend server code is part of the client project & repo. Until refactoring:
 * `npm run build`
-* `node server` or `PORT=<p1> node server`
+* `node server` or `PORT=<p1> node server` or `nodemon server` or `PORT=<p1> nodemon server`
 
 Database connection parameters can be overridden using environment variables:
 * `DB_HOST` - hostname or IP address
