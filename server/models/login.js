@@ -46,6 +46,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: false,
       field: '"InvalidAttempt"'
+    },
+    firstLogin: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"FirstLogin'
     }
   }, {
     tableName: '"Login"',

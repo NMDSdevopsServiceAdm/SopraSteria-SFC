@@ -19,7 +19,7 @@ router.route('/').post(async (req, res) => {
           username,
           isActive: true
         },
-        attributes: ['id', 'isActive', 'registrationId'],
+        attributes: ['id', 'isActive', 'registrationId', 'firstLogin'],
         include: [ {
           model: models.user,
           attributes: ['fullname'],
@@ -31,24 +31,23 @@ router.route('/').post(async (req, res) => {
       });
 
       if (results && results.registrationId !== 'undefined' && results.registrationId > 0) {
-        // found user
-        const registrationId = results.registrationId;
-
-        console.log('WA DEBUG: found user with registration ID and full name and establishment name/id: ',
-                    registrationId,
-                    ' ',
-                    results.user.fullname,
-                    ' ',
-                    results.user.establishment.id,
-                    ' ',
-                    results.user.establishment.name);
-
-        res.status(200);
-        return res.json(formatSuccessulLoginResponse(
+        // successfully logged in
+        const response = formatSuccessulLoginResponse(
           results.user.fullname,
+          results.firstLogin,
           results.user.establishment.id,
           results.user.establishment.name
-        ));
+        );
+
+        // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
+        if (!results.firstLogin) {
+          await results.update({
+            firstLogin: new Date()
+          });
+        }
+
+        res.status(200);
+        return res.json(response);
       } else {
         // TODO - improve logging/error reporting
         console.error('tmpLogin::post - user not found');
@@ -70,9 +69,10 @@ router.route('/').post(async (req, res) => {
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, establishmentId, establishmentName) => {
+const formatSuccessulLoginResponse = (fullname, firstLoginDate, establishmentId, establishmentName) => {
   return {
     fullname,
+    firstLogin: firstLoginDate ? false : true,
     establishment: {
       id: establishmentId,
       name: establishmentName
