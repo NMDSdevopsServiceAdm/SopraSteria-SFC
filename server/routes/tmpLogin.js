@@ -7,6 +7,33 @@ const validateLoginParameters = (username, password) => {
   return username && typeof username === 'string' && username.length > 0;
 };
 
+// temporary endpoint to reset the first login
+router.route('/resetFirstLogin/:username').put(async (req, res) => {
+  try {
+    const username = req.params.username;
+    let results = await models.login.findOne({
+      where: {
+        username
+      },
+      attributes: ['id', 'firstLogin']
+    });
+
+    if (results && results.id) {
+      await results.update({
+        firstLogin: null
+      });
+    }
+
+    res.status(200);
+    return res.json({success: true});
+
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('tmpLogin::resetFirstLogin - failed', err);
+    res.status(500).send('tmpLogin::resetFirstLogin - failed');
+  }
+});
+
 // GET Location API by locationId
 router.route('/').post(async (req, res) => {
   if (validateLoginParameters(req.body.username, req.body.password)) {
@@ -35,7 +62,7 @@ router.route('/').post(async (req, res) => {
         }]
       });
 
-      if (results && results.registrationId !== 'undefined' && results.registrationId > 0 &&
+      if (results && results.registrationId > 0 &&
           results.user && results.user.establishment) {
 
         //console.log('WA DEBUG: main service: ', results.user.establishment.mainService)
