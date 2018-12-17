@@ -72,7 +72,7 @@ router.route('/').post(async (req, res) => {
 const formatSuccessulLoginResponse = (fullname, firstLoginDate, establishmentId, establishmentName) => {
   return {
     fullname,
-    firstLogin: firstLoginDate ? false : true,
+    isFirstLogin: firstLoginDate ? false : true,
     establishment: {
       id: establishmentId,
       name: establishmentName

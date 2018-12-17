@@ -23,8 +23,8 @@
                 "fullname" : {
                     "$ref" : "establishment_types.schema.json#/definitions/Fullname"
                 },
-                "establishmentName" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/EstablishmentName"
+                "establishment" : {
+                    "$ref" : "establishment_types.schema.json#/definitions/Establishment"
                 },
                 "mainServiceName" : {
                     "$ref" : "establishment_types.schema.json#/definitions/ServiceName"
