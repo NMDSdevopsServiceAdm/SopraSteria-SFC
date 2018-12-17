@@ -8,30 +8,55 @@
             "minimum" : 0
         },
         "Username" : {
-            "type" : "string"
+            "type" : "string",
+            "minLength": 3,
+            "maxLength": 120
         },
         "Password" : {
-            "type" : "string"
+            "type" : "string",
+            "minLength": 8,
+            "maxLength": 120
         },
         "Fullname" : {
             "description" : "The fullname of a user",
             "type" : "string",
-            "minLength" : 3
+            "minLength" : 3,
+            "maxLength": 120
+        },
+        "Address" : {
+            "description" : "Concatenated address - excluding postcode",
+            "type" : "string",
+            "minLength" : 3,
+            "maxLength" : 120
+        },
+        "Postcode" : {
+            "description": "A UK postcode",
+            "type": "string",
+            "pattern" : "([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})"
+        },
+        "LocationRef" : {
+            "description" : "A unique reference associated to an Establishment",
+            "type" : "string",
+            "minLength": 8,
+            "maxLength": 12
         },
         "EstablishmentName" : {
             "description": "the name of the Establishment",
             "type" : "string",
-            "minLength" : 3
+            "minLength" : 3,
+            "maxLength": 120
         },
         "ServiceName" : {
             "description": "the name of the Service",
             "type" : "string",
-            "minLength" : 3
+            "minLength" : 3,
+            "maxLength": 120
         },
         "ServiceCategory" : {
             "description": "the category associated with the Service",
             "type" : "string",
-            "minLength" : 3
+            "minLength" : 3,
+            "maxLength": 120
         },
 		"EmployerType" : {
 			"description" : "The type of employer",
@@ -43,53 +68,11 @@
                     "enum" : ["Private Sector", "Voluntary or Charity", "Other"]
 				},
 				"id" : {
-					"description" : "Optional integer representing the employer type",
+					"description" : "Optional integer representing the employer type: 1=Private, 2=Voluntary, 3=Other",
 					"$ref" : "#/definitions/ID"
 				}
 			},
 			"required" : ["value"]
-        },
-        "Service" : {
-            "description" : "The Service that can be performed at an Establishment",
-            "properties" : {
-                "id" : {
-                    "description" : "the unique reference of the service type",
-                    "$ref" : "#/definitions/ID"
-                },
-                "key" : {
-                    "description": "a textual representation of the service type; replacing spaces 'value' with underscores and capitalising",
-                    "type" : "string",
-                    "minLength" : 3
-                },
-                "name" : {
-                    "description" : "the display name of the service type",
-                    "type" : "string",
-                    "minLength" : 3
-                },
-                "category" : {
-                    "description"  : "the category of this service"
-                },
-                "isCQC" : {
-                    "description": "if true, this service is defined by CQC",
-                    "type" : "boolean"
-                },
-                "isMyService" : {
-                    "description" : "optional flag that when true identifies this service being one of the services provided by the Establishment (returned by api/myServices)",
-                    "type" : "boolean"
-                },
-                "capacity" : {
-                    "description" : "optional set of capacity questions and, if relevant (associated to a known Establishment), the answers",
-                    "type" : "array",
-                    "items" : {
-                        "$ref" : "#/definitions/ServiceCapacity"
-                    },
-                    "minItems" : 1
-                },
-                "isMainService" : {
-                    "description" : "optional flag, that if true, highlights this service is the main service for a given establishment"
-                }
-            },
-            "required" : ["id"]
         },
         "ServiceCapacity" : {
             "description" : "Optionally associated to a Service, is one or more questions around capacity",
@@ -116,6 +99,48 @@
                 }
             }
         },
+        "Service" : {
+            "description" : "The Service that can be performed at an Establishment",
+            "properties" : {
+                "id" : {
+                    "description" : "the unique reference of the service type",
+                    "$ref" : "#/definitions/ID"
+                },
+                "key" : {
+                    "description": "a textual representation of the service type; replacing spaces 'value' with underscores and capitalising",
+                    "type" : "string",
+                    "minLength" : 3
+                },
+                "name" : {
+                    "description" : "the display name of the service type",
+                    "$ref" : "#/definitions/ServiceName"
+                },
+                "category" : {
+                    "description"  : "the category of this service",
+                    "$ref" : "#/definitions/ServiceCategory"
+                },
+                "isCQC" : {
+                    "description": "if true, this service is defined by CQC",
+                    "type" : "boolean"
+                },
+                "isMyService" : {
+                    "description" : "optional flag that when true identifies this service being one of the services provided by the Establishment (returned by api/myServices)",
+                    "type" : "boolean"
+                },
+                "capacity" : {
+                    "description" : "optional set of capacity questions and, if relevant (associated to a known Establishment), the answers",
+                    "type" : "array",
+                    "items" : {
+                        "$ref" : "#/definitions/ServiceCapacity"
+                    },
+                    "minItems" : 1
+                },
+                "isMainService" : {
+                    "description" : "optional flag, that if true, highlights this service is the main service for a given establishment"
+                }
+            },
+            "required" : ["id"]
+        },
         "ServiceGroup" : {
             "description" : "A collection of services having the same cateogory",
             "type" : "object",
@@ -132,6 +157,45 @@
                     "minItems": 1
                 }
             }
+        },
+        "Establishment" : {
+            "description" : "A physical location offering care services; can be commercial or private location",
+            "type" : "object",
+            "properties" : {
+                "id" : {
+                    "description" : "The unique reference for this estasblishment",
+                    "$ref" : "#/definitions/ID"
+                },
+                "name" : {
+                    "description" : "The given name ofthis establishment",
+                    "$ref" : "#/definitions/EstablishmentName"
+                },
+                "address" : {
+                    "description": "The given (concatenated) address of this establishment",
+                    "$ref" : "#/definitions/Address"
+                },
+                "postcode" : {
+                    "description": "The given postcode of this establishment",
+                    "$ref" : "#/definitions/Postcode"
+                },
+                "locationRef" : {
+                    "description": "An optional reference ",
+                    "$ref" : "#/definitions/LocationRef"
+                },
+                "isRegulated" : {
+                    "description": "True if this establishment is regulated by CQC",
+                    "type": "boolean"
+                },
+                "mainService" : {
+                    "description" : "(Optionally), the primary service associated with this Establishment",
+                    "$ref" : "#/definitions/Service"
+                },
+                "employerType" : {
+                    "description": "The type of the employer",
+                    "$ref" : "#/definitions/EmployerType"
+                }
+            },
+            "required" : ["id", "name"]
         }
     }
 }
