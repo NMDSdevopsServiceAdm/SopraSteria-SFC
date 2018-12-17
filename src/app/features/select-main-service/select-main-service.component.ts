@@ -21,6 +21,7 @@ export class SelectMainServiceComponent implements OnInit {
   uniqueCategoriesArray: any[];
   newObject: [];
   //temp = [];
+  catRegulatedCheck: boolean;
 
   currentSection: number;
   lastSection: number;
@@ -57,33 +58,16 @@ export class SelectMainServiceComponent implements OnInit {
 
     this.currentSection = this.currentSection + 1;
     debugger;
-    if (this.backLink === 'registered-question') {
-      this.lastSection = 8;
+    if (this.backLink === '/registered-question') {
+      this.lastSection = 7;
     }
-    else if (this.backLink === 'select-workplace') {
-      this.lastSection = 9;
+    else if (this.backLink === '/select-workplace') {
+      this.lastSection = 8;
     }
   }
 
-  // setSectionNumbers() {
-  //   this.prevPage = this.registration.locationdata[0].prevPage;
-  //   const currentpage = this.registration.locationdata[0].currentPage;
-
-  //   this.currentSection = currentpage + 1;
-
-
-  //   if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
-  //     //this.currentSection = '2';
-  //     this.lastSection = 7;
-  //   }
-  //   else if ((this.prevPage === 'select-workplace') && (this.currentSection === 3)) {
-  //     //this.currentSection = '3';
-  //     this.lastSection = 8;
-  //   }
-  // }
-
   getMainServices() {
-    debugger
+    //debugger
     //this.regulatedCheck = this.registration[0].locationdata.isRegulated;
 
     if (this.registration.locationdata[0].isRegulated === true) {
@@ -98,10 +82,7 @@ export class SelectMainServiceComponent implements OnInit {
 
     this._registrationService.getMainServices(this.regulatedCheck)
       .subscribe(
-        // value => this.getUniqueServiceCategories(value)
-        value => {
-          this.allCategoriesArray = value;
-        }
+        value => this.allCategoriesArray = value
       );
   }
 
