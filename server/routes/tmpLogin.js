@@ -1,13 +1,15 @@
 var express = require('express');
 var router = express.Router();
 const models = require('../models/index');
+const Authorization = require('../utils/security/isAuthenticated');
 
 // TODO: JSON schema validation enforcement; for now, they simple have to be defined and not empty (and username only because we're not interested in password in tmpLogin)
 const validateLoginParameters = (username, password) => {
   return username && typeof username === 'string' && username.length > 0;
 };
 
-// temporary endpoint to reset the first login
+// temporary endpoint to reset the first login - must be authorised
+router.use('/resetFirstLogin', Authorization.isAuthorised);
 router.route('/resetFirstLogin/:username').put(async (req, res) => {
   try {
     const username = req.params.username;
