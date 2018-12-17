@@ -25,7 +25,7 @@ router.route('/').post(async (req, res) => {
           attributes: ['fullname'],
           include: [{
             model: models.establishment,
-            attributes: ['id', 'name'],
+            attributes: ['id', 'name', 'isRegulated'],
             include: [{
               model: models.services,
               as: 'mainService',
@@ -35,7 +35,8 @@ router.route('/').post(async (req, res) => {
         }]
       });
 
-      if (results && results.registrationId !== 'undefined' && results.registrationId > 0) {
+      if (results && results.registrationId !== 'undefined' && results.registrationId > 0 &&
+          results.user && results.user.establishment) {
 
         //console.log('WA DEBUG: main service: ', results.user.establishment.mainService)
 
@@ -47,6 +48,11 @@ router.route('/').post(async (req, res) => {
           results.user.establishment.mainService
         );
 
+        // this faus login sets the Authorization header to be the establishment iD
+        const headers = {
+          'Authorization': results.user.establishment.id
+        };
+
         // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
         if (!results.firstLogin) {
           await results.update({
@@ -54,6 +60,7 @@ router.route('/').post(async (req, res) => {
           });
         }
 
+        res.set(headers);
         res.status(200);
         return res.json(response);
       } else {
@@ -84,7 +91,8 @@ const formatSuccessulLoginResponse = (fullname, firstLoginDate, establishment, m
     isFirstLogin: firstLoginDate ? false : true,
     establishment: {
       id: establishment.id,
-      name: establishment.name
+      name: establishment.name,
+      isRegulated: establishment.isRegulated
     },
     mainService: {
       id: mainService ? mainService.id : null,

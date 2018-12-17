@@ -17,7 +17,7 @@
             "required": ["username", "password"]
         },
         "loginResponse" : {
-            "description" : "the login API response (on success)",
+            "description" : "the login API response (on success); TODO - enforce the child attributes of establishment and mainService",
             "type" : "object",
             "properties" : {
                 "fullname" : {
