@@ -19,16 +19,36 @@ router.route('/')
     }
 });
 
+// takes optional query paramter "cqc" - values 'true' or 'false', return filter services for those that are CQC registered
 router.route('/byCategory')
   .get(async function (req, res) {
+    const filterByCqc = req.query.cqc && req.query.cqc === 'true' ? true : false;
+
+    console.log('WA DEBUG: query parameters: ', req.query)
+    console.log('WA DEBUG: filter by: ', filterByCqc)
+
 
     //Find matching postcode data
-    let results = await models.services.findAll({
-      order: [
-        ['category', 'ASC'],
-        ['name', 'ASC']
-      ]
-    });
+    let results = null;
+
+    if (filterByCqc) {
+      results = await models.services.findAll({
+        where: {
+          iscqcregistered: true
+        },
+        order: [
+          ['category', 'ASC'],
+          ['name', 'ASC']
+        ]
+      });
+    } else {
+      results = await models.services.findAll({
+        order: [
+          ['category', 'ASC'],
+          ['name', 'ASC']
+        ]
+      });  
+    }
 
     let servicesData = createServicesByCategoryJSON(results);
 
