@@ -13,23 +13,21 @@
                 "password" : {
                     "$ref" : "establishment_types.schema.json#/definitions/Password"
                 }
-            }
+            },
+            "required": ["username", "password"]
         },
         "loginResponse" : {
-            "description" : "the login API response (on success)",
+            "description" : "the login API response (on success); TODO - enforce the child attributes of establishment and mainService",
             "type" : "object",
             "properties" : {
                 "fullname" : {
                     "$ref" : "establishment_types.schema.json#/definitions/Fullname"
                 },
-                "establishmentName" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/EstablishmentName"
+                "establishment" : {
+                    "$ref" : "establishment_types.schema.json#/definitions/Establishment"
                 },
-                "mainServiceName" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/ServiceName"
-                },
-                "mainServiceID" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/ID"
+                "mainService" : {
+                    "$ref" : "establishment_types.schema.json#/definitions/Service"
                 },
                 "isFirstLogin" : {
                     "description" : "true if this is the first time user has logged in",
