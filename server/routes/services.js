@@ -24,10 +24,6 @@ router.route('/byCategory')
   .get(async function (req, res) {
     const filterByCqc = req.query.cqc && req.query.cqc === 'true' ? true : false;
 
-    console.log('WA DEBUG: query parameters: ', req.query)
-    console.log('WA DEBUG: filter by: ', filterByCqc)
-
-
     //Find matching postcode data
     let results = null;
 
