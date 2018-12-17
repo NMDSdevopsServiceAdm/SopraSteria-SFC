@@ -28,7 +28,7 @@ module.exports = function(sequelize, DataTypes) {
     postcode: {
       type: DataTypes.TEXT,
       allowNull: false,
-      field: '"Postcode"'
+      field: '"PostCode"'
     },
     isRegulated: {
       type: DataTypes.BOOLEAN,
@@ -39,6 +39,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: '"MainServiceId"'
+    },
+    employerType: {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Private Sector', 'Voluntary / Charity', 'Other'],
+      field: '"EmployerType"'
     }
   }, {
     tableName: '"Establishment"',

@@ -37,14 +37,26 @@
             },
             "required" : ["fullname", "establishmentName", "mainServiceName", "isFirstLogin"]
         },
-        "employerTypeRequest" : {
+        "employerTypeGetResponse" : {
+            "description" : "Response to GET on Employer Type to an establishment (id assumed)",
+            "type" : "object",
+            "$ref" : "establishment_types.schema.json#/definitions/Establishment",
+            "required": ["id", "name", "employerType"]
+        },
+        "employerTypePostRequest" : {
             "description" : "Request to assign an Employer Type to an establishment (id assumed)",
             "type" : "object",
-            "propertie" : {
+            "properties" : {
                 "employerType" : {
                     "$ref" : "establishment_types.schema.json#/definitions/EmployerType"
                 }
             }
+        },
+        "employerTypePostResponse" : {
+            "description" : "Response to assign an Employer Type to an establishment (id assumed)",
+            "type" : "object",
+            "$ref" : "establishment_types.schema.json#/definitions/Establishment",
+            "required": ["id", "name", "employerType"]
         },
         "servicesGetRequest" : {
             "description": "intentionally empty"
