@@ -44,11 +44,11 @@ router.route('/').post(async (req, res) => {
                     results.user.establishment.name);
 
         res.status(200);
-        return res.json({
-          "success" : 1,
-          "message" : "Successful login so there"
-        });
-
+        return res.json(formatSuccessulLoginResponse(
+          results.user.fullname,
+          results.user.establishment.id,
+          results.user.establishment.name
+        ));
       } else {
         // TODO - improve logging/error reporting
         console.error('tmpLogin::post - user not found');
@@ -68,5 +68,16 @@ router.route('/').post(async (req, res) => {
   }
 
 });
+
+// TODO: enforce JSON schema
+const formatSuccessulLoginResponse = (fullname, establishmentId, establishmentName) => {
+  return {
+    fullname,
+    establishment: {
+      id: establishmentId,
+      name: establishmentName
+    }
+  };
+};
 
 module.exports = router;

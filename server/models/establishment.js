@@ -11,13 +11,13 @@ module.exports = function(sequelize, DataTypes) {
     },
     name: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       unique: true,
       field: '"Name"'
     },
     address: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       field: '"Address"'
     },
     locationId: {
@@ -27,12 +27,12 @@ module.exports = function(sequelize, DataTypes) {
     },
     postcode: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       field: '"Postcode"'
     },
     isRegulated: {
       type: DataTypes.BOOLEAN,
-      allowNull: true,
+      allowNull: false,
       field: '"IsRegulated"'
     },
     mainServiceId: {
