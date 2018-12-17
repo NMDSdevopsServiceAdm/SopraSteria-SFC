@@ -26,11 +26,8 @@
                 "establishment" : {
                     "$ref" : "establishment_types.schema.json#/definitions/Establishment"
                 },
-                "mainServiceName" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/ServiceName"
-                },
-                "mainServiceID" : {
-                    "$ref" : "establishment_types.schema.json#/definitions/ID"
+                "mainService" : {
+                    "$ref" : "establishment_types.schema.json#/definitions/Service"
                 },
                 "isFirstLogin" : {
                     "description" : "true if this is the first time user has logged in",

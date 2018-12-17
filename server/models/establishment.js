@@ -48,7 +48,11 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Establishment.associate = (models) => {
-
+    Establishment.belongsTo(models.services, {
+      foreignKey: 'mainServiceId',
+      targetKey: 'id',
+      as: 'mainService'
+    })
   };
 
   return Establishment;

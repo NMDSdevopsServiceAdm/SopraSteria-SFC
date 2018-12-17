@@ -25,18 +25,26 @@ router.route('/').post(async (req, res) => {
           attributes: ['fullname'],
           include: [{
             model: models.establishment,
-            attributes: ['id', 'name']
+            attributes: ['id', 'name'],
+            include: [{
+              model: models.services,
+              as: 'mainService',
+              attributes: ['id', 'name']
+            }]
           }]
         }]
       });
 
       if (results && results.registrationId !== 'undefined' && results.registrationId > 0) {
+
+        //console.log('WA DEBUG: main service: ', results.user.establishment.mainService)
+
         // successfully logged in
         const response = formatSuccessulLoginResponse(
           results.user.fullname,
           results.firstLogin,
-          results.user.establishment.id,
-          results.user.establishment.name
+          results.user.establishment,
+          results.user.establishment.mainService
         );
 
         // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
@@ -69,13 +77,18 @@ router.route('/').post(async (req, res) => {
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, firstLoginDate, establishmentId, establishmentName) => {
+const formatSuccessulLoginResponse = (fullname, firstLoginDate, establishment, mainService) => {
+  // note - the mainService can be null
   return {
     fullname,
     isFirstLogin: firstLoginDate ? false : true,
     establishment: {
-      id: establishmentId,
-      name: establishmentName
+      id: establishment.id,
+      name: establishment.name
+    },
+    mainService: {
+      id: mainService ? mainService.id : null,
+      name: mainService ? mainService.name : null
     }
   };
 };
