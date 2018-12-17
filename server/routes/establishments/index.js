@@ -1,12 +1,15 @@
 // default route and registration of all sub routes
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
 
+const EmployerType = require('./employerType');
+
 // ensure all establishment routes are authorised
 router.use('/', Authorization.hasAuthorisedEstablishment);
+router.use('/:id/employerType', EmployerType);
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {

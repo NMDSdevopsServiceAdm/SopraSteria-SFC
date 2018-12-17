@@ -37,7 +37,7 @@ app.use('/api/services', services);
 app.use('/api/registration', registration);
 app.use('/api/errors', errors);
 app.use('/api/login', tmpLogin);
-app.use('/api/establishment', Authorization.hasAuthorisedEstablishment, establishments);
+app.use('/api/establishment', establishments);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

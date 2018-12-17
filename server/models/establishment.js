@@ -43,7 +43,7 @@ module.exports = function(sequelize, DataTypes) {
     employerType: {
       type: DataTypes.ENUM,
       allowNull: true,
-      values: ['Private Section', 'Voluntary / Charity', 'Other'],
+      values: ['Private Sector', 'Voluntary / Charity', 'Other'],
       field: '"EmployerType"'
     }
   }, {
