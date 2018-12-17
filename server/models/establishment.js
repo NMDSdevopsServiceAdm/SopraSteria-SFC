@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('establishment', {
-    establishmentId: {
+  const Establishment = sequelize.define('establishment', {
+    id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
@@ -46,4 +46,10 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
+
+  Establishment.associate = (models) => {
+
+  };
+
+  return Establishment;
 };
