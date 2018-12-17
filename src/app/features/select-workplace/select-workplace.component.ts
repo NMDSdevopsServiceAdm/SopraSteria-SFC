@@ -26,7 +26,7 @@ export class SelectWorkplaceComponent implements OnInit {
 
   currentSection: number;
   lastSection: number;
-  prevPage: string;
+  backLink: string;
 
   isSubmitted = false;
 
@@ -48,17 +48,14 @@ export class SelectWorkplaceComponent implements OnInit {
   }
 
   setSectionNumbers() {
-    this.prevPage = this.registration.locationdata[0].prevPage;
-    const currentpage = this.registration.locationdata[0].currentPage;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
 
-    this.currentSection = currentpage + 1;
-
-
-    if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
-      //this.currentSection = '2';
-      this.lastSection = 7;
-    }
+    this.currentSection = this.currentSection + 1;
+    this.lastSection = 8;
   }
+
+  // && (this.currentSection === 2)
 
   selectWorkplaceChanged(value: string): void {
     this.selectedAddressId = this.registration.locationdata[value].locationId;
@@ -82,8 +79,8 @@ export class SelectWorkplaceComponent implements OnInit {
     .subscribe(
       (data: RegistrationModel) => {
         if (data.success === 1) {
-          data.locationdata[0].prevPage = 'select-workplace';
-          data.locationdata[0].currentPage = this.currentSection;
+
+          this.updateSectionNumbers(data);
 
           this._registrationService.updateState(data);
           this._registrationService.routingCheck(data);
@@ -99,6 +96,22 @@ export class SelectWorkplaceComponent implements OnInit {
         console.log('Get location by postcode complete');
       }
     );
+  }
+
+  updateSectionNumbers(data) {
+    debugger;
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.currentSection;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/select-workplace');
+
+
+    // data.userRoute.currentPage = this.currentSection;
+    // data.userRoute.route.push('/select-workplace');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
   }
 
 }

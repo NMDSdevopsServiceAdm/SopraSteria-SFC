@@ -319,8 +319,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       this._registrationService.getLocationByPostCode(cqcRegisteredPostcodeValue).subscribe(
         (data: RegistrationModel) => {
           if (data.success === 1) {
-            data.locationdata['prevPage'] = 'registered-question';
-            data.locationdata['currentPage'] = 1;
+
+            this.setSectionNumbers(data);
+
             debugger;
             //data = data.locationdata;
             this._registrationService.updateState(data);
@@ -413,6 +414,18 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       }
 
     }
+  }
+
+  setSectionNumbers(data) {
+
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.registration.userRoute['currentPage'] = 1;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/registered-question');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
   }
 }
 

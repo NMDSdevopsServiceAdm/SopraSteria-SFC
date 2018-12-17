@@ -25,12 +25,12 @@ export class SecurityQuestionComponent implements OnInit {
   submittedSecurityA = false;
 
   private securityQuestionMessages = {
-    maxlength: 'The security question must be no longer than 120 characters.',
+    maxlength: 'The security question must be no longer than 255 characters.',
     required: 'Please enter your Security question.'
   };
 
   private securityAnswerMessages = {
-    maxlength: 'The security answer must be no longer than 120 characters.',
+    maxlength: 'The security answer must be no longer than 255 characters.',
     required: 'Please enter your Security answer.'
   };
 
@@ -52,8 +52,8 @@ export class SecurityQuestionComponent implements OnInit {
 
   ngOnInit() {
     this.securityQuestionAnswerForm = this.fb.group({
-      securityQuestionInput: ['', [Validators.required, Validators.maxLength(120)]],
-      securityAnswerInput: ['', [Validators.required, Validators.maxLength(120)]]
+      securityQuestionInput: ['', [Validators.required, Validators.maxLength(255)]],
+      securityAnswerInput: ['', [Validators.required, Validators.maxLength(255)]]
     });
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     console.log(this.registration);
