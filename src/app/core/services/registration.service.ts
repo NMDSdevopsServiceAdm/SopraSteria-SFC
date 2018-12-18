@@ -136,10 +136,8 @@ export class RegistrationService {
   }
 
   getUsernameDuplicate(id: string) {
-
     const $value = id;
-    debugger;
-    return this.http.get('/username/:' + $value)
+    return this.http.get('/api/registration/username/' + $value)
       .pipe(
         catchError(err => this.handleHttpError(err))
       );

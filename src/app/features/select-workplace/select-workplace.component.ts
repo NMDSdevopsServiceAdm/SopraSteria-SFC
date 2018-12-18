@@ -28,6 +28,7 @@ export class SelectWorkplaceComponent implements OnInit {
   currentSection: number;
   lastSection: number;
   backLink: string;
+  secondItem: number;
 
   isSubmitted = false;
 
@@ -69,6 +70,7 @@ export class SelectWorkplaceComponent implements OnInit {
   setSectionNumbers() {
     this.currentSection = this.registration.userRoute.currentPage;
     this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+    this.secondItem = 1;
 
     this.currentSection = this.currentSection + 1;
     this.lastSection = 8;
@@ -146,17 +148,18 @@ export class SelectWorkplaceComponent implements OnInit {
           this._registrationService.updateState(data);
           //this.routingCheck(data);
         }
-      },
-      (err: RegistrationTrackerError) => {
-        debugger;
-        console.log(err);
-        this.nonCqcPostcodeApiError = err.friendlyMessage;
-        this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
-      },
-      () => {
-        console.log('Get location by postcode complete');
-        this.router.navigate(['/select-workplace-address']);
       }
+      // ,
+      // (err: RegistrationTrackerError) => {
+      //   debugger;
+      //   console.log(err);
+      //   this.nonCqcPostcodeApiError = err.friendlyMessage;
+      //   //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+      // },
+      // () => {
+      //   console.log('Get location by postcode complete');
+      //   this.router.navigate(['/select-workplace-address']);
+      // }
     );
   }
 

@@ -21,6 +21,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   currentSection: number;
   lastSection: number;
   backLink: string;
+  secondItem: number;
 
   constructor(private _registrationService: RegistrationService, private router: Router) {}
 
@@ -33,15 +34,16 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   setSectionNumbers() {
     this.currentSection = this.registration.userRoute.currentPage;
     this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+    this.secondItem = 1;
 
     this.currentSection = this.currentSection + 1;
 
     debugger;
     if (this.backLink === '/select-main-service') {
-      if (this.registration.userRoute.route[1] === '/select-workplace') {
+      if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
         this.lastSection = 8;
       }
-      else if (this.registration.userRoute.route[1] === '/select-workplace-address') {
+      else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
         this.lastSection = 9;
       }
       else {
@@ -140,16 +142,6 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
           this._registrationService.updateState(data);
           //this.routingCheck(data);
         }
-      },
-      (err: RegistrationTrackerError) => {
-        debugger;
-        console.log(err);
-        this.nonCqcPostcodeApiError = err.friendlyMessage;
-        //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
-      },
-      () => {
-        console.log('Get location by postcode complete');
-        this.router.navigate(['/select-workplace-address']);
       }
     );
   }

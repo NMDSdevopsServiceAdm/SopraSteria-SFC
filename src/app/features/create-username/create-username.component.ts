@@ -6,6 +6,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationTrackerError } from '../../core/model/registrationTrackerError.model';
 import { CustomValidators } from './../../shared/custom-form-validators';
 
 @Component({
@@ -20,9 +21,12 @@ export class CreateUsernameComponent implements OnInit {
   createSecurityQuestionValue: string;
   createsecurityAnswerValue: string;
 
+  usernameApiError: string;
+
   currentSection: number;
   lastSection: number;
   backLink: string;
+  secondItem: number;
 
   isSubmitted = false;
   submittedUsername = false;
@@ -145,22 +149,58 @@ export class CreateUsernameComponent implements OnInit {
 
     //const username = this.getCreateUsernameInput();
     debugger;
-    this._registrationService.getUsernameDuplicate(value);
+    this._registrationService.getUsernameDuplicate(value)
+    // .subscribe(
+    //   res => {
+    //     // console.log(res)
+    //     debugger;
+    //     if (res.status === '1') {
+    //       debugger;
+    //       this.usernameApiError = res.message;
+    //       //this.setCreateUsernameMessage(this.getCreateUsernameInput);
+    //     }
+    //   }
+    // );
+    .subscribe(
+      (data: RegistrationModel) => {
+        if (data['status'] === '1') {
+
+          this.usernameApiError = data.message;
+
+          debugger;
+          this.setCreateUsernameMessage(this.getCreateUsernameInput);
+
+        }
+        else {
+          this.usernameApiError = null;
+        }
+      },
+      (err: RegistrationTrackerError) => {
+        debugger;
+        console.log(err);
+        this.usernameApiError = err.message;
+        this.setCreateUsernameMessage(this.getCreateUsernameInput);
+      },
+      () => {
+        console.log('Get location by postcode complete');
+      }
+    );
   }
 
   setSectionNumbers() {
     this.currentSection = this.registration.userRoute.currentPage;
     this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+    this.secondItem = 1;
 
     this.currentSection = this.currentSection + 1;
 
     debugger;
     if (this.backLink === '/user-details') {
       debugger;
-      if (this.registration.userRoute.route[1] === '/select-workplace') {
+      if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
         this.lastSection = 8;
       }
-      else if (this.registration.userRoute.route[1] === '/select-workplace-address') {
+      else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
         this.lastSection = 9;
       }
       else {
@@ -232,16 +272,15 @@ export class CreateUsernameComponent implements OnInit {
     this.submittedConfirmPassword = true;
 
     // stop here if form is invalid
-    if (this.createUserNamePasswordForm.invalid) {
+    if (this.createUserNamePasswordForm.invalid || this.usernameApiError) {
 
       //this.isSubmitted = false;
       //this.submittedUsername = false;
       //this.submittedPassword = false;
       //this.submittedConfirmPassword = false;
-      //return;
+      return;
     }
     else {
-
       this.save();
     }
   }

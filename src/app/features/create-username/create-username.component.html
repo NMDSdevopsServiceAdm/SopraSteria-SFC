@@ -16,7 +16,8 @@
       <div class="col-12 col-md-6 p-0">
 
         <div class="field-group"
-             [ngClass]="{'is-invalid': usernameMessage || (isSubmitted && !getCreateUsernameInput.valid) }">
+             [ngClass]="{'is-invalid': usernameMessage || (isSubmitted && !getCreateUsernameInput.valid) ||
+                          this.usernameApiError }">
           <label class="form-label" for="createUsername">Username</label>
           <p class="field-comment-text">You will use this to sign in. It should be unique to you</p>
 
@@ -27,6 +28,9 @@
             </span>
             <span *ngIf="submittedUsername && getCreateUsernameInput.hasError('required')" class="main-body-text mb-2">
               Please enter your username.
+            </span>
+            <span *ngIf="this.usernameApiError" class="main-body-text mb-2">
+              {{ this.usernameApiError }}
             </span>
           </span>
 
