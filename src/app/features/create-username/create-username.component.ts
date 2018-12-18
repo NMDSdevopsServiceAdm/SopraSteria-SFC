@@ -94,7 +94,11 @@ export class CreateUsernameComponent implements OnInit {
     this.getCreateUsernameInput.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => this.setCreateUsernameMessage(this.getCreateUsernameInput)
+      value => {
+        this.checkUsernameDuplicate(value);
+
+        this.setCreateUsernameMessage(this.getCreateUsernameInput);
+      }
     );
 
     // Create password watcher
@@ -135,6 +139,13 @@ export class CreateUsernameComponent implements OnInit {
 
     // Set section numbering on load
     this.setSectionNumbers();
+  }
+
+  checkUsernameDuplicate(value) {
+
+    //const username = this.getCreateUsernameInput();
+    debugger;
+    this._registrationService.getUsernameDuplicate(value);
   }
 
   setSectionNumbers() {

@@ -12,6 +12,11 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class ConfirmWorkplaceDetailsComponent implements OnInit {
   registration: RegistrationModel;
+  addressPostcode: string;
+
+  cqcPostcodeApiError: string;
+  cqclocationApiError: string;
+  nonCqcPostcodeApiError: string;
 
   currentSection: number;
   lastSection: number;
@@ -35,6 +40,9 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
     if (this.backLink === '/select-main-service') {
       if (this.registration.userRoute.route[1] === '/select-workplace') {
         this.lastSection = 8;
+      }
+      else if (this.registration.userRoute.route[1] === '/select-workplace-address') {
+        this.lastSection = 9;
       }
       else {
         this.lastSection = 7;
@@ -117,6 +125,32 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
 
     debugger;
     this.router.navigate([this.backLink]);
+  }
+
+  workplaceNotFound() {
+    this.addressPostcode = this.registration.locationdata[0].postalCode;
+    debugger;
+
+    this._registrationService.getAddressByPostCode(this.addressPostcode).subscribe(
+      (data: RegistrationModel) => {
+        if (data.success === 1) {
+          debugger;
+          //data = data.postcodedata;
+          this._registrationService.updateState(data);
+          //this.routingCheck(data);
+        }
+      },
+      (err: RegistrationTrackerError) => {
+        debugger;
+        console.log(err);
+        this.nonCqcPostcodeApiError = err.friendlyMessage;
+        //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+      },
+      () => {
+        console.log('Get location by postcode complete');
+        this.router.navigate(['/select-workplace-address']);
+      }
+    );
   }
 
 }

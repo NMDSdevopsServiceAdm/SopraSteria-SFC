@@ -135,6 +135,16 @@ export class RegistrationService {
       );
   }
 
+  getUsernameDuplicate(id: string) {
+
+    const $value = id;
+    debugger;
+    return this.http.get('/username/:' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
+      );
+  }
+
   routingCheck(data) {
     debugger;
     if (data.locationdata.length > 1) {

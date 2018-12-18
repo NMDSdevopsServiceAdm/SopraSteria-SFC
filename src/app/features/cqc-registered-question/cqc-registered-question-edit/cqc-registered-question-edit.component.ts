@@ -343,6 +343,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       this._registrationService.getLocationByLocationId(locationIdValue).subscribe(
         (data: RegistrationModel) => {
           if (data.success === 1) {
+
+            this.setSectionNumbers(data);
+
             debugger;
             //data = data.locationdata;
             this._registrationService.updateState(data);
@@ -364,6 +367,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       this._registrationService.getAddressByPostCode(notRegisteredPostcodeValue).subscribe(
         (data: RegistrationModel) => {
           if (data.success === 1) {
+
+            this.setSectionNumbers(data);
+
             debugger;
             //data = data.postcodedata;
             this._registrationService.updateState(data);

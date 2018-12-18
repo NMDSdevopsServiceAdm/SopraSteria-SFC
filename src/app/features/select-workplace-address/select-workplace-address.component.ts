@@ -23,6 +23,10 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   cqclocationApiError: string;
   nonCqcPostcodeApiError: string;
 
+  currentSection: number;
+  lastSection: number;
+  backLink: string;
+
   constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
 
   ngOnInit() {
@@ -43,6 +47,16 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     console.log(this.registration);
 
     this.editPostcode = false;
+
+    this.setSectionNumbers();
+  }
+
+  setSectionNumbers() {
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+
+    this.currentSection = this.currentSection + 1;
+    this.lastSection = 8;
   }
 
   selectWorkplaceAddressChanged(value: string): void {
@@ -58,6 +72,8 @@ export class SelectWorkplaceAddressComponent implements OnInit {
 
     this.locationdata.push(postcodeObj);
 
+    this.updateSectionNumbers(this.locationdata[0]);
+
     this._registrationService.updateState(this.locationdata[0]);
 
     if (this.registration.locationdata[0].locationName === '') {
@@ -68,6 +84,22 @@ export class SelectWorkplaceAddressComponent implements OnInit {
       this.router.navigate(['/select-main-service']);
     }
 
+  }
+
+  updateSectionNumbers(data) {
+    debugger;
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.currentSection;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/select-workplace-address');
+
+
+    // data.userRoute.currentPage = this.currentSection;
+    // data.userRoute.route.push('/select-workplace');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
   }
 
   postcodeChange() {

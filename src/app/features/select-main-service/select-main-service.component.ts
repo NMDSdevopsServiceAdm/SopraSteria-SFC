@@ -66,6 +66,9 @@ export class SelectMainServiceComponent implements OnInit {
     else if (this.backLink === '/select-workplace') {
       this.lastSection = 8;
     }
+    else if (this.backLink === '/enter-workplace-address') {
+      this.lastSection = 9;
+    }
     else if (this.backLink === '/confirm-workplace-details') {
       if (this.registration.userRoute[1].route === '/select-workplace') {
         this.lastSection = 8;

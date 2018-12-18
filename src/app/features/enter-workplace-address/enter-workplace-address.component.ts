@@ -16,6 +16,10 @@ export class EnterWorkplaceAddressComponent implements OnInit {
   enterWorkplaceAddressForm: FormGroup;
   registration: RegistrationModel;
 
+  currentSection: number;
+  lastSection: number;
+  backLink: string;
+
   // Set up Messages
   isSubmitted = false;
   submittedPostcodeInput = false;
@@ -110,7 +114,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    ;
 
     this.loadExistingValues();
 
@@ -119,148 +122,92 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     this.getPostcode.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => //this.setPostcodeMessage(this.getPostcode)
-      {
+      value => {
         if (value.length > 0) {
 
           if (this.getPostcode.errors) {
             this.setPostcodeMessage(this.getPostcode);
           }
         }
-        // else {
-        //   this.isSubmitted = false;
-        //   this.submittedPostcodeInput = false;
-        //   this.submittedAddress1Input = false;
-        //   this.submittedAddress2Input = false;
-        //   this.submittedTownCityInput = false;
-        //   this.submittedCountyInput = false;
-        //   this.submittedWpNameInput = false;
-        //   this.setPostcodeMessage(this.getPostcode);
-        // }
       }
     );
 
     this.getAddress1.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => //this.setAddress1Message(this.getAddress1)
-      {
+      value => {
         if (value.length > 0) {
 
           if (this.getAddress1.errors) {
             this.setAddress1Message(this.getAddress1);
           }
         }
-        // else {
-        //   this.isSubmitted = false;
-        //   this.submittedPostcodeInput = false;
-        //   this.submittedAddress1Input = false;
-        //   this.submittedAddress2Input = false;
-        //   this.submittedTownCityInput = false;
-        //   this.submittedCountyInput = false;
-        //   this.submittedWpNameInput = false;
-        //   this.setAddress1Message(this.getAddress1);
-        // }
       }
     );
 
     this.getAddress2.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => //this.setAddress2Message(this.getAddress2)
-      {
+      value => {
         if (value.length > 0) {
 
           if (this.getAddress2.errors) {
             this.setAddress2Message(this.getAddress2);
           }
         }
-        // else {
-        //   this.isSubmitted = false;
-        //   this.submittedPostcodeInput = false;
-        //   this.submittedAddress1Input = false;
-        //   this.submittedAddress2Input = false;
-        //   this.submittedTownCityInput = false;
-        //   this.submittedCountyInput = false;
-        //   this.submittedWpNameInput = false;
-        //   this.setAddress2Message(this.getAddress2);
-        // }
       }
     );
 
     this.getTownCity.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => //this.setTownCityMessage(this.getTownCity)
-      {
+      value => {
         if (value.length > 0) {
 
           if (this.getTownCity.errors) {
             this.setTownCityMessage(this.getTownCity);
           }
         }
-        // else {
-        //   this.isSubmitted = false;
-        //   this.submittedPostcodeInput = false;
-        //   this.submittedAddress1Input = false;
-        //   this.submittedAddress2Input = false;
-        //   this.submittedTownCityInput = false;
-        //   this.submittedCountyInput = false;
-        //   this.submittedWpNameInput = false;
-        //   this.setTownCityMessage(this.getTownCity);
-        // }
       }
     );
 
     this.getCounty.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => //this.setCountyMessage(this.getCounty)
-      {
+      value => {
         if (value.length > 0) {
 
           if (this.getCounty.errors) {
             this.setCountyMessage(this.getCounty);
           }
         }
-        // else {
-        //   this.isSubmitted = false;
-        //   this.submittedPostcodeInput = false;
-        //   this.submittedAddress1Input = false;
-        //   this.submittedAddress2Input = false;
-        //   this.submittedTownCityInput = false;
-        //   this.submittedCountyInput = false;
-        //   this.submittedWpNameInput = false;
-        //   this.setCountyMessage(this.getCounty);
-        // }
       }
     );
 
     this.getWpName.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => //this.setWpNameMessage(this.getWpName)
-      {
+      value => {
         if (value.length > 0) {
 
           if (this.getWpName.errors) {
             this.setWpNameMessage(this.getWpName);
           }
         }
-        // else {
-        //   this.isSubmitted = false;
-        //   this.submittedPostcodeInput = false;
-        //   this.submittedAddress1Input = false;
-        //   this.submittedAddress2Input = false;
-        //   this.submittedTownCityInput = false;
-        //   this.submittedCountyInput = false;
-        //   this.submittedWpNameInput = false;
-        //   this.setWpNameMessage(this.getWpName);
-        // }
       }
     );
 
     // -- END -- Validation check watchers
+
+    this.setSectionNumbers();
+  }
+
+  setSectionNumbers() {
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+
+    this.currentSection = this.currentSection + 1;
+    this.lastSection = 8;
   }
 
   // -- START -- Set validation handlers
@@ -271,7 +218,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
       this.postcodeMessage = Object.keys(c.errors).map(
         key => this.postcodeMessage += this.postcodeMessages[key]).join(' ');
     }
-    ;
     //this.submittedPostcodeInput = false;
   }
 
@@ -283,12 +229,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
         key => this.address1Message += this.address1Messages[key]).join(' ');
     }
     //this.submittedAddress1Input = false;
-    // else {
-
-    //   if (this.isSubmitted && !this.getAddress1.errors) {
-    //     this.save();
-    //   }
-    // }
   }
 
   setAddress2Message(c: AbstractControl): void {
@@ -299,12 +239,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
         key => this.address2Message += this.address2Messages[key]).join(' ');
     }
     //this.submittedAddress2Input = false;
-    // else {
-
-    //   if (this.isSubmitted && !this.getAddress2.errors) {
-    //     this.save();
-    //   }
-    // }
   }
 
   setTownCityMessage(c: AbstractControl): void {
@@ -315,12 +249,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
         key => this.townCityMessage += this.townCityMessages[key]).join(' ');
     }
     //this.submittedTownCityInput = false;
-    // else {
-
-    //   if (this.isSubmitted && !this.getTownCity.errors) {
-    //     this.save();
-    //   }
-    // }
   }
 
   setCountyMessage(c: AbstractControl): void {
@@ -345,7 +273,7 @@ export class EnterWorkplaceAddressComponent implements OnInit {
   // -- END -- Set validation handlers
 
   loadExistingValues() {
-    ;
+
     if ((this.registration.locationdata[0].hasOwnProperty('locationName')) && (this.registration.locationdata[0].locationName === '')) {
       const postcodeValue = this.registration.locationdata[0].postalCode;
       const address1Value = this.registration.locationdata[0].addressLine1;
@@ -373,27 +301,12 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     this.submittedCountyInput = true;
     this.submittedWpNameInput = true;
 
-    ;
-
     // stop here if form is invalid
     if (this.enterWorkplaceAddressForm.invalid) {
-      // this.submittedPostcodeInput = false;
-      // this.submittedAddress1Input = false;
-      // this.submittedAddress2Input = false;
-      // this.submittedTownCityInput = false;
-      // this.submittedCountyInput = false;
-      // this.submittedWpNameInput = false;
-      // this.setPostcodeMessage(this.getPostcode);
-      // this.setAddress1Message(this.getAddress1);
-      // this.setAddress2Message(this.getAddress2);
-      // this.setTownCityMessage(this.getTownCity);
-      // this.setCountyMessage(this.getCounty);
-      // this.setWpNameMessage(this.getWpName);
-      ;
-        return;
+      return;
     }
     else {
-      ;
+
       this.save();
     }
   }
@@ -406,7 +319,7 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     const countyValue = this.enterWorkplaceAddressForm.get('countyInput').value;
     const wpNameValue = this.enterWorkplaceAddressForm.get('wpNameInput').value;
 
-    //this._registrationService.registration$.subscribe(registration => this.registration = registration);
+    // this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     console.log(this.registration);
 
@@ -421,10 +334,28 @@ export class EnterWorkplaceAddressComponent implements OnInit {
 
     const updateRegistration = this.registration.locationdata[0];
 
+    this.updateSectionNumbers(this.registration);
+
     this._registrationService.updateState(this.registration);
     //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/select-main-service']);
 
+  }
+
+  updateSectionNumbers(data) {
+    debugger;
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.currentSection;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/enter-workplace-address');
+
+
+    // data.userRoute.currentPage = this.currentSection;
+    // data.userRoute.route.push('/select-workplace');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
   }
 
 }
