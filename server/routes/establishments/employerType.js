@@ -9,16 +9,6 @@ const models = require('../../models');
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
-  // must provide the establishment ID and it must be a number
-  if (!req.params.id || isNaN(parseInt(req.params.id))) {
-    console.error('establishment::employerType GET - missing establishment id parameter');
-    return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
-  }
-  if (establishmentId !== parseInt(req.params.id)) {
-    console.error('establishment::employerType GET - given and known establishment id do not match');
-    return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
-  }
-
   try {
     let results = await models.establishment.findOne({
       where: {
@@ -46,16 +36,6 @@ const EXPECTED_EMPLOYER_TYPES = ['Private Sector', 'Voluntary / Charity', 'Other
 router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const givenEmployerType = req.body.employerType;
-
-  // must provide the establishment ID and it must be a number
-  if (!req.params.id || isNaN(parseInt(req.params.id))) {
-    console.error('establishment::employerType POST - missing establishment id parameter');
-    return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
-  }
-  if (establishmentId !== parseInt(req.params.id)) {
-    console.error('establishment::employerType POST - given and known establishment id do not match');
-    return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
-  }
 
   // must provide employer type and must be one of expected values
   if (!givenEmployerType || !EXPECTED_EMPLOYER_TYPES.includes(givenEmployerType)) {

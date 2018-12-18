@@ -8,7 +8,7 @@ const Authorization = require('../../utils/security/isAuthenticated');
 const EmployerType = require('./employerType');
 
 // ensure all establishment routes are authorised
-router.use('/', Authorization.hasAuthorisedEstablishment);
+router.use('/:id', Authorization.hasAuthorisedEstablishment);
 router.use('/:id/employerType', EmployerType);
 
 // gets all there is to know about an Establishment
