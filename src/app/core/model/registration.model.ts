@@ -3,6 +3,10 @@ export interface RegistrationModel {
   success: number;
   message: string;
   detailsChanged: boolean;
+  userRoute: {
+    currentPage: number;
+    route: [];
+  };
   locationdata: [{
     locationId: string;
     locationName: string;
@@ -23,8 +27,6 @@ export interface RegistrationModel {
       securityQuestion: string;
       securityAnswer: string;
     };
-    prevPage: string;
-    currentPage: number;
   }];
   postcodedata: [{
     locationName: string;

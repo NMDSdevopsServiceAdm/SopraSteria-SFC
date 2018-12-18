@@ -20,17 +20,22 @@ export class SecurityQuestionComponent implements OnInit {
   securityQuestionMessage: string;
   securityAnswerMessage: string;
 
+  currentSection: number;
+  lastSection: number;
+  backLink: string;
+  secondItem: number;
+
   isSubmitted = false;
   submittedSecurityQ = false;
   submittedSecurityA = false;
 
   private securityQuestionMessages = {
-    maxlength: 'The security question must be no longer than 120 characters.',
+    maxlength: 'The security question must be no longer than 255 characters.',
     required: 'Please enter your Security question.'
   };
 
   private securityAnswerMessages = {
-    maxlength: 'The security answer must be no longer than 120 characters.',
+    maxlength: 'The security answer must be no longer than 255 characters.',
     required: 'Please enter your Security answer.'
   };
 
@@ -52,8 +57,8 @@ export class SecurityQuestionComponent implements OnInit {
 
   ngOnInit() {
     this.securityQuestionAnswerForm = this.fb.group({
-      securityQuestionInput: ['', [Validators.required, Validators.maxLength(120)]],
-      securityAnswerInput: ['', [Validators.required, Validators.maxLength(120)]]
+      securityQuestionInput: ['', [Validators.required, Validators.maxLength(255)]],
+      securityAnswerInput: ['', [Validators.required, Validators.maxLength(255)]]
     });
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
     console.log(this.registration);
@@ -73,6 +78,31 @@ export class SecurityQuestionComponent implements OnInit {
     );
 
     this.changeDetails();
+
+    // Set section numbering on load
+    this.setSectionNumbers();
+  }
+
+  setSectionNumbers() {
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+    this.secondItem = 1;
+
+    this.currentSection = this.currentSection + 1;
+
+    debugger;
+    if (this.backLink === '/create-username') {
+      debugger;
+      if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
+        this.lastSection = 8;
+      }
+      else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
+        this.lastSection = 9;
+      }
+      else {
+        this.lastSection = 7;
+      }
+    }
   }
 
   setSecurityQuestionMessage(c: AbstractControl): void {
@@ -139,12 +169,48 @@ export class SecurityQuestionComponent implements OnInit {
     this.registration.locationdata[0].user['securityQuestion'] = securityQuestionValue;
     this.registration.locationdata[0].user['securityAnswer'] = securityAnswerValue;
 
+    this.updateSectionNumbers(this.registration);
+
     this._registrationService.updateState(this.registration);
 
     //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/confirm-account-details']);
 
     //routerLink="/confirm-account-details"
+  }
+
+  updateSectionNumbers(data) {
+    debugger;
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.currentSection;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/security-question');
+
+    // data.userRoute.currentPage = this.currentSection;
+    // data.userRoute.route.push('/select-workplace');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
+  }
+
+  clickBack() {
+    const routeArray = this.registration.userRoute.route;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.currentSection = this.currentSection - 1;
+    debugger;
+    this.registration.userRoute.route.splice(-1);
+    debugger;
+
+    //this.updateSectionNumbers(this.registration);
+    //this.registration.userRoute = this.registration.userRoute;
+    this.registration.userRoute.currentPage = this.currentSection;
+    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
+    debugger;
+    this._registrationService.updateState(this.registration);
+
+    debugger;
+    this.router.navigate([this.backLink]);
   }
 
 }

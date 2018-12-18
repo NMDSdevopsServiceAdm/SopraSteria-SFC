@@ -14,6 +14,10 @@ const initialRegistration: RegistrationModel = {
   success: 1,
   message: 'Successful',
   detailsChanged: false,
+  userRoute: {
+    currentPage: 1,
+    route: []
+  },
   locationdata: [{
     addressLine1: '14 Shepherd\'s Court',
     addressLine2: '111 High Street',
@@ -33,9 +37,7 @@ const initialRegistration: RegistrationModel = {
       password: 'password1',
       securityQuestion: 'Who is my partner',
       securityAnswer: 'James P.Sulivan'
-    },
-    prevPage: '',
-    currentPage: 1
+    }
   }],
   postcodedata: [{
     locationName: '',
@@ -127,7 +129,15 @@ export class RegistrationService {
 
   getMainServices(id: boolean) {
     const $value = id;
-    return this.http.get('/api/services/' + $value)
+    return this.http.get('/api/services/byCategory?cqc=' + $value)
+      .pipe(
+        catchError(err => this.handleHttpError(err))
+      );
+  }
+
+  getUsernameDuplicate(id: string) {
+    const $value = id;
+    return this.http.get('/api/registration/username/' + $value)
       .pipe(
         catchError(err => this.handleHttpError(err))
       );
@@ -139,11 +149,11 @@ export class RegistrationService {
       this.router.navigate(['/select-workplace']);
     } else {
       debugger;
-      if ((data.locationdata[0].mainService === '') || (data.locationdata[0].mainService === null)) {
+      // if ((data.locationdata[0].mainService === '') || (data.locationdata[0].mainService === null)) {
         this.router.navigate(['/select-main-service']);
-      } else {
-        this.router.navigate(['/confirm-workplace-details']);
-      }
+      // } else {
+      //   this.router.navigate(['/confirm-workplace-details']);
+      // }
 
     }
   }

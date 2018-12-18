@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
@@ -21,13 +21,15 @@ export class SelectMainServiceComponent implements OnInit {
   uniqueCategoriesArray: any[];
   newObject: [];
   //temp = [];
+  catRegulatedCheck: boolean;
 
   currentSection: number;
   lastSection: number;
-  prevPage: string;
+  backLink: string;
 
   servicesData = [];
   testObject: [{}];
+  isInvalid: boolean;
 
   //$scope.myArray = [];
 
@@ -35,7 +37,7 @@ export class SelectMainServiceComponent implements OnInit {
 
   ngOnInit() {
     this.SelectMainServiceForm = this.fb.group({
-      mainServiceSelected: ''
+      mainServiceSelected: ['', Validators.required]
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
@@ -48,28 +50,56 @@ export class SelectMainServiceComponent implements OnInit {
       value => this.selectMainServiceChanged(value)
     );
 
+    this.isInvalid = false;
     this.setSectionNumbers();
   }
 
   setSectionNumbers() {
-    this.prevPage = this.registration.locationdata[0].prevPage;
-    const currentpage = this.registration.locationdata[0].currentPage;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
 
-    this.currentSection = currentpage + 1;
-
-
-    if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
-      //this.currentSection = '2';
+    this.currentSection = this.currentSection + 1;
+    debugger;
+    if (this.backLink === '/registered-question') {
       this.lastSection = 7;
     }
-    else if ((this.prevPage === 'select-workplace') && (this.currentSection === 3)) {
-      //this.currentSection = '3';
+    else if (this.backLink === '/select-workplace') {
       this.lastSection = 8;
+    }
+    else if (this.backLink === '/enter-workplace-address') {
+      this.lastSection = 9;
+    }
+    else if (this.backLink === '/confirm-workplace-details') {
+      if (this.registration.userRoute[1].route === '/select-workplace') {
+        this.lastSection = 8;
+      }
+      else {
+        this.lastSection = 7;
+      }
     }
   }
 
+  clickBack() {
+    const routeArray = this.registration.userRoute.route;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.currentSection = this.currentSection - 1;
+    debugger;
+    this.registration.userRoute.route.splice(-1);
+    debugger;
+
+    //this.updateSectionNumbers(this.registration);
+    //this.registration.userRoute = this.registration.userRoute;
+    this.registration.userRoute.currentPage = this.currentSection;
+    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
+    debugger;
+    this._registrationService.updateState(this.registration);
+
+    debugger;
+    this.router.navigate([this.backLink]);
+  }
+
   getMainServices() {
-    debugger
+    //debugger
     //this.regulatedCheck = this.registration[0].locationdata.isRegulated;
 
     if (this.registration.locationdata[0].isRegulated === true) {
@@ -84,92 +114,9 @@ export class SelectMainServiceComponent implements OnInit {
 
     this._registrationService.getMainServices(this.regulatedCheck)
       .subscribe(
-        // value => this.getUniqueServiceCategories(value)
-        value => {
-          this.allCategoriesArray = value;
-        }
+        value => this.allCategoriesArray = value
       );
   }
-
-
-
-  // getUniqueServiceCategories(value) {
-  //   const data = value;
-  //   //
-  //   //const allCategories = [];
-  //   //const uniqueCategories = [];
-
-  //   // let j = 0;
-  //   // const temp = [];
-
-  //   // for (let i = 0, len = data.length; i < len - 1; i++) {
-
-  //   //   if (data[i].category !== data[i + 1].category) {
-
-  //   //     temp[j] = data[i].category;
-
-  //   //     j++;
-  //   //   }
-  //   //   temp[j] = data[len - 1].category;
-  //   // }
-  //   // this.uniqueCategoriesArray = temp;
-
-  //   let obj: {};
-
-  //   data.map(
-  //     res => {
-
-  //       for (let i = 0, len = res.length; i < len; i++) {
-
-  //       obj = {
-  //         category: res,
-  //       };
-
-  //       this.servicesData.push(obj);
-
-  //       }
-
-  //       console.log(this.servicesData);
-  //     }
-  //   );
-
-
-  //   //console.log(this.uniqueCategoriesArray);
-
-  //   //this.createNewObject(data, this.uniqueCategoriesArray);
-
-  //   //console.log(this.allCategories);
-  // }
-
-  // createNewObject(data, categoryArray) {
-  //   //const serviceList = data;
-  //   const uniqueCategoryList = categoryArray;
-
-  //   //const newObject;
-
-  //   for (let i = 0, len = categoryArray.length; i < len; i++) {
-
-  //     const catData = categoryArray;
-  //     const servicesData = [];
-
-  //     if (catData[i] !== catData[i + 1]) {
-
-  //       const catObject = [{
-  //         catData,
-  //         // serviceId: data.id,
-  //         // category: data.category,
-  //         // name: data.name,
-  //         // cqcRegistered: data.iscqcregistered,
-  //         // capacityQuestion: data.capacityquestion,
-  //         // currentUptakeQuestion: data.currentuptakequestion
-  //       }]
-  //     }
-  //     this.newObject.push(catObject);
-
-  //   }
-  //   console.log(this.newObject);
-  // }
-
 
   selectMainServiceChanged(value: string): void {
 
@@ -180,13 +127,37 @@ export class SelectMainServiceComponent implements OnInit {
 
   save() {
     //routerLink = "/confirm-workplace-details"
-    this.registration.locationdata[0].prevPage = 'select-main-service';
-    this.registration.locationdata[0].currentPage = this.currentSection;
+
+    this.updateSectionNumbers(this.registration);
+    //
 
     console.log(this.registration);
     this._registrationService.updateState(this.registration);
-    //this._registrationService.routingCheck(this.registration);
-    this.router.navigate(['/confirm-workplace-details']);
+
+    if (this.SelectMainServiceForm.invalid) {
+      this.isInvalid = true;
+      return;
+    }
+    else {
+      this.router.navigate(['/confirm-workplace-details']);
+    }
+
+  }
+
+  updateSectionNumbers(data) {
+    debugger;
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.currentSection;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/select-main-service');
+
+
+    // data.userRoute.currentPage = this.currentSection;
+    // data.userRoute.route.push('/select-workplace');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
   }
 
 }
