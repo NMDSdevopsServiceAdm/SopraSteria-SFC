@@ -26,7 +26,7 @@ router.route('/').get(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::employerType GET - failed', err);
-    res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
+    return res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
   }
 });
 
@@ -67,7 +67,7 @@ router.route('/').post(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::employerType POST - failed', err);
-    res.status(503).send(`Unable to update Establishment with employer type: ${req.params.id}/${givenEmployerType}`);
+    return res.status(503).send(`Unable to update Establishment with employer type: ${req.params.id}/${givenEmployerType}`);
   }
 });
 

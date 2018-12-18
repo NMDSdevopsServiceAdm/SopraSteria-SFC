@@ -58,7 +58,7 @@ router.route('/:id').get(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment root GET - failed', err);
-    res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
+    return res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
   }
 });
 

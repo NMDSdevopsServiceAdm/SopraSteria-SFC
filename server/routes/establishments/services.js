@@ -29,8 +29,7 @@ router.route('/').get(async (req, res) => {
         model: models.services,
         as: 'mainService',
         attributes: ['id', 'name']
-      }
-    ]
+      }]
     });
 
     let allServicesResults = null;
@@ -71,40 +70,98 @@ router.route('/').get(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::otherSerives GET - failed', err);
-    res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
+    return res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
   }
 });
 
 // updates the current set of other services for the known establishment
 router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
+  const newServices = req.body.services;
+
+  // validate input
+  if (!newServices || !Array.isArray(newServices)) {
+    console.error('establishment::otherSerives POST - unexpected input: ', newServices);
+    return res.status(400).send('Expected (new) services as JSON');
+  }
 
   try {
-    // let results = await models.establishment.findOne({
-    //   where: {
-    //     id: establishmentId
-    //   },
-    //   attributes: ['id', 'name', 'employerType']
-    // });
+    let results = await models.establishment.findOne({
+      where: {
+        id: establishmentId
+      },
+      attributes: ['id', 'isRegulated']
+    });
 
-    // if (results && results.id && (establishmentId === results.id)) {
-    //   // we have found the establishment, update the employer type
-    //   const newResults = await results.update({
-    //     //name: 'Warren Ayling'
-    //     employerType: givenEmployerType
-    //   });
+    if (results && results.id && (establishmentId === results.id)) {
+      // we have found the establishment
+
+      // get the set of all services that can be associated with this establishment
+      let allServicesResults = null;
+      if (results.isRegulated) {
+        allServicesResults = await models.services.findAll({
+          where: {
+            iscqcregistered: true
+          },
+          order: [
+            ['category', 'ASC'],
+            ['name', 'ASC']
+          ]
+        });
+      } else {
+        allServicesResults = await models.services.findAll({
+          order: [
+            ['category', 'ASC'],
+            ['name', 'ASC']
+          ]
+        });  
+      }
+
+      if (allServicesResults) {
+        // within a transaction first delete all existing 'other services', before creating new ones
+        await models.sequelize.transaction(async t => {
+          let deleteAllExisting = await models.establishmentServices.destroy({
+            where: {
+              establishmentId
+            }
+          });
+
+          // create new service associations
+          let newServicesPromises = [];
+          newServices.forEach(thisNewService => {
+            if (thisNewService && thisNewService.id && parseInt(thisNewService.id) === thisNewService.id) {
+              // ensure this suggested service is allowed for this given Establishment
+              const isValidService = allServicesResults.find(refService => refService.id === thisNewService.id);
+
+              if (isValidService) {
+                newServicesPromises.push(models.establishmentServices.create({
+                  establishmentId,
+                  serviceId: thisNewService.id
+                }));  
+              }
+            }
+          })
+          await Promise.all(newServicesPromises);
+        });
+
+        res.status(200);
+        //return res.json(formatOtherServicesResponse(results));
+        return res.send('success');
+
+      } else {
+        console.error('establishment::otherSerives POST - failed to retrieve all associated services');
+        return res.status(503).send(`Unable to update Establishment: ${establishmentId}`);
+      }
       
-    //   res.status(200);
-    //   return res.json(formatOtherServicesResponse(results));
-    // } else {
-    //   console.error('establishment::otherSerives POST - Not found establishment having id: ${establishmentId}', err);
-    //   return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
-    // }
+    } else {
+      console.error('establishment::otherSerives POST - Not found establishment having id: ${establishmentId}');
+      return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
+    }
 
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::otherSerives POST - failed', err);
-    res.status(503).send(`Unable to update Establishment with employer type: ${req.params.id}/${givenEmployerType}`);
+    return res.status(503).send(`Unable to update Establishment with employer type: ${req.params.id}/${givenEmployerType}`);
   }
 });
 
