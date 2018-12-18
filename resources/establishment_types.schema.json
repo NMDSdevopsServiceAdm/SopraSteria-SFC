@@ -193,7 +193,7 @@
                         "$ref" : "#/definitions/ServiceGroup"
                     }
                 },
-                "allServices" : {
+                "allOtherServices" : {
                     "description": "Optionally, the list of all services available to this Establishment based on CQC (isRegistered), with those services already associated to this Establishment highlighted",
                     "type" : "array",
                     "items" : {
