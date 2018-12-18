@@ -144,9 +144,29 @@ router.route('/').post(async (req, res) => {
           await Promise.all(newServicesPromises);
         });
 
+        // now refresh the Establishment and return the updated set of other services
+        let results = await models.establishment.findOne({
+          where: {
+            id: establishmentId
+          },
+          attributes: ['id', 'name', 'isRegulated'],
+          include: [{
+            model: models.services,
+            as: 'otherServices',
+            attributes: ['id', 'name', 'category'],
+            order: [
+              ['category', 'ASC'],
+              ['name', 'ASC']
+            ]
+          },{
+            model: models.services,
+            as: 'mainService',
+            attributes: ['id', 'name']
+          }]
+        });
+    
         res.status(200);
-        //return res.json(formatOtherServicesResponse(results));
-        return res.send('success');
+        return res.json(formatOtherServicesResponse(results));
 
       } else {
         console.error('establishment::otherSerives POST - failed to retrieve all associated services');
