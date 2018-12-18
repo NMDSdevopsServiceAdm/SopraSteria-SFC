@@ -134,6 +134,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
     this._registrationService.getAddressByPostCode(this.addressPostcode).subscribe(
       (data: RegistrationModel) => {
         if (data.success === 1) {
+          this.updateSectionNumbers(data);
           debugger;
           //data = data.postcodedata;
           this._registrationService.updateState(data);

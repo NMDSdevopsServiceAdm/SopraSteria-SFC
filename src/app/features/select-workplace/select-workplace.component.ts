@@ -141,6 +141,7 @@ export class SelectWorkplaceComponent implements OnInit {
       (data: RegistrationModel) => {
         if (data.success === 1) {
           debugger;
+          this.updateSectionNumbers(data);
           //data = data.postcodedata;
           this._registrationService.updateState(data);
           //this.routingCheck(data);
