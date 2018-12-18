@@ -58,7 +58,6 @@ router.route('/').get(async (req, res) => {
 
         if (allServicesResults) {
           results.allServices = mergeServices(allServicesResults, results.otherServices);
-          console.log("WA DEBUG: allServices: ", results.allServices);
         }
     
       }
