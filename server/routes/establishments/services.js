@@ -56,7 +56,7 @@ router.route('/').get(async (req, res) => {
         }
 
         if (allServicesResults) {
-          results.allServices = mergeServices(allServicesResults, results.otherServices);
+          results.allServices = mergeServices(allServicesResults, results.otherServices, results.mainService);
         }
     
       }
@@ -179,8 +179,8 @@ const formatOtherServicesResponse = (establishment) => {
 }
 
 // this method takes all services available to this given establishment and merges those services already registered
-//  against this Establishment
-const mergeServices = (allServices, theseServices) => {
+//  against this Establishment, whilst also removing the main service
+const mergeServices = (allServices, theseServices, mainService) => {
   // its a simple case of working through each of "theseServices", and setting the "isMyService"
   if (theseServices && Array.isArray(theseServices)) {
     theseServices.forEach(thisService => {
@@ -188,12 +188,13 @@ const mergeServices = (allServices, theseServices) => {
       let foundService = allServices.find(refService => refService.id === thisService.id );
       if (foundService) {
         foundService.isMyService = true;
+
       }
     });
   }
 
-  //return mergedServices;
-  return allServices;
+  // now remove the main service
+  return allServices.filter(refService => refService.id !== mainService.id );
 };
 
 module.exports = router;
