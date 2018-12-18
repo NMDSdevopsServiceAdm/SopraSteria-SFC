@@ -6,6 +6,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationTrackerError } from '../../core/model/registrationTrackerError.model';
 import { CustomValidators } from './../../shared/custom-form-validators';
 
 @Component({
@@ -19,6 +20,13 @@ export class CreateUsernameComponent implements OnInit {
 
   createSecurityQuestionValue: string;
   createsecurityAnswerValue: string;
+
+  usernameApiError: string;
+
+  currentSection: number;
+  lastSection: number;
+  backLink: string;
+  secondItem: number;
 
   isSubmitted = false;
   submittedUsername = false;
@@ -84,15 +92,17 @@ export class CreateUsernameComponent implements OnInit {
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    console.log(this.registration);
-
-    this.changeDetails();
+    //console.log(this.registration);
 
     // Create username watcher
     this.getCreateUsernameInput.valueChanges.pipe(
       debounceTime(1000)
     ).subscribe(
-      value => this.setCreateUsernameMessage(this.getCreateUsernameInput)
+      value => {
+        this.checkUsernameDuplicate(value);
+
+        this.setCreateUsernameMessage(this.getCreateUsernameInput);
+      }
     );
 
     // Create password watcher
@@ -128,6 +138,75 @@ export class CreateUsernameComponent implements OnInit {
         }
       }
     );
+
+    this.changeDetails();
+
+    // Set section numbering on load
+    this.setSectionNumbers();
+  }
+
+  checkUsernameDuplicate(value) {
+
+    //const username = this.getCreateUsernameInput();
+    debugger;
+    this._registrationService.getUsernameDuplicate(value)
+    // .subscribe(
+    //   res => {
+    //     // console.log(res)
+    //     debugger;
+    //     if (res.status === '1') {
+    //       debugger;
+    //       this.usernameApiError = res.message;
+    //       //this.setCreateUsernameMessage(this.getCreateUsernameInput);
+    //     }
+    //   }
+    // );
+    .subscribe(
+      (data: RegistrationModel) => {
+        if (data['status'] === '1') {
+
+          this.usernameApiError = data.message;
+
+          debugger;
+          this.setCreateUsernameMessage(this.getCreateUsernameInput);
+
+        }
+        else {
+          this.usernameApiError = null;
+        }
+      },
+      (err: RegistrationTrackerError) => {
+        debugger;
+        console.log(err);
+        this.usernameApiError = err.message;
+        this.setCreateUsernameMessage(this.getCreateUsernameInput);
+      },
+      () => {
+        console.log('Get location by postcode complete');
+      }
+    );
+  }
+
+  setSectionNumbers() {
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+    this.secondItem = 1;
+
+    this.currentSection = this.currentSection + 1;
+
+    debugger;
+    if (this.backLink === '/user-details') {
+      debugger;
+      if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
+        this.lastSection = 8;
+      }
+      else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
+        this.lastSection = 9;
+      }
+      else {
+        this.lastSection = 7;
+      }
+    }
   }
 
   setCreateUsernameMessage(c: AbstractControl): void {
@@ -181,7 +260,6 @@ export class CreateUsernameComponent implements OnInit {
           confirmPasswordInput: createPasswordValue
         }
       });
-
     }
 
   }
@@ -193,19 +271,16 @@ export class CreateUsernameComponent implements OnInit {
     this.submittedPassword = true;
     this.submittedConfirmPassword = true;
 
-
-
     // stop here if form is invalid
-    if (this.createUserNamePasswordForm.invalid) {
+    if (this.createUserNamePasswordForm.invalid || this.usernameApiError) {
 
       //this.isSubmitted = false;
       //this.submittedUsername = false;
       //this.submittedPassword = false;
       //this.submittedConfirmPassword = false;
-      //return;
+      return;
     }
     else {
-
       this.save();
     }
   }
@@ -239,6 +314,8 @@ export class CreateUsernameComponent implements OnInit {
       }
     }
 
+    this.updateSectionNumbers(this.registration);
+
     this._registrationService.updateState(this.registration);
 
     //this._registrationService.routingCheck(this.registration);
@@ -252,6 +329,40 @@ export class CreateUsernameComponent implements OnInit {
 
 
     //routerLink = "/security-question"
+  }
+
+  updateSectionNumbers(data) {
+    debugger;
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.currentSection;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/create-username');
+
+    // data.userRoute.currentPage = this.currentSection;
+    // data.userRoute.route.push('/select-workplace');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
+  }
+
+  clickBack() {
+    const routeArray = this.registration.userRoute.route;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.currentSection = this.currentSection - 1;
+    debugger;
+    this.registration.userRoute.route.splice(-1);
+    debugger;
+
+    //this.updateSectionNumbers(this.registration);
+    //this.registration.userRoute = this.registration.userRoute;
+    this.registration.userRoute.currentPage = this.currentSection;
+    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
+    debugger;
+    this._registrationService.updateState(this.registration);
+
+    debugger;
+    this.router.navigate([this.backLink]);
   }
 }
 

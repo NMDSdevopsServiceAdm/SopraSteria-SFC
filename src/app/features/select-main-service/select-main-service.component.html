@@ -1,7 +1,7 @@
 <div class="sub-page-container col-12">
 
   <div id="back" class="back-link">
-    <a routerLink="/{{ registration.locationdata.prevPage }}">
+    <a (click)="clickBack()">
       <span class="arrow"></span>Back
     </a>
   </div>
@@ -16,68 +16,30 @@
         [formGroup]="SelectMainServiceForm">
 
     <div class="form-group">
-      <div class="field-group col-12 p-0 pb-4" *ngFor="let item of allCategoriesArray; let i = index">
-      <!-- <div class="field-group col-12 p-0 pb-4" ng-repeat="item in allCategoriesArray | unique='category'; let i = index"> -->
-        <label class="main-body-text-bold mb-3 d-block" *ngIf="item.category">{{ item.category }}</label>
 
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="{{ item.serviceId }}" value="{{ item.name }}" formControlName="mainServiceSelected">
-              <label class="main-body-text p-0" for="{{ item.serviceId }}">{{ item.name }}</label>
+      <div class="field-group pb-4" [ngClass]="{'is-invalid': isInvalid }">
+
+        <span class="invalid-feedback">
+          <span class="main-body-text mb-2" *ngIf="isInvalid">
+            Please select a main service.
+          </span>
+        </span>
+
+        <div class="mt-5" *ngFor="let item of allCategoriesArray; let i = index">
+          <label class="main-body-text-bold mb-4 p-0 d-block" *ngIf="item.category">{{ item.category }}</label>
+
+          <div *ngFor="let data of item.services">
+            <div class="row mb-4" *ngIf="data.isCQC === regulatedCheck">
+              <div class="col-12">
+                <div class="multiple-choice">
+                  <input type="radio" id="{{ data.id }}" value="{{ data.name }}" formControlName="mainServiceSelected">
+                  <label class="main-body-text p-0" for="{{ data.id }}">{{ data.name }}</label>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        <!-- <div class="row mb-4">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="adult-residential-2" value="Care home services without nursing" formControlName="mainServiceSelected">
-              <label class="main-body-text p-0" for="adult-residential-2">Care home services without nursing</label>
-            </div>
-          </div>
-        </div> -->
       </div>
-
-      <!-- <div class="field-group col-12 p-0 pb-4">
-        <label class="main-body-text-bold mb-3 d-block">Adult domiciliary</label>
-
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="adult-domiciliary-1" value="Domiciliary care services" formControlName="mainServiceSelected">
-              <label class="main-body-text p-0" for="adult-domiciliary-1">Domiciliary care services</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="adult-domiciliary-2" value="Nurses agency" formControlName="mainServiceSelected">
-              <label class="main-body-text p-0" for="adult-domiciliary-2">Nurses agency</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="adult-domiciliary-3" value="Extra care housing services" formControlName="mainServiceSelected">
-              <label class="main-body-text p-0" for="adult-domiciliary-3">Extra care housing services</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="row mb-4">
-          <div class="col-12">
-            <div class="multiple-choice">
-              <input type="radio" id="adult-domiciliary-4" value="Supported living services" formControlName="mainServiceSelected">
-              <label class="main-body-text p-0" for="adult-domiciliary-4">Supported living services</label>
-            </div>
-          </div>
-        </div>
-      </div> -->
 
     </div>
 

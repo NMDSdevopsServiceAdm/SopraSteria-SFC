@@ -24,6 +24,8 @@ ul {
   }
 }
 
+//a:not([href]):not([tabindex])
+
 a,
 .text-link {
   text-decoration: underline;
@@ -34,6 +36,18 @@ a,
 
   &:hover {
     color: #0056b3;
+  }
+
+  &:not([href]):not([tabindex]) {
+    text-decoration: underline;
+    color: #007bff;
+    cursor: pointer;
+
+    @include rem(font-size, 19px);
+
+    &:hover {
+      color: #0056b3;
+  }
   }
 }
 

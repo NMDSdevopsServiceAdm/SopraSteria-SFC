@@ -13,6 +13,11 @@ import { RegistrationModel } from '../../core/model/registration.model';
 export class ConfirmAccountDetailsComponent implements OnInit {
   registration: RegistrationModel;
 
+  currentSection: number;
+  lastSection: number;
+  backLink: string;
+  secondItem: number;
+
   constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -25,10 +30,35 @@ export class ConfirmAccountDetailsComponent implements OnInit {
       console.log(this.registration);
     }
     //this.registration[0]['detailsChanged'] = undefined;
+
+    // Set section numbering on load
+    this.setSectionNumbers();
+  }
+
+  setSectionNumbers() {
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+    this.secondItem = 1;
+
+    this.currentSection = (this.currentSection + 1);
+
+    debugger;
+    if (this.backLink === '/security-question') {
+      debugger;
+      if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
+        this.lastSection = 8;
+      }
+      else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
+        this.lastSection = 9;
+      }
+      else {
+        this.lastSection = 7;
+      }
+    }
   }
 
   submit() {
-
+    debugger;
     this._registrationService.postRegistration(this.registration);
     //this.router.navigate(['/registration-complete']);
   }
@@ -40,15 +70,40 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
     this._registrationService.updateState(this.registration);
 
-    //if (this.registration[0].hasOwnProperty('detailsChanged')) {
-    //  this.registration[0]['detailsChanged'] = true;
-    //}
-    //else {
-    //  this.registration[0]['isRegulated'] = false;
-    //}
+  }
 
-    //this._registrationService.updateState(this.registration);
+  updateSectionNumbers(data) {
+    debugger;
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.currentSection;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/confirm-account-details');
 
+    // data.userRoute.currentPage = this.currentSection;
+    // data.userRoute.route.push('/select-workplace');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
+  }
+
+  clickBack() {
+    const routeArray = this.registration.userRoute.route;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.currentSection = this.currentSection - 1;
+    debugger;
+    this.registration.userRoute.route.splice(-1);
+    debugger;
+
+    //this.updateSectionNumbers(this.registration);
+    //this.registration.userRoute = this.registration.userRoute;
+    this.registration.userRoute.currentPage = this.currentSection;
+    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
+    debugger;
+    this._registrationService.updateState(this.registration);
+
+    debugger;
+    this.router.navigate([this.backLink]);
   }
 
 }
