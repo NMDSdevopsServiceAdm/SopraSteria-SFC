@@ -11,6 +11,9 @@ var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
 var tmpLogin = require('./server/routes/tmpLogin');
+var establishments = require('./server/routes/establishments');
+
+var Authorization = require('./server/utils/security/isAuthenticated');
 
 var errors = require('./server/routes/errors');
 
@@ -34,6 +37,8 @@ app.use('/api/services', services);
 app.use('/api/registration', registration);
 app.use('/api/errors', errors);
 app.use('/api/login', tmpLogin);
+app.use('/api/establishment', establishments);
+
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
