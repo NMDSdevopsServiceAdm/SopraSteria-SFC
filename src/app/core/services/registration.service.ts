@@ -129,7 +129,7 @@ export class RegistrationService {
 
   getMainServices(id: boolean) {
     const $value = id;
-    return this.http.get('/api/services/byCategory')
+    return this.http.get('/api/services/byCategory?cqc=' + $value)
       .pipe(
         catchError(err => this.handleHttpError(err))
       );

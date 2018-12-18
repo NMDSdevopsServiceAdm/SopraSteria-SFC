@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
@@ -29,6 +29,7 @@ export class SelectMainServiceComponent implements OnInit {
 
   servicesData = [];
   testObject: [{}];
+  isInvalid: boolean;
 
   //$scope.myArray = [];
 
@@ -36,7 +37,7 @@ export class SelectMainServiceComponent implements OnInit {
 
   ngOnInit() {
     this.SelectMainServiceForm = this.fb.group({
-      mainServiceSelected: ''
+      mainServiceSelected: ['', Validators.required]
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
@@ -49,6 +50,7 @@ export class SelectMainServiceComponent implements OnInit {
       value => this.selectMainServiceChanged(value)
     );
 
+    this.isInvalid = false;
     this.setSectionNumbers();
   }
 
@@ -64,6 +66,33 @@ export class SelectMainServiceComponent implements OnInit {
     else if (this.backLink === '/select-workplace') {
       this.lastSection = 8;
     }
+    else if (this.backLink === '/confirm-workplace-details') {
+      if (this.registration.userRoute[1].route === '/select-workplace') {
+        this.lastSection = 8;
+      }
+      else {
+        this.lastSection = 7;
+      }
+    }
+  }
+
+  clickBack() {
+    const routeArray = this.registration.userRoute.route;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.currentSection = this.currentSection - 1;
+    debugger;
+    this.registration.userRoute.route.splice(-1);
+    debugger;
+
+    //this.updateSectionNumbers(this.registration);
+    //this.registration.userRoute = this.registration.userRoute;
+    this.registration.userRoute.currentPage = this.currentSection;
+    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
+    debugger;
+    this._registrationService.updateState(this.registration);
+
+    debugger;
+    this.router.navigate([this.backLink]);
   }
 
   getMainServices() {
@@ -101,8 +130,15 @@ export class SelectMainServiceComponent implements OnInit {
 
     console.log(this.registration);
     this._registrationService.updateState(this.registration);
-    //this._registrationService.routingCheck(this.registration);
-    this.router.navigate(['/confirm-workplace-details']);
+
+    if (this.SelectMainServiceForm.invalid) {
+      this.isInvalid = true;
+      return;
+    }
+    else {
+      this.router.navigate(['/confirm-workplace-details']);
+    }
+
   }
 
   updateSectionNumbers(data) {
@@ -110,7 +146,7 @@ export class SelectMainServiceComponent implements OnInit {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/registered-question', '/select-workplace');
+    data.userRoute['route'].push('/select-main-service');
 
 
     // data.userRoute.currentPage = this.currentSection;

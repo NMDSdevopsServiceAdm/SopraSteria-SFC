@@ -1,7 +1,7 @@
 <div class="sub-page-container col-12">
 
   <div id="back" class="back-link">
-    <a routerLink="/{{ backLink }}">
+    <a (click)="clickBack()">
       <span class="arrow"></span>Back
     </a>
   </div>
@@ -17,15 +17,24 @@
 
     <div class="form-group">
 
-      <div class="field-group col-12 p-0 pb-4" *ngFor="let item of allCategoriesArray; let i = index">
-        <label class="main-body-text-bold mb-3 d-block" *ngIf="item.category">{{ item.category }}</label>
+      <div class="field-group pb-4" [ngClass]="{'is-invalid': isInvalid }">
 
-        <div *ngFor="let data of item.services">
-          <div class="row mb-4" *ngIf="data.isCQC === regulatedCheck">
-            <div class="col-12">
-              <div class="multiple-choice">
-                <input type="radio" id="{{ data.id }}" value="{{ data.name }}" formControlName="mainServiceSelected">
-                <label class="main-body-text p-0" for="{{ data.id }}">{{ data.name }}</label>
+        <span class="invalid-feedback">
+          <span class="main-body-text mb-2" *ngIf="isInvalid">
+            Please select a main service.
+          </span>
+        </span>
+
+        <div class="mt-5" *ngFor="let item of allCategoriesArray; let i = index">
+          <label class="main-body-text-bold mb-4 p-0 d-block" *ngIf="item.category">{{ item.category }}</label>
+
+          <div *ngFor="let data of item.services">
+            <div class="row mb-4" *ngIf="data.isCQC === regulatedCheck">
+              <div class="col-12">
+                <div class="multiple-choice">
+                  <input type="radio" id="{{ data.id }}" value="{{ data.name }}" formControlName="mainServiceSelected">
+                  <label class="main-body-text p-0" for="{{ data.id }}">{{ data.name }}</label>
+                </div>
               </div>
             </div>
           </div>

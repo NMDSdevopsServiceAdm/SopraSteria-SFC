@@ -20,6 +20,10 @@ export class CreateUsernameComponent implements OnInit {
   createSecurityQuestionValue: string;
   createsecurityAnswerValue: string;
 
+  currentSection: number;
+  lastSection: number;
+  backLink: string;
+
   isSubmitted = false;
   submittedUsername = false;
   submittedPassword = false;
@@ -84,9 +88,7 @@ export class CreateUsernameComponent implements OnInit {
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    console.log(this.registration);
-
-    this.changeDetails();
+    //console.log(this.registration);
 
     // Create username watcher
     this.getCreateUsernameInput.valueChanges.pipe(
@@ -128,6 +130,32 @@ export class CreateUsernameComponent implements OnInit {
         }
       }
     );
+
+    this.changeDetails();
+
+    // Set section numbering on load
+    this.setSectionNumbers();
+  }
+
+  setSectionNumbers() {
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+
+    this.currentSection = this.currentSection + 1;
+
+    debugger;
+    if (this.backLink === '/user-details') {
+      debugger;
+      if (this.registration.userRoute.route[1] === '/select-workplace') {
+        this.lastSection = 8;
+      }
+      else if (this.registration.userRoute.route[1] === '/select-workplace-address') {
+        this.lastSection = 9;
+      }
+      else {
+        this.lastSection = 7;
+      }
+    }
   }
 
   setCreateUsernameMessage(c: AbstractControl): void {
@@ -181,7 +209,6 @@ export class CreateUsernameComponent implements OnInit {
           confirmPasswordInput: createPasswordValue
         }
       });
-
     }
 
   }
@@ -192,8 +219,6 @@ export class CreateUsernameComponent implements OnInit {
     this.submittedUsername = true;
     this.submittedPassword = true;
     this.submittedConfirmPassword = true;
-
-
 
     // stop here if form is invalid
     if (this.createUserNamePasswordForm.invalid) {
@@ -239,6 +264,8 @@ export class CreateUsernameComponent implements OnInit {
       }
     }
 
+    this.updateSectionNumbers(this.registration);
+
     this._registrationService.updateState(this.registration);
 
     //this._registrationService.routingCheck(this.registration);
@@ -252,6 +279,40 @@ export class CreateUsernameComponent implements OnInit {
 
 
     //routerLink = "/security-question"
+  }
+
+  updateSectionNumbers(data) {
+    debugger;
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.currentSection;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/create-username');
+
+    // data.userRoute.currentPage = this.currentSection;
+    // data.userRoute.route.push('/select-workplace');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
+  }
+
+  clickBack() {
+    const routeArray = this.registration.userRoute.route;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.currentSection = this.currentSection - 1;
+    debugger;
+    this.registration.userRoute.route.splice(-1);
+    debugger;
+
+    //this.updateSectionNumbers(this.registration);
+    //this.registration.userRoute = this.registration.userRoute;
+    this.registration.userRoute.currentPage = this.currentSection;
+    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
+    debugger;
+    this._registrationService.updateState(this.registration);
+
+    debugger;
+    this.router.navigate([this.backLink]);
   }
 }
 

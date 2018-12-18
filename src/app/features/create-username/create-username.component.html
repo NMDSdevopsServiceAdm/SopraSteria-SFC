@@ -1,12 +1,12 @@
 <div class="sub-page-container col-12">
 
   <div id="back" class="back-link">
-    <a routerLink="/user-details">
+    <a (click)="clickBack()">
       <span class="arrow"></span>Back
     </a>
   </div>
 
-  <p class="h5">Section 5 of 7</p>
+  <p class="h5">Section {{ currentSection }} of {{ lastSection }}</p>
   <h1 class="h1">Create a username</h1>
 
   <form (ngSubmit)="onSubmit()"

@@ -32,6 +32,7 @@
 
     &:focus {
       border: 2px solid $focus-yellow !important;
+      box-shadow: none;
     }
 
     &:disabled,

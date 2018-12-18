@@ -18,6 +18,7 @@ export class SelectWorkplaceComponent implements OnInit {
   selectWorkplaceForm: FormGroup;
   registration: RegistrationModel;
   selectedAddressId: string;
+  addressPostcode: string;
   mainService: string;
 
   cqcPostcodeApiError: string;
@@ -45,6 +46,24 @@ export class SelectWorkplaceComponent implements OnInit {
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     this.setSectionNumbers();
+  }
+
+  clickBack() {
+    const routeArray = this.registration.userRoute.route;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.currentSection = this.currentSection - 1;
+    debugger;
+    this.registration.userRoute.route.splice(-1);
+    debugger;
+
+    //this.updateSectionNumbers(this.registration);
+    this.registration['userRoute'] = this.registration.userRoute;
+    this.registration.userRoute['currentPage'] = this.currentSection;
+    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
+    this._registrationService.updateState(this.registration);
+
+    debugger;
+    this.router.navigate([this.backLink]);
   }
 
   setSectionNumbers() {
@@ -112,6 +131,32 @@ export class SelectWorkplaceComponent implements OnInit {
     console.log(data);
     console.log(this.registration);
     debugger;
+  }
+
+  workplaceNotFound() {
+    this.addressPostcode = this.registration.locationdata[0].postalCode;
+    debugger;
+
+    this._registrationService.getAddressByPostCode(this.addressPostcode).subscribe(
+      (data: RegistrationModel) => {
+        if (data.success === 1) {
+          debugger;
+          //data = data.postcodedata;
+          this._registrationService.updateState(data);
+          //this.routingCheck(data);
+        }
+      },
+      (err: RegistrationTrackerError) => {
+        debugger;
+        console.log(err);
+        this.nonCqcPostcodeApiError = err.friendlyMessage;
+        this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
+      },
+      () => {
+        console.log('Get location by postcode complete');
+        this.router.navigate(['/select-workplace-address']);
+      }
+    );
   }
 
 }

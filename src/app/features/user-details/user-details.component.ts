@@ -18,7 +18,7 @@ export class UserDetailsComponent implements OnInit {
 
   currentSection: number;
   lastSection: number;
-  prevPage: string;
+  backLink: string;
 
   //submitted = false;
   submittedfullname = false;
@@ -95,7 +95,7 @@ export class UserDetailsComponent implements OnInit {
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
-    this.setSectionNumbers();
+    //this.setSectionNumbers();
 
     // Check validation on each field
     // const fullnameControl = this.userDetailsForm.get('userFullnameInput');
@@ -136,26 +136,28 @@ export class UserDetailsComponent implements OnInit {
     // Check if come from Account details confirmation page
     this.changeDetails();
 
+    // Set section numbering on load
+    this.setSectionNumbers();
   }
 
   setSectionNumbers() {
-    this.prevPage = this.registration.locationdata[0].prevPage;
-    const currentpage = this.registration.locationdata[0].currentPage;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
 
-    this.currentSection = currentpage + 1;
+    this.currentSection = this.currentSection + 1;
 
-
-    if (this.prevPage === 'confirm-workplace-details') {
-      if (this.currentSection === 3) {
-        this.lastSection = 6;
-      }
-      else if (this.currentSection === 4) {
-        this.lastSection = 7;
-      }
-      else if (this.currentSection === 5) {
+    debugger;
+    if (this.backLink === '/confirm-workplace-details') {
+      debugger;
+      if (this.registration.userRoute.route[1] === '/select-workplace') {
         this.lastSection = 8;
       }
-
+      else if (this.registration.userRoute.route[1] === '/select-workplace-address') {
+        this.lastSection = 9;
+      }
+      else {
+        this.lastSection = 7;
+      }
     }
   }
 
@@ -229,15 +231,11 @@ export class UserDetailsComponent implements OnInit {
     this.submittedEmail = true;
     this.submittedPhone = true;
 
-
-
     // stop here if form is invalid
     if (this.userDetailsForm.invalid) {
-
         return;
     }
     else {
-
       this.save();
     }
   }
@@ -299,8 +297,9 @@ export class UserDetailsComponent implements OnInit {
       // }
     }
 
-    this.registration.locationdata[0].prevPage = 'user-details';
-    this.registration.locationdata[0].currentPage = this.currentSection;
+    //this.registration.locationdata[0].prevPage = 'user-details';
+    //this.registration.locationdata[0].currentPage = this.currentSection;
+    this.updateSectionNumbers(this.registration);
 
     this._registrationService.updateState(this.registration);
 
@@ -310,6 +309,41 @@ export class UserDetailsComponent implements OnInit {
       this.router.navigate(['/create-username']);
     }
 
+  }
+
+  updateSectionNumbers(data) {
+    debugger;
+    data['userRoute'] = this.registration.userRoute;
+    data.userRoute['currentPage'] = this.currentSection;
+    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'].push('/user-details');
+
+
+    // data.userRoute.currentPage = this.currentSection;
+    // data.userRoute.route.push('/select-workplace');
+
+    console.log(data);
+    console.log(this.registration);
+    debugger;
+  }
+
+  clickBack() {
+    const routeArray = this.registration.userRoute.route;
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.currentSection = this.currentSection - 1;
+    debugger;
+    this.registration.userRoute.route.splice(-1);
+    debugger;
+
+    //this.updateSectionNumbers(this.registration);
+    //this.registration.userRoute = this.registration.userRoute;
+    this.registration.userRoute.currentPage = this.currentSection;
+    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
+    debugger;
+    this._registrationService.updateState(this.registration);
+
+    debugger;
+    this.router.navigate([this.backLink]);
   }
 
 }
