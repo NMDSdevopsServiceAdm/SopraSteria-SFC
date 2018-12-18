@@ -174,7 +174,7 @@ const formatOtherServicesResponse = (establishment) => {
     name: establishment.name,
     mainService: ServiceFormatters.singleService(establishment.mainService),
     otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices, false, false, false),
-    allServices: ServiceFormatters.createServicesByCategoryJSON(establishment.allServices, false, false, true),
+    allOtherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.allServices, false, false, true),
   };
 }
 
