@@ -58,7 +58,13 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'mainServiceId',
       targetKey: 'id',
       as: 'mainService'
-    })
+    });
+    Establishment.belongsToMany(models.services, {
+      through: 'establishmentServices',
+      foreignKey: 'establishmentId',
+      targetKey: 'id',
+      as: 'otherServices'
+    });
   };
 
   return Establishment;

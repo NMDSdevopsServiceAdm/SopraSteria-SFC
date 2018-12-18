@@ -1,6 +1,5 @@
-// default route and registration of all sub routes
-var express = require('express');
-var router = express.Router({mergeParams: true});
+const express = require('express');
+const router = express.Router({mergeParams: true});
 const models = require('../../models');
 
 // parent route defines the "id" parameter

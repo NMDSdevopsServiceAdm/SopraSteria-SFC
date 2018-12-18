@@ -106,11 +106,6 @@
                     "description" : "the unique reference of the service type",
                     "$ref" : "#/definitions/ID"
                 },
-                "key" : {
-                    "description": "a textual representation of the service type; replacing spaces 'value' with underscores and capitalising",
-                    "type" : "string",
-                    "minLength" : 3
-                },
                 "name" : {
                     "description" : "the display name of the service type",
                     "$ref" : "#/definitions/ServiceName"
@@ -134,9 +129,6 @@
                         "$ref" : "#/definitions/ServiceCapacity"
                     },
                     "minItems" : 1
-                },
-                "isMainService" : {
-                    "description" : "optional flag, that if true, highlights this service is the main service for a given establishment"
                 }
             },
             "required" : ["id"]
@@ -193,6 +185,20 @@
                 "employerType" : {
                     "description": "The type of the employer",
                     "$ref" : "#/definitions/EmployerType"
+                },
+                "otherServices" : {
+                    "description": "Optionally, the establishment can be associated with more than just the main service",
+                    "type" : "array",
+                    "items" : {
+                        "$ref" : "#/definitions/ServiceGroup"
+                    }
+                },
+                "allServices" : {
+                    "description": "Optionally, the list of all services available to this Establishment based on CQC (isRegistered), with those services already associated to this Establishment highlighted",
+                    "type" : "array",
+                    "items" : {
+                        "$ref" : "#/definitions/ServiceGroup"
+                    }
                 }
             },
             "required" : ["id", "name"]
