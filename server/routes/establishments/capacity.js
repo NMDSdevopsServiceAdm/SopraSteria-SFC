@@ -6,6 +6,8 @@ const ServiceFormatters = require('../../models/api/services');
 
 // parent route defines the "id" parameter
 
+// TODO - refactor this API; much of the gets in [GET] endpoint are used in the [POST]
+
 // gets current set of capcities for the known establishment
 // takes optional query paramter "all" - values 'true' or 'false' (default), which is set, returns 'allCapacities'
 router.route('/').get(async (req, res) => {
@@ -109,10 +111,10 @@ router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const newCapacities = req.body.capacities;
 
-/*   // validate input
-  if (!newServices || !Array.isArray(newServices)) {
-    console.error('establishment::capacity POST - unexpected input: ', newServices);
-    return res.status(400).send('Expected (new) services as JSON');
+   // validate input
+  if (!newCapacities || !Array.isArray(newCapacities)) {
+    console.error('establishment::capacity POST - unexpected input: ', newCapacities);
+    return res.status(400).send('Expected (new) capabilities as JSON');
   }
 
   try {
@@ -120,58 +122,107 @@ router.route('/').post(async (req, res) => {
       where: {
         id: establishmentId
       },
-      attributes: ['id', 'isRegulated']
+      attributes: ['id', 'name', 'isRegulated', 'mainServiceId'],
+      include: [{
+        model: models.services,
+        as: 'mainService',
+        attributes: ['id', 'name']
+      },{
+        model: models.establishmentCapacity,
+        as: 'capacity',
+        attributes: ['id', 'answer'],
+        include: [{
+          model: models.serviceCapacity,
+          as: 'reference',
+          attributes: ['id', 'question']
+        }]
+      }]
     });
 
+    let allServiceCapacityQuestions = null;
     if (results && results.id && (establishmentId === results.id)) {
-      // we have found the establishment
+      // fetch the main service id and all the associated 'other services' by id only
+      const allCapacitiesResults = await models.establishment.findOne({
+        where: {
+          id: establishmentId
+        },
+        attributes: ['id'],
+        include: [{
+          model: models.services,
+          as: 'otherServices',
+          attributes: ['id'],
+        },{
+          model: models.services,
+          as: 'mainService',
+          attributes: ['id']
+        }]
+      });
 
-      // get the set of all services that can be associated with this establishment
-      let allServicesResults = null;
-      if (results.isRegulated) {
-        allServicesResults = await models.services.findAll({
-          where: {
-            iscqcregistered: true
-          },
-          order: [
-            ['category', 'ASC'],
-            ['name', 'ASC']
-          ]
-        });
-      } else {
-        allServicesResults = await models.services.findAll({
-          order: [
-            ['category', 'ASC'],
-            ['name', 'ASC']
-          ]
-        });  
+      const allAssociatedServiceIndices = [];
+      if (allCapacitiesResults && allCapacitiesResults.id) {
+        // merge tha main and other service ids
+        if (allCapacitiesResults.mainService.id) {
+          allAssociatedServiceIndices.push(allCapacitiesResults.mainService.id);
+        }
+        // TODO: there is a much better way to derference (transpose) the id on an Array of objects
+        //  viz. Map
+        if (allCapacitiesResults.otherServices) {
+          allCapacitiesResults.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+        }
       }
 
-      if (allServicesResults) {
-        // within a transaction first delete all existing 'other services', before creating new ones
+      // now fetch all the questions for the given set of combined services
+      if (allAssociatedServiceIndices.length > 0) {
+        allServiceCapacityQuestions = await models.serviceCapacity.findAll({
+          where: {
+            serviceId: allAssociatedServiceIndices
+          },
+          attributes: ['id', 'seq', 'question'],
+          order: [
+            ['seq', 'ASC']
+          ],
+          include: [{
+            model: models.services,
+            as: 'service',
+            attributes: ['id', 'category', 'name'],
+            order: [
+              ['category', 'ASC'],
+              ['name', 'ASC']
+            ]
+          }]
+        });
+
+      }
+
+      if (allServiceCapacityQuestions) {
+        // within a transaction first delete all existing 'capacities', before creating new ones
         await models.sequelize.transaction(async t => {
-          let deleteAllExisting = await models.establishmentServices.destroy({
+          let deleteAllExisting = await models.establishmentCapacity.destroy({
             where: {
               establishmentId
             }
           });
 
-          // create new service associations
-          let newServicesPromises = [];
-          newServices.forEach(thisNewService => {
-            if (thisNewService && thisNewService.id && parseInt(thisNewService.id) === thisNewService.id) {
-              // ensure this suggested service is allowed for this given Establishment
-              const isValidService = allServicesResults.find(refService => refService.id === thisNewService.id);
+          // create new capacity associationss
+          let newCapacityPromises = [];
+          newCapacities.forEach(thisNewCapability => {
+            if (thisNewCapability && thisNewCapability.questionId &&
+                parseInt(thisNewCapability.questionId) === thisNewCapability.questionId &&
+                thisNewCapability.answer && parseInt(thisNewCapability.answer) === thisNewCapability.answer) {
+              // ensure this suggested capability (question) is allowed for this given Establishment
+              const isValidService = allServiceCapacityQuestions.find(
+                refServiceCapacity => refServiceCapacity.id === thisNewCapability.questionId);
 
               if (isValidService) {
-                newServicesPromises.push(models.establishmentServices.create({
+                newCapacityPromises.push(models.establishmentCapacity.create({
                   establishmentId,
-                  serviceId: thisNewService.id
-                }));  
+                  serviceCapacityId: thisNewCapability.questionId,
+                  answer: thisNewCapability.answer
+                }));
               }
             }
           })
-          await Promise.all(newServicesPromises);
+          await Promise.all(newCapacityPromises);
         });
 
         // now refresh the Establishment and return the updated set of other services
@@ -179,27 +230,28 @@ router.route('/').post(async (req, res) => {
           where: {
             id: establishmentId
           },
-          attributes: ['id', 'name', 'isRegulated'],
+          attributes: ['id', 'name', 'isRegulated', 'mainServiceId'],
           include: [{
-            model: models.services,
-            as: 'otherServices',
-            attributes: ['id', 'name', 'category'],
-            order: [
-              ['category', 'ASC'],
-              ['name', 'ASC']
-            ]
-          },{
             model: models.services,
             as: 'mainService',
             attributes: ['id', 'name']
+          },{
+            model: models.establishmentCapacity,
+            as: 'capacity',
+            attributes: ['id', 'answer'],
+            include: [{
+              model: models.serviceCapacity,
+              as: 'reference',
+              attributes: ['id', 'question']
+            }]
           }]
         });
     
         res.status(200);
-        return res.json(formatOtherServicesResponse(results));
+        return res.json(formatCapacityResponse(results));
 
       } else {
-        console.error('establishment::capacity POST - failed to retrieve all associated services');
+        console.error('establishment::capacity POST - failed to retrieve all associated service capacities');
         return res.status(503).send(`Unable to update Establishment: ${establishmentId}`);
       }
       
@@ -212,8 +264,7 @@ router.route('/').post(async (req, res) => {
     // TODO - improve logging/error reporting
     console.error('establishment::capacity POST - failed', err);
     return res.status(503).send(`Unable to update Establishment with employer type: ${req.params.id}/${givenEmployerType}`);
-  } */
-  return res.status(501).send();
+  }
 });
 
 
