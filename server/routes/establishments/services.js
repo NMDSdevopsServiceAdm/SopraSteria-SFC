@@ -37,10 +37,8 @@ router.route('/').get(async (req, res) => {
       // if the option to return all services is given, then fetch a list of all services available to this establishment
       if (includeAllServices) {
         if (results.isRegulated) {
+          // other services for CQC regulated is ALL including non-CQC
           allServicesResults = await models.services.findAll({
-            where: {
-              iscqcregistered: true
-            },
             order: [
               ['category', 'ASC'],
               ['name', 'ASC']
@@ -48,6 +46,9 @@ router.route('/').get(async (req, res) => {
           });
         } else {
           allServicesResults = await models.services.findAll({
+            where: {
+              iscqcregistered: false
+            },
             order: [
               ['category', 'ASC'],
               ['name', 'ASC']

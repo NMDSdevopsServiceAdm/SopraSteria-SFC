@@ -9,7 +9,10 @@ router.route('/')
 
     //Find matching postcode data
     let results = await models.services.findAll({
-    });
+      where: {
+        isMain: true
+      }
+  });
 
     let servicesData = createServicesJSON(results);
 
@@ -31,7 +34,8 @@ router.route('/byCategory')
     if (filterByCqc) {
       results = await models.services.findAll({
         where: {
-          iscqcregistered: true
+          iscqcregistered: true,
+          isMain: true
         },
         order: [
           ['category', 'ASC'],
@@ -40,6 +44,10 @@ router.route('/byCategory')
       });
     } else {
       results = await models.services.findAll({
+        where: {
+          iscqcregistered: false,
+          isMain: true
+        },
         order: [
           ['category', 'ASC'],
           ['name', 'ASC']
@@ -56,24 +64,25 @@ router.route('/byCategory')
     }
 });
 
-router.route('/:cqcRegistered')
-  .get(async function (req, res) {
+// deprecated
+// router.route('/:cqcRegistered')
+//   .get(async function (req, res) {
 
-    //Find matching postcode data
-    let results = await models.services.findAll({
-      where: {
-        iscqcregistered: req.params.cqcRegistered
-      }
-    });
+//     //Find matching postcode data
+//     let results = await models.services.findAll({
+//       where: {
+//         iscqcregistered: req.params.cqcRegistered
+//       }
+//     });
 
-    let servicesData = await createServicesJSON(results);
+//     let servicesData = await createServicesJSON(results);
 
-    if (servicesData.length === 0) {
-      res.sendStatus(404);
-    } else {
-      res.send(servicesData);
-    }
-});
+//     if (servicesData.length === 0) {
+//       res.sendStatus(404);
+//     } else {
+//       res.send(servicesData);
+//     }
+// });
 
 router.route('/id/:id')
   .get(async function (req, res) {

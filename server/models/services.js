@@ -27,6 +27,11 @@ module.exports = function(sequelize, DataTypes) {
     iscqcregistered: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    isMain: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      field: 'ismain'
     }
   }, {
     tableName: 'services',
