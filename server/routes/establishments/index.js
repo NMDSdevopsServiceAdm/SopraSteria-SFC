@@ -4,12 +4,15 @@ const router = express.Router();
 
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
+const ServiceFormatters = require('../../models/api/services');
 
 const EmployerType = require('./employerType');
+const Services = require('./services');
 
 // ensure all establishment routes are authorised
-router.use('/', Authorization.hasAuthorisedEstablishment);
+router.use('/:id', Authorization.hasAuthorisedEstablishment);
 router.use('/:id/employerType', EmployerType);
+router.use('/:id/services', Services);
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
@@ -32,6 +35,14 @@ router.route('/:id').get(async (req, res) => {
       },
       include: [{
         model: models.services,
+        as: 'otherServices',
+        attributes: ['id', 'name', 'category'],
+        order: [
+          ['category', 'ASC'],
+          ['name', 'ASC']
+        ]
+      },{
+        model: models.services,
         as: 'mainService',
         attributes: ['id', 'name']
       }]
@@ -47,7 +58,7 @@ router.route('/:id').get(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment root GET - failed', err);
-    res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
+    return res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
   }
 });
 
@@ -62,10 +73,8 @@ const formatEstablishmentResponse = (establishment) => {
     locationRef: establishment.locationId,
     isRegulated: establishment.isRegulated,
     employerType: establishment.employerType,
-    mainService: {
-      id: establishment.mainService ? establishment.mainService.id : null,
-      name: establishment.mainService ? establishment.mainService.name : null
-    }
+    mainService: ServiceFormatters.singleService(establishment.mainService),
+    otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices)
   };
 }
 

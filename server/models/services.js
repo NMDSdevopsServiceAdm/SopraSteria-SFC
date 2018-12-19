@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('services', {
+  const Services =  sequelize.define('services', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -34,4 +34,15 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
+
+  Services.associate = (models) => {
+    Services.belongsToMany(models.establishment, {
+      through: 'establishmentServices',
+      foreignKey: 'serviceId',
+      targetKey: 'id',
+      as: 'establishments'
+    });
+  };
+
+  return Services;
 };
