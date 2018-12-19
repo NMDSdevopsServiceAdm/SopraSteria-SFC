@@ -65,6 +65,17 @@ module.exports = function(sequelize, DataTypes) {
       targetKey: 'id',
       as: 'otherServices'
     });
+    // Establishment.belongsToMany(models.serviceCapacity, {
+    //   through: 'establishmentCapacity',
+    //   foreignKey: 'establishmentId',
+    //   targetKey: 'establishmentId',
+    //   as: 'capacity'
+    // });
+    Establishment.hasMany(models.establishmentCapacity, {
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'capacity'
+    });
   };
 
   return Establishment;
