@@ -4,12 +4,21 @@ const router = express.Router();
 
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
+const ServiceFormatters = require('../../models/api/services');
+const CapacityFormatters = require('../../models/api/capacity');
+const ShareFormatters = require('../../models/api/shareData');
 
 const EmployerType = require('./employerType');
+const Services = require('./services');
+const Capacity = require('./capacity');
+const ShareData = require('./shareData');
 
 // ensure all establishment routes are authorised
-router.use('/', Authorization.hasAuthorisedEstablishment);
+router.use('/:id', Authorization.hasAuthorisedEstablishment);
 router.use('/:id/employerType', EmployerType);
+router.use('/:id/services', Services);
+router.use('/:id/capacity', Capacity);
+router.use('/:id/share', ShareData);
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
@@ -32,8 +41,25 @@ router.route('/:id').get(async (req, res) => {
       },
       include: [{
         model: models.services,
+        as: 'otherServices',
+        attributes: ['id', 'name', 'category'],
+        order: [
+          ['category', 'ASC'],
+          ['name', 'ASC']
+        ]
+      },{
+        model: models.services,
         as: 'mainService',
         attributes: ['id', 'name']
+      },{
+        model: models.establishmentCapacity,
+        as: 'capacity',
+        attributes: ['id', 'answer'],
+        include: [{
+          model: models.serviceCapacity,
+          as: 'reference',
+          attributes: ['id', 'question']
+        }]
       }]
     });
 
@@ -47,7 +73,7 @@ router.route('/:id').get(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment root GET - failed', err);
-    res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
+    return res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
   }
 });
 
@@ -62,10 +88,10 @@ const formatEstablishmentResponse = (establishment) => {
     locationRef: establishment.locationId,
     isRegulated: establishment.isRegulated,
     employerType: establishment.employerType,
-    mainService: {
-      id: establishment.mainService ? establishment.mainService.id : null,
-      name: establishment.mainService ? establishment.mainService.name : null
-    }
+    share: ShareFormatters.shareDataJSON(establishment),
+    mainService: ServiceFormatters.singleService(establishment.mainService),
+    otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices),
+    capacities: CapacityFormatters.capacitiesJSON(establishment.capacity)
   };
 }
 

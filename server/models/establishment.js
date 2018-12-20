@@ -45,6 +45,21 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       values: ['Private Sector', 'Voluntary / Charity', 'Other'],
       field: '"EmployerType"'
+    },
+    shareData: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"ShareData"'
+    },
+    shareWithCQC: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"ShareDataWithCQC"'
+    },
+    shareWithLA: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"ShareDataWithLA"'
     }
   }, {
     tableName: '"Establishment"',
@@ -58,7 +73,24 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'mainServiceId',
       targetKey: 'id',
       as: 'mainService'
-    })
+    });
+    Establishment.belongsToMany(models.services, {
+      through: 'establishmentServices',
+      foreignKey: 'establishmentId',
+      targetKey: 'id',
+      as: 'otherServices'
+    });
+    // Establishment.belongsToMany(models.serviceCapacity, {
+    //   through: 'establishmentCapacity',
+    //   foreignKey: 'establishmentId',
+    //   targetKey: 'establishmentId',
+    //   as: 'capacity'
+    // });
+    Establishment.hasMany(models.establishmentCapacity, {
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'capacity'
+    });
   };
 
   return Establishment;

@@ -63,10 +63,7 @@
         },
         "serviceGetResponse" : {
             "description" : "the Get Services API response; can be empty. TODO: need to be able to mandate Service::name and Service::isCQC attributes on get",
-            "type" : "array",
-            "items" : {
-                "$ref" : "establishment_types.schema.json#/definitions/ServiceGroup"
-            }
+            "$ref" : "establishment_types.schema.json#/definitions/Establishment"
         },
         "servicePostRequest" : {
             "description" : "The Post Services API request; cannot be empty because it is the list of services for assumed (known) Establishment",
@@ -82,7 +79,8 @@
             }
         },
         "servicePostResponse" : {
-            "description": "intentionally empty"
+            "description" : "the POST Services API response",
+            "$ref" : "establishment_types.schema.json#/definitions/Establishment"
         },
         "serviceCapacityGetRequest" : {
             "description": "intentionally empty"
