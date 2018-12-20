@@ -5,14 +5,17 @@ const router = express.Router();
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
 const ServiceFormatters = require('../../models/api/services');
+const CapacityFormatters = require('../../models/api/capacity');
 
 const EmployerType = require('./employerType');
 const Services = require('./services');
+const Capacity = require('./capacity');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
 router.use('/:id/employerType', EmployerType);
 router.use('/:id/services', Services);
+router.use('/:id/capacity', Capacity);
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
@@ -45,6 +48,15 @@ router.route('/:id').get(async (req, res) => {
         model: models.services,
         as: 'mainService',
         attributes: ['id', 'name']
+      },{
+        model: models.establishmentCapacity,
+        as: 'capacity',
+        attributes: ['id', 'answer'],
+        include: [{
+          model: models.serviceCapacity,
+          as: 'reference',
+          attributes: ['id', 'question']
+        }]
       }]
     });
 
@@ -74,7 +86,8 @@ const formatEstablishmentResponse = (establishment) => {
     isRegulated: establishment.isRegulated,
     employerType: establishment.employerType,
     mainService: ServiceFormatters.singleService(establishment.mainService),
-    otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices)
+    otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices),
+    capacities: CapacityFormatters.capacitiesJSON(establishment.capacity)
   };
 }
 

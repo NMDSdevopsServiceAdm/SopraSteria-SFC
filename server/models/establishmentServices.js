@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
       field: '"ServiceID"'
     }
   }, {
-    tableName: '"OtherServices"',
+    tableName: '"EstablishmentServices"',
     schema: 'cqc',
     createdAt: false,
     updatedAt: false
