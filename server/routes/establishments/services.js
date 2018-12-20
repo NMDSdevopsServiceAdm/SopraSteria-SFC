@@ -101,9 +101,6 @@ router.route('/').post(async (req, res) => {
       let allServicesResults = null;
       if (results.isRegulated) {
         allServicesResults = await models.services.findAll({
-          where: {
-            iscqcregistered: true
-          },
           order: [
             ['category', 'ASC'],
             ['name', 'ASC']
@@ -111,6 +108,9 @@ router.route('/').post(async (req, res) => {
         });
       } else {
         allServicesResults = await models.services.findAll({
+          where: {
+            iscqcregistered: false
+          },
           order: [
             ['category', 'ASC'],
             ['name', 'ASC']
