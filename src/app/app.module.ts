@@ -30,6 +30,9 @@ import { ContinueCreatingAccountComponent } from './features/continue-creating-a
 
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
+import { HomepageComponent } from './features/homepage/homepage.component';
+import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
+import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +53,10 @@ import { RegistrationService } from './core/services/registration.service';
     RegistrationCompleteComponent,
     EnterWorkplaceAddressComponent,
     SelectMainServiceComponent,
-    ContinueCreatingAccountComponent
+    ContinueCreatingAccountComponent,
+    HomepageComponent,
+    SelectOtherServicesComponent,
+    SelectOtherServicesListComponent
   ],
   imports: [
     BrowserModule,

@@ -15,6 +15,8 @@ import { RegistrationCompleteComponent } from './features/registration-complete/
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
+import { HomepageComponent } from './features/homepage/homepage.component';
+import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
 
 const routes: Routes = [
 
@@ -65,6 +67,14 @@ const routes: Routes = [
   {
     path: 'continue-creating-account',
     component: ContinueCreatingAccountComponent
+  },
+  {
+    path: 'welcome',
+    component: HomepageComponent
+  },
+  {
+    path: 'select-other-services',
+    component: SelectOtherServicesComponent
   }
 ];
 
