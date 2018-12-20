@@ -19,6 +19,17 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
 
   if (req.headers[AUTH_HEADER] && Number.isInteger(parseInt(req.headers[AUTH_HEADER]))) {
     req.establishmentId = parseInt(req.headers[AUTH_HEADER]);
+
+    // must provide the establishment ID and it must be a number
+    if (!req.params.id || isNaN(parseInt(req.params.id))) {
+      console.error('isAuthenticated - missing establishment id parameter');
+      return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
+    }
+    if (req.establishmentId !== parseInt(req.params.id)) {
+      console.error('isAuthenticated - given and known establishment id do not match');
+      return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+    }
+  
     next();
   } else {
     // not authenticated
