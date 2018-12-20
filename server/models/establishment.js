@@ -45,6 +45,21 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       values: ['Private Sector', 'Voluntary / Charity', 'Other'],
       field: '"EmployerType"'
+    },
+    shareData: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"ShareData"'
+    },
+    shareWithCQC: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"ShareDataWithCQC"'
+    },
+    shareWithLA: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"ShareDataWithLA"'
     }
   }, {
     tableName: '"Establishment"',
