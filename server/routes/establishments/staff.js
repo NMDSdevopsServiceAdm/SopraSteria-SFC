@@ -79,7 +79,7 @@ const formatStaffResponse = (establishment) => {
   return {
     id: establishment.id,
     name: establishment.name,
-    employerType: establishment.numberOfStaff
+    numberOfStaff: establishment.numberOfStaff
   };
 }
 
