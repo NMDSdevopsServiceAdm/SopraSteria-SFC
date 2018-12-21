@@ -199,6 +199,16 @@
                     "items" : {
                         "$ref" : "#/definitions/ServiceGroup"
                     }
+                },
+                "share": {
+                    "description" : "Whether to share, and if so, the share options (LA/CQC)",
+                    "$ref" : "#/definitions/ShareOptions"
+                },
+                "numberOfStaff" : {
+                    "description" : "The number of staff reported at this Establishment",
+                    "type" : "integer",
+                    "minimum": 0,
+                    "maximum": 999
                 }
             },
             "required" : ["id", "name"]

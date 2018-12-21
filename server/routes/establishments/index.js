@@ -12,6 +12,7 @@ const EmployerType = require('./employerType');
 const Services = require('./services');
 const Capacity = require('./capacity');
 const ShareData = require('./shareData');
+const Staff = require('./staff');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -19,6 +20,7 @@ router.use('/:id/employerType', EmployerType);
 router.use('/:id/services', Services);
 router.use('/:id/capacity', Capacity);
 router.use('/:id/share', ShareData);
+router.use('/:id/staff', Staff);
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
@@ -88,6 +90,7 @@ const formatEstablishmentResponse = (establishment) => {
     locationRef: establishment.locationId,
     isRegulated: establishment.isRegulated,
     employerType: establishment.employerType,
+    numberOfStaff: establishment.numberOfStaff,
     share: ShareFormatters.shareDataJSON(establishment),
     mainService: ServiceFormatters.singleService(establishment.mainService),
     otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices),
