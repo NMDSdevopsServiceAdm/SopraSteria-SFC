@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
       primaryKey: true,
       field: '"JobID"'
     },
-    name: {
+    title: {
       type: DataTypes.TEXT,
       allowNull: false,
       field: '"JobName"'
