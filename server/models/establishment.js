@@ -96,6 +96,11 @@ module.exports = function(sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'capacity'
     });
+    Establishment.hasMany(models.establishmentJobs, {
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'jobs'
+    });
   };
 
   return Establishment;

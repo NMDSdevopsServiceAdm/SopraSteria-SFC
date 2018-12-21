@@ -7,12 +7,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
-      field: '"EstablishmentCapacityID"'
+      field: '"EstablishmentJobID"'
     },
     jobId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: '"ServiceCapacityID"'
+      field: '"JobID"'
     },
     establishmentId: {
       type: DataTypes.INTEGER,
@@ -24,6 +24,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       values: ['Vacancies', 'Starters', 'Leavers'],
       field: '"JobType"'
+    },
+    total: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: '"Total"'
     }
   }, {
     tableName: '"EstablishmentJobs"',
