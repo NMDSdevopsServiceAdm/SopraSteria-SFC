@@ -150,6 +150,53 @@
                 }
             }
         },
+        "job" : {
+            "description": "An individual job total",
+            "type" : "object",
+            "properties": {
+                "jobId" : {
+                    "description" : "A unique reference to the job title",
+                    "type" : "integer",
+                    "minimum": 0
+                },
+                "title" : {
+                    "description" : "The title of the job of given jobId",
+                    "type" : "string"
+                },
+                "total" : {
+                    "description" : "The number of staff for this specific job (as given by jobId)",
+                    "type" : "integer",
+                    "minimum": 0,
+                    "maximum": 999
+                }
+            },
+            "required" : ["jobId"]
+        },
+        "jobs" : {
+            "description": "The collective definition of number of vacancies, starters and leavers atytributed to a given establishment. Each is optional, but if given, overwrites all existing jobs of that type",
+            "type" : "object",
+            "properties" : {
+                "vacanices": {
+                    "type" : "array",
+                    "items" : [{
+                        "$ref" : "#/definitions/job"
+                    }]
+                },
+                "starters": {
+                    "type" : "array",
+                    "items" : [{
+                        "$ref" : "#/definitions/job"
+                    }]
+                },
+                "leavers": {
+                    "type" : "array",
+                    "items" : [{
+                        "$ref" : "#/definitions/job"
+                    }]
+                }
+            },
+            "required" : []
+        },
         "Establishment" : {
             "description" : "A physical location offering care services; can be commercial or private location",
             "type" : "object",
