@@ -6,6 +6,7 @@ const localformatJob = (thisJob) => {
     title: thisJob.reference.title
   }
 };
+
 exports.jobsByTypeJSON = (givenJobs) => {
   let jobGroupsMap = new Map();
 
@@ -29,7 +30,31 @@ exports.jobsByTypeJSON = (givenJobs) => {
   const jobTypeGroup = {};
   jobGroupsMap.forEach((key,value) => {
     jobTypeGroup[value] = key;
- });
+  });
+
+  // add the totals; totals must always be given even if there no associated jobs
+  let totalVacancies = 0;
+  if (jobTypeGroup['Vacancies']) {
+    jobTypeGroup['Vacancies'].forEach(thisJob => {
+      totalVacancies += thisJob.total;
+    });
+  }
+  let totalStarters = 0;
+  if (jobTypeGroup['Starters']) {
+    jobTypeGroup['Starters'].forEach(thisJob => {
+      totalStarters += thisJob.total;
+    });
+   }
+  let totalLeavers = 0;
+  if (jobTypeGroup['Leavers']) {
+    jobTypeGroup['Leavers'].forEach(thisJob => {
+      totalLeavers += thisJob.total;
+    });
+  }
+
+  jobTypeGroup[`TotalVacencies`] = totalVacancies;
+  jobTypeGroup[`TotalStarters`] = totalStarters;
+  jobTypeGroup[`TotalLeavers`] = totalLeavers;
 
   return jobTypeGroup;
 };

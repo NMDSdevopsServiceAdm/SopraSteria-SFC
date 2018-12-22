@@ -176,7 +176,7 @@
             "description": "The collective definition of number of vacancies, starters and leavers atytributed to a given establishment. Each is optional, but if given, overwrites all existing jobs of that type",
             "type" : "object",
             "properties" : {
-                "vacanices": {
+                "Vacancies": {
                     "type" : "array",
                     "items" : [{
                         "$ref" : "#/definitions/job"
@@ -193,9 +193,24 @@
                     "items" : [{
                         "$ref" : "#/definitions/job"
                     }]
+                },
+                "TotalVacancies" : {
+                    "description" : "The total of all Vacancies - 0, if no Vacancies",
+                    "type" : "integer",
+                    "minimum": 0
+                },
+                "TotalStarters" : {
+                    "description" : "The total of all Starters - 0, if no Vacancies",
+                    "type" : "integer",
+                    "minimum": 0
+                },
+                "TotalLeavers" : {
+                    "description" : "The total of all Leavers - 0, if no Vacancies",
+                    "type" : "integer",
+                    "minimum": 0
                 }
             },
-            "required" : []
+            "required" : ["TotalVacancies", "TotalStarters", "TotalLeavers"]
         },
         "Establishment" : {
             "description" : "A physical location offering care services; can be commercial or private location",

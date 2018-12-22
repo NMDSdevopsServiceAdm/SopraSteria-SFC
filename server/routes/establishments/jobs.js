@@ -19,7 +19,7 @@ router.route('/').get(async (req, res) => {
         {
           model: models.establishmentJobs,
           as: 'jobs',
-          attributes: ['id', 'type'],
+          attributes: ['id', 'type', 'total'],
           order: [
             ['type', 'ASC']
           ],
@@ -190,7 +190,7 @@ router.route('/').post(async (req, res) => {
       res.status(200);
       return res.json(formatJobResponse(results));
     } else {
-      console.error('establishment::jobs POST - Not found establishment having id: ${establishmentId}', err);
+      console.error('establishment::jobs POST - Not found establishment having id: ${establishmentId}');
       return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
     }
 
