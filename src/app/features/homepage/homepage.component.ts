@@ -12,7 +12,7 @@ import { LoginApiModel } from '../../core/model/loginApi.model';
   styleUrls: ['./homepage.component.scss']
 })
 export class HomepageComponent implements OnInit {
-  login: LoginApiModel;
+  login: any;
 
   fullname: string;
 
@@ -28,6 +28,10 @@ export class HomepageComponent implements OnInit {
     console.log(this.login);
     debugger;
     //this.fullname = this.login.fullname;
+  }
+
+  welcomeContinue() {
+    this.router.navigate(['/select-other-services']);
   }
 
 }
