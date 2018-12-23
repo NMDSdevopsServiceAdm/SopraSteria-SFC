@@ -187,3 +187,71 @@ form,
     margin-right: 30px;
   }
 }
+
+/* Hide the browser's default checkbox */
+.check input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+
+  &:focus {
+    ~.checkmark {
+      -webkit-box-shadow: 0 0 0 4px $focus-yellow;
+      -moz-box-shadow: 0 0 0 4px $focus-yellow;
+      box-shadow: 0 0 0 4px $focus-yellow;
+    }
+  }
+}
+
+/* Create a custom checkbox */
+.checkmark {
+  position: absolute;
+  height: 40px;
+  width: 40px;
+  background-color: #fff;
+  border: 2px solid black;
+}
+
+/* On mouse-over, add a grey background color */
+.check:hover input~.checkmark {
+  background-color: #fff;
+  cursor: pointer;
+}
+
+/* When the checkbox is checked, add a blue background */
+.check input:checked~.checkmark {
+  background-color: #fff;
+}
+
+/* Create the checkmark/indicator (hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the checkmark when checked */
+.check input:checked~.checkmark:after {
+  display: block;
+}
+
+/* Style the checkmark/indicator */
+.check .checkmark:after {
+  left: 12px;
+  top: 5px;
+  width: 12px;
+  height: 23px;
+  border: solid black;
+  border-width: 0 5px 5px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.check-label {
+  margin-left: 55px;
+  padding-top: 10px;
+  height: 40px;
+  display: inline-block;
+  vertical-align: middle;
+}

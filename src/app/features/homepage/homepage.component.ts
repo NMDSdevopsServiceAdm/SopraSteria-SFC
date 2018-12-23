@@ -27,7 +27,7 @@ export class HomepageComponent implements OnInit {
 
     console.log(this.login);
     debugger;
-    this.fullname = this.login.fullname;
+    //this.fullname = this.login.fullname;
   }
 
 }
