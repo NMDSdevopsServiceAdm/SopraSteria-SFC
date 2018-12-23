@@ -15,6 +15,10 @@ import { RegistrationCompleteComponent } from './features/registration-complete/
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
+import { VacanciesComponent } from "./features/vacancies/vacancies.component";
+import { ConfirmVacanciesComponent } from "./features/confirm-vacancies/confirm-vacancies.component"
+import { AddNewStartersComponent } from "./features/add-new-starters/add-new-starters.component"
+
 
 const routes: Routes = [
 
@@ -65,7 +69,19 @@ const routes: Routes = [
   {
     path: 'continue-creating-account',
     component: ContinueCreatingAccountComponent
-  }
+  },
+  {
+    path: 'vacancies',
+    component: VacanciesComponent
+  },
+  {
+    path: 'confirm-vacancies',
+    component: ConfirmVacanciesComponent
+  },
+  {
+    path: 'add-new-starters',
+    component: AddNewStartersComponent
+  },
 ];
 
 @NgModule({

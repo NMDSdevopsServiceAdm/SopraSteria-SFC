@@ -20,3 +20,16 @@ $grid-breakpoints: (
   xl: 1200px
 );
   */
+
+$color: (
+  link: #1078c7
+);
+
+$breakpoints: (
+  mobile-s: 320px,
+  mobile-m: 375px,
+  mobile-l: 425px,
+  tablet: 768px,
+  laptop: 1024px,
+  laptop-l: 1440px
+);

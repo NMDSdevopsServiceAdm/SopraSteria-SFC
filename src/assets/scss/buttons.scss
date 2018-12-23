@@ -40,4 +40,18 @@
       background-color: $light-grey-text;
     }
   }
+
+  &.btn-link {
+    margin: auto 0;
+    font-size: 15px;
+    letter-spacing: 1px;
+    border: 0;
+    color: map-get($color, link);
+    text-decoration: underline;
+    line-height: 2rem;
+
+    @include media(map-get($breakpoints, tablet)) {
+      line-height: 20px;
+    }
+  }
 }

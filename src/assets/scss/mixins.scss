@@ -53,3 +53,9 @@
     #{$property}: $rem; /* 9 */
   }
 }
+
+@mixin media($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
