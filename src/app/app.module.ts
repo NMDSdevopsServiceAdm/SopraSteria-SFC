@@ -27,9 +27,14 @@ import { RegistrationCompleteComponent } from './features/registration-complete/
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
+import { VacanciesComponent } from './features/vacancies/vacancies.component';
+import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component'
+import { AddNewStartersComponent } from './features/add-new-starters/add-new-starters.component'
 
+import { Number } from "./shared/number.directive"
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
+import { JobService } from "./core/services/job.service"
 
 @NgModule({
   declarations: [
@@ -50,7 +55,11 @@ import { RegistrationService } from './core/services/registration.service';
     RegistrationCompleteComponent,
     EnterWorkplaceAddressComponent,
     SelectMainServiceComponent,
-    ContinueCreatingAccountComponent
+    ContinueCreatingAccountComponent,
+    Number,
+    VacanciesComponent,
+    ConfirmVacanciesComponent,
+    AddNewStartersComponent,
   ],
   imports: [
     BrowserModule,
@@ -72,7 +81,8 @@ import { RegistrationService } from './core/services/registration.service';
   ],
   providers: [
     LocationService,
-    RegistrationService
+    RegistrationService,
+    JobService,
   ],
   bootstrap: [AppComponent]
 })

@@ -98,4 +98,13 @@ strong {
   @include rem(line-height, 14px);
 }
 
+.main-page-container {
+  header {
+    margin-bottom: 3rem;
 
+    h1 {
+      padding: 0;
+      margin-bottom: 3rem;
+    }
+  }
+}
