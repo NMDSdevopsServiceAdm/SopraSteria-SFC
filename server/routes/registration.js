@@ -47,24 +47,49 @@ router.get('/service/:name', function (req, res) {
 });
 
 // RETURNS ALL THE USERS IN THE DATABASE
+router.get('/username', function (req, res) {
+  // this is a false trap for empty username lookup requests from the UI
+  return res.json({
+    status: '0',
+    message: 'Username not found',
+  });
+});
 router.get('/username/:username', function (req, res) {
-  client.connect()
-  var UserNameSelect = 'SELECT * FROM cqc."Login" where "Username" = $1 Limit 1'
+  try {
+    client.connect()
+    var UserNameSelect = 'SELECT * FROM cqc."Login" where "Username" = $1 Limit 1'
 
-  client.query(UserNameSelect,[req.params.username],function(err,result) {         
-        if (result.rowCount == 0) {
-          res.json({
-            status: '0',
-            message: 'Username not found',
-          });
 
-        } else {
-          res.json({
-            status: '1',
-            message: 'Username found',
-          });
-        }                 
-  })
+    client.query(UserNameSelect,[req.params.username],function(err,result) {      
+      if (err) {
+        // TODO: Return a 500 error - but the UI can't actually handle this currently, so make it look like the user does not exist (low noise on the UI)
+        //return res.status(500).semd('Unable to get usernames');
+        return res.json({
+          status: '0',
+          message: 'Username not found',
+        });
+      }   
+      if (result.rowCount == 0) {
+        return res.json({
+          status: '0',
+          message: 'Username not found',
+        });
+  
+      } else {
+        return res.json({
+          status: '1',
+          message: 'Username found',
+        });
+      }                 
+    });
+  } catch (err) {
+    // TODO: Return a 500 error - but the UI can't actually handle this currently, so make it look like the user does not exist (low noise on the UI)
+    //return res.status(500).semd('Unable to get usernames');
+    return res.json({
+      status: '0',
+      message: 'Username not found',
+    });
+  }
 
 });
 

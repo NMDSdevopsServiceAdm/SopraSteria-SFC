@@ -12,6 +12,7 @@ var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
 var tmpLogin = require('./server/routes/tmpLogin');
 var establishments = require('./server/routes/establishments');
+var jobs = require('./server/routes/jobs');
 
 var Authorization = require('./server/utils/security/isAuthenticated');
 
@@ -38,6 +39,7 @@ app.use('/api/registration', registration);
 app.use('/api/errors', errors);
 app.use('/api/login', tmpLogin);
 app.use('/api/establishment', establishments);
+app.use('/api/jobs', jobs);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

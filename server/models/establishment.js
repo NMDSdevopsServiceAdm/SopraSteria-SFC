@@ -60,6 +60,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       field: '"ShareDataWithLA"'
+    },
+    numberOfStaff: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"NumberOfStaff"'
     }
   }, {
     tableName: '"Establishment"',
@@ -90,6 +95,11 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
       as: 'capacity'
+    });
+    Establishment.hasMany(models.establishmentJobs, {
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'jobs'
     });
   };
 
