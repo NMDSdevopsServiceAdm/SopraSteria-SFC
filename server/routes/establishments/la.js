@@ -5,6 +5,8 @@ const LaFormatters = require('../../models/api/la');
 
 // parent route defines the "id" parameter
 
+// TODO: refactor the get/pull - sharing fetch queries
+
 // gets current set of Local Authorities to share with for the known establishment
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -98,9 +100,37 @@ router.route('/').post(async (req, res) => {
         });
         await Promise.all(laRecords);
       });
-     
-      res.status(200);
-      return res.json(formatLAResponse(results));
+
+      // now need to refetch the associated local authorities to return the confirmation
+      let reFetchResults = await models.establishment.findOne({
+        where: {
+          id: establishmentId
+        },
+        attributes: ['id', 'name'],
+        include: [
+          {
+            model: models.establishmentLocalAuthority,
+            as: 'localAuthorities',
+            attributes: ['id'],
+            include: [{
+              model: models.localAuthority,
+              as: 'reference',
+              attributes: ['id', 'name'],
+              order: [
+                ['name', 'ASC']
+              ]
+            }]
+          }
+        ]
+      });
+  
+      if (reFetchResults && reFetchResults.id && (establishmentId === reFetchResults.id)) {
+        res.status(200);
+        return res.json(formatLAResponse(reFetchResults));
+      } else {
+        console.error('establishment::la POST - Not found establishment having id: ${establishmentId} after having updated the establishment', err);
+        return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
+      }
     } else {
       console.error('establishment::la POST - Not found establishment having id: ${establishmentId}', err);
       return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
@@ -139,7 +169,7 @@ const formatLAResponse = (establishment) => {
   return {
     id: establishment.id,
     name: establishment.name,
-    localAuthorities: LaFormatters.listOfLAsJSON(establishment.jobs)
+    localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities)
   };
 }
 

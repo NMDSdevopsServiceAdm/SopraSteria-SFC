@@ -84,6 +84,19 @@ router.route('/:id').get(async (req, res) => {
               ['title', 'ASC']
             ]
           }]
+        },
+        {
+          model: models.establishmentLocalAuthority,
+          as: 'localAuthorities',
+          attributes: ['id'],
+          include: [{
+            model: models.localAuthority,
+            as: 'reference',
+            attributes: ['id', 'name'],
+            order: [
+              ['name', 'ASC']
+            ]
+          }]
         }
       ]
     });
@@ -114,7 +127,7 @@ const formatEstablishmentResponse = (establishment) => {
     isRegulated: establishment.isRegulated,
     employerType: establishment.employerType,
     numberOfStaff: establishment.numberOfStaff,
-    share: ShareFormatters.shareDataJSON(establishment, establishment.authorities),
+    share: ShareFormatters.shareDataJSON(establishment, establishment.localAuthorities),
     mainService: ServiceFormatters.singleService(establishment.mainService),
     otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices),
     capacities: CapacityFormatters.capacitiesJSON(establishment.capacity),
