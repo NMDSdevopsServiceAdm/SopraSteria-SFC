@@ -16,7 +16,7 @@ router.route('/').get(async (req, res) => {
       where: {
         id: establishmentId
       },
-      attributes: ['id', 'name'],
+      attributes: ['id', 'name', "postcode"],
       include: [
         {
           model: models.establishmentLocalAuthority,
@@ -34,9 +34,20 @@ router.route('/').get(async (req, res) => {
       ]
     });
 
+    // need to identify which, if any, of the shared authorities is attributed to the
+    //  primary Authority; that is the Local Authority associated with the physical area
+    //  of the given Establishment (using the postcode as the key)
+    const primaryAuthority = await models.pcodedata.findOne({
+      where: {
+        postcode: results.postcode
+      },
+      attributes: ['postcode', 'local_custodian_code']
+    });
+    const primaryAuthorityCustodianCode = primaryAuthority.local_custodian_code;
+
     if (results && results.id && (establishmentId === results.id)) {
       res.status(200);
-      return res.json(formatLAResponse(results));
+      return res.json(formatLAResponse(results, primaryAuthorityCustodianCode));
     } else {
       return res.status(404).send('Not found');
     }
@@ -163,13 +174,13 @@ const isValidLAEntry = (entry, allKnownLAs) => {
   }
 };
 
-const formatLAResponse = (establishment) => {
+const formatLAResponse = (establishment, primaryAuthorityCustodianCode) => {
   // WARNING - do not be tempted to copy the database model as the API response; the API may chose to rename/contain
   //           some attributes
   return {
     id: establishment.id,
     name: establishment.name,
-    localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities)
+    localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities, primaryAuthorityCustodianCode)
   };
 }
 

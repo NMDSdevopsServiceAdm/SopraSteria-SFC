@@ -216,13 +216,21 @@
             "type" : "object",
             "properties" : {
                 "id" : {
-                    "description" : "This the local custodian code",
+                    "description" : "This the primary index for a specific Local Authority of a given Establishment",
                     "$ref" : "#/definitions/ID"
                 },
                 "name" : {
                     "description": "This is the readable name of the Local Authority",
                     "type" : "string",
                     "minLength": 3
+                },
+                "custodianCode" : {
+                    "description" : "A unique reference for a Local Authority",
+                    "$ref" : "#/definitions/ID"
+                },
+                "isPrimaryAuthority" : {
+                    "description": "An optional flag (assumed false if not given) that if true, identifies this as being the Local Authority as known by the physical location of the associated Establishment",
+                    "type" : "boolean"
                 }
             },
             "required" : ["id", "name"]
