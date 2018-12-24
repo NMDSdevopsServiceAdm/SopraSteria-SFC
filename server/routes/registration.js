@@ -256,7 +256,8 @@ router.route('/')
       res.status(200);
       res.json({
         "success" : 1,
-        "message" : "Record added Successfully"
+        "message" : "Record added Successfully",
+        "establishmentId" : Estblistmentdata.MainServiceId
       });
 
     } catch (err) {
