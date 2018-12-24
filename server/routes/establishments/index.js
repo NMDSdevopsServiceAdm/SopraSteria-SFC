@@ -70,7 +70,7 @@ router.route('/:id').get(async (req, res) => {
         {
           model: models.establishmentJobs,
           as: 'jobs',
-          attributes: ['id', 'type'],
+          attributes: ['id', 'type', 'total'],
           order: [
             ['type', 'ASC']
           ],
