@@ -21,6 +21,7 @@ export class SelectOtherServicesListComponent implements OnInit {
   isInvalid: boolean;
   checked: boolean;
   postOtherServicesdata: any = [];
+  obj;
 
   constructor(
     private fb: FormBuilder,
@@ -36,7 +37,7 @@ export class SelectOtherServicesListComponent implements OnInit {
 
   ngOnInit() {
     this.SelectOtherServiceForm = this.fb.group({
-      otherServiceSelected: ''
+      otherServiceSelected: ['']
     });
 
     this.isRegistered = true;
@@ -50,15 +51,14 @@ export class SelectOtherServicesListComponent implements OnInit {
       .subscribe(
         (data: any) => {
 
-          console.log(data);
+          // Check if other services are already set
+          this.checkIsServiceSet(data);
+
           this.servicesData = data;
           this.otherServicesData = data.allOtherServices;
           this.mainService = data.mainService.name;
-
-          //debugger;
         },
         (err) => {
-          //debugger;
           console.log(err);
         },
         () => {
@@ -68,16 +68,62 @@ export class SelectOtherServicesListComponent implements OnInit {
 
   }
 
-  onSubmit() {
-    console.log('send');
+  // Check if services exists and if so create services obj
+  checkIsServiceSet(data) {
 
-    //getServiceChecked();
+    data.otherServices.forEach(category => {
+      category.services.forEach(service => {
+
+        this.obj = {
+          services: [{
+            'id': service.id,
+            'name': service.name
+          }]
+        };
+
+        for (let i = 0; i < 1; i++) {
+          this.postOtherServicesdata.push(this.obj.services[i]);
+        }
+
+      });
+    });
+  }
+
+  toggleCheckbox($event: any) {
+    if ($event.checked) {
+      const $id = $event.id;
+      const $name = $event.value;
+      const $idToNum = parseInt($id);
+
+      this.obj = {
+        services: [{
+          'id': $idToNum,
+          'name': $name
+        }]
+      };
+
+      for (let i = 0; i < this.obj.services.length; i++) {
+        this.postOtherServicesdata.push(this.obj.services[i]);
+      }
+    }
+    else {
+      const $id = $event.id;
+      const $idToNum = parseInt($id);
+
+      for (let i = 0; i < this.postOtherServicesdata.length; i++) {
+        if ($idToNum === this.postOtherServicesdata[i].id) {
+          delete this.postOtherServicesdata[i];
+        }
+      }
+    }
+  }
+
+  onSubmit() {
+
     if (this.postOtherServicesdata.length > 0) {
-      debugger
       this.save();
     }
     else {
-      debugger;
       this.router.navigate(['/type-of-employer']);
     }
   }
@@ -86,11 +132,9 @@ export class SelectOtherServicesListComponent implements OnInit {
     this._eSService.postOtherServices(this.postOtherServicesdata)
       .subscribe(
         (data: any) => {
-          // debugger;
           console.log(data);
         },
         (err) => {
-          // debugger;
           console.log(err);
         },
         () => {
@@ -98,28 +142,6 @@ export class SelectOtherServicesListComponent implements OnInit {
           this.router.navigate(['/type-of-employer']);
         }
       );
-  }
-
-  public toggleCheckbox($event: any) {
-    // console.log($event);
-    if ($event.checked) {
-      const $id = $event.id;
-      const $name = $event.value;
-
-      //this.setPostObject($id, $name);
-
-      const obj = {
-        services: [{
-          'id': $id,
-          'name': $name
-        }]
-      };
-
-      for (let i = 0; i < obj.services.length; i++) {
-        this.postOtherServicesdata.push(obj.services[i]);
-      }
-      console.log(this.postOtherServicesdata);
-    }
   }
 
 }

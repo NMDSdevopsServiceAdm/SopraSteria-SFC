@@ -10,26 +10,11 @@ import { ServicesModel } from '../model/services.model';
 import { PostServicesModel } from '../model/postServices.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
-// const initialRegistration: LoginApiModel = {
-//   // Example initial dummy data
-//   username: 'Uname3',
-//   password: 'Bob'
-// };
-
 @Injectable({
   providedIn: 'root'
 })
 export class EstablishmentServicesService {
-  // // Observable login source
-  // private _auth$: BehaviorSubject<LoginApiModel> = new BehaviorSubject<LoginApiModel>(initialRegistration);
-
-  // // Observable login stream
-  // public auth$: Observable<LoginApiModel> = this._auth$.asObservable();
-  // // registrationModel: RegistrationModel[];
   header: {};
-
-
-
 
   constructor(private http: HttpClient, private router: Router) {
 
@@ -45,7 +30,6 @@ export class EstablishmentServicesService {
   // GET all services [true:false]
   getAllServices(value: any) {
     const $value = value;
-    //const $id = '79';
     const $id = '182';
     const options = { headers: { 'Authorization': $id, 'Content-type': 'application/json' } };
     //debugger;
@@ -74,15 +58,6 @@ export class EstablishmentServicesService {
     dataError.friendlyMessage = error.error.message;
     return ErrorObservable.create(dataError);
   }
-
-  updateState(data) {
-    //this._auth$.next(data);
-  }
-
-
-
-
-
 
 }
 

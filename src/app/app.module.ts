@@ -33,6 +33,7 @@ import { RegistrationService } from './core/services/registration.service';
 import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
 import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
+import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { SelectOtherServicesListComponent } from './features/select-other-servic
     ContinueCreatingAccountComponent,
     HomepageComponent,
     SelectOtherServicesComponent,
-    SelectOtherServicesListComponent
+    SelectOtherServicesListComponent,
+    TypeOfEmployerComponent
   ],
   imports: [
     BrowserModule,

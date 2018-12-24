@@ -17,6 +17,7 @@ import { SelectMainServiceComponent } from './features/select-main-service/selec
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
 import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
+import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 
 const routes: Routes = [
 
@@ -75,6 +76,10 @@ const routes: Routes = [
   {
     path: 'select-other-services',
     component: SelectOtherServicesComponent
+  },
+  {
+    path: 'type-of-employer',
+    component: TypeOfEmployerComponent
   }
 ];
 
