@@ -1,5 +1,6 @@
 /* jshint indent: 2 */
 const models = require('./index');
+var bcrypt = require('bcrypt-nodejs');
 
 module.exports = function(sequelize, DataTypes) {
   const Login = sequelize.define('login', {
@@ -51,7 +52,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       field: '"FirstLogin'
+    },
+    Hash: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: "Hash"
     }
+
   }, {
     tableName: '"Login"',
     schema: 'cqc',
