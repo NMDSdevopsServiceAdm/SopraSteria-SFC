@@ -41,13 +41,18 @@ router.route('/').get(async (req, res) => {
       where: {
         postcode: results.postcode
       },
-      attributes: ['postcode', 'local_custodian_code']
+      attributes: ['postcode', 'local_custodian_code'],
+      include: {
+        model: models.localAuthority,
+        as: 'theAuthority',
+        attributes: ['name']
+      }
     });
-    const primaryAuthorityCustodianCode = primaryAuthority.local_custodian_code;
+    //const primaryAuthorityCustodianCode = primaryAuthority.local_custodian_code;
 
     if (results && results.id && (establishmentId === results.id)) {
       res.status(200);
-      return res.json(formatLAResponse(results, primaryAuthorityCustodianCode));
+      return res.json(formatLAResponse(results, primaryAuthority));
     } else {
       return res.status(404).send('Not found');
     }
@@ -180,7 +185,11 @@ const formatLAResponse = (establishment, primaryAuthorityCustodianCode) => {
   return {
     id: establishment.id,
     name: establishment.name,
-    localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities, primaryAuthorityCustodianCode)
+    primaryAuthority: {
+      id: primaryAuthorityCustodianCode.local_custodian_code,
+      name: primaryAuthorityCustodianCode.theAuthority.name
+    },
+    localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities, primaryAuthorityCustodianCode.local_custodian_code)
   };
 }
 
