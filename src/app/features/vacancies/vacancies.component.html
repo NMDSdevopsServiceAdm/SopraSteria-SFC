@@ -29,7 +29,7 @@
             <div class="col-3 col-sm-2">
               <!-- <label class="d-block"> -->
               <input type="number" formControlName="amount" class="form-control"
-                appNumber [allowNegative]="false" [allowFloat]="false" min="0" step="1" [max]="999"
+                appNumberMax="999" appNumberPositiveOnly appNumberIntOnly appNoPaste min="0" step="1"
                 [ngClass]="{'is-invalid': (vacancy.get('amount').touched || vacancy.get('amount').dirty) && !vacancy.get('amount').valid }" />
             </div>
             <div *ngIf="idx !== 0" class="col-3 center-v no-padding-left">
@@ -63,4 +63,5 @@
       <button type="submit" class="btn btn-primary">Save and continue</button>
     </div>
   </form>
+  <app-messages></app-messages>
 </div>

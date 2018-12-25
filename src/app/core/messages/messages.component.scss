@@ -1,0 +1,10 @@
+.alert {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 3rem 0;
+  padding: 15px;
+
+  ~ .alert {
+    margin-top: 1.5rem;
+  }
+}

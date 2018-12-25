@@ -1,21 +1,22 @@
-import { Component, Input, OnInit } from '@angular/core'
-import { FormGroup, FormBuilder, Validators, AbstractControl, ValidatorFn, FormArray } from '@angular/forms'
-import { Router } from '@angular/router'
+import { Component, Input, OnInit, OnDestroy } from "@angular/core"
+import { FormGroup, FormBuilder, Validators, AbstractControl, ValidatorFn, FormArray } from "@angular/forms"
+import { Router } from "@angular/router"
 
 import { JobService } from "../../core/services/job.service"
 import { Job } from "../../core/model/job.model"
 
 @Component({
-  selector: 'app-vacancies',
-  templateUrl: './vacancies.component.html',
-  styleUrls: ['./vacancies.component.scss']
+  selector: "app-vacancies",
+  templateUrl: "./vacancies.component.html",
+  styleUrls: ["./vacancies.component.scss"]
 })
-export class VacanciesComponent implements OnInit {
+export class VacanciesComponent implements OnInit, OnDestroy {
   constructor(private fb: FormBuilder, private router: Router, private jobService: JobService) { }
 
   vacanciesForm: FormGroup
   total: number = 0
 
+  subscriptions = []
   jobsAvailable: Job[] = []
 
   noVacanciesReasonOptions = [
@@ -33,11 +34,11 @@ export class VacanciesComponent implements OnInit {
     const { vacancyControl, noVacanciesReason } = this.vacanciesForm.controls
 
     if (noVacanciesReason.value === "dont-know") {
-      this.router.navigate(['/add-new-starters'])
+      this.router.navigate(["/starters"])
 
     } else if (this.vacanciesForm.valid || noVacanciesReason.value === "no-staff") {
       this.jobService.currentVacancies.next(this.vacanciesForm)
-      this.router.navigate(['/confirm-vacancies'])
+      this.router.navigate(["/confirm-vacancies"])
 
     } else {
       // TODO handle validation errors
@@ -79,7 +80,7 @@ export class VacanciesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.jobService.getJobs().subscribe(jobs => this.jobsAvailable = jobs)
+    this.subscriptions.push(this.jobService.getJobs().subscribe(jobs => this.jobsAvailable = jobs))
 
     if (Object.keys(this.jobService.currentVacancies.value.controls).length === 0) {
       this.vacanciesForm = this.fb.group({
@@ -108,5 +109,9 @@ export class VacanciesComponent implements OnInit {
       vacancyControl.reset({}, { emitEvent: false })
       this.total = 0
     })
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe())
   }
 }
