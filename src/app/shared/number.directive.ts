@@ -1,75 +1,40 @@
-import { Input, Directive, ElementRef, HostListener } from "@angular/core"
+import { Directive, ElementRef, HostListener } from "@angular/core"
 
+import { BaseNumber } from "./base-number.directive"
+
+/*
+ * This directive applies to all input[type="number"] to prevent strings like 00999 acceptable
+ * by default by JS engines as numbers.
+ */
 @Directive({
-  selector: "input[appNumber]"
+  selector: "input[type=number]"
 })
-export class Number {
-  @Input() public allowNegative: boolean
-  @Input() public allowFloat: boolean
-  @Input() public max: number
-
-  private static specialKeyCodes: Array<number> = [ 8, 9, 35, 36, 37, 39, 91 ]
-
-  private previousKeyCode
-
-  constructor(private el: ElementRef) {}
-
-  private isKeyCodeDecrement(keyCode) {
-    return keyCode === 40
+export class Number extends BaseNumber {
+  constructor(private el: ElementRef) {
+    super()
   }
 
-  private isKeyCodeIncrement(keyCode) {
-    return keyCode === 38
-  }
-
-  private isKeyCodeDot(keyCode) {
-    return keyCode === 190
-  }
-
-  private isKeyCodeZero(keyCode) {
-    return keyCode === 48
-  }
-
-  private isKeyCodeMinus(keyCode) {
-    return keyCode === 189
-  }
+  previousValue = null
 
   @HostListener("keydown", ["$event"])
   onKeyDown(event: KeyboardEvent) {
     const { key, keyCode } = event
-
-    if (!Number.specialKeyCodes.some(k => k === keyCode)) {
+    
+    if (!this.isKeyCodeSpecial(keyCode) &&
+        !this.isKeyCodeIncrement(keyCode) &&
+        !this.isKeyCodeDecrement(keyCode)) {
       const curVal = this.el.nativeElement.value
-      const curValNum = parseFloat(curVal)
-      const nextVal = `${isNaN(curVal) ? "" : curVal}${key}`
-      const nextValNum = parseFloat(nextVal)
+      const nextVal = `${this.previousValue ? this.previousValue : curVal}${key}`
 
-      if (this.isKeyCodeDecrement(keyCode)) {
-        if (!this.allowNegative && curValNum - 1 < 0) {
-          event.preventDefault()
-        }
-
-      } else if (this.isKeyCodeIncrement(keyCode)) {
-        if (this.max !== undefined && curValNum + 1 > this.max) {
-          event.preventDefault()
-        }
+      if (/(^-?0\d+)|(^\,)|(-{2,})|(\.{2,})|(\,{2,})|(\d+-)|[\+]/.test(nextVal)) {
+        event.preventDefault()
+        
+      } else if (this.isKeyCodeMinus(keyCode)) {
+        this.previousValue = `${curVal}${key}`
 
       } else {
-        if (!this.allowFloat && this.isKeyCodeDot(keyCode)) {
-          event.preventDefault()
-
-        } else if (!this.allowNegative && (this.isKeyCodeMinus(keyCode) || nextValNum < 0)) {
-          event.preventDefault()
-
-        } else if (/^0\d+/.test(nextVal)) {
-          event.preventDefault()
-
-        } else if (this.max !== undefined && nextValNum > this.max) {
-          event.preventDefault()
-        }
+        this.previousValue = null
       }
     }
-
-    this.previousKeyCode = keyCode
   }
 }

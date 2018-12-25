@@ -17,7 +17,7 @@ import { SelectMainServiceComponent } from './features/select-main-service/selec
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
 import { VacanciesComponent } from "./features/vacancies/vacancies.component";
 import { ConfirmVacanciesComponent } from "./features/confirm-vacancies/confirm-vacancies.component"
-import { AddNewStartersComponent } from "./features/add-new-starters/add-new-starters.component"
+import { StartersComponent } from "./features/starters/starters.component"
 
 
 const routes: Routes = [
@@ -79,8 +79,8 @@ const routes: Routes = [
     component: ConfirmVacanciesComponent
   },
   {
-    path: 'add-new-starters',
-    component: AddNewStartersComponent
+    path: 'starters',
+    component: StartersComponent
   },
 ];
 

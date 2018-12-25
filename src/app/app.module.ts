@@ -29,12 +29,19 @@ import { SelectMainServiceComponent } from './features/select-main-service/selec
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component'
-import { AddNewStartersComponent } from './features/add-new-starters/add-new-starters.component'
+import { StartersComponent } from './features/starters/starters.component'
+import { MessagesComponent } from './core/messages/messages.component'
 
 import { Number } from "./shared/number.directive"
+import { NumberIntOnly } from "./shared/number-int-only.directive"
+import { NumberMax } from "./shared/number-max.directive"
+import { NumberPositiveOnly } from "./shared/number-positive-only.directive"
+import { NoPaste } from "./shared/no-paste.directive"
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
-import { JobService } from "./core/services/job.service"
+import { JobService } from "./core/services/job.service";
+import { HttpErrorHandler } from "./core/services/http-error-handler.service"
+import { MessageService } from "./core/services/message.service"
 
 @NgModule({
   declarations: [
@@ -57,9 +64,13 @@ import { JobService } from "./core/services/job.service"
     SelectMainServiceComponent,
     ContinueCreatingAccountComponent,
     Number,
+    NumberIntOnly,
+    NumberMax,
+    NumberPositiveOnly,
     VacanciesComponent,
     ConfirmVacanciesComponent,
-    AddNewStartersComponent,
+    StartersComponent,
+    MessagesComponent,
   ],
   imports: [
     BrowserModule,
@@ -83,6 +94,8 @@ import { JobService } from "./core/services/job.service"
     LocationService,
     RegistrationService,
     JobService,
+    MessageService,
+    HttpErrorHandler,
   ],
   bootstrap: [AppComponent]
 })
