@@ -16,7 +16,7 @@ import { Job } from "../model/job.model"
 export class JobService {
   constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler, private formBuilder: FormBuilder) {}
 
-  public currentVacancies: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(this.formBuilder.group({}))
+  public currentVacanciesForm: BehaviorSubject<FormGroup> = new BehaviorSubject<FormGroup>(this.formBuilder.group({}))
 
   /*
    * GET /api/jobs
