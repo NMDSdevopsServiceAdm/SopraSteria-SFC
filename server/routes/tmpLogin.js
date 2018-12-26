@@ -84,7 +84,7 @@ router.route('/').post(async (req, res) => {
 
         // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
         if (!results.firstLogin) {
-          await results.update({
+           results.update({
             firstLogin: new Date()
           });
         }
