@@ -6,7 +6,7 @@
   }
 
   .facts {
-    background-color: map-get($color, white);
+    background-color: map-get($color, grey-light);
 
     * {
       color: map-get($color, blue);
@@ -26,12 +26,12 @@
     }
 
     &.btn-primary {
-      color: map-get($color, blue);
+      color: map-get($color, blue-light);
       background-color: map-get($color, white);
       @include box-shadow($color: map-get($color, blue));
 
       &:hover {
-        color: map-get($color, blue);
+        color: map-get($color, blue-light);
         background-color: map-get($color, white) !important;
       }
     }
