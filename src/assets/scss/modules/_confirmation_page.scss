@@ -1,0 +1,39 @@
+#main-content .main-page-container.confirmation-page {
+  background-color: map-get($color, blue);
+
+  * {
+    color: map-get($color, white);
+  }
+
+  .facts {
+    background-color: map-get($color, white);
+
+    * {
+      color: map-get($color, blue);
+    }
+
+    span {
+      &.amount {
+      }
+    }
+  }
+
+  .btn {
+    &.btn-link {
+      color: map-get($color, white);
+      text-decoration: underline;
+      box-shadow: none;
+    }
+
+    &.btn-primary {
+      color: map-get($color, blue);
+      background-color: map-get($color, white);
+      @include box-shadow($color: map-get($color, blue));
+
+      &:hover {
+        color: map-get($color, blue);
+        background-color: map-get($color, white) !important;
+      }
+    }
+  }
+}

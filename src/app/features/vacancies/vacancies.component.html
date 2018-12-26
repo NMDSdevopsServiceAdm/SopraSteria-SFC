@@ -22,15 +22,17 @@
 
           <div *ngFor="let vacancy of vacanciesForm.get('vacancyControl').controls; let idx = index" [formGroupName]="idx" class="row record">
             <div class="col-6 col-sm-7">
-              <select formControlName="vacancy" class="form-control">
-                <option *ngFor="let job of jobsLeft(idx)" (change)="vacancyChange(idx)" [value]="job.id">{{job.title}}</option>
+              <select formControlName="jobId" class="form-control">
+                <option *ngFor="let job of jobsLeft(idx)" [value]="job.id">
+                  {{job.title}}
+                </option>
               </select>
             </div>
             <div class="col-3 col-sm-2">
               <!-- <label class="d-block"> -->
-              <input type="number" formControlName="amount" class="form-control"
+              <input type="number" formControlName="total" class="form-control"
                 appNumberMax="999" appNumberPositiveOnly appNumberIntOnly appNoPaste min="0" step="1"
-                [ngClass]="{'is-invalid': (vacancy.get('amount').touched || vacancy.get('amount').dirty) && !vacancy.get('amount').valid }" />
+                [ngClass]="{'is-invalid': (vacancy.get('total').touched || vacancy.get('total').dirty) && !vacancy.get('total').valid }" />
             </div>
             <div *ngIf="idx !== 0" class="col-3 center-v no-padding-left">
               <button type="button" class="btn-link" (click)="removeVacancy(idx)">Remove</button>
