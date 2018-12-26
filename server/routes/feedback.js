@@ -28,7 +28,7 @@ router.route('/').post(async (req, res) => {
     });
 
     if (results) {
-      return res.status(200).send();
+      return res.status(201).send();
     } else {
       return res.status(503).send('Unable to post feedback');
     }
