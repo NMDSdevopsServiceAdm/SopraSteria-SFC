@@ -66,6 +66,16 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: false
   });
 
+  Login.prototype.comparePassword = function (passw, cb) {
+    console.log(this.password);
+    bcrypt.compare(passw, this.Hash, function (err, isMatch) {
+     // console.log("inside")
+        if (err) {
+            return cb(err);
+        }
+        cb(null, isMatch);
+    });
+  };
   Login.associate = (models) => {
     Login.belongsTo(models.user, {
       foreignKey: 'registrationId',
