@@ -4,7 +4,7 @@ import { Router } from "@angular/router"
 
 import { MessageService } from "../../core/services/message.service"
 import { JobService } from "../../core/services/job.service"
-import { Message } from "../../core/model/message.model"
+import { EstablishmentService } from "../../core/services/establishment.service"
 import { Job } from "../../core/model/job.model"
 
 @Component({
@@ -13,7 +13,12 @@ import { Job } from "../../core/model/job.model"
   styleUrls: ["./vacancies.component.scss"]
 })
 export class VacanciesComponent implements OnInit, OnDestroy {
-  constructor(private fb: FormBuilder, private router: Router, private jobService: JobService, private messageService: MessageService) { }
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private jobService: JobService,
+    private establishmentService: EstablishmentService,
+    private messageService: MessageService) {}
 
   vacanciesForm: FormGroup
   total: number = 0
@@ -38,21 +43,27 @@ export class VacanciesComponent implements OnInit, OnDestroy {
     if (noVacanciesReason.value === "dont-know") {
       this.router.navigate(["/starters"])
 
-    } else if (this.vacanciesForm.valid || noVacanciesReason.value === "no-staff") {
-      this.jobService.currentVacanciesForm.next(this.vacanciesForm)
-      this.router.navigate(["/confirm-vacancies"])
-
     } else {
-      this.messageService.add(new Message("error", "You have to declare vacancies or choose one of alternative options."))
+      if (this.vacanciesForm.valid || noVacanciesReason.value === "no-staff") {
+        const vacanciesFromForm = this.vacanciesForm.valid ? this.vacanciesForm.controls.vacancyControl.value : []
+        const vacancies = vacanciesFromForm.map(v => ({ jobId: parseFloat(v.jobId), total: v.total }));
+
+        this.subscriptions.push(
+          this.establishmentService.postVacancies(vacancies)
+            .subscribe(() => {
+              this.router.navigate(["/confirm-vacancies"])
+            }))
+
+      } else {
+        this.messageService.clearError()
+        this.messageService.show("error", "Please fill the required fields.")
+      }
     }
   }
 
   jobsLeft(idx) {
     const vacancyControl = <FormArray> this.vacanciesForm.controls.vacancyControl
-    // const thisVacancy = vacancyControl.controls[idx]
-
     return this.jobsAvailable.filter(j => !vacancyControl.controls.some(v => v.value.jobId === j.id))
-    // return this.jobsAvailable.filter(j => !vacancyControl.controls.some(v => v !== thisVacancy && parseInt(v.value.vacancy) === j.id))
   }
 
   addVacancy(): void {
@@ -71,10 +82,10 @@ export class VacanciesComponent implements OnInit, OnDestroy {
     (<FormArray> this.vacanciesForm.controls.vacancyControl).removeAt(index)
   }
 
-  createVacancyControlItem(): FormGroup {
+  createVacancyControlItem(jobId=null, total=null): FormGroup {
     return this.fb.group({
-      jobId: ["", Validators.required],
-      total: ["", Validators.required]
+      jobId: [jobId, Validators.required],
+      total: [total, Validators.required]
     })
   }
 
@@ -85,37 +96,60 @@ export class VacanciesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions.push(this.jobService.getJobs().subscribe(jobs => this.jobsAvailable = jobs))
 
-    if (Object.keys(this.jobService.currentVacanciesForm.value.controls).length === 0) {
-      this.vacanciesForm = this.fb.group({
-        vacancyControl: this.fb.array([
-          this.createVacancyControlItem()
-        ]),
-        noVacanciesReason: ""
+    this.vacanciesForm = this.fb.group({
+      vacancyControl: this.fb.array([]),
+      noVacanciesReason: ""
+    })
+
+    const vacancyControl = <FormArray> this.vacanciesForm.controls.vacancyControl
+
+    this.subscriptions.push(
+      this.establishmentService.getVacancies().subscribe(vacancies => {
+        if (vacancies) {
+          vacancies.forEach(v => vacancyControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)))
+
+        } else {
+          vacancyControl.push(this.createVacancyControlItem())
+        }
       })
-    } else {
-      this.vacanciesForm = this.jobService.currentVacanciesForm.value
-    }
+    )
 
-    this.total = this.calculateTotal(this.vacanciesForm.controls.vacancyControl.value)
+    let previousVacanciesCount = vacancyControl.length
 
-    this.vacanciesForm.controls.vacancyControl.valueChanges.subscribe(value => {
-      this.total = this.calculateTotal(value)
-      this.vacanciesForm.patchValue({
-        noVacanciesReason: ""
-      }, { emitEvent: false })
-    })
+    this.total = this.calculateTotal(vacancyControl.value)
 
-    this.vacanciesForm.controls.noVacanciesReason.valueChanges.subscribe(value => {
-      const vacancyControl = <FormArray> this.vacanciesForm.controls.vacancyControl
-      for (let i = 1; i < vacancyControl.length; i++) {
-        vacancyControl.removeAt(i)
-      }
-      vacancyControl.reset({}, { emitEvent: false })
-      this.total = 0
-    })
+    this.subscriptions.push(
+      vacancyControl.valueChanges.subscribe(value => {
+        this.total = this.calculateTotal(value)
+
+        if (document.activeElement.getAttribute("type") !== "radio") {
+          this.vacanciesForm.patchValue({
+            noVacanciesReason: ""
+          }, { emitEvent: false })
+        }
+      })
+    )
+
+    this.subscriptions.push(
+      this.vacanciesForm.controls.noVacanciesReason.valueChanges.subscribe(() => {
+        while (vacancyControl.length > 1) {
+          vacancyControl.removeAt(1)
+        }
+
+        vacancyControl.reset([], { emitEvent: false })
+        this.total = 0
+      })
+    )
+
+    this.subscriptions.push(
+      this.vacanciesForm.valueChanges.subscribe(() => {
+        this.messageService.clearAll()
+      })
+    )
   }
 
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe())
+    this.messageService.clearAll()
   }
 }

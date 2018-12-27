@@ -1,47 +1,45 @@
 import { Injectable } from "@angular/core"
 
-import { from, Observable } from 'rxjs'
+import { BehaviorSubject, Observable } from 'rxjs'
 
 @Injectable({
   providedIn: "root"
 })
 export class MessageService {
-  private success: string[] = []
-  private info: string[] = []
-  private warning: string[] = []
-  private error: string[] = []
+  private _success$ = new BehaviorSubject<string>("")
+  private _info$ = new BehaviorSubject<string>("")
+  private _warning$ = new BehaviorSubject<string>("")
+  private _error$ = new BehaviorSubject<string>("")
 
-  public success$: Observable<string> = from(this.success)
-  public info$: Observable<string> = from(this.info)
-  public warning$: Observable<string> = from(this.warning)
-  public error$: Observable<string> = from(this.error)
+  success$: Observable<string> = this._success$.asObservable()
+  info$: Observable<string> = this._info$.asObservable()
+  warning$: Observable<string> = this._warning$.asObservable()
+  error$: Observable<string> = this._error$.asObservable()
 
-  add({ status, message }) {
+  show(status, message) {
     switch(status) {
-      case "success": this.success.push(message); break;
-      case "info": this.info.push(message); break;
-      case "warning": this.warning.push(message); break;
-      case "error": this.error.push(message); break;
+      case "success": this._success$.next(message); break;
+      case "info": this._info$.next(message); break;
+      case "warning": this._warning$.next(message); break;
+      case "error": this._error$.next(message); break;
       default: throw new TypeError(`Unknown message type ${JSON.stringify(message)}!`)
     }
-
-    return this
   }
 
   clearSuccess() {
-    this.success.splice(0)
+    this._success$.next("")
   }
 
   clearInfo() {
-    this.info.splice(0)
+    this._info$.next("")
   }
 
   clearWarning() {
-    this.warning.splice(0)
+    this._warning$.next("")
   }
 
   clearError() {
-    this.error.splice(0)
+    this._error$.next("")
   }
 
   clearAll() {
