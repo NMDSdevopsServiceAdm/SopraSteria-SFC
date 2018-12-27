@@ -14,6 +14,7 @@ var tmpLogin = require('./server/routes/tmpLogin');
 var establishments = require('./server/routes/establishments');
 var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
+var feedback = require('./server/routes/feedback');
 var login = require('./server/routes/login');
 
 var Authorization = require('./server/utils/security/isAuthenticated');
@@ -43,6 +44,7 @@ app.use('/api/errors', errors);
 app.use('/api/establishment', establishments);
 app.use('/api/jobs', jobs);
 app.use('/api/localAuthority', la);
+app.use('/api/feedback', feedback);
 app.use('/api/login', login);
 
 app.get('*', function(req, res) {
