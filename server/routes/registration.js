@@ -257,7 +257,7 @@ router.route('/')
       res.json({
         "success" : 1,
         "message" : "Record added Successfully",
-        "establishmentId" : Estblistmentdata.MainServiceId
+        "establishmentId" : establishmentID
       });
 
     } catch (err) {
