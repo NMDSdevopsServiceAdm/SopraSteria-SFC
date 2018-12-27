@@ -19,6 +19,7 @@ import { VacanciesComponent } from "./features/vacancies/vacancies.component";
 import { ConfirmVacanciesComponent } from "./features/confirm-vacancies/confirm-vacancies.component"
 import { StartersComponent } from "./features/starters/starters.component"
 import { ConfirmStartersComponent } from "./features/confirm-starters/confirm-starters.component"
+import { LeaversComponent } from "./features/leavers/leavers.component"
 
 
 const routes: Routes = [
@@ -86,6 +87,10 @@ const routes: Routes = [
   {
     path: 'confirm-starters',
     component: ConfirmStartersComponent
+  },
+  {
+    path: 'leavers',
+    component: LeaversComponent
   },
 ];
 
