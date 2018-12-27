@@ -36,7 +36,7 @@ const formatAddressResponse = (addresses) => {
     address2:thisAddress.addressline2,
     townAndCity: thisAddress.towncity,
     county: thisAddress.county,
-    postcode: thisAddress.postalCode,
+    postcode: thisAddress.postalcode,
     mainServiceName: thisAddress.mainservice,
     locatioName: thisAddress.locationname,
     locationId: thisAddress.locationid
