@@ -63,7 +63,8 @@ export class StartersComponent implements OnInit, OnDestroy {
 
   jobsLeft(idx) {
     const recordsControl = <FormArray> this.form.controls.recordsControl
-    return this.jobsAvailable.filter(j => !recordsControl.controls.some(v => v.value.jobId === j.id))
+    const thisRecord = recordsControl.controls[idx]
+    return this.jobsAvailable.filter(j => !recordsControl.controls.some(v => v !== thisRecord && parseFloat(v.value.jobId) === j.id))
   }
 
   addVacancy(): void {
