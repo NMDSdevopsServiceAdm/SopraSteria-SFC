@@ -18,6 +18,7 @@ import { ContinueCreatingAccountComponent } from './features/continue-creating-a
 import { VacanciesComponent } from "./features/vacancies/vacancies.component";
 import { ConfirmVacanciesComponent } from "./features/confirm-vacancies/confirm-vacancies.component"
 import { StartersComponent } from "./features/starters/starters.component"
+import { ConfirmStartersComponent } from "./features/confirm-starters/confirm-starters.component"
 
 
 const routes: Routes = [
@@ -81,6 +82,10 @@ const routes: Routes = [
   {
     path: 'starters',
     component: StartersComponent
+  },
+  {
+    path: 'confirm-starters',
+    component: ConfirmStartersComponent
   },
 ];
 

@@ -16,7 +16,7 @@ export class EstablishmentService {
   get establishmentId() {
     // TODO replace with commented code
     // return this.establishmentId
-    return 183
+    return 184
   }
 
   setEstablishmentId(value) {
@@ -57,6 +57,16 @@ export class EstablishmentService {
     const data = { jobs: { vacancies } }
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data, this.getOptions()).pipe(
       debounceTime(500),
+      catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * GET /api/establishment/:establishmentId/jobs
+   */
+  getStarters() {
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`, this.getOptions()).pipe(
+      debounceTime(500),
+      map(res => res.jobs.Starters),
       catchError(this.httpErrorHandler.handleHttpError))
   }
 

@@ -1,12 +1,153 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from "@angular/core"
+import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
+import { Router } from "@angular/router"
+
+import { MessageService } from "../../core/services/message.service"
+import { JobService } from "../../core/services/job.service"
+import { EstablishmentService } from "../../core/services/establishment.service"
+import { Job } from "../../core/model/job.model"
 
 @Component({
   selector: 'app-starters',
   templateUrl: './starters.component.html',
   styleUrls: ['./starters.component.scss']
 })
-export class StartersComponent implements OnInit {
+export class StartersComponent implements OnInit, OnDestroy {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private jobService: JobService,
+    private establishmentService: EstablishmentService,
+    private messageService: MessageService) {}
+
+  form: FormGroup
+  total: number = 0
+  jobsAvailable: Job[] = []
+
+  private subscriptions = []
+
+  noRecordsReasons = [
+    {
+      label: "There have been no new starters.",
+      value: "no-new"
+    },
+    {
+      label: "I don't know how many new starters there have been.",
+      value: "dont-know"
+    }
+  ]
+
+  submitHandler(): void {
+    const { recordsControl, noRecordsReason } = this.form.controls
+
+    if (noRecordsReason.value === "dont-know") {
+      this.router.navigate(["/leavers"])
+
+    } else {
+      if (this.form.valid || noRecordsReason.value === "no-new") {
+        const startersFromForm = this.form.valid ? this.form.controls.recordsControl.value : []
+        const starters = startersFromForm.map(v => ({ jobId: parseFloat(v.jobId), total: v.total }));
+
+        this.subscriptions.push(
+          this.establishmentService.postStarters(starters)
+            .subscribe(() => {
+              this.router.navigate(["/confirm-starters"])
+            }))
+
+      } else {
+        this.messageService.clearError()
+        this.messageService.show("error", "Please fill the required fields.")
+      }
+    }
+  }
+
+  jobsLeft(idx) {
+    const recordsControl = <FormArray> this.form.controls.recordsControl
+    return this.jobsAvailable.filter(j => !recordsControl.controls.some(v => v.value.jobId === j.id))
+  }
+
+  addVacancy(): void {
+    const recordsControl = <FormArray> this.form.controls.recordsControl
+
+    recordsControl.push(
+      this.createRecordItem()
+    )
+  }
+
+  isJobsNotTakenLeft() {
+    return this.jobsAvailable.length !== this.form.controls.recordsControl.value.length
+  }
+
+  removeRecord(index): void {
+    (<FormArray> this.form.controls.recordsControl).removeAt(index)
+  }
+
+  createRecordItem(jobId=null, total=null): FormGroup {
+    return this.fb.group({
+      jobId: [jobId, Validators.required],
+      total: [total, Validators.required]
+    })
+  }
+
+  calculateTotal(records) {
+    return records.reduce((acc, i) => acc += parseInt(i.total) || 0, 0) || 0
+  }
 
   ngOnInit() {
+    this.subscriptions.push(this.jobService.getJobs().subscribe(jobs => this.jobsAvailable = jobs))
+
+    this.form = this.fb.group({
+      recordsControl: this.fb.array([]),
+      noRecordsReason: ""
+    })
+
+    const recordsControl = <FormArray> this.form.controls.recordsControl
+
+    this.subscriptions.push(
+      this.establishmentService.getStarters().subscribe(vacancies => {
+        if (vacancies) {
+          vacancies.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)))
+
+        } else {
+          recordsControl.push(this.createRecordItem())
+        }
+      })
+    )
+
+    this.total = this.calculateTotal(recordsControl.value)
+
+    this.subscriptions.push(
+      recordsControl.valueChanges.subscribe(value => {
+        this.total = this.calculateTotal(value)
+
+        if (document.activeElement.getAttribute("type") !== "radio") {
+          this.form.patchValue({
+            noRecordsReason: ""
+          }, { emitEvent: false })
+        }
+      })
+    )
+
+    this.subscriptions.push(
+      this.form.controls.noRecordsReason.valueChanges.subscribe(() => {
+        while (recordsControl.length > 1) {
+          recordsControl.removeAt(1)
+        }
+
+        recordsControl.reset([], { emitEvent: false })
+        this.total = 0
+      })
+    )
+
+    this.subscriptions.push(
+      this.form.valueChanges.subscribe(() => {
+        this.messageService.clearAll()
+      })
+    )
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe())
+    this.messageService.clearAll()
   }
 }

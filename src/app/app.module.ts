@@ -30,6 +30,7 @@ import { ContinueCreatingAccountComponent } from './features/continue-creating-a
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component'
 import { StartersComponent } from './features/starters/starters.component'
+import { ConfirmStartersComponent } from './features/confirm-starters/confirm-starters.component'
 import { MessagesComponent } from './core/messages/messages.component'
 
 import { Number } from "./shared/number.directive"
@@ -41,7 +42,7 @@ import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
 import { JobService } from "./core/services/job.service";
 import { HttpErrorHandler } from "./core/services/http-error-handler.service"
-import { MessageService } from "./core/services/message.service"
+import { MessageService } from "./core/services/message.service";
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { MessageService } from "./core/services/message.service"
     ConfirmVacanciesComponent,
     StartersComponent,
     MessagesComponent,
+    ConfirmStartersComponent,
   ],
   imports: [
     BrowserModule,
