@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy } from "@angular/core"
-import { FormGroup, FormBuilder, Validators, AbstractControl, ValidatorFn, FormArray } from "@angular/forms"
+import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
 import { Router } from "@angular/router"
 
 import { MessageService } from "../../core/services/message.service"
@@ -113,8 +113,6 @@ export class VacanciesComponent implements OnInit, OnDestroy {
         }
       })
     )
-
-    let previousVacanciesCount = vacancyControl.length
 
     this.total = this.calculateTotal(vacancyControl.value)
 
