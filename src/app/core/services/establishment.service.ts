@@ -82,6 +82,16 @@ export class EstablishmentService {
   }
 
   /*
+   * GET /api/establishment/:establishmentId/jobs
+   */
+  getLeavers() {
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`, this.getOptions()).pipe(
+      debounceTime(500),
+      map(res => res.jobs.Leavers),
+      catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
    * POST /api/establishment/:establishmentId/jobs
    */
   postLeavers(leavers) {
