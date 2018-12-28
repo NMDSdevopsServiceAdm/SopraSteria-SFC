@@ -101,4 +101,24 @@ export class EstablishmentService {
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
   }
+
+    /*
+   * GET /api/establishment/:establishmentId/staff
+   */
+  getStaff() {
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/staff`, this.getOptions()).pipe(
+      debounceTime(500),
+      map(res => res.numberOfStaff),
+      catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * POST /api/establishment/:establishmentId/staff/:staffNumber
+   */
+  postStaff(numberOfStaff) {
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/staff/${numberOfStaff}`, null, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
 }
