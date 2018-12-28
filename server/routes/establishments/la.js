@@ -122,7 +122,7 @@ router.route('/').post(async (req, res) => {
         where: {
           id: establishmentId
         },
-        attributes: ['id', 'name'],
+        attributes: ['id', 'name', "postcode"],
         include: [
           {
             model: models.establishmentLocalAuthority,
@@ -179,18 +179,24 @@ const isValidLAEntry = (entry, allKnownLAs) => {
   }
 };
 
-const formatLAResponse = (establishment, primaryAuthorityCustodianCode) => {
+const formatLAResponse = (establishment, primaryAuthorityCustodianCode=null) => {
   // WARNING - do not be tempted to copy the database model as the API response; the API may chose to rename/contain
   //           some attributes
-  return {
+  const response = {
     id: establishment.id,
     name: establishment.name,
-    primaryAuthority: {
-      id: primaryAuthorityCustodianCode.local_custodian_code,
-      name: primaryAuthorityCustodianCode.theAuthority.name
-    },
-    localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities, primaryAuthorityCustodianCode.local_custodian_code)
+    localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities,
+                                                 primaryAuthorityCustodianCode ? primaryAuthorityCustodianCode.local_custodian_code : null)
   };
+
+  if (primaryAuthorityCustodianCode) {
+    response.primaryAuthority = {
+      id: parseInt(primaryAuthorityCustodianCode.local_custodian_code),
+      name: primaryAuthorityCustodianCode.theAuthority.name
+    }
+  }
+
+  return response;
 }
 
 module.exports = router;
