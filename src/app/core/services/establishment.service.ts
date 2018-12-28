@@ -16,7 +16,7 @@ export class EstablishmentService {
   get establishmentId() {
     // TODO replace with commented code
     // return this.establishmentId
-    return 1;
+    return 184
   }
 
   setEstablishmentId(value) {
