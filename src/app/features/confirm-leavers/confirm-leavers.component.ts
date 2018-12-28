@@ -5,11 +5,11 @@ import { map } from 'rxjs/operators'
 import { EstablishmentService } from "../../core/services/establishment.service"
 
 @Component({
-  selector: 'app-confirm-starters',
-  templateUrl: './confirm-starters.component.html',
-  styleUrls: ['./confirm-starters.component.scss']
+  selector: 'app-confirm-leavers',
+  templateUrl: './confirm-leavers.component.html',
+  styleUrls: ['./confirm-leavers.component.scss']
 })
-export class ConfirmStartersComponent implements OnInit, OnDestroy {
+export class ConfirmLeaversComponent implements OnInit, OnDestroy {
   private subscriptions = []
 
   total: number
@@ -17,17 +17,17 @@ export class ConfirmStartersComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private establishmentService: EstablishmentService) { }
 
   makeChangeHandler() {
-    this.router.navigate(["/starters"])
+    this.router.navigate(["/leavers"])
   }
 
   submitHandler() {
-    this.router.navigate(["/leavers"])
+    this.router.navigate(["/staff"])
   }
 
   ngOnInit() {
     this.subscriptions.push(
       this.establishmentService.getJobs()
-        .pipe(map(jobs => jobs.TotalStarters))
+        .pipe(map(jobs => jobs.TotalLeavers))
         .subscribe(total => this.total = total))
   }
 
