@@ -15,12 +15,14 @@ import { RegistrationCompleteComponent } from './features/registration-complete/
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
+import { HomepageComponent } from './features/homepage/homepage.component';
+import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
+import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from "./features/vacancies/vacancies.component";
 import { ConfirmVacanciesComponent } from "./features/confirm-vacancies/confirm-vacancies.component"
 import { StartersComponent } from "./features/starters/starters.component"
 import { ConfirmStartersComponent } from "./features/confirm-starters/confirm-starters.component"
 import { LeaversComponent } from "./features/leavers/leavers.component"
-
 
 const routes: Routes = [
 
@@ -71,6 +73,18 @@ const routes: Routes = [
   {
     path: 'continue-creating-account',
     component: ContinueCreatingAccountComponent
+  },
+  {
+    path: 'welcome',
+    component: HomepageComponent
+  },
+  {
+    path: 'select-other-services',
+    component: SelectOtherServicesComponent
+  },
+  {
+    path: 'type-of-employer',
+    component: TypeOfEmployerComponent
   },
   {
     path: 'vacancies',
