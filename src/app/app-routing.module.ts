@@ -22,6 +22,7 @@ import { ConfirmStartersComponent } from "./features/confirm-starters/confirm-st
 import { LeaversComponent } from "./features/leavers/leavers.component"
 import { ConfirmLeaversComponent } from "./features/confirm-leavers/confirm-leavers.component"
 import { StaffComponent } from "./features/staff/staff.component"
+import { CapacityOfServicesComponent } from "./features/services-capacity/services-capacity.component"
 
 
 const routes: Routes = [
@@ -101,6 +102,10 @@ const routes: Routes = [
   {
     path: 'staff',
     component: StaffComponent
+  },
+  {
+    path: 'capacity-of-services',
+    component: CapacityOfServicesComponent
   },
 ];
 

@@ -34,6 +34,7 @@ import { ConfirmStartersComponent } from './features/confirm-starters/confirm-st
 import { LeaversComponent } from './features/leavers/leavers.component';
 import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leavers.component';
 import { StaffComponent } from './features/staff/staff.component';
+import { ServicesCapacityComponent } from './features/services-capacity/services-capacity.component';
 import { MessagesComponent } from './core/messages/messages.component'
 
 import { Number } from "./shared/number.directive"
@@ -79,6 +80,7 @@ import { MessageService } from "./core/services/message.service";
     LeaversComponent,
     ConfirmLeaversComponent,
     StaffComponent,
+    ServicesCapacityComponent,
   ],
   imports: [
     BrowserModule,
