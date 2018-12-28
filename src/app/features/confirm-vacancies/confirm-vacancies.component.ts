@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { Router } from "@angular/router"
-
 import { map } from 'rxjs/operators'
 
 import { EstablishmentService } from "../../core/services/establishment.service"
