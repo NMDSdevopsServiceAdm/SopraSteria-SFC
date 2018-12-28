@@ -1,3 +1,54 @@
-<p>
-  services-capacity works!
-</p>
+<div class="main-page-container col-12">
+  <header>
+    <h1 class="h1">Capacity of your services</h1>
+    <p class="page-description">You've told us about the services your workplace provides. We need to know what the capacity of these services is.</p>
+  </header>
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <div class="form-group mb-5">
+      <div class="col-12 p-0">
+        <div>
+          <div class="row">
+            <div class="col-12">
+              <h2>Main service - care home with nursing</h2>
+            </div>
+            <div class="col-12">
+              <label>How many beds do you currently have?
+                <input type="number" formControlName="bedsTotal" class="form-control"
+                  appNumberMax="999999999" appNumberPositiveOnly appNumberIntOnly appNoPaste min="0" step="1"
+                  [ngClass]="{'is-invalid': (form.get('bedsTotal').touched || form.get('bedsTotal').dirty) && !form.get('bedsTotal').valid }" />
+              </label>
+            </div>
+            <div class="col-12">
+              <label>How many beds of those beds are currently used?
+                <input type="number" formControlName="bedsUsed" class="form-control"
+                  appNumberMax="999999999" appNumberPositiveOnly appNumberIntOnly appNoPaste min="0" step="1"
+                  [ngClass]="{'is-invalid': (form.get('bedsUsed').touched || form.get('bedsUsed').dirty) && !form.get('bedsUsed').valid }" />
+              </label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <h2>Other services - domiciliary care services (adults)</h2>
+            </div>
+            <div class="col-12">
+              <label>How many people are currently recieving care?
+                <input type="number" formControlName="peopleWithCare" class="form-control"
+                  appNumberMax="999999999" appNumberPositiveOnly appNumberIntOnly appNoPaste min="0" step="1"
+                  [ngClass]="{'is-invalid': (form.get('peopleWithCare').touched || form.get('peopleWithCare').dirty) && !form.get('peopleWithCare').valid }" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-container">
+      <button type="submit" class="btn btn-primary">Save and continue</button>
+    </div>
+  </form>
+  <app-messages></app-messages>
+</div>

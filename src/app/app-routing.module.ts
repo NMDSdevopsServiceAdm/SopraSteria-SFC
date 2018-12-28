@@ -22,7 +22,8 @@ import { ConfirmStartersComponent } from "./features/confirm-starters/confirm-st
 import { LeaversComponent } from "./features/leavers/leavers.component"
 import { ConfirmLeaversComponent } from "./features/confirm-leavers/confirm-leavers.component"
 import { StaffComponent } from "./features/staff/staff.component"
-import { CapacityOfServicesComponent } from "./features/services-capacity/services-capacity.component"
+import { ServicesCapacityComponent } from "./features/services-capacity/services-capacity.component"
+import { SharingComponent } from "./features/sharing/sharing.component"
 
 
 const routes: Routes = [
@@ -105,7 +106,11 @@ const routes: Routes = [
   },
   {
     path: 'capacity-of-services',
-    component: CapacityOfServicesComponent
+    component: ServicesCapacityComponent
+  },
+  {
+    path: 'sharing',
+    component: SharingComponent
   },
 ];
 

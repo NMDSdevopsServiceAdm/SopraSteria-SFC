@@ -31,6 +31,28 @@ export class EstablishmentService {
   }
 
   /*
+   * GET /api/establishment/:establishmentId/capacity/?all=[true|false]
+   */
+  getCapacity(all=false) {
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/capacity?all=${all}`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        map(res => res.capacities),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * POST /api/establishment/:establishmentId/capacity
+   */
+  postCapacity(capacities) {
+    const data = { capacities }
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/capacity`, data, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
    * GET /api/establishment/:establishmentId/jobs
    */
   getJobs() {
