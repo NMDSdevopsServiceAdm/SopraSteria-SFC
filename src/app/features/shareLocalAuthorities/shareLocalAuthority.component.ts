@@ -57,7 +57,7 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
   }
   get primaryAuthorityName(): string {
     if (this._primaryAuthority) return this._primaryAuthority.name;
-    return 'TODO';
+    return 'Rendering....';
   }
   get localAuthorities(): LocalAuthorityModel[] {
     return this._localAuthorities;
@@ -130,7 +130,6 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
     // when initialising this component, get the set of all Local Authorities (for drop down)
     this.subscriptions.push(
       this.localAuthorityService.getAuthorities().subscribe(authorities => {
-        console.log('WA DEBUG: Number of authorities: ', authorities.length)
         this._allAuthorities = authorities;
       })
     );
@@ -138,8 +137,6 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
     // and get the current establishment local authorities configuration
     this.subscriptions.push(
       this.establishmentService.getLocalAuthorities().subscribe(authorities => {
-        console.log('WA DEBUG: The primary authority: ', authorities.primaryAuthority)
-        console.log('WA DEBUG: The local authorities: ', authorities.localAuthorities)
         this._primaryAuthority = authorities.primaryAuthority;
         this._localAuthorities = authorities.localAuthorities;
 
