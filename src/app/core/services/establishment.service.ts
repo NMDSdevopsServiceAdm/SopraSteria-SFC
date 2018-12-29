@@ -6,6 +6,22 @@ import { FormBuilder, FormGroup } from "@angular/forms"
 
 import { HttpErrorHandler } from "./http-error-handler.service"
 
+import { SharingOptionsModel } from '../model/sharingOptions.model';
+import { LocalAuthorityModel } from '../model/localAuthority.model';
+
+// local interface specifications for the request/response
+interface EstablishmentApiResponse {
+  id: number;
+  name: string;
+};
+interface ShareOptionsResponse extends EstablishmentApiResponse {
+  share: SharingOptionsModel;
+};
+interface ShareWithLocalAuthorityResponse extends EstablishmentApiResponse {
+  primaryAuthority: LocalAuthorityModel;
+  localAuthorities: LocalAuthorityModel[];
+};
+
 @Injectable({
   providedIn: "root"
 })
@@ -117,6 +133,20 @@ export class EstablishmentService {
    */
   postStaff(numberOfStaff) {
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/staff/${numberOfStaff}`, null, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  getSharingOptions() {
+    return this.http.get<ShareOptionsResponse>(`/api/establishment/${this.establishmentId}/share`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  getLocalAuthorities() {
+    return this.http.get<ShareWithLocalAuthorityResponse>(`/api/establishment/${this.establishmentId}/localAuthorities`, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
