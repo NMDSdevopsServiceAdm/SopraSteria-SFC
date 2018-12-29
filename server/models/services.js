@@ -16,14 +16,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    capacityquestion: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    currentuptakequestion: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
     iscqcregistered: {
       type: DataTypes.BOOLEAN,
       allowNull: true

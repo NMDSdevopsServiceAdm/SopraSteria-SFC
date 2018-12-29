@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
-      field: '"EstablishmentLocalAuthority"'
+      field: '"EstablishmentLocalAuthorityID"'
     },
     authorityId: {
       type: DataTypes.INTEGER,

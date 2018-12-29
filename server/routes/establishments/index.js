@@ -15,6 +15,7 @@ const Capacity = require('./capacity');
 const ShareData = require('./shareData');
 const Staff = require('./staff');
 const Jobs = require('./jobs');
+const LA = require('./la');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -24,6 +25,7 @@ router.use('/:id/capacity', Capacity);
 router.use('/:id/share', ShareData);
 router.use('/:id/staff', Staff);
 router.use('/:id/jobs', Jobs);
+router.use('/:id/localAuthorities', LA);
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
@@ -70,7 +72,7 @@ router.route('/:id').get(async (req, res) => {
         {
           model: models.establishmentJobs,
           as: 'jobs',
-          attributes: ['id', 'type'],
+          attributes: ['id', 'type', 'total'],
           order: [
             ['type', 'ASC']
           ],
@@ -80,6 +82,19 @@ router.route('/:id').get(async (req, res) => {
             attributes: ['id', 'title'],
             order: [
               ['title', 'ASC']
+            ]
+          }]
+        },
+        {
+          model: models.establishmentLocalAuthority,
+          as: 'localAuthorities',
+          attributes: ['id'],
+          include: [{
+            model: models.localAuthority,
+            as: 'reference',
+            attributes: ['id', 'name'],
+            order: [
+              ['name', 'ASC']
             ]
           }]
         }
@@ -112,7 +127,7 @@ const formatEstablishmentResponse = (establishment) => {
     isRegulated: establishment.isRegulated,
     employerType: establishment.employerType,
     numberOfStaff: establishment.numberOfStaff,
-    share: ShareFormatters.shareDataJSON(establishment),
+    share: ShareFormatters.shareDataJSON(establishment, establishment.localAuthorities),
     mainService: ServiceFormatters.singleService(establishment.mainService),
     otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices),
     capacities: CapacityFormatters.capacitiesJSON(establishment.capacity),

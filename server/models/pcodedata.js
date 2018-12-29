@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('pcodedata', {
+  const PcodeData = sequelize.define('pcodedata', {
     uprn: {
       type: DataTypes.BIGINT,
       primaryKey:true,
@@ -49,4 +49,14 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
+
+  PcodeData.associate = (models) => {
+    PcodeData.belongsTo(models.localAuthority, {
+      foreignKey: 'local_custodian_code',
+      targetKey: 'id',
+      as: 'theAuthority'
+    });
+  };
+
+  return PcodeData;
 };

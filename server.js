@@ -13,10 +13,14 @@ var registration = require('./server/routes/registration');
 var tmpLogin = require('./server/routes/tmpLogin');
 var establishments = require('./server/routes/establishments');
 var jobs = require('./server/routes/jobs');
-
-var Authorization = require('./server/utils/security/isAuthenticated');
+var la = require('./server/routes/la');
+var feedback = require('./server/routes/feedback');
 
 var errors = require('./server/routes/errors');
+
+// test only routes - helpers to setup and execute automated tests
+var testOnly = require('./server/routes/testOnly');
+
 
 var app = express();
 
@@ -40,6 +44,9 @@ app.use('/api/errors', errors);
 app.use('/api/login', tmpLogin);
 app.use('/api/establishment', establishments);
 app.use('/api/jobs', jobs);
+app.use('/api/localAuthority', la);
+app.use('/api/feedback', feedback);
+app.use('/api/test', testOnly);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
