@@ -1,11 +1,17 @@
 const localformatLA = (thisLA) => {
   const thisJson = {
-    id: thisLA.id
   };
+
+  if (thisLA.id) {
+    thisJson.id = thisLA.id;
+  }
+  if (thisLA.custodianCode) {
+    thisJson.custodianCode = thisLA.custodianCode;
+  }
   
   if (thisLA.reference) {
     thisJson.name = thisLA.reference.name;
-    thisJson.custodianCode = thisLA.reference.id;
+    thisJson.custodianCode = thisLA.reference.custodianCode;
   }
 
   if (thisLA.name) {

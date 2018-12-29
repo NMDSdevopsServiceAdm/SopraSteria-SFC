@@ -92,7 +92,7 @@ router.route('/:id').get(async (req, res) => {
           include: [{
             model: models.localAuthority,
             as: 'reference',
-            attributes: ['id', 'name'],
+            attributes: ['custodianCode', 'name'],
             order: [
               ['name', 'ASC']
             ]

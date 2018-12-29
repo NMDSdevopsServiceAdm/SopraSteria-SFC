@@ -2,7 +2,7 @@
 
 module.exports = function(sequelize, DataTypes) {
   const LocalAuthority = sequelize.define('localAuthority', {
-    id: {
+    custodianCode: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,

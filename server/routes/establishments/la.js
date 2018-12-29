@@ -25,7 +25,7 @@ router.route('/').get(async (req, res) => {
           include: [{
             model: models.localAuthority,
             as: 'reference',
-            attributes: ['id', 'name'],
+            attributes: ['custodianCode', 'name'],
             order: [
               ['name', 'ASC']
             ]
@@ -131,7 +131,7 @@ router.route('/').post(async (req, res) => {
             include: [{
               model: models.localAuthority,
               as: 'reference',
-              attributes: ['id', 'name'],
+              attributes: ['custodianCode', 'name'],
               order: [
                 ['name', 'ASC']
               ]
@@ -191,7 +191,7 @@ const formatLAResponse = (establishment, primaryAuthorityCustodianCode=null) => 
 
   if (primaryAuthorityCustodianCode) {
     response.primaryAuthority = {
-      id: parseInt(primaryAuthorityCustodianCode.local_custodian_code),
+      custodianCode: parseInt(primaryAuthorityCustodianCode.local_custodian_code),
       name: primaryAuthorityCustodianCode.theAuthority.name
     }
   }
