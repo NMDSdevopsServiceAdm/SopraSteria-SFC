@@ -8,44 +8,98 @@
     (ngSubmit)="onSubmit()"
     [formGroup]="shareLocalAuthoritiesForm">
 
-    <div class="form-group mb-5">
-      <div class="row p-0">
-          <div class="col-1">
-              <input type="checkbox"
-                id="primaryAuthority"
-                formControlName="primaryAuthority"
-                class="form-control">  
+    <ng-template [ngIf]="isSharingEnabled" [ngIfElse]="notSharing">
+      <div class="form-group mb-5">
+        <div class="row p-0">
+            <div class="col-1">
+                <input type="checkbox"
+                  id="primaryAuthority"
+                  formControlName="primaryAuthority"
+                  class="form-control">  
+            </div>
+            <div class="col-11">
+                <label for="primaryAuthority" class="page-emphasis">{{ primaryAuthority ? primaryAuthority.name : 'TODO' }}</label>
+                <p class="page-comment">This is the local authority you are located in</p>    
+            </div>
+        </div>
+        <div class="row">
+            <p class="page-description">Add more local authorities to share your data with.</p>
+        </div>
+        <div class="form-group mb-5" *ngIf="allAuthorties && localAuthorities">
+
+          <div *ngFor="let thisLA of localAuthorities; let idx = index" [formGroupName]="idx" class="row record">
+            <!--<div class="col-6 col-sm-7">
+              <select formControlName="jobId" class="form-control">
+              <select class="form-control">
+                <option *ngFor="let myLa of allAuthorties" [value]="myLa.custodianCode">
+                  {{myLa.name}}
+                </option>
+              </select>
+            </div>
+            <div class="col-3 center-v no-padding-left">
+              <button type="button" class="btn-link" (click)="removeAuthority(idx)">Remove</button>
+            </div>-->
           </div>
-          <div class="col-11">
-              <label for="primaryAuthority">TODO: [City of London]</label>
-              <p class="page-comment">This is the local authority you are located in</p>    
+          <div class="row summary-and-controls mb-5 record">
+            <div class="col-6 col-sm-7 center-v">
+              <button type="button" class="btn-link" (click)="addAuthority()">+ Add another local authority</button>
+            </div>
           </div>
-      </div>
-    </div>
-    <div class="form-group mb-5">
-      <div class="col-12 p-0">
-          <p class="page-description">Add more local authorities to share your data with.</p>
-      </div>
-      <div class="col-12 p-0">
-          <p>Add list of local authorities</p>
-      </div>
-    </div>
-    <div class="form-group mb-5">
-      <div class="row">
-          <div class="col-1">
-            <input type="radio"
-              id="doNotShare"
-              formControlName="doNotShare"
-              class="form-control">
+
+        </div>
+        <div class="form-group mb-5">
+          <!--
+          <div class="row">
+              <div class="col-1">
+                <input type="radio"
+                  id="doNotShare"
+                  formControlName="doNotShare"
+                  value="true"
+                  class="form-control">
+              </div>
+              <div class="col-11">
+                  <label for="doNotShare">No, don't share any data with any local authority.</label>
+              </div>
           </div>
-          <div class="col-11">
-              <label for="doNotShare">No, don't share any data with any local authority.</label>
+          <div class="row">
+              <div class="col-1">
+                <input type="radio"
+                  id="doNotShare"
+                  value="false"
+                  formControlName="doNotShare"
+                  class="form-control">
+              </div>
+              <div class="col-11">
+                  <label for="doShare">Continue to share with local authorities (because we are using radio buttons!).</label>
+              </div>
           </div>
+        -->
+          <div class="row round">
+              <div class="col-1">
+                  <input type="checkbox" id="doShare" formControlName="doNotShare" class="form-control">
+                  <label for="doShare"></label>
+              </div>
+              <div class="col-11">
+                  <p>No, don't share any data with any local authority.</p>
+              </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="btn-container">
-      <button type="submit" class="btn btn-primary">Save and continue</button>
-    </div>  
+      <div class="btn-container">
+        <button type="submit" class="btn btn-primary">Save and continue</button>
+      </div>
+  
+    </ng-template>
+
+    <ng-template #notSharing>
+      <div *ngIf="!isSharingEnabled">
+        <p class="page-description">Sharing with Local Authorities is not enabled</p>
+      </div>
+      <div class="btn-container">
+        <button type="submit" class="btn btn-primary">Continue</button>
+      </div>
+    </ng-template>
+
   </form>
 </div>
 
