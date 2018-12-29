@@ -108,7 +108,7 @@ router.route('/').post(async (req, res) => {
           if (isValidLAEntry(thisLA, allLAs)) {
             laRecords.push(
               models.establishmentLocalAuthority.create({
-                authorityId: thisLA.id,
+                authorityId: thisLA.custodianCode,
                 establishmentId
               })
             );
@@ -163,13 +163,13 @@ router.route('/').post(async (req, res) => {
 // TODO - ensure the jobId is valid
 const isValidLAEntry = (entry, allKnownLAs) => {
   if (entry && 
-      entry.id &&
-      parseInt(entry.id) === entry.id) {
+      entry.custodianCode &&
+      parseInt(entry.custodianCode) === entry.custodianCode) {
 
-      // now check the LA id is within range
+      // now check the LA custodianCode is within range
       if (allKnownLAs &&
           Array.isArray(allKnownLAs) &&
-          allKnownLAs.includes(entry.id)) {
+          allKnownLAs.includes(entry.custodianCode)) {
         return true;
       } else {
         return false;
