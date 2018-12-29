@@ -29,7 +29,7 @@ exports.listOfLAsJSON = (givenLAs, primaryAuthorityCustodianCode) => {
 
       // if the primary Authority custodian code is given,
       //  highlight if this local authority is the primary authority
-      if (primaryAuthorityCustodianCode && parseInt(primaryAuthorityCustodianCode) === parseInt(thisLA.reference.id)) {
+      if (primaryAuthorityCustodianCode && parseInt(primaryAuthorityCustodianCode) === parseInt(thisLA.reference.custodianCode)) {
         localLa.isPrimaryAuthority = true;
       }
 
