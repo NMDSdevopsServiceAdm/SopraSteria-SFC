@@ -1,0 +1,12 @@
+@import "../../../assets/scss/variables.scss";
+.page-comment {
+    color: $light-grey-text;
+    padding-left: 0px;
+}
+
+input[type=checkbox] {
+    transform: scale(2.0);
+}
+input[type=radio] {
+    transform: scale(2.0);
+}

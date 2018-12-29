@@ -25,6 +25,7 @@ import { ConfirmStartersComponent } from "./features/confirm-starters/confirm-st
 import { LeaversComponent } from "./features/leavers/leavers.component"
 import { ConfirmLeaversComponent } from "./features/confirm-leavers/confirm-leavers.component"
 import { StaffComponent } from "./features/staff/staff.component"
+import { ShareLocalAuthorityComponent } from "./features/shareLocalAuthorities/shareLocalAuthority.component"
 
 const routes: Routes = [
 
@@ -115,6 +116,10 @@ const routes: Routes = [
   {
     path: 'staff',
     component: StaffComponent
+  },
+  {
+    path: 'shareLocalAuthority',
+    component: ShareLocalAuthorityComponent
   },
 ];
 

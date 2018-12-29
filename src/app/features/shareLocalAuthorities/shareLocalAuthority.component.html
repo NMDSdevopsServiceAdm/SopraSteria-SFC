@@ -1,0 +1,51 @@
+<div class="main-page-container col-12">
+  <header>
+    <h1 class="h1">Sharing data with local authorities</h1>
+    <p class="page-description">Select which local authorities you would like to share your data with.</p>
+  </header>
+
+  <form novalidate
+    (ngSubmit)="onSubmit()"
+    [formGroup]="shareLocalAuthoritiesForm">
+
+    <div class="form-group mb-5">
+      <div class="row p-0">
+          <div class="col-1">
+              <input type="checkbox"
+                id="primaryAuthority"
+                formControlName="primaryAuthority"
+                class="form-control">  
+          </div>
+          <div class="col-11">
+              <label for="primaryAuthority">TODO: [City of London]</label>
+              <p class="page-comment">This is the local authority you are located in</p>    
+          </div>
+      </div>
+    </div>
+    <div class="form-group mb-5">
+      <div class="col-12 p-0">
+          <p class="page-description">Add more local authorities to share your data with.</p>
+      </div>
+      <div class="col-12 p-0">
+          <p>Add list of local authorities</p>
+      </div>
+    </div>
+    <div class="form-group mb-5">
+      <div class="row">
+          <div class="col-1">
+            <input type="radio"
+              id="doNotShare"
+              formControlName="doNotShare"
+              class="form-control">
+          </div>
+          <div class="col-11">
+              <label for="doNotShare">No, don't share any data with any local authority.</label>
+          </div>
+      </div>
+    </div>
+    <div class="btn-container">
+      <button type="submit" class="btn btn-primary">Save and continue</button>
+    </div>  
+  </form>
+</div>
+
