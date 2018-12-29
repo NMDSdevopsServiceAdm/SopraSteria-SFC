@@ -86,14 +86,14 @@ router.route('/').post(async (req, res) => {
     if (results && results.id && (establishmentId === results.id)) {
       // when processing the local authorities, we need to ensure they are one of the known local authorities
       const allLAResult = await models.localAuthority.findAll({
-        attributes: ['id']
+        attributes: ['custodianCode']
       });
       if (!allLAResult) {
         console.error('establishment::la POST - unable to retrieve all known local authorities');
         return res.status(503).send('Unable to retrieve all Local Authorities');
       }
       const allLAs = [];
-      allLAResult.forEach(thisRes => allLAs.push(thisRes.id));
+      allLAResult.forEach(thisRes => allLAs.push(thisRes.custodianCode));
 
       await models.sequelize.transaction(async t => {
         await models.establishmentLocalAuthority.destroy({
