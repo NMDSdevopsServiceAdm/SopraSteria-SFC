@@ -38,6 +38,10 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
   get primaryAuthorityControl() {
     return this.shareLocalAuthoritiesForm.get('primaryAuthorityCtl').value
   }
+  set primaryAuthorityControl(value:boolean) {
+    console.log("Updating primary authority control: ", value);
+    this.shareLocalAuthoritiesForm.get('primaryAuthorityCtl').patchValue(true, {onlySelf:true, emitEvent: false});
+  }
   get doNotShareControl(): boolean {
     return this.shareLocalAuthoritiesForm.get('doNotShareCtl').value;
   }
@@ -181,7 +185,14 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
         const ourAuthoritiesControl = this.authoritiesControl;
         if (this._localAuthorities && this._localAuthorities.length > 0) {
           this._localAuthorities.forEach(thisAuthority => {
-            ourAuthoritiesControl.push(this._createAuthorityControl(thisAuthority.custodianCode));
+            // one of the fetched (API) authorities could be the primary authority
+            if (thisAuthority.isPrimaryAuthority) {
+              console.log("The primary authority is checked: ", thisAuthority.custodianCode);
+              this.primaryAuthorityControl = true;
+            } else {
+              ourAuthoritiesControl.push(this._createAuthorityControl(thisAuthority.custodianCode));
+            }
+            
           });
         }
         
