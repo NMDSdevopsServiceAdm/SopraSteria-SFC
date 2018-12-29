@@ -104,7 +104,44 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
   }
 
   onSubmit () {
-    alert("Called onSubmit - doNotShare: " + this.doNotShareControl);
+    alert("onSubmit)")
+    if (this.doNotShareControl) {
+      alert("Navigate to share options")
+      //this.router.navigate(["/shareOptions"]);
+    } else {
+      alert("Process selected authorities")
+      // get the list of authorities from the form array, but filter
+      //   the default option (whereby custodian code is null), and
+      //   to remap each entry. Note, the source and target are
+      //   the same structure but preferred to map here anyway
+      //   to make it explicit for posting
+      // const selectedAuthorites = [];
+      const authorityCtlValues = this.authoritiesControl.value;
+
+      const selectedAuthorites = this.authoritiesControl.value
+          .filter(a => a.custodianCode === null ? false : true)
+          .map(a => { return { custodianCode: parseInt(a.custodianCode) }});
+
+      // now check if the primary authority has also been selected, and if so
+      //  add that to the set of selected authorities
+      if (this.primaryAuthorityControl) {
+        selectedAuthorites.push({
+          custodianCode: this._primaryAuthority.custodianCode
+        });
+      }
+
+      // // for test/debugging
+      // selectedAuthorites.forEach(thisAuth => {
+      //   console.log("this auth: ", thisAuth)
+      // });
+
+      this.subscriptions.push(
+        this.establishmentService.postLocalAuthorities(selectedAuthorites)
+          .subscribe(() => {
+            this.router.navigate(['/vacancies']);
+          }));
+    }
+
   }
 
   ngOnInit() {

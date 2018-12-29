@@ -145,8 +145,17 @@ export class EstablishmentService {
         catchError(this.httpErrorHandler.handleHttpError))
   }
 
+  /*
+   * localAuthorities
+   */
   getLocalAuthorities() {
     return this.http.get<ShareWithLocalAuthorityResponse>(`/api/establishment/${this.establishmentId}/localAuthorities`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+  postLocalAuthorities(authorities:LocalAuthorityModel[]) {
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/localAuthorities`, { localAuthorities: authorities }, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
