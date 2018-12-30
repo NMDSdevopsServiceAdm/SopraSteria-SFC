@@ -21,9 +21,9 @@ export class ServicesCapacityComponent implements OnInit, OnDestroy {
 
   private subscriptions = []
   private capacitiesMap = {
-    "4": "bedsTotal",
-    "5": "bedsUsed",
-    "1": "peopleWithCare"
+    "2": "bedsTotal",
+    "3": "bedsUsed",
+    "11": "peopleWithCare"
   }
 
   submitHandler(): void {
