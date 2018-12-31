@@ -28,7 +28,11 @@
 .record {
   & ~ .record {
     margin-top: 3rem;
-  }
+  };
+  line-height: 32px;
+}
+.record select {
+  height: 30px;
 }
 
 .summary-and-controls {
