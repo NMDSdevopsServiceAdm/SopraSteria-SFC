@@ -27,7 +27,7 @@ export class ServicesCapacityComponent implements OnInit, OnDestroy {
     if (this.form.valid) {
       this.subscriptions.push(
         this.establishmentService.postCapacity(this.formToApi())
-          .subscribe(() => this.router.navigate(["/sharing"])))
+          .subscribe(() => this.router.navigate(["/share-options"])))
 
     } else {
       this.messageService.clearError()
