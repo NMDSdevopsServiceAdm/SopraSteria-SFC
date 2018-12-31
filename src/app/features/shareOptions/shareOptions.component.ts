@@ -49,7 +49,7 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
 
   private get isShareWithCQCEnabled(): boolean {
     if (this._shareOptions) {
-      if (this._shareOptions.enabled && 
+      if (this._shareOptions.enabled &&
           this._shareOptions.with &&
           this._shareOptions.with.includes(this._withCQC)) {
         return true;
@@ -61,7 +61,7 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
   }
   private get isShareWithLAEnabled(): boolean {
     if (this._shareOptions) {
-      if (this._shareOptions.enabled && 
+      if (this._shareOptions.enabled &&
           this._shareOptions.with &&
           this._shareOptions.with.includes(this._withLocalAuthority)) {
         return true;
@@ -72,7 +72,7 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  
+
   onSubmit () {
     if (this.doNotShareControl) {
       // disable sharing, but leave options unmodified
@@ -102,7 +102,7 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
           this.subscriptions.push(
             this.establishmentService.postSharingOptions(this._shareOptions)
             .subscribe(() => {
-              this.router.navigate(['/shareLocalAuthority']);
+              this.router.navigate(['/share-local-authority']);
             })
           );
         } else {
@@ -153,7 +153,6 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
         }
       })
     );
-
   }
 
   ngOnDestroy() {
