@@ -6,6 +6,8 @@ import { FormBuilder, FormGroup } from "@angular/forms"
 
 import { HttpErrorHandler } from "./http-error-handler.service"
 
+import { ServicesModel } from '../model/services.model';
+import { PostServicesModel } from '../model/postServices.model';
 import { SharingOptionsModel } from '../model/sharingOptions.model';
 import { LocalAuthorityModel } from '../model/localAuthority.model';
 
@@ -181,4 +183,34 @@ export class EstablishmentService {
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
   }
+
+  /*
+   * Other Services
+   */
+  // GET all services [true:false]
+  getAllServices() {
+    return this.http.get<ServicesModel>(`/api/establishment/${this.establishmentId}/services?all=true`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError)
+      );
+  }
+  getCurrentServices() {
+    return this.http.get<ServicesModel>(`/api/establishment/${this.establishmentId}/services?all=false`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError)
+      );
+  }
+
+  // POST other services
+  postOtherServices(obj: PostServicesModel) {
+    const $obj = { services: obj };
+    return this.http.post<PostServicesModel>(`/api/establishment/${this.establishmentId}/services`, $obj, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError)
+      );
+  }
+  
 }
