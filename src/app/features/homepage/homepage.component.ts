@@ -4,7 +4,6 @@ import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/fo
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth-service';
-import { LoginApiModel } from '../../core/model/loginApi.model';
 
 @Component({
   selector: 'app-homepage',
@@ -12,22 +11,25 @@ import { LoginApiModel } from '../../core/model/loginApi.model';
   styleUrls: ['./homepage.component.scss']
 })
 export class HomepageComponent implements OnInit {
-  login: any;
-
-  fullname: string;
-
   constructor(
     private _loginService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder) {}
 
-  ngOnInit() {
-    this._loginService.auth$.subscribe(login => this.login = login);
+  get fullname() : string {
+    return this._loginService.fullname == null ? 'TODO' : this._loginService.fullname;
+  }
+  get establishmentName() : string {
+    return this._loginService.establishment.name == null ? 'TODO' : this._loginService.establishment.name;
+  }
 
-    console.log(this.login);
-    debugger;
-    //this.fullname = this.login.fullname;
+  get isFirstLoggedIn() : boolean {
+    return this._loginService.isFirstLogin == null ? false : this._loginService.isFirstLogin;
+  }
+
+  ngOnInit() {
+  
   }
 
   welcomeContinue() {

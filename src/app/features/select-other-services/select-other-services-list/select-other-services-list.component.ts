@@ -3,7 +3,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { EstablishmentServicesService } from '../../../core/services/establishment-services.service';
+import { EstablishmentService } from '../../../core/services/establishment.service';
 import { PostServicesModel } from '../../../core/model/postServices.model';
 import { Services } from '@angular/core/src/view';
 
@@ -27,7 +27,7 @@ export class SelectOtherServicesListComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
-    private _eSService: EstablishmentServicesService
+    private _eSService: EstablishmentService
   ) { }
 
   // Get user fullname
@@ -42,12 +42,12 @@ export class SelectOtherServicesListComponent implements OnInit {
 
     this.isRegistered = true;
 
-    this.getAllServices(this.isRegistered);
+    this.getAllServices();
   }
 
-  getAllServices(value) {
+  getAllServices() {
 
-    this._eSService.getAllServices(value)
+    this._eSService.getAllServices()
       .subscribe(
         (data: any) => {
 
@@ -81,10 +81,9 @@ export class SelectOtherServicesListComponent implements OnInit {
           }]
         };
 
-        for (let i = 0; i < 1; i++) {
-          this.postOtherServicesdata.push(this.obj.services[i]);
-        }
-
+        this.obj.services.forEach(thisService => {
+          this.postOtherServicesdata.push(thisService);
+        });
       });
     });
   }
@@ -138,10 +137,9 @@ export class SelectOtherServicesListComponent implements OnInit {
           console.log(err);
         },
         () => {
-          console.log('Successfully posted other services');
-          this.router.navigate(['/type-of-employer']);
+          // TODO - update navigation to "service capacity"
+          this.router.navigate(['/share-options']);
         }
       );
   }
-
 }

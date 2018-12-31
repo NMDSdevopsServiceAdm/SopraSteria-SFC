@@ -4,7 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 import { map } from 'rxjs/operators';
 
-import { EstablishmentServicesService } from '../../core/services/establishment-services.service';
+import { EstablishmentService } from '../../core/services/establishment.service';
 import { LoginApiModel } from '../../core/model/loginApi.model';
 
 @Component({
@@ -19,7 +19,7 @@ export class SelectOtherServicesComponent implements OnInit {
   servicesData: object;
 
   constructor(
-    private _eSService: EstablishmentServicesService,
+    private _eSService: EstablishmentService,
     private router: Router,
     // private route: ActivatedRoute,
     ) {}
