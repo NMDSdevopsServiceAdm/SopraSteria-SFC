@@ -21,14 +21,12 @@ export class LocalAuthorityService {
 
   getAuthorities() {
     if (!this._authorities) {
-      console.log("WA DEBUG: inside LocalAuthorityService::getAuthorities - initialising private cache")
       const options = { headers: { 'Content-type': 'application/json' } };
       return this.http.get<LocalAuthorityModel[]>('/api/localAuthority', options)
        .pipe(
          catchError(err => this.handleHttpError(err))
        );
     } else {
-      console.log("WA DEBUG: inside LocalAuthorityService::getAuthorities - returning private cache")
       return this._authorities;
     }
   }
@@ -37,7 +35,6 @@ export class LocalAuthorityService {
     // on failing to fetch authorities, add a default authority
     // TODO: this needs some work to return a subscribable observer which is a default set of data
     //        which simplifies error handling in the components that consume it.
-    console.log("WA DEBUG: inside LocalAuthorityService::handleHttpError: ", error)
     return Observable.create([{
       custodianCode: 0,
       name: 'Unknown Authorities'

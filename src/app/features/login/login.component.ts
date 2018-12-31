@@ -55,7 +55,6 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    debugger;
     this.usernameValue = this.getUsernameInput.value;
     this.userPasswordValue = this.getPasswordInput.value;
 
@@ -83,7 +82,6 @@ export class LoginComponent implements OnInit {
 
         },
         (err) => {
-          debugger;
           console.log(err);
         },
         () => {

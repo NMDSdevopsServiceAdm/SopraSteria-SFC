@@ -88,7 +88,6 @@ router.route('/').post(async (req, res) => {
         shareWithCQC: shareCQC,
         shareWithLA: shareLA
       };
-      console.log("WA DEBUG - updating share options: ", revisedShareOptions)
       await results.update(revisedShareOptions);
       
       res.status(200);

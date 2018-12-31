@@ -34,9 +34,7 @@ export class CustomValidators extends Validators {
       return null;
     }
 
-    //debugger;
     if (passwordControl.value !== confirmPasswordControl.value) {
-      //debugger;
       return { 'notMatched': true };
     }
 
@@ -44,7 +42,6 @@ export class CustomValidators extends Validators {
 
   // static apiErrorSet(c: AbstractControl): { [key: string]: boolean } | null {
   //   const postcodeControl = c.get('cqcRegisteredPostcode');
-  //   //debugger;
 
   //   if (!c.errors) {
   //     return null;

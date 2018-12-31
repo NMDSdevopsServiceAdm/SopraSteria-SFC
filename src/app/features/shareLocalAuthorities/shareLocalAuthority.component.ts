@@ -177,7 +177,6 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
           this._localAuthorities.forEach(thisAuthority => {
             // one of the fetched (API) authorities could be the primary authority
             if (thisAuthority.isPrimaryAuthority) {
-              console.log("The primary authority is checked: ", thisAuthority.custodianCode);
               this.primaryAuthorityControl = true;
             } else {
               ourAuthoritiesControl.push(this._createAuthorityControl(thisAuthority.custodianCode));
@@ -185,8 +184,7 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
             
           });
         }
-        
-        //console.log("Getting primary authority by name: ", this.primaryAuthorityName)
+
       })
     );
   }
