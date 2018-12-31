@@ -36,7 +36,6 @@ import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leav
 import { StaffComponent } from './features/staff/staff.component';
 import { ServicesCapacityComponent } from './features/services-capacity/services-capacity.component';
 import { SharingComponent } from './features/sharing/sharing.component';
-import { MessagesComponent } from './core/messages/messages.component'
 import { MessagesComponent } from './core/messages/messages.component';
 import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
 import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
