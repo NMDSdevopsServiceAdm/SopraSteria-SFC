@@ -137,7 +137,6 @@ export class SelectOtherServicesListComponent implements OnInit {
           console.log(err);
         },
         () => {
-          console.log('DEBUG: Successfully posted other services');
           // TODO - update navigation to "service capacity"
           this.router.navigate(['/shareOptions']);
         }

@@ -6,6 +6,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 //import { LoginUser } from './login-user';
 
 import { AuthService } from '../../core/services/auth-service';
+import { EstablishmentService } from "../../core/services/establishment.service"
+
 import { LoginApiModel } from '../../core/model/loginApi.model';
 
 @Component({
@@ -30,6 +32,7 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private _loginService: AuthService,
+    private establishmentService: EstablishmentService,
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder) {}
@@ -51,14 +54,11 @@ export class LoginComponent implements OnInit {
     });
 
     this._loginService.auth$.subscribe(login => this.login = login);
-    console.log('test');
   }
 
   onSubmit() {
     this.usernameValue = this.getUsernameInput.value;
     this.userPasswordValue = this.getPasswordInput.value;
-
-    console.log(this.login);
 
     if (this.loginForm.invalid) {
       return;
@@ -76,16 +76,27 @@ export class LoginComponent implements OnInit {
 
     this._loginService.postLogin(this.login)
       .subscribe(
-        (data: LoginApiModel) => {
+        (response) => {
+          // TODO: despite passing the 'observe' option
+          //       in the auth-service postLogin, the callback
+          //       here is still the JSON data and not the full
+          //       response. Hence, cannot get at the
+          //       headers.
+          console.log("DEBUG response: ", response)
+          // const data = response.body;
 
-            this._loginService.updateState(data);
+          this._loginService.updateState(response);
 
+          // // update the establishment service state with the given establishment oid
+          this.establishmentService.establishmentId = response.establishment.id;
+          //this.establishmentService.establishmentToken = response.headers.get('authorization');
+          this.establishmentService.establishmentToken = response.establishment.id;
         },
         (err) => {
+          // TODO - better handling and display of errors
           console.log(err);
         },
         () => {
-          console.log('Login complete complete');
           this.router.navigate(['/welcome']);
         }
       );
