@@ -15,6 +15,22 @@ const initialRegistration: LoginApiModel = {
   password: 'Bob',
 };
 
+interface LoggedInMainService {
+  id: number;
+  name: string
+}
+interface LoggedInEstablishment {
+  id: number;
+  name: string;
+  isRegulated: boolean
+};
+interface LoggedInSession {
+  fullname: string,
+  isFirstLogin: boolean,
+  establishment: LoggedInEstablishment;
+  mainService: LoggedInMainService;
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -22,18 +38,63 @@ export class AuthService {
   // Observable login source
   private _auth$: BehaviorSubject<LoginApiModel> = new BehaviorSubject<LoginApiModel>(initialRegistration);
 
+  private _loginToken: string = null;
+
+  // hold the response from login
+  private _session: LoggedInSession = null;
+  private _token: string = null;
+
   // Observable login stream
   public auth$: Observable<LoginApiModel> = this._auth$.asObservable();
-  // registrationModel: RegistrationModel[];
 
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient,
+              
+              private router: Router) { }
+
+  // returns true if logged in; otherwise false
+  public get isLoggedIn(): boolean {  
+    return this._session ? true : false;
+  }
+
+  public get establishment() : LoggedInEstablishment {
+    if (this._session) {
+      return this._session.establishment;
+    } else {
+      return null;
+    }
+  }
+  public get mainService() : LoggedInMainService {
+    if (this._session) {
+      return this._session.mainService;
+    } else {
+      return null;
+    }
+  }
+  public get fullname() : string {
+    if (this._session) {
+      return this._session.fullname;
+    } else {
+      return null;
+    }
+  }
+  public get isFirstLogin() : boolean {
+    if (this._session) {
+      return this._session.isFirstLogin;
+    } else {
+      return false;
+    }
+  }
+
+  // sets the session token - note; this should proberly be saved to local storage - but also with an expiry.
+  public set token(authorization:string) {
+    this._token = authorization;
+  }
 
   postLogin(id: any) {
     const $value = id;
-    const options = { headers: { 'Content-type': 'application/json' } };
-    debugger;
-    return this.http.post<LoginApiModel>('/api/login/', $value, options)
+    const options = { headers: { 'Content-type': 'application/json',  observe: "response" as 'body', responseType: "json" } };
+    return this.http.post<any>('/api/login/', $value, options)
       .pipe(
         catchError(err => this.handleHttpError(err))
       );
@@ -49,6 +110,11 @@ export class AuthService {
 
   updateState(data) {
     this._auth$.next(data);
+
+    // TODO: because I don't understand how to extract data from the observable
+    //      and I don't understand Denny's original intentions in storing the LoginApiModel
+    //      which is the username/password rather than the login API response.
+    this._session = data;
   }
 
 

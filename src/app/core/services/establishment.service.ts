@@ -6,6 +6,8 @@ import { FormBuilder, FormGroup } from "@angular/forms"
 
 import { HttpErrorHandler } from "./http-error-handler.service"
 
+import { ServicesModel } from '../model/services.model';
+import { PostServicesModel } from '../model/postServices.model';
 import { SharingOptionsModel } from '../model/sharingOptions.model';
 import { LocalAuthorityModel } from '../model/localAuthority.model';
 
@@ -35,19 +37,19 @@ export class EstablishmentService {
 
   constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {}
 
-  get establishmentId() {
-    // TODO replace with commented code
-    // return this.establishmentId
-    return 184
-  }
+  private _establishmentToken = null;
 
-  setEstablishmentId(value) {
-    Object.defineProperty(this, "establishmentId", { value, writable: false })
+
+  public set establishmentId(value:number) {
+    this._establishmentId = value
+  }
+  public set establishmentToken(value) {
+    this._establishmentToken = value
   }
 
   private getOptions() {
     let headers = new HttpHeaders()
-    headers = headers.append("Authorization", this.establishmentId.toString())
+    headers = headers.append("Authorization", this._establishmentToken)
     headers = headers.append("Content-Type", "application/json")
     return { headers }
   }
@@ -77,7 +79,7 @@ export class EstablishmentService {
    * GET /api/establishment/:establishmentId/jobs
    */
   getJobs() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`, this.getOptions()).pipe(
+    return this.http.get<any>(`/api/establishment/${this._establishmentId}/jobs`, this.getOptions()).pipe(
       debounceTime(500),
       map(res => res.jobs),
       catchError(this.httpErrorHandler.handleHttpError))
@@ -87,7 +89,7 @@ export class EstablishmentService {
    * GET /api/establishment/:establishmentId/jobs
    */
   getVacancies() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`, this.getOptions()).pipe(
+    return this.http.get<any>(`/api/establishment/${this._establishmentId}/jobs`, this.getOptions()).pipe(
       debounceTime(500),
       map(res => res.jobs.Vacancies),
       catchError(this.httpErrorHandler.handleHttpError))
@@ -98,7 +100,7 @@ export class EstablishmentService {
    */
   postVacancies(vacancies) {
     const data = { jobs: { vacancies } }
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data, this.getOptions()).pipe(
+    return this.http.post<any>(`/api/establishment/${this._establishmentId}/jobs`, data, this.getOptions()).pipe(
       debounceTime(500),
       catchError(this.httpErrorHandler.handleHttpError))
   }
@@ -107,7 +109,7 @@ export class EstablishmentService {
    * GET /api/establishment/:establishmentId/jobs
    */
   getStarters() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`, this.getOptions()).pipe(
+    return this.http.get<any>(`/api/establishment/${this._establishmentId}/jobs`, this.getOptions()).pipe(
       debounceTime(500),
       map(res => res.jobs.Starters),
       catchError(this.httpErrorHandler.handleHttpError))
@@ -118,7 +120,7 @@ export class EstablishmentService {
    */
   postStarters(starters) {
     const data = { jobs: { starters } }
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data, this.getOptions())
+    return this.http.post<any>(`/api/establishment/${this._establishmentId}/jobs`, data, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
@@ -128,7 +130,7 @@ export class EstablishmentService {
    * GET /api/establishment/:establishmentId/jobs
    */
   getLeavers() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`, this.getOptions()).pipe(
+    return this.http.get<any>(`/api/establishment/${this._establishmentId}/jobs`, this.getOptions()).pipe(
       debounceTime(500),
       map(res => res.jobs.Leavers),
       catchError(this.httpErrorHandler.handleHttpError))
@@ -139,7 +141,7 @@ export class EstablishmentService {
    */
   postLeavers(leavers) {
     const data = { jobs: { leavers } }
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data, this.getOptions())
+    return this.http.post<any>(`/api/establishment/${this._establishmentId}/jobs`, data, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
@@ -149,7 +151,7 @@ export class EstablishmentService {
    * GET /api/establishment/:establishmentId/staff
    */
   getStaff() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/staff`, this.getOptions()).pipe(
+    return this.http.get<any>(`/api/establishment/${this._establishmentId}/staff`, this.getOptions()).pipe(
       debounceTime(500),
       map(res => res.numberOfStaff),
       catchError(this.httpErrorHandler.handleHttpError))
@@ -159,7 +161,7 @@ export class EstablishmentService {
    * POST /api/establishment/:establishmentId/staff/:staffNumber
    */
   postStaff(numberOfStaff) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/staff/${numberOfStaff}`, null, this.getOptions())
+    return this.http.post<any>(`/api/establishment/${this._establishmentId}/staff/${numberOfStaff}`, null, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
@@ -169,7 +171,7 @@ export class EstablishmentService {
    * Share With Local Authorities
    */
   getSharingOptions() {
-    return this.http.get<ShareOptionsResponse>(`/api/establishment/${this.establishmentId}/share`, this.getOptions())
+    return this.http.get<ShareOptionsResponse>(`/api/establishment/${this._establishmentId}/share`, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
@@ -178,7 +180,7 @@ export class EstablishmentService {
     const postBody: ShareOptionsRequest = {
       share: shareOptions
     };
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/share`, postBody, this.getOptions())
+    return this.http.post<any>(`/api/establishment/${this._establishmentId}/share`, postBody, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
@@ -188,7 +190,7 @@ export class EstablishmentService {
    * Share With Local Authorities
    */
   getLocalAuthorities() {
-    return this.http.get<ShareWithLocalAuthorityResponse>(`/api/establishment/${this.establishmentId}/localAuthorities`, this.getOptions())
+    return this.http.get<ShareWithLocalAuthorityResponse>(`/api/establishment/${this._establishmentId}/localAuthorities`, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
@@ -197,9 +199,39 @@ export class EstablishmentService {
     const postBody : ShareWithLocalAuthorityRequest = {
       localAuthorities: authorities
     };
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/localAuthorities`, postBody, this.getOptions())
+    return this.http.post<any>(`/api/establishment/${this._establishmentId}/localAuthorities`, postBody, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
   }
+
+  /*
+   * Other Services
+   */
+  // GET all services [true:false]
+  getAllServices() {
+    return this.http.get<ServicesModel>(`/api/establishment/${this._establishmentId}/services?all=true`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError)
+      );
+  }
+  getCurrentServices() {
+    return this.http.get<ServicesModel>(`/api/establishment/${this._establishmentId}/services?all=false`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError)
+      );
+  }
+
+  // POST other services
+  postOtherServices(obj: PostServicesModel) {
+    const $obj = { services: obj };
+    return this.http.post<PostServicesModel>(`/api/establishment/${this._establishmentId}/services`, $obj, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError)
+      );
+  }
+  
 }
