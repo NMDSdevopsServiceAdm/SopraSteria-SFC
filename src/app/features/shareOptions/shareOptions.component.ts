@@ -75,7 +75,6 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
   
   onSubmit () {
     if (this.doNotShareControl) {
-      alert("Process selected share options - disable sharing");
       // disable sharing, but leave options unmodified
       this._shareOptions.enabled = false;
       this.subscriptions.push(
@@ -116,8 +115,6 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
         }
 
       } else {
-        alert("Process selected share options - disable sharing and reset options");
-
         // reset sharing options
         this._shareOptions.enabled = false;
         this._shareOptions.with = [];
@@ -143,7 +140,6 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
     // // fetch establishment sharing options to determine if Local Authority sharing is enable.
     this.subscriptions.push(
       this.establishmentService.getSharingOptions().subscribe(options => {
-        alert("Fetched share options: " + options)
         // for this component to be relevant, sharing must be enabled and
         //   must be sharing with Local Authority
         this._shareOptions = options.share;
