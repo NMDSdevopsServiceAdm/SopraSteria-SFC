@@ -15,19 +15,15 @@
               <h2>What type of employer are you?</h2>
             </div>
 
-            <div *ngFor="let option of options" class="col-12"  >
-              <div class="mb-5">
-                <div *ngFor="let option of options; let idx = index" class="row mb-5">
-                  <div class="col-12">
-                    <div class="multiple-choice">
-                      <input type="radio" id="selectOption-{{idx}}" formControlName="employerType" [value]="option" />
-                      <label class="main-body-text p-0" for="selectOption-{{idx}}">{{option}}</label>
-                    </div>
-                  </div>
-
+            <div *ngFor="let option of options; let idx = index" class="row col-12">
+              <div class="col-12">
+                <div class="multiple-choice">
+                  <input type="radio" id="selectOption-{{idx}}" formControlName="employerType" [value]="option" />
+                  <label class="main-body-text p-0" for="selectOption-{{idx}}">{{option}}</label>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>

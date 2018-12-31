@@ -21,12 +21,24 @@ export class TypeOfEmployerComponent implements OnInit, OnDestroy {
   employerName: string
 
   options = [
-    "Private sector",
-    "Voluntary or charity",
+    "Private Sector",
+    "Voluntary / Charity",
     "Other"
   ]
 
   private subscriptions = []
+
+  submitHandler() {
+    if (this.form.valid) {
+      this.subscriptions.push(
+        this.establishmentService.postEmployerType(this.form.value)
+          .subscribe(() => this.router.navigate(["/select-other-services"])))
+
+    } else {
+      this.messageService.clearError()
+      this.messageService.show("error", "Please fill the required fields.")
+    }
+  }
 
   ngOnInit() {
     this.form = this.fb.group({

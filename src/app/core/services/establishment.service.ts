@@ -223,8 +223,8 @@ export class EstablishmentService {
   /*
    * POST /api/establishment/:establishmentId/employerType
    */
-  postEmployerType(employerType) {
-    return this.http.post<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`, { employerType }, this.getOptions())
+  postEmployerType(data) {
+    return this.http.post<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`, data, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
