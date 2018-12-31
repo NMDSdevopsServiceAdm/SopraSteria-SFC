@@ -91,8 +91,6 @@ export class AuthService {
     this._token = authorization;
   }
 
-  // return establishment
-
   postLogin(id: any) {
     const $value = id;
     const options = { headers: { 'Content-type': 'application/json',  observe: "response" as 'body', responseType: "json" } };

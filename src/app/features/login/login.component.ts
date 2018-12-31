@@ -82,7 +82,6 @@ export class LoginComponent implements OnInit {
           //       here is still the JSON data and not the full
           //       response. Hence, cannot get at the
           //       headers.
-          console.log("DEBUG response: ", response)
           // const data = response.body;
 
           this._loginService.updateState(response);
