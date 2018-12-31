@@ -117,8 +117,6 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
       //   the same structure but preferred to map here anyway
       //   to make it explicit for posting
       // const selectedAuthorites = [];
-      const authorityCtlValues = this.authoritiesControl.value;
-
       const selectedAuthorites = this.authoritiesControl.value
           .filter(a => a.custodianCode === null ? false : true)
           .map(a => { return { custodianCode: parseInt(a.custodianCode) }});
@@ -133,9 +131,10 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
 
       this.subscriptions.push(
         this.establishmentService.postLocalAuthorities(selectedAuthorites)
-          .subscribe(() => {
-            this.router.navigate(['/vacancies']);
-          }));
+        .subscribe(() => {
+          this.router.navigate(['/vacancies']);
+        })
+      );
     }
 
   }

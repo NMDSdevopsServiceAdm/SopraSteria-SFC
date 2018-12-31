@@ -10,6 +10,13 @@
     font-weight: bold;
 }
 
+.hidden {
+    visibility: hidden;
+}
+.show {
+    visibility: visible;
+}
+
 input[type=checkbox] {
     transform: scale(2.0);
 }

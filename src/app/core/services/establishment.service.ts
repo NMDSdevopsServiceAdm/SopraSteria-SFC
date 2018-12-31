@@ -14,8 +14,14 @@ interface EstablishmentApiResponse {
   id: number;
   name: string;
 };
+interface ShareOptionsRequest {
+  share: SharingOptionsModel;
+};
 interface ShareOptionsResponse extends EstablishmentApiResponse {
   share: SharingOptionsModel;
+};
+interface ShareWithLocalAuthorityRequest {
+  localAuthorities: LocalAuthorityModel[]
 };
 interface ShareWithLocalAuthorityResponse extends EstablishmentApiResponse {
   primaryAuthority: LocalAuthorityModel;
@@ -138,15 +144,27 @@ export class EstablishmentService {
         catchError(this.httpErrorHandler.handleHttpError))
   }
 
+  /*
+   * Share With Local Authorities
+   */
   getSharingOptions() {
     return this.http.get<ShareOptionsResponse>(`/api/establishment/${this.establishmentId}/share`, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
   }
+  postSharingOptions(shareOptions:SharingOptionsModel) {
+    const postBody: ShareOptionsRequest = {
+      share: shareOptions
+    };
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/share`, postBody, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
 
   /*
-   * localAuthorities
+   * Share With Local Authorities
    */
   getLocalAuthorities() {
     return this.http.get<ShareWithLocalAuthorityResponse>(`/api/establishment/${this.establishmentId}/localAuthorities`, this.getOptions())
@@ -155,7 +173,10 @@ export class EstablishmentService {
         catchError(this.httpErrorHandler.handleHttpError))
   }
   postLocalAuthorities(authorities:LocalAuthorityModel[]) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/localAuthorities`, { localAuthorities: authorities }, this.getOptions())
+    const postBody : ShareWithLocalAuthorityRequest = {
+      localAuthorities: authorities
+    };
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/localAuthorities`, postBody, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))

@@ -32,20 +32,19 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
 
   // form controls
   get shareWithCQCcontrol() {
-    return this.shareOptionsForm.get('shareWithCQC').value
+    return this.shareOptionsForm.get('shareWithCQCctl').value
   }
   set shareWithCQCcontrol(value:boolean) {
-    console.log("Updating share With CQC control: ", value);
-    this.shareOptionsForm.get('shareWithCQC').patchValue(true, {onlySelf:true, emitEvent: false});
+    this.shareOptionsForm.get('shareWithCQCctl').patchValue(true, {onlySelf:true, emitEvent: false});
   }
   get shareWithLocalAuthorityControl(): boolean {
-    return this.shareOptionsForm.get('shareWithLocalAuthority').value;
+    return this.shareOptionsForm.get('shareWithLocalAuthorityCtl').value;
   }
   set shareWithLocalAuthorityControl(value: boolean) {
-    this.shareOptionsForm.get('shareWithLocalAuthority').patchValue(true, {onlySelf:true, emitEvent: false});
+    this.shareOptionsForm.get('shareWithLocalAuthorityCtl').patchValue(true, {onlySelf:true, emitEvent: false});
   }
   get doNotShareControl() {
-    return this.shareOptionsForm.get('doShareCtl').value;
+    return this.shareOptionsForm.get('doNotShareCtl').value;
   }
 
   private get isShareWithCQCEnabled(): boolean {
@@ -75,26 +74,76 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
 
   
   onSubmit () {
-    alert("onSubmit)")
     if (this.doNotShareControl) {
-      alert("Navigate to vacancies, skipping over Share with Local Authorities")
-      //this.router.navigate(["/vacancies"]);
+      alert("Process selected share options - disable sharing");
+      // disable sharing, but leave options unmodified
+      this._shareOptions.enabled = false;
+      this.subscriptions.push(
+        this.establishmentService.postSharingOptions(this._shareOptions)
+        .subscribe(() => {
+          this.router.navigate(['/vacancies']);
+        })
+      );
+
     } else {
-      alert("Process selected share options - including context driven navigation");
+      if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
+        this._shareOptions.enabled = true;
+        this._shareOptions.with = [];
+
+        if (this.shareWithCQCcontrol) {
+          this._shareOptions.with.push(this._withCQC);
+        }
+        if (this.shareWithLocalAuthorityControl) {
+          this._shareOptions.with.push(this._withLocalAuthority);
+        }
+
+        if (this.shareWithLocalAuthorityControl) {
+          // only navigate to share with local authorities if sharing
+          //  has been enabled with Local Authorities
+          this.subscriptions.push(
+            this.establishmentService.postSharingOptions(this._shareOptions)
+            .subscribe(() => {
+              this.router.navigate(['/shareLocalAuthority']);
+            })
+          );
+        } else {
+          this.subscriptions.push(
+            this.establishmentService.postSharingOptions(this._shareOptions)
+            .subscribe(() => {
+              this.router.navigate(['/vacancies']);
+            })
+          );
+        }
+
+      } else {
+        alert("Process selected share options - disable sharing and reset options");
+
+        // reset sharing options
+        this._shareOptions.enabled = false;
+        this._shareOptions.with = [];
+
+        this.subscriptions.push(
+          this.establishmentService.postSharingOptions(this._shareOptions)
+          .subscribe(() => {
+            this.router.navigate(['/vacancies']);
+          })
+        );
+      }
     }
   }
 
   ngOnInit() {
     // create form controls, including an empty array for the list of authorities
     this.shareOptionsForm = this.fb.group({
-      shareWithCQC: [false, [Validators.required]],
-      shareWithLocalAuthority: [false, [Validators.required]],
+      shareWithCQCctl: [false, [Validators.required]],
+      shareWithLocalAuthorityCtl: [false, [Validators.required]],
       doNotShareCtl: [false, [Validators.required]],
     });
 
-    // fetch establishment sharing options to determine if Local Authority sharing is enable.
+    // // fetch establishment sharing options to determine if Local Authority sharing is enable.
     this.subscriptions.push(
       this.establishmentService.getSharingOptions().subscribe(options => {
+        alert("Fetched share options: " + options)
         // for this component to be relevant, sharing must be enabled and
         //   must be sharing with Local Authority
         this._shareOptions = options.share;

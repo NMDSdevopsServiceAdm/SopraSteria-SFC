@@ -8,7 +8,7 @@
   <div>
     <div class="row summary-and-controls mb-5 record">
       <div class="col-12 col-sm-12 center-v">
-        <button type="button" class="btn-link" (click)="addAuthority()">Why do we share your data?</button>
+        <button type="button" class="btn-link">Why do we share your data?</button>
       </div>
     </div>
   </div>
@@ -25,12 +25,12 @@
       <div class="row p-0">
         <div class="col-1 center-v no-padding-left">
             <input type="checkbox"
-              id="shareWithCQC"
-              formControlName="shareWithCQC"
+              id="shareWithCQCctl"
+              formControlName="shareWithCQCctl"
               class="form-control">  
         </div>
         <div class="col-11">
-            <label for="shareWithCQC">Care Quality Commission (CQC)</label>
+            <label for="shareWithCQCctl">Care Quality Commission (CQC)</label>
         </div>
         <div class="row summary-and-controls mb-5 record">
           <div class="col-12 col-sm-12 center-v">
@@ -41,31 +41,32 @@
       <div class="row p-0">
         <div class="col-1 center-v no-padding-left">
             <input type="checkbox"
-              id="shareWithLocalAuthority"
-              formControlName="shareWithLocalAuthority"
+              id="shareWithLocalAuthorityCtl"
+              formControlName="shareWithLocalAuthorityCtl"
               class="form-control">  
         </div>
         <div class="col-11">
-            <label for="shareWithLocalAuthority">Local authorities</label>
+            <label for="shareWithLocalAuthorityCtl">Local authorities</label>
         </div>
         <div class="row summary-and-controls mb-5 record">
           <div class="col-12 col-sm-12 center-v">
-            <button type="button" class="btn-link">What do we shae with local authorities?</button>
+            <button type="button" class="btn-link">What do we share with local authorities?</button>
           </div>
         </div>
       </div>
-  
+        
       <div class="form-group mb-5">
         <div class="row round">
             <div class="col-1">
-                <input type="checkbox" id="doShareCtl" formControlName="doNotShareCtl" class="form-control">
-                <label for="doShare"></label>
+                <input type="checkbox" id="doNotShareCtl" formControlName="doNotShareCtl" class="form-control">
+                <label for="doNotShareCtl"></label>
             </div>
             <div class="col-11">
                 <p>No, don't share my data.</p>
             </div>
         </div>
       </div>
+
     </div>
     <div class="btn-container">
       <button type="submit" class="btn btn-primary">Save and continue</button>
