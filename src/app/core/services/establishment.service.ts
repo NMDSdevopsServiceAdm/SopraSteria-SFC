@@ -6,6 +6,28 @@ import { FormBuilder, FormGroup } from "@angular/forms"
 
 import { HttpErrorHandler } from "./http-error-handler.service"
 
+import { SharingOptionsModel } from '../model/sharingOptions.model';
+import { LocalAuthorityModel } from '../model/localAuthority.model';
+
+// local interface specifications for the request/response
+interface EstablishmentApiResponse {
+  id: number;
+  name: string;
+};
+interface ShareOptionsRequest {
+  share: SharingOptionsModel;
+};
+interface ShareOptionsResponse extends EstablishmentApiResponse {
+  share: SharingOptionsModel;
+};
+interface ShareWithLocalAuthorityRequest {
+  localAuthorities: LocalAuthorityModel[]
+};
+interface ShareWithLocalAuthorityResponse extends EstablishmentApiResponse {
+  primaryAuthority: LocalAuthorityModel;
+  localAuthorities: LocalAuthorityModel[];
+};
+
 @Injectable({
   providedIn: "root"
 })
@@ -118,6 +140,64 @@ export class EstablishmentService {
   postLeavers(leavers) {
     const data = { jobs: { leavers } }
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * GET /api/establishment/:establishmentId/staff
+   */
+  getStaff() {
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/staff`, this.getOptions()).pipe(
+      debounceTime(500),
+      map(res => res.numberOfStaff),
+      catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * POST /api/establishment/:establishmentId/staff/:staffNumber
+   */
+  postStaff(numberOfStaff) {
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/staff/${numberOfStaff}`, null, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * Share With Local Authorities
+   */
+  getSharingOptions() {
+    return this.http.get<ShareOptionsResponse>(`/api/establishment/${this.establishmentId}/share`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+  postSharingOptions(shareOptions:SharingOptionsModel) {
+    const postBody: ShareOptionsRequest = {
+      share: shareOptions
+    };
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/share`, postBody, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * Share With Local Authorities
+   */
+  getLocalAuthorities() {
+    return this.http.get<ShareWithLocalAuthorityResponse>(`/api/establishment/${this.establishmentId}/localAuthorities`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+  postLocalAuthorities(authorities:LocalAuthorityModel[]) {
+    const postBody : ShareWithLocalAuthorityRequest = {
+      localAuthorities: authorities
+    };
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/localAuthorities`, postBody, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))

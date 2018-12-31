@@ -25,7 +25,7 @@ router.route('/').get(async (req, res) => {
           include: [{
             model: models.localAuthority,
             as: 'reference',
-            attributes: ['id', 'name'],
+            attributes: ['custodianCode', 'name'],
             order: [
               ['name', 'ASC']
             ]
@@ -86,14 +86,14 @@ router.route('/').post(async (req, res) => {
     if (results && results.id && (establishmentId === results.id)) {
       // when processing the local authorities, we need to ensure they are one of the known local authorities
       const allLAResult = await models.localAuthority.findAll({
-        attributes: ['id']
+        attributes: ['custodianCode']
       });
       if (!allLAResult) {
         console.error('establishment::la POST - unable to retrieve all known local authorities');
         return res.status(503).send('Unable to retrieve all Local Authorities');
       }
       const allLAs = [];
-      allLAResult.forEach(thisRes => allLAs.push(thisRes.id));
+      allLAResult.forEach(thisRes => allLAs.push(thisRes.custodianCode));
 
       await models.sequelize.transaction(async t => {
         await models.establishmentLocalAuthority.destroy({
@@ -108,7 +108,7 @@ router.route('/').post(async (req, res) => {
           if (isValidLAEntry(thisLA, allLAs)) {
             laRecords.push(
               models.establishmentLocalAuthority.create({
-                authorityId: thisLA.id,
+                authorityId: thisLA.custodianCode,
                 establishmentId
               })
             );
@@ -131,7 +131,7 @@ router.route('/').post(async (req, res) => {
             include: [{
               model: models.localAuthority,
               as: 'reference',
-              attributes: ['id', 'name'],
+              attributes: ['custodianCode', 'name'],
               order: [
                 ['name', 'ASC']
               ]
@@ -163,13 +163,13 @@ router.route('/').post(async (req, res) => {
 // TODO - ensure the jobId is valid
 const isValidLAEntry = (entry, allKnownLAs) => {
   if (entry && 
-      entry.id &&
-      parseInt(entry.id) === entry.id) {
+      entry.custodianCode &&
+      parseInt(entry.custodianCode) === entry.custodianCode) {
 
-      // now check the LA id is within range
+      // now check the LA custodianCode is within range
       if (allKnownLAs &&
           Array.isArray(allKnownLAs) &&
-          allKnownLAs.includes(entry.id)) {
+          allKnownLAs.includes(entry.custodianCode)) {
         return true;
       } else {
         return false;
@@ -191,7 +191,7 @@ const formatLAResponse = (establishment, primaryAuthorityCustodianCode=null) => 
 
   if (primaryAuthorityCustodianCode) {
     response.primaryAuthority = {
-      id: parseInt(primaryAuthorityCustodianCode.local_custodian_code),
+      custodianCode: parseInt(primaryAuthorityCustodianCode.local_custodian_code),
       name: primaryAuthorityCustodianCode.theAuthority.name
     }
   }

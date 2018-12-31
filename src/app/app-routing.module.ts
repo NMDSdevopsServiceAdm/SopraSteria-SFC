@@ -15,6 +15,9 @@ import { RegistrationCompleteComponent } from './features/registration-complete/
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
+import { HomepageComponent } from './features/homepage/homepage.component';
+import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
+import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from "./features/vacancies/vacancies.component";
 import { ConfirmVacanciesComponent } from "./features/confirm-vacancies/confirm-vacancies.component"
 import { StartersComponent } from "./features/starters/starters.component"
@@ -24,7 +27,8 @@ import { ConfirmLeaversComponent } from "./features/confirm-leavers/confirm-leav
 import { StaffComponent } from "./features/staff/staff.component"
 import { ServicesCapacityComponent } from "./features/services-capacity/services-capacity.component"
 import { SharingComponent } from "./features/sharing/sharing.component"
-
+import { ShareOptionsComponent } from "./features/shareOptions/shareOptions.component"
+import { ShareLocalAuthorityComponent } from "./features/shareLocalAuthorities/shareLocalAuthority.component"
 
 const routes: Routes = [
 
@@ -77,6 +81,18 @@ const routes: Routes = [
     component: ContinueCreatingAccountComponent
   },
   {
+    path: 'welcome',
+    component: HomepageComponent
+  },
+  {
+    path: 'select-other-services',
+    component: SelectOtherServicesComponent
+  },
+  {
+    path: 'type-of-employer',
+    component: TypeOfEmployerComponent
+  },
+  {
     path: 'vacancies',
     component: VacanciesComponent
   },
@@ -111,6 +127,14 @@ const routes: Routes = [
   {
     path: 'sharing',
     component: SharingComponent
+  },
+  {
+    path: 'shareLocalAuthority',
+    component: ShareLocalAuthorityComponent
+  },
+  {
+    path: 'shareOptions',
+    component: ShareOptionsComponent
   },
 ];
 

@@ -1,0 +1,76 @@
+<div class="main-page-container col-12">
+  <header>
+    <h1 class="h1">Sharing your data</h1>
+    <p class="page-description">We would like to share your data with other organisations.</p>
+    <p class="page-description">Before we do that, we need your consent.</p>
+  </header>
+
+  <div>
+    <div class="row summary-and-controls mb-5 record">
+      <div class="col-12 col-sm-12 center-v">
+        <button type="button" class="btn-link">Why do we share your data?</button>
+      </div>
+    </div>
+  </div>
+
+  <form novalidate
+    (ngSubmit)="onSubmit()"
+    [formGroup]="shareOptionsForm">
+
+    <div class="col-12 row">
+      <p class="page-emphasis">Do you agree to us sharing data with:</p>
+    </div>
+
+    <div class="form-group mb-5">
+      <div class="row p-0">
+        <div class="col-1 center-v no-padding-left">
+            <input type="checkbox"
+              id="shareWithCQCctl"
+              formControlName="shareWithCQCctl"
+              class="form-control">  
+        </div>
+        <div class="col-11">
+            <label for="shareWithCQCctl">Care Quality Commission (CQC)</label>
+        </div>
+        <div class="row summary-and-controls mb-5 record">
+          <div class="col-12 col-sm-12 center-v">
+            <button type="button" class="btn-link">What do we share with CQC?</button>
+          </div>
+        </div>
+      </div>
+      <div class="row p-0">
+        <div class="col-1 center-v no-padding-left">
+            <input type="checkbox"
+              id="shareWithLocalAuthorityCtl"
+              formControlName="shareWithLocalAuthorityCtl"
+              class="form-control">  
+        </div>
+        <div class="col-11">
+            <label for="shareWithLocalAuthorityCtl">Local authorities</label>
+        </div>
+        <div class="row summary-and-controls mb-5 record">
+          <div class="col-12 col-sm-12 center-v">
+            <button type="button" class="btn-link">What do we share with local authorities?</button>
+          </div>
+        </div>
+      </div>
+        
+      <div class="form-group mb-5">
+        <div class="row round">
+            <div class="col-1">
+                <input type="checkbox" id="doNotShareCtl" formControlName="doNotShareCtl" class="form-control">
+                <label for="doNotShareCtl"></label>
+            </div>
+            <div class="col-11">
+                <p>No, don't share my data.</p>
+            </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="btn-container">
+      <button type="submit" class="btn btn-primary">Save and continue</button>
+    </div>
+
+  </form>
+</div>

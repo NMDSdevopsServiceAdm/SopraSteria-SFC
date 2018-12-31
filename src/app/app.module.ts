@@ -37,6 +37,9 @@ import { StaffComponent } from './features/staff/staff.component';
 import { ServicesCapacityComponent } from './features/services-capacity/services-capacity.component';
 import { SharingComponent } from './features/sharing/sharing.component';
 import { MessagesComponent } from './core/messages/messages.component'
+import { MessagesComponent } from './core/messages/messages.component';
+import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
+import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
 
 import { Number } from "./shared/number.directive"
 import { NumberIntOnly } from "./shared/number-int-only.directive"
@@ -45,6 +48,10 @@ import { NumberPositiveOnly } from "./shared/number-positive-only.directive"
 import { NoPaste } from "./shared/no-paste.directive"
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
+import { HomepageComponent } from './features/homepage/homepage.component';
+import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
+import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
+import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { JobService } from "./core/services/job.service";
 import { HttpErrorHandler } from "./core/services/http-error-handler.service"
 import { MessageService } from "./core/services/message.service";
@@ -69,6 +76,10 @@ import { MessageService } from "./core/services/message.service";
     EnterWorkplaceAddressComponent,
     SelectMainServiceComponent,
     ContinueCreatingAccountComponent,
+    HomepageComponent,
+    SelectOtherServicesComponent,
+    SelectOtherServicesListComponent,
+    TypeOfEmployerComponent,
     Number,
     NumberIntOnly,
     NumberMax,
@@ -83,6 +94,8 @@ import { MessageService } from "./core/services/message.service";
     StaffComponent,
     ServicesCapacityComponent,
     SharingComponent,
+    ShareLocalAuthorityComponent,
+    ShareOptionsComponent,
   ],
   imports: [
     BrowserModule,

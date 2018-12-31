@@ -1,11 +1,17 @@
 const localformatLA = (thisLA) => {
   const thisJson = {
-    id: thisLA.id
   };
+
+  if (thisLA.id) {
+    thisJson.id = thisLA.id;
+  }
+  if (thisLA.custodianCode) {
+    thisJson.custodianCode = thisLA.custodianCode;
+  }
   
   if (thisLA.reference) {
     thisJson.name = thisLA.reference.name;
-    thisJson.custodianCode = thisLA.reference.id;
+    thisJson.custodianCode = thisLA.reference.custodianCode;
   }
 
   if (thisLA.name) {
@@ -23,7 +29,7 @@ exports.listOfLAsJSON = (givenLAs, primaryAuthorityCustodianCode) => {
 
       // if the primary Authority custodian code is given,
       //  highlight if this local authority is the primary authority
-      if (primaryAuthorityCustodianCode && parseInt(primaryAuthorityCustodianCode) === parseInt(thisLA.reference.id)) {
+      if (primaryAuthorityCustodianCode && parseInt(primaryAuthorityCustodianCode) === parseInt(thisLA.reference.custodianCode)) {
         localLa.isPrimaryAuthority = true;
       }
 
