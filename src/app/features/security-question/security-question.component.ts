@@ -90,9 +90,7 @@ export class SecurityQuestionComponent implements OnInit {
 
     this.currentSection = this.currentSection + 1;
 
-    debugger;
     if (this.backLink === '/create-username') {
-      debugger;
       if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
         this.lastSection = 8;
       }
@@ -180,7 +178,6 @@ export class SecurityQuestionComponent implements OnInit {
   }
 
   updateSectionNumbers(data) {
-    debugger;
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
@@ -191,25 +188,20 @@ export class SecurityQuestionComponent implements OnInit {
 
     console.log(data);
     console.log(this.registration);
-    debugger;
   }
 
   clickBack() {
     const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
     this.currentSection = this.currentSection - 1;
-    debugger;
     this.registration.userRoute.route.splice(-1);
-    debugger;
 
     //this.updateSectionNumbers(this.registration);
     //this.registration.userRoute = this.registration.userRoute;
     this.registration.userRoute.currentPage = this.currentSection;
     //this.registration.userRoute['route'] = this.registration.userRoute['route'];
-    debugger;
     this._registrationService.updateState(this.registration);
 
-    debugger;
     this.router.navigate([this.backLink]);
   }
 

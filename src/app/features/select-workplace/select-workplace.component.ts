@@ -53,9 +53,7 @@ export class SelectWorkplaceComponent implements OnInit {
     const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
     this.currentSection = this.currentSection - 1;
-    debugger;
     this.registration.userRoute.route.splice(-1);
-    debugger;
 
     //this.updateSectionNumbers(this.registration);
     this.registration['userRoute'] = this.registration.userRoute;
@@ -63,7 +61,6 @@ export class SelectWorkplaceComponent implements OnInit {
     //this.registration.userRoute['route'] = this.registration.userRoute['route'];
     this._registrationService.updateState(this.registration);
 
-    debugger;
     this.router.navigate([this.backLink]);
   }
 
@@ -120,7 +117,6 @@ export class SelectWorkplaceComponent implements OnInit {
   }
 
   updateSectionNumbers(data) {
-    debugger;
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
@@ -132,17 +128,14 @@ export class SelectWorkplaceComponent implements OnInit {
 
     console.log(data);
     console.log(this.registration);
-    debugger;
   }
 
   workplaceNotFound() {
     this.addressPostcode = this.registration.locationdata[0].postalCode;
-    debugger;
 
     this._registrationService.getAddressByPostCode(this.addressPostcode).subscribe(
       (data: RegistrationModel) => {
         if (data.success === 1) {
-          debugger;
           this.updateSectionNumbers(data);
           //data = data.postcodedata;
           this._registrationService.updateState(data);
@@ -151,7 +144,6 @@ export class SelectWorkplaceComponent implements OnInit {
       }
       // ,
       // (err: RegistrationTrackerError) => {
-      //   debugger;
       //   console.log(err);
       //   this.nonCqcPostcodeApiError = err.friendlyMessage;
       //   //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);

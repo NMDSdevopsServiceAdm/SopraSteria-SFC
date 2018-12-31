@@ -75,7 +75,7 @@ router.route('/').post(async (req, res) => {
         attributes: ['id']
       });
       if (!allJobsResult) {
-        console.error('establishment::jobs POST - unable to retrieve all known jobs: ', givenJobs);
+        console.error('establishment::jobs POST - unable to retrieve all known jobs');
         return res.status(503).send('Unable to retrieve all jobs');
       }
       const allJobs = [];
@@ -197,7 +197,7 @@ router.route('/').post(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::jobs POST - failed', err);
-    return res.status(503).send(`Unable to update Establishment with employer type: ${req.params.id}/${givenEmployerType}`);
+    return res.status(503).send(`Unable to update Establishment with jobs: ${req.params.id}/${givenEmployerType}`);
   }
 });
 

@@ -34,7 +34,9 @@ import { ConfirmStartersComponent } from './features/confirm-starters/confirm-st
 import { LeaversComponent } from './features/leavers/leavers.component';
 import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leavers.component';
 import { StaffComponent } from './features/staff/staff.component';
-import { MessagesComponent } from './core/messages/messages.component'
+import { MessagesComponent } from './core/messages/messages.component';
+import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
+import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
 
 import { Number } from "./shared/number.directive"
 import { NumberIntOnly } from "./shared/number-int-only.directive"
@@ -87,6 +89,8 @@ import { MessageService } from "./core/services/message.service";
     LeaversComponent,
     ConfirmLeaversComponent,
     StaffComponent,
+    ShareLocalAuthorityComponent,
+    ShareOptionsComponent,
   ],
   imports: [
     BrowserModule,

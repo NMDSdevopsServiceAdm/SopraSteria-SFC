@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true,
       autoIncrement: true,
-      field: '"EstablishmentLocalAuthority"'
+      field: '"EstablishmentLocalAuthorityID"'
     },
     authorityId: {
       type: DataTypes.INTEGER,
@@ -29,7 +29,7 @@ module.exports = function(sequelize, DataTypes) {
   EstablishmentLocalAuthority.associate = (models) => {
     EstablishmentLocalAuthority.belongsTo(models.localAuthority, {
       foreignKey: 'authorityId',
-      targetKey: 'id',
+      targetKey: 'custodianCode',
       as: 'reference'
     });
   };
