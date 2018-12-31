@@ -39,7 +39,6 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
     return this.shareLocalAuthoritiesForm.get('primaryAuthorityCtl').value
   }
   set primaryAuthorityControl(value:boolean) {
-    console.log("Updating primary authority control: ", value);
     this.shareLocalAuthoritiesForm.get('primaryAuthorityCtl').patchValue(true, {onlySelf:true, emitEvent: false});
   }
   get doNotShareControl(): boolean {
@@ -108,12 +107,10 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
   }
 
   onSubmit () {
-    alert("onSubmit)")
     if (this.doNotShareControl) {
       alert("Navigate to share options")
       //this.router.navigate(["/shareOptions"]);
     } else {
-      alert("Process selected authorities")
       // get the list of authorities from the form array, but filter
       //   the default option (whereby custodian code is null), and
       //   to remap each entry. Note, the source and target are
@@ -133,11 +130,6 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
           custodianCode: this._primaryAuthority.custodianCode
         });
       }
-
-      // // for test/debugging
-      // selectedAuthorites.forEach(thisAuth => {
-      //   console.log("this auth: ", thisAuth)
-      // });
 
       this.subscriptions.push(
         this.establishmentService.postLocalAuthorities(selectedAuthorites)
