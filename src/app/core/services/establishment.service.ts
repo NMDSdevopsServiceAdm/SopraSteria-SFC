@@ -30,6 +30,12 @@ interface ShareWithLocalAuthorityResponse extends EstablishmentApiResponse {
   localAuthorities: LocalAuthorityModel[];
 };
 
+interface EmployerTypeResponse {
+  id: number
+  name: string
+  employerType: string
+}
+
 @Injectable({
   providedIn: "root"
 })
@@ -195,11 +201,32 @@ export class EstablishmentService {
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
   }
+
   postLocalAuthorities(authorities:LocalAuthorityModel[]) {
     const postBody : ShareWithLocalAuthorityRequest = {
       localAuthorities: authorities
     };
     return this.http.post<any>(`/api/establishment/${this._establishmentId}/localAuthorities`, postBody, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * GET /api/establishment/:establishmentId/employerType
+   */
+  getEmployerType() {
+    return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * POST /api/establishment/:establishmentId/employerType
+   */
+  postEmployerType(data) {
+    return this.http.post<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`, data, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
@@ -233,5 +260,4 @@ export class EstablishmentService {
         catchError(this.httpErrorHandler.handleHttpError)
       );
   }
-  
 }
