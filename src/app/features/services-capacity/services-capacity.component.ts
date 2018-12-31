@@ -19,18 +19,14 @@ export class ServicesCapacityComponent implements OnInit, OnDestroy {
 
   form: FormGroup
 
+  capacitiesAvailable: object;
+
   private subscriptions = []
-  private capacitiesMap = {
-    "2": "bedsTotal",
-    "3": "bedsUsed",
-    "11": "peopleWithCare"
-  }
 
   submitHandler(): void {
     if (this.form.valid) {
-      const data = this.formToApi()
       this.subscriptions.push(
-        this.establishmentService.postCapacity(data)
+        this.establishmentService.postCapacity(this.formToApi())
           .subscribe(() => this.router.navigate(["/sharing"])))
 
     } else {
@@ -40,22 +36,25 @@ export class ServicesCapacityComponent implements OnInit, OnDestroy {
   }
 
   private formToApi() {
-    return Object.entries(this.capacitiesMap).map(
-      ([key, value]) => ({ questionId: parseFloat(key), answer: this.form.value[value] }))
+    return Object.entries(this.form.value).map(([key, value]) => ({ questionId: parseFloat(key), answer: value }))
   }
 
   ngOnInit() {
-    this.form = this.fb.group({
-      bedsTotal: ["", Validators.required],
-      bedsUsed: ["", Validators.required],
-      peopleWithCare: ["", Validators.required]
-    })
-
-    this.capacitiesMap
+    this.form = this.fb.group({})
 
     this.subscriptions.push(
-      this.establishmentService.getCapacity()
-        .subscribe(c => this.form.patchValue({ [this.capacitiesMap[c.questionId]]: c.answer }))
+      this.establishmentService.getCapacity(true)
+        .subscribe(data => {
+          this.capacitiesAvailable = data.allServiceCapacities
+
+          data.allServiceCapacities.forEach(service => {
+            service.questions.forEach(question => {
+              let answer = data.capacities.find(cc => question.questionId === cc.questionId)
+              answer = answer ? answer.answer : ""
+              this.form.registerControl(question.questionId.toString(), this.fb.control(parseFloat(answer), [Validators.required]))
+            })
+          })
+        })
     )
   }
 

@@ -37,7 +37,6 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/capacity?all=${all}`, this.getOptions())
       .pipe(
         debounceTime(500),
-        map(res => res.capacities),
         catchError(this.httpErrorHandler.handleHttpError))
   }
 
