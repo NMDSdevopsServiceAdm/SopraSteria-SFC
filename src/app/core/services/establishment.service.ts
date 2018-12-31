@@ -44,6 +44,7 @@ export class EstablishmentService {
   constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {}
 
   private _establishmentToken = null;
+  private _establishmentId = null;
 
 
   public set establishmentId(value:number) {
@@ -216,7 +217,7 @@ export class EstablishmentService {
    * GET /api/establishment/:establishmentId/employerType
    */
   getEmployerType() {
-    return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`, this.getOptions())
+    return this.http.get<EmployerTypeResponse>(`/api/establishment/${this._establishmentId}/employerType`, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
@@ -226,7 +227,7 @@ export class EstablishmentService {
    * POST /api/establishment/:establishmentId/employerType
    */
   postEmployerType(data) {
-    return this.http.post<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`, data, this.getOptions())
+    return this.http.post<EmployerTypeResponse>(`/api/establishment/${this._establishmentId}/employerType`, data, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))

@@ -33,7 +33,7 @@ export class HomepageComponent implements OnInit {
   }
 
   welcomeContinue() {
-    this.router.navigate(['/select-other-services']);
+    this.router.navigate(['/type-of-employer']);
   }
 
 }

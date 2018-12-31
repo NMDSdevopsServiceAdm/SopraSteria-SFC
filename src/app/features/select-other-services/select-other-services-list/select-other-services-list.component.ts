@@ -138,7 +138,7 @@ export class SelectOtherServicesListComponent implements OnInit {
         },
         () => {
           // TODO - update navigation to "service capacity"
-          this.router.navigate(['/share-options']);
+          this.router.navigate(['/capacity-of-services']);
         }
       );
   }
