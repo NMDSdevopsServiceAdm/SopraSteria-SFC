@@ -65,7 +65,7 @@ export class EstablishmentService {
    * GET /api/establishment/:establishmentId/capacity/?all=[true|false]
    */
   getCapacity(all=false) {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/capacity?all=${all}`, this.getOptions())
+    return this.http.get<any>(`/api/establishment/${this._establishmentId}/capacity?all=${all}`, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
@@ -76,7 +76,7 @@ export class EstablishmentService {
    */
   postCapacity(capacities) {
     const data = { capacities }
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/capacity`, data, this.getOptions())
+    return this.http.post<any>(`/api/establishment/${this._establishmentId}/capacity`, data, this.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError))
