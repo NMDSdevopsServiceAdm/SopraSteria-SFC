@@ -37,8 +37,8 @@ export class EstablishmentService {
 
   constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {}
 
-  private _establishmentId = null;
   private _establishmentToken = null;
+
 
   public set establishmentId(value:number) {
     this._establishmentId = value
@@ -52,6 +52,27 @@ export class EstablishmentService {
     headers = headers.append("Authorization", this._establishmentToken)
     headers = headers.append("Content-Type", "application/json")
     return { headers }
+  }
+
+  /*
+   * GET /api/establishment/:establishmentId/capacity/?all=[true|false]
+   */
+  getCapacity(all=false) {
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/capacity?all=${all}`, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
+  }
+
+  /*
+   * POST /api/establishment/:establishmentId/capacity
+   */
+  postCapacity(capacities) {
+    const data = { capacities }
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/capacity`, data, this.getOptions())
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
   }
 
   /*
@@ -126,7 +147,7 @@ export class EstablishmentService {
         catchError(this.httpErrorHandler.handleHttpError))
   }
 
-    /*
+  /*
    * GET /api/establishment/:establishmentId/staff
    */
   getStaff() {
