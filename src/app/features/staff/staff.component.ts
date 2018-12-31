@@ -10,6 +10,7 @@ import { EstablishmentService } from "../../core/services/establishment.service"
   templateUrl: './staff.component.html',
   styleUrls: ['./staff.component.scss']
 })
+
 export class StaffComponent implements OnInit, OnDestroy {
 
   constructor(

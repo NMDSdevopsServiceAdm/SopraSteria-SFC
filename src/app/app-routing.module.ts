@@ -25,6 +25,8 @@ import { ConfirmStartersComponent } from "./features/confirm-starters/confirm-st
 import { LeaversComponent } from "./features/leavers/leavers.component"
 import { ConfirmLeaversComponent } from "./features/confirm-leavers/confirm-leavers.component"
 import { StaffComponent } from "./features/staff/staff.component"
+import { ServicesCapacityComponent } from "./features/services-capacity/services-capacity.component"
+import { SharingComponent } from "./features/sharing/sharing.component"
 import { ShareOptionsComponent } from "./features/shareOptions/shareOptions.component"
 import { ShareLocalAuthorityComponent } from "./features/shareLocalAuthorities/shareLocalAuthority.component"
 
@@ -117,6 +119,14 @@ const routes: Routes = [
   {
     path: 'staff',
     component: StaffComponent
+  },
+  {
+    path: 'capacity-of-services',
+    component: ServicesCapacityComponent
+  },
+  {
+    path: 'sharing',
+    component: SharingComponent
   },
   {
     path: 'shareLocalAuthority',
