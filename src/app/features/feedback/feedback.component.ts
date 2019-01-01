@@ -51,7 +51,6 @@ export class FeedbackComponent implements OnInit, OnDestroy {
 
   closeWindow() {
     // close the window
-    alert("We shoudl close the window")
     this.feedbackService.window.close();
   }
 
