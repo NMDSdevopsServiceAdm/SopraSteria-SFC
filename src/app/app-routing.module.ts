@@ -28,6 +28,7 @@ import { StaffComponent } from "./features/staff/staff.component"
 import { ServicesCapacityComponent } from "./features/services-capacity/services-capacity.component"
 import { ShareOptionsComponent } from "./features/shareOptions/shareOptions.component"
 import { ShareLocalAuthorityComponent } from "./features/shareLocalAuthorities/shareLocalAuthority.component"
+import { FeedbackComponent } from "./features/feedback/feedback.component"
 
 const routes: Routes = [
 
@@ -130,6 +131,10 @@ const routes: Routes = [
   {
     path: 'share-options',
     component: ShareOptionsComponent
+  },
+  {
+    path: 'feedback',
+    component: FeedbackComponent
   },
 ];
 

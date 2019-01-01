@@ -39,6 +39,7 @@ import { SharingComponent } from './features/sharing/sharing.component';
 import { MessagesComponent } from './core/messages/messages.component';
 import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
 import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
+import { FeedbackComponent } from './features/feedback/feedback.component';
 
 import { Number } from "./shared/number.directive"
 import { NumberIntOnly } from "./shared/number-int-only.directive"
@@ -54,6 +55,7 @@ import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-emp
 import { JobService } from "./core/services/job.service";
 import { HttpErrorHandler } from "./core/services/http-error-handler.service"
 import { MessageService } from "./core/services/message.service";
+import { FeedbackService } from "./core/services/feedback.service";
 
 @NgModule({
   declarations: [
@@ -95,6 +97,7 @@ import { MessageService } from "./core/services/message.service";
     SharingComponent,
     ShareLocalAuthorityComponent,
     ShareOptionsComponent,
+    FeedbackComponent,
   ],
   imports: [
     BrowserModule,
@@ -120,6 +123,7 @@ import { MessageService } from "./core/services/message.service";
     JobService,
     MessageService,
     HttpErrorHandler,
+    FeedbackService,
   ],
   bootstrap: [AppComponent]
 })
