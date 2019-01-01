@@ -33,6 +33,7 @@ export class HomepageComponent implements OnInit {
   }
 
   welcomeContinue() {
+    this._loginService.resetFirstLogin();
     this.router.navigate(['/type-of-employer']);
   }
 

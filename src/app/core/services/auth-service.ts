@@ -86,6 +86,17 @@ export class AuthService {
     }
   }
 
+  public resetFirstLogin(): boolean {
+    if (this._session) {
+      this._session.isFirstLogin = false;
+
+      // successfully reset
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   // sets the session token - note; this should proberly be saved to local storage - but also with an expiry.
   public set token(authorization:string) {
     this._token = authorization;
