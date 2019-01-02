@@ -28,7 +28,7 @@ export class VacanciesComponent implements OnInit, OnDestroy {
 
   noVacanciesReasonOptions = [
     {
-      label: "There are no curret staff vacancies.",
+      label: "There are no current staff vacancies.",
       value: "no-staff"
     },
     {
