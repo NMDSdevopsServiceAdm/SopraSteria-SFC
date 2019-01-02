@@ -29,6 +29,7 @@ import { ServicesCapacityComponent } from "./features/services-capacity/services
 import { ShareOptionsComponent } from "./features/shareOptions/shareOptions.component"
 import { ShareLocalAuthorityComponent } from "./features/shareLocalAuthorities/shareLocalAuthority.component"
 import { FeedbackComponent } from "./features/feedback/feedback.component"
+import { ContactUsComponent } from "./features/contactUs/contactUs.component"
 
 const routes: Routes = [
 
@@ -136,6 +137,10 @@ const routes: Routes = [
     path: 'feedback',
     component: FeedbackComponent
   },
+  {
+    path: 'contact-us',
+    component: ContactUsComponent
+  }
 ];
 
 @NgModule({
