@@ -34,7 +34,7 @@ router.route('/:id').get(async (req, res) => {
   // must provide the establishment ID and it must be a number
   if (!req.params.id || isNaN(parseInt(req.params.id))) {
     console.error('establishment root GET - missing establishment id parameter');
-    return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
+   return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
   }
   if (establishmentId !== parseInt(req.params.id)) {
     console.error('establishment root GET - given and known establishment id do not match');

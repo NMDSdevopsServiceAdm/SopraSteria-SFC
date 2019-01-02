@@ -186,7 +186,7 @@ router.route('/').post(async (req, res) => {
           }]
         }]
       });
-      
+
       res.status(200);
       return res.json(formatJobResponse(results));
     } else {
@@ -206,7 +206,7 @@ router.route('/').post(async (req, res) => {
 const isValidJobEntry = (entry, allKnownJobs) => {
   const maxNumberOfStaff=1000;
 
-  if (entry && 
+  if (entry &&
       entry.total &&
       parseInt(entry.total) === entry.total &&
       entry.total < maxNumberOfStaff &&

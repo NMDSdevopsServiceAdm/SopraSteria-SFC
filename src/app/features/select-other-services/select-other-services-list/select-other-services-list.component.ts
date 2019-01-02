@@ -16,7 +16,7 @@ export class SelectOtherServicesListComponent implements OnInit {
   mainService: string;
   isRegistered: boolean;
   servicesData: {};
-  otherServicesData = {};
+  otherServicesData = [];
   SelectOtherServiceForm: FormGroup;
   isInvalid: boolean;
   checked: boolean;
@@ -122,9 +122,8 @@ export class SelectOtherServicesListComponent implements OnInit {
     if (this.postOtherServicesdata.length > 0) {
       this.save();
     }
-    else {
-      this.router.navigate(['/type-of-employer']);
-    }
+
+    this.router.navigate(['/capacity-of-services']);
   }
 
   save() {
