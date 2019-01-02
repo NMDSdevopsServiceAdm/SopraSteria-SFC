@@ -58,8 +58,6 @@
     </div>
     <form class="col-12 pt-4 pb-2 terms-container mb-4" [formGroup]="tcAgreementForm">
       <label for="tcAgreement" class="check">
-          <!-- <input type="checkbox" id="{{ data.id }}" formControlName="otherServiceSelected"
-          [checked]="data.isMyService" value="{{ data.name }}"  /> -->
         <input id="tcAgreement" type="checkbox" formControlName="tcAgreement" (change)="toggleCheckbox($event.target)" />
         <span class="checkmark"></span>
 

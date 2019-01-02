@@ -36,21 +36,13 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
-    console.log(this.registration);
-
     if (this.registration.hasOwnProperty('detailsChanged')) {
       delete this.registration.detailsChanged;
-      console.log(this.registration);
     }
-    //this.registration[0]['detailsChanged'] = undefined;
 
     // Set section numbering on load
     this.setSectionNumbers();
 
-    // Watch mainServiceSelected
-    // this.tcAgreementForm.get('tcAgreement').valueChanges.subscribe(
-    //   value => this.selectTCAgreementChanged(value)
-    // );
     this.submitDisabled = true;
   }
 
@@ -76,13 +68,11 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
   submit() {
     this._registrationService.postRegistration(this.registration);
-    //this.router.navigate(['/registration-complete']);
   }
 
   changeDetails() {
 
     this.registration['detailsChanged'] = true;
-    console.log(this.registration);
 
     this._registrationService.updateState(this.registration);
 
@@ -93,9 +83,6 @@ export class ConfirmAccountDetailsComponent implements OnInit {
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/confirm-account-details');
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
   }
 
   clickBack() {
