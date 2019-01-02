@@ -13,8 +13,8 @@
   <div class="header-line container">
     <div class="container">
       <div class="m-0 d-inline-block beta-txt">Beta</div>
-      <div class="m-0 d-inline-block ml-3">
-        <span>This is a new service - your <a routerLink="/" title="Leave feedback">feedback</a> will help us to improve it.</span>
+      <div class="m-0 d-inline-block ml-3" *ngIf="router && router.url == '/feedback' ? false : true">
+        <span>This is a new service - your <a routerLink="/feedback" title="Leave feedback" target="_blank">feedback</a> will help us to improve it.</span>
       </div>
     </div>
   </div>

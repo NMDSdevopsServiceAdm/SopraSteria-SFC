@@ -1,7 +1,10 @@
 @import "./assets/scss/variables";
 @import "./assets/scss/mixins.scss";
 
+@import "./assets/scss/base";
 @import "./assets/scss/main.scss";
+@import "./assets/scss/layout";
+@import "./assets/scss/module";
 
 @import "./assets/scss/type.scss";
 @import "./assets/scss/buttons.scss";

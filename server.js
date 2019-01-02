@@ -17,9 +17,11 @@ var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
 var login = require('./server/routes/login');
 
-var Authorization = require('./server/utils/security/isAuthenticated');
-
 var errors = require('./server/routes/errors');
+
+// test only routes - helpers to setup and execute automated tests
+var testOnly = require('./server/routes/testOnly');
+
 
 var app = express();
 
@@ -45,6 +47,7 @@ app.use('/api/establishment', establishments);
 app.use('/api/jobs', jobs);
 app.use('/api/localAuthority', la);
 app.use('/api/feedback', feedback);
+app.use('/api/test', testOnly);
 app.use('/api/login', login);
 
 app.get('*', function(req, res) {
