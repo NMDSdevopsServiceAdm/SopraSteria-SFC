@@ -106,7 +106,7 @@ export class VacanciesComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.establishmentService.getVacancies().subscribe(vacancies => {
-        if (vacancies) {
+        if (vacancies.length) {
           vacancies.forEach(v => vacancyControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)))
 
         } else {

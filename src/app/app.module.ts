@@ -56,6 +56,8 @@ import { JobService } from "./core/services/job.service";
 import { HttpErrorHandler } from "./core/services/http-error-handler.service"
 import { MessageService } from "./core/services/message.service";
 import { FeedbackService } from "./core/services/feedback.service";
+import { EstablishmentService } from "./core/services/establishment.service"
+
 
 @NgModule({
   declarations: [
@@ -124,6 +126,7 @@ import { FeedbackService } from "./core/services/feedback.service";
     MessageService,
     HttpErrorHandler,
     FeedbackService,
+    EstablishmentService,
   ],
   bootstrap: [AppComponent]
 })
