@@ -150,6 +150,125 @@
                 }
             }
         },
+        "job" : {
+            "description": "An individual job total",
+            "type" : "object",
+            "properties": {
+                "jobId" : {
+                    "description" : "A unique reference to the job title",
+                    "$ref" : "#/definitions/ID"
+                },
+                "title" : {
+                    "description" : "The title of the job of given jobId",
+                    "type" : "string"
+                },
+                "total" : {
+                    "description" : "The number of staff for this specific job (as given by jobId)",
+                    "type" : "integer",
+                    "minimum": 0,
+                    "maximum": 999
+                }
+            },
+            "required" : ["jobId"]
+        },
+        "jobs" : {
+            "description": "The collective definition of number of vacancies, starters and leavers atytributed to a given establishment. Each is optional, but if given, overwrites all existing jobs of that type",
+            "type" : "object",
+            "properties" : {
+                "Vacancies": {
+                    "type" : "array",
+                    "items" : [{
+                        "$ref" : "#/definitions/job"
+                    }]
+                },
+                "starters": {
+                    "type" : "array",
+                    "items" : [{
+                        "$ref" : "#/definitions/job"
+                    }]
+                },
+                "leavers": {
+                    "type" : "array",
+                    "items" : [{
+                        "$ref" : "#/definitions/job"
+                    }]
+                },
+                "TotalVacancies" : {
+                    "description" : "The total of all Vacancies - 0, if no Vacancies",
+                    "type" : "integer",
+                    "minimum": 0
+                },
+                "TotalStarters" : {
+                    "description" : "The total of all Starters - 0, if no Vacancies",
+                    "type" : "integer",
+                    "minimum": 0
+                },
+                "TotalLeavers" : {
+                    "description" : "The total of all Leavers - 0, if no Vacancies",
+                    "type" : "integer",
+                    "minimum": 0
+                }
+            },
+            "required" : ["TotalVacancies", "TotalStarters", "TotalLeavers"]
+        },
+        "LocalAuthority" : {
+            "description" : "Local Authority reference",
+            "type" : "object",
+            "properties" : {
+                "id" : {
+                    "description" : "This the primary index for a specific Local Authority of a given Establishment",
+                    "$ref" : "#/definitions/ID"
+                },
+                "name" : {
+                    "description": "This is the readable name of the Local Authority",
+                    "type" : "string",
+                    "minLength": 3
+                },
+                "custodianCode" : {
+                    "description" : "A unique reference for a Local Authority",
+                    "$ref" : "#/definitions/ID"
+                },
+                "isPrimaryAuthority" : {
+                    "description": "An optional flag (assumed false if not given) that if true, identifies this as being the Local Authority as known by the physical location of the associated Establishment",
+                    "type" : "boolean"
+                }
+            },
+            "required" : ["id", "name"]
+        },
+        "ShareOptions" : {
+            "description" : "For sharing data with CQC and Local Authorities",
+            "type" : "object",
+            "properties" : {
+                "enabled" : {
+                    "description" : "If false, all sharing is disabled",
+                    "type" : "boolean"
+                },
+                "with" : {
+                    "description" : "If enabled is true, describes which of the share options (CQC/Local Authority) is enabled",
+                    "type" : "object",
+                    "properties": {
+                        "shareWithCQC" : {
+                            "description": "If true, then share with CQC",
+                            "type" : "boolean"
+                        },
+                        "shareWithLA" : {
+                            "description": "If true, then share with Local Authorities"
+                        },
+                        "authorities" : {
+                            "description" : "A list of all the local authorities to which data is shared with; only populated if 'shareWithLA' is true",
+                            "type" : "array",
+                            "items" : [
+                                {
+                                    "$ref" : "#/definitions/LocalAuthority"
+                                }
+                            ]
+                        }
+                    },
+                    "required" : []
+                }
+            },
+            "required" : ["enabled"]
+        },
         "Establishment" : {
             "description" : "A physical location offering care services; can be commercial or private location",
             "type" : "object",
@@ -199,9 +318,53 @@
                     "items" : {
                         "$ref" : "#/definitions/ServiceGroup"
                     }
-                }
-            },
+                },
+                "share": {
+                    "description" : "Whether to share, and if so, the share options (LA/CQC)",
+                    "$ref" : "#/definitions/ShareOptions"
+                },
+                "numberOfStaff" : {
+                    "description" : "The number of staff reported at this Establishment",
+                    "type" : "integer",
+                    "minimum": 0,
+                    "maximum": 999
+                }            },
             "required" : ["id", "name"]
         }
+    },
+    "Feedback" : {
+        "description" : "For capturing user feedback",
+        "properties" : {
+            "id" : {
+                "description" : "A unique index for this particular feedback; id is optional because this type is used to both create and return feedback",
+                "$ref" : "#/definitions/ID"
+            },
+            "whenDoing" : {
+                "description" : "The feedback as given for 'when doing something in particular'",
+                "type" : "string",
+                "minLength" : 0,
+                "maxLength" : 500
+            },
+            "tellUs" : {
+                "description" : "General 'tell us' feedback",
+                "type" : "string",
+                "minLength" : 0,
+                "maxLength" : 500
+            },
+            "name" : {
+                "description" : "Optional name for the feedback",
+                "type" : "string",
+                "minLength" : 3,
+                "maxLength" : 120
+            },
+            "email" : {
+                "description" : "Optional email for the feedback",
+                "type" : "string",
+                "minLength" : 3,
+                "maxLength" : 120,
+                "pattern" : "^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"
+            }
+        },
+        "required" : ["whenDoing", "tellUs"]
     }
 }

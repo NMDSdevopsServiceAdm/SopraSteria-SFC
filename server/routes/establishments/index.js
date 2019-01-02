@@ -7,11 +7,15 @@ const Authorization = require('../../utils/security/isAuthenticated');
 const ServiceFormatters = require('../../models/api/services');
 const CapacityFormatters = require('../../models/api/capacity');
 const ShareFormatters = require('../../models/api/shareData');
+const JobFormatters = require('../../models/api/jobs');
 
 const EmployerType = require('./employerType');
 const Services = require('./services');
 const Capacity = require('./capacity');
 const ShareData = require('./shareData');
+const Staff = require('./staff');
+const Jobs = require('./jobs');
+const LA = require('./la');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -19,6 +23,9 @@ router.use('/:id/employerType', EmployerType);
 router.use('/:id/services', Services);
 router.use('/:id/capacity', Capacity);
 router.use('/:id/share', ShareData);
+router.use('/:id/staff', Staff);
+router.use('/:id/jobs', Jobs);
+router.use('/:id/localAuthorities', LA);
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
@@ -39,28 +46,59 @@ router.route('/:id').get(async (req, res) => {
       where: {
         id: establishmentId
       },
-      include: [{
-        model: models.services,
-        as: 'otherServices',
-        attributes: ['id', 'name', 'category'],
-        order: [
-          ['category', 'ASC'],
-          ['name', 'ASC']
-        ]
-      },{
-        model: models.services,
-        as: 'mainService',
-        attributes: ['id', 'name']
-      },{
-        model: models.establishmentCapacity,
-        as: 'capacity',
-        attributes: ['id', 'answer'],
-        include: [{
-          model: models.serviceCapacity,
-          as: 'reference',
-          attributes: ['id', 'question']
-        }]
-      }]
+      include: [
+        {
+          model: models.services,
+          as: 'otherServices',
+          attributes: ['id', 'name', 'category'],
+          order: [
+            ['category', 'ASC'],
+            ['name', 'ASC']
+          ]
+        },{
+          model: models.services,
+          as: 'mainService',
+          attributes: ['id', 'name']
+        },{
+          model: models.establishmentCapacity,
+          as: 'capacity',
+          attributes: ['id', 'answer'],
+          include: [{
+            model: models.serviceCapacity,
+            as: 'reference',
+            attributes: ['id', 'question']
+          }]
+        },
+        {
+          model: models.establishmentJobs,
+          as: 'jobs',
+          attributes: ['id', 'type', 'total'],
+          order: [
+            ['type', 'ASC']
+          ],
+          include: [{
+            model: models.job,
+            as: 'reference',
+            attributes: ['id', 'title'],
+            order: [
+              ['title', 'ASC']
+            ]
+          }]
+        },
+        {
+          model: models.establishmentLocalAuthority,
+          as: 'localAuthorities',
+          attributes: ['id'],
+          include: [{
+            model: models.localAuthority,
+            as: 'reference',
+            attributes: ['custodianCode', 'name'],
+            order: [
+              ['name', 'ASC']
+            ]
+          }]
+        }
+      ]
     });
 
     if (results && results.id && (establishmentId === results.id)) {
@@ -88,10 +126,12 @@ const formatEstablishmentResponse = (establishment) => {
     locationRef: establishment.locationId,
     isRegulated: establishment.isRegulated,
     employerType: establishment.employerType,
-    share: ShareFormatters.shareDataJSON(establishment),
+    numberOfStaff: establishment.numberOfStaff,
+    share: ShareFormatters.shareDataJSON(establishment, establishment.localAuthorities),
     mainService: ServiceFormatters.singleService(establishment.mainService),
     otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices),
-    capacities: CapacityFormatters.capacitiesJSON(establishment.capacity)
+    capacities: CapacityFormatters.capacitiesJSON(establishment.capacity),
+    jobs: JobFormatters.jobsByTypeJSON(establishment.jobs)
   };
 }
 

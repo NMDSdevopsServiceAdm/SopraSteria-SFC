@@ -87,7 +87,6 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   }
 
   updateSectionNumbers(data) {
-    debugger;
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
@@ -99,7 +98,6 @@ export class SelectWorkplaceAddressComponent implements OnInit {
 
     console.log(data);
     console.log(this.registration);
-    debugger;
   }
 
   postcodeChange() {

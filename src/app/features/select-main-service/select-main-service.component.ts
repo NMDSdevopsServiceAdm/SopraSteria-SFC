@@ -59,7 +59,6 @@ export class SelectMainServiceComponent implements OnInit {
     this.backLink = this.registration.userRoute.route[this.currentSection - 1];
 
     this.currentSection = this.currentSection + 1;
-    debugger;
     if (this.backLink === '/registered-question') {
       this.lastSection = 7;
     }
@@ -83,23 +82,18 @@ export class SelectMainServiceComponent implements OnInit {
     const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
     this.currentSection = this.currentSection - 1;
-    debugger;
     this.registration.userRoute.route.splice(-1);
-    debugger;
 
     //this.updateSectionNumbers(this.registration);
     //this.registration.userRoute = this.registration.userRoute;
     this.registration.userRoute.currentPage = this.currentSection;
     //this.registration.userRoute['route'] = this.registration.userRoute['route'];
-    debugger;
     this._registrationService.updateState(this.registration);
 
-    debugger;
     this.router.navigate([this.backLink]);
   }
 
   getMainServices() {
-    //debugger
     //this.regulatedCheck = this.registration[0].locationdata.isRegulated;
 
     if (this.registration.locationdata[0].isRegulated === true) {
@@ -145,7 +139,6 @@ export class SelectMainServiceComponent implements OnInit {
   }
 
   updateSectionNumbers(data) {
-    debugger;
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
@@ -157,7 +150,6 @@ export class SelectMainServiceComponent implements OnInit {
 
     console.log(data);
     console.log(this.registration);
-    debugger;
   }
 
 }
