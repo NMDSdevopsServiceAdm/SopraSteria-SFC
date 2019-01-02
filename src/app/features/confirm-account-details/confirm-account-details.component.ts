@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { RegistrationService } from '../../core/services/registration.service';
@@ -12,15 +13,27 @@ import { RegistrationModel } from '../../core/model/registration.model';
 })
 export class ConfirmAccountDetailsComponent implements OnInit {
   registration: RegistrationModel;
+  tcAgreementForm: FormGroup;
 
   currentSection: number;
   lastSection: number;
   backLink: string;
   secondItem: number;
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private route: ActivatedRoute) { }
+  submitDisabled: boolean;
+
+  constructor(
+    private _registrationService: RegistrationService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private fb: FormBuilder
+  ) { }
 
   ngOnInit() {
+    this.tcAgreementForm = this.fb.group({
+      tcAgreement: ['', Validators.required]
+    });
+
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     console.log(this.registration);
@@ -33,6 +46,12 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
     // Set section numbering on load
     this.setSectionNumbers();
+
+    // Watch mainServiceSelected
+    // this.tcAgreementForm.get('tcAgreement').valueChanges.subscribe(
+    //   value => this.selectTCAgreementChanged(value)
+    // );
+    this.submitDisabled = true;
   }
 
   setSectionNumbers() {
@@ -42,9 +61,7 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
     this.currentSection = (this.currentSection + 1);
 
-    debugger;
     if (this.backLink === '/security-question') {
-      debugger;
       if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
         this.lastSection = 8;
       }
@@ -58,7 +75,6 @@ export class ConfirmAccountDetailsComponent implements OnInit {
   }
 
   submit() {
-    debugger;
     this._registrationService.postRegistration(this.registration);
     //this.router.navigate(['/registration-complete']);
   }
@@ -73,7 +89,6 @@ export class ConfirmAccountDetailsComponent implements OnInit {
   }
 
   updateSectionNumbers(data) {
-    debugger;
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
@@ -81,29 +96,28 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
     // data.userRoute.currentPage = this.currentSection;
     // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
-    debugger;
   }
 
   clickBack() {
     const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
     this.currentSection = this.currentSection - 1;
-    debugger;
     this.registration.userRoute.route.splice(-1);
-    debugger;
 
-    //this.updateSectionNumbers(this.registration);
-    //this.registration.userRoute = this.registration.userRoute;
     this.registration.userRoute.currentPage = this.currentSection;
-    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
-    debugger;
+
     this._registrationService.updateState(this.registration);
 
-    debugger;
     this.router.navigate([this.backLink]);
+  }
+
+  toggleCheckbox($event: any) {
+    if ($event.checked) {
+      this.submitDisabled = false;
+    }
+    else {
+      this.submitDisabled = true;
+    }
   }
 
 }

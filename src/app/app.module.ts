@@ -56,6 +56,7 @@ import { JobService } from "./core/services/job.service";
 import { HttpErrorHandler } from "./core/services/http-error-handler.service"
 import { MessageService } from "./core/services/message.service";
 import { FeedbackService } from "./core/services/feedback.service";
+import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { FeedbackService } from "./core/services/feedback.service";
     ShareLocalAuthorityComponent,
     ShareOptionsComponent,
     FeedbackComponent,
+    TermsConditionsComponent,
   ],
   imports: [
     BrowserModule,
