@@ -29,7 +29,7 @@ module.exports = function(sequelize, DataTypes) {
   EstablishmentLocalAuthority.associate = (models) => {
     EstablishmentLocalAuthority.belongsTo(models.localAuthority, {
       foreignKey: 'authorityId',
-      targetKey: 'id',
+      targetKey: 'custodianCode',
       as: 'reference'
     });
   };

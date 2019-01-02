@@ -8,7 +8,7 @@ router.route('/').get(async (req, res) => {
 
   try {
     let results = await models.localAuthority.findAll({
-      attributes: ['id', 'name'],
+      attributes: ['custodianCode', 'name'],
       order: [
         ['name', 'ASC']
       ]

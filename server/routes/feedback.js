@@ -9,6 +9,7 @@ router.route('/').post(async (req, res) => {
 
   try {
     // expecting doingWhat and tellUs attributes, even though they could be of zero length
+    //  TODO: check with the BA regarding the both mandatory logic; either/or, but at least one makes more sense.
     // intentionally leaving out any specific validation - awaiting JSON schema validation.
 
     // express JSON body parser undefines attribute if it is an empty string!

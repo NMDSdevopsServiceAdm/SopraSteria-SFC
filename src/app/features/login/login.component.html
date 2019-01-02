@@ -4,7 +4,7 @@
   <h1 class="h1">Sign in</h1>
 
   <form novalidate
-        (ngSubmit)="save()"
+        (ngSubmit)="onSubmit()"
         [formGroup]="loginForm">
 
     <div class="form-group mb-5">
@@ -29,7 +29,7 @@
       </div>
       <div class="field-group">
         <label for="password" class="d-block">Password</label>
-        <input type="text"
+        <input type="password"
                placeholder=""
                id="password"
                formControlName="password"

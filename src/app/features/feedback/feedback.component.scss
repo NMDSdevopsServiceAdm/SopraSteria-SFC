@@ -1,0 +1,20 @@
+@import "../../../assets/scss/variables.scss";
+
+.page-title {
+    font-weight: bold;
+}
+
+.form-title {
+    font-weight: normal;
+}
+.form-caveat {
+    font-weight: normal;
+    color: $light-grey-text;
+    font-style: italic;
+    padding: 0;
+}
+
+.form {
+    font-size: 16pt;
+}
+
