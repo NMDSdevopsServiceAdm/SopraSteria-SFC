@@ -142,6 +142,8 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
           this._registrationService.updateState(data);
           //this.routingCheck(data);
         }
+
+        this.router.navigate(["/select-workplace-address"])
       }
     );
   }

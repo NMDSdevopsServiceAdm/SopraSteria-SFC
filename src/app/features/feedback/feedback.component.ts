@@ -28,6 +28,34 @@ export class FeedbackComponent implements OnInit, OnDestroy {
   private feedbackForm: FormGroup
   private subscriptions = []
 
+  private _countdownValidation = {
+    whenDoingCtl : {
+      max: 500,
+      current: 0,
+      remaining: 500 },
+    tellUsCtl : {
+      max: 500,
+      current: 0,
+      remaining: 500
+    }
+  };
+
+  private validateCountdown(control: string): void {
+    (this._countdownValidation[control]).current = this.feedbackForm.get(control).value.toString().length;
+    (this._countdownValidation[control]).remaining = (this._countdownValidation[control]).max - (this._countdownValidation[control]).current;
+  }
+
+  private countdown(control: string): number {
+    return (this._countdownValidation[control]).remaining;
+  };
+
+  private countdownWhenDoing(): number {
+    return this.countdown('whenDoingCtl');
+  }
+  private countdownTellUs(): number {
+    return this.countdown('tellUsCtl');
+  }
+
   // form controls
   get tellUscontrol() : string {
     return this.feedbackForm.get('tellUsCtl').value
@@ -81,8 +109,8 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     this.feedbackForm = this.fb.group({
       tellUsCtl: ['', [Validators.required, Validators.maxLength(500)]],
       whenDoingCtl: ['', [Validators.required, Validators.maxLength(500)]],
-      nameCtl: ['', [Validators.required, Validators.maxLength(120)]],
-      emailCtl: ['', [Validators.required, Validators.maxLength(120)]],
+      nameCtl: ['', [Validators.maxLength(120)]],
+      emailCtl: ['', [Validators.email,Validators.maxLength(120)]],
     });
   }
 
