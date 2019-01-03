@@ -9,6 +9,10 @@ export class FooterComponent {
 
   constructor() { }
 
+  preventDefault(event) {
+    event.preventDefault()
+  }
+
   ngOnInit() {
   }
 
