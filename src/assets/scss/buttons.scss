@@ -37,7 +37,12 @@
 
     &:disabled,
     &.disabled {
-      background-color: $light-grey-text;
+      background-color: $sfc-btn-primary-green;
+
+      &:hover,
+      &:active {
+        background-color: $sfc-btn-primary-green !important;
+      }
     }
   }
 
