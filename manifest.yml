@@ -1,5 +1,5 @@
 applications:
-- name: sfcuat
-  memory: 1G
+- name: sfcdev
+  memory: 512m
   disk_quota: 1GB
   buildpack: nodejs_buildpack

@@ -10,16 +10,16 @@
   "test": {
     "username": "sfcadmin",
     "password": "sfcadmin123",
-    "database": "sfctstdb",
+    "database": "sfcdevdb",
     "host": "35.178.185.248",
     "port": 5432,
     "dialect": "postgres"
   },
   "production": {
-    "username": "uo42p_ysvn68zc3h",
+    "username": "sfcadmin",
     "password": "sfcadmin123",
-    "database": "rdsbroker_bc0d061f_121c_4627_80af_90cf67961b75",
-    "host": "rdsbroker-bc0d061f-121c-4627-80af-90cf67961b75.c7uewwm9qebj.eu-west-1.rds.amazonaws.com",
+    "database": "sfcdevdb",
+    "host": "35.178.185.248",
     "port": 5432,
     "dialect": "postgres"
   }
