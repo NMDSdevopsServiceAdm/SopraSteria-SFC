@@ -32,6 +32,18 @@ exports.jobsByTypeJSON = (givenJobs) => {
     jobTypeGroup[value] = key;
   });
 
+
+  // have default (if simply empty) set of vacancies, starters and leavers
+  if (typeof jobTypeGroup['Vacancies'] === 'undefined') {
+    jobTypeGroup['Vacancies'] = [];
+  }
+  if (typeof jobTypeGroup['Starters'] === 'undefined') {
+    jobTypeGroup['Starters'] = [];
+  }
+  if (typeof jobTypeGroup['Leavers'] === 'undefined') {
+    jobTypeGroup['Leavers'] = [];
+  }
+
   // add the totals; totals must always be given even if there no associated jobs
   let totalVacancies = 0;
   if (jobTypeGroup['Vacancies']) {

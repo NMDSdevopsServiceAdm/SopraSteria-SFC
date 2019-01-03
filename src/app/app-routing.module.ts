@@ -18,18 +18,19 @@ import { ContinueCreatingAccountComponent } from './features/continue-creating-a
 import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
-import { VacanciesComponent } from "./features/vacancies/vacancies.component";
-import { ConfirmVacanciesComponent } from "./features/confirm-vacancies/confirm-vacancies.component"
-import { StartersComponent } from "./features/starters/starters.component"
-import { ConfirmStartersComponent } from "./features/confirm-starters/confirm-starters.component"
-import { LeaversComponent } from "./features/leavers/leavers.component"
-import { ConfirmLeaversComponent } from "./features/confirm-leavers/confirm-leavers.component"
-import { StaffComponent } from "./features/staff/staff.component"
-import { ServicesCapacityComponent } from "./features/services-capacity/services-capacity.component"
-import { ShareOptionsComponent } from "./features/shareOptions/shareOptions.component"
-import { ShareLocalAuthorityComponent } from "./features/shareLocalAuthorities/shareLocalAuthority.component"
-import { FeedbackComponent } from "./features/feedback/feedback.component"
-import { ContactUsComponent } from "./features/contactUs/contactUs.component"
+import { VacanciesComponent } from './features/vacancies/vacancies.component';
+import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component';
+import { StartersComponent } from './features/starters/starters.component';
+import { ConfirmStartersComponent } from './features/confirm-starters/confirm-starters.component';
+import { LeaversComponent } from './features/leavers/leavers.component';
+import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leavers.component';
+import { StaffComponent } from './features/staff/staff.component';
+import { ServicesCapacityComponent } from './features/services-capacity/services-capacity.component';
+import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
+import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
+import { FeedbackComponent } from './features/feedback/feedback.component';
+import { ContactUsComponent } from "./features/contactUs/contactUs.component";
+import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
 
@@ -140,6 +141,10 @@ const routes: Routes = [
   {
     path: 'contact-us',
     component: ContactUsComponent
+  },
+  {
+    path: 'terms-and-conditions',
+    component: TermsConditionsComponent
   }
 ];
 
