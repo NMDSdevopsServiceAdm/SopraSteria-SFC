@@ -67,7 +67,6 @@ export class RegistrationService {
   postRegistration(id: any) {
     const $value = id.locationdata;
     const options = { headers: { 'Content-type': 'application/json' } };
-    debugger;
     this.http.post<RegistrationModel>('/api/registration/', $value, options).subscribe(
       (data) => console.log(data),
       (error) => console.log(error),
@@ -97,7 +96,6 @@ export class RegistrationService {
   }
 
   getAddressByPostCode(id: string) {
-    debugger;
     const $value = id;
 
     return this.http.get<RegistrationModel>('/api/postcodes/' + $value)
@@ -144,11 +142,9 @@ export class RegistrationService {
   }
 
   routingCheck(data) {
-    debugger;
     if (data.locationdata.length > 1) {
       this.router.navigate(['/select-workplace']);
     } else {
-      debugger;
       // if ((data.locationdata[0].mainService === '') || (data.locationdata[0].mainService === null)) {
         this.router.navigate(['/select-main-service']);
       // } else {
