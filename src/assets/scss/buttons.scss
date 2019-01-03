@@ -1,0 +1,62 @@
+.btn-container {
+
+  //@include rem(padding, 30px 0 0 0);
+}
+
+.btn {
+  width: 100%;
+  border: none;
+  border-radius: 0;
+  height: 40px;
+
+  @include rem(padding, 0 26px);
+  @include box-shadow(0, 2px, 0, 0, $sfc-btn-primary-green-hover);
+
+  @include rem(font-size, 13px);
+
+  @media only screen and (min-width: 576px) {
+    font-size: 19px !important;
+  }
+
+  @media only screen and (min-width: 768px) {
+    width: auto;
+  }
+
+  &.btn-primary {
+    background-color: $sfc-btn-primary-green;
+
+    &:hover,
+    &:active {
+      background-color: $sfc-btn-primary-green-hover !important;
+    }
+
+    &:focus {
+      border: 2px solid $focus-yellow !important;
+      box-shadow: none;
+    }
+
+    &:disabled,
+    &.disabled {
+      background-color: $sfc-btn-primary-green;
+
+      &:hover,
+      &:active {
+        background-color: $sfc-btn-primary-green !important;
+      }
+    }
+  }
+
+  &.btn-link {
+    margin: auto 0;
+    font-size: 15px;
+    letter-spacing: 1px;
+    border: 0;
+    color: map-get($color, link);
+    text-decoration: underline;
+    line-height: 2rem;
+
+    @include media(map-get($breakpoints, tablet)) {
+      line-height: 20px;
+    }
+  }
+}

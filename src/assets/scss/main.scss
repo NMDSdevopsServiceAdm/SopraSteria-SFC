@@ -1,0 +1,173 @@
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+
+  li {
+    list-style: none;
+
+    a {
+      display: inline-block;
+      text-decoration: underline;
+
+      @include rem(font-size, 20px);
+      @include rem(padding, 6px 0);
+    }
+  }
+}
+
+//a:not([href]):not([tabindex])
+
+a,
+.text-link {
+  text-decoration: underline;
+  color: #007bff;
+  cursor: pointer;
+
+  @include rem(font-size, 19px);
+
+  &:hover {
+    color: #0056b3;
+  }
+
+  &:not([href]):not([tabindex]) {
+    text-decoration: underline;
+    color: #007bff;
+    cursor: pointer;
+
+    @include rem(font-size, 19px);
+
+    &:hover {
+      color: #0056b3;
+    }
+  }
+}
+
+p {
+
+  @include rem(font-size, 19px);
+}
+
+// Structure
+
+.container {
+  max-width: 960px;
+}
+
+#main-content {
+  min-height: calc(100vh - 351px);
+
+  @media (min-width: 961px) {
+    padding: 0;
+  }
+
+  .main-page-container {
+
+    @include rem(padding, 60px 0);
+  }
+
+  .sub-page-container {
+
+    @include rem(padding, 30px 0 60px 0);
+
+    .back-link {
+      @include rem(padding, 0 0 30px 0);
+
+      a {
+        color: $black;
+        text-decoration: none;
+        border-bottom: 1px solid $black;
+
+        @include rem(font-size, 16px);
+
+        .arrow {
+          content: '';
+          display: inline-block;
+          width: 0;
+          height: 0;
+          border-top: 4px solid transparent;
+          border-right: 5px solid $black;
+          border-bottom: 4px solid transparent;
+          left: 0;
+          //margin: -6px 10px 0 0;
+          @include rem(margin, -6px 10px 0 0);
+        }
+      }
+    }
+  }
+}
+
+.panel {
+
+  &.collapse {
+
+    @include rem(margin, 0 0 0 0);
+
+    ul {
+      @include rem(margin, 0 0 0 15px);
+
+      li {
+        list-style-type: disc;
+      }
+    }
+  }
+
+}
+
+.panel-border-narrow {
+  width: 100%;
+  border-left: 10px solid #bfc1c3;
+
+  @include rem(padding, 0 0 0 30px);
+  @include rem(margin, 20px 0 0 0);
+}
+
+.is-invalid {
+  border-left: 10px solid $error-red;
+
+  .invalid-feedback {
+    display: block;
+    color: $error-red;
+    font-weight: 700;
+    margin: 0;
+
+    span {
+      display: block;
+    }
+  }
+
+  input,
+  select,
+  textarea {
+
+    &.ng-dirty.ng-invalid {
+      border-color: $error-red;
+    }
+  }
+  /*input {
+
+      &.input {
+        border-color: $error-red;
+      }
+    }*/
+}
+
+.border-line-bottom {
+  border-bottom: 1px solid $headerline-border-grey;
+}
+
+.completion-message {
+  background: $mint-green;
+  color: $white;
+  text-align: center;
+
+  @include rem(padding, 40px 0);
+}

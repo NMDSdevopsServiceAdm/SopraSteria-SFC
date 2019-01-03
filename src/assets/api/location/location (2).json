@@ -1,0 +1,5017 @@
+{
+  "locations": [
+    {
+      "total": 87154,
+      "firstPageUri": "/locations?page=1&perPage=1000",
+      "page": 1,
+      "previousPageUri": null,
+      "lastPageUri": "/locations?page=88&perPage=1000",
+      "nextPageUri": "/locations?page=2&perPage=1000",
+      "perPage": 1000,
+      "totalPages": 88,
+      "locations": [
+        {
+          "locationId": "1-1000210669",
+          "locationName": "Kingswood House Nursing Home",
+          "postalCode": "TN37 6HR"
+        },
+        {
+          "locationId": "1-1000270393",
+          "locationName": "Red Kite Home Care",
+          "postalCode": "SL1 7JZ"
+        },
+        {
+          "locationId": "1-1000312641",
+          "locationName": "Human Support Group Limited - Sale",
+          "postalCode": "M33 7HF"
+        },
+        {
+          "locationId": "1-1000401911",
+          "locationName": "Little Haven",
+          "postalCode": "SE6 1HP"
+        },
+        {
+          "locationId": "1-1000587219",
+          "locationName": "Highlands Borders Care Home",
+          "postalCode": "EX1 2QE"
+        },
+        {
+          "locationId": "1-1000711804",
+          "locationName": "Belmont Grange Nursing and Residential Home",
+          "postalCode": "DH1 2QW"
+        },
+        {
+          "locationId": "1-1001535875",
+          "locationName": "Optical Express - Birmingham Clinic",
+          "postalCode": "B4 7SL"
+        },
+        {
+          "locationId": "1-1001764404",
+          "locationName": "Everycare Midsussex",
+          "postalCode": "RH15 9RN"
+        },
+        {
+          "locationId": "1-1001764472",
+          "locationName": "Cherish UK Ltd",
+          "postalCode": "FY4 3RS"
+        },
+        {
+          "locationId": "1-1001764512",
+          "locationName": "Optical Express - Bluewater Clinic",
+          "postalCode": "DA9 9SJ"
+        },
+        {
+          "locationId": "1-1001764737",
+          "locationName": "Optical Express - Bristol (Cabot Circus) Clinic",
+          "postalCode": "BS1 3BH"
+        },
+        {
+          "locationId": "1-1001765343",
+          "locationName": "Optical Express - Cambridge Clinic",
+          "postalCode": "CB2 3NB"
+        },
+        {
+          "locationId": "1-1001875558",
+          "locationName": "Optical Express - Dudley (Merry Hill) Clinic",
+          "postalCode": "DY5 1QX"
+        },
+        {
+          "locationId": "1-1001875873",
+          "locationName": "Optical Express - Leeds (Albion Street) Clinic",
+          "postalCode": "LS1 5AW"
+        },
+        {
+          "locationId": "1-1001876258",
+          "locationName": "Optical Express - Liverpool Clinic",
+          "postalCode": "L1 8BU"
+        },
+        {
+          "locationId": "1-1001899520",
+          "locationName": "Optical Express - London (Harley Street) Clinic",
+          "postalCode": "W1G 9AP"
+        },
+        {
+          "locationId": "1-1001900393",
+          "locationName": "Aspire Dental Care Ltd - Aylesbury",
+          "postalCode": "HP20 2AH"
+        },
+        {
+          "locationId": "1-1001911451",
+          "locationName": "Optical Express - London (Shaftesbury Avenue) Clinic",
+          "postalCode": "WC2H 8EL"
+        },
+        {
+          "locationId": "1-1001911572",
+          "locationName": "Optical Express - London (White City) Clinic",
+          "postalCode": "W12 7GF"
+        },
+        {
+          "locationId": "1-1001911912",
+          "locationName": "Aspire Dental Care Ltd - Amersham",
+          "postalCode": "HP7 9NU"
+        },
+        {
+          "locationId": "1-1001921065",
+          "locationName": "Thomas Road",
+          "postalCode": "CB21 5EA"
+        },
+        {
+          "locationId": "1-1001943146",
+          "locationName": "Optical Express - Manchester (Trafford Park) Clinic",
+          "postalCode": "M17 8BN"
+        },
+        {
+          "locationId": "1-1001966561",
+          "locationName": "Aurora Quality Care",
+          "postalCode": "N20 9DZ"
+        },
+        {
+          "locationId": "1-1001973807",
+          "locationName": "Optical Express - Manchester (Deansgate) Clinic",
+          "postalCode": "M3 4DN"
+        },
+        {
+          "locationId": "1-1001974009",
+          "locationName": "Optical Express - Milton Keynes Clinic",
+          "postalCode": "MK9 3AG"
+        },
+        {
+          "locationId": "1-1002003374",
+          "locationName": "Optical Express - Newcastle (Northumberland Road) Clinic",
+          "postalCode": "NE1 8JF"
+        },
+        {
+          "locationId": "1-1002025035",
+          "locationName": "Optical Express - Northampton Clinic",
+          "postalCode": "NN1 5BT"
+        },
+        {
+          "locationId": "1-1002025397",
+          "locationName": "Optical Express - Norwich Clinic",
+          "postalCode": "NR2 1QD"
+        },
+        {
+          "locationId": "1-1002056748",
+          "locationName": "Optical Express - Nottingham Clinic",
+          "postalCode": "NG1 7DD"
+        },
+        {
+          "locationId": "1-1002056969",
+          "locationName": "Optical Express - Reading (Broad Street) Clinic",
+          "postalCode": "RG1 2AA"
+        },
+        {
+          "locationId": "1-1002057300",
+          "locationName": "Optical Express - Sheffield (Meadowhall) Clinic",
+          "postalCode": "S9 1EP"
+        },
+        {
+          "locationId": "1-1002086691",
+          "locationName": "Optical Express - Southampton (West Quay) Clinic",
+          "postalCode": "SO14 7EG"
+        },
+        {
+          "locationId": "1-1002113960",
+          "locationName": "Elmwood",
+          "postalCode": "ME15 7DR"
+        },
+        {
+          "locationId": "1-1002140522",
+          "locationName": "Avant Garde New Eltham",
+          "postalCode": "SE9 3UL"
+        },
+        {
+          "locationId": "1-1002185812",
+          "locationName": "Mayfield Adult Services",
+          "postalCode": "TN20 6TZ"
+        },
+        {
+          "locationId": "1-1002210887",
+          "locationName": "Friary Dental Practice",
+          "postalCode": "DE1 1EX"
+        },
+        {
+          "locationId": "1-1002242875",
+          "locationName": "Right at Home (Bristol East)",
+          "postalCode": "BS16 5EL"
+        },
+        {
+          "locationId": "1-1002254715",
+          "locationName": "Prompt Healthcare Staffing Limited",
+          "postalCode": "IG11 7BZ"
+        },
+        {
+          "locationId": "1-1002268066",
+          "locationName": "Montgomery House",
+          "postalCode": "S6 3BZ"
+        },
+        {
+          "locationId": "1-1002282014",
+          "locationName": "Teversham Road",
+          "postalCode": "CB21 5EB"
+        },
+        {
+          "locationId": "1-1002318136",
+          "locationName": "ACES (Holt Road)",
+          "postalCode": "NR21 8BQ"
+        },
+        {
+          "locationId": "1-1002333348",
+          "locationName": "10 Harley Street",
+          "postalCode": "W1G 9PF"
+        },
+        {
+          "locationId": "1-1002525074",
+          "locationName": "Olney Dental Care",
+          "postalCode": "BD4 7QP"
+        },
+        {
+          "locationId": "1-1002551837",
+          "locationName": "Jeesal Kelling Park",
+          "postalCode": "NR25 7ER"
+        },
+        {
+          "locationId": "1-1002558672",
+          "locationName": "Network Health and Social Care - Harrow",
+          "postalCode": "HA1 1ES"
+        },
+        {
+          "locationId": "1-1002622220",
+          "locationName": "Harmonic Care",
+          "postalCode": "EN5 1HJ"
+        },
+        {
+          "locationId": "1-1002692043",
+          "locationName": "Barnsley Disability Services Limited",
+          "postalCode": "S71 1HH"
+        },
+        {
+          "locationId": "1-1002716537",
+          "locationName": "Surrey Heart Clinic",
+          "postalCode": "KT13 0TJ"
+        },
+        {
+          "locationId": "1-1002733665",
+          "locationName": "Newtown Dental Practice",
+          "postalCode": "B19 2ER"
+        },
+        {
+          "locationId": "1-1002951945",
+          "locationName": "Kingston",
+          "postalCode": "KT2 6QJ"
+        },
+        {
+          "locationId": "1-1004092255",
+          "locationName": "Highgate Dental Centre",
+          "postalCode": "N6 5AX"
+        },
+        {
+          "locationId": "1-1004124995",
+          "locationName": "Kinver Care",
+          "postalCode": "DY7 6HL"
+        },
+        {
+          "locationId": "1-1004172993",
+          "locationName": "Nurseplus UK",
+          "postalCode": "TA1 3JA"
+        },
+        {
+          "locationId": "1-1004193709",
+          "locationName": "Langley Court",
+          "postalCode": "WV4 4QE"
+        },
+        {
+          "locationId": "1-1004356711",
+          "locationName": "The Sunbury Dental Practice",
+          "postalCode": "TW16 6QL"
+        },
+        {
+          "locationId": "1-1004459443",
+          "locationName": "Park Health Care Centre",
+          "postalCode": "HU9 3JA"
+        },
+        {
+          "locationId": "1-1004508435",
+          "locationName": "Meadow Rose Nursing Home",
+          "postalCode": "B31 2TX"
+        },
+        {
+          "locationId": "1-1004528051",
+          "locationName": "Aster Homecare",
+          "postalCode": "BD9 4JU"
+        },
+        {
+          "locationId": "1-1004581134",
+          "locationName": "Reliacare",
+          "postalCode": "LA12 0HX"
+        },
+        {
+          "locationId": "1-1004589685",
+          "locationName": "The Spinney Nursing Home",
+          "postalCode": "WN8 0PY"
+        },
+        {
+          "locationId": "1-1004705702",
+          "locationName": "Ultrasure Scan Clinic",
+          "postalCode": "NG9 3JA"
+        },
+        {
+          "locationId": "1-1004741053",
+          "locationName": "Creating Lifestyles Surbiton Limited",
+          "postalCode": "KT6 5JY"
+        },
+        {
+          "locationId": "1-1004878396",
+          "locationName": "Avon Vasectomy Service",
+          "postalCode": "BS5 7PH"
+        },
+        {
+          "locationId": "1-1004909835",
+          "locationName": "Willington Surgery",
+          "postalCode": "DE65 6QT"
+        },
+        {
+          "locationId": "1-1004979412",
+          "locationName": "Ashley House",
+          "postalCode": "NN1 1LG"
+        },
+        {
+          "locationId": "1-1005257161",
+          "locationName": "Fullerton House College",
+          "postalCode": "DN12 4AR"
+        },
+        {
+          "locationId": "1-1005257175",
+          "locationName": "Wilsic Hall College",
+          "postalCode": "DN11 9AG"
+        },
+        {
+          "locationId": "1-1005818486",
+          "locationName": "Cherry Care Services Limited - Witney",
+          "postalCode": "OX28 1BD"
+        },
+        {
+          "locationId": "1-1006374293",
+          "locationName": "Lordshill Dental Surgery",
+          "postalCode": "SO16 8HY"
+        },
+        {
+          "locationId": "1-1006377911",
+          "locationName": "InHealth Radiology Department",
+          "postalCode": "BS8 1BN"
+        },
+        {
+          "locationId": "1-1006568265",
+          "locationName": "198 Kettering Rd",
+          "postalCode": "NN1 4BL"
+        },
+        {
+          "locationId": "1-1006631923",
+          "locationName": "Forest Homecare West Essex",
+          "postalCode": "CM6 1DA"
+        },
+        {
+          "locationId": "1-1006660964",
+          "locationName": "Forest Homecare Suffolk",
+          "postalCode": "CO10 2XH"
+        },
+        {
+          "locationId": "1-1006661258",
+          "locationName": "Maidenhead Orthodontic Centre",
+          "postalCode": "SL6 1PT"
+        },
+        {
+          "locationId": "1-1006677565",
+          "locationName": "Forest Homecare Mid Essex",
+          "postalCode": "CM1 7DR"
+        },
+        {
+          "locationId": "1-1007050476",
+          "locationName": "Ashdale Care Home",
+          "postalCode": "NG18 2AT"
+        },
+        {
+          "locationId": "1-1007301683",
+          "locationName": "EnhanceAble Space",
+          "postalCode": "KT3 6AG"
+        },
+        {
+          "locationId": "1-1007389721",
+          "locationName": "Acorns to Mighty Oaks",
+          "postalCode": "B27 7TL"
+        },
+        {
+          "locationId": "1-1008452849",
+          "locationName": "Autism Wessex - Community Support Services South",
+          "postalCode": "SO14 5FE"
+        },
+        {
+          "locationId": "1-1009498872",
+          "locationName": "Nonsuch Care",
+          "postalCode": "CR3 6JG"
+        },
+        {
+          "locationId": "1-1009564543",
+          "locationName": "Dental Care Centre",
+          "postalCode": "SO40 3DE"
+        },
+        {
+          "locationId": "1-1010200899",
+          "locationName": "The Hall",
+          "postalCode": "TN26 2EW"
+        },
+        {
+          "locationId": "1-1010200978",
+          "locationName": "Ashlea House",
+          "postalCode": "TN24 9BP"
+        },
+        {
+          "locationId": "1-1010201117",
+          "locationName": "Birch House",
+          "postalCode": "TN26 2AF"
+        },
+        {
+          "locationId": "1-1010701645",
+          "locationName": "Sunnyside",
+          "postalCode": "NR29 4PZ"
+        },
+        {
+          "locationId": "1-1010717052",
+          "locationName": "Dental Harmony",
+          "postalCode": "IG2 6XH"
+        },
+        {
+          "locationId": "1-1010722651",
+          "locationName": "MBI Home Care Ltd",
+          "postalCode": "CV1 4HT"
+        },
+        {
+          "locationId": "1-1010802809",
+          "locationName": "Mencap - Malvern Gate",
+          "postalCode": "WR2 4BN"
+        },
+        {
+          "locationId": "1-1010884111",
+          "locationName": "Senior Care Solutions @ Home Limited",
+          "postalCode": "HA8 5AW"
+        },
+        {
+          "locationId": "1-1010950092",
+          "locationName": "Bluebird Care (Welwyn & Hatfield)",
+          "postalCode": "AL9 5AF"
+        },
+        {
+          "locationId": "1-1010984267",
+          "locationName": "Telemedicine Clinic Limited",
+          "postalCode": "RG7 4SA"
+        },
+        {
+          "locationId": "1-1011035809",
+          "locationName": "Barnsley MBC Learning Disabilities-Domiciliary Care Team",
+          "postalCode": "S71 1HG"
+        },
+        {
+          "locationId": "1-1011039037",
+          "locationName": "Balm Care Services Limited",
+          "postalCode": "B29 6HR"
+        },
+        {
+          "locationId": "1-1011180907",
+          "locationName": "Progressive Mews",
+          "postalCode": "CO6 3QH"
+        },
+        {
+          "locationId": "1-1011236555",
+          "locationName": "Ravendale Hall",
+          "postalCode": "DN37 0RX"
+        },
+        {
+          "locationId": "1-1011333524",
+          "locationName": "Suite  20, Waltham Forest Business Centre",
+          "postalCode": "E17 6DS"
+        },
+        {
+          "locationId": "1-1011393978",
+          "locationName": "Thames Drive Dental Practice",
+          "postalCode": "SS9 2XD"
+        },
+        {
+          "locationId": "1-1011483062",
+          "locationName": "Sanderson House",
+          "postalCode": "ST4 2LA"
+        },
+        {
+          "locationId": "1-1012921482",
+          "locationName": "Care Avenues Limited",
+          "postalCode": "B16 8LA"
+        },
+        {
+          "locationId": "1-1012933568",
+          "locationName": "Care for You (UK) Limited",
+          "postalCode": "CV3 1JL"
+        },
+        {
+          "locationId": "1-1012935329",
+          "locationName": "Sans Soucie Home Care Ltd",
+          "postalCode": "GU2 9RW"
+        },
+        {
+          "locationId": "1-1012972951",
+          "locationName": "Homecare Unique Limited",
+          "postalCode": "ME16 0YL"
+        },
+        {
+          "locationId": "1-1013198321",
+          "locationName": "Harriotts Lane",
+          "postalCode": "KT21 2QB"
+        },
+        {
+          "locationId": "1-1013271908",
+          "locationName": "Walton Park Dental Practice",
+          "postalCode": "KT12 3ET"
+        },
+        {
+          "locationId": "1-1013392643",
+          "locationName": "Poplars Care Home",
+          "postalCode": "SO16 3GD"
+        },
+        {
+          "locationId": "1-1013473262",
+          "locationName": "The Lawns Surgery",
+          "postalCode": "BN16 2EA"
+        },
+        {
+          "locationId": "1-1013474660",
+          "locationName": "Peace Manor Residential Care Ltd - Waverley Road Unit - Plumstead",
+          "postalCode": "SE18 7TJ"
+        },
+        {
+          "locationId": "1-1013484737",
+          "locationName": "Making Space (St Helens) Domiciliary Care Service",
+          "postalCode": "WA10 2JL"
+        },
+        {
+          "locationId": "1-1013497053",
+          "locationName": "Nowshera House",
+          "postalCode": "NN11 6DX"
+        },
+        {
+          "locationId": "1-1013512824",
+          "locationName": "Rinkway House",
+          "postalCode": "DE11 8JL"
+        },
+        {
+          "locationId": "1-1013578241",
+          "locationName": "Care Your Way Limited (Burgess Hill)",
+          "postalCode": "RH15 9NN"
+        },
+        {
+          "locationId": "1-1013600852",
+          "locationName": "Nash Healthcare Ltd",
+          "postalCode": "NG1 5FS"
+        },
+        {
+          "locationId": "1-1013715525",
+          "locationName": "Centennium House",
+          "postalCode": "KT14 6LD"
+        },
+        {
+          "locationId": "1-1013770194",
+          "locationName": "Complete Individual Care Limited",
+          "postalCode": "CV3 2AG"
+        },
+        {
+          "locationId": "1-1013780002",
+          "locationName": "Ixia Dental",
+          "postalCode": "HA3 0XN"
+        },
+        {
+          "locationId": "1-1013800126",
+          "locationName": "Hales Group Limited - Ipswich",
+          "postalCode": "IP1 2QA"
+        },
+        {
+          "locationId": "1-1015183303",
+          "locationName": "Ledbury Dental Care",
+          "postalCode": "HR8 2EY"
+        },
+        {
+          "locationId": "1-1015201506",
+          "locationName": "Jordangate",
+          "postalCode": "SK10 1EW"
+        },
+        {
+          "locationId": "1-1015239533",
+          "locationName": "Tregertha Court Care Home",
+          "postalCode": "PL13 1HN"
+        },
+        {
+          "locationId": "1-1015325400",
+          "locationName": "Radis Community Care (Broadleas Court ECH)",
+          "postalCode": "PE27 5XG"
+        },
+        {
+          "locationId": "1-1015327520",
+          "locationName": "St.Theresa's Nursing Home",
+          "postalCode": "PL17 7QF"
+        },
+        {
+          "locationId": "1-1015336035",
+          "locationName": "Radis Community Care (Baird Lodge)",
+          "postalCode": "CB7 4FF"
+        },
+        {
+          "locationId": "1-1015358566",
+          "locationName": "Lydd Dental Practice",
+          "postalCode": "TN29 9DQ"
+        },
+        {
+          "locationId": "1-1015358696",
+          "locationName": "Radis Community Care (Millbrook House)",
+          "postalCode": "CB7 5HR"
+        },
+        {
+          "locationId": "1-1015358959",
+          "locationName": "Radis Community Care (Ness Court ECH)",
+          "postalCode": "CB25 0AB"
+        },
+        {
+          "locationId": "1-1015377941",
+          "locationName": "Vitascare",
+          "postalCode": "NG17 7PF"
+        },
+        {
+          "locationId": "1-1015412687",
+          "locationName": "Ripponden Road Dental Practice",
+          "postalCode": "OL4 2SF"
+        },
+        {
+          "locationId": "1-1015495184",
+          "locationName": "iQ Orthodontics & Dental",
+          "postalCode": "KT14 6NE"
+        },
+        {
+          "locationId": "1-1015512238",
+          "locationName": "Wargrave Dental Clinic",
+          "postalCode": "RG10 8BY"
+        },
+        {
+          "locationId": "1-1015603399",
+          "locationName": "PHI Clinic",
+          "postalCode": "W1G 7JB"
+        },
+        {
+          "locationId": "1-1015632304",
+          "locationName": "iQ Orthodontics and Dental",
+          "postalCode": "KT14 6ES"
+        },
+        {
+          "locationId": "1-1015786013",
+          "locationName": "dentael",
+          "postalCode": "UB6 8HR"
+        },
+        {
+          "locationId": "1-1015909323",
+          "locationName": "Oasis Care",
+          "postalCode": "BD16 2NB"
+        },
+        {
+          "locationId": "1-1016078793",
+          "locationName": "Tru Caring Limited",
+          "postalCode": "SO32 1BE"
+        },
+        {
+          "locationId": "1-1017305072",
+          "locationName": "Chroma Dental Limited",
+          "postalCode": "RH12 1HE"
+        },
+        {
+          "locationId": "1-1017435583",
+          "locationName": "Bespoke Dental Care",
+          "postalCode": "DA12 2NQ"
+        },
+        {
+          "locationId": "1-1017476760",
+          "locationName": "Brookleigh Caring Services Billingham Office",
+          "postalCode": "TS23 4EA"
+        },
+        {
+          "locationId": "1-1017537919",
+          "locationName": "Century House",
+          "postalCode": "B90 3BH"
+        },
+        {
+          "locationId": "1-1017570228",
+          "locationName": "Bluebell Centre",
+          "postalCode": "B37 5TX"
+        },
+        {
+          "locationId": "1-1017603195",
+          "locationName": "Angels Healthcare Limited",
+          "postalCode": "B37 7HG"
+        },
+        {
+          "locationId": "1-1017608705",
+          "locationName": "West Hill Dental Care",
+          "postalCode": "BH2 5NX"
+        },
+        {
+          "locationId": "1-1017647203",
+          "locationName": "Coastal Home Care (Hove) Ltd.",
+          "postalCode": "BN41 1HU"
+        },
+        {
+          "locationId": "1-1017840155",
+          "locationName": "Conceive International Preston",
+          "postalCode": "PR1 6AS"
+        },
+        {
+          "locationId": "1-1018035334",
+          "locationName": "Hathaway House",
+          "postalCode": "WS12 1TA"
+        },
+        {
+          "locationId": "1-1018973887",
+          "locationName": "Voyage (DCA) North",
+          "postalCode": "WS14 0QP"
+        },
+        {
+          "locationId": "1-1019377495",
+          "locationName": "Burwash Medical Centre",
+          "postalCode": "BN3 8GQ"
+        },
+        {
+          "locationId": "1-1019524567",
+          "locationName": "Cassiobury Dental Practice",
+          "postalCode": "WD17 3AH"
+        },
+        {
+          "locationId": "1-1019548217",
+          "locationName": "Autism Plus",
+          "postalCode": "DN8 4AG"
+        },
+        {
+          "locationId": "1-1019722172",
+          "locationName": "Chloe Drury Limited",
+          "postalCode": "SM1 4PP"
+        },
+        {
+          "locationId": "1-1019757835",
+          "locationName": "Wakefield MDC Shared Lives Service",
+          "postalCode": "WF10 4JH"
+        },
+        {
+          "locationId": "1-1019809210",
+          "locationName": "Malting Green Surgery",
+          "postalCode": "CO2 0JJ"
+        },
+        {
+          "locationId": "1-1019896794",
+          "locationName": "Sutton Valence Surgery",
+          "postalCode": "ME17 3BD"
+        },
+        {
+          "locationId": "1-1020071820",
+          "locationName": "Optimax Eye Clinic Hull",
+          "postalCode": "HU1 3AJ"
+        },
+        {
+          "locationId": "1-1020079429",
+          "locationName": "Chesterfield Orthodontics",
+          "postalCode": "S40 1SZ"
+        },
+        {
+          "locationId": "1-1020093533",
+          "locationName": "Abbey Lawns Domiciliary Care Office",
+          "postalCode": "SY2 5DE"
+        },
+        {
+          "locationId": "1-1020208748",
+          "locationName": "Park and Calder Community Practice",
+          "postalCode": "HX1 5UA"
+        },
+        {
+          "locationId": "1-1020224614",
+          "locationName": "Park and Calder Community Practice",
+          "postalCode": "OL14 5QN"
+        },
+        {
+          "locationId": "1-1020287965",
+          "locationName": "Tendring Care",
+          "postalCode": "CO15 3AY"
+        },
+        {
+          "locationId": "1-1020305432",
+          "locationName": "Be Fair Dental",
+          "postalCode": "GU11 1JW"
+        },
+        {
+          "locationId": "1-1020661231",
+          "locationName": "British Association for Performing Arts Medicine",
+          "postalCode": "WC1X 8HR"
+        },
+        {
+          "locationId": "1-1022807012",
+          "locationName": "Smiles of New Forest",
+          "postalCode": "SO41 9NH"
+        },
+        {
+          "locationId": "1-1022807036",
+          "locationName": "The Smiles Studio",
+          "postalCode": "SO53 3AL"
+        },
+        {
+          "locationId": "1-1022899172",
+          "locationName": "Kent Supported Living Services",
+          "postalCode": "TN9 1DS"
+        },
+        {
+          "locationId": "1-1024119613",
+          "locationName": "Mountbatton Care Ltd",
+          "postalCode": "L20 4BG"
+        },
+        {
+          "locationId": "1-1024440827",
+          "locationName": "Sedation Solutions (Clinical) LLP",
+          "postalCode": "SM2 7QA"
+        },
+        {
+          "locationId": "1-1024527741",
+          "locationName": "Homecare4u Bristol",
+          "postalCode": "BS3 1HW"
+        },
+        {
+          "locationId": "1-1024651484",
+          "locationName": "Lumina Homecare Limited",
+          "postalCode": "HP3 9QJ"
+        },
+        {
+          "locationId": "1-1024710742",
+          "locationName": "Lawn Medical Practice - IHG",
+          "postalCode": "SN3 1JL"
+        },
+        {
+          "locationId": "1-1024807955",
+          "locationName": "Direct Care (Tameside)",
+          "postalCode": "SK15 2QP"
+        },
+        {
+          "locationId": "1-1025033626",
+          "locationName": "MASTA Travel Clinic - Southampton",
+          "postalCode": "SO14 7FL"
+        },
+        {
+          "locationId": "1-1025085211",
+          "locationName": "Medical Centre",
+          "postalCode": "OX14 2HR"
+        },
+        {
+          "locationId": "1-1025101540",
+          "locationName": "MASTA Travel Clinic - London Victoria",
+          "postalCode": "SW1W 0AU"
+        },
+        {
+          "locationId": "1-1025130100",
+          "locationName": "Alverthorpe Surgery",
+          "postalCode": "WF2 0DP"
+        },
+        {
+          "locationId": "1-1025137823",
+          "locationName": "Gemini Xtra Care",
+          "postalCode": "NN2 6LJ"
+        },
+        {
+          "locationId": "1-1025253788",
+          "locationName": "Mydentist - Ankerage Green - Worcester",
+          "postalCode": "WR4 0DZ"
+        },
+        {
+          "locationId": "1-1026224214",
+          "locationName": "Knightsbridge Lodge",
+          "postalCode": "GL51 9TA"
+        },
+        {
+          "locationId": "1-1026390206",
+          "locationName": "Chestnut Homecare Limited",
+          "postalCode": "DN39 6YP"
+        },
+        {
+          "locationId": "1-1026552161",
+          "locationName": "Rapid Intervention Service, Newark Hospital",
+          "postalCode": "NG24 4DE"
+        },
+        {
+          "locationId": "1-1026565684",
+          "locationName": "Essex Lodge Surgery",
+          "postalCode": "E13 0AS"
+        },
+        {
+          "locationId": "1-1027009924",
+          "locationName": "St Faith Dental Clinic",
+          "postalCode": "RH19 1PN"
+        },
+        {
+          "locationId": "1-1027042974",
+          "locationName": "Leicestershire Consultant Eye Surgeons LLP @ The Stoneygate Eye Hospital",
+          "postalCode": "LE2 2PN"
+        },
+        {
+          "locationId": "1-1027055592",
+          "locationName": "St Mark Crown Court Dental Clinic",
+          "postalCode": "ME1 1HB"
+        },
+        {
+          "locationId": "1-1027092547",
+          "locationName": "St Mark Dental Surgery",
+          "postalCode": "CB4 1DY"
+        },
+        {
+          "locationId": "1-1027132695",
+          "locationName": "Personal Security Service",
+          "postalCode": "N14 6HF"
+        },
+        {
+          "locationId": "1-1027156899",
+          "locationName": "Chorley and Preston Domiciliary Care Service",
+          "postalCode": "PR1 1TX"
+        },
+        {
+          "locationId": "1-1027442778",
+          "locationName": "ABC Support Services",
+          "postalCode": "CH48 2HL"
+        },
+        {
+          "locationId": "1-1027647257",
+          "locationName": "Bingham Medical Centre",
+          "postalCode": "NG13 8FD"
+        },
+        {
+          "locationId": "1-1028678661",
+          "locationName": "Cygnet House",
+          "postalCode": "DY8 3UU"
+        },
+        {
+          "locationId": "1-1028713855",
+          "locationName": "Scope. Community Activities Cornwall",
+          "postalCode": "PL26 6SA"
+        },
+        {
+          "locationId": "1-1028736331",
+          "locationName": "Wiltshire Heights Care Home",
+          "postalCode": "BA15 1FD"
+        },
+        {
+          "locationId": "1-1028764301",
+          "locationName": "Beechmere",
+          "postalCode": "CW1 3QD"
+        },
+        {
+          "locationId": "1-1028788584",
+          "locationName": "Oakmere",
+          "postalCode": "SK9 3QN"
+        },
+        {
+          "locationId": "1-1028788864",
+          "locationName": "Willowmere",
+          "postalCode": "CW10 9HW"
+        },
+        {
+          "locationId": "1-1028818471",
+          "locationName": "Millhouse",
+          "postalCode": "CW5 5BX"
+        },
+        {
+          "locationId": "1-1028986728",
+          "locationName": "Ambleside",
+          "postalCode": "CV37 9ST"
+        },
+        {
+          "locationId": "1-1029077606",
+          "locationName": "Isobel House",
+          "postalCode": "DE24 0LZ"
+        },
+        {
+          "locationId": "1-1029208654",
+          "locationName": "Gallery Implants Limited",
+          "postalCode": "OX4 1LF"
+        },
+        {
+          "locationId": "1-1029276107",
+          "locationName": "Clearbury",
+          "postalCode": "EX16 7JU"
+        },
+        {
+          "locationId": "1-1029332346",
+          "locationName": "The Service Tree Limited",
+          "postalCode": "NG2 5LN"
+        },
+        {
+          "locationId": "1-1029344722",
+          "locationName": "Shield Recruitment Limited",
+          "postalCode": "LS16 7SF"
+        },
+        {
+          "locationId": "1-1029431911",
+          "locationName": "Ashley House",
+          "postalCode": "CV31 1TQ"
+        },
+        {
+          "locationId": "1-1029591368",
+          "locationName": "Horizon SARC Walsall",
+          "postalCode": "WS2 9SR"
+        },
+        {
+          "locationId": "1-1029607779",
+          "locationName": "Horizon SARC Castle Vale",
+          "postalCode": "B35 7QX"
+        },
+        {
+          "locationId": "1-1029779693",
+          "locationName": "Oxforce Limited",
+          "postalCode": "OX2 6PE"
+        },
+        {
+          "locationId": "1-1029795871",
+          "locationName": "Dorset Blue Care Limited",
+          "postalCode": "DT5 2NA"
+        },
+        {
+          "locationId": "1-1030969861",
+          "locationName": "Pentowan Home Care",
+          "postalCode": "TR7 2SU"
+        },
+        {
+          "locationId": "1-1031162250",
+          "locationName": "Shy Lowen Care Limited",
+          "postalCode": "GL1 5TG"
+        },
+        {
+          "locationId": "1-1031394829",
+          "locationName": "Person Centred Care",
+          "postalCode": "GL51 9TX"
+        },
+        {
+          "locationId": "1-1031538887",
+          "locationName": "High Street Dental Practice",
+          "postalCode": "GL20 5BB"
+        },
+        {
+          "locationId": "1-1031548869",
+          "locationName": "Forget Me Not Home Services Limited",
+          "postalCode": "CO7 6TR"
+        },
+        {
+          "locationId": "1-1031697770",
+          "locationName": "Regency Manor Care Home",
+          "postalCode": "BH14 0DA"
+        },
+        {
+          "locationId": "1-1031770864",
+          "locationName": "Home Instead Senior Care",
+          "postalCode": "HP18 9BB"
+        },
+        {
+          "locationId": "1-1031883348",
+          "locationName": "Holmes House Care Home",
+          "postalCode": "LE18 4UF"
+        },
+        {
+          "locationId": "1-1031902754",
+          "locationName": "Seacroft Court Nursing Home",
+          "postalCode": "PE25 3BE"
+        },
+        {
+          "locationId": "1-1032171002",
+          "locationName": "Social Care Reablement - Civic Centre",
+          "postalCode": "EX31 1EG"
+        },
+        {
+          "locationId": "1-1033244389",
+          "locationName": "Achor Healthcare Limited (Management Office)",
+          "postalCode": "SW1W 9SZ"
+        },
+        {
+          "locationId": "1-1033249690",
+          "locationName": "Immaculata Ambulance Services Ltd",
+          "postalCode": "RH11 8AX"
+        },
+        {
+          "locationId": "1-1033394718",
+          "locationName": "The Peter Gidney Neurodisability Centre",
+          "postalCode": "DA2 7QT"
+        },
+        {
+          "locationId": "1-1033464812",
+          "locationName": "Care 1st Homecare (Berkshire)",
+          "postalCode": "RG12 2PW"
+        },
+        {
+          "locationId": "1-1033529215",
+          "locationName": "Home Instead Senior Care – Bromley, Chislehurst and Orpington",
+          "postalCode": "BR3 3LA"
+        },
+        {
+          "locationId": "1-1033697666",
+          "locationName": "Thursby House",
+          "postalCode": "CH62 3PW"
+        },
+        {
+          "locationId": "1-1033729347",
+          "locationName": "Mears Help to Live at Home Wiltshire",
+          "postalCode": "SP4 7RT"
+        },
+        {
+          "locationId": "1-1033852800",
+          "locationName": "CK Dental, Nuffield Health Bristol Hospital @ The Chesterfield",
+          "postalCode": "BS8 1BN"
+        },
+        {
+          "locationId": "1-1033895377",
+          "locationName": "Hamelin Trust Community Support Service",
+          "postalCode": "CM12 0DU"
+        },
+        {
+          "locationId": "1-1034002035",
+          "locationName": "St Mary's Health Centre",
+          "postalCode": "PR1 0SR"
+        },
+        {
+          "locationId": "1-1034083748",
+          "locationName": "Caremark (Hillingdon)",
+          "postalCode": "UB10 0LR"
+        },
+        {
+          "locationId": "1-1034153843",
+          "locationName": "35 Priory Grove",
+          "postalCode": "HU4 6LX"
+        },
+        {
+          "locationId": "1-1034321453",
+          "locationName": "Manchester House Nursing Home",
+          "postalCode": "PR9 9LN"
+        },
+        {
+          "locationId": "1-1034441807",
+          "locationName": "The Cannon Hill Clinic",
+          "postalCode": "N14 7HD"
+        },
+        {
+          "locationId": "1-1035560684",
+          "locationName": "The Serenity Care Company Ltd",
+          "postalCode": "DN21 2TU"
+        },
+        {
+          "locationId": "1-1036703656",
+          "locationName": "Prospect House Community Care Office",
+          "postalCode": "YO41 1JS"
+        },
+        {
+          "locationId": "1-1037809866",
+          "locationName": "HMYOI Werrington",
+          "postalCode": "ST9 0DX"
+        },
+        {
+          "locationId": "1-1037849403",
+          "locationName": "Recovery and Independence Team",
+          "postalCode": "TS6 6TD"
+        },
+        {
+          "locationId": "1-1038133515",
+          "locationName": "Astley Grange",
+          "postalCode": "HD2 1DJ"
+        },
+        {
+          "locationId": "1-1038188065",
+          "locationName": "Ambu Kare UK - Westwood Farm",
+          "postalCode": "PE3 9UW"
+        },
+        {
+          "locationId": "1-1038290656",
+          "locationName": "Broad Oak Manor Domiciliary Care",
+          "postalCode": "SG14 2JA"
+        },
+        {
+          "locationId": "1-1038295449",
+          "locationName": "AJ Case Management Ltd",
+          "postalCode": "WV6 8ST"
+        },
+        {
+          "locationId": "1-1038324659",
+          "locationName": "Bronte Care Services Limited",
+          "postalCode": "BD16 4LD"
+        },
+        {
+          "locationId": "1-1038600741",
+          "locationName": "Harrogate",
+          "postalCode": "HG1 5LB"
+        },
+        {
+          "locationId": "1-1038751039",
+          "locationName": "Smile Dental Care Salford",
+          "postalCode": "M38 9WH"
+        },
+        {
+          "locationId": "1-1038878062",
+          "locationName": "Reed Specialist Recruitment Limited - Community Care - London",
+          "postalCode": "W5 3TA"
+        },
+        {
+          "locationId": "1-1038912199",
+          "locationName": "Canford Manor Nursing Home",
+          "postalCode": "PO13 9JH"
+        },
+        {
+          "locationId": "1-1038957201",
+          "locationName": "Clove House Dental Practice",
+          "postalCode": "SN13 9BX"
+        },
+        {
+          "locationId": "1-1039033306",
+          "locationName": "Tudor House Medical Practice",
+          "postalCode": "NG5 3HU"
+        },
+        {
+          "locationId": "1-1039065531",
+          "locationName": "BPAS Taunton",
+          "postalCode": "TA1 5DA"
+        },
+        {
+          "locationId": "1-1039149681",
+          "locationName": "Erewash (DCC Home Care Services)",
+          "postalCode": "DE7 8HG"
+        },
+        {
+          "locationId": "1-1040192126",
+          "locationName": "Bupa - Hollway Road, Stockwood",
+          "postalCode": "BS14 8PG"
+        },
+        {
+          "locationId": "1-1040203414",
+          "locationName": "Barnsley Shared Lives Scheme",
+          "postalCode": "S70 1BA"
+        },
+        {
+          "locationId": "1-1040272352",
+          "locationName": "Mental Health Services Canterbury and Coastal",
+          "postalCode": "CT1 3RA"
+        },
+        {
+          "locationId": "1-1040316370",
+          "locationName": "Bluebird Care (Worthing)",
+          "postalCode": "BN17 5HY"
+        },
+        {
+          "locationId": "1-1040340169",
+          "locationName": "Gateshead Supported Living Service 1 and 2",
+          "postalCode": "NE8 3AH"
+        },
+        {
+          "locationId": "1-1040355398",
+          "locationName": "Norwood Dental Care",
+          "postalCode": "SE27 9JF"
+        },
+        {
+          "locationId": "1-1040368551",
+          "locationName": "Mitcham Dental Care",
+          "postalCode": "CR4 2PF"
+        },
+        {
+          "locationId": "1-1040390924",
+          "locationName": "MCH House",
+          "postalCode": "ME8 0PZ"
+        },
+        {
+          "locationId": "1-1040452175",
+          "locationName": "Springfield Care Home Limited",
+          "postalCode": "DL1 2QA"
+        },
+        {
+          "locationId": "1-1040460687",
+          "locationName": "Park Road North Dental Practice",
+          "postalCode": "CH41 0DA"
+        },
+        {
+          "locationId": "1-1040494951",
+          "locationName": "Ross Court Care Home",
+          "postalCode": "HR9 7BQ"
+        },
+        {
+          "locationId": "1-1040593235",
+          "locationName": "Angelwings Homecare (Office)",
+          "postalCode": "HD6 4AU"
+        },
+        {
+          "locationId": "1-1040599993",
+          "locationName": "Action for Children Disability Lincolnshire",
+          "postalCode": "LN5 8EW"
+        },
+        {
+          "locationId": "1-1040754030",
+          "locationName": "Lifeline Sefton (South): Sefton House",
+          "postalCode": "L20 8AH"
+        },
+        {
+          "locationId": "1-1040814147",
+          "locationName": "County Care Independent Living Ltd",
+          "postalCode": "RH6 9ST"
+        },
+        {
+          "locationId": "1-1040848521",
+          "locationName": "South East Division Re-ablement Service (Erewash)",
+          "postalCode": "DE7 8HG"
+        },
+        {
+          "locationId": "1-1040909391",
+          "locationName": "Kcarers Limited",
+          "postalCode": "NE16 3AS"
+        },
+        {
+          "locationId": "1-1041032166",
+          "locationName": "HF Trust - Bradford DCA",
+          "postalCode": "BD4 6DN"
+        },
+        {
+          "locationId": "1-1041052413",
+          "locationName": "Devonshire Park Dental Centre",
+          "postalCode": "CH42 7LX"
+        },
+        {
+          "locationId": "1-1041108285",
+          "locationName": "Bluebird Care, Newmarket and Fenland",
+          "postalCode": "CB6 3NW"
+        },
+        {
+          "locationId": "1-1041171805",
+          "locationName": "Solid Homecare",
+          "postalCode": "B23 6RY"
+        },
+        {
+          "locationId": "1-1041200431",
+          "locationName": "Friends Care Limited",
+          "postalCode": "CT2 7NJ"
+        },
+        {
+          "locationId": "1-1041284604",
+          "locationName": "Hilbre Lodge",
+          "postalCode": "CH47 1HB"
+        },
+        {
+          "locationId": "1-1042267691",
+          "locationName": "Willow House",
+          "postalCode": "TQ10 9AY"
+        },
+        {
+          "locationId": "1-1042689019",
+          "locationName": "Heathcotes (Carrington Park)",
+          "postalCode": "NG5 1AW"
+        },
+        {
+          "locationId": "1-1042703648",
+          "locationName": "The Micky Project",
+          "postalCode": "CV3 6PG"
+        },
+        {
+          "locationId": "1-1042749071",
+          "locationName": "Masons Hill",
+          "postalCode": "BR2 9HT"
+        },
+        {
+          "locationId": "1-1042780301",
+          "locationName": "HB Home Care Services",
+          "postalCode": "PR9 7LN"
+        },
+        {
+          "locationId": "1-1042868082",
+          "locationName": "Network Healthcare - Chipping Sodbury",
+          "postalCode": "BS37 6AH"
+        },
+        {
+          "locationId": "1-1042925530",
+          "locationName": "New Court Surgery",
+          "postalCode": "BS23 3HQ"
+        },
+        {
+          "locationId": "1-1043049898",
+          "locationName": "Clarendon Gardens",
+          "postalCode": "HA9 7LD"
+        },
+        {
+          "locationId": "1-1043091351",
+          "locationName": "MSH Health & Wellbeing Community Interest Company",
+          "postalCode": "W10 6TT"
+        },
+        {
+          "locationId": "1-1043259741",
+          "locationName": "Falmouth Dental Health Centre",
+          "postalCode": "TR11 2DH"
+        },
+        {
+          "locationId": "1-1043432438",
+          "locationName": "Tor Lodge Dental Practice",
+          "postalCode": "TQ1 2AL"
+        },
+        {
+          "locationId": "1-1043462491",
+          "locationName": "Green Apple Nutrition",
+          "postalCode": "B18 6DA"
+        },
+        {
+          "locationId": "1-1043572375",
+          "locationName": "Alexandra Park Dental Practice",
+          "postalCode": "N22 7XH"
+        },
+        {
+          "locationId": "1-1043614679",
+          "locationName": "Dazzle Dental Care",
+          "postalCode": "N3 2QS"
+        },
+        {
+          "locationId": "1-1043659556",
+          "locationName": "Gemcare South West Limited",
+          "postalCode": "PL20 6AL"
+        },
+        {
+          "locationId": "1-1043708006",
+          "locationName": "Beverley Mews",
+          "postalCode": "WS10 0PQ"
+        },
+        {
+          "locationId": "1-104456550",
+          "locationName": "Visitation of Our Lady Residential Care Home",
+          "postalCode": "W5 2RU"
+        },
+        {
+          "locationId": "1-1044917051",
+          "locationName": "Skintek Dental, Laser & Aesthetic Clinic",
+          "postalCode": "RH10 1HA"
+        },
+        {
+          "locationId": "1-1044981244",
+          "locationName": "Seyf Dental Practice",
+          "postalCode": "SW13 0LF"
+        },
+        {
+          "locationId": "1-1045119571",
+          "locationName": "The Gateway",
+          "postalCode": "TS2 1SW"
+        },
+        {
+          "locationId": "1-104514560",
+          "locationName": "St Denys Care Home",
+          "postalCode": "EX32 9BB"
+        },
+        {
+          "locationId": "1-1045152825",
+          "locationName": "The Dovecote Residential Care Home",
+          "postalCode": "NG19 7SA"
+        },
+        {
+          "locationId": "1-1045188033",
+          "locationName": "J. Sainsbury - Leigh",
+          "postalCode": "WN7 5SJ"
+        },
+        {
+          "locationId": "1-104526532",
+          "locationName": "FarleyMed",
+          "postalCode": "RG7 1UL"
+        },
+        {
+          "locationId": "1-1045325603",
+          "locationName": "Manor House Dental Surgery",
+          "postalCode": "N4 1DY"
+        },
+        {
+          "locationId": "1-1045448189",
+          "locationName": "KIDS (London)",
+          "postalCode": "N1 8HX"
+        },
+        {
+          "locationId": "1-1045508473",
+          "locationName": "Ethos Care",
+          "postalCode": "BH23 3PY"
+        },
+        {
+          "locationId": "1-1045537301",
+          "locationName": "Thornlea Rest Home",
+          "postalCode": "FY4 2QP"
+        },
+        {
+          "locationId": "1-1045600872",
+          "locationName": "The Gore Surgery",
+          "postalCode": "SS14 2DD"
+        },
+        {
+          "locationId": "1-1045600947",
+          "locationName": "Wickford Health Centre",
+          "postalCode": "SS12 0AG"
+        },
+        {
+          "locationId": "1-1045633503",
+          "locationName": "Total Home Care Solutions Milton Keynes",
+          "postalCode": "MK16 9PY"
+        },
+        {
+          "locationId": "1-1045705927",
+          "locationName": "City Care Welwyn",
+          "postalCode": "AL7 1TS"
+        },
+        {
+          "locationId": "1-1046408002",
+          "locationName": "Boldmere Dental Practice",
+          "postalCode": "B73 5XE"
+        },
+        {
+          "locationId": "1-1047240571",
+          "locationName": "Select Home Care",
+          "postalCode": "TQ12 2HB"
+        },
+        {
+          "locationId": "1-1047394304",
+          "locationName": "Hillton Dental Sittingbourne",
+          "postalCode": "ME10 4AW"
+        },
+        {
+          "locationId": "1-1047451329",
+          "locationName": "Toddington Dental Practice",
+          "postalCode": "LU5 6AA"
+        },
+        {
+          "locationId": "1-1047688732",
+          "locationName": "Shakespeare Health Centre",
+          "postalCode": "UB4 0BE"
+        },
+        {
+          "locationId": "1-1047712291",
+          "locationName": "St Mary’s Haven Residential Care Home",
+          "postalCode": "TR18 2DH"
+        },
+        {
+          "locationId": "1-1047720171",
+          "locationName": "St Mary's Haven Respite",
+          "postalCode": "TR18 2DH"
+        },
+        {
+          "locationId": "1-1047785322",
+          "locationName": "Long Stratton Supported Living",
+          "postalCode": "NR15 2XY"
+        },
+        {
+          "locationId": "1-1047798773",
+          "locationName": "Kings Lynn Supported Living",
+          "postalCode": "PE30 2HZ"
+        },
+        {
+          "locationId": "1-1047798782",
+          "locationName": "Personal and Community Support Services. Floating Support City",
+          "postalCode": "NR1 2DH"
+        },
+        {
+          "locationId": "1-1047798791",
+          "locationName": "Church Green Lodge",
+          "postalCode": "NR7 8ET"
+        },
+        {
+          "locationId": "1-1047798800",
+          "locationName": "Pine Lodge",
+          "postalCode": "NR29 5JH"
+        },
+        {
+          "locationId": "1-1047798809",
+          "locationName": "Faro Lodge",
+          "postalCode": "PE30 3YE"
+        },
+        {
+          "locationId": "1-1047798828",
+          "locationName": "Norwich Supported Living",
+          "postalCode": "NR7 8ET"
+        },
+        {
+          "locationId": "1-1047798837",
+          "locationName": "Independence Matters",
+          "postalCode": "NR31 0LJ"
+        },
+        {
+          "locationId": "1-1047798856",
+          "locationName": "Personal and Community Support Services Personal Assistant Services Broadland",
+          "postalCode": "NR7 8ET"
+        },
+        {
+          "locationId": "1-1047798885",
+          "locationName": "Personal Assistant Services North",
+          "postalCode": "NR7 8ET"
+        },
+        {
+          "locationId": "1-1047798914",
+          "locationName": "Personal and Community Support Services Personal Assistant Services South",
+          "postalCode": "NR17 2AT"
+        },
+        {
+          "locationId": "1-1047798933",
+          "locationName": "City Personal Assistant Service",
+          "postalCode": "NR4 6QS"
+        },
+        {
+          "locationId": "1-1047798942",
+          "locationName": "Stepping Out",
+          "postalCode": "NR31 8ES"
+        },
+        {
+          "locationId": "1-1047848681",
+          "locationName": "Dr Shina's Surgery at Crowndale Health Centre",
+          "postalCode": "NW1 1TN"
+        },
+        {
+          "locationId": "1-1047862711",
+          "locationName": "Bluebird Care (South Staffs)",
+          "postalCode": "WV8 1PL"
+        },
+        {
+          "locationId": "1-1048000383",
+          "locationName": "Affinity Trust - Domiciliary Care Agency - South",
+          "postalCode": "GU11 3HU"
+        },
+        {
+          "locationId": "1-1048017153",
+          "locationName": "HMP Blundeston",
+          "postalCode": "NR32 5BG"
+        },
+        {
+          "locationId": "1-1048100754",
+          "locationName": "Sally and Sarah",
+          "postalCode": "TS18 3DA"
+        },
+        {
+          "locationId": "1-104822703",
+          "locationName": "The Old Rectory Retirement Home",
+          "postalCode": "CT2 8NJ"
+        },
+        {
+          "locationId": "1-104857965",
+          "locationName": "La Luz Residential Home",
+          "postalCode": "KT20 5SD"
+        },
+        {
+          "locationId": "1-104946930",
+          "locationName": "St Mary's Convent and Nursing Home",
+          "postalCode": "W4 2QE"
+        },
+        {
+          "locationId": "1-104959356",
+          "locationName": "Acorn Hove",
+          "postalCode": "BN3 6NR"
+        },
+        {
+          "locationId": "1-104968428",
+          "locationName": "Dorriemay House",
+          "postalCode": "CT9 1XB"
+        },
+        {
+          "locationId": "1-104974906",
+          "locationName": "Greenacres Care Home",
+          "postalCode": "LN7 6QY"
+        },
+        {
+          "locationId": "1-104984455",
+          "locationName": "Cornfields",
+          "postalCode": "RG23 8HD"
+        },
+        {
+          "locationId": "1-104984511",
+          "locationName": "Applelea",
+          "postalCode": "RG22 4BB"
+        },
+        {
+          "locationId": "1-104984525",
+          "locationName": "Willow Tree Lodge",
+          "postalCode": "RG22 5NA"
+        },
+        {
+          "locationId": "1-104984539",
+          "locationName": "Cornview",
+          "postalCode": "RG23 8HF"
+        },
+        {
+          "locationId": "1-104984553",
+          "locationName": "Glebelands",
+          "postalCode": "RG21 3DN"
+        },
+        {
+          "locationId": "1-104984567",
+          "locationName": "Timaru",
+          "postalCode": "SO51 0HB"
+        },
+        {
+          "locationId": "1-104984581",
+          "locationName": "Baytrees",
+          "postalCode": "RG22 6PD"
+        },
+        {
+          "locationId": "1-1050178780",
+          "locationName": "Herefordshire MIND Domiciliary Care Service",
+          "postalCode": "HR1 2TB"
+        },
+        {
+          "locationId": "1-1050236930",
+          "locationName": "Acacia Lodge",
+          "postalCode": "RG9 1EY"
+        },
+        {
+          "locationId": "1-1050248767",
+          "locationName": "CareKind",
+          "postalCode": "SY13 4AL"
+        },
+        {
+          "locationId": "1-1050259592",
+          "locationName": "Care Homes Stoke Limited",
+          "postalCode": "ST6 1EB"
+        },
+        {
+          "locationId": "1-1050260143",
+          "locationName": "Lawton Rise Care Home",
+          "postalCode": "ST6 5QS"
+        },
+        {
+          "locationId": "1-1050278440",
+          "locationName": "Forever There",
+          "postalCode": "B77 2AH"
+        },
+        {
+          "locationId": "1-1050303481",
+          "locationName": "Brunel Court",
+          "postalCode": "PO1 4JB"
+        },
+        {
+          "locationId": "1-1050303495",
+          "locationName": "Milton Village",
+          "postalCode": "PO1 4JB"
+        },
+        {
+          "locationId": "1-105049765",
+          "locationName": "Ann Charlton Lodge",
+          "postalCode": "TS10 4PR"
+        },
+        {
+          "locationId": "1-105106051",
+          "locationName": "Laxton Hall",
+          "postalCode": "NN17 3AU"
+        },
+        {
+          "locationId": "1-105110341",
+          "locationName": "Callum House",
+          "postalCode": "CR5 2BL"
+        },
+        {
+          "locationId": "1-105110357",
+          "locationName": "Redstone House",
+          "postalCode": "RH1 4BG"
+        },
+        {
+          "locationId": "1-105115516",
+          "locationName": "Trent Lodge Residential Care Home",
+          "postalCode": "EN2 6TZ"
+        },
+        {
+          "locationId": "1-105115571",
+          "locationName": "West Lodge Residential Care Home",
+          "postalCode": "IG9 5LW"
+        },
+        {
+          "locationId": "1-105121303",
+          "locationName": "Ashcroft - Bromley",
+          "postalCode": "BR1 4HE"
+        },
+        {
+          "locationId": "1-105134763",
+          "locationName": "Bayith Rest Home",
+          "postalCode": "PO8 9QH"
+        },
+        {
+          "locationId": "1-1051403692",
+          "locationName": "Lyme Regis Medical Centre",
+          "postalCode": "DT7 3LS"
+        },
+        {
+          "locationId": "1-1051444139",
+          "locationName": "Barons Lodge Sutton",
+          "postalCode": "SM2 5DW"
+        },
+        {
+          "locationId": "1-1051445034",
+          "locationName": "Weston Cottage Dental Practice",
+          "postalCode": "KT7 0XA"
+        },
+        {
+          "locationId": "1-105146446",
+          "locationName": "Ascot Nursing Home - Ascot",
+          "postalCode": "SL5 7LD"
+        },
+        {
+          "locationId": "1-1051526530",
+          "locationName": "Pearl Dental Care Sevenoaks",
+          "postalCode": "TN13 1HJ"
+        },
+        {
+          "locationId": "1-105155035",
+          "locationName": "Mr & Mrs A H Akbarally",
+          "postalCode": "KT19 9TA"
+        },
+        {
+          "locationId": "1-1051582637",
+          "locationName": "Abbey Vale Care",
+          "postalCode": "NN1 4EP"
+        },
+        {
+          "locationId": "1-105163313",
+          "locationName": "Holbeach and East Elloe Hospital Trust",
+          "postalCode": "PE12 8AQ"
+        },
+        {
+          "locationId": "1-105164495",
+          "locationName": "Hollybank Rest Home",
+          "postalCode": "SO30 2EB"
+        },
+        {
+          "locationId": "1-105176594",
+          "locationName": "Ranworth House",
+          "postalCode": "BN21 2NW"
+        },
+        {
+          "locationId": "1-105176629",
+          "locationName": "Felbrigg House",
+          "postalCode": "CT16 2PU"
+        },
+        {
+          "locationId": "1-105176642",
+          "locationName": "Bradfield House",
+          "postalCode": "BN11 4NY"
+        },
+        {
+          "locationId": "1-105176655",
+          "locationName": "Walcott House",
+          "postalCode": "PO21 2EU"
+        },
+        {
+          "locationId": "1-105176668",
+          "locationName": "Ormesby House",
+          "postalCode": "RH8 9JB"
+        },
+        {
+          "locationId": "1-1051784960",
+          "locationName": "Adamson House",
+          "postalCode": "M20 2YY"
+        },
+        {
+          "locationId": "1-1052203736",
+          "locationName": "Berkshire Care Limited",
+          "postalCode": "RG42 5AB"
+        },
+        {
+          "locationId": "1-1052264761",
+          "locationName": "HMP Dovegate",
+          "postalCode": "ST14 8XR"
+        },
+        {
+          "locationId": "1-1052364456",
+          "locationName": "Abbey Lodge",
+          "postalCode": "TN33 0SH"
+        },
+        {
+          "locationId": "1-1052380284",
+          "locationName": "West Auckland Dental Practice",
+          "postalCode": "DL14 9HW"
+        },
+        {
+          "locationId": "1-1052404934",
+          "locationName": "Radfield Homecare-Staffordshire",
+          "postalCode": "ST17 4BN"
+        },
+        {
+          "locationId": "1-105247794",
+          "locationName": "Miramar Nursing Home",
+          "postalCode": "LN12 2LT"
+        },
+        {
+          "locationId": "1-105252675",
+          "locationName": "Downview Residential Home",
+          "postalCode": "RG17 0ED"
+        },
+        {
+          "locationId": "1-1052529329",
+          "locationName": "Appoline Dental Care",
+          "postalCode": "NG31 7DL"
+        },
+        {
+          "locationId": "1-1052574231",
+          "locationName": "Rydal Avenue",
+          "postalCode": "WA4 6AU"
+        },
+        {
+          "locationId": "1-105288175",
+          "locationName": "St Albans House",
+          "postalCode": "CT14 9TL"
+        },
+        {
+          "locationId": "1-105299391",
+          "locationName": "Clinica Health Limited",
+          "postalCode": "W2 1EJ"
+        },
+        {
+          "locationId": "1-105303233",
+          "locationName": "Rowan Lodge",
+          "postalCode": "UB5 4QE"
+        },
+        {
+          "locationId": "1-105303258",
+          "locationName": "Hazelwood House",
+          "postalCode": "HA3 8PF"
+        },
+        {
+          "locationId": "1-105311568",
+          "locationName": "Beachville West End",
+          "postalCode": "NE64 6XD"
+        },
+        {
+          "locationId": "1-105319474",
+          "locationName": "The Brandon Centre",
+          "postalCode": "NW5 3LG"
+        },
+        {
+          "locationId": "1-1053732470",
+          "locationName": "Highfield ENT Clinic",
+          "postalCode": "WA8 7DJ"
+        },
+        {
+          "locationId": "1-1053843308",
+          "locationName": "Midland Heart Supported Living Service",
+          "postalCode": "B19 1RN"
+        },
+        {
+          "locationId": "1-1053860164",
+          "locationName": "Polsloe",
+          "postalCode": "EX1 2HL"
+        },
+        {
+          "locationId": "1-1053898278",
+          "locationName": "Wii Care Limited",
+          "postalCode": "ME2 4BQ"
+        },
+        {
+          "locationId": "1-1053988796",
+          "locationName": "Larchwood Nursing and Residential Home",
+          "postalCode": "NR7 0RF"
+        },
+        {
+          "locationId": "1-105401915",
+          "locationName": "Admiral House - Folkestone",
+          "postalCode": "CT20 1PD"
+        },
+        {
+          "locationId": "1-105412469",
+          "locationName": "Independent Family Health Care Limited",
+          "postalCode": "LS18 5BL"
+        },
+        {
+          "locationId": "1-1054132568",
+          "locationName": "Figtree Care Services Ltd",
+          "postalCode": "DA1 5FS"
+        },
+        {
+          "locationId": "1-105423293",
+          "locationName": "Bevern View",
+          "postalCode": "BN8 5FJ"
+        },
+        {
+          "locationId": "1-105426344",
+          "locationName": "Checaniah House",
+          "postalCode": "E5 0RX"
+        },
+        {
+          "locationId": "1-105436109",
+          "locationName": "The Wedge Residential Home",
+          "postalCode": "PO11 0HU"
+        },
+        {
+          "locationId": "1-1054364594",
+          "locationName": "Barnardo's Worcestershire Community Short Breaks",
+          "postalCode": "DY10 3ED"
+        },
+        {
+          "locationId": "1-105440969",
+          "locationName": "Chase Lodge Health",
+          "postalCode": "NW7 2ED"
+        },
+        {
+          "locationId": "1-105451593",
+          "locationName": "Langley House",
+          "postalCode": "SR8 4NL"
+        },
+        {
+          "locationId": "1-1054545201",
+          "locationName": "Lifesmyle Family and Cosmetic Dentistry Ltd",
+          "postalCode": "BB11 4HU"
+        },
+        {
+          "locationId": "1-1054621685",
+          "locationName": "Hermitage Clinic",
+          "postalCode": "E1W 1NR"
+        },
+        {
+          "locationId": "1-105462203",
+          "locationName": "Valley View Care Home",
+          "postalCode": "HX2 0RX"
+        },
+        {
+          "locationId": "1-105473075",
+          "locationName": "Glasson House",
+          "postalCode": "EN4 9JS"
+        },
+        {
+          "locationId": "1-1055635376",
+          "locationName": "Livewell (Care & Support) Ltd - West Midlands",
+          "postalCode": "B27 6RT"
+        },
+        {
+          "locationId": "1-1056579588",
+          "locationName": "B&H Care Ltd",
+          "postalCode": "ST6 2EB"
+        },
+        {
+          "locationId": "1-1057114714",
+          "locationName": "2M Health & Home Care Services Ltd - Birmingham",
+          "postalCode": "B66 2AL"
+        },
+        {
+          "locationId": "1-1057115093",
+          "locationName": "Archangel Home Care - Staffordshire Branch",
+          "postalCode": "ST5 7RU"
+        },
+        {
+          "locationId": "1-1058278981",
+          "locationName": "My Care Clouds CIC",
+          "postalCode": "IG1 4PG"
+        },
+        {
+          "locationId": "1-105830553",
+          "locationName": "Glengarry Court Care Home",
+          "postalCode": "FY6 7JA"
+        },
+        {
+          "locationId": "1-105831675",
+          "locationName": "The Gables Care Home",
+          "postalCode": "PR7 1LF"
+        },
+        {
+          "locationId": "1-105835715",
+          "locationName": "Brockfield House",
+          "postalCode": "NN9 6QQ"
+        },
+        {
+          "locationId": "1-105836127",
+          "locationName": "Forest View Care Home",
+          "postalCode": "E17 3QG"
+        },
+        {
+          "locationId": "1-1058388579",
+          "locationName": "Puddingstone Grange",
+          "postalCode": "SE18 3RD"
+        },
+        {
+          "locationId": "1-105844767",
+          "locationName": "Bradstowe Lodge",
+          "postalCode": "CT10 1QL"
+        },
+        {
+          "locationId": "1-1058488741",
+          "locationName": "Easy Smile Sheerness",
+          "postalCode": "ME12 1AB"
+        },
+        {
+          "locationId": "1-105849633",
+          "locationName": "Portland House",
+          "postalCode": "LE9 2EH"
+        },
+        {
+          "locationId": "1-105849874",
+          "locationName": "Clare House Residential Home",
+          "postalCode": "NN12 8UD"
+        },
+        {
+          "locationId": "1-105851472",
+          "locationName": "The Chestnuts Nursing and Dementia Care Home",
+          "postalCode": "E11 2PR"
+        },
+        {
+          "locationId": "1-105853417",
+          "locationName": "Thornley Leazes Care",
+          "postalCode": "NE47 9NH"
+        },
+        {
+          "locationId": "1-105854023",
+          "locationName": "Eventide Residential Home Limited",
+          "postalCode": "EX23 8RQ"
+        },
+        {
+          "locationId": "1-105855203",
+          "locationName": "Oakhurst Court Nursing Home",
+          "postalCode": "RH9 8JY"
+        },
+        {
+          "locationId": "1-105860838",
+          "locationName": "Aronel Cottage Care Home Limited",
+          "postalCode": "PO22 8BQ"
+        },
+        {
+          "locationId": "1-105862743",
+          "locationName": "Warren Drive",
+          "postalCode": "TN6 1TP"
+        },
+        {
+          "locationId": "1-105862938",
+          "locationName": "Yeldall Manor",
+          "postalCode": "RG10 9XR"
+        },
+        {
+          "locationId": "1-105863325",
+          "locationName": "Ash Court Care Centre - Camden",
+          "postalCode": "NW5 2PW"
+        },
+        {
+          "locationId": "1-105885228",
+          "locationName": "Heathlands Care Home",
+          "postalCode": "E4 6NF"
+        },
+        {
+          "locationId": "1-1058859079",
+          "locationName": "Woolsthorpe Surgery",
+          "postalCode": "NG32 1LX"
+        },
+        {
+          "locationId": "1-1058873173",
+          "locationName": "Prospects Supported Living ltd",
+          "postalCode": "BB4 8PD"
+        },
+        {
+          "locationId": "1-1058888375",
+          "locationName": "White Gates Care Centre",
+          "postalCode": "TW18 1UG"
+        },
+        {
+          "locationId": "1-1058891991",
+          "locationName": "Aban Dental Clinic",
+          "postalCode": "L19 2NJ"
+        },
+        {
+          "locationId": "1-105892230",
+          "locationName": "St Mary's Convent",
+          "postalCode": "DH8 0QD"
+        },
+        {
+          "locationId": "1-105892965",
+          "locationName": "LHM Healthcare",
+          "postalCode": "E11 1RG"
+        },
+        {
+          "locationId": "1-105892980",
+          "locationName": "East of England Hyperbaric Unit",
+          "postalCode": "NR31 6LA"
+        },
+        {
+          "locationId": "1-1059056748",
+          "locationName": "Trinity-Herts Care Homes Limited",
+          "postalCode": "NW7 2RN"
+        },
+        {
+          "locationId": "1-1059108813",
+          "locationName": "Complete Professional Care Ltd",
+          "postalCode": "ME7 3QG"
+        },
+        {
+          "locationId": "1-1059132871",
+          "locationName": "Bondgate Dental Practice",
+          "postalCode": "YO62 5EZ"
+        },
+        {
+          "locationId": "1-105913802",
+          "locationName": "Cristos",
+          "postalCode": "BN3 2RN"
+        },
+        {
+          "locationId": "1-1059180974",
+          "locationName": "Farleigh Dental",
+          "postalCode": "CR2 8PB"
+        },
+        {
+          "locationId": "1-1059213371",
+          "locationName": "19 Bell Street Dental Practice",
+          "postalCode": "CM21 9AR"
+        },
+        {
+          "locationId": "1-1059213430",
+          "locationName": "Barton Dental Surgery",
+          "postalCode": "MK45 4LL"
+        },
+        {
+          "locationId": "1-105995778",
+          "locationName": "Acorn Luxury Care Limited",
+          "postalCode": "BH3 7AS"
+        },
+        {
+          "locationId": "1-106007036",
+          "locationName": "Grove Hill Care Home",
+          "postalCode": "SN6 7JN"
+        },
+        {
+          "locationId": "1-106021624",
+          "locationName": "Charis Primary Programme",
+          "postalCode": "E1 4TP"
+        },
+        {
+          "locationId": "1-106025374",
+          "locationName": "Pure Sports Medicine Limited (Threadneedle)",
+          "postalCode": "EC2R 8AR"
+        },
+        {
+          "locationId": "1-106025394",
+          "locationName": "Pure Sports Medicine Limited (Kensington)",
+          "postalCode": "SW7 4XR"
+        },
+        {
+          "locationId": "1-106030318",
+          "locationName": "Bourton Grange",
+          "postalCode": "SY22 6LQ"
+        },
+        {
+          "locationId": "1-106030615",
+          "locationName": "Bedford Charter House",
+          "postalCode": "MK40 2PU"
+        },
+        {
+          "locationId": "1-106035602",
+          "locationName": "Stoneleigh",
+          "postalCode": "PO37 6EU"
+        },
+        {
+          "locationId": "1-106049195",
+          "locationName": "The Laurels Care Home",
+          "postalCode": "CT14 9JY"
+        },
+        {
+          "locationId": "1-1060533908",
+          "locationName": "Heritage Healthcare-Middlesbrough",
+          "postalCode": "TS2 1RT"
+        },
+        {
+          "locationId": "1-106058258",
+          "locationName": "Cleeve Lodge",
+          "postalCode": "RG8 9BN"
+        },
+        {
+          "locationId": "1-1060675709",
+          "locationName": "The Palace Gate Practice",
+          "postalCode": "W8 5JN"
+        },
+        {
+          "locationId": "1-1060743567",
+          "locationName": "Greenshoot Care Services Limited",
+          "postalCode": "YO1 6DP"
+        },
+        {
+          "locationId": "1-1060789310",
+          "locationName": "Messenger Dental Practice",
+          "postalCode": "GL1 1HX"
+        },
+        {
+          "locationId": "1-1060827481",
+          "locationName": "Way Ahead Care - Taunton",
+          "postalCode": "TA1 1BW"
+        },
+        {
+          "locationId": "1-1060912125",
+          "locationName": "Simone's House",
+          "postalCode": "UB10 0AD"
+        },
+        {
+          "locationId": "1-1060955754",
+          "locationName": "ERS Medical",
+          "postalCode": "SL1 3FQ"
+        },
+        {
+          "locationId": "1-106113818",
+          "locationName": "Homefield Court",
+          "postalCode": "NW10 7AP"
+        },
+        {
+          "locationId": "1-1061139537",
+          "locationName": "Cravenwood House",
+          "postalCode": "M8 5AE"
+        },
+        {
+          "locationId": "1-1061140237",
+          "locationName": "Tan Dental Practice",
+          "postalCode": "N15 4AJ"
+        },
+        {
+          "locationId": "1-1061213391",
+          "locationName": "Unique Dental Care",
+          "postalCode": "SE27 9BU"
+        },
+        {
+          "locationId": "1-1061311593",
+          "locationName": "Dr Ali Abd",
+          "postalCode": "SW1X 7JN"
+        },
+        {
+          "locationId": "1-1061378066",
+          "locationName": "Peverell Clinic",
+          "postalCode": "PL3 4QE"
+        },
+        {
+          "locationId": "1-1061474820",
+          "locationName": "Family Dental Practice",
+          "postalCode": "BB9 9TD"
+        },
+        {
+          "locationId": "1-1061513188",
+          "locationName": "South Norfolk Carers Limited",
+          "postalCode": "NR15 1HJ"
+        },
+        {
+          "locationId": "1-1061526118",
+          "locationName": "Joint Community Rehabilitation Service",
+          "postalCode": "BN7 2FZ"
+        },
+        {
+          "locationId": "1-1061545566",
+          "locationName": "Joint Community Rehabilitation Service",
+          "postalCode": "TN39 3JU"
+        },
+        {
+          "locationId": "1-106162884",
+          "locationName": "Bethany House Care Home",
+          "postalCode": "DL5 4UD"
+        },
+        {
+          "locationId": "1-1061637931",
+          "locationName": "Solent Lodge",
+          "postalCode": "PO14 2PG"
+        },
+        {
+          "locationId": "1-1061645660",
+          "locationName": "Burley Heights",
+          "postalCode": "ST18 9LQ"
+        },
+        {
+          "locationId": "1-1061648251",
+          "locationName": "Solihull Framework Services",
+          "postalCode": "B37 6QZ"
+        },
+        {
+          "locationId": "1-1061652651",
+          "locationName": "Peoples Care Limited",
+          "postalCode": "E1 1BJ"
+        },
+        {
+          "locationId": "1-106167046",
+          "locationName": "Leazes Hall Care Home",
+          "postalCode": "NE16 6AJ"
+        },
+        {
+          "locationId": "1-106171008",
+          "locationName": "Jean Garwood House",
+          "postalCode": "CR2 6LX"
+        },
+        {
+          "locationId": "1-106171754",
+          "locationName": "Park House Nursing Home",
+          "postalCode": "BD13 1QJ"
+        },
+        {
+          "locationId": "1-106171864",
+          "locationName": "All Hallows Nursing Home",
+          "postalCode": "NR35 1DL"
+        },
+        {
+          "locationId": "1-106171883",
+          "locationName": "All Hallows Hospital",
+          "postalCode": "NR35 2QL"
+        },
+        {
+          "locationId": "1-106178384",
+          "locationName": "Wood Green Slimming Clinic",
+          "postalCode": "N22 8HE"
+        },
+        {
+          "locationId": "1-106179040",
+          "locationName": "Edmund Peter Shephard",
+          "postalCode": "W1G 7HL"
+        },
+        {
+          "locationId": "1-106191811",
+          "locationName": "Magnolia House",
+          "postalCode": "SM1 2EE"
+        },
+        {
+          "locationId": "1-106196515",
+          "locationName": "St Clare's Hospice",
+          "postalCode": "NE32 5HA"
+        },
+        {
+          "locationId": "1-106199876",
+          "locationName": "North Bay House",
+          "postalCode": "NR32 3PW"
+        },
+        {
+          "locationId": "1-106200061",
+          "locationName": "Perran Bay Care Home",
+          "postalCode": "TR6 0BH"
+        },
+        {
+          "locationId": "1-106202577",
+          "locationName": "Cherrytree Residential Home",
+          "postalCode": "LE8 5TD"
+        },
+        {
+          "locationId": "1-106202900",
+          "locationName": "Trinity Court Nursing Home",
+          "postalCode": "SW17 7HL"
+        },
+        {
+          "locationId": "1-106213545",
+          "locationName": "Plastic Surgery W1 Limited",
+          "postalCode": "W1G 9LG"
+        },
+        {
+          "locationId": "1-106214415",
+          "locationName": "The Branches",
+          "postalCode": "NE32 5TQ"
+        },
+        {
+          "locationId": "1-106214874",
+          "locationName": "St Oswalds Hospice",
+          "postalCode": "NE3 1EE"
+        },
+        {
+          "locationId": "1-106220488",
+          "locationName": "Etherley Lodge",
+          "postalCode": "DL14 0HD"
+        },
+        {
+          "locationId": "1-106225323",
+          "locationName": "Barnsley Hospice",
+          "postalCode": "S75 2RL"
+        },
+        {
+          "locationId": "1-106227115",
+          "locationName": "Melrose House",
+          "postalCode": "N10 2EH"
+        },
+        {
+          "locationId": "1-106227345",
+          "locationName": "Oakleigh House Nursing Home",
+          "postalCode": "HA5 4HB"
+        },
+        {
+          "locationId": "1-106240471",
+          "locationName": "Ealing Eventide Homes Limited - Downhurst",
+          "postalCode": "W5 2DD"
+        },
+        {
+          "locationId": "1-106245011",
+          "locationName": "Rowcroft Hospice",
+          "postalCode": "TQ2 5LS"
+        },
+        {
+          "locationId": "1-106260202",
+          "locationName": "Elmwood Residential Home Limited",
+          "postalCode": "EX24 6QJ"
+        },
+        {
+          "locationId": "1-106260291",
+          "locationName": "Ridgewood Lodge",
+          "postalCode": "TR14 8DQ"
+        },
+        {
+          "locationId": "1-106260372",
+          "locationName": "Yew Tree Cottage Residential Home",
+          "postalCode": "TA20 3DB"
+        },
+        {
+          "locationId": "1-1062708751",
+          "locationName": "Jenson House",
+          "postalCode": "B70 9QD"
+        },
+        {
+          "locationId": "1-1062737003",
+          "locationName": "Exmed UK Ltd",
+          "postalCode": "HR1 3SE"
+        },
+        {
+          "locationId": "1-1062779921",
+          "locationName": "Brook Bedfordshire",
+          "postalCode": "MK40 2TE"
+        },
+        {
+          "locationId": "1-1062780066",
+          "locationName": "Brook Birmingham",
+          "postalCode": "B1 1BL"
+        },
+        {
+          "locationId": "1-1062780166",
+          "locationName": "Brook Blackburn",
+          "postalCode": "BB2 2BL"
+        },
+        {
+          "locationId": "1-1062780242",
+          "locationName": "Brook Bristol",
+          "postalCode": "BS1 2AG"
+        },
+        {
+          "locationId": "1-1062780264",
+          "locationName": "Brook Brixton",
+          "postalCode": "SW9 7AW"
+        },
+        {
+          "locationId": "1-1062780284",
+          "locationName": "Brook Burnley",
+          "postalCode": "BB11 1TS"
+        },
+        {
+          "locationId": "1-1062780313",
+          "locationName": "Brook Cornwall",
+          "postalCode": "TR15 3QG"
+        },
+        {
+          "locationId": "1-1062780327",
+          "locationName": "Brook Dudley",
+          "postalCode": "DY1 1HA"
+        },
+        {
+          "locationId": "1-1062780342",
+          "locationName": "Brook Euston",
+          "postalCode": "NW1 1HJ"
+        },
+        {
+          "locationId": "1-1062780359",
+          "locationName": "Brook Liverpool",
+          "postalCode": "L3 8JA"
+        },
+        {
+          "locationId": "1-1062780396",
+          "locationName": "Brook Luton",
+          "postalCode": "LU1 2AF"
+        },
+        {
+          "locationId": "1-1062858411",
+          "locationName": "Brook Manchester",
+          "postalCode": "M1 1FL"
+        },
+        {
+          "locationId": "1-1062858427",
+          "locationName": "Brook Milton Keynes",
+          "postalCode": "MK9 2FX"
+        },
+        {
+          "locationId": "1-1062858442",
+          "locationName": "Brook Oldham",
+          "postalCode": "OL1 1QH"
+        },
+        {
+          "locationId": "1-1062858460",
+          "locationName": "Brook Salford",
+          "postalCode": "M5 5NZ"
+        },
+        {
+          "locationId": "1-1062858476",
+          "locationName": "Brook Southwark",
+          "postalCode": "SE17 3PY"
+        },
+        {
+          "locationId": "1-1062858494",
+          "locationName": "Brook Tipton",
+          "postalCode": "DY4 0HP"
+        },
+        {
+          "locationId": "1-1062858512",
+          "locationName": "Brook Wigan and Leigh",
+          "postalCode": "WN1 1AS"
+        },
+        {
+          "locationId": "1-1062858529",
+          "locationName": "Brook Wirral",
+          "postalCode": "CH41 2QR"
+        },
+        {
+          "locationId": "1-106319079",
+          "locationName": "Willow Burn",
+          "postalCode": "DH7 0QS"
+        },
+        {
+          "locationId": "1-106338834",
+          "locationName": "Clairleigh Nursing Home",
+          "postalCode": "BR1 3AS"
+        },
+        {
+          "locationId": "1-106348462",
+          "locationName": "Magenta",
+          "postalCode": "CT19 5BH"
+        },
+        {
+          "locationId": "1-106348478",
+          "locationName": "Blythson Limited - 33 St. Johns Church Road",
+          "postalCode": "CT19 5BH"
+        },
+        {
+          "locationId": "1-106348492",
+          "locationName": "Blythson Limited - 5 Ashley Avenue",
+          "postalCode": "CT19 4PX"
+        },
+        {
+          "locationId": "1-106348506",
+          "locationName": "Blythson Limited - 3 Ashley Avenue",
+          "postalCode": "CT19 4PX"
+        },
+        {
+          "locationId": "1-106351203",
+          "locationName": "The Grange Residential Home",
+          "postalCode": "IP33 2JT"
+        },
+        {
+          "locationId": "1-106352564",
+          "locationName": "Fullwood House Limited",
+          "postalCode": "DE7 8AU"
+        },
+        {
+          "locationId": "1-106360378",
+          "locationName": "Clayton Court",
+          "postalCode": "GU33 7QP"
+        },
+        {
+          "locationId": "1-106378587",
+          "locationName": "Ebor Lodge",
+          "postalCode": "HU5 3HS"
+        },
+        {
+          "locationId": "1-106383494",
+          "locationName": "Ashmore Nursing Home",
+          "postalCode": "IP31 2AD"
+        },
+        {
+          "locationId": "1-1063878487",
+          "locationName": "Bupa - High Street, Sturry",
+          "postalCode": "CT2 0BD"
+        },
+        {
+          "locationId": "1-1063878660",
+          "locationName": "Plan Care - Brighton",
+          "postalCode": "BN1 3XG"
+        },
+        {
+          "locationId": "1-1063889990",
+          "locationName": "MiHomecare - Havant",
+          "postalCode": "PO9 1JN"
+        },
+        {
+          "locationId": "1-106389880",
+          "locationName": "Epsom Day Surgery",
+          "postalCode": "KT17 4BL"
+        },
+        {
+          "locationId": "1-106389976",
+          "locationName": "Cobham Day Surgery",
+          "postalCode": "KT11 1HS"
+        },
+        {
+          "locationId": "1-106398562",
+          "locationName": "Oaklands Care Home",
+          "postalCode": "PO7 5UJ"
+        },
+        {
+          "locationId": "1-106409439",
+          "locationName": "Merrimore House",
+          "postalCode": "PE36 5HW"
+        },
+        {
+          "locationId": "1-106409918",
+          "locationName": "St Luke's Hospital - Oxford",
+          "postalCode": "OX3 7PF"
+        },
+        {
+          "locationId": "1-106487846",
+          "locationName": "Wordsley House",
+          "postalCode": "TS25 5RE"
+        },
+        {
+          "locationId": "1-1065214498",
+          "locationName": "Stanley Grange and Choice North West (Supported Living)",
+          "postalCode": "PR5 0RB"
+        },
+        {
+          "locationId": "1-1065223653",
+          "locationName": "South Network",
+          "postalCode": "M22 5RG"
+        },
+        {
+          "locationId": "1-1065229362",
+          "locationName": "Swanscombe Health Centre",
+          "postalCode": "DA10 0BF"
+        },
+        {
+          "locationId": "1-1065243315",
+          "locationName": "Choice Care Home",
+          "postalCode": "TQ1 3QT"
+        },
+        {
+          "locationId": "1-1065294543",
+          "locationName": "National Slimming & Cosmetic Clinics",
+          "postalCode": "NE1 8JQ"
+        },
+        {
+          "locationId": "1-1065306398",
+          "locationName": "Blossoms Care Home Limited",
+          "postalCode": "DA9 9ND"
+        },
+        {
+          "locationId": "1-1065533916",
+          "locationName": "St Albans Dental Centre",
+          "postalCode": "AL1 4JE"
+        },
+        {
+          "locationId": "1-1065711624",
+          "locationName": "Avanta Care",
+          "postalCode": "LS6 3PS"
+        },
+        {
+          "locationId": "1-1065850512",
+          "locationName": "Kingkerswell Health Centre - IHG",
+          "postalCode": "TQ12 5DJ"
+        },
+        {
+          "locationId": "1-1065857462",
+          "locationName": "Harbour Dental Practice",
+          "postalCode": "CW11 4NE"
+        },
+        {
+          "locationId": "1-1065865376",
+          "locationName": "White Eagle Home Care Limited",
+          "postalCode": "WS2 0LX"
+        },
+        {
+          "locationId": "1-1065880893",
+          "locationName": "SCA Care",
+          "postalCode": "SO16 8HF"
+        },
+        {
+          "locationId": "1-1065947714",
+          "locationName": "Pearly Whites Dental Surgery",
+          "postalCode": "TR26 1SF"
+        },
+        {
+          "locationId": "1-1065968475",
+          "locationName": "Goodhealth Domiciliary Care",
+          "postalCode": "SS13 1LT"
+        },
+        {
+          "locationId": "1-1066052292",
+          "locationName": "The Coach House",
+          "postalCode": "AL10 8AE"
+        },
+        {
+          "locationId": "1-1066114804",
+          "locationName": "Core Assets Children's Services",
+          "postalCode": "HP22 6NJ"
+        },
+        {
+          "locationId": "1-1066132924",
+          "locationName": "The Bay Care Group",
+          "postalCode": "TQ3 3DT"
+        },
+        {
+          "locationId": "1-1066173731",
+          "locationName": "Regain Case Management",
+          "postalCode": "CM13 1RE"
+        },
+        {
+          "locationId": "1-1066318846",
+          "locationName": "Valleywood Care Limited",
+          "postalCode": "CW1 6ZQ"
+        },
+        {
+          "locationId": "1-106669968",
+          "locationName": "North Devon Hospice",
+          "postalCode": "EX32 0HU"
+        },
+        {
+          "locationId": "1-106670808",
+          "locationName": "Sussex Grange Residential Care Home",
+          "postalCode": "PO20 9DH"
+        },
+        {
+          "locationId": "1-106670953",
+          "locationName": "Sussex Grange Home Care",
+          "postalCode": "PO20 9DH"
+        },
+        {
+          "locationId": "1-106680723",
+          "locationName": "Westview",
+          "postalCode": "LE2 9HG"
+        },
+        {
+          "locationId": "1-106681600",
+          "locationName": "Snowberry Lane Clinic (Bournemouth)",
+          "postalCode": "BH2 6HT"
+        },
+        {
+          "locationId": "1-106682439",
+          "locationName": "Florence House Residential Home",
+          "postalCode": "PE26 1JR"
+        },
+        {
+          "locationId": "1-106693743",
+          "locationName": "Verulam House Nursing Home",
+          "postalCode": "AL3 4DH"
+        },
+        {
+          "locationId": "1-106695693",
+          "locationName": "Canonbury Residential Home",
+          "postalCode": "GL13 9BE"
+        },
+        {
+          "locationId": "1-106699147",
+          "locationName": "Whitehall Lodge Care Home",
+          "postalCode": "B70 0HG"
+        },
+        {
+          "locationId": "1-106701647",
+          "locationName": "Sarah Care Limited",
+          "postalCode": "S20 3GS"
+        },
+        {
+          "locationId": "1-106713928",
+          "locationName": "Polesworth Group 32 Station Road",
+          "postalCode": "B78 1BQ"
+        },
+        {
+          "locationId": "1-106713944",
+          "locationName": "Polesworth Group 64 Long Street",
+          "postalCode": "B78 1SL"
+        },
+        {
+          "locationId": "1-106713958",
+          "locationName": "Polesworth Group Pooley View",
+          "postalCode": "B78 1BN"
+        },
+        {
+          "locationId": "1-106713972",
+          "locationName": "Polesworth Group 68 Long Street",
+          "postalCode": "B78 1SL"
+        },
+        {
+          "locationId": "1-106713986",
+          "locationName": "Polesworth Group 70 Long Street",
+          "postalCode": "B78 1SL"
+        },
+        {
+          "locationId": "1-106714000",
+          "locationName": "Polesworth Group Friary Road",
+          "postalCode": "CV9 3AG"
+        },
+        {
+          "locationId": "1-106714014",
+          "locationName": "Polesworth Group Pooley Heights",
+          "postalCode": "B78 1JA"
+        },
+        {
+          "locationId": "1-106714028",
+          "locationName": "Highfield",
+          "postalCode": "B78 1RS"
+        },
+        {
+          "locationId": "1-106714042",
+          "locationName": "Polesworth Group Laurel End",
+          "postalCode": "B78 1LT"
+        },
+        {
+          "locationId": "1-106726011",
+          "locationName": "The Beeches Nursing Home",
+          "postalCode": "TR27 4AH"
+        },
+        {
+          "locationId": "1-106726148",
+          "locationName": "Beechwood House Care Home",
+          "postalCode": "BA20 2JA"
+        },
+        {
+          "locationId": "1-106727903",
+          "locationName": "Hilltop House",
+          "postalCode": "RG10 9BN"
+        },
+        {
+          "locationId": "1-106728331",
+          "locationName": "Manor House",
+          "postalCode": "SM4 5QT"
+        },
+        {
+          "locationId": "1-1067442671",
+          "locationName": "Centre for Sight Queen Anne Street",
+          "postalCode": "W1G 8HZ"
+        },
+        {
+          "locationId": "1-106748043",
+          "locationName": "Walmer Lodge Residential Home",
+          "postalCode": "BD8 7ET"
+        },
+        {
+          "locationId": "1-106749761",
+          "locationName": "Lindsey Lodge Hospice",
+          "postalCode": "DN17 2AA"
+        },
+        {
+          "locationId": "1-106756667",
+          "locationName": "Bridge House",
+          "postalCode": "BS36 2BN"
+        },
+        {
+          "locationId": "1-106756991",
+          "locationName": "Chamarel",
+          "postalCode": "CB24 3BP"
+        },
+        {
+          "locationId": "1-1067603053",
+          "locationName": "Bell View Help at Home Ltd",
+          "postalCode": "NE70 7QB"
+        },
+        {
+          "locationId": "1-1067605740",
+          "locationName": "Regency Clinic - City of London",
+          "postalCode": "N1 7SR"
+        },
+        {
+          "locationId": "1-1067615537",
+          "locationName": "Lashbrook House Care Home",
+          "postalCode": "RG9 3LP"
+        },
+        {
+          "locationId": "1-1067698381",
+          "locationName": "Stafford House Residential Care Home",
+          "postalCode": "FY5 1DB"
+        },
+        {
+          "locationId": "1-1067843570",
+          "locationName": "The Brookside Centre",
+          "postalCode": "SO15 0SD"
+        },
+        {
+          "locationId": "1-1067941105",
+          "locationName": "Outdoor Medical Solutions",
+          "postalCode": "GL8 8EZ"
+        },
+        {
+          "locationId": "1-1067954339",
+          "locationName": "Dental Centre Of Excellence",
+          "postalCode": "B98 9AA"
+        },
+        {
+          "locationId": "1-1067954477",
+          "locationName": "Caring Forever",
+          "postalCode": "NR35 2SX"
+        },
+        {
+          "locationId": "1-106798595",
+          "locationName": "West Lodge Care Home",
+          "postalCode": "DL15 9SY"
+        },
+        {
+          "locationId": "1-1067995571",
+          "locationName": "Polmedics Limited - West Bromwich",
+          "postalCode": "B70 9LW"
+        },
+        {
+          "locationId": "1-106800622",
+          "locationName": "Aisling Lodge",
+          "postalCode": "PE19 2BU"
+        },
+        {
+          "locationId": "1-106800639",
+          "locationName": "Springfield Residential Home",
+          "postalCode": "PE15 9NY"
+        },
+        {
+          "locationId": "1-1068072922",
+          "locationName": "Mayfair Homecare - Merton",
+          "postalCode": "SM4 5LJ"
+        },
+        {
+          "locationId": "1-1068118767",
+          "locationName": "Polmedics Limited - Rugby",
+          "postalCode": "CV21 3TJ"
+        },
+        {
+          "locationId": "1-1068164654",
+          "locationName": "Sutton Out-of-Hours GP Service by SELDOC-Urgent Care Centre - St Heliers Hospital",
+          "postalCode": "SM5 1AA"
+        },
+        {
+          "locationId": "1-1068186923",
+          "locationName": "SevaSupport-Oldham Learning Disability Service",
+          "postalCode": "OL9 9PY"
+        },
+        {
+          "locationId": "1-1068298019",
+          "locationName": "Polmedics Limited - Allison Street",
+          "postalCode": "B5 5TH"
+        },
+        {
+          "locationId": "1-106875417",
+          "locationName": "Sandon House Clinic",
+          "postalCode": "PR2 5BW"
+        },
+        {
+          "locationId": "1-106875865",
+          "locationName": "Pinhay House Residential Care Home",
+          "postalCode": "DT7 3RQ"
+        },
+        {
+          "locationId": "1-106876167",
+          "locationName": "Cheybassa Lodge Rest Home",
+          "postalCode": "PO11 9EZ"
+        },
+        {
+          "locationId": "1-106879041",
+          "locationName": "Nexus Support Limited",
+          "postalCode": "SS9 2AX"
+        },
+        {
+          "locationId": "1-106883008",
+          "locationName": "Kingfield Holt",
+          "postalCode": "S11 9AS"
+        },
+        {
+          "locationId": "1-106886716",
+          "locationName": "The Old Prebendal House",
+          "postalCode": "OX7 6BQ"
+        },
+        {
+          "locationId": "1-106886894",
+          "locationName": "Stewart House Care Home",
+          "postalCode": "OX16 9JS"
+        },
+        {
+          "locationId": "1-106889395",
+          "locationName": "Fairlight Nursing Home",
+          "postalCode": "BN16 3LX"
+        },
+        {
+          "locationId": "1-106890455",
+          "locationName": "Abbeyfield Lear House",
+          "postalCode": "CH48 5DT"
+        },
+        {
+          "locationId": "1-106892215",
+          "locationName": "Abbotsfield Residential Care Home",
+          "postalCode": "LA13 9JS"
+        },
+        {
+          "locationId": "1-106893460",
+          "locationName": "Matthew Residential Care Limited - 59 Woodgrange Avenue",
+          "postalCode": "HA3 0XG"
+        },
+        {
+          "locationId": "1-106895295",
+          "locationName": "Beachcomber Care Home",
+          "postalCode": "SR7 7AA"
+        },
+        {
+          "locationId": "1-106897628",
+          "locationName": "Matthew Residential Care Limited - 1 Milton Avenue",
+          "postalCode": "NW9 0EU"
+        },
+        {
+          "locationId": "1-106902467",
+          "locationName": "The Leonard Pulham Nursing Home",
+          "postalCode": "HP22 5PN"
+        },
+        {
+          "locationId": "1-106902712",
+          "locationName": "Camelot Nursing and Residential Care Home",
+          "postalCode": "BN11 4BY"
+        },
+        {
+          "locationId": "1-106909122",
+          "locationName": "Tower House",
+          "postalCode": "RG9 3JN"
+        },
+        {
+          "locationId": "1-106912776",
+          "locationName": "Harpwood Residential Home",
+          "postalCode": "TN15 7RY"
+        },
+        {
+          "locationId": "1-106916349",
+          "locationName": "Aspray House",
+          "postalCode": "E10 7EB"
+        },
+        {
+          "locationId": "1-106925184",
+          "locationName": "Foxley Lodge Residential Care Home",
+          "postalCode": "CR8 2HB"
+        },
+        {
+          "locationId": "1-106926337",
+          "locationName": "Abbey Chase Nursing Home",
+          "postalCode": "KT16 8JW"
+        },
+        {
+          "locationId": "1-106935923",
+          "locationName": "Glebe House (Charnwood) Limited",
+          "postalCode": "LE11 3HU"
+        },
+        {
+          "locationId": "1-106941123",
+          "locationName": "Beddell House",
+          "postalCode": "DH1 2SE"
+        },
+        {
+          "locationId": "1-106946535",
+          "locationName": "Abbotsford Nursing Home - Romford",
+          "postalCode": "RM1 3BX"
+        },
+        {
+          "locationId": "1-106948093",
+          "locationName": "Norwyn House",
+          "postalCode": "EX13 5ST"
+        },
+        {
+          "locationId": "1-106950380",
+          "locationName": "High Hurlands Nursing Home",
+          "postalCode": "GU30 7RY"
+        },
+        {
+          "locationId": "1-106950397",
+          "locationName": "High Hurlands Community Homes",
+          "postalCode": "GU30 7RY"
+        },
+        {
+          "locationId": "1-106952186",
+          "locationName": "The Briars",
+          "postalCode": "TS12 1DU"
+        },
+        {
+          "locationId": "1-106953628",
+          "locationName": "Ivydene Care Home",
+          "postalCode": "LE9 7NR"
+        },
+        {
+          "locationId": "1-106956345",
+          "locationName": "Harbour Rise Rest Home",
+          "postalCode": "TQ4 6DN"
+        },
+        {
+          "locationId": "1-106964246",
+          "locationName": "The Rectory Care Home",
+          "postalCode": "TA1 3JH"
+        },
+        {
+          "locationId": "1-106965965",
+          "locationName": "Bolton Hospice",
+          "postalCode": "BL1 4QT"
+        },
+        {
+          "locationId": "1-106967129",
+          "locationName": "Braeside Residential Care Home",
+          "postalCode": "CR2 0NH"
+        },
+        {
+          "locationId": "1-106967419",
+          "locationName": "Mount Carmel",
+          "postalCode": "SW16 1TH"
+        },
+        {
+          "locationId": "1-106969315",
+          "locationName": "Clair Francis Retirement Home",
+          "postalCode": "PE1 2UT"
+        },
+        {
+          "locationId": "1-106979471",
+          "locationName": "Inspirations",
+          "postalCode": "WV6 0BZ"
+        },
+        {
+          "locationId": "1-1069796641",
+          "locationName": "Lime Square Medical Centre",
+          "postalCode": "M11 1DA"
+        },
+        {
+          "locationId": "1-1069817853",
+          "locationName": "Specialist Support Services for Younger Adults with Disabilities South",
+          "postalCode": "NN8 2JR"
+        },
+        {
+          "locationId": "1-1069985613",
+          "locationName": "Tynedale Hospice at Home",
+          "postalCode": "NE46 1XB"
+        },
+        {
+          "locationId": "1-1070068359",
+          "locationName": "Viavi Limited",
+          "postalCode": "W1G 6HR"
+        },
+        {
+          "locationId": "1-1070137131",
+          "locationName": "Age UK Rotherham",
+          "postalCode": "S65 1SL"
+        },
+        {
+          "locationId": "1-1070243370",
+          "locationName": "The Dentist Wilmslow",
+          "postalCode": "SK9 1LS"
+        },
+        {
+          "locationId": "1-1070253842",
+          "locationName": "Gedling Village Care Home",
+          "postalCode": "NG4 4HA"
+        },
+        {
+          "locationId": "1-1070281691",
+          "locationName": "1 Stratton Road",
+          "postalCode": "SN9 5DY"
+        },
+        {
+          "locationId": "1-1070362225",
+          "locationName": "Solihull Home Care",
+          "postalCode": "B90 4AA"
+        },
+        {
+          "locationId": "1-1070599122",
+          "locationName": "Kenton Medical Centre",
+          "postalCode": "NE3 3QP"
+        },
+        {
+          "locationId": "1-1070612834",
+          "locationName": "Gedling Village Court",
+          "postalCode": "NG4 4HA"
+        },
+        {
+          "locationId": "1-1070612919",
+          "locationName": "Oasis Community Care Ltd",
+          "postalCode": "PL31 2RQ"
+        },
+        {
+          "locationId": "1-107064189",
+          "locationName": "Townley Road",
+          "postalCode": "SE22 8SW"
+        },
+        {
+          "locationId": "1-107064315",
+          "locationName": "Woodcote Road",
+          "postalCode": "SM6 0PU"
+        },
+        {
+          "locationId": "1-107066495",
+          "locationName": "Abbey Dean",
+          "postalCode": "PO22 0EW"
+        },
+        {
+          "locationId": "1-1070667042",
+          "locationName": "Deep Blue Skin Technology",
+          "postalCode": "HG1 1DW"
+        },
+        {
+          "locationId": "1-107067388",
+          "locationName": "Abbeyfield Residential Care Home - The Grove",
+          "postalCode": "NE3 1NH"
+        },
+        {
+          "locationId": "1-107067403",
+          "locationName": "Abbeyfield Residential Care Home - Castle Farm",
+          "postalCode": "NE3 1RF"
+        },
+        {
+          "locationId": "1-107067763",
+          "locationName": "Marquis Court Residential Home",
+          "postalCode": "SR3 2BB"
+        },
+        {
+          "locationId": "1-107069906",
+          "locationName": "Hillview Farm",
+          "postalCode": "RG18 9ER"
+        },
+        {
+          "locationId": "1-107071905",
+          "locationName": "St Ann's Lodge 2",
+          "postalCode": "KT3 5LL"
+        },
+        {
+          "locationId": "1-107074988",
+          "locationName": "Sunnyside Residential Home",
+          "postalCode": "TA20 1EZ"
+        },
+        {
+          "locationId": "1-107079545",
+          "locationName": "H M T Care - 48 Albany Drive",
+          "postalCode": "CT6 8PX"
+        },
+        {
+          "locationId": "1-107079561",
+          "locationName": "Orchard House",
+          "postalCode": "CT6 5UD"
+        },
+        {
+          "locationId": "1-107079737",
+          "locationName": "The Grange",
+          "postalCode": "TN24 9EX"
+        },
+        {
+          "locationId": "1-1070803341",
+          "locationName": "White Doves",
+          "postalCode": "B94 6NN"
+        },
+        {
+          "locationId": "1-107082305",
+          "locationName": "Inwood House",
+          "postalCode": "WF4 5HG"
+        },
+        {
+          "locationId": "1-107082503",
+          "locationName": "Windsor Court Residential Home",
+          "postalCode": "TS18 4DZ"
+        },
+        {
+          "locationId": "1-107082748",
+          "locationName": "Grace Lodge",
+          "postalCode": "KT10 0QL"
+        },
+        {
+          "locationId": "1-107083100",
+          "locationName": "Primrose House",
+          "postalCode": "PL21 9AW"
+        },
+        {
+          "locationId": "1-1070838441",
+          "locationName": "Complete Care Agency Ltd",
+          "postalCode": "LS19 7ZA"
+        },
+        {
+          "locationId": "1-107086205",
+          "locationName": "Beechwood House",
+          "postalCode": "CR2 0AA"
+        },
+        {
+          "locationId": "1-107086902",
+          "locationName": "The Swallows",
+          "postalCode": "SE6 1AX"
+        },
+        {
+          "locationId": "1-107087295",
+          "locationName": "Bethany Christian Home",
+          "postalCode": "PL4 8QE"
+        },
+        {
+          "locationId": "1-107087876",
+          "locationName": "Bradbury House",
+          "postalCode": "HP9 2JW"
+        },
+        {
+          "locationId": "1-107094195",
+          "locationName": "5 George V Avenue",
+          "postalCode": "CT9 5QA"
+        },
+        {
+          "locationId": "1-107095355",
+          "locationName": "Newton Care Homes Limited",
+          "postalCode": "HA1 4SZ"
+        },
+        {
+          "locationId": "1-107095666",
+          "locationName": "The Grange",
+          "postalCode": "N12 8SP"
+        },
+        {
+          "locationId": "1-107101837",
+          "locationName": "Vision of Hope",
+          "postalCode": "BN1 5BB"
+        },
+        {
+          "locationId": "1-107107715",
+          "locationName": "Carnalea Residential Home",
+          "postalCode": "ME13 8TA"
+        },
+        {
+          "locationId": "1-107107821",
+          "locationName": "Dalkeith Lodge",
+          "postalCode": "CT6 6DT"
+        },
+        {
+          "locationId": "1-107110126",
+          "locationName": "Spring House Residential Care Home",
+          "postalCode": "PL19 9NP"
+        },
+        {
+          "locationId": "1-107111672",
+          "locationName": "Riverdale Grange Clinic",
+          "postalCode": "S10 3FE"
+        },
+        {
+          "locationId": "1-107117300",
+          "locationName": "Banbury Heights Nursing Home",
+          "postalCode": "OX16 5HT"
+        },
+        {
+          "locationId": "1-107124988",
+          "locationName": "Tudor Lodge Residential Care Home",
+          "postalCode": "HA8 8EJ"
+        },
+        {
+          "locationId": "1-107126155",
+          "locationName": "Kendal House",
+          "postalCode": "NE26 1DP"
+        },
+        {
+          "locationId": "1-107126258",
+          "locationName": "Wayside",
+          "postalCode": "RH12 4PX"
+        },
+        {
+          "locationId": "1-107126433",
+          "locationName": "Crossways Healthcare Limited",
+          "postalCode": "RH16 2AA"
+        },
+        {
+          "locationId": "1-107126752",
+          "locationName": "Ashton House Nursing Home",
+          "postalCode": "RH16 4BX"
+        },
+        {
+          "locationId": "1-107128095",
+          "locationName": "Staveley House",
+          "postalCode": "LA15 8QQ"
+        },
+        {
+          "locationId": "1-107129620",
+          "locationName": "The Red House",
+          "postalCode": "KT21 2NN"
+        },
+        {
+          "locationId": "1-1071306794",
+          "locationName": "Cambrian",
+          "postalCode": "CH45 1HD"
+        },
+        {
+          "locationId": "1-107135070",
+          "locationName": "Slate House Residential Home",
+          "postalCode": "GU47 9AN"
+        },
+        {
+          "locationId": "1-107135403",
+          "locationName": "Rutland House Care Home",
+          "postalCode": "SM1 3DQ"
+        },
+        {
+          "locationId": "1-107138300",
+          "locationName": "Sydenhurst",
+          "postalCode": "GU8 4SJ"
+        },
+        {
+          "locationId": "1-107144677",
+          "locationName": "Winash Rest Home",
+          "postalCode": "BS21 7RP"
+        },
+        {
+          "locationId": "1-107149416",
+          "locationName": "Park Manor Limited",
+          "postalCode": "BH13 6BS"
+        },
+        {
+          "locationId": "1-107149755",
+          "locationName": "Beechbrook Residential Home",
+          "postalCode": "RG10 9TG"
+        },
+        {
+          "locationId": "1-107151917",
+          "locationName": "Brookdale House Care Home",
+          "postalCode": "SO53 2FS"
+        },
+        {
+          "locationId": "1-107153495",
+          "locationName": "Derriford House",
+          "postalCode": "GU51 3AW"
+        },
+        {
+          "locationId": "1-107157895",
+          "locationName": "Keep Hill Residential Home",
+          "postalCode": "HP11 1DU"
+        },
+        {
+          "locationId": "1-107163108",
+          "locationName": "Beach Crest Residential Home",
+          "postalCode": "BH25 7DX"
+        },
+        {
+          "locationId": "1-107182515",
+          "locationName": "Beulah Lodge",
+          "postalCode": "CR7 8JH"
+        },
+        {
+          "locationId": "1-107182531",
+          "locationName": "Graceland Care Home",
+          "postalCode": "CR7 8LZ"
+        },
+        {
+          "locationId": "1-1072142761",
+          "locationName": "The Borough Dental Practice",
+          "postalCode": "SP5 3ND"
+        },
+        {
+          "locationId": "1-1072186149",
+          "locationName": "Westfield Medical Centre",
+          "postalCode": "LS7 3EX"
+        },
+        {
+          "locationId": "1-1072197172",
+          "locationName": "Hatzola Trust Office",
+          "postalCode": "E5 9NA"
+        },
+        {
+          "locationId": "1-1072216055",
+          "locationName": "Dedicated Care East Anglia Limited",
+          "postalCode": "PE30 4JQ"
+        },
+        {
+          "locationId": "1-1072244980",
+          "locationName": "Roman Court",
+          "postalCode": "S64 9ES"
+        },
+        {
+          "locationId": "1-1072360539",
+          "locationName": "Meadows",
+          "postalCode": "CM77 6SZ"
+        },
+        {
+          "locationId": "1-1072428702",
+          "locationName": "Kent and Medway Domiciliary Care",
+          "postalCode": "CT17 0HL"
+        },
+        {
+          "locationId": "1-107245899",
+          "locationName": "Overcliff House",
+          "postalCode": "BH6 4DL"
+        },
+        {
+          "locationId": "1-107247925",
+          "locationName": "Delaheys Nursing Home",
+          "postalCode": "FY8 1ES"
+        },
+        {
+          "locationId": "1-107248775",
+          "locationName": "Greta Cottage",
+          "postalCode": "TS12 1LS"
+        },
+        {
+          "locationId": "1-107249188",
+          "locationName": "Rosewood Lodge & Brook House",
+          "postalCode": "TA6 3LH"
+        },
+        {
+          "locationId": "1-107249542",
+          "locationName": "Alde House",
+          "postalCode": "HP10 8NX"
+        },
+        {
+          "locationId": "1-107255905",
+          "locationName": "Chilton House",
+          "postalCode": "HP18 9LR"
+        },
+        {
+          "locationId": "1-107256697",
+          "locationName": "St Heliers Hotel",
+          "postalCode": "CT20 2EF"
+        },
+        {
+          "locationId": "1-107261490",
+          "locationName": "Residential Care Home",
+          "postalCode": "E6 3SF"
+        },
+        {
+          "locationId": "1-107262028",
+          "locationName": "Melville House",
+          "postalCode": "B16 9QU"
+        },
+        {
+          "locationId": "1-1072625331",
+          "locationName": "Lorne House",
+          "postalCode": "DY10 1SY"
+        },
+        {
+          "locationId": "1-107263398",
+          "locationName": "Park House",
+          "postalCode": "TQ1 3JX"
+        },
+        {
+          "locationId": "1-107263645",
+          "locationName": "The Paddocks",
+          "postalCode": "IP21 5TR"
+        },
+        {
+          "locationId": "1-1072686080",
+          "locationName": "Voyage (DCA) South 2",
+          "postalCode": "HR2 8EQ"
+        },
+        {
+          "locationId": "1-1072695828",
+          "locationName": "The Light Clinic",
+          "postalCode": "RG6 6BZ"
+        },
+        {
+          "locationId": "1-107269593",
+          "locationName": "Acorn Lodge Care Centre",
+          "postalCode": "E5 0QP"
+        },
+        {
+          "locationId": "1-107269968",
+          "locationName": "Victoria House",
+          "postalCode": "NE22 5QA"
+        },
+        {
+          "locationId": "1-1072700059",
+          "locationName": "Threeways",
+          "postalCode": "RH1 5BS"
+        },
+        {
+          "locationId": "1-107271282",
+          "locationName": "Burn Brae Lodge",
+          "postalCode": "NE45 5RU"
+        },
+        {
+          "locationId": "1-1072734878",
+          "locationName": "Threeways Dom Care",
+          "postalCode": "RH1 5BS"
+        },
+        {
+          "locationId": "1-1072743547",
+          "locationName": "JDK Limited (Glenholme Care)",
+          "postalCode": "WF4 1AB"
+        },
+        {
+          "locationId": "1-107276328",
+          "locationName": "Threen House Nursing Home",
+          "postalCode": "W5 5BH"
+        },
+        {
+          "locationId": "1-1072766085",
+          "locationName": "Court Lodge Limited",
+          "postalCode": "KT19 0AX"
+        },
+        {
+          "locationId": "1-1072844601",
+          "locationName": "Osborne House",
+          "postalCode": "YO8 4AU"
+        },
+        {
+          "locationId": "1-107285145",
+          "locationName": "Holywell Nursing Home",
+          "postalCode": "TA9 4BB"
+        },
+        {
+          "locationId": "1-107285339",
+          "locationName": "Heathfield (Horsham) Limited",
+          "postalCode": "RH12 2DX"
+        },
+        {
+          "locationId": "1-107285738",
+          "locationName": "Homestead Care Home (Brownhills) Limited",
+          "postalCode": "WS8 6AN"
+        },
+        {
+          "locationId": "1-107286382",
+          "locationName": "Poole - Atlantic Enterprise UK Limited t/a The Diver Clinic",
+          "postalCode": "BH15 2NN"
+        },
+        {
+          "locationId": "1-107288206",
+          "locationName": "Redcot Lodge Residential Care Home",
+          "postalCode": "CT9 2NJ"
+        },
+        {
+          "locationId": "1-1072888668",
+          "locationName": "Nomad - Bath",
+          "postalCode": "BA1 1NP"
+        },
+        {
+          "locationId": "1-107289210",
+          "locationName": "Devonshire Dementia Care Home",
+          "postalCode": "KT3 6AG"
+        },
+        {
+          "locationId": "1-107289799",
+          "locationName": "Chandos Lodge Nursing Home",
+          "postalCode": "SL2 3ED"
+        },
+        {
+          "locationId": "1-107291188",
+          "locationName": "Pinehurst Rest Home",
+          "postalCode": "RH5 6BY"
+        },
+        {
+          "locationId": "1-107292415",
+          "locationName": "Welcome Home",
+          "postalCode": "ME12 4NH"
+        },
+        {
+          "locationId": "1-107292708",
+          "locationName": "Cleeve Hill Nursing Home",
+          "postalCode": "GL52 3PW"
+        },
+        {
+          "locationId": "1-1072972554",
+          "locationName": "Creative Support - Hampton Crescent",
+          "postalCode": "LS9 8NH"
+        },
+        {
+          "locationId": "1-107298415",
+          "locationName": "The White House Care Home",
+          "postalCode": "TS18 5ET"
+        },
+        {
+          "locationId": "1-107300241",
+          "locationName": "Threeways",
+          "postalCode": "RH1 5BS"
+        },
+        {
+          "locationId": "1-107300355",
+          "locationName": "Alandale Residential Home",
+          "postalCode": "CT16 3JB"
+        },
+        {
+          "locationId": "1-107301958",
+          "locationName": "Russell Churcher Court",
+          "postalCode": "PO12 3BE"
+        },
+        {
+          "locationId": "1-1073074027",
+          "locationName": "Sevacare - Leicester",
+          "postalCode": "LE1 7EA"
+        },
+        {
+          "locationId": "1-107309195",
+          "locationName": "Little Acre Care Home",
+          "postalCode": "CA7 4QH"
+        },
+        {
+          "locationId": "1-107318660",
+          "locationName": "Saint Francis Hospice",
+          "postalCode": "RM4 1QH"
+        },
+        {
+          "locationId": "1-107319447",
+          "locationName": "Keech Hospice Care",
+          "postalCode": "LU3 3NT"
+        },
+        {
+          "locationId": "1-107322842",
+          "locationName": "Mrs Lynne Weatherly",
+          "postalCode": "TN2 3AD"
+        },
+        {
+          "locationId": "1-107323659",
+          "locationName": "Hillcrest Residential Home",
+          "postalCode": "IP32 6BB"
+        },
+        {
+          "locationId": "1-107324645",
+          "locationName": "The Newcastle Clinic",
+          "postalCode": "NE2 3QE"
+        },
+        {
+          "locationId": "1-107325655",
+          "locationName": "Holly House Care Home",
+          "postalCode": "EN1 2PT"
+        },
+        {
+          "locationId": "1-107329955",
+          "locationName": "Woodbourne",
+          "postalCode": "RH6 7BZ"
+        },
+        {
+          "locationId": "1-107332768",
+          "locationName": "Hillyfield Rest Home Limited",
+          "postalCode": "SO41 0RP"
+        },
+        {
+          "locationId": "1-107338589",
+          "locationName": "Larchwood Grove",
+          "postalCode": "DA12 1QH"
+        },
+        {
+          "locationId": "1-107338606",
+          "locationName": "Copperfields Residential Home",
+          "postalCode": "ME3 7BX"
+        },
+        {
+          "locationId": "1-107339905",
+          "locationName": "Jane Benn - Pangbourne Drive",
+          "postalCode": "HA7 4QT"
+        },
+        {
+          "locationId": "1-107340678",
+          "locationName": "Glendale Lodge",
+          "postalCode": "CT14 8BS"
+        },
+        {
+          "locationId": "1-107340693",
+          "locationName": "The Willows",
+          "postalCode": "IP29 4PJ"
+        },
+        {
+          "locationId": "1-107340707",
+          "locationName": "Ravenswood",
+          "postalCode": "BS23 2PX"
+        },
+        {
+          "locationId": "1-107345976",
+          "locationName": "Coombe House Residential Home",
+          "postalCode": "PL14 4JU"
+        },
+        {
+          "locationId": "1-107367140",
+          "locationName": "Elm Lodge Residential Care Home",
+          "postalCode": "WF4 5DB"
+        },
+        {
+          "locationId": "1-107383482",
+          "locationName": "Cherwell Care Services Limited - 50 Bucknell Road",
+          "postalCode": "OX26 2DG"
+        },
+        {
+          "locationId": "1-107383562",
+          "locationName": "Rushymead Residential Care Home",
+          "postalCode": "HP7 0LA"
+        },
+        {
+          "locationId": "1-107384209",
+          "locationName": "Advanced Medical Rejuvenation",
+          "postalCode": "DN1 2DJ"
+        },
+        {
+          "locationId": "1-1074133755",
+          "locationName": "SureCare (Reading & East Berkshire)",
+          "postalCode": "RG30 1EA"
+        },
+        {
+          "locationId": "1-1074491086",
+          "locationName": "Parkshot House",
+          "postalCode": "TW9 2PR"
+        },
+        {
+          "locationId": "1-1074494895",
+          "locationName": "Alif Home Care Limited",
+          "postalCode": "UB6 0SS"
+        },
+        {
+          "locationId": "1-1074572927",
+          "locationName": "Ivy Cottage Dental Care",
+          "postalCode": "S60 2DJ"
+        },
+        {
+          "locationId": "1-1074595194",
+          "locationName": "Radis Community Care (Oak Tree House ECH)",
+          "postalCode": "RG30 4DZ"
+        },
+        {
+          "locationId": "1-1074638357",
+          "locationName": "Voyage (DCA) Portsmouth",
+          "postalCode": "PO2 8FA"
+        },
+        {
+          "locationId": "1-1074671692",
+          "locationName": "James Nugent Court",
+          "postalCode": "L8 3SR"
+        },
+        {
+          "locationId": "1-1074752261",
+          "locationName": "Strawberry Gardens Medical Practice",
+          "postalCode": "LA3 2LE"
+        },
+        {
+          "locationId": "1-1074889822",
+          "locationName": "Damorcare Ltd",
+          "postalCode": "CM2 0DZ"
+        },
+        {
+          "locationId": "1-1074915363",
+          "locationName": "PCS (Personal Care Services) Ltd",
+          "postalCode": "WN8 9TG"
+        },
+        {
+          "locationId": "1-1074924728",
+          "locationName": "Border Cottage Care",
+          "postalCode": "WF10 2LA"
+        },
+        {
+          "locationId": "1-1074960300",
+          "locationName": "Oradent Studio",
+          "postalCode": "NG16 3AW"
+        },
+        {
+          "locationId": "1-1074985387",
+          "locationName": "Beach House",
+          "postalCode": "CT7 9JS"
+        },
+        {
+          "locationId": "1-1075014268",
+          "locationName": "Orton Manor Nursing Home",
+          "postalCode": "B46 1TH"
+        },
+        {
+          "locationId": "1-1075067939",
+          "locationName": "@155",
+          "postalCode": "DE22 3NP"
+        },
+        {
+          "locationId": "1-1075090503",
+          "locationName": "Lister House Surgery",
+          "postalCode": "DE23 8RJ"
+        },
+        {
+          "locationId": "1-1075207045",
+          "locationName": "Andrews Court Care Home",
+          "postalCode": "BB2 4QR"
+        },
+        {
+          "locationId": "1-1075557433",
+          "locationName": "Desired Care 4 U Limited",
+          "postalCode": "B66 4JN"
+        },
+        {
+          "locationId": "1-107639336",
+          "locationName": "Villa Maria Private Nursing Home",
+          "postalCode": "CR2 7BB"
+        },
+        {
+          "locationId": "1-1076637595",
+          "locationName": "RLO Orchard Care Limited",
+          "postalCode": "WR8 0HB"
+        },
+        {
+          "locationId": "1-1076642927",
+          "locationName": "Tamworth Home Care Limited",
+          "postalCode": "B77 1LF"
+        },
+        {
+          "locationId": "1-1077251016",
+          "locationName": "Broadview",
+          "postalCode": "AL6 0PL"
+        },
+        {
+          "locationId": "1-1077792941",
+          "locationName": "No 36",
+          "postalCode": "TW7 4JF"
+        },
+        {
+          "locationId": "1-1077795207",
+          "locationName": "Sevacare - Portsmouth",
+          "postalCode": "PO2 8FA"
+        },
+        {
+          "locationId": "1-1077825571",
+          "locationName": "Newcross Healthcare Solutions Limited (Bristol)",
+          "postalCode": "BS1 4XE"
+        },
+        {
+          "locationId": "1-1077826278",
+          "locationName": "OAA Care Limited",
+          "postalCode": "BS1 5EH"
+        },
+        {
+          "locationId": "1-1077845612",
+          "locationName": "The Moreton Centre",
+          "postalCode": "TN38 0LX"
+        },
+        {
+          "locationId": "1-1077860041",
+          "locationName": "Mansfield i-Centre",
+          "postalCode": "NG18 5BR"
+        },
+        {
+          "locationId": "1-1077955880",
+          "locationName": "1908 Lodge Wings",
+          "postalCode": "PO12 1PG"
+        },
+        {
+          "locationId": "1-107842075",
+          "locationName": "Chestnuts Residential Home (Weymouth)",
+          "postalCode": "DT4 9QS"
+        },
+        {
+          "locationId": "1-107842210",
+          "locationName": "Doneraile Residential Care Home",
+          "postalCode": "TQ12 1EQ"
+        },
+        {
+          "locationId": "1-107842486",
+          "locationName": "The Nightingales",
+          "postalCode": "TQ1 3JG"
+        },
+        {
+          "locationId": "1-107881428",
+          "locationName": "The Rowans Hospice",
+          "postalCode": "PO7 5RU"
+        },
+        {
+          "locationId": "1-107889029",
+          "locationName": "Cheswold Park Hospital",
+          "postalCode": "DN5 8AR"
+        },
+        {
+          "locationId": "1-107893245",
+          "locationName": "Longcroft Residential Care Home",
+          "postalCode": "SS11 7DD"
+        },
+        {
+          "locationId": "1-107895826",
+          "locationName": "Three Trees",
+          "postalCode": "YO16 4NG"
+        },
+        {
+          "locationId": "1-107899574",
+          "locationName": "Hollymead House",
+          "postalCode": "PO22 8HG"
+        },
+        {
+          "locationId": "1-1079056468",
+          "locationName": "Hands of Hope Ltd",
+          "postalCode": "NE4 6RJ"
+        },
+        {
+          "locationId": "1-1079077889",
+          "locationName": "14 Thornhill",
+          "postalCode": "SR2 7LA"
+        },
+        {
+          "locationId": "1-1079077909",
+          "locationName": "Newbird Care",
+          "postalCode": "E10 5NP"
+        },
+        {
+          "locationId": "1-1079106851",
+          "locationName": "Coombe Grange Residential Home",
+          "postalCode": "SO41 6BP"
+        },
+        {
+          "locationId": "1-107911476",
+          "locationName": "St Judes Nursing Home",
+          "postalCode": "SM2 5DU"
+        },
+        {
+          "locationId": "1-107911906",
+          "locationName": "The Hollies Care Home",
+          "postalCode": "CB1 7PH"
+        },
+        {
+          "locationId": "1-1079135618",
+          "locationName": "Earlsgate Dental Practice",
+          "postalCode": "CT20 2HW"
+        },
+        {
+          "locationId": "1-107919185",
+          "locationName": "Abbeyfield House - Alnwick",
+          "postalCode": "NE66 2NZ"
+        },
+        {
+          "locationId": "1-1079258837",
+          "locationName": "Meadow Green",
+          "postalCode": "WF16 9PA"
+        },
+        {
+          "locationId": "1-107928045",
+          "locationName": "Ebury Court Residential Home Limited",
+          "postalCode": "RM7 0LX"
+        },
+        {
+          "locationId": "1-107928596",
+          "locationName": "Beech House - Binfield",
+          "postalCode": "RG42 4AB"
+        },
+        {
+          "locationId": "1-1079286719",
+          "locationName": "Mulberry Manor Care Home",
+          "postalCode": "S64 8PT"
+        },
+        {
+          "locationId": "1-1079327045",
+          "locationName": "Lifeline Sefton (North): Church Street",
+          "postalCode": "PR9 0QT"
+        },
+        {
+          "locationId": "1-1079328822",
+          "locationName": "Poppy Lodge Care Home",
+          "postalCode": "SS0 8LP"
+        },
+        {
+          "locationId": "1-107938388",
+          "locationName": "Pinfold Home",
+          "postalCode": "SW16 2SL"
+        },
+        {
+          "locationId": "1-107939561",
+          "locationName": "Old School House",
+          "postalCode": "HP27 9SF"
+        },
+        {
+          "locationId": "1-1079415178",
+          "locationName": "Palace House Care Home",
+          "postalCode": "BB12 6TD"
+        },
+        {
+          "locationId": "1-107941915",
+          "locationName": "Westwood Care Home",
+          "postalCode": "BN1 6RB"
+        },
+        {
+          "locationId": "1-1079419560",
+          "locationName": "Elite Care Services Limited",
+          "postalCode": "MK42 8HL"
+        },
+        {
+          "locationId": "1-1079432984",
+          "locationName": "Tempcare Personnel Limited",
+          "postalCode": "BD4 8BX"
+        },
+        {
+          "locationId": "1-107944387",
+          "locationName": "Belamie Gables",
+          "postalCode": "RG7 1DG"
+        },
+        {
+          "locationId": "1-107949099",
+          "locationName": "North Tyneside Carers Centre",
+          "postalCode": "NE29 0AB"
+        },
+        {
+          "locationId": "1-107949152",
+          "locationName": "Rosalyn House",
+          "postalCode": "LU5 5TT"
+        },
+        {
+          "locationId": "1-107953478",
+          "locationName": "Jenkin House Residential Care Home",
+          "postalCode": "WF4 6DT"
+        },
+        {
+          "locationId": "1-107953974",
+          "locationName": "Archers Point Residential Home",
+          "postalCode": "BR1 2ND"
+        },
+        {
+          "locationId": "1-1079541551",
+          "locationName": "Bio Luminuex Health Care Limited",
+          "postalCode": "EC4V 5BY"
+        },
+        {
+          "locationId": "1-107962248",
+          "locationName": "Merrie Meade Residential Home",
+          "postalCode": "PO30 1XN"
+        },
+        {
+          "locationId": "1-107962461",
+          "locationName": "Dale Care Limited",
+          "postalCode": "DL15 9HS"
+        },
+        {
+          "locationId": "1-107970149",
+          "locationName": "Chatting Independently Limited - Rectory Drive",
+          "postalCode": "PE15 9QR"
+        },
+        {
+          "locationId": "1-107970197",
+          "locationName": "Chatting Independently Limited - Orchard View",
+          "postalCode": "PE15 9QN"
+        },
+        {
+          "locationId": "1-107972385",
+          "locationName": "Charlotte Straker House",
+          "postalCode": "NE45 5HB"
+        },
+        {
+          "locationId": "1-1079749292",
+          "locationName": "Gravesend Dental Practice",
+          "postalCode": "DA12 4NF"
+        },
+        {
+          "locationId": "1-107980568",
+          "locationName": "Humanedge Healthcare Limited",
+          "postalCode": "N17 9LN"
+        },
+        {
+          "locationId": "1-1079848163",
+          "locationName": "SimplyTeeth - Stanford le Hope",
+          "postalCode": "SS17 9AB"
+        },
+        {
+          "locationId": "1-1079927884",
+          "locationName": "Bretton Care",
+          "postalCode": "S71 2EA"
+        },
+        {
+          "locationId": "1-1079946335",
+          "locationName": "Day and Night Homecare",
+          "postalCode": "S25 1YE"
+        },
+        {
+          "locationId": "1-1080003429",
+          "locationName": "The Foothills",
+          "postalCode": "OL16 2AY"
+        },
+        {
+          "locationId": "1-1080036731",
+          "locationName": "Ealing, London",
+          "postalCode": "NW10 7PN"
+        },
+        {
+          "locationId": "1-1080106099",
+          "locationName": "Hunts Cross Dental Centre",
+          "postalCode": "L25 0LQ"
+        },
+        {
+          "locationId": "1-1080115563",
+          "locationName": "Julians House",
+          "postalCode": "SG1 3ES"
+        },
+        {
+          "locationId": "1-1080116017",
+          "locationName": "AccuroCare West Herts",
+          "postalCode": "WD3 1ER"
+        },
+        {
+          "locationId": "1-1080165636",
+          "locationName": "Stage Medical Ltd",
+          "postalCode": "RG21 3DU"
+        },
+        {
+          "locationId": "1-1080221854",
+          "locationName": "Network Health and Social Care Birmingham",
+          "postalCode": "B2 5RS"
+        },
+        {
+          "locationId": "1-1080323444",
+          "locationName": "Dental Health Care",
+          "postalCode": "SG13 7ED"
+        },
+        {
+          "locationId": "1-1080426281",
+          "locationName": "Aaron Abbey Care Services Limited",
+          "postalCode": "RG41 2GY"
+        },
+        {
+          "locationId": "1-1081360390",
+          "locationName": "IntegraCare (Teesside)",
+          "postalCode": "TS6 6UT"
+        },
+        {
+          "locationId": "1-1081565974",
+          "locationName": "Spring Tree Rest Home",
+          "postalCode": "B77 1EL"
+        },
+        {
+          "locationId": "1-1081631509",
+          "locationName": "Kings Cross Dental Practice",
+          "postalCode": "WC1X 8QN"
+        },
+        {
+          "locationId": "1-1081935584",
+          "locationName": "Nurseplus UK",
+          "postalCode": "TQ12 2ET"
+        },
+        {
+          "locationId": "1-1081964445",
+          "locationName": "Cherry Tree",
+          "postalCode": "RM11 3BL"
+        },
+        {
+          "locationId": "1-1082132527",
+          "locationName": "Nurse Plus and Carer Plus (UK) Limited",
+          "postalCode": "BS15 1TF"
+        },
+        {
+          "locationId": "1-1082172079",
+          "locationName": "Saffron Walden Community Hospital",
+          "postalCode": "CB11 3HY"
+        },
+        {
+          "locationId": "1-1082205335",
+          "locationName": "The Academy of Birmingham Cosmetic Dentistry",
+          "postalCode": "B2 5TB"
+        },
+        {
+          "locationId": "1-1082322178",
+          "locationName": "Apollo Care South Wirral",
+          "postalCode": "CH62 4SB"
+        },
+        {
+          "locationId": "1-1082452887",
+          "locationName": "Mimosa Homecare",
+          "postalCode": "B25 8AD"
+        },
+        {
+          "locationId": "1-1082522037",
+          "locationName": "Hare Lane Dental Practice",
+          "postalCode": "KT10 0QY"
+        },
+        {
+          "locationId": "1-1082660068",
+          "locationName": "Charters Court Nursing and Residential Home",
+          "postalCode": "RH19 2JG"
+        },
+        {
+          "locationId": "1-1082758137",
+          "locationName": "Rose Cottage",
+          "postalCode": "BD13 3EL"
+        },
+        {
+          "locationId": "1-108296408",
+          "locationName": "Wishingwell Residential Care Home",
+          "postalCode": "YO24 2TL"
+        },
+        {
+          "locationId": "1-108298048",
+          "locationName": "Coombe Dingle Nursing Home",
+          "postalCode": "CR3 5RB"
+        },
+        {
+          "locationId": "1-1083032152",
+          "locationName": "Riverside ECHG Halton Brook",
+          "postalCode": "WA7 2NW"
+        },
+        {
+          "locationId": "1-108303850",
+          "locationName": "Brook House Residential Care Home",
+          "postalCode": "BH23 2AX"
+        },
+        {
+          "locationId": "1-108306728",
+          "locationName": "Elderthorpe Residential Home",
+          "postalCode": "BD18 3AN"
+        },
+        {
+          "locationId": "1-108307260",
+          "locationName": "Belvedere House",
+          "postalCode": "SM7 3HB"
+        },
+        {
+          "locationId": "1-108311205",
+          "locationName": "St Georges Residential Care Home",
+          "postalCode": "CR4 1EB"
+        },
+        {
+          "locationId": "1-108313637",
+          "locationName": "Lytchetts",
+          "postalCode": "DT2 8PJ"
+        },
+        {
+          "locationId": "1-108317835",
+          "locationName": "Ferndale Nursing Home",
+          "postalCode": "RH10 6BH"
+        },
+        {
+          "locationId": "1-108318708",
+          "locationName": "Goodwin Medical Associates Limited",
+          "postalCode": "W1G 8EZ"
+        },
+        {
+          "locationId": "1-108320885",
+          "locationName": "Poplars Care Home",
+          "postalCode": "HA4 7BZ"
+        },
+        {
+          "locationId": "1-108323085",
+          "locationName": "Ivy Lodge Retirement Home",
+          "postalCode": "YO32 3YP"
+        },
+        {
+          "locationId": "1-108323728",
+          "locationName": "Kolbe House",
+          "postalCode": "W5 3HH"
+        },
+        {
+          "locationId": "1-108329459",
+          "locationName": "Clara Nehab House",
+          "postalCode": "NW11 0DA"
+        },
+        {
+          "locationId": "1-108329896",
+          "locationName": "Devonshire House",
+          "postalCode": "DL14 9HW"
+        },
+        {
+          "locationId": "1-108330425",
+          "locationName": "The Old Rectory",
+          "postalCode": "ST18 0EY"
+        },
+        {
+          "locationId": "1-108341083",
+          "locationName": "LilenaResidential CareHome",
+          "postalCode": "TR7 3DZ"
+        },
+        {
+          "locationId": "1-108341099",
+          "locationName": "Pentree Lodge Residential Care Home",
+          "postalCode": "TR7 1PD"
+        },
+        {
+          "locationId": "1-108344916",
+          "locationName": "David Gresham House",
+          "postalCode": "RH8 0BA"
+        },
+        {
+          "locationId": "1-108352247",
+          "locationName": "Shandford Residential Care Home",
+          "postalCode": "EX9 6RS"
+        },
+        {
+          "locationId": "1-108358115",
+          "locationName": "New Beginnings NE Limited",
+          "postalCode": "NE4 9YH"
+        },
+        {
+          "locationId": "1-108358360",
+          "locationName": "East Yorkshire Housing Association Limited - 11 Redwood Close",
+          "postalCode": "YO16 7GX"
+        },
+        {
+          "locationId": "1-108369587",
+          "locationName": "Calderdale Care Scheme",
+          "postalCode": "HX1 5BD"
+        },
+        {
+          "locationId": "1-108376838",
+          "locationName": "Calvert Trust Kielder",
+          "postalCode": "NE48 1BS"
+        },
+        {
+          "locationId": "1-1083788441",
+          "locationName": "Brocklehurst Dental Practice",
+          "postalCode": "HP7 9NU"
+        },
+        {
+          "locationId": "1-108380515",
+          "locationName": "Ashleigh Residential Home",
+          "postalCode": "HU5 1LT"
+        },
+        {
+          "locationId": "1-108380542",
+          "locationName": "Beverley Court Residential Home",
+          "postalCode": "HU5 1LH"
+        },
+        {
+          "locationId": "1-108380557",
+          "locationName": "The Cottage Residential Home",
+          "postalCode": "HU13 9NW"
+        },
+        {
+          "locationId": "1-1083806383",
+          "locationName": "Brocklehurst Dental Practice",
+          "postalCode": "HP7 9NU"
+        },
+        {
+          "locationId": "1-108382196",
+          "locationName": "Abbey Homecare (Grimsby)",
+          "postalCode": "DN31 2AW"
+        },
+        {
+          "locationId": "1-108382220",
+          "locationName": "Abbey Homecare (Brigg)",
+          "postalCode": "DN20 8EJ"
+        },
+        {
+          "locationId": "1-108382519",
+          "locationName": "Rose House",
+          "postalCode": "RM3 9HB"
+        },
+        {
+          "locationId": "1-108384875",
+          "locationName": "Rainbow Medical Services",
+          "postalCode": "SW17 9ER"
+        },
+        {
+          "locationId": "1-108385542",
+          "locationName": "Oaklea Nursing Home",
+          "postalCode": "TS5 6QW"
+        },
+        {
+          "locationId": "1-108386437",
+          "locationName": "The New Victoria Hospital",
+          "postalCode": "KT2 7EG"
+        },
+        {
+          "locationId": "1-108387554",
+          "locationName": "Olton Grange Residential Home",
+          "postalCode": "B92 7JJ"
+        },
+        {
+          "locationId": "1-108389651",
+          "locationName": "The Abbeyfield Ferring Society",
+          "postalCode": "BN12 5NN"
+        },
+        {
+          "locationId": "1-108391794",
+          "locationName": "Benslow Nursing Home",
+          "postalCode": "SG4 9QY"
+        },
+        {
+          "locationId": "1-108397028",
+          "locationName": "Mondial",
+          "postalCode": "CO15 1HX"
+        },
+        {
+          "locationId": "1-108399276",
+          "locationName": "Queen Mary House",
+          "postalCode": "BR7 5PY"
+        },
+        {
+          "locationId": "1-1084002692",
+          "locationName": "Arcare for Forte Limited",
+          "postalCode": "WV14 9QB"
+        },
+        {
+          "locationId": "1-108401171",
+          "locationName": "Consulting Rooms",
+          "postalCode": "W1G 6JP"
+        },
+        {
+          "locationId": "1-108401325",
+          "locationName": "The Hospice of Our Lady and St John",
+          "postalCode": "MK15 9AB"
+        },
+        {
+          "locationId": "1-108402749",
+          "locationName": "Linda Lodge",
+          "postalCode": "SM2 6QL"
+        },
+        {
+          "locationId": "1-108411638",
+          "locationName": "First Trust Hospital",
+          "postalCode": "PR3 5LD"
+        },
+        {
+          "locationId": "1-1084127034",
+          "locationName": "Beverley Health Centre",
+          "postalCode": "HU17 7BZ"
+        },
+        {
+          "locationId": "1-108415043",
+          "locationName": "St Luke's Hospice",
+          "postalCode": "S11 9NE"
+        },
+        {
+          "locationId": "1-108415224",
+          "locationName": "Broadway Lodge",
+          "postalCode": "BS24 9NN"
+        },
+        {
+          "locationId": "1-108422511",
+          "locationName": "Highbury Rise",
+          "postalCode": "SG4 9RW"
+        },
+        {
+          "locationId": "1-108422526",
+          "locationName": "Robin Hood House",
+          "postalCode": "HP4 1PL"
+        },
+        {
+          "locationId": "1-108422541",
+          "locationName": "Chiltern View",
+          "postalCode": "LU6 1NX"
+        },
+        {
+          "locationId": "1-1084239237",
+          "locationName": "Clifton Lane Clinic",
+          "postalCode": "S65 2AJ"
+        },
+        {
+          "locationId": "1-1084244232",
+          "locationName": "Saffron Walden Community Hospital",
+          "postalCode": "CB11 3HY"
+        },
+        {
+          "locationId": "1-1084262157",
+          "locationName": "Sub-4 Health & Wellbeing Centre",
+          "postalCode": "ST9 0JQ"
+        },
+        {
+          "locationId": "1-1084331836",
+          "locationName": "Haydock Dental Practice",
+          "postalCode": "WA11 0LE"
+        },
+        {
+          "locationId": "1-1084406735",
+          "locationName": "Mears Care - Old Stratford",
+          "postalCode": "MK19 6AN"
+        },
+        {
+          "locationId": "1-1084520641",
+          "locationName": "Genesis Care, Milton Keynes",
+          "postalCode": "MK14 6LS"
+        },
+        {
+          "locationId": "1-1084600255",
+          "locationName": "Southern Family Care Ltd",
+          "postalCode": "SG12 8HG"
+        },
+        {
+          "locationId": "1-1084749612",
+          "locationName": "Comfortcare",
+          "postalCode": "CM2 7QA"
+        },
+        {
+          "locationId": "1-1084837178",
+          "locationName": "Baby Dolly",
+          "postalCode": "LE10 1DW"
+        },
+        {
+          "locationId": "1-1084838953",
+          "locationName": "Ewer House",
+          "postalCode": "CO3 3HH"
+        },
+        {
+          "locationId": "1-1084839223",
+          "locationName": "Orchard Brooks Healthcare",
+          "postalCode": "CO2 8JB"
+        },
+        {
+          "locationId": "1-1084905041",
+          "locationName": "Care Compassion and Conversation Ltd",
+          "postalCode": "OX7 5SR"
+        },
+        {
+          "locationId": "1-1085019491",
+          "locationName": "Little Sutton Lane",
+          "postalCode": "B75 6PH"
+        },
+        {
+          "locationId": "1-1085049968",
+          "locationName": "Maycroft Manor",
+          "postalCode": "BN1 8NA"
+        },
+        {
+          "locationId": "1-1085069086",
+          "locationName": "Bolton Community Drug & Alcohol Service",
+          "postalCode": "BL2 1ES"
+        },
+        {
+          "locationId": "1-108509622",
+          "locationName": "Bay House",
+          "postalCode": "MK46 5BD"
+        },
+        {
+          "locationId": "1-108518176",
+          "locationName": "Arran Manor",
+          "postalCode": "RM11 2EJ"
+        },
+        {
+          "locationId": "1-108518503",
+          "locationName": "Ashling House",
+          "postalCode": "RM11 1NZ"
+        },
+        {
+          "locationId": "1-108521111",
+          "locationName": "Chilmington House",
+          "postalCode": "RG30 2ES"
+        },
+        {
+          "locationId": "1-108521735",
+          "locationName": "Sundial Cottage Care Home",
+          "postalCode": "SO45 1BW"
+        },
+        {
+          "locationId": "1-108527038",
+          "locationName": "Ashingdon Hall",
+          "postalCode": "SS4 3HZ"
+        },
+        {
+          "locationId": "1-108529725",
+          "locationName": "Emmaus House",
+          "postalCode": "HG2 0JS"
+        },
+        {
+          "locationId": "1-108529908",
+          "locationName": "Keldgate Manor",
+          "postalCode": "HU17 8HU"
+        },
+        {
+          "locationId": "1-108532966",
+          "locationName": "The Boltons",
+          "postalCode": "RG6 1QD"
+        },
+        {
+          "locationId": "1-108533198",
+          "locationName": "Bath Lodge Care Home",
+          "postalCode": "RG1 6NB"
+        },
+        {
+          "locationId": "1-108540000",
+          "locationName": "Hospice of the Good Shepherd",
+          "postalCode": "CH2 4DG"
+        },
+        {
+          "locationId": "1-108549937",
+          "locationName": "Pembroke Lodge",
+          "postalCode": "RG1 5PF"
+        },
+        {
+          "locationId": "1-108552349",
+          "locationName": "Burrswood Health and Wellbeing",
+          "postalCode": "TN3 9PY"
+        },
+        {
+          "locationId": "1-108552597",
+          "locationName": "Summerleaze Residential Home",
+          "postalCode": "EX8 2EW"
+        },
+        {
+          "locationId": "1-108555581",
+          "locationName": "Vancooten Trevors Care Limited - Croydon",
+          "postalCode": "CR0 1QG"
+        },
+        {
+          "locationId": "1-1085565890",
+          "locationName": "The Alice Medical Centre",
+          "postalCode": "NG5 5HW"
+        },
+        {
+          "locationId": "1-108559470",
+          "locationName": "Adey Gardens Care Home",
+          "postalCode": "DH4 4EH"
+        },
+        {
+          "locationId": "1-1085607208",
+          "locationName": "Advent House",
+          "postalCode": "WF3 4AR"
+        },
+        {
+          "locationId": "1-1085647758",
+          "locationName": "Park Health Centre",
+          "postalCode": "S2 5QQ"
+        },
+        {
+          "locationId": "1-1085647912",
+          "locationName": "SCA Collins Limited",
+          "postalCode": "S11 9PF"
+        },
+        {
+          "locationId": "1-108565934",
+          "locationName": "Acorn Lodge - Bournemouth",
+          "postalCode": "BH6 3SY"
+        },
+        {
+          "locationId": "1-108565949",
+          "locationName": "Ivy Lodge",
+          "postalCode": "BH10 5NZ"
+        },
+        {
+          "locationId": "1-108566995",
+          "locationName": "St Andrews House - Ashburton",
+          "postalCode": "TQ13 7DT"
+        },
+        {
+          "locationId": "1-108567725",
+          "locationName": "Ridgegate Home",
+          "postalCode": "RH2 0NR"
+        },
+        {
+          "locationId": "1-108568449",
+          "locationName": "Millennium House",
+          "postalCode": "S11 8XB"
+        },
+        {
+          "locationId": "1-108573907",
+          "locationName": "Abbingdon House",
+          "postalCode": "CH63 5PR"
+        },
+        {
+          "locationId": "1-108580491",
+          "locationName": "The Old Vicarage",
+          "postalCode": "RG17 0JB"
+        },
+        {
+          "locationId": "1-108580598",
+          "locationName": "Ashtonleigh Residential Home",
+          "postalCode": "RH12 2ED"
+        },
+        {
+          "locationId": "1-108582393",
+          "locationName": "Ellens Court",
+          "postalCode": "ME9 0NT"
+        },
+        {
+          "locationId": "1-108588545",
+          "locationName": "Compton House Christian Nursing Home",
+          "postalCode": "RH16 2JZ"
+        },
+        {
+          "locationId": "1-108591744",
+          "locationName": "Wild Acres Care Home",
+          "postalCode": "RG40 3RB"
+        },
+        {
+          "locationId": "1-108591793",
+          "locationName": "Applegarth Care Home",
+          "postalCode": "SL6 0LG"
+        },
+        {
+          "locationId": "1-108598960",
+          "locationName": "White Moon Lodge",
+          "postalCode": "N15 4JN"
+        },
+        {
+          "locationId": "1-108600680",
+          "locationName": "Lynden Hill Clinic",
+          "postalCode": "RG10 9XP"
+        },
+        {
+          "locationId": "1-108617865",
+          "locationName": "Redcotts",
+          "postalCode": "TW12 2LY"
+        },
+        {
+          "locationId": "1-108620354",
+          "locationName": "Larchmere House Nursing Home",
+          "postalCode": "TN17 2EN"
+        },
+        {
+          "locationId": "1-108620715",
+          "locationName": "Garden House Hospice",
+          "postalCode": "SG6 1QU"
+        },
+        {
+          "locationId": "1-108623119",
+          "locationName": "Absolute Care UK Limited",
+          "postalCode": "RG2 0LU"
+        },
+        {
+          "locationId": "1-108623663",
+          "locationName": "Heathfield House Nursing Home",
+          "postalCode": "OX5 3DX"
+        },
+        {
+          "locationId": "1-108624315",
+          "locationName": "Overleat Residential Care Home",
+          "postalCode": "TQ7 1JL"
+        },
+        {
+          "locationId": "1-108628449",
+          "locationName": "Dr Berk Private GP Surgery",
+          "postalCode": "N8 0HR"
+        },
+        {
+          "locationId": "1-108630838",
+          "locationName": "Warren Lodge Care Centre",
+          "postalCode": "RG40 4HR"
+        },
+        {
+          "locationId": "1-1086326353",
+          "locationName": "Scope Inclusion Norfolk",
+          "postalCode": "NR4 6AU"
+        },
+        {
+          "locationId": "1-108633465",
+          "locationName": "Faith Global Links Ventures Limited",
+          "postalCode": "CM2 8YT"
+        },
+        {
+          "locationId": "1-1086432824",
+          "locationName": "The Dental Surgery",
+          "postalCode": "N1 1BB"
+        },
+        {
+          "locationId": "1-108646848",
+          "locationName": "Jasmine Court Independent Hospital",
+          "postalCode": "EN9 3JY"
+        },
+        {
+          "locationId": "1-1086477509",
+          "locationName": "Nurses Friend",
+          "postalCode": "NN1 5DQ"
+        },
+        {
+          "locationId": "1-1086502702",
+          "locationName": "West Dulwich Dental",
+          "postalCode": "SE21 8HY"
+        },
+        {
+          "locationId": "1-108658057",
+          "locationName": "Brook House Residential Home",
+          "postalCode": "MK44 1DT"
+        },
+        {
+          "locationId": "1-1086663866",
+          "locationName": "Leicester",
+          "postalCode": "LE3 6NU"
+        },
+        {
+          "locationId": "1-1086672970",
+          "locationName": "Angels @ Home C.I.C",
+          "postalCode": "M30 0WB"
+        },
+        {
+          "locationId": "1-1086695206",
+          "locationName": "Uniclinic Limited",
+          "postalCode": "IG2 6SX"
+        },
+        {
+          "locationId": "1-1086793376",
+          "locationName": "Home Instead Senior Care",
+          "postalCode": "SK2 6RX"
+        },
+        {
+          "locationId": "1-1086793907",
+          "locationName": "New Green Surgery",
+          "postalCode": "HU9 2LJ"
+        },
+        {
+          "locationId": "1-1086864259",
+          "locationName": "Brook Wirral",
+          "postalCode": "CH41 2QR"
+        },
+        {
+          "locationId": "1-1086896144",
+          "locationName": "KG Business Centre",
+          "postalCode": "NN5 7QN"
+        },
+        {
+          "locationId": "1-1087000237",
+          "locationName": "Allours Home Support Rutland Ltd",
+          "postalCode": "LE16 7WB"
+        },
+        {
+          "locationId": "1-108714429",
+          "locationName": "Sherbutt House",
+          "postalCode": "YO42 2DX"
+        },
+        {
+          "locationId": "1-108715869",
+          "locationName": "St Clare Hospice",
+          "postalCode": "CM17 9JX"
+        },
+        {
+          "locationId": "1-108717680",
+          "locationName": "Douglas House",
+          "postalCode": "OX4 1RW"
+        },
+        {
+          "locationId": "1-108725465",
+          "locationName": "Elaine Herbert House",
+          "postalCode": "NR1 4EL"
+        },
+        {
+          "locationId": "1-108725481",
+          "locationName": "The Great Hospital Domiciliary Service",
+          "postalCode": "NR1 4EL"
+        },
+        {
+          "locationId": "1-108729005",
+          "locationName": "Sherbutt House Home Care Services",
+          "postalCode": "YO42 2DX"
+        },
+        {
+          "locationId": "1-108729479",
+          "locationName": "Scotch Dyke Residential Home",
+          "postalCode": "BN12 5NR"
+        },
+        {
+          "locationId": "1-108733608",
+          "locationName": "The Close Care Home",
+          "postalCode": "OX14 3DP"
+        },
+        {
+          "locationId": "1-108735498",
+          "locationName": "Blair House Nursing Home",
+          "postalCode": "PR9 9DR"
+        },
+        {
+          "locationId": "1-108736405",
+          "locationName": "Highfield Cottage",
+          "postalCode": "TS4 2QP"
+        },
+        {
+          "locationId": "1-108741211",
+          "locationName": "Hampton House",
+          "postalCode": "GL53 0BN"
+        },
+        {
+          "locationId": "1-108742106",
+          "locationName": "Birchville Court Care Home",
+          "postalCode": "WD23 1PB"
+        },
+        {
+          "locationId": "1-108744500",
+          "locationName": "Cedar Lodge",
+          "postalCode": "SS2 4DL"
+        },
+        {
+          "locationId": "1-108747302",
+          "locationName": "Littledene House",
+          "postalCode": "WD23 2JJ"
+        }
+      ],
+      "uri": "/locations"
+    }
+  ]
+}

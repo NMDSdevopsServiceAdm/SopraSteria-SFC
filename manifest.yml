@@ -1,4 +1,5 @@
 applications:
 - name: sfcuat
-  memory: 64M
-  buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
+  memory: 1G
+  disk_quota: 1GB
+  buildpack: nodejs_buildpack
