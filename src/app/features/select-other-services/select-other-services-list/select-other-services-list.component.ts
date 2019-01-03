@@ -123,7 +123,9 @@ export class SelectOtherServicesListComponent implements OnInit {
       this.save();
     }
 
-    this.router.navigate(['/capacity-of-services']);
+    if (!this.SelectOtherServiceForm.controls.otherServiceSelected.value.length) {
+      this.router.navigate(['/share-options'])
+    }
   }
 
   save() {
@@ -136,8 +138,7 @@ export class SelectOtherServicesListComponent implements OnInit {
           console.log(err);
         },
         () => {
-          // TODO - update navigation to "service capacity"
-          this.router.navigate(['/capacity-of-services']);
+          this.router.navigate(['/capacity-of-services'])
         }
       );
   }
