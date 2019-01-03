@@ -157,6 +157,7 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe())
-    this.messageService.clearAll()
+    this.messageService.clearAll();
   }
 }
+
