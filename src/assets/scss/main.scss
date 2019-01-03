@@ -105,6 +105,23 @@ p {
   }
 }
 
+.panel {
+
+  &.collapse {
+
+    @include rem(margin, 0 0 0 0);
+
+    ul {
+      @include rem(margin, 0 0 0 15px);
+
+      li {
+        list-style-type: disc;
+      }
+    }
+  }
+
+}
+
 .panel-border-narrow {
   width: 100%;
   border-left: 10px solid #bfc1c3;
