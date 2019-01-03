@@ -34,9 +34,9 @@ export class FeedbackComponent implements OnInit, OnDestroy {
       current: 0,
       remaining: 500 },
     tellUsCtl : {
-      max: 400,
+      max: 500,
       current: 0,
-      remaining: 400
+      remaining: 500
     }
   };
 
@@ -83,10 +83,6 @@ export class FeedbackComponent implements OnInit, OnDestroy {
   }
 
   onSubmit () {
-    console.log("Feedback when doing form errors: ", this.feedbackForm.get('whenDoingCtl').errors)
-
-    return;
-
     if (this.feedbackForm.valid) {
       if (this.pendingFeedback) {
         // not yet submitted feedback, so post feedback
@@ -114,7 +110,7 @@ export class FeedbackComponent implements OnInit, OnDestroy {
       tellUsCtl: ['', [Validators.required, Validators.maxLength(500)]],
       whenDoingCtl: ['', [Validators.required, Validators.maxLength(500)]],
       nameCtl: ['', [Validators.maxLength(120)]],
-      emailCtl: ['', [Validators.maxLength(120)]],
+      emailCtl: ['', [Validators.email,Validators.maxLength(120)]],
     });
   }
 
