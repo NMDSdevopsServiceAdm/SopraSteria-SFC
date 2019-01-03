@@ -29,7 +29,7 @@ import { ServicesCapacityComponent } from './features/services-capacity/services
 import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
 import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
-
+import { ContactUsComponent } from "./features/contactUs/contactUs.component";
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -139,10 +139,13 @@ const routes: Routes = [
     component: FeedbackComponent
   },
   {
+    path: 'contact-us',
+    component: ContactUsComponent
+  },
+  {
     path: 'terms-and-conditions',
     component: TermsConditionsComponent
   }
-
 ];
 
 @NgModule({
