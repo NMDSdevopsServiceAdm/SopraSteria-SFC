@@ -1,11 +1,13 @@
 
 <div class="main-page-container col-12">
 
-  <h1 class="h1">Sign in</h1>
-
   <form novalidate
         (ngSubmit)="onSubmit()"
         [formGroup]="loginForm">
+
+    <h1 class="h1">Sign in</h1>
+
+    <app-messages></app-messages>
 
     <div class="form-group mb-5">
       <div class="field-group mb-5">

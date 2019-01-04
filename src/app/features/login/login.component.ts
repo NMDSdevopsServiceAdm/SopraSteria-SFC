@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 //import { LoginUser } from './login-user';
 
+import { MessageService } from "../../core/services/message.service"
 import { AuthService } from '../../core/services/auth-service';
 import { EstablishmentService } from "../../core/services/establishment.service"
 
@@ -33,6 +34,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private _loginService: AuthService,
     private establishmentService: EstablishmentService,
+    private messageService: MessageService,
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder) {}
@@ -61,7 +63,8 @@ export class LoginComponent implements OnInit {
     this.userPasswordValue = this.getPasswordInput.value;
 
     if (this.loginForm.invalid) {
-      return;
+      this.messageService.clearError()
+      this.messageService.show("error", "Please fill the required fields.")
     }
     else {
       this.save();

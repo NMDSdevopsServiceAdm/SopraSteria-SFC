@@ -1,13 +1,16 @@
 <div class="main-page-container col-12">
-  <header>
-    <h1 class="h1">Add current staff vacancies</h1>
-    <p class="page-input-info">This should only be for permanent or temporary staff</p>
-    <p class="page-description">If you have any current staff vacancies, please add them below.</p>
-  </header>
 
   <form novalidate
     (ngSubmit)="submitHandler()"
     [formGroup]="vacanciesForm">
+
+    <header>
+      <h1 class="h1">Add current staff vacancies</h1>
+      <p class="page-input-info">This should only be for permanent or temporary staff</p>
+      <p class="page-description">If you have any current staff vacancies, please add them below.</p>
+    </header>
+
+    <app-messages></app-messages>
 
     <div class="form-group mb-5">
       <div class="col-12 p-0">
@@ -65,5 +68,4 @@
       <button type="submit" class="btn btn-primary">Save and continue</button>
     </div>
   </form>
-  <app-messages></app-messages>
 </div>
