@@ -42,13 +42,17 @@ form,
     color: $error-red;
   }
 
+  .field-group {
+    margin-bottom: 3rem !important;
+  }
+
   .form-group {
     margin-top: 3rem;
     margin-bottom: 5rem;
-  }
 
-  .field-group {
-    margin-bottom: 3rem !important;
+    // .form-control {
+      // height: 4rem;
+    // }
   }
 
   .form-group,
