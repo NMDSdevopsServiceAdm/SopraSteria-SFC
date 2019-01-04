@@ -10,7 +10,7 @@
 
     <ng-template [ngIf]="isSharingEnabled" [ngIfElse]="notSharing">
       <div class="form-group mb-5">
-        <div class="row p-0">
+        <div class="row p-0" *ngIf="hasPrimaryAuthority">
           <div class="col-1 center-v no-padding-left">
               <input type="checkbox"
                 id="primaryAuthorityCtl"

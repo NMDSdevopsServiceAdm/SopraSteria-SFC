@@ -58,6 +58,7 @@ import { HttpErrorHandler } from './core/services/http-error-handler.service';
 import { MessageService } from './core/services/message.service';
 import { FeedbackService } from './core/services/feedback.service';
 import { EstablishmentService } from './core/services/establishment.service';
+import { LocalAuthorityService } from './core/services/localAuthority.service';
 
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
@@ -131,6 +132,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     HttpErrorHandler,
     FeedbackService,
     EstablishmentService,
+    LocalAuthorityService,
   ],
   bootstrap: [AppComponent]
 })
