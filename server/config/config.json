@@ -5,7 +5,10 @@
     "database": "sfcdevdb",
     "host": "35.178.185.248",
     "port": 5432,
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": true /* for SSL config */
+    }
   },
   "test": {
     "username": "sfcadmin",
@@ -13,7 +16,10 @@
     "database": "sfcdevdb",
     "host": "35.178.185.248",
     "port": 5432,
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": true /* for SSL config */
+    }
   },
   "production": {
     "username": "sfcadmin",
@@ -21,6 +27,9 @@
     "database": "sfcdevdb",
     "host": "35.178.185.248",
     "port": 5432,
-    "dialect": "postgres"
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": true /* for SSL config  */
+    }
   }
 }
