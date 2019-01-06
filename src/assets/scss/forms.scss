@@ -16,12 +16,10 @@ form,
     }
   }
 
-  .field-group {
-    .form-control {
-      &.is-invalid,
-      &.is-invalid:focus {
-        border: 4px solid $error-red;
-      }
+  .form-control {
+    &.is-invalid,
+    &.is-invalid:focus {
+      border: 4px solid $error-red;
     }
   }
 
