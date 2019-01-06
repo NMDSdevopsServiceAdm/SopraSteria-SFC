@@ -27,6 +27,11 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
   } else {
     console.log(`No Authorization header on host request (${req.get('host')})`);
   }
+
+  // need to extract the establishment id from the params not the header
+  req.establishmentId = parseInt(req.params.id);
+  console.log("Extracted establishment id: ", req.establishmentId);
+
   return next();
 /*   if (req.headers[AUTH_HEADER] && Number.isInteger(parseInt(req.headers[AUTH_HEADER]))) {
     req.establishmentId = parseInt(req.headers[AUTH_HEADER]);
