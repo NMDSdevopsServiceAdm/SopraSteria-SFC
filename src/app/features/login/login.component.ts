@@ -56,10 +56,12 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: ['', [Validators.required, Validators.maxLength(120)]]
     });
 
-    this.loginForm.valueChanges.subscribe(value => {
-      if (this.loginForm.valid) {
-        this.messageService.clearError()
-      }})
+    this.subscriptions.push(
+      this.loginForm.valueChanges.subscribe(value => {
+        if (this.loginForm.valid) {
+          this.messageService.clearError()
+        }})
+    )
 
     this.subscriptions.push(
       this._loginService.auth$.subscribe(login => this.login = login))
