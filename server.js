@@ -39,14 +39,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // open/reference endpoints
-app.use('/api/locations', locations);
-app.use('/api/postcodes', postcodes);
 app.use('/api/services', services);
 app.use('/api/jobs', jobs);
 app.use('/api/localAuthority', la);
 
 // transaction endpoints
 app.use('/api/errors', errors);
+app.use('/api/locations', [cacheMiddleware.nocache, locations]);
+app.use('/api/postcodes', [cacheMiddleware.nocache, postcodes]);
 app.use('/api/registration', [cacheMiddleware.nocache, registration]);
 app.use('/api/login', [cacheMiddleware.nocache, tmpLogin]);
 app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
