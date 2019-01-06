@@ -5,6 +5,12 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+
+// API metrics
+var swStats = require('swagger-stats');
+// var apiSpec = require('swagger.json');
+
+
 var routes = require('./server/routes/index');
 var locations = require('./server/routes/locations');
 var postcodes = require('./server/routes/postcodes');
@@ -34,6 +40,21 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
+
+// instrument routes
+app.use(swStats.getMiddleware({
+        //swaggerSpec:apiSpec,
+        uriPath: '/metrics',
+        name: 'ADS-WDS',
+        version: '1.0.0',
+        //ip: '127.0.0.1',
+        timelineBucketDuration: 60000,
+        durationBuckets: [50, 100, 200, 500, 1000, 5000],
+        requestSizeBuckets: [500, 5000, 15000, 50000],
+        responseSizeBuckets: [600, 6000, 6000, 60000],
+    })
+);
+
 
 // app.use('/', routes);
 app.use('/api/locations', locations);
@@ -82,6 +103,7 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
+
 
 var debug = require('debug')('server');
 
