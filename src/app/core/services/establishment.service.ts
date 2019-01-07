@@ -41,31 +41,14 @@ interface EmployerTypeResponse {
 })
 export class EstablishmentService {
 
-  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {}
+  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {
+    this._headers = new HttpHeaders();
+    this._headers.set("Content-Type", "application/json")
+  }
 
-  private _establishmentToken: string = null
+  private _headers = null;
+
   private _establishmentId: number = null
-
-  public set establishmentToken(value: string) {
-    this._establishmentToken = value
-    localStorage.setItem("establishmentToken", value)
-  }
-
-  public get establishmentToken() {
-    if (this._establishmentToken) {
-      return this._establishmentToken
-    }
-
-    this._establishmentToken = localStorage.getItem("establishmentToken")
-
-    if (isDevMode()) {
-      if (!this._establishmentToken) {
-        throw new TypeError("No establishmentToken in local storage!")
-      }
-    }
-
-    return this._establishmentToken
-  }
 
   public set establishmentId(value:number) {
     this._establishmentId = value
@@ -90,7 +73,6 @@ export class EstablishmentService {
 
   private getOptions() {
     let headers = new HttpHeaders()
-    headers = headers.append("Authorization", this.establishmentToken)
     headers = headers.append("Content-Type", "application/json")
     return { headers }
   }
