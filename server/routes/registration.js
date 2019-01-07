@@ -30,6 +30,7 @@ const client = new Client({
   database: config.database,
   password: config.password,
   port: config.port,
+  ssl: config.dialectOptions.ssl
 });
 
 // Check if service exists
