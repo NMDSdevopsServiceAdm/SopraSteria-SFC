@@ -51,6 +51,10 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
     return <FormArray> this.shareLocalAuthoritiesForm.controls.authoritiesCtl;
   }
 
+  get hasPrimaryAuthority() : boolean {
+    return this._primaryAuthority !== null;
+  }
+
   // component state
   get isSharingEnabled(): boolean {
     return this._isSharingWithLAEnabled;
@@ -60,7 +64,7 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
   }
   get primaryAuthorityName(): string {
     if (this._primaryAuthority) return this._primaryAuthority.name;
-    return 'Rendering....';
+    return 'Loading....';
   }
   get localAuthorities(): LocalAuthorityModel[] {
     return this._localAuthorities;
@@ -168,7 +172,7 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
     // and get the current establishment local authorities configuration
     this.subscriptions.push(
       this.establishmentService.getLocalAuthorities().subscribe(authorities => {
-        this._primaryAuthority = authorities.primaryAuthority;
+        this._primaryAuthority = authorities.primaryAuthority && authorities.primaryAuthority.name ? authorities.primaryAuthority : null;
         this._localAuthorities = authorities.localAuthorities;
 
         // create the set of authority form controls for each local authority
