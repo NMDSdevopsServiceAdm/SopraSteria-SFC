@@ -8,14 +8,13 @@ exports.isAuthorised = (req, res , next) => {
   } else {
     console.log(`No Authorization header on host request (${req.get('host')})`);
   }
-  return next();
 
-  /* if (req.headers[AUTH_HEADER] && Number.isInteger(parseInt(req.headers[AUTH_HEADER]))) {
+  if (req.headers[AUTH_HEADER] && Number.isInteger(parseInt(req.headers[AUTH_HEADER]))) {
     next();
   } else {
     // not authenticated
     res.status(401).send('Requires authorisation');
-  } */
+  }
 };
 
 // this util middleware will block if the given request is not authorised but will also extract
@@ -28,12 +27,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
     console.log(`No Authorization header on host request (${req.get('host')})`);
   }
 
-  // need to extract the establishment id from the params not the header
-  req.establishmentId = parseInt(req.params.id);
-  console.log("Extracted establishment id: ", req.establishmentId);
-
-  return next();
-/*   if (req.headers[AUTH_HEADER] && Number.isInteger(parseInt(req.headers[AUTH_HEADER]))) {
+  if (req.headers[AUTH_HEADER] && Number.isInteger(parseInt(req.headers[AUTH_HEADER]))) {
     req.establishmentId = parseInt(req.headers[AUTH_HEADER]);
 
     // must provide the establishment ID and it must be a number
@@ -51,5 +45,4 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
     // not authenticated
     res.status(401).send('Requires authorisation');
   }
- */
 }
