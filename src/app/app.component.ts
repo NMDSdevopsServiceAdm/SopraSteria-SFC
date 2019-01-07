@@ -1,4 +1,3 @@
-import "core-js"
 import { Component } from '@angular/core';
 
 @Component({
