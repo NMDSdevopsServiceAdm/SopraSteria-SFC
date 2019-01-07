@@ -8,7 +8,39 @@
     </div>
   </div>
   <div id="nav-container "class="container p-0">
-    <nav class="nav"></nav>
+
+    <nav class="main-nav navbar navbar-expand-lg col-12 p-0">
+
+      <div class="col-12 col-centered p-0" *ngIf="username">
+        <div class="col-12 p-0">
+
+          <!-- <span class="mobile-nav-btn navbar-toggler ml-3 collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="nav-menu-title">Menu<span class="arrow"></span></span>
+          </span> -->
+
+          <div id="navbarSupportedContent">
+
+            <ul class="navbar-nav main-menu">
+              <li class="nav-item pl-0 pr-0 active">
+                <a routerLink="/your-account">Your account</a>
+              </li>
+              <li class="nav-item pl-0 pr-0">
+                <a routerLink="/staff-records">Staff records</a>
+              </li>
+              <li class="nav-item pl-0 pr-0">
+                <a routerLink="/workplaces">Workplaces</a>
+              </li>
+            </ul>
+          </div>
+            <ul class="navbar-nav logout-menu flex-row ml-auto justify-content-end">
+              <li class="subnav-menu-title">
+                <a title="Signed in Users name" [routerLink]="">Signed in as {{ username }} <span class="arrow"></span></a>
+              </li>
+            </ul>
+        </div>
+      </div>
+    </nav>
+
   </div>
   <div class="header-line container">
     <div class="container">
