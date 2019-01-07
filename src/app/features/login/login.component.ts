@@ -88,8 +88,13 @@ export class LoginComponent implements OnInit {
 
           // // update the establishment service state with the given establishment oid
           this.establishmentService.establishmentId = response.establishment.id;
+
+          // store the authorization token
+          // TODO: add expiry of token const expiresAt = moment().add(response.expiresIn,'second');
+          localStorage.setItem("auth-token", response.establishment.id)
+          
           //this.establishmentService.establishmentToken = response.headers.get('authorization');
-          this.establishmentService.establishmentToken = response.establishment.id;
+          //this.establishmentService.establishmentToken = response.establishment.id;
         },
         (err) => {
           // TODO - better handling and display of errors
