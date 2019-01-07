@@ -121,7 +121,7 @@ export class VacanciesComponent implements OnInit, OnDestroy {
       vacancyControl.valueChanges.subscribe(value => {
         this.total = this.calculateTotal(value)
 
-        if (document.activeElement && document.activeElement.getAttribute("type") !== "radio") {
+        if (document.activeElement.getAttribute("type") !== "radio") {
           this.vacanciesForm.patchValue({
             noVacanciesReason: ""
           }, { emitEvent: false })

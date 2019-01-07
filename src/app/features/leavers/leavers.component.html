@@ -24,7 +24,6 @@
           <div *ngFor="let record of form.get('recordsControl').controls; let idx = index" [formGroupName]="idx" class="row record">
             <div class="col-6 col-sm-7">
               <select formControlName="jobId" class="form-control">
-                <option [ngValue]="null">Select Job Title</option>
                 <option *ngFor="let job of jobsLeft(idx)" [value]="job.id">
                   {{job.title}}
                 </option>
