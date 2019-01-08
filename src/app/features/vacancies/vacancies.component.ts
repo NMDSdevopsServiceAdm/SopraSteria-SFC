@@ -40,6 +40,21 @@ export class VacanciesComponent implements OnInit, OnDestroy {
     }
   ]
 
+  goBack(event) {
+    event.preventDefault()
+    this.subscriptions.push(
+      this.establishmentService.getLocalAuthorities()
+        .subscribe(res => {
+          if (res.localAuthorities.length) {
+            this.router.navigate(["/share-local-authority"])
+
+          } else {
+            this.router.navigate(["/share-options"])
+          }
+        })
+    )
+  }
+
   submitHandler(): void {
     const { vacancyControl, noVacanciesReason } = this.vacanciesForm.controls
 

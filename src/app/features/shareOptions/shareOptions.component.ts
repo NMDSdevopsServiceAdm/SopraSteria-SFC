@@ -73,6 +73,18 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
     if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
       this._shareOptions.enabled = true
       this._shareOptions.with = []
+    }
+  }
+
+  goBack(event) {
+    event.preventDefault()
+    this.subscriptions.push(
+      this.establishmentService.getAllServices()
+        .subscribe(({otherServices}) => {
+          this.router.navigate([otherServices.length ? "/capacity-of-services" : "/select-other-services"])
+        })
+    )
+  }
 
       if (this.shareWithCQCcontrol) {
         this._shareOptions.with.push(this._withCQC)
