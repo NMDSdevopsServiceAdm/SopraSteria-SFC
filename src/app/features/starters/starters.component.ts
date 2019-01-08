@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy } from "@angular/core"
-import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
+import { FormGroup, FormBuilder, Validators, FormArray, ValidatorFn, AbstractControl } from "@angular/forms"
 import { Router } from "@angular/router"
 
 import { MessageService } from "../../core/services/message.service"
@@ -18,7 +18,10 @@ export class StartersComponent implements OnInit, OnDestroy {
     private router: Router,
     private jobService: JobService,
     private establishmentService: EstablishmentService,
-    private messageService: MessageService) {}
+    private messageService: MessageService) {
+    this.validatorRecordTotal = this.validatorRecordTotal.bind(this)
+    this.validatorRecordJobId = this.validatorRecordJobId.bind(this)
+  }
 
   form: FormGroup
   total: number = 0
@@ -83,10 +86,20 @@ export class StartersComponent implements OnInit, OnDestroy {
     (<FormArray> this.form.controls.recordsControl).removeAt(index)
   }
 
+  validatorRecordTotal(control) {
+    return control.value !== null || this.form.controls.noRecordsReason.value.length ?
+      {} : { "total": true }
+  }
+
+  validatorRecordJobId(control) {
+    return control.value !== null || this.form.controls.noRecordsReason.value.length ?
+      {} : { "jobId": true }
+  }
+
   createRecordItem(jobId=null, total=null): FormGroup {
     return this.fb.group({
-      jobId: [jobId, Validators.required],
-      total: [total, Validators.required]
+      jobId: [jobId, this.validatorRecordJobId],
+      total: [total, this.validatorRecordTotal],
     })
   }
 
@@ -121,7 +134,7 @@ export class StartersComponent implements OnInit, OnDestroy {
       recordsControl.valueChanges.subscribe(value => {
         this.total = this.calculateTotal(value)
 
-        if (document.activeElement.getAttribute("type") !== "radio") {
+        if (document.activeElement && document.activeElement.getAttribute("type") !== "radio") {
           this.form.patchValue({
             noRecordsReason: ""
           }, { emitEvent: false })

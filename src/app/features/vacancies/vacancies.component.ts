@@ -18,7 +18,10 @@ export class VacanciesComponent implements OnInit, OnDestroy {
     private router: Router,
     private jobService: JobService,
     private establishmentService: EstablishmentService,
-    private messageService: MessageService) {}
+    private messageService: MessageService) {
+    this.validatorRecordTotal = this.validatorRecordTotal.bind(this)
+    this.validatorRecordJobId = this.validatorRecordJobId.bind(this)
+  }
 
   vacanciesForm: FormGroup
   total: number = 0
@@ -83,10 +86,20 @@ export class VacanciesComponent implements OnInit, OnDestroy {
     (<FormArray> this.vacanciesForm.controls.vacancyControl).removeAt(index)
   }
 
+  validatorRecordTotal(control) {
+    return control.value !== null || this.vacanciesForm.controls.noVacanciesReason.value.length ?
+      {} : { "total": true }
+  }
+
+  validatorRecordJobId(control) {
+    return control.value !== null || this.vacanciesForm.controls.noVacanciesReason.value.length ?
+      {} : { "jobId": true }
+  }
+
   createVacancyControlItem(jobId=null, total=null): FormGroup {
     return this.fb.group({
-      jobId: [jobId, Validators.required],
-      total: [total, Validators.required]
+      jobId: [jobId, this.validatorRecordJobId],
+      total: [total, this.validatorRecordTotal]
     })
   }
 
