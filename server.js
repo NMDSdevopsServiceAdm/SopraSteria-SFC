@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var cacheMiddleware = require('./server/utils/middleware/noCache');
+
 var routes = require('./server/routes/index');
 var locations = require('./server/routes/locations');
 var postcodes = require('./server/routes/postcodes');
@@ -35,18 +37,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 
-// app.use('/', routes);
-app.use('/api/locations', locations);
-app.use('/api/postcodes', postcodes);
+// open/reference endpoints
 app.use('/api/services', services);
-app.use('/api/registration', registration);
-app.use('/api/errors', errors);
-app.use('/api/login', tmpLogin);
-app.use('/api/establishment', establishments);
 app.use('/api/jobs', jobs);
 app.use('/api/localAuthority', la);
-app.use('/api/feedback', feedback);
-app.use('/api/test', testOnly);
+
+// transaction endpoints
+app.use('/api/errors', errors);
+app.use('/api/locations', [cacheMiddleware.nocache, locations]);
+app.use('/api/postcodes', [cacheMiddleware.nocache, postcodes]);
+app.use('/api/registration', [cacheMiddleware.nocache, registration]);
+app.use('/api/login', [cacheMiddleware.nocache, tmpLogin]);
+app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
+app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
+app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

@@ -16,6 +16,10 @@ export class NumberMax extends BaseNumber {
   onKeyDown(event: KeyboardEvent) {
     const { key, keyCode } = event
 
+    if (this.max === null) {
+      return
+    }
+
     if (!this.isKeyCodeSpecial(keyCode)) {
       const curVal = this.el.nativeElement.value
       const curValNum = parseFloat(curVal)

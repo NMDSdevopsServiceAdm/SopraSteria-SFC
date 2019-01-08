@@ -15,10 +15,11 @@
             <div class="col-12" [ngClass]="{'is-invalid': (feedbackForm.get('whenDoingCtl').touched ||
               feedbackForm.get('whenDoingCtl').dirty) &&
               !feedbackForm.get('whenDoingCtl').valid }">
-              <textarea 
+              <textarea
                 id="whenDoingCtl"
                 formControlName="whenDoingCtl"
                 class="col-9"
+                [maxlength]="_countdownValidation['whenDoingCtl'].max"
                 (input)="validateCountdown('whenDoingCtl')">
               </textarea>
               <div class="col-12">
@@ -33,7 +34,7 @@
                   </span>
               </div>
             </div>
-          </div>        
+          </div>
         </div>
 
         <div class="row form">
@@ -42,10 +43,11 @@
             <div class="col-12" [ngClass]="{'is-invalid': (feedbackForm.get('tellUsCtl').touched ||
               feedbackForm.get('tellUsCtl').dirty) &&
               !feedbackForm.get('tellUsCtl').valid }">
-                <textarea 
+                <textarea
                   id="tellUsCtl"
                   formControlName="tellUsCtl"
                   class="col-9"
+                  [maxlength]="_countdownValidation['tellUsCtl'].max"
                   (input)="validateCountdown('tellUsCtl')">
               </textarea>
               <div class="col-12">
@@ -62,7 +64,7 @@
 
             </div>
             <div class="col-3"></div>
-          </div>        
+          </div>
         </div>
 
         <div class="row form">
@@ -75,7 +77,7 @@
             feedbackForm.get('nameCtl').dirty) &&
             !feedbackForm.get('nameCtl').valid }">
               <p class="col-12 form-caveat">Optional</p>
-              <input 
+              <input
                 id="nameCtl"
                 formControlName="nameCtl"
                 class="col-9"
@@ -87,14 +89,14 @@
               </span>
           </div>
         </div>
-    
+
         <div class="row form">
           <p class="col-12 form-title">Email</p>
           <div class="col-12" [ngClass]="{'is-invalid': (feedbackForm.get('emailCtl').touched ||
           feedbackForm.get('emailCtl').dirty) &&
           !feedbackForm.get('emailCtl').valid }">
               <p class="col-12 form-caveat">Optional</p>
-              <input 
+              <input
                 id="emailCtl"
                 formControlName="emailCtl"
                 class="col-9"
@@ -110,7 +112,7 @@
           </div>
         </div>
       </div>
-  
+
       <div class="row form">
         <div class="btn-container col-12 ">
           <button type="submit" class="btn btn-primary">Send</button>
