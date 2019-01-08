@@ -8,6 +8,15 @@ h1, .h1 {
   @include rem(line-height, 48px);
 }
 
+h2, .h2 {
+  font-weight: 700;
+  margin: 0;
+
+  @include rem(padding, 0 0 0 0);
+  @include rem(font-size, 30px);
+  @include rem(line-height, 40px);
+}
+
 h5, .h5 {
   color: $light-grey-text;
 
@@ -17,6 +26,17 @@ h5, .h5 {
 .main-text {
 
   @include rem(font-size, 16px);
+}
+
+a.link-body-text {
+
+  &:not([href]):not([tabindex]) {
+    @include rem(font-size, 16px);
+
+    @media (min-width: 641px) {
+      @include rem(font-size, 19px);
+    }
+  }
 }
 
 .main-body-text {

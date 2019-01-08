@@ -2,16 +2,19 @@
 
 .page-title {
     font-weight: bold;
+    padding-left: 18px;
 }
 
 .form-title {
     font-weight: normal;
+    margin: 0px;
 }
 .form-caveat {
     font-weight: normal;
     color: $light-grey-text;
     font-style: italic;
-    padding: 0;
+    padding: 0px;
+    margin: 0px;
 }
 
 .form {

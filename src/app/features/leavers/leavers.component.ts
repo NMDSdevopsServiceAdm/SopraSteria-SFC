@@ -106,7 +106,7 @@ export class LeaversComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.establishmentService.getLeavers().subscribe(item => {
-        if (item) {
+        if (item.length) {
           item.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)))
 
         } else {

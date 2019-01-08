@@ -47,7 +47,7 @@ a,
 
     &:hover {
       color: #0056b3;
-  }
+    }
   }
 }
 
@@ -103,6 +103,23 @@ p {
       }
     }
   }
+}
+
+.panel {
+
+  &.collapse {
+
+    @include rem(margin, 0 0 0 0);
+
+    ul {
+      @include rem(margin, 0 0 0 15px);
+
+      li {
+        list-style-type: disc;
+      }
+    }
+  }
+
 }
 
 .panel-border-narrow {

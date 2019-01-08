@@ -37,4 +37,7 @@ export class HomepageComponent implements OnInit {
     this.router.navigate(['/type-of-employer']);
   }
 
+  tryagin() {
+    this.router.navigate(['/type-of-employer']);
+  }
 }

@@ -1,6 +1,7 @@
 <div class="main-page-container col-12">
   <header>
     <h1 class="h1">Add current staff vacancies</h1>
+    <p class="page-input-info">This should only be for permanent or temporary staff</p>
     <p class="page-description">If you have any current staff vacancies, please add them below.</p>
   </header>
 
@@ -23,6 +24,7 @@
           <div *ngFor="let vacancy of vacanciesForm.get('vacancyControl').controls; let idx = index" [formGroupName]="idx" class="row record">
             <div class="col-6 col-sm-7">
               <select formControlName="jobId" class="form-control">
+                <option [ngValue]="null">Select Job Title</option>
                 <option *ngFor="let job of jobsLeft(idx)" [value]="job.id">
                   {{job.title}}
                 </option>

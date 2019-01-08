@@ -106,7 +106,7 @@ export class StartersComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.establishmentService.getStarters().subscribe(vacancies => {
-        if (vacancies) {
+        if (vacancies.length) {
           vacancies.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)))
 
         } else {

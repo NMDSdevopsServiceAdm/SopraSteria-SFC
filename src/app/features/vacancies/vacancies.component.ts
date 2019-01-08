@@ -28,7 +28,7 @@ export class VacanciesComponent implements OnInit, OnDestroy {
 
   noVacanciesReasonOptions = [
     {
-      label: "There are no curret staff vacancies.",
+      label: "There are no current staff vacancies.",
       value: "no-staff"
     },
     {
@@ -106,7 +106,7 @@ export class VacanciesComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.establishmentService.getVacancies().subscribe(vacancies => {
-        if (vacancies) {
+        if (vacancies.length) {
           vacancies.forEach(v => vacancyControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)))
 
         } else {
@@ -121,7 +121,7 @@ export class VacanciesComponent implements OnInit, OnDestroy {
       vacancyControl.valueChanges.subscribe(value => {
         this.total = this.calculateTotal(value)
 
-        if (document.activeElement.getAttribute("type") !== "radio") {
+        if (document.activeElement && document.activeElement.getAttribute("type") !== "radio") {
           this.vacanciesForm.patchValue({
             noVacanciesReason: ""
           }, { emitEvent: false })
