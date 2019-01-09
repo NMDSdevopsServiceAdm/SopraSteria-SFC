@@ -43,9 +43,6 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
   set shareWithLocalAuthorityControl(value: boolean) {
     this.shareOptionsForm.get('shareWithLocalAuthorityCtl').patchValue(true, {onlySelf:true, emitEvent: false});
   }
-  get doNotShareControl() {
-    return this.shareOptionsForm.get('doNotShareCtl').value;
-  }
 
   private get isShareWithCQCEnabled(): boolean {
     if (this._shareOptions) {
@@ -72,60 +69,47 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
     return false;
   }
 
+  onSubmit() {
+    if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
+      this._shareOptions.enabled = true
+      this._shareOptions.with = []
 
-  onSubmit () {
-    if (this.doNotShareControl) {
-      // disable sharing, but leave options unmodified
-      this._shareOptions.enabled = false;
-      this.subscriptions.push(
-        this.establishmentService.postSharingOptions(this._shareOptions)
-        .subscribe(() => {
-          this.router.navigate(['/vacancies']);
-        })
-      );
+      if (this.shareWithCQCcontrol) {
+        this._shareOptions.with.push(this._withCQC)
+      }
+      if (this.shareWithLocalAuthorityControl) {
+        this._shareOptions.with.push(this._withLocalAuthority)
+      }
 
-    } else {
-      if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
-        this._shareOptions.enabled = true;
-        this._shareOptions.with = [];
-
-        if (this.shareWithCQCcontrol) {
-          this._shareOptions.with.push(this._withCQC);
-        }
-        if (this.shareWithLocalAuthorityControl) {
-          this._shareOptions.with.push(this._withLocalAuthority);
-        }
-
-        if (this.shareWithLocalAuthorityControl) {
-          // only navigate to share with local authorities if sharing
-          //  has been enabled with Local Authorities
-          this.subscriptions.push(
-            this.establishmentService.postSharingOptions(this._shareOptions)
-            .subscribe(() => {
-              this.router.navigate(['/share-local-authority']);
-            })
-          );
-        } else {
-          this.subscriptions.push(
-            this.establishmentService.postSharingOptions(this._shareOptions)
-            .subscribe(() => {
-              this.router.navigate(['/vacancies']);
-            })
-          );
-        }
-
-      } else {
-        // reset sharing options
-        this._shareOptions.enabled = false;
-        this._shareOptions.with = [];
-
+      if (this.shareWithLocalAuthorityControl) {
+        // only navigate to share with local authorities if sharing
+        //  has been enabled with Local Authorities
         this.subscriptions.push(
           this.establishmentService.postSharingOptions(this._shareOptions)
-          .subscribe(() => {
-            this.router.navigate(['/vacancies']);
-          })
+            .subscribe(() => {
+              this.router.navigate(['/share-local-authority'])
+            })
+        )
+      } else {
+        this.subscriptions.push(
+          this.establishmentService.postSharingOptions(this._shareOptions)
+            .subscribe(() => {
+              this.router.navigate(['/vacancies'])
+            })
         );
       }
+
+    } else {
+      // reset sharing options
+      this._shareOptions.enabled = false
+      this._shareOptions.with = []
+
+      this.subscriptions.push(
+        this.establishmentService.postSharingOptions(this._shareOptions)
+          .subscribe(() => {
+            this.router.navigate(['/vacancies'])
+          })
+      )
     }
   }
 
@@ -134,7 +118,6 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
     this.shareOptionsForm = this.fb.group({
       shareWithCQCctl: [false, [Validators.required]],
       shareWithLocalAuthorityCtl: [false, [Validators.required]],
-      doNotShareCtl: [false, [Validators.required]],
     });
 
     // // fetch establishment sharing options to determine if Local Authority sharing is enable.
@@ -160,4 +143,3 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
     this.messageService.clearAll();
   }
 }
-

@@ -6,9 +6,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
+import { HttpErrorHandler } from "./http-error-handler.service"
 import { LoginApiModel } from '../model/loginApi.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
+// TODO do we still need it?
 const initialRegistration: LoginApiModel = {
   // Example initial dummy data
   username: 'Uname3',
@@ -49,11 +51,11 @@ export class AuthService {
 
 
   constructor(private http: HttpClient,
-              
+              private httpErrorHandler: HttpErrorHandler,
               private router: Router) { }
 
   // returns true if logged in; otherwise false
-  public get isLoggedIn(): boolean {  
+  public get isLoggedIn(): boolean {
     return this._session ? true : false;
   }
 
@@ -107,7 +109,7 @@ export class AuthService {
     const options = { headers: { 'Content-type': 'application/json',  observe: "response" as 'body', responseType: "json" } };
     return this.http.post<any>('/api/login/', $value, options)
       .pipe(
-        catchError(err => this.handleHttpError(err))
+        catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 
@@ -134,11 +136,3 @@ export class AuthService {
 
 
 }
-
-
-
-
-
-
-
-

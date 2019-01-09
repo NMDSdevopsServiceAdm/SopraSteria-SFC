@@ -58,6 +58,10 @@ import { HttpErrorHandler } from './core/services/http-error-handler.service';
 import { MessageService } from './core/services/message.service';
 import { FeedbackService } from './core/services/feedback.service';
 import { EstablishmentService } from './core/services/establishment.service';
+import { LocalAuthorityService } from './core/services/localAuthority.service';
+
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './core/services/auth-interceptor';
 
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
@@ -131,6 +135,12 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     HttpErrorHandler,
     FeedbackService,
     EstablishmentService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
+    LocalAuthorityService
   ],
   bootstrap: [AppComponent]
 })

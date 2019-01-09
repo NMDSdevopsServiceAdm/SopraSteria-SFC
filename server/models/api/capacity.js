@@ -6,7 +6,8 @@ const localformatCapacity = (thisCapacity, thisQuestion, showQuestionDetail=fals
     question: thisQuestion.question    
   };
   if (showQuestionDetail) {
-    myCapacity.questionId = thisQuestion.id
+    myCapacity.questionId = thisQuestion.id;
+    myCapacity.seq = thisQuestion.seq ? thisQuestion.seq : 0;
   }
 
   // answer can be primary value or contained within a question
