@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { Services } from '@angular/core/src/view';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -16,7 +16,7 @@ import { PostServicesModel } from '../../core/model/postServices.model';
   templateUrl: './select-other-services.component.html',
   styleUrls: ['./select-other-services.component.scss']
 })
-export class SelectOtherServicesComponent implements OnInit {
+export class SelectOtherServicesComponent implements OnInit, OnDestroy {
   mainService: string;
   isRegistered: boolean;
   servicesData: {};
@@ -26,6 +26,8 @@ export class SelectOtherServicesComponent implements OnInit {
   checked: boolean;
   postOtherServicesdata: any = [];
   obj;
+
+  private subscriptions = []
 
   constructor(
     private fb: FormBuilder,
@@ -50,7 +52,7 @@ export class SelectOtherServicesComponent implements OnInit {
   }
 
   getAllServices() {
-
+    this.subscriptions.push(
     this._eSService.getAllServices()
       .subscribe(
         (data: any) => {
@@ -68,8 +70,8 @@ export class SelectOtherServicesComponent implements OnInit {
         () => {
           console.log('Got all services');
         }
-      );
-
+      )
+    )
   }
 
   // Check if services exists and if so create services obj
@@ -121,18 +123,29 @@ export class SelectOtherServicesComponent implements OnInit {
     }
   }
 
-  onSubmit() {
+  async onSubmit() {
+    try {
+      await this.save()
 
-    if (this.postOtherServicesdata.length > 0) {
-      this.save();
-    }
+      this.subscriptions.push(
+        this._eSService.getCapacity(true).subscribe(c => {
+          if (c.allServiceCapacities.length) {
+            this.router.navigate(['/capacity-of-services'])
 
-    if (!this.SelectOtherServiceForm.controls.otherServiceSelected.value.length) {
-      this.router.navigate(['/share-options'])
+          } else {
+            this.router.navigate(['/share-options'])
+          }
+        })
+      )
+    } catch (e) {
+      // keep the JS transpiler silent lack of rejected path
     }
   }
 
   save() {
+    return new Promise((resolve, reject) => {
+    if (this.postOtherServicesdata.length > 0) {
+    this.subscriptions.push(
     this._eSService.postOtherServices(this.postOtherServicesdata)
       .subscribe(
         (data: any) => {
@@ -140,13 +153,20 @@ export class SelectOtherServicesComponent implements OnInit {
         },
         (err) => {
           console.log(err);
+          reject(err)
         },
         () => {
           this.router.navigate(['/capacity-of-services'])
         }
-      );
+      )
+    )
+    } else {
+      resolve()
+    }
+    })
   }
 
-
-
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe())
+  }
 }
