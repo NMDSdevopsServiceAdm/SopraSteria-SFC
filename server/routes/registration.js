@@ -33,22 +33,6 @@ const client = new Client({
 });
 
 
-const returnDateTime = () => {
-  return (new Date()).toISOString();
-};
-router.route('/hello').get(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').put(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').delete(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').post(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-
 // Check if service exists
 router.get('/service/:name', function (req, res) {
   client.connect() 

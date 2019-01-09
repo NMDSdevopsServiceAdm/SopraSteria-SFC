@@ -54,7 +54,13 @@ router.route('/').get(async (req, res) => {
       res.status(200);
       return res.json(formatLAResponse(results, primaryAuthority));
     } else {
-      return res.status(404).send('Not found');
+      // Note - which pcodedata being external reference data and with a user being
+      //        able to enter address details not found in pcoddata, it will not be
+      //        uncommon as initially thought to not resolve on primary authority
+
+      // Rather than erroring, primary authority will be null
+      res.status(200);
+      return res.json(formatLAResponse(results, null));
     }
 
   } catch (err) {
@@ -179,21 +185,23 @@ const isValidLAEntry = (entry, allKnownLAs) => {
   }
 };
 
-const formatLAResponse = (establishment, primaryAuthorityCustodianCode=null) => {
+const formatLAResponse = (establishment, primaryAuthority=null) => {
   // WARNING - do not be tempted to copy the database model as the API response; the API may chose to rename/contain
   //           some attributes
   const response = {
     id: establishment.id,
     name: establishment.name,
     localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities,
-                                                 primaryAuthorityCustodianCode ? primaryAuthorityCustodianCode.local_custodian_code : null)
+                                                 primaryAuthority ? primaryAuthority.local_custodian_code : null)
   };
 
-  if (primaryAuthorityCustodianCode) {
+  if (primaryAuthority) {
     response.primaryAuthority = {
-      custodianCode: parseInt(primaryAuthorityCustodianCode.local_custodian_code),
-      name: primaryAuthorityCustodianCode.theAuthority.name
+      custodianCode: parseInt(primaryAuthority.local_custodian_code),
+      name: primaryAuthority.theAuthority.name
     }
+  } else {
+    response.primaryAuthority = {};
   }
 
   return response;
