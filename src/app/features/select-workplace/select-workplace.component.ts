@@ -1,9 +1,10 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
+import { MessageService } from "../../core/services/message.service"
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
 import { RegistrationTrackerError } from './../../core/model/registrationTrackerError.model';
@@ -14,7 +15,7 @@ import { RegistrationTrackerError } from './../../core/model/registrationTracker
   templateUrl: './select-workplace.component.html',
   styleUrls: ['./select-workplace.component.scss']
 })
-export class SelectWorkplaceComponent implements OnInit {
+export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   selectWorkplaceForm: FormGroup;
   registration: RegistrationModel;
   selectedAddressId: string;
@@ -32,7 +33,7 @@ export class SelectWorkplaceComponent implements OnInit {
 
   isSubmitted = false;
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
+  constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder, private messageService: MessageService) { }
 
   ngOnInit() {
     this.selectWorkplaceForm = this.fb.group({
@@ -140,6 +141,7 @@ export class SelectWorkplaceComponent implements OnInit {
           //data = data.postcodedata;
           this._registrationService.updateState(data);
           //this.routingCheck(data);
+          this.router.navigate(["/select-workplace-address"])
         }
       }
       // ,
@@ -155,4 +157,7 @@ export class SelectWorkplaceComponent implements OnInit {
     );
   }
 
+  ngOnDestroy() {
+    this.messageService.clearAll()
+  }
 }
