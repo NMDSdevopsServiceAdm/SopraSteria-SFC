@@ -19,7 +19,7 @@ router.post('/',async function(req, res) {
         attributes: ['id', 'isActive', 'registrationId', 'firstLogin', 'Hash'],
         include: [ {
           model: models.user,
-          attributes: ['fullname','isAdmin'],
+          attributes: ['fullname', 'isAdmin','establishmentId'],
           include: [{
             model: models.establishment,
             attributes: ['id', 'name', 'isRegulated'],
@@ -42,11 +42,12 @@ router.post('/',async function(req, res) {
       if (isMatch && !err) {
 
         var claims = {
-          EstblishmentId: login.registrationId,
+          EstblishmentId: login.user.establishmentId,
           Username: req.body.username,
           isAdmin: login.user.isAdmin
         }
-      
+        console.log(claims);
+
         var token = jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: 43200 * 1});        
 
  

@@ -40,6 +40,8 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
     if (token.startsWith('Bearer')) {
       token = token.slice(7, token.length);
     }
+   
+
     jwt.verify(token, Token_Secret, function (err, data) {
       if (err) {
         return res.json({
@@ -47,23 +49,29 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           message: 'token is invalid'
         });
       } else {        
+        
 
-        req.establishmentId = data.establishmentId; //parseInt(req.headers[AUTH_HEADER]);     
         // must provide the establishment ID and it must be a number
-        if (!req.params.id || isNaN(parseInt(req.params.id))) {
+        if (!data.EstblishmentId || isNaN(parseInt(data.EstblishmentId))) {
           console.error('isAuthenticated - missing establishment id parameter');
           return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
         }
-        if (req.establishmentId !== parseInt(req.params.id)) {
+        if (data.EstblishmentId !== parseInt(req.params.id)) {
           console.error('isAuthenticated - given and known establishment id do not match');
           return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
-        }        
+        }
+        req.establishmentId =   data.EstblishmentId ;        
+        req.Username= data.Username;
+        req.isAdmin= data.isAdmin
+
         next();
-      }
+        
+      }     
     });
     
   } else {
     // not authenticated
     res.status(401).send('Requires authorisation');
   }
+
 }
