@@ -23,6 +23,11 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"Username"'
     },
+    password: {
+     type: DataTypes.TEXT,
+     allowNull: false,
+     field: "Password"
+    },
     securityQuestion: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -60,6 +65,11 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
+
+  // uses the current 
+  Login.prototype.hashPassword = function () {
+    return bcrypt.hashSync(this.password, bcrypt.genSaltSync(10), null);
+  };
 
   Login.prototype.comparePassword = function (passw, cb) {
 
