@@ -14,13 +14,16 @@ exports.isAuthorised = (req, res , next) => {
     if (token.startsWith('Bearer')) {
       token = token.slice(7, tokenlength);
     }
-    jwt.verify(token, Token_Secret, function (err, data) {
+    jwt.verify(token, Token_Secret, function (err, claim) {
       if (err) {
         return res.json({
           sucess: false,
           message: 'token is invalid'
         });
       } else {
+        req.establishmentId = claim.EstblishmentId;
+        req.Username = claim.Username;
+        req.isAdmin = claim.isAdmin;
         next();
       }      
     });    
@@ -44,7 +47,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
     }
    
 
-    jwt.verify(token, Token_Secret, function (err, data) {
+    jwt.verify(token, Token_Secret, function (err, claim) {
       if (err) {
         return res.json({
           sucess: false,
@@ -54,17 +57,17 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
         
 
         // must provide the establishment ID and it must be a number
-        if (!data.EstblishmentId || isNaN(parseInt(data.EstblishmentId))) {
+        if (!claim.EstblishmentId || isNaN(parseInt(claim.EstblishmentId))) {
           console.error('isAuthenticated - missing establishment id parameter');
           return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
         }
-        if (data.EstblishmentId !== parseInt(req.params.id)) {
+        if (claim.EstblishmentId !== parseInt(req.params.id)) {
           console.error('isAuthenticated - given and known establishment id do not match');
           return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
         }
-        req.establishmentId =   data.EstblishmentId ;        
-        req.Username= data.Username;
-        req.isAdmin= data.isAdmin
+        req.establishmentId =   claim.EstblishmentId ;        
+        req.Username= claim.Username;
+        req.isAdmin = claim.isAdmin;
 
         next();
         

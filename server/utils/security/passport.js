@@ -1,4 +1,4 @@
-const Authorization = require('../utils/security/isAuthenticated');
+const Authorization = require('./isAuthenticated');
 
 const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
