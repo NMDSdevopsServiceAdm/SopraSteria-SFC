@@ -2,8 +2,8 @@
  const models = require('../models/index');
  const jwt = require('jsonwebtoken');
  const passport = require('passport');
-var router = express.Router();
-require('../config/passport')(passport);
+ var router = express.Router();
+ require('../utils/security/passport')(passport);
 const Login = require('../models').login;
 
 Token_Secret = process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
