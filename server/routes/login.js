@@ -5,21 +5,21 @@
 var router = express.Router();
 require('../config/passport')(passport);
 const Login = require('../models').login;
-// console.log("this is console user");
-// //console.log(models.user.username);
+
+Token_Secret = process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
 
 router.post('/',async function(req, res) {
-  console.log('inside login');
-  await Login
+   Login
       .findOne({
         where: {
-          username: req.body.username
+          username: req.body.username,
+          isActive:true
         }
         ,
         attributes: ['id', 'isActive', 'registrationId', 'firstLogin', 'Hash'],
         include: [ {
           model: models.user,
-          attributes: ['fullname'],
+          attributes: ['fullname','isAdmin'],
           include: [{
             model: models.establishment,
             attributes: ['id', 'name', 'isRegulated'],
@@ -39,12 +39,17 @@ router.post('/',async function(req, res) {
           });
         }
     login.comparePassword(req.body.password, (err, isMatch) => {
-          if(isMatch && !err) {
-            var token = jwt.sign(JSON.parse(JSON.stringify(login)), 'nodeauthsecret', {expiresIn: 86400 * 30});
-            jwt.verify(token, 'nodeauthsecret', function(err, data){
-              console.log(err, data);
-            })
-             // successfully logged in
+      if (isMatch && !err) {
+
+        var claims = {
+          EstblishmentId: login.registrationId,
+          Username: req.body.username,
+          isAdmin: login.user.isAdmin
+        }
+      
+        var token = jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: 43200 * 1});        
+
+ 
             const response = formatSuccessulLoginResponse(
               login.user.fullname,
               login.firstLogin,
@@ -54,17 +59,20 @@ router.post('/',async function(req, res) {
 
             // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
             if (!login.firstLogin) {
-               login.update({
+                login.update({
                 firstLogin: new Date()
               });
             }
-      
+
+          token = 'Bearer ' + token;
+
           const headers = {
-            'Authorization': login.user.establishment.id
+            'Authorization': token
           };
           res.set(headers);
 
-            res.json({success: true, token: 'JWT ' + token});
+          
+          res.json({success: true, token: token});
           } else {
             res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
           }

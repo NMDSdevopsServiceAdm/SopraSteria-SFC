@@ -23,11 +23,11 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"Username"'
     },
-    password: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      field: "Password"
-    },
+    //password: {
+    //  type: DataTypes.TEXT,
+    //  allowNull: false,
+    //  field: "Password"
+    //},
     securityQuestion: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -67,7 +67,7 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Login.prototype.comparePassword = function (passw, cb) {
-    console.log(this.password);
+
     bcrypt.compare(passw, this.Hash, function (err, isMatch) {
      // console.log("inside")
         if (err) {

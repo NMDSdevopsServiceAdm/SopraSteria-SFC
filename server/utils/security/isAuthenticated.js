@@ -1,11 +1,27 @@
-const AUTH_HEADER='authorization';
+const jwt = require('jsonwebtoken');
+const AUTH_HEADER = 'authorization';
+
+Token_Secret = process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
 
 // this util middleware will block if the given request is not authorised
 exports.isAuthorised = (req, res , next) => {
   // TODO: temporary implementation based on route/tmpLogin.js
 
   if (req.headers[AUTH_HEADER] && Number.isInteger(parseInt(req.headers[AUTH_HEADER]))) {
-    next();
+    let token = req.headers[AUTH_HEADER];
+    if (token.startsWith('Bearer')) {
+      token = token.slice(7, tokenlength);
+    }
+    jwt.verify(token, Token_Secret, function (err, data) {
+      if (err) {
+        return res.json({
+          sucess: false,
+          message: 'token is invalid'
+        });
+      } else {
+        next();
+      }      
+    });    
   } else {
     // not authenticated
     res.status(401).send('Requires authorisation');
@@ -17,20 +33,35 @@ exports.isAuthorised = (req, res , next) => {
 exports.hasAuthorisedEstablishment = (req, res, next) => {
   // TODO: temporary implementation based on route/tmpLogin.js
 
-  if (req.headers[AUTH_HEADER] && Number.isInteger(parseInt(req.headers[AUTH_HEADER]))) {
-    req.establishmentId = parseInt(req.headers[AUTH_HEADER]);
+  if (req.headers[AUTH_HEADER] ) {
 
-    // must provide the establishment ID and it must be a number
-    if (!req.params.id || isNaN(parseInt(req.params.id))) {
-      console.error('isAuthenticated - missing establishment id parameter');
-      return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
+    let token = req.headers[AUTH_HEADER];
+
+    if (token.startsWith('Bearer')) {
+      token = token.slice(7, token.length);
     }
-    if (req.establishmentId !== parseInt(req.params.id)) {
-      console.error('isAuthenticated - given and known establishment id do not match');
-      return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
-    }
-  
-    next();
+    jwt.verify(token, Token_Secret, function (err, data) {
+      if (err) {
+        return res.json({
+          sucess: false,
+          message: 'token is invalid'
+        });
+      } else {        
+
+        req.establishmentId = data.establishmentId; //parseInt(req.headers[AUTH_HEADER]);     
+        // must provide the establishment ID and it must be a number
+        if (!req.params.id || isNaN(parseInt(req.params.id))) {
+          console.error('isAuthenticated - missing establishment id parameter');
+          return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
+        }
+        if (req.establishmentId !== parseInt(req.params.id)) {
+          console.error('isAuthenticated - given and known establishment id do not match');
+          return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+        }        
+        next();
+      }
+    });
+    
   } else {
     // not authenticated
     res.status(401).send('Requires authorisation');

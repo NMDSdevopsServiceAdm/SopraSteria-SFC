@@ -48,7 +48,7 @@ app.use('/api/errors', errors);
 app.use('/api/locations', [cacheMiddleware.nocache, locations]);
 app.use('/api/postcodes', [cacheMiddleware.nocache, postcodes]);
 app.use('/api/registration', [cacheMiddleware.nocache, registration]);
-app.use('/api/login', [cacheMiddleware.nocache, tmpLogin]);
+app.use('/api/login', [cacheMiddleware.nocache, login]);
 app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
