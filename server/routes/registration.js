@@ -1,9 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var concatenateAddress = require('../utils/concatenateAddress').concatenateAddress;
-const bodyParser = require('body-parser');
 
-
+const slack = require('../utils/slack/slack-logger');
 const { Client } = require('pg');
 
 // TODO - copied from model/index.js; this will be removed when registration is refactored to using sequelize''
@@ -284,6 +283,13 @@ router.route('/')
         console.error(err);
         throw errOnLogin;
       }
+
+      // post via Slack, but remove sensitive data
+      const slackMsg = req.body[0];
+      delete slackMsg.user.password;
+      delete slackMsg.user.securityQuestion;
+      delete slackMsg.user.securityAnswer;
+      slack.info("Registration", JSON.stringify(slackMsg, null, 2));
 
       // gets here on success
       res.status(200);
