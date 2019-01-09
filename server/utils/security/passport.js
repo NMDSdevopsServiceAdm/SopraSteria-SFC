@@ -1,10 +1,12 @@
+const Authorization = require('../utils/security/isAuthenticated');
+
 const JwtStrategy = require('passport-jwt').Strategy,
     ExtractJwt = require('passport-jwt').ExtractJwt;
 
 // load up the user model
 const User = require('../../models').User;
 
-Token_Secret = process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
+Token_Secret = Authorization.getTokenSecret();
 
 module.exports = function(passport) {
   const opts = {

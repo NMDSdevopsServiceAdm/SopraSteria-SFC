@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
 const AUTH_HEADER = 'authorization';
 
-Token_Secret = process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
+exports.getTokenSecret = () => {
+  return process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
+}
 
 // this util middleware will block if the given request is not authorised
 exports.isAuthorised = (req, res , next) => {

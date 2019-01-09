@@ -5,8 +5,9 @@
  var router = express.Router();
  require('../utils/security/passport')(passport);
 const Login = require('../models').login;
+const Authorization = require('../utils/security/isAuthenticated');
 
-Token_Secret = process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
+Token_Secret = Authorization.getTokenSecret();
 
 router.post('/',async function(req, res) {
    Login
