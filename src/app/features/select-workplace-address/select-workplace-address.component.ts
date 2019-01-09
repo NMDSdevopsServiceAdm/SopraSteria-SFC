@@ -87,9 +87,9 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   }
 
   updateSectionNumbers(data) {
-    data['userRoute'] = this.registration.userRoute;
+    data['userRoute'] = this.registration.userRoute || {}
     data.userRoute['currentPage'] = this.currentSection;
-    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'] = (this.registration.userRoute && this.registration.userRoute['route']) || []
     data.userRoute['route'].push('/select-workplace-address');
 
 
