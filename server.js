@@ -12,6 +12,7 @@ var locations = require('./server/routes/locations');
 var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
+var sfcreg = require('./server/routes/sfcreg');
 var tmpLogin = require('./server/routes/tmpLogin');
 var establishments = require('./server/routes/establishments');
 var jobs = require('./server/routes/jobs');

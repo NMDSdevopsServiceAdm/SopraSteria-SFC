@@ -4,6 +4,25 @@ const models = require('../../models');
 
 // parent route defines the "id" parameter
 
+
+const returnDateTime = () => {
+  return (new Date()).toISOString();
+};
+router.route('/hello').get(async (req, res) => {
+  return res.status(200).send(returnDateTime());
+});
+router.route('/hello').put(async (req, res) => {
+  return res.status(200).send(returnDateTime());
+});
+router.route('/hello').delete(async (req, res) => {
+  return res.status(200).send(returnDateTime());
+});
+router.route('/hello').post(async (req, res) => {
+  return res.status(200).send(returnDateTime());
+});
+
+
+
 // gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
