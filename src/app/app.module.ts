@@ -49,11 +49,13 @@ import { NumberPositiveOnly } from './shared/number-positive-only.directive';
 import { NoPaste } from './shared/no-paste.directive';
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
+import { StaffService } from './core/services/staff.service';
 import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
 import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { LogoutComponent } from './features/logout/logout.component';
+import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
 
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
@@ -112,6 +114,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     ContactUsComponent,
     TermsConditionsComponent,
     LogoutComponent,
+    CreateStaffRecordComponent,
   ],
   imports: [
     BrowserModule,
@@ -146,6 +149,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     },
     LocalAuthorityService,
     AuthGuard
+    StaffService,
   ],
   bootstrap: [AppComponent]
 })

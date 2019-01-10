@@ -1,0 +1,56 @@
+<div class="main-page-container col-12">
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1">Create a staff record</h1>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="form-group mb-5">
+      <div class="col-12 p-0">
+        <div>
+          <div class="row">
+            <div class="col-12"  >
+              <label>Full name or ID number
+                <input type="text" formControlName="fullNameOrId"
+                  class="form-control" [ngClass]="{'is-invalid': (form.get('fullNameOrId').touched || form.get('fullNameOrId').dirty) && !form.get('fullNameOrId').valid }" />
+              </label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12"  >
+              <label>What is their main job role
+                <select formControlName="jobRole" class="form-control">
+                  <option [value]="null">Select Main Job Role</option>
+                  <option *ngFor="let role of roles" [value]="role.key">
+                    {{role.label}}
+                  </option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <div class="multiple-choice">
+                <label>What type of contract do they have?
+                  <input *nfFor="let contract of contractsAvailable" type="radio" formControlName="typeOfContract" class="form-control"> {{contract.label}}
+                </label>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-container">
+      <button type="submit" class="btn btn-primary">Save and continue</button>
+    </div>
+  </form>
+</div>
