@@ -6,9 +6,17 @@ import {
   HttpInterceptor
 } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
+import { catchError, debounceTime } from "rxjs/operators"
+
+import { HttpErrorHandler } from "./http-error-handler.service"
 
 @Injectable()
-export class BaseHeadersInterceptor implements HttpInterceptor {
+export class GenericInterceptor implements HttpInterceptor {
+
+  constructor(
+    private httpErrorHandler: HttpErrorHandler
+  ) {}
+  
   intercept(request: HttpRequest<any>,
             next: HttpHandler): Observable<HttpEvent<any>> {
 
@@ -17,5 +25,8 @@ export class BaseHeadersInterceptor implements HttpInterceptor {
     })
 
     return next.handle(cloned)
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError))
   }
 }

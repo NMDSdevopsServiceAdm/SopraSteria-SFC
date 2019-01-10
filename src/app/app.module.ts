@@ -61,9 +61,8 @@ import { EstablishmentService } from './core/services/establishment.service';
 import { LocalAuthorityService } from './core/services/localAuthority.service';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { BaseHeadersInterceptor } from './core/services/base-headers-interceptor';
+import { GenericInterceptor } from './core/services/generic-interceptor';
 import { AuthInterceptor } from './core/services/auth-interceptor';
-import { ResponseHandlerInterceptor } from './core/services/response-handler-interceptor';
 
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
@@ -139,17 +138,12 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     EstablishmentService,
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: BaseHeadersInterceptor,
+      useClass: GenericInterceptor,
       multi: true
     },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ResponseHandlerInterceptor,
       multi: true
     },
     LocalAuthorityService
