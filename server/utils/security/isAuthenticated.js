@@ -15,14 +15,11 @@ exports.isAuthorised = (req, res , next) => {
 
     jwt.verify(token, Token_Secret, function (err, claim) {
       if (err) {
-        return res.json({
+        return res.status(401).send({
           sucess: false,
           message: 'token is invalid'
         });
-      } else {
-        req.establishmentId = claim.EstblishmentId;
-        req.Username = claim.Username;
-        req.isAdmin = claim.isAdmin;
+      } else {      
         next();
       }      
     });    
@@ -41,7 +38,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
       if (err) {
-        return res.json({
+        return res.status(401).send({
           sucess: false,
           message: 'token is invalid'
         });
