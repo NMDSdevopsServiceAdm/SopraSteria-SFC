@@ -1,13 +1,16 @@
 <div class="main-page-container col-12">
-  <header>
-    <h1 class="h1">Staff who have left in the last 12 months</h1>
-    <p class="page-input-info">This should only be for permanent or temporary staff</p>
-    <p class="page-description">What are the job roles of the staff who have left?</p>
-  </header>
 
   <form novalidate
     (ngSubmit)="submitHandler()"
     [formGroup]="form">
+
+    <header>
+      <h1 class="h1">Staff who have left in the last 12 months</h1>
+      <p class="page-input-info">This should only be for permanent or temporary staff</p>
+      <p class="page-description">What are the job roles of the staff who have left?</p>
+    </header>
+
+    <app-messages></app-messages>
 
     <div class="form-group mb-5">
       <div class="col-12 p-0">
@@ -17,7 +20,7 @@
               Job role
             </div>
             <div class="col-6 col-sm-5">
-              Number of new starters
+              Number of leavers
             </div>
           </div>
 
@@ -41,7 +44,7 @@
           </div>
           <div class="row summary-and-controls mb-5 record">
             <div class="col-6 col-sm-7 center-v">
-              <button *ngIf="this.isJobsNotTakenLeft()" type="button" class="btn-link" (click)="addRecord()">+ Add another new starter</button>
+              <button *ngIf="this.isJobsNotTakenLeft()" type="button" class="btn-link" (click)="addRecord()">+ Add another leaver</button>
             </div>
             <div class="col-5 summary">
               <span>Total: {{total}}</span>
@@ -66,5 +69,4 @@
       <button type="submit" class="btn btn-primary">Save and continue</button>
     </div>
   </form>
-  <app-messages></app-messages>
 </div>

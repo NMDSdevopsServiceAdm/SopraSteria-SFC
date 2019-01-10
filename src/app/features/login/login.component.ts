@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
 //import { LoginUser } from './login-user';
 
+import { MessageService } from "../../core/services/message.service"
 import { AuthService } from '../../core/services/auth-service';
 import { EstablishmentService } from "../../core/services/establishment.service"
 
@@ -15,7 +16,7 @@ import { LoginApiModel } from '../../core/model/loginApi.model';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   //loginUser = new LoginUser();
 
@@ -25,6 +26,7 @@ export class LoginComponent implements OnInit {
   usernameValue: string;
   userPasswordValue: string;
 
+  private subscriptions = []
 
   // Set up Validation messages
   usernameMessage: string;
@@ -33,6 +35,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private _loginService: AuthService,
     private establishmentService: EstablishmentService,
+    private messageService: MessageService,
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder) {}
@@ -53,7 +56,15 @@ export class LoginComponent implements OnInit {
       password: ['', [Validators.required, Validators.maxLength(120)]]
     });
 
-    this._loginService.auth$.subscribe(login => this.login = login);
+    this.subscriptions.push(
+      this.loginForm.valueChanges.subscribe(value => {
+        if (this.loginForm.valid) {
+          this.messageService.clearError()
+        }})
+    )
+
+    this.subscriptions.push(
+      this._loginService.auth$.subscribe(login => this.login = login))
   }
 
   onSubmit() {
@@ -61,19 +72,20 @@ export class LoginComponent implements OnInit {
     this.userPasswordValue = this.getPasswordInput.value;
 
     if (this.loginForm.invalid) {
-      return;
+      this.messageService.clearError()
+      this.messageService.show("error", "Please fill the required fields.")
     }
     else {
       this.save();
     }
-
   }
 
   save() {
-
     this.login.username = this.usernameValue;
     this.login.password = this.userPasswordValue;
+    this.messageService.clearError()
 
+    this.subscriptions.push(
     this._loginService.postLogin(this.login)
       .subscribe(
         (response) => {
@@ -97,14 +109,17 @@ export class LoginComponent implements OnInit {
           //this.establishmentService.establishmentToken = response.establishment.id;
         },
         (err) => {
-          // TODO - better handling and display of errors
-          console.log(err);
+          const message = err.friendlyMessage || "Invalid username or password."
+          this.messageService.show("error", message)
         },
         () => {
           this.router.navigate(['/welcome']);
         }
-      );
-
+      ))
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe())
+    this.messageService.clearAll()
+  }
 }
