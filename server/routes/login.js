@@ -36,7 +36,7 @@ router.post('/',async function(req, res) {
       .then((login) => {
         if (!login) {
           return res.status(401).send({
-            message: 'Authentication failed. User not found.',
+            message: 'Authentication failed.',
           });
         }
    login.comparePassword(req.body.password, (err, isMatch) => {
@@ -44,11 +44,10 @@ router.post('/',async function(req, res) {
 
         var claims = {
           EstblishmentId: login.user.establishmentId,
-          Username: req.body.username,
           isAdmin: login.user.isAdmin,
           sub: req.body.username,
           aud: "ADS-WDS",
-          iss: "https://asc-wds.skillsforcare.org.uk/"
+          iss: process.env.TOKEN_ISS ? process.env.TOKEN_ISS : "http://localhost:3000"
         }
 
         var date = new Date().getTime();
@@ -78,7 +77,7 @@ router.post('/',async function(req, res) {
           res.status(200);
           return res.json(response);
           } else {
-            res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
+            res.status(401).send({success: false, msg: 'Authentication failed.'});
           }
         })
       })
