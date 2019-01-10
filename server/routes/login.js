@@ -39,24 +39,29 @@ router.post('/',async function(req, res) {
             message: 'Authentication failed. User not found.',
           });
         }
-    login.comparePassword(req.body.password, (err, isMatch) => {
+   login.comparePassword(req.body.password, (err, isMatch) => {
       if (isMatch && !err) {
 
         var claims = {
           EstblishmentId: login.user.establishmentId,
           Username: req.body.username,
-          isAdmin: login.user.isAdmin
+          isAdmin: login.user.isAdmin,
+          sub: req.body.username,
+          aud: "ADS-WDS",
+          iss: "https://asc-wds.skillsforcare.org.uk/"
         }
-        console.log(claims);
 
-        var token = jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: 43200 * 1});        
+        var date = new Date().getTime();
+        date += (12 * 60 * 60 * 1000);        
 
- 
+        var token = jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: "12h"});        
+   
             const response = formatSuccessulLoginResponse(
               login.user.fullname,
               login.firstLogin,
               login.user.establishment,
-              login.user.establishment.mainService
+              login.user.establishment.mainService,
+              new Date(date).toISOString()
             );
 
             // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
@@ -65,16 +70,13 @@ router.post('/',async function(req, res) {
                 firstLogin: new Date()
               });
             }
-
           token = 'Bearer ' + token;
-
           const headers = {
             'Authorization': token
           };
           res.set(headers);
-
-          
-          res.json({success: true, token: token});
+          res.status(200);
+          return res.json(response);
           } else {
             res.status(401).send({success: false, msg: 'Authentication failed. Wrong password.'});
           }
@@ -84,7 +86,7 @@ router.post('/',async function(req, res) {
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, firstLoginDate, establishment, mainService) => {
+const formatSuccessulLoginResponse = (fullname, firstLoginDate, establishment, mainService, expiryDate) => {
   // note - the mainService can be null
   return {
     fullname,
@@ -97,7 +99,8 @@ const formatSuccessulLoginResponse = (fullname, firstLoginDate, establishment, m
     mainService: {
       id: mainService ? mainService.id : null,
       name: mainService ? mainService.name : null
-    }
+    },
+    expiryDate: expiryDate
   };
 };
 module.exports = router;
