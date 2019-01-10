@@ -12,6 +12,7 @@ import { FeedbackModel } from '../model/feedback.model';
 export class FeedbackService {
   constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {}
 
+  // TODO Why we just can't use window object directly? (it's available in entire JS)
   // returns browser's native 'window' object
   get _window() : any {
     return window;
@@ -25,15 +26,6 @@ export class FeedbackService {
    * POST /api/feedback
    */
   post(feedback: FeedbackModel) {
-    const options = {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }
-
-    return this.http.post<any>("/api/feedback", feedback, options)
-      .pipe(
-        debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError))
+    return this.http.post<any>("/api/feedback", feedback)
   }
 }

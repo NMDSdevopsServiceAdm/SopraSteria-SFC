@@ -16,16 +16,7 @@ export class JobService {
    * GET /api/jobs
    */
   getJobs() {
-    const options = {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }
-
-    return this.http.get<any>("/api/jobs", options)
-      .pipe(
-        debounceTime(500),
-        map(res => res.jobs),
-        catchError(this.httpErrorHandler.handleHttpError))
+    return this.http.get<any>("/api/jobs")
+      .pipe(map(res => res.jobs))
   }
 }
