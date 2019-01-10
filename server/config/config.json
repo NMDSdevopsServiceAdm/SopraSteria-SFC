@@ -10,7 +10,7 @@
   "test": {
     "username": "sfcadmin",
     "password": "sfcadmin123",
-    "database": "sfcdevdb",
+    "database": "sfctstdb",
     "host": "35.178.185.248",
     "port": 5432,
     "dialect": "postgres"
