@@ -29,8 +29,6 @@ router.use('/:id/jobs', Jobs);
 router.use('/:id/localAuthorities', LA);
 router.use('/:id/worker', Worker);
 
-const AUTH_HEADER = 'authorization';
-
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
   const establishmentId = req.establishmentId;
