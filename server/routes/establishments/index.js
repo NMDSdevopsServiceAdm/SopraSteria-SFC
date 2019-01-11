@@ -26,7 +26,7 @@ router.use('/:id/share', ShareData);
 router.use('/:id/staff', Staff);
 router.use('/:id/jobs', Jobs);
 router.use('/:id/localAuthorities', LA);
-const AUTH_HEADER = 'authorization';
+
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
   const establishmentId = req.establishmentId;

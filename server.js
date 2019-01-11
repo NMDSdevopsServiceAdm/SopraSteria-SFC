@@ -12,7 +12,6 @@ var locations = require('./server/routes/locations');
 var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
-var tmpLogin = require('./server/routes/tmpLogin');
 var establishments = require('./server/routes/establishments');
 var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
