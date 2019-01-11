@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -104,11 +104,8 @@ export class AuthService {
 
   postLogin(id: any) {
     const $value = id;
-    const options = { headers: { 'Content-type': 'application/json',  observe: "response" as 'body', responseType: "json" } };
-    return this.http.post<any>('/api/login/', $value, options)
-      .pipe(
-        catchError(err => this.handleHttpError(err))
-      );
+    const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
+    return this.http.post<any>('/api/login/', $value, { headers: requestHeaders, observe: 'response' });
   }
 
   private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {

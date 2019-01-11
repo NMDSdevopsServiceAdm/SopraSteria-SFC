@@ -77,28 +77,18 @@ export class LoginComponent implements OnInit {
     this._loginService.postLogin(this.login)
       .subscribe(
         (response) => {
-          // TODO: despite passing the 'observe' option
-          //       in the auth-service postLogin, the callback
-          //       here is still the JSON data and not the full
-          //       response. Hence, cannot get at the
-          //       headers.
-          // const data = response.body;
-
-          this._loginService.updateState(response);
+          this._loginService.updateState(response.body);
 
           // // update the establishment service state with the given establishment oid
-          this.establishmentService.establishmentId = response.establishment.id;
+          this.establishmentService.establishmentId = response.body.establishment.id;
 
           // store the authorization token
-          // TODO: add expiry of token const expiresAt = moment().add(response.expiresIn,'second');
-          localStorage.setItem("auth-token", response.establishment.id)
-          
-          //this.establishmentService.establishmentToken = response.headers.get('authorization');
-          //this.establishmentService.establishmentToken = response.establishment.id;
+          localStorage.setItem("auth-token", response.headers.get('authorization'))
+          localStorage.setItem("auth-token-expiry", response.body.expiryDate)
         },
         (err) => {
           // TODO - better handling and display of errors
-          console.log(err);
+          console.log(err.error);
         },
         () => {
           this.router.navigate(['/welcome']);
