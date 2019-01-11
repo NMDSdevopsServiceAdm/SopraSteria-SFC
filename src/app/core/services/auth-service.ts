@@ -6,9 +6,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
+import { HttpErrorHandler } from "./http-error-handler.service"
 import { LoginApiModel } from '../model/loginApi.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
+// TODO do we still need it?
 const initialRegistration: LoginApiModel = {
   // Example initial dummy data
   username: 'Uname3',
@@ -49,11 +51,11 @@ export class AuthService {
 
 
   constructor(private http: HttpClient,
-              
+              private httpErrorHandler: HttpErrorHandler,
               private router: Router) { }
 
   // returns true if logged in; otherwise false
-  public get isLoggedIn(): boolean {  
+  public get isLoggedIn(): boolean {
     return this._session ? true : false;
   }
 
@@ -104,8 +106,16 @@ export class AuthService {
 
   postLogin(id: any) {
     const $value = id;
+<<<<<<< HEAD
     const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
     return this.http.post<any>('/api/login/', $value, { headers: requestHeaders, observe: 'response' });
+=======
+    const options = { headers: { 'Content-type': 'application/json',  observe: "response" as 'body', responseType: "json" } };
+    return this.http.post<any>('/api/login/', $value, options)
+      .pipe(
+        catchError(this.httpErrorHandler.handleHttpError)
+      );
+>>>>>>> a0d1253fe67b06ed748275c3bec97270b3a1c9fa
   }
 
   private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
@@ -131,11 +141,3 @@ export class AuthService {
 
 
 }
-
-
-
-
-
-
-
-
