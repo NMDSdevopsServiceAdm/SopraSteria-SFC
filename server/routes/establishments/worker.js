@@ -68,10 +68,14 @@ router.route('/').post(async (req, res) => {
     newWorker.logLevel = Workers.Worker.LOG_INFO;
 
     const expectedInput = await validatePost(req);
-    console.log("WA DEBUG: post input: ", expectedInput)
 
     if (!expectedInput) {
         return res.status(400).send('Unexpected Input; missing mandatory nameOrId, contractType or mainJob, or mainJob is not a valid job.');
+    }
+
+    const validatedEstablishment = await Workers.Worker.validateEstablishment(establishmentId);
+    if (!validatedEstablishment) {
+        return res.status(404).send('Establishment unknown.');
     }
 
     try {

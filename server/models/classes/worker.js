@@ -90,9 +90,6 @@ class Worker {
 
         if (mustSave && this._isNew) {
             // create new Worker
-console.log("WA DEBUG: contract: ", this.contract)
-console.log("WA DEBUG: main job: ", this.mainJob)
-
             try {
                 let creation = await models.worker.create({
                     establishmentFk: this._establishmentId,
@@ -191,6 +188,8 @@ console.log("WA DEBUG: main job: ", this.mainJob)
 
 
     // HELPERS
+    // returns false if job definition is not valid, otherwise returns
+    //  a well formed job definition using data as given in jobs reference lookup
     static async validateJob(jobDef) {
         // get reference set of jobs to validate against
         if (!jobDef) return false;
@@ -203,31 +202,60 @@ console.log("WA DEBUG: main job: ", this.mainJob)
         
         // jobid overrides title, because jobId is indexed whereas title is not!
         let referenceJob = null;
-        if (jobDef.jobId) {
-            referenceJob = await models.job.findOne({
-                where: {
-                    id: jobDef.jobId
-                },
-                attributes: ['id', 'title'],
-            });
-        } else {
-            referenceJob = await models.job.findOne({
-                where: {
-                    title: jobDef.title
-                },
-                attributes: ['id', 'title'],
-            });
-        }
-
-        if (referenceJob && referenceJob.id) {
-            // found a job match
-            return {
-                jobId: referenceJob.id,
-                title: referenceJob.title
-            };
+        try {
+            if (jobDef.jobId) {
+                referenceJob = await models.job.findOne({
+                    where: {
+                        id: jobDef.jobId
+                    },
+                    attributes: ['id', 'title'],
+                });
+            } else {
+                referenceJob = await models.job.findOne({
+                    where: {
+                        title: jobDef.title
+                    },
+                    attributes: ['id', 'title'],
+                });
+            }
+            if (referenceJob && referenceJob.id) {
+                // found a job match
+                return {
+                    jobId: referenceJob.id,
+                    title: referenceJob.title
+                };
+            }
+    
+        } catch (err) {
+            console.err(err);
         }
 
         // failed to find reference job
+        return false;
+    }
+
+    // returns false if establishment is not valid, otherwise returns
+    //  the establishment id
+    static async validateEstablishment(establishmentId) {
+        if (!establishmentId) return false;
+
+        if (!Number.isInteger(establishmentId)) return false;
+
+        if (establishmentId <= 0) return false;
+
+        let referenceEstablishment;
+        try {
+            referenceEstablishment = await models.establishment.findOne({
+                where: {
+                    id: establishmentId
+                },
+                attributes: ['id'],
+            });
+            if (referenceEstablishment && referenceEstablishment.id && referenceEstablishment.id === establishmentId) return true;
+    
+        } catch (err) {
+            console.error(err);
+        }
         return false;
     }
 
