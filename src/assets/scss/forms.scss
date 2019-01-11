@@ -27,6 +27,15 @@ form,
     color: $error-red;
   }
 
+  .form-group {
+    margin-top: 3rem;
+    margin-bottom: 5rem;
+  }
+
+  .field-group {
+    margin-bottom: 3rem !important;
+  }
+
   .form-group,
   .field-group {
 
@@ -112,7 +121,6 @@ form,
 
 @media (min-width: 641px) {
   .multiple-choice {
-    float: left;
   }
 }
 
@@ -128,6 +136,13 @@ form,
   zoom: 1;
   filter: alpha(opacity=0);
   opacity: 0;
+}
+
+label {
+  select,
+  input {
+    margin-top: 10px;
+  }
 }
 
 .multiple-choice label {

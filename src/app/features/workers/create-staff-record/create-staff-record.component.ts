@@ -1,27 +1,35 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
+import { Router } from "@angular/router"
 
 import { MessageService } from "../../../core/services/message.service"
-import { StaffService } from "../../../core/services/staff.service"
+import { WorkerService } from "../../../core/services/worker.service"
 
 @Component({
   selector: 'app-create-staff-record',
-  templateUrl: './create-staff-record.component.html',
-  styleUrls: ['./create-staff-record.component.scss']
+  templateUrl: './create-staff-record.component.html'
 })
 export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   constructor(
-    private staffService: StaffService,
+    private workerService: WorkerService,
     private messageService: MessageService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private router: Router
   ) {}
 
   form: FormGroup
 
   private subscriptions = []
 
-  private contractsAvailable = [
+  rolesAvailable = [
+    {
+      key: "role1",
+      label: "role1"
+    }
+  ]
+
+  contractsAvailable = [
     {
       key: "permanent",
       label: "Permanent"
@@ -45,10 +53,16 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   ]
 
   submitHandler() {
+    if (this.form.valid) {
+    this.subscriptions.push(
+      this.workerService.createWorker(this.form.value).subscribe(() => {
+        this.router.navigate(["/mental-health"])
+      }))
 
-    // this.subscriptions.push(
-      // this.staffService.createWorker()
-    // )
+    } else {
+        this.messageService.clearError()
+        this.messageService.show("error", "Please fill the required fields.")
+    }
   }
 
   ngOnInit() {

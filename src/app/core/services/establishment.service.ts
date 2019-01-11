@@ -1,8 +1,7 @@
 import { Injectable, isDevMode } from "@angular/core"
-import { HttpClient, HttpHeaders } from "@angular/common/http"
+import { HttpClient } from "@angular/common/http"
 import { BehaviorSubject } from "rxjs"
-import { catchError, debounceTime, map } from "rxjs/operators"
-import { FormBuilder, FormGroup } from "@angular/forms"
+import { map } from "rxjs/operators"
 
 import { HttpErrorHandler } from "./http-error-handler.service"
 
@@ -41,12 +40,7 @@ interface EmployerTypeResponse {
 })
 export class EstablishmentService {
 
-  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {
-    this._headers = new HttpHeaders();
-    this._headers.set("Content-Type", "application/json")
-  }
-
-  private _headers = null;
+  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {}
 
   private _establishmentId: number = null
 

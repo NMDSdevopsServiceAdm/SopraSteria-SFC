@@ -50,6 +50,7 @@ import { NoPaste } from './shared/no-paste.directive';
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
 import { StaffService } from './core/services/staff.service';
+import { WorkerService } from './core/services/worker.service';
 import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
 import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
@@ -69,6 +70,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/services/auth-interceptor';
 
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
+import { SubmitButtonComponent } from './shared/submit-button/submit-button.component';
 
 @NgModule({
   declarations: [
@@ -115,6 +117,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     TermsConditionsComponent,
     LogoutComponent,
     CreateStaffRecordComponent,
+    SubmitButtonComponent,
   ],
   imports: [
     BrowserModule,
@@ -150,6 +153,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     LocalAuthorityService,
     AuthGuard
     StaffService,
+    WorkerService
   ],
   bootstrap: [AppComponent]
 })

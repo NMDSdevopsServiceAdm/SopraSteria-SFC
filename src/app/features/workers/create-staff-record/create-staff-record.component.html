@@ -10,47 +10,34 @@
 
     <app-messages></app-messages>
 
-    <div class="form-group mb-5">
-      <div class="col-12 p-0">
-        <div>
-          <div class="row">
-            <div class="col-12"  >
-              <label>Full name or ID number
-                <input type="text" formControlName="fullNameOrId"
-                  class="form-control" [ngClass]="{'is-invalid': (form.get('fullNameOrId').touched || form.get('fullNameOrId').dirty) && !form.get('fullNameOrId').valid }" />
-              </label>
-            </div>
-          </div>
+    <div class="form-group">
+      <div class="field-group mb-5">
+        <label class="col-8">Full name or ID number
+          <input type="text" formControlName="fullNameOrId"
+            class="form-control col-12" [ngClass]="{'is-invalid': (form.get('fullNameOrId').touched || form.get('fullNameOrId').dirty) && !form.get('fullNameOrId').valid}" />
+        </label>
+      </div>
 
-          <div class="row">
-            <div class="col-12"  >
-              <label>What is their main job role
-                <select formControlName="jobRole" class="form-control">
-                  <option [value]="null">Select Main Job Role</option>
-                  <option *ngFor="let role of roles" [value]="role.key">
-                    {{role.label}}
-                  </option>
-                </select>
-              </label>
-            </div>
-          </div>
+      <div class="field-group mb-5">
+        <label>What is their main job role
+          <select formControlName="jobRole" class="form-control">
+            <option [value]="null">Select Main Job Role</option>
+            <option *ngFor="let role of rolesAvailable" [value]="role.key">
+              {{role.label}}
+            </option>
+          </select>
+        </label>
+      </div>
 
-          <div class="row">
-            <div class="col-12">
-              <div class="multiple-choice">
-                <label>What type of contract do they have?
-                  <input *nfFor="let contract of contractsAvailable" type="radio" formControlName="typeOfContract" class="form-control"> {{contract.label}}
-                </label>
-              </div>
-            </div>
-          </div>
-
+      <div class="field-group mb-5">
+        <label class="d-block">What type of contract do they have?</label>
+        <div *ngFor="let contract of contractsAvailable; let idx = index" class="multiple-choice">
+          <input type="radio" formControlName="typeOfContract" class="form-control" [value]="contract.key">
+          <label for="contract-type-{{idx}}">{{contract.label}}</label>
         </div>
       </div>
     </div>
 
-    <div class="btn-container">
-      <button type="submit" class="btn btn-primary">Save and continue</button>
-    </div>
+    <app-submit-button></app-submit-button>
   </form>
 </div>

@@ -120,11 +120,14 @@ strong {
 
 .main-page-container {
   header {
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
 
     h1 {
       padding: 0;
-      margin-bottom: 3rem;
+
+      ~ * {
+        margin-top: 3rem;
+      }
     }
   }
 }
