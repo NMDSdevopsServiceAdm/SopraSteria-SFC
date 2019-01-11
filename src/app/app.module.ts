@@ -49,7 +49,6 @@ import { NumberPositiveOnly } from './shared/number-positive-only.directive';
 import { NoPaste } from './shared/no-paste.directive';
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
-import { StaffService } from './core/services/staff.service';
 import { WorkerService } from './core/services/worker.service';
 import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
@@ -152,8 +151,7 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     },
     LocalAuthorityService,
     AuthGuard
-    StaffService,
-    WorkerService
+    WorkerService,
   ],
   bootstrap: [AppComponent]
 })
