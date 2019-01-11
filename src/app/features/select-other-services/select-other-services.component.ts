@@ -138,13 +138,12 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
         })
       )
     } catch (e) {
-      // keep the JS transpiler silent lack of rejected path
+      // keep the JS transpiler silent about lack of rejected path
     }
   }
 
   save() {
     return new Promise((resolve, reject) => {
-    if (this.postOtherServicesdata.length > 0) {
     this.subscriptions.push(
     this._eSService.postOtherServices(this.postOtherServicesdata)
       .subscribe(
@@ -155,14 +154,9 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
           console.log(err);
           reject(err)
         },
-        () => {
-          this.router.navigate(['/capacity-of-services'])
-        }
+        resolve
       )
     )
-    } else {
-      resolve()
-    }
     })
   }
 
