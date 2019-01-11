@@ -44,6 +44,19 @@ const validatePost = async (req) => {
     }
 };
 
+// middleware to validate the establishment on all worker endpoints
+const validateEstablishment = async (req, res, next) => {
+    const establishmentId = req.establishmentId;
+    const validatedEstablishment = await Workers.Worker.validateEstablishment(establishmentId);
+    if (!validatedEstablishment) {
+        return res.status(404).send('Establishment unknown.');
+    } else {
+        next();
+    }
+};
+
+router.use('/', validateEstablishment);
+
 // gets requested worker id
 router.route('/:workerId').get(async (req, res) => {
     const workerId = req.params.workerId;
@@ -71,11 +84,6 @@ router.route('/').post(async (req, res) => {
 
     if (!expectedInput) {
         return res.status(400).send('Unexpected Input; missing mandatory nameOrId, contractType or mainJob, or mainJob is not a valid job.');
-    }
-
-    const validatedEstablishment = await Workers.Worker.validateEstablishment(establishmentId);
-    if (!validatedEstablishment) {
-        return res.status(404).send('Establishment unknown.');
     }
 
     try {
