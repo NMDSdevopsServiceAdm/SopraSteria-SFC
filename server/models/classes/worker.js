@@ -22,13 +22,13 @@ class Worker {
         this._uid = null;
         this._contract = null;
         this._nameId = null;
-        this._job = null;
+        this._mainJob = null;
 
         // change properties
         this._isNew = false;
         this._chgNameId = false;
         this._chgContract = false;
-        this._chgJob = false;
+        this._chgMainJob = false;
         
         // default logging level - errors only
         this._logLevel = Worker.LOG_ERROR;
@@ -90,21 +90,25 @@ class Worker {
 
         if (mustSave && this._isNew) {
             // create new Worker
+console.log("WA DEBUG: contract: ", this.contract)
+console.log("WA DEBUG: main job: ", this.mainJob)
+
             try {
                 let creation = await models.worker.create({
                     establishmentFk: this._establishmentId,
                     uid: this.uid,
+                    nameId: this.nameId,
+                    contract: this.contract,
+                    mainJobFk: this.mainJob.jobId,
                     attributes: ['id'],
                 });
 
                 const sanitisedResults = creation.get({plain: true});
 
-                console.log("WA DEBUG: creation results: ", sanitisedResults)
-                console.log("WA DEBUG: creation result fields: ", sanitisedResults.ID, creation.updated)
-    
                 this._id = sanitisedResults.ID;
                 this._isNew = false;
                 this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);    
+                
             } catch (err) {
                 throw new WorkerExceptions.WorkerSaveException(null,
                                                                this.uid,
@@ -168,19 +172,63 @@ class Worker {
         this._chgNameId = true;
         return this.nameId;
     }
-    get job() {
-        return this._job;
+    get mainJob() {
+        return this._mainJob;
     }
-    set job(job) {
-        this._job = job;
-        return this.job;
+    set mainJob(job) {
+        this._mainJob = job;
+        this._chgMainJob = true;
+        return this.mainJob;
     }
     get contract() {
         return this._contract;
     }
     set contract(contract) {
         this._contract = contract;
+        this._chgContract = true;
         return this.contract;
+    }
+
+
+    // HELPERS
+    static async validateJob(jobDef) {
+        // get reference set of jobs to validate against
+        if (!jobDef) return false;
+        
+        // must exist a jobId or title
+        if (!(jobDef.jobId || jobDef.title)) return false;
+
+        // if jobId is given, it must be an integer
+        if (jobDef.jobId && !(Number.isInteger(jobDef.jobId))) return false;
+        
+        // jobid overrides title, because jobId is indexed whereas title is not!
+        let referenceJob = null;
+        if (jobDef.jobId) {
+            referenceJob = await models.job.findOne({
+                where: {
+                    id: jobDef.jobId
+                },
+                attributes: ['id', 'title'],
+            });
+        } else {
+            referenceJob = await models.job.findOne({
+                where: {
+                    title: jobDef.title
+                },
+                attributes: ['id', 'title'],
+            });
+        }
+
+        if (referenceJob && referenceJob.id) {
+            // found a job match
+            return {
+                jobId: referenceJob.id,
+                title: referenceJob.title
+            };
+        }
+
+        // failed to find reference job
+        return false;
     }
 
 };

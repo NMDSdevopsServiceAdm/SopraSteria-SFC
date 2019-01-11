@@ -7,6 +7,10 @@
             "type" : "integer",
             "minimum" : 0
         },
+        "uid" : {
+            "type" : "string",
+            "pattern": "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$"
+        },
         "Username" : {
             "type" : "string",
             "minLength": 3,
@@ -150,7 +154,7 @@
                 }
             }
         },
-        "job" : {
+        "Job" : {
             "description": "An individual job total",
             "type" : "object",
             "properties": {
@@ -171,20 +175,20 @@
             },
             "required" : ["jobId"]
         },
-        "jobs" : {
+        "Jobs" : {
             "description": "The collective definition of number of vacancies, starters and leavers atytributed to a given establishment. Each is optional, but if given, overwrites all existing jobs of that type",
             "type" : "object",
             "properties" : {
                 "Vacancies": {
                     "type" : "array",
                     "items" : [{
-                        "$ref" : "#/definitions/job"
+                        "$ref" : "#/definitions/Job"
                     }]
                 },
                 "starters": {
                     "type" : "array",
                     "items" : [{
-                        "$ref" : "#/definitions/job"
+                        "$ref" : "#/definitions/Job"
                     }]
                 },
                 "leavers": {
@@ -269,6 +273,39 @@
             },
             "required" : ["enabled"]
         },
+        "Worker" : {
+            "description" : "A Worker belongs to a single Establishment",
+            "properties" : {
+                "uid" : {
+                    "description" : "A unique identifier for a Worker",
+                    "$ref" : "#/definitions/uid"
+                },
+                "nameOrId" : {
+                    "description" : "The name or id (staff number) of the worker - unique to the Establishment",
+                    "type"  : "string",
+                    "maxLength": 50
+                },
+                "contractType" : {
+                    "description": "The employment contract associated to this worker",
+                    "type" : "string",
+                    "enum" : ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]
+                },
+                "mainJob" : {
+                    "description": "The main job/activity associated with this worker; can have other job roles too - see 'otherJobs' below",
+                    "$ref" : "#/defintions/Job",
+                    "required" : ["jobId", "title"]
+                },
+                "createdAt" : {
+                    "description" : "When the worker record was created",
+                    "type" : "date-time"
+                },
+                "updatedAt" : {
+                    "description": "When the worker record was last updated",
+                    "type" : "date-time"
+                }
+            },
+            "required" : ["uid", "nameOrId", "contractType", "mainJob"]
+        },
         "Establishment" : {
             "description" : "A physical location offering care services; can be commercial or private location",
             "type" : "object",
@@ -328,7 +365,15 @@
                     "type" : "integer",
                     "minimum": 0,
                     "maximum": 999
-                }            },
+                },
+                "workers" : {
+                    "description": "An Establishment has zero or more Workers",
+                    "type" : "array",
+                    "items" : [
+                        { "$ref" : "#/definitions/Worker" }
+                    ]
+                }
+            },
             "required" : ["id", "name"]
         }
     },

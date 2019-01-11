@@ -10,6 +10,40 @@ const Workers = require('../../models/classes/worker');
 
 // parent route defines the "id" parameter
 
+// returns false on validation error, or an object with expected attributes on success
+const validatePost = async (req) => {
+    const expectedContractTypeValues = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'];
+
+    // TODO: JSON schema validation
+
+    // mandatory fields when creating a worker:
+    //  1. name/ID
+    //  2. contract type
+    //  3. main job title
+    const givenNameId = req.body.nameOrId;
+    const givenContract = req.body.contract;
+    const givenMainJob = req.body.mainJob;
+
+    // ensure the given job is one of the known jobs, which includes
+    //  extracting title for a given ID or ID for a given title
+    const validatedJob = await Workers.Worker.validateJob(givenMainJob);
+
+    if ((givenNameId && givenNameId.length <= 50) &&
+        (givenContract && expectedContractTypeValues.includes(givenContract)) &&
+        (validatedJob)) {
+        return {
+            nameOrId: givenNameId,
+            contract: givenContract,
+            mainJob: {
+                jobId: validatedJob.jobId,
+                title: validatedJob.title
+            }
+        };
+    } else {
+        return false;
+    }
+};
+
 // gets requested worker id
 router.route('/:workerId').get(async (req, res) => {
     const workerId = req.params.workerId;
@@ -30,10 +64,21 @@ router.route('/').post(async (req, res) => {
     const establishmentId = req.establishmentId;
     const newWorker = new Workers.Worker(establishmentId);
 
+    // TODO: INFO logging on Worker; change to LOG_ERROR only
+    newWorker.logLevel = Workers.Worker.LOG_INFO;
+
+    const expectedInput = await validatePost(req);
+    console.log("WA DEBUG: post input: ", expectedInput)
+
+    if (!expectedInput) {
+        return res.status(400).send('Unexpected Input; missing mandatory nameOrId, contractType or mainJob, or mainJob is not a valid job.');
+    }
+
     try {
-        // for the time being, creates an empty worker
-        // TODO: mandate nameId, contract and main job type
-        newWorker.logLevel = Workers.Worker.LOG_INFO;
+        newWorker.nameId = expectedInput.nameOrId;
+        newWorker.contract = expectedInput.contract;
+        newWorker.mainJob = expectedInput.mainJob;
+
         await newWorker.save();
 
         return res.status(201).json({

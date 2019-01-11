@@ -20,20 +20,20 @@ module.exports = function(sequelize, DataTypes) {
     },
     nameId: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       unique: true,
       len: [0,50],
       field: '"NameOrID"'
     },
     contract: {
       type: DataTypes.ENUM,
-      allowNull: true,
+      allowNull: false,
       values: ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'],
       field: '"Contract"'
     },
     mainJobFk : {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       field: '"MainJobFK"'
     },
     created: {
