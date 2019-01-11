@@ -274,21 +274,23 @@ export class EnterWorkplaceAddressComponent implements OnInit {
 
   loadExistingValues() {
 
-    if ((this.registration.locationdata[0].hasOwnProperty('locationName')) && (this.registration.locationdata[0].locationName === '')) {
-      const postcodeValue = this.registration.locationdata[0].postalCode;
-      const address1Value = this.registration.locationdata[0].addressLine1;
-      const address2Value = this.registration.locationdata[0].addressLine2;
-      const townCityValue = this.registration.locationdata[0].townCity;
-      const countyValue = this.registration.locationdata[0].county;
+    if (this.registration.hasOwnProperty('locationdata')) {
+      if ((this.registration.locationdata[0].hasOwnProperty('locationName')) && (this.registration.locationdata[0].locationName === '')) {
+        const postcodeValue = this.registration.locationdata[0].postalCode;
+        const address1Value = this.registration.locationdata[0].addressLine1;
+        const address2Value = this.registration.locationdata[0].addressLine2;
+        const townCityValue = this.registration.locationdata[0].townCity;
+        const countyValue = this.registration.locationdata[0].county;
 
-      this.enterWorkplaceAddressForm.setValue({
-        postcodeInput: postcodeValue,
-        address1Input: address1Value,
-        address2Input: address2Value,
-        townCityInput: townCityValue,
-        countyInput: countyValue,
-        wpNameInput: '',
-      });
+        this.enterWorkplaceAddressForm.setValue({
+          postcodeInput: postcodeValue,
+          address1Input: address1Value,
+          address2Input: address2Value,
+          townCityInput: townCityValue,
+          countyInput: countyValue,
+          wpNameInput: '',
+        });
+      }
     }
   }
 
@@ -353,9 +355,9 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     // data.userRoute.currentPage = this.currentSection;
     // data.userRoute.route.push('/select-workplace');
 
-    console.log(data);
-    console.log(this.registration);
-    debugger;
+    //console.log(data);
+    //console.log(this.registration);
+    //debugger;
   }
 
 }
