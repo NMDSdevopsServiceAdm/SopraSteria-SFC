@@ -99,13 +99,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           localStorage.setItem("auth-token-expiry", response.body.expiryDate)
         },
         (err) => {
-<<<<<<< HEAD
-          // TODO - better handling and display of errors
-          console.log(err.error);
-=======
-          const message = err.friendlyMessage || "Invalid username or password."
+          const message = err.error.message || "Invalid username or password."
           this.messageService.show("error", message)
->>>>>>> a0d1253fe67b06ed748275c3bec97270b3a1c9fa
         },
         () => {
           this.router.navigate(['/welcome']);

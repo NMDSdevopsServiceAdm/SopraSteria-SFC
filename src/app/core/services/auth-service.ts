@@ -106,16 +106,8 @@ export class AuthService {
 
   postLogin(id: any) {
     const $value = id;
-<<<<<<< HEAD
     const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
     return this.http.post<any>('/api/login/', $value, { headers: requestHeaders, observe: 'response' });
-=======
-    const options = { headers: { 'Content-type': 'application/json',  observe: "response" as 'body', responseType: "json" } };
-    return this.http.post<any>('/api/login/', $value, options)
-      .pipe(
-        catchError(this.httpErrorHandler.handleHttpError)
-      );
->>>>>>> a0d1253fe67b06ed748275c3bec97270b3a1c9fa
   }
 
   private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
