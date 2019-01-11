@@ -13,7 +13,7 @@ class WorkerException {
 
     // returns a safe message (undisclosed - safe to return by API)
     get safe()  {
-        if (_safeErr) {
+        if (this._safeErr) {
             return this._safeErr;
         } else {
             return 'error occurred';
@@ -68,7 +68,7 @@ class WorkerRestoreException extends WorkerException {
         } else if (!super.safe) {
             return `Failed to restore Worker with identity: ${super.identifier}.`;
         } else {
-            return super.safe();
+            return super.safe;
         }
     };
 };
@@ -80,7 +80,7 @@ class WorkerDeleteException extends WorkerException {
         if (!super._safeErr) {
             return `Failed to delete Worker with identity: ${super.identifier}.`;
         } else {
-            return super.safe();
+            return super.safe;
         }
     };
 };

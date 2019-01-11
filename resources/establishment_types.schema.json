@@ -285,7 +285,7 @@
                     "type"  : "string",
                     "maxLength": 50
                 },
-                "contractType" : {
+                "contract" : {
                     "description": "The employment contract associated to this worker",
                     "type" : "string",
                     "enum" : ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]

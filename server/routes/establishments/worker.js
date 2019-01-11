@@ -57,31 +57,62 @@ const validateEstablishment = async (req, res, next) => {
 
 router.use('/', validateEstablishment);
 
+// gets all workers
+router.route('/').get(async (req, res) => {
+    const establishmentId = req.establishmentId;
+    try {
+        const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+        return res.status(200).json({
+            workers: allTheseWorkers
+        });
+    } catch (err) {
+        console.error('worker::POST - failed', thisError.message);
+        return res.status(503).send('Failed to get workers for establishment having id: '+establishmentId);
+    }
+});
+
 // gets requested worker id
 router.route('/:workerId').get(async (req, res) => {
     const workerId = req.params.workerId;
     const establishmentId = req.establishmentId;
 
+    // validating worker id - must be a V4 UUID
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
+
+    const thisWorker = new Workers.Worker(establishmentId);
+
+    try {
+        if (await thisWorker.restore(workerId)) {
+            return res.status(200).json(thisWorker.toJSON());
+        } else {
+            // not found worker
+            return res.status(404).send('Not Found');
+        }
+
+    } catch (err) {
+        const thisError = new Workers.WorkerExceptions.WorkerRestoreException(
+            null,
+            thisWorker.uid,
+            null,
+            err,
+            null,
+            `Failed to retrieve worker with uid: ${thisWorker.uid}`);
+
+        console.error('worker::POST - failed', thisError.message);
+        return res.status(503).send(thisError.safe);
+
+    }
+
     return res.status(501).send(`Pending: fetch of specific worker with id (${workerId}) for establishment (${establishmentId})`);
-});
-
-// gets all workers
-router.route('/').get(async (req, res) => {
-    const establishmentId = req.establishmentId;
-
-    return res.status(501).send(`Pending: fetch of all workers for establishment (${establishmentId})`);
 });
 
 // creates new worker
 router.route('/').post(async (req, res) => {
     const establishmentId = req.establishmentId;
     const newWorker = new Workers.Worker(establishmentId);
-
-    // TODO: INFO logging on Worker; change to LOG_ERROR only
-    newWorker.logLevel = Workers.Worker.LOG_INFO;
-
+    
     const expectedInput = await validatePost(req);
-
     if (!expectedInput) {
         return res.status(400).send('Unexpected Input; missing mandatory nameOrId, contractType or mainJob, or mainJob is not a valid job.');
     }
@@ -98,8 +129,7 @@ router.route('/').post(async (req, res) => {
         });
 
     } catch (err) {
-        // TODO: pass the name
-        const thisError = new Workers.WorkerExceptions.WorkerSaveException(null, newWorker.uid, null, err, null);
+        const thisError = new Workers.WorkerExceptions.WorkerSaveException(newWorker.nameId, newWorker.uid, null, err, null);
 
         console.error('worker::POST - failed', thisError.message);
         return res.status(503).send(thisError.safe);

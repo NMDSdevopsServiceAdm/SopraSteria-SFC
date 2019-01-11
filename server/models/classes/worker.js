@@ -23,6 +23,8 @@ class Worker {
         this._contract = null;
         this._nameId = null;
         this._mainJob = null;
+        this._created = null;
+        this._updated = null;
 
         // change properties
         this._isNew = false;
@@ -31,7 +33,8 @@ class Worker {
         this._chgMainJob = false;
         
         // default logging level - errors only
-        this._logLevel = Worker.LOG_ERROR;
+        // TODO: INFO logging on Worker; change to LOG_ERROR only
+        this._logLevel = Worker.LOG_INFO;
     }
 
     // returns true if valid establishment id
@@ -97,12 +100,14 @@ class Worker {
                     nameId: this.nameId,
                     contract: this.contract,
                     mainJobFk: this.mainJob.jobId,
-                    attributes: ['id'],
+                    attributes: ['id', 'created', 'updated'],
                 });
 
                 const sanitisedResults = creation.get({plain: true});
 
                 this._id = sanitisedResults.ID;
+                this._created = sanitisedResults.created;
+                this._updated = sanitisedResults.updated;
                 this._isNew = false;
                 this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);    
                 
@@ -131,26 +136,116 @@ class Worker {
     };
 
     // loads the Worker (with given id) from DB, but only if it belongs to the given Establishment
-    // Can throw "WorkerRestoreException"
-    restore(uid, establishmentId) {
-        throw new Error('Not implemented');
+    // returns true on success; false if no Worker
+    // Can throw WorkerRestoreException exception.
+    async restore(workerUid) {
+        if (!workerUid) {
+            throw new WorkerExceptions.WorkerRestoreException(null,
+                null,
+                null,
+                'Worker::restore failed: Missing uid',
+                null,
+                'Unexpected Error');
+        }
+
+        try {
+            // by including the establishment id in the
+            //  fetch, we are sure to only fetch those
+            //  worker records associated to the given
+            //   establishment
+            const fetchResults = await models.worker.findOne({
+                where: {
+                    establishmentFk: this._establishmentId,
+                    uid: workerUid
+                },
+                include: [
+                    {
+                        model: models.job,
+                        as: 'mainJob',
+                        attributes: ['id', 'title']
+                    }
+                ]
+            });
+
+            if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
+                // update self - don't use setters because they modify the change state
+                this._isNew = false;
+                this._uid = workerUid;
+                this._nameId = fetchResults.nameId;
+                this._contract = fetchResults.contract;
+                this._mainJob = {
+                    jobId: fetchResults.mainJob.id,
+                    title: fetchResults.mainJob.title
+                };
+                this._created = fetchResults.created;
+                this._updated = fetchResults.updated;
+
+                return true;
+            }
+
+            return false;
+
+        } catch (err) {
+            throw new WorkerExceptions.WorkerRestoreException(null,
+                this.uid,
+                null,
+                err,
+                null);
+        }
     };
 
     // deletes this Worker from DB
     // Can throw "WorkerDeleteException"
-    delete() {
+    async delete() {
         throw new Error('Not implemented');
     };
 
     // returns a set of Workers based on given filter criteria (all if no filters defined) - restricted to the given Establishment
-    static fetch(establishmentId, filters) {
+    static async fetch(establishmentId, filters=null) {
+        const allWorkers = [];
+        const fetchResults = await models.worker.findAll({
+            where: {
+                establishmentFk: establishmentId
+            },
+            include: [
+                {
+                    model: models.job,
+                    as: 'mainJob',
+                    attributes: ['id', 'title']
+                  }
+            ],
+            attributes: ['uid', 'nameId', 'contract'],
+            order: [
+                ['updated', 'DESC']
+            ]           
+        });
 
+        if (fetchResults) {
+            fetchResults.forEach(thisWorker => {
+                allWorkers.push({
+                    uid: thisWorker.uid,
+                    nameOrId: thisWorker.nameId,
+                    contract: thisWorker.contract,
+                    mainJob: {
+                        jobId: thisWorker.mainJob.id,
+                        title: thisWorker.mainJob.title
+                    }
+                })
+            });
+        }
+
+        return allWorkers;
     };
 
     // returns a Javascript object which can be used to present as JSON
     toJSON() {
         return {
-
+            uid: this.uid,
+            nameOrId: this.nameId,
+            contract: this.contract,
+            mainJob: this.mainJob,
+            created: this.created,
+            updated: this.updated
         };
     }
 
@@ -184,6 +279,12 @@ class Worker {
         this._contract = contract;
         this._chgContract = true;
         return this.contract;
+    }
+    get created() {
+        return this._created;
+    }
+    get updated() {
+        return this._updated;
     }
 
 
