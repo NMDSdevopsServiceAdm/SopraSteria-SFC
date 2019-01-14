@@ -341,20 +341,23 @@ class Worker {
         let allExistAndValid = true;    // assume all exist until proven otherwise
 
         const nameIdProperty = this._properties.get('NameOrId');
-        const mainJobProperty = this._properties.get('MainJob');
-        const contractProperty = this._properties.get('Contract');
-
-        // console.log("WA DEBUG - Worker::hasMandatoryProperties: nameId: ", nameIdProperty, nameIdProperty.valid)
-        // console.log("WA DEBUG - Worker::hasMandatoryProperties: main job: ", mainJobProperty, mainJobProperty.valid)
-        // console.log("WA DEBUG - Worker::hasMandatoryProperties: contract: ", contractProperty, contractProperty.valid)
-
-        if ((!nameIdProperty || !nameIdProperty.valid) ||
-            (!mainJobProperty || !mainJobProperty.valid) ||
-            (!contractProperty || !contractProperty.valid)) {
+        if (!nameIdProperty || !nameIdProperty.valid) {
             allExistAndValid = false;
+            this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid name or id property');
         }
 
-        console.log("WA DEBUG - Worker::hasMandatoryProperties: allExistAndValid: ", allExistAndValid)
+        const mainJobProperty = this._properties.get('MainJob');
+        if (!mainJobProperty || !mainJobProperty.valid) {
+            allExistAndValid = false;
+            this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid main job property');
+        }
+
+        const contractProperty = this._properties.get('Contract');
+
+        if (!contractProperty || !contractProperty.valid) {
+            allExistAndValid = false;
+            this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid contract property');
+        }
 
         return allExistAndValid;
     }
