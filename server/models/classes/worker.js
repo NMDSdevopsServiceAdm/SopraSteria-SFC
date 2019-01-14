@@ -155,7 +155,7 @@ class Worker {
                 const nameId = this._properties.get('NameOrId');
                 throw new WorkerExceptions.WorkerSaveException(null,
                                                                this.uid,
-                                                               nameId,
+                                                               nameId ? nameId.property : null,
                                                                err,
                                                                null);
             }
@@ -334,6 +334,31 @@ class Worker {
         }
         return false;
     }
+
+    
+    // returns true if all mandatory properties for a Worker exist and are valid
+    get hasMandatoryProperties() {
+        let allExistAndValid = true;    // assume all exist until proven otherwise
+
+        const nameIdProperty = this._properties.get('NameOrId');
+        const mainJobProperty = this._properties.get('MainJob');
+        const contractProperty = this._properties.get('Contract');
+
+        // console.log("WA DEBUG - Worker::hasMandatoryProperties: nameId: ", nameIdProperty, nameIdProperty.valid)
+        // console.log("WA DEBUG - Worker::hasMandatoryProperties: main job: ", mainJobProperty, mainJobProperty.valid)
+        // console.log("WA DEBUG - Worker::hasMandatoryProperties: contract: ", contractProperty, contractProperty.valid)
+
+        if ((!nameIdProperty || !nameIdProperty.valid) ||
+            (!mainJobProperty || !mainJobProperty.valid) ||
+            (!contractProperty || !contractProperty.valid)) {
+            allExistAndValid = false;
+        }
+
+        console.log("WA DEBUG - Worker::hasMandatoryProperties: allExistAndValid: ", allExistAndValid)
+
+        return allExistAndValid;
+    }
+
 
 };
 

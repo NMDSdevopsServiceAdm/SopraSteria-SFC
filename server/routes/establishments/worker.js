@@ -10,40 +10,6 @@ const Workers = require('../../models/classes/worker');
 
 // parent route defines the "id" parameter
 
-// returns false on validation error, or an object with expected attributes on success
-const validatePost = async (req) => {
-    const expectedContractTypeValues = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'];
-
-    // TODO: JSON schema validation
-
-    // mandatory fields when creating a worker:
-    //  1. name/ID
-    //  2. contract type
-    //  3. main job title
-    const givenNameId = req.body.nameOrId;
-    const givenContract = req.body.contract;
-    const givenMainJob = req.body.mainJob;
-
-    // ensure the given job is one of the known jobs, which includes
-    //  extracting title for a given ID or ID for a given title
-    const validatedJob = await Workers.Worker.validateJob(givenMainJob);
-
-    if ((givenNameId && givenNameId.length <= 50) &&
-        (givenContract && expectedContractTypeValues.includes(givenContract)) &&
-        (validatedJob)) {
-        return {
-            nameOrId: givenNameId,
-            contract: givenContract,
-            mainJob: {
-                jobId: validatedJob.jobId,
-                title: validatedJob.title
-            }
-        };
-    } else {
-        return false;
-    }
-};
-
 // middleware to validate the establishment on all worker endpoints
 const validateEstablishment = async (req, res, next) => {
     const establishmentId = req.establishmentId;
@@ -103,8 +69,6 @@ router.route('/:workerId').get(async (req, res) => {
         return res.status(503).send(thisError.safe);
 
     }
-
-    return res.status(501).send(`Pending: fetch of specific worker with id (${workerId}) for establishment (${establishmentId})`);
 });
 
 // creates new worker
@@ -115,6 +79,13 @@ router.route('/').post(async (req, res) => {
     try {
         // TODO: JSON validation
         const isValidWorker = await newWorker.load(req.body);
+
+        // specific to a Worker creation, there are three mandatory properties
+        //  confirm all mandatory properties are present
+        if (!newWorker.hasMandatoryProperties) {
+            return res.status(400).send('Not all mandtaory properties have been provided');
+        }
+
         if (isValidWorker) {
             await newWorker.save();
             return res.status(201).json({
@@ -130,8 +101,6 @@ router.route('/').post(async (req, res) => {
             return res.status(503).send(err.safe);
         }
     }
-
-    return res.status(500).send(`Unexpected POST status`);
 });
 
 // updates given worker id

@@ -19,7 +19,10 @@ class PropertyManager {
     get(propertyTypeName) {
         const thisProperty = this._properties[propertyTypeName];
 
-        return thisProperty.property;
+        if (thisProperty)
+            return thisProperty;
+        else
+            return null;
     }
 
     // returns true if all properties are valid, else returns the list
@@ -65,22 +68,20 @@ class PropertyManager {
                 default:
                     // do nothing - newProperty remains null
             }
-
-            if (newProperty) {
-                this._addProperty(newProperty);
-            }
-
         });
 
         const newProperties = await Promise.all(typePromises);
 
         // having restored all known properties, add them
         newProperties.forEach(thisProperty => {
-            if (documentType === PropertyManager.SEQUELIZE_DOCUMENT) {
-                // if restoring from fact (DB), we know the property to be unchanged
-                thisProperty.reset();
+            // can return undefined from individual clone methods - ignore
+            if (thisProperty) {
+                if (documentType === PropertyManager.SEQUELIZE_DOCUMENT) {
+                    // if restoring from fact (DB), we know the property to be unchanged
+                    thisProperty.reset();
+                }
+                this._addProperty(thisProperty);
             }
-            this._addProperty(thisProperty);
         });
 
 

@@ -10,8 +10,11 @@ exports.WorkerContractProperty = class WorkerContractProperty extends PropertyPr
 
     // concrete implementations
     static async cloneFromJson(document) {
+        console.log("WA DEBUG: Cloning from JSON: document: ", document)
         if (document.contract) {
             return new WorkerContractProperty(document.contract);
+        } else {
+            return null;
         }
     }
     static async cloneFromSequelize(document) {
