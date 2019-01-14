@@ -43,9 +43,9 @@ export class VacanciesComponent implements OnInit, OnDestroy {
   goBack(event) {
     event.preventDefault()
     this.subscriptions.push(
-      this.establishmentService.getLocalAuthorities()
+      this.establishmentService.getSharingOptions()
         .subscribe(res => {
-          if (res.localAuthorities.length) {
+          if (res.share.enabled && res.with.includes("Local Authority")) {
             this.router.navigate(["/share-local-authority"])
 
           } else {

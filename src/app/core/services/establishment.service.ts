@@ -21,6 +21,7 @@ interface ShareOptionsRequest {
 };
 interface ShareOptionsResponse extends EstablishmentApiResponse {
   share: SharingOptionsModel;
+  with: Array<string>
 };
 interface ShareWithLocalAuthorityRequest {
   localAuthorities: LocalAuthorityModel[]
