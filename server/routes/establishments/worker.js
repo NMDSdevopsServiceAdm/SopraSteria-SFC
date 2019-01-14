@@ -83,7 +83,7 @@ router.route('/').post(async (req, res) => {
         // specific to a Worker creation, there are three mandatory properties
         //  confirm all mandatory properties are present
         if (!newWorker.hasMandatoryProperties) {
-            return res.status(400).send('Not all mandtaory properties have been provided');
+            return res.status(400).send('Not all mandatory properties have been provided');
         }
 
         if (isValidWorker) {
@@ -96,8 +96,10 @@ router.route('/').post(async (req, res) => {
         }
     } catch (err) {
         if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
+            console.error("Worker POST: ", err.message);
             return res.status(400).send(err.safe);
         } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
+            console.error("Worker POST: ", err.message);
             return res.status(503).send(err.safe);
         }
     }

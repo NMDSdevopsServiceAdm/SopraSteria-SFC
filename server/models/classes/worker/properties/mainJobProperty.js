@@ -16,7 +16,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends PropertyProt
         if (document.mainJob) {
             const validatedJob = await WorkerMainJobProperty._validateJob(document.mainJob);
             if (validatedJob) {
-                return new WorkerMainJobProperty(document.mainJob);
+                return new WorkerMainJobProperty(validatedJob);
             } else {
                 // we are expecting to restore a main job property, but it is invalid
                 return new WorkerMainJobProperty(null);
