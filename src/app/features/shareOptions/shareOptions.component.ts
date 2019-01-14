@@ -116,9 +116,14 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
   goBack(event) {
     event.preventDefault()
     this.subscriptions.push(
-      this.establishmentService.getAllServices()
-        .subscribe(({otherServices}) => {
-          this.router.navigate([otherServices.length ? "/capacity-of-services" : "/select-other-services"])
+      this.establishmentService.getCapacity(true)
+        .subscribe(c => {
+          if (c.allServiceCapacities.length) {
+            this.router.navigate(['/capacity-of-services'])
+
+          } else {
+            this.router.navigate(["/select-other-services"])
+          }
         })
     )
   }
