@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -33,14 +33,13 @@ interface LoggedInSession {
   mainService: LoggedInMainService;
 };
 
+// TODO this file should be renamed to auth.service
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   // Observable login source
   private _auth$: BehaviorSubject<LoginApiModel> = new BehaviorSubject<LoginApiModel>(initialRegistration);
-
-  private _loginToken: string = null;
 
   // hold the response from login
   private _session: LoggedInSession = null;
@@ -99,9 +98,21 @@ export class AuthService {
     }
   }
 
-  // sets the session token - note; this should proberly be saved to local storage - but also with an expiry.
-  public set token(authorization:string) {
-    this._token = authorization;
+  set token(token: string) {
+    this._token = token
+    localStorage.setItem("auth-token", token)
+  }
+
+  get token() {
+    if (!this._token) {
+      this._token = localStorage.getItem("auth-token")
+    }
+
+    return this._token
+  }
+
+  authorise(token) {
+    this.token = token
   }
 
   postLogin(id: any) {
@@ -127,9 +138,8 @@ export class AuthService {
     this._session = data;
   }
 
-
-
-
-
-
+  logout() {
+    this._session = null
+    this._token = null
+  }
 }

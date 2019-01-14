@@ -53,6 +53,8 @@ import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
 import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
+import { LogoutComponent } from './features/logout/logout.component';
+
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
 import { MessageService } from './core/services/message.service';
@@ -108,6 +110,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     FeedbackComponent,
     ContactUsComponent,
     TermsConditionsComponent,
+    LogoutComponent,
   ],
   imports: [
     BrowserModule,

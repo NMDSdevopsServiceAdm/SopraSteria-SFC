@@ -94,9 +94,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           // // update the establishment service state with the given establishment oid
           this.establishmentService.establishmentId = response.body.establishment.id;
 
-          // store the authorization token
-          localStorage.setItem("auth-token", response.headers.get('authorization'))
-          localStorage.setItem("auth-token-expiry", response.body.expiryDate)
+          const token = response.headers.get('authorization')
+          this._loginService.authorise(token)
         },
         (err) => {
           const message = err.error.message || "Invalid username or password."

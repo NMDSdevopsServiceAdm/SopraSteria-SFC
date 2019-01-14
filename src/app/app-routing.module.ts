@@ -30,6 +30,7 @@ import { ShareOptionsComponent } from './features/shareOptions/shareOptions.comp
 import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
 import { ContactUsComponent } from "./features/contactUs/contactUs.component";
+import { LogoutComponent } from './features/logout/logout.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -37,6 +38,10 @@ const routes: Routes = [
   {
     path: 'registered-question',
     component: CqcRegisteredQuestionComponent,
+  },
+  {
+    path: 'sign-out',
+    component: LogoutComponent
   },
   {
     path: 'select-workplace',
