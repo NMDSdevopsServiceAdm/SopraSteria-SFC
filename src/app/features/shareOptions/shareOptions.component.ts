@@ -70,10 +70,47 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
-      this._shareOptions.enabled = true
-      this._shareOptions.with = []
-    }
+      if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
+        this._shareOptions.enabled = true;
+        this._shareOptions.with = [];
+
+        if (this.shareWithCQCcontrol) {
+          this._shareOptions.with.push(this._withCQC);
+        }
+        if (this.shareWithLocalAuthorityControl) {
+          this._shareOptions.with.push(this._withLocalAuthority);
+        }
+
+        if (this.shareWithLocalAuthorityControl) {
+          // only navigate to share with local authorities if sharing
+          //  has been enabled with Local Authorities
+          this.subscriptions.push(
+            this.establishmentService.postSharingOptions(this._shareOptions)
+              .subscribe(() => {
+                this.router.navigate(['/share-local-authority']);
+              })
+          );
+        } else {
+          this.subscriptions.push(
+            this.establishmentService.postSharingOptions(this._shareOptions)
+              .subscribe(() => {
+                this.router.navigate(['/vacancies']);
+              })
+          );
+        }
+
+      } else {
+        // reset sharing options
+        this._shareOptions.enabled = false;
+        this._shareOptions.with = [];
+
+        this.subscriptions.push(
+          this.establishmentService.postSharingOptions(this._shareOptions)
+            .subscribe(() => {
+              this.router.navigate(['/vacancies'])
+            })
+        )
+      }
   }
 
   goBack(event) {
@@ -84,45 +121,6 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
           this.router.navigate([otherServices.length ? "/capacity-of-services" : "/select-other-services"])
         })
     )
-  }
-
-      if (this.shareWithCQCcontrol) {
-        this._shareOptions.with.push(this._withCQC)
-      }
-      if (this.shareWithLocalAuthorityControl) {
-        this._shareOptions.with.push(this._withLocalAuthority)
-      }
-
-      if (this.shareWithLocalAuthorityControl) {
-        // only navigate to share with local authorities if sharing
-        //  has been enabled with Local Authorities
-        this.subscriptions.push(
-          this.establishmentService.postSharingOptions(this._shareOptions)
-            .subscribe(() => {
-              this.router.navigate(['/share-local-authority'])
-            })
-        )
-      } else {
-        this.subscriptions.push(
-          this.establishmentService.postSharingOptions(this._shareOptions)
-            .subscribe(() => {
-              this.router.navigate(['/vacancies'])
-            })
-        );
-      }
-
-    } else {
-      // reset sharing options
-      this._shareOptions.enabled = false
-      this._shareOptions.with = []
-
-      this.subscriptions.push(
-        this.establishmentService.postSharingOptions(this._shareOptions)
-          .subscribe(() => {
-            this.router.navigate(['/vacancies'])
-          })
-      )
-    }
   }
 
   ngOnInit() {
