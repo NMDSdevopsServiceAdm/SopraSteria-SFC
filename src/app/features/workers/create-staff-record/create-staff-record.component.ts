@@ -4,6 +4,10 @@ import { Router } from "@angular/router"
 
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService } from "../../../core/services/worker.service"
+import { JobService } from "../../../core/services/job.service"
+import { Contracts } from "../../../core/constants/contracts.enum"
+import { Job } from "../../../core/model/job.model"
+
 
 @Component({
   selector: 'app-create-staff-record',
@@ -13,56 +17,42 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   constructor(
     private workerService: WorkerService,
+    private jobService: JobService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
     private router: Router
-  ) {}
+  ) {
+    this.saveHandler = this.saveHandler.bind(this)
+  }
 
   form: FormGroup
+  jobsAvailable: Job[] = []
+  contractsAvailable: Array<string> = []
 
   private subscriptions = []
 
-  rolesAvailable = [
-    {
-      key: "role1",
-      label: "role1"
+  async submitHandler() {
+    try {
+      await this.saveHandler()
+      this.router.navigate(["/mental-health"])
+
+    } catch (err) {
+      // keep typescript transpiler silent
     }
-  ]
+  }
 
-  contractsAvailable = [
-    {
-      key: "permanent",
-      label: "Permanent"
-    },
-    {
-      key: "temporary",
-      label: "Temporary"
-    },
-    {
-      key: "poolbank",
-      label: "Pool/Bank"
-    },
-    {
-      key: "agency",
-      label: "Agency"
-    },
-    {
-      key: "other",
-      label: "Other"
-    }
-  ]
+  saveHandler() {
+    return new Promise((resolve, reject) => {
+      if (this.form.valid) {
+        this.subscriptions.push(
+          this.workerService.createWorker(this.form.value).subscribe(resolve))
 
-  submitHandler() {
-    if (this.form.valid) {
-    this.subscriptions.push(
-      this.workerService.createWorker(this.form.value).subscribe(() => {
-        this.router.navigate(["/mental-health"])
-      }))
-
-    } else {
+      } else {
         this.messageService.clearError()
         this.messageService.show("error", "Please fill the required fields.")
-    }
+        reject()
+      }
+    })
   }
 
   ngOnInit() {
@@ -71,6 +61,14 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       jobRole: ["", Validators.required],
       typeOfContract: ["", Validators.required]
     })
+
+    this.contractsAvailable = Object.values(Contracts)
+
+    this.subscriptions.push(
+      this.jobService.getJobs()
+        .subscribe(jobs => {
+          this.jobsAvailable = jobs
+        }))
   }
 
   ngOnDestroy() {

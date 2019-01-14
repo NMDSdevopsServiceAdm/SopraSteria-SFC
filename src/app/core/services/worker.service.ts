@@ -16,7 +16,6 @@ export class WorkerService {
     private establishmentService: EstablishmentService
   ) {}
 
-  // TODO this probably requires amendments before using
   /*
    * GET /api/establishment/:establishmentId/worker/:workerId
    */
@@ -24,11 +23,19 @@ export class WorkerService {
     return this.http.get<Worker>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`)
   }
 
-  // TODO this probably requires amendments before using
+  /*
+   * GET /api/establishment/:establishmentId/worker
+   */
+  getAllWorkers() {
+    return this.http.get<WorkersResponse>(`/api/establishment/${this.establishmentService.establishmentId}/worker`).pipe(
+      map(w => w.workers)
+    )
+  }
+
   /*
    * POST /api/establishment/:establishmentId/worker
    */
-  createWorker(data) {
+  createWorker(data: Worker) {
     return this.http.post<any>(`/api/establishment/${this.establishmentService.establishmentId}/worker`, data)
   }
 
@@ -47,4 +54,8 @@ export class WorkerService {
   deleteWorker(workerId: string | number) {
     return this.http.delete<any>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`)
   }
+}
+
+interface WorkersResponse {
+  workers: Array<Worker>
 }
