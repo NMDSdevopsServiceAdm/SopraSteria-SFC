@@ -66,7 +66,7 @@ router.route('/').get(async (req, res) => {
             workers: allTheseWorkers
         });
     } catch (err) {
-        console.error('worker::POST - failed', thisError.message);
+        console.error('worker::GET:all - failed', thisError.message);
         return res.status(503).send('Failed to get workers for establishment having id: '+establishmentId);
     }
 });
@@ -99,7 +99,7 @@ router.route('/:workerId').get(async (req, res) => {
             null,
             `Failed to retrieve worker with uid: ${thisWorker.uid}`);
 
-        console.error('worker::POST - failed', thisError.message);
+        console.error('worker::GET/:workerId - failed', thisError.message);
         return res.status(503).send(thisError.safe);
 
     }
@@ -112,38 +112,54 @@ router.route('/').post(async (req, res) => {
     const establishmentId = req.establishmentId;
     const newWorker = new Workers.Worker(establishmentId);
     
-    const expectedInput = await validatePost(req);
-    if (!expectedInput) {
-        return res.status(400).send('Unexpected Input; missing mandatory nameOrId, contractType or mainJob, or mainJob is not a valid job.');
-    }
-
     try {
-        newWorker.nameId = expectedInput.nameOrId;
-        newWorker.contract = expectedInput.contract;
-        newWorker.mainJob = expectedInput.mainJob;
-
-        await newWorker.save();
-
-        return res.status(201).json({
-            uid: newWorker.uid
-        });
-
+        // TODO: JSON validation
+        const isValidWorker = await newWorker.load(req.body);
+        if (isValidWorker) {
+            await newWorker.save();
+            return res.status(201).json({
+                uid: newWorker.uid
+            });
+        } else {
+            return res.status(400).send('Unexpected Input.');
+        }
     } catch (err) {
-        const thisError = new Workers.WorkerExceptions.WorkerSaveException(newWorker.nameId, newWorker.uid, null, err, null);
-
-        console.error('worker::POST - failed', thisError.message);
-        return res.status(503).send(thisError.safe);
+        if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
+            return res.status(400).send(err.safe);
+        } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
+            return res.status(503).send(err.safe);
+        }
     }
-    
 
-
-    return res.status(501).send(`Pending: creation of new worker for establishment (${establishmentId})`);
+    return res.status(500).send(`Unexpected POST status`);
 });
 
 // updates given worker id
 router.route('/:workerId').put(async (req, res) => {
     const workerId = req.params.workerId;
     const establishmentId = req.establishmentId;
+
+    // The put can update any, multiple or all aspects of a worker.
+
+    // There are no mandatory properties of a PUT; all properties are optional.
+
+    // But when given, a properties must fully validate; in the main, that
+    //  is conformig to JSON schema, but each property will have it's own
+    //  specific validation; for example, when updating the main job, the
+    //  job given must be one of the known jobs.
+
+    // Rather than a set of fixed monolithic rules for parsing and
+    //  validation, each property of a Worker will parse and validate
+    //  itself, making it easy, scalable and automic to add new properties.
+
+    // This is true not just of PUT (update) operator but the GET (restore)
+    //   operator too. Any number of properties could have been provided
+    //   and stored; consequently, any number of properties need to be restored. 
+
+    // There are 20+ properties of a Worker.
+
+    // Using a Gang of Four "Prototype" pattern, whereby the Worker manages a set
+    //   of Prototypes. Each attribute is a prototype.
 
     return res.status(501).send(`Pending: update of worker with id (${workerId}) for establishment (${establishmentId})`);
 });

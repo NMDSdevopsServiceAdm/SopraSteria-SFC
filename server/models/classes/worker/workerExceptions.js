@@ -73,6 +73,21 @@ class WorkerRestoreException extends WorkerException {
     };
 };
 
+class WorkerJsonException extends WorkerException {
+    constructor(err, reason=null, safeErr=null) {
+        super(null, null, null, err, safeErr);
+        this._reason=reason;
+    };
+
+    get safe()  {
+        if (!super.safe) {
+            return `Failed to restore Worker from JSON: .`;
+        } else {
+            return super.safe;
+        }
+    };
+};
+
 class WorkerDeleteException extends WorkerException {
     constructor(id, uid, name, err, safeErr=null) { super(id, uid, name, err, safeErr); };
 
@@ -89,3 +104,4 @@ class WorkerDeleteException extends WorkerException {
 module.exports.WorkerSaveException = WorkerSaveException;
 module.exports.WorkerRestoreException = WorkerRestoreException;
 module.exports.WorkerDeleteException = WorkerDeleteException;
+module.exports.WorkerJsonException = WorkerJsonException;

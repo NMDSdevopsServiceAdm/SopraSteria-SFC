@@ -12,8 +12,12 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
-const WorkerContract = require( './worker/workerContract');
 const WorkerExceptions = require('./worker/workerExceptions');
+
+// Worker properties
+const WorkerProperties = require('./worker/workerProperties').manager;
+const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
+const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_DOCUMENT;
 
 class Worker {
     constructor(establishmentId) {
@@ -25,6 +29,9 @@ class Worker {
         this._mainJob = null;
         this._created = null;
         this._updated = null;
+
+        // abstracted properties
+        this._properties = WorkerProperties;
 
         // change properties
         this._isNew = false;
@@ -86,22 +93,54 @@ class Worker {
         }
     }
 
+    // takes the given JSON document and creates a Worker's set of extendable properties
+    // Returns true if the resulting Worker is valid; otherwise false
+    async load(document) {
+        try {
+            await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+        } catch (err) {
+            this._log(Worker.LOG_ERROR, `Woker::load - failed: ${err}`);
+            throw new WorkerExceptions.WorkerJsonException(
+                err,
+                null,
+                'Failed to load Worker from JSON');
+        }
+        return this.isValid();
+    }
+
+    // returns true if Worker is valid, otherwise false
+    isValid() {
+        // the property manager returns a list of all properties that are invalid; or true
+        const thisWorkerIsValid = this._properties.isValid;
+        if (thisWorkerIsValid === true) {
+            return true;
+        } else {
+            this._log(Worker.LOG_ERROR, `Worker invalid properties: ${thisWorkerIsValid.toString()}`);
+            return false;
+        }
+    }
+
     // saves the Worker to DB. Returns true if saved; false is not.
     // Throws "WorkerSaveException" on error
     async save() {
         let mustSave = this._initialise();
-
         if (mustSave && this._isNew) {
             // create new Worker
             try {
-                let creation = await models.worker.create({
+                const creationDocument = {
                     establishmentFk: this._establishmentId,
                     uid: this.uid,
-                    nameId: this.nameId,
-                    contract: this.contract,
-                    mainJobFk: this.mainJob.jobId,
                     attributes: ['id', 'created', 'updated'],
-                });
+                };
+
+                // now append the extendable properties.
+                // Note - although the POST (create) has a default
+                //   set of mandatory properties, there is no reason
+                //   why we cannot create a Worker record with more properties
+                const modifedCreationDocument = this._properties.save(creationDocument);
+
+                // now save the document
+                let creation = await models.worker.create(modifedCreationDocument);
 
                 const sanitisedResults = creation.get({plain: true});
 
@@ -112,9 +151,11 @@ class Worker {
                 this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);    
                 
             } catch (err) {
+                // if the name/Id property is known, use it in the error message
+                const nameId = this._properties.get('NameOrId');
                 throw new WorkerExceptions.WorkerSaveException(null,
                                                                this.uid,
-                                                               this.nameId,
+                                                               nameId,
                                                                err,
                                                                null);
             }
@@ -171,14 +212,11 @@ class Worker {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
                 this._uid = workerUid;
-                this._nameId = fetchResults.nameId;
-                this._contract = fetchResults.contract;
-                this._mainJob = {
-                    jobId: fetchResults.mainJob.id,
-                    title: fetchResults.mainJob.title
-                };
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
+
+                // load extendable properties
+                await this._properties.restore(fetchResults, SEQUELIZE_DOCUMENT_TYPE);
 
                 return true;
             }
@@ -239,13 +277,20 @@ class Worker {
 
     // returns a Javascript object which can be used to present as JSON
     toJSON() {
+        // JSON representation of extendable properties
+        const myJSON = this._properties.toJSON();
+
+        // add worker default properties
+        const myDefaultJSON = {
+            uid:  this.uid,
+            created:  this.created.toJSON(),
+            updated: this.updated.toJSON()
+        };
+
+        // TODO: JSON schema validation
         return {
-            uid: this.uid,
-            nameOrId: this.nameId,
-            contract: this.contract,
-            mainJob: this.mainJob,
-            created: this.created,
-            updated: this.updated
+            ...myDefaultJSON,
+            ...myJSON
         };
     }
 
@@ -256,30 +301,6 @@ class Worker {
     get uid() {
         return this._uid;
     };
-    get nameId() {
-        return this._nameId;
-    };
-    set nameId(nameId) {
-        this._nameId = nameId;
-        this._chgNameId = true;
-        return this.nameId;
-    }
-    get mainJob() {
-        return this._mainJob;
-    }
-    set mainJob(job) {
-        this._mainJob = job;
-        this._chgMainJob = true;
-        return this.mainJob;
-    }
-    get contract() {
-        return this._contract;
-    }
-    set contract(contract) {
-        this._contract = contract;
-        this._chgContract = true;
-        return this.contract;
-    }
     get created() {
         return this._created;
     }
@@ -289,52 +310,6 @@ class Worker {
 
 
     // HELPERS
-    // returns false if job definition is not valid, otherwise returns
-    //  a well formed job definition using data as given in jobs reference lookup
-    static async validateJob(jobDef) {
-        // get reference set of jobs to validate against
-        if (!jobDef) return false;
-        
-        // must exist a jobId or title
-        if (!(jobDef.jobId || jobDef.title)) return false;
-
-        // if jobId is given, it must be an integer
-        if (jobDef.jobId && !(Number.isInteger(jobDef.jobId))) return false;
-        
-        // jobid overrides title, because jobId is indexed whereas title is not!
-        let referenceJob = null;
-        try {
-            if (jobDef.jobId) {
-                referenceJob = await models.job.findOne({
-                    where: {
-                        id: jobDef.jobId
-                    },
-                    attributes: ['id', 'title'],
-                });
-            } else {
-                referenceJob = await models.job.findOne({
-                    where: {
-                        title: jobDef.title
-                    },
-                    attributes: ['id', 'title'],
-                });
-            }
-            if (referenceJob && referenceJob.id) {
-                // found a job match
-                return {
-                    jobId: referenceJob.id,
-                    title: referenceJob.title
-                };
-            }
-    
-        } catch (err) {
-            console.err(err);
-        }
-
-        // failed to find reference job
-        return false;
-    }
-
     // returns false if establishment is not valid, otherwise returns
     //  the establishment id
     static async validateEstablishment(establishmentId) {
@@ -365,5 +340,4 @@ class Worker {
 module.exports.Worker = Worker;
 
 // sub types
-module.exports.WorkerContract = WorkerContract;
 module.exports.WorkerExceptions = WorkerExceptions;
