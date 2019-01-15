@@ -22,7 +22,6 @@ export class AuthInterceptor implements HttpInterceptor {
     const token = this.authService.token
 
     if (token) {
-        // TODO: add bearer upon integrating JWT server side auth
         const cloned = request.clone({
             //headers: request.headers.set("Authorization", "Bearer " + idToken);
             headers: request.headers.set("Authorization", token)

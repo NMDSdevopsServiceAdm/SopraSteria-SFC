@@ -53,9 +53,8 @@ export class AuthService {
               private httpErrorHandler: HttpErrorHandler,
               private router: Router) { }
 
-  // returns true if logged in; otherwise false
   public get isLoggedIn(): boolean {
-    return this._session ? true : false;
+    return !!this.token
   }
 
   public get establishment() : LoggedInEstablishment {
@@ -100,7 +99,13 @@ export class AuthService {
 
   set token(token: string) {
     this._token = token
-    localStorage.setItem("auth-token", token)
+
+    if (token) {
+      localStorage.setItem("auth-token", token)
+
+    } else {
+      localStorage.removeItem("auth-token")
+    }
   }
 
   get token() {
@@ -140,6 +145,6 @@ export class AuthService {
 
   logout() {
     this._session = null
-    this._token = null
+    this.token = null
   }
 }

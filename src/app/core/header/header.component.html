@@ -5,9 +5,9 @@
         <img src="../../../assets/img/logo.png" alt="Skills for Care" />
       </div>
       <div class="strapline col-6">Adult Social Care Workforce Data Set</div>
-      <div class="auth-controls col-12 col-lg-3 col-xl-4">
+      <div class="auth-controls col-12 col-md-4 col-lg-4">
         <ul>
-          <li>
+          <li *ngIf="!isLoggedIn()">
             <a routerLink="/registered-question" title="Create an account">Create an account</a>
           </li>
           <li>
