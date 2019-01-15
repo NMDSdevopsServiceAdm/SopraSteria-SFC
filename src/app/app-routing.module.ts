@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-//import { LoginComponent } from './features/login/login.component';
+import { AuthGuard } from "./core/services/auth-guard.service"
+
+import { LoginComponent } from './features/login/login.component';
 //import { RegisterComponent } from './features/register/register.component';
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
 import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
@@ -30,13 +32,21 @@ import { ShareOptionsComponent } from './features/shareOptions/shareOptions.comp
 import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
 import { ContactUsComponent } from "./features/contactUs/contactUs.component";
+import { LogoutComponent } from './features/logout/logout.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
-
+  {
+    path: "login",
+    component: LoginComponent
+  },
   {
     path: 'registered-question',
     component: CqcRegisteredQuestionComponent,
+  },
+  {
+    path: 'sign-out',
+    component: LogoutComponent
   },
   {
     path: 'select-workplace',
@@ -84,55 +94,81 @@ const routes: Routes = [
   },
   {
     path: 'welcome',
-    component: HomepageComponent
+    component: HomepageComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'select-other-services',
-    component: SelectOtherServicesComponent
+    component: SelectOtherServicesComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'type-of-employer',
-    component: TypeOfEmployerComponent
+    component: TypeOfEmployerComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'vacancies',
-    component: VacanciesComponent
+    component: VacanciesComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'confirm-vacancies',
-    component: ConfirmVacanciesComponent
+    component: ConfirmVacanciesComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'starters',
-    component: StartersComponent
+    component: StartersComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'confirm-starters',
-    component: ConfirmStartersComponent
+    component: ConfirmStartersComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'leavers',
-    component: LeaversComponent
+    component: LeaversComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'confirm-leavers',
-    component: ConfirmLeaversComponent
+    component: ConfirmLeaversComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'staff',
-    component: StaffComponent
+    component: StaffComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'capacity-of-services',
-    component: ServicesCapacityComponent
+    component: ServicesCapacityComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'share-local-authority',
-    component: ShareLocalAuthorityComponent
+    component: ShareLocalAuthorityComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'share-options',
-    component: ShareOptionsComponent
+    component: ShareOptionsComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard]
   },
   {
     path: 'feedback',
@@ -145,6 +181,15 @@ const routes: Routes = [
   {
     path: 'terms-and-conditions',
     component: TermsConditionsComponent
+  },
+  {
+    path: "",
+    redirectTo: "/welcome",
+    pathMatch: "full"
+  },
+  {
+    path: "**",
+    redirectTo: "/welcome"
   }
 ];
 
