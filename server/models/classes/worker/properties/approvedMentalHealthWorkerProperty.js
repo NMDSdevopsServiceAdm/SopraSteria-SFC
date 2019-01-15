@@ -10,8 +10,8 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
 
     // concrete implementations
     static async cloneFromJson(document) {
-        if (document.approvedMentalHeathWorker) {
-            return new WorkerApprovedMentalHealthWorkerProperty(document.approvedMentalHeathWorker);
+        if (document.approvedMentalHealthWorker) {
+            return new WorkerApprovedMentalHealthWorkerProperty(document.approvedMentalHealthWorker);
         } else {
             return null;
         }
@@ -30,7 +30,7 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
 
     toJSON() {
         return {
-            approvedMentalHealthProfessional: this.property
+            approvedMentalHealthWorker: this.property
         }
     }
 
