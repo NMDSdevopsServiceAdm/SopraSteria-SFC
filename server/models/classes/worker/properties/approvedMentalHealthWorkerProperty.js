@@ -17,14 +17,14 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
         }
     }
     static async cloneFromSequelize(document) {
-        if (document.approvedMentalHealthProfessional) {
-            return new WorkerApprovedMentalHealthWorkerProperty(document.approvedMentalHealthProfessional);
+        if (document.approvedMentalHealthWorker) {
+            return new WorkerApprovedMentalHealthWorkerProperty(document.approvedMentalHealthWorker);
         }
     }
 
     save() {
         return {
-            approvedMentalHealthProfessional: this.property
+            approvedMentalHealthWorker: this.property
         }
     }
 
