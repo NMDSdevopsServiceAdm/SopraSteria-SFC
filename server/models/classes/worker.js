@@ -124,6 +124,16 @@ class Worker {
     // Throws "WorkerSaveException" on error
     async save() {
         let mustSave = this._initialise();
+
+        if (!this.uid) {
+            this._log(Worker.LOG_ERROR, 'Not able to save an unknown uid');
+            throw new WorkerExceptions.WorkerSaveException(null,
+                this.uid,
+                nameId ? nameId.property : null,
+                'Not able to save an unknown uid',
+                'Worker does not exist');
+        }
+
         if (mustSave && this._isNew) {
             // create new Worker
             try {
@@ -148,7 +158,7 @@ class Worker {
                 this._created = sanitisedResults.created;
                 this._updated = sanitisedResults.updated;
                 this._isNew = false;
-                this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);    
+                this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 
             } catch (err) {
                 // if the name/Id property is known, use it in the error message
@@ -159,6 +169,57 @@ class Worker {
                                                                err,
                                                                null);
             }
+        } else {
+            // we are updating an existing worker
+            try {
+                const updatedTimestamp = new Date();
+
+                // now append the extendable properties
+                const modifedUpdateDocument = this._properties.save({});
+
+                const updateDocument = {
+                    ...modifedUpdateDocument,
+                    updated: updatedTimestamp,
+                };
+
+                // now save the document
+                let [updatedRecordCount, updatedRows] =
+                    await models.worker.update(updateDocument,
+                                               {
+                                                    returning: true,
+                                                    where: {
+                                                        uid: this.uid
+                                                    },
+                                                    attributes: ['id', 'updated'],
+                                               });
+
+                if (updatedRecordCount === 1) {
+                    const updatedRecord = updatedRows[0].get({plain: true});
+
+                    this._updated = updatedRecord.updated;
+                    this._id = updatedRecord.ID;
+
+                    this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
+
+                } else {
+                    const nameId = this._properties.get('NameOrId');
+                    throw new WorkerExceptions.WorkerSaveException(null,
+                                                                this.uid,
+                                                                nameId ? nameId.property : null,
+                                                                err,
+                                                                `Failed to update resulting worker record with uid: ${this._uid}`);
+                }
+                
+            } catch (err) {
+                // if the name/Id property is known, use it in the error message
+                const nameId = this._properties.get('NameOrId');
+                throw new WorkerExceptions.WorkerSaveException(null,
+                                                               this.uid,
+                                                               nameId ? nameId.property : null,
+                                                               err,
+                                                               `Failed to update worker record with uid: ${this._uid}`);
+            }
+
         }
 
         if (mustSave && !this._isNew) {

@@ -110,29 +110,48 @@ router.route('/:workerId').put(async (req, res) => {
     const workerId = req.params.workerId;
     const establishmentId = req.establishmentId;
 
-    // The put can update any, multiple or all aspects of a worker.
+    // validating worker id - must be a V4 UUID
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
+    
+    const thisWorker = new Workers.Worker(establishmentId);
+    
+    try {
+        // before updating a Worker, we need to be sure the Worker is
+        //  available to the given establishment. The best way of doing that
+        //  is to restore from given UID
+        if (await thisWorker.restore(workerId)) {
+            // TODO: JSON validation
 
-    // There are no mandatory properties of a PUT; all properties are optional.
+            // by loading after the restore, only those properties defined in the
+            //  PUT body will be updated (peristed)
+            const isValidWorker = await thisWorker.load(req.body);
 
-    // But when given, a properties must fully validate; in the main, that
-    //  is conformig to JSON schema, but each property will have it's own
-    //  specific validation; for example, when updating the main job, the
-    //  job given must be one of the known jobs.
+            // this is an update to an existing Worker, so no mandatory properties!
 
-    // Rather than a set of fixed monolithic rules for parsing and
-    //  validation, each property of a Worker will parse and validate
-    //  itself, making it easy, scalable and automic to add new properties.
+            if (isValidWorker) {
+                await thisWorker.save();
+                return res.status(200).json({
+                    uid: thisWorker.uid
+                });
+            } else {
+                return res.status(400).send('Unexpected Input.');
+            }
+            
+        } else {
+            // not found worker
+            return res.status(404).send('Not Found');
+        }
 
-    // This is true not just of PUT (update) operator but the GET (restore)
-    //   operator too. Any number of properties could have been provided
-    //   and stored; consequently, any number of properties need to be restored. 
-
-    // There are 20+ properties of a Worker.
-
-    // Using a Gang of Four "Prototype" pattern, whereby the Worker manages a set
-    //   of Prototypes. Each attribute is a prototype.
-
-    return res.status(501).send(`Pending: update of worker with id (${workerId}) for establishment (${establishmentId})`);
+    } catch (err) {
+        if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
+            console.error("Worker POST: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
+            console.error("Worker POST: ", err.message);
+            return res.status(503).send(err.safe);
+        }
+    }
 });
 
 // deletes given worker id
