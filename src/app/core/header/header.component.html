@@ -1,10 +1,21 @@
 <header id="header-container" class="container-fluid p-0">
   <div class="main-header container-fluid">
     <div class="container">
-      <div class="logo">
+      <div class="logo col-2">
         <img src="../../../assets/img/logo.png" alt="Skills for Care" />
       </div>
-      <div class="strapline">Adult Social Care Workforce Data Set</div>
+      <div class="strapline col-6">Adult Social Care Workforce Data Set</div>
+      <div class="auth-controls col-12 col-md-4 col-lg-4">
+        <ul>
+          <li *ngIf="!isLoggedIn()">
+            <a routerLink="/registered-question" title="Create an account">Create an account</a>
+          </li>
+          <li>
+            <a *ngIf="!isLoggedIn()" routerLink="/login" title="Sign out">Sign in</a>
+            <a *ngIf="isLoggedIn()" href="#" (click)="signOut($event)" title="Sign out">Sign out</a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
   <div id="nav-container "class="container p-0">
