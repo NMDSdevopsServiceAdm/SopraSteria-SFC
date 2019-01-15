@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 
 //import { LoginUser } from './login-user';
 
@@ -102,7 +102,20 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.messageService.show("error", message)
         },
         () => {
-          this.router.navigate(['/welcome']);
+          const redirectUrl = this._loginService.redirectUrl
+
+          if (redirectUrl) {
+            const navExtras: NavigationExtras = {
+              queryParamsHandling: "preserve",
+              preserveFragment: true
+            }
+
+            this._loginService.redirectUrl = null
+            this.router.navigate([redirectUrl], navExtras)
+
+          } else {
+            this.router.navigate(['/welcome']);
+          }
         }
       ))
   }

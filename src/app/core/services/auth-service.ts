@@ -45,6 +45,8 @@ export class AuthService {
   private _session: LoggedInSession = null;
   private _token: string = null;
 
+  redirectUrl: string = null
+
   // Observable login stream
   public auth$: Observable<LoginApiModel> = this._auth$.asObservable();
 
