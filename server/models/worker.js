@@ -36,6 +36,17 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"MainJobFK"'
     },
+    approvedMentalHealthWorker : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', 'Don\'t know'],
+      field: '"ApprovedMentalHealthWorker"'
+    },
+    mainJobStartDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"MainJobStartDate"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,

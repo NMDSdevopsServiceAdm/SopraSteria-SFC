@@ -5,12 +5,16 @@ const Manager = require('../properties/manager');
 const contractProperty = require('./properties/contractProperty').WorkerContractProperty;
 const nameOrIdProperty = require('./properties/nameOfIdProperty').WorkerNameOrIdProperty;
 const mainJobProperty = require('./properties/mainJobProperty').WorkerMainJobProperty;
+const approvedMentalHealthWorkerProperty = require('./properties/approvedMentalHealthWorkerProperty').WorkerApprovedMentalHealthWorkerProperty;
+const mainJobStartDate = require('./properties/mainJobStartDateProperty').WorkerMainJobStartDateProperty;
 
 const thisManager = new Manager.PropertyManager();
 
 thisManager.registerProperty(contractProperty);
 thisManager.registerProperty(nameOrIdProperty);
 thisManager.registerProperty(mainJobProperty);
+thisManager.registerProperty(approvedMentalHealthWorkerProperty);
+thisManager.registerProperty(mainJobStartDate);
 
 exports.manager = thisManager;
 exports.SEQUELIZE_DOCUMENT = Manager.PropertyManager.SEQUELIZE_DOCUMENT;
