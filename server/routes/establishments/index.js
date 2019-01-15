@@ -16,6 +16,7 @@ const ShareData = require('./shareData');
 const Staff = require('./staff');
 const Jobs = require('./jobs');
 const LA = require('./la');
+const Worker = require('./worker');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
