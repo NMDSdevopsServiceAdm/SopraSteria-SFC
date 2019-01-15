@@ -10,7 +10,8 @@
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "server:coverage": "c8 node server.js"
   },
   "private": true,
   "dependencies": {
@@ -26,6 +27,7 @@
     "@ng-bootstrap/ng-bootstrap": "^3.3.1",
     "bcrypt-nodejs": "0.0.3",
     "bootstrap": "^4.0.0",
+    "c8": "^3.2.1",
     "concurrently": "^4.1.0",
     "cookie-parser": "^1.4.3",
     "core-js": "^2.5.4",
