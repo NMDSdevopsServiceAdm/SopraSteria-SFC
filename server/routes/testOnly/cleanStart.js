@@ -6,6 +6,11 @@ const models = require('../../models');
 router.route('/').post(async (req, res) => {
   try {
     await models.sequelize.transaction(async t => {
+        // workers
+        await models.worker.destroy({
+            where: {}
+        });
+        
         // establishments
         await models.establishmentCapacity.destroy({
             where: {}

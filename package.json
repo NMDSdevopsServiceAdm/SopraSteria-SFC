@@ -10,7 +10,8 @@
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "server:coverage": "c8 node server.js"
   },
   "private": true,
   "dependencies": {
@@ -24,21 +25,27 @@
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
     "@ng-bootstrap/ng-bootstrap": "^3.3.1",
+    "bcrypt-nodejs": "0.0.3",
     "bootstrap": "^4.0.0",
+    "c8": "^3.2.1",
     "concurrently": "^4.1.0",
     "cookie-parser": "^1.4.3",
     "core-js": "^2.5.4",
     "jade": "^1.11.0",
     "jquery": "^3.3.1",
+    "jsonwebtoken": "^8.4.0",
     "morgan": "^1.9.1",
     "ngx-bootstrap": "^3.0.1",
-    "pg": "^7.6.1",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "pg": "^7.7.1",
     "pg-hstore": "^2.3.2",
     "popper.js": "^1.14.4",
     "rxjs": "~6.3.3",
     "rxjs-compat": "^6.3.3",
     "sequelize": "^4.41.2",
     "serve-favicon": "^2.5.0",
+    "uuid": "^3.3.2",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {

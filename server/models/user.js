@@ -58,6 +58,5 @@ module.exports = function(sequelize, DataTypes) {
       targetKey: 'id'
     })
   };
-
   return User;
 };
