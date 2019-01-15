@@ -51,8 +51,8 @@ before_deploy:
     #- if [ "$TRAVIS_BRANCH"=develop ]; then B_NAME=develop; fi
     #- if [ "$TRAVIS_BRANCH"=test ]; then B_NAME=test; fi
     #- echo $B_NAME
-   - if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; mv index_uat.html index.html; fi
-   - if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; mv index_staging.html index.html; fi
+   #- if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; mv index_uat.html index.html; fi
+   #- if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; mv index_staging.html index.html; fi
  deploy:
   - provider: cloudfoundry
     edge: true  
