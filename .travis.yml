@@ -53,7 +53,7 @@ before_deploy:
     #- echo $B_NAME
    #- if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
    #- if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
-   - if [ "$TRAVIS_BRANCH" = 107_google_analytics_dev ]; then echo "107_google_analytics_dev"; fi
+   - if [ "$TRAVIS_BRANCH" = 107_google_analytics_dev ]; then echo "107_google_analytics_dev"; mv index_staging.html index.html  fi
 deploy:
   - provider: cloudfoundry
     edge: true  
