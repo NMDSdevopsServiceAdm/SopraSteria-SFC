@@ -34,6 +34,7 @@ import { FeedbackComponent } from './features/feedback/feedback.component';
 import { ContactUsComponent } from "./features/contactUs/contactUs.component";
 import { LogoutComponent } from './features/logout/logout.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
+import { MentalHealthComponent } from './features/mental-health/mental-health.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -186,6 +187,10 @@ const routes: Routes = [
   {
     path: 'create-staff-record',
     component: CreateStaffRecordComponent
+  },
+  {
+    path: 'mental-health',
+    component: MentalHealthComponent
   },
   {
     path: "",

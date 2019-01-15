@@ -56,10 +56,12 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const { required, max } = Validators
+
     this.form = this.formBuilder.group({
-      fullNameOrId: ["", Validators.required],
-      jobRole: ["", Validators.required],
-      typeOfContract: ["", Validators.required]
+      fullNameOrId: ["", required, max(50)],
+      jobRole: ["", required],
+      typeOfContract: ["", required]
     })
 
     this.contractsAvailable = Object.values(Contracts)

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from "@angular/router"
 
 @Component({
   selector: 'app-submit-button',
@@ -7,13 +8,15 @@ import { Component, Input } from '@angular/core';
 export class SubmitButtonComponent {
   @Input() saveCallback: Function
 
-  constructor() { }
+  constructor(
+    private router: Router
+  ) {}
 
   async saveAndExit() {
     if (this.saveCallback) {
       try {
         await this.saveCallback()
-        // TODO implement exit behaviour
+        this.router.navigate(["/welcome"])
 
       } catch (err) {
         // this should be already handled by saveCallback()
@@ -26,6 +29,6 @@ export class SubmitButtonComponent {
   }
 
   viewRecordSummary() {
-    // TODO implement
+    // TODO to be implemented
   }
 }
