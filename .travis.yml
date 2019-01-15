@@ -53,7 +53,7 @@ before_deploy:
     #- echo $B_NAME
    #- if [ "$TRAVIS_BRANCH" = master ]; then echo "master"; fi
    #- if [ "$TRAVIS_BRANCH" = test ]; then echo "test"; fi
-   #- if [ "$TRAVIS_BRANCH" = develop ]; then echo "develop"; fi
+   - if [ "$TRAVIS_BRANCH" = 107_google_analytics_dev ]; then echo "107_google_analytics_dev"; fi
 deploy:
   - provider: cloudfoundry
     edge: true  
@@ -65,7 +65,7 @@ deploy:
     space: sandbox
     manifest: manifest.dev.yml
     on:
-        branch: registrationapi
+        branch: 107_google_analytics_dev
   - provider: cloudfoundry
     edge: true  
     username: nmdsdevopsserviceadm@hotmail.com
