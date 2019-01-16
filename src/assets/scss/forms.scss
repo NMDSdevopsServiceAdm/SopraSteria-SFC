@@ -88,6 +88,7 @@ form,
     label, .label {
       padding: 0 0 10px 0;
       margin: 0 0 2rem 0;
+      letter-spacing: 1px;
 
       @include rem(font-size, 19px);
       @include rem(line-height, 20px);
