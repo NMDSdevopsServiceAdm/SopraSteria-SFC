@@ -82,7 +82,8 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
         )
 
         this.subscriptions.push(
-          this.workerService.createWorker(worker).subscribe(resolve))
+          this.workerService.createWorker(worker).subscribe(resolve)
+        )
 
       } else {
         this.messageService.clearError()
