@@ -36,7 +36,7 @@ export class WorkerService {
     return this.http.get<WorkersResponse>(`/api/establishment/${this.establishmentService.establishmentId}/worker`, EstablishmentService.getOptions())
       .pipe(
         debounceTime(500),
-        map(w => w.workers)
+        map(w => w.workers),
         catchError(this.httpErrorHandler.handleHttpError)
       )
   }
