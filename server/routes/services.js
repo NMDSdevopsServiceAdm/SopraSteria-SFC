@@ -4,22 +4,6 @@ const models = require('../models/index');
 const ServiceFormatters = require('../models/api/services');
 
 
-const returnDateTime = () => {
-  return (new Date()).toISOString();
-};
-router.route('/hello').get(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').put(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').delete(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').post(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-
 /* GET ALL services*/
 router.route('/')
   .get(async function (req, res) {

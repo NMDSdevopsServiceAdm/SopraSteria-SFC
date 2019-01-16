@@ -4,22 +4,6 @@ const models = require('../models');
 
 // note - intentionally no get for feedback
 
-const returnDateTime = () => {
-  return (new Date()).toISOString();
-};
-router.route('/hello').get(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').put(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').delete(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').post(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-
 // submit feedback
 router.route('/').post(async (req, res) => {
 
