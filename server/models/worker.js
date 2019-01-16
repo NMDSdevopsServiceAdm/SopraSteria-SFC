@@ -47,6 +47,21 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"MainJobStartDate"'
     },
+    nationalInsuranceNumber: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NationalInsuranceNumber"'
+    },
+    dataOfBirth: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DateOfBirth"'
+    },
+    postcode: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Postcode"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,
