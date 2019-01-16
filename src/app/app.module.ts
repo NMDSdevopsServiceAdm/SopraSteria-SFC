@@ -152,7 +152,7 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
       multi: true
     },
     LocalAuthorityService,
-    AuthGuard
+    AuthGuard,
     WorkerService,
   ],
   bootstrap: [AppComponent]

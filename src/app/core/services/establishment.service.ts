@@ -1,7 +1,7 @@
 import { Injectable, isDevMode } from "@angular/core"
-import { HttpClient } from "@angular/common/http"
+import { HttpClient, HttpHeaders } from "@angular/common/http"
 import { BehaviorSubject } from "rxjs"
-import { map } from "rxjs/operators"
+import { map, debounceTime, catchError } from "rxjs/operators"
 
 import { HttpErrorHandler } from "./http-error-handler.service"
 
