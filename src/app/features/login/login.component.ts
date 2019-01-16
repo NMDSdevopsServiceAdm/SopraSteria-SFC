@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 
 //import { LoginUser } from './login-user';
 
@@ -89,31 +89,33 @@ export class LoginComponent implements OnInit, OnDestroy {
     this._loginService.postLogin(this.login)
       .subscribe(
         (response) => {
-          // TODO: despite passing the 'observe' option
-          //       in the auth-service postLogin, the callback
-          //       here is still the JSON data and not the full
-          //       response. Hence, cannot get at the
-          //       headers.
-          // const data = response.body;
-
-          this._loginService.updateState(response);
+          this._loginService.updateState(response.body);
 
           // // update the establishment service state with the given establishment oid
-          this.establishmentService.establishmentId = response.establishment.id;
+          this.establishmentService.establishmentId = response.body.establishment.id;
 
-          // store the authorization token
-          // TODO: add expiry of token const expiresAt = moment().add(response.expiresIn,'second');
-          localStorage.setItem("auth-token", response.establishment.id)
-          
-          //this.establishmentService.establishmentToken = response.headers.get('authorization');
-          //this.establishmentService.establishmentToken = response.establishment.id;
+          const token = response.headers.get('authorization')
+          this._loginService.authorise(token)
         },
         (err) => {
-          const message = err.friendlyMessage || "Invalid username or password."
+          const message = err.error.message || "Invalid username or password."
           this.messageService.show("error", message)
         },
         () => {
-          this.router.navigate(['/welcome']);
+          const redirectUrl = this._loginService.redirectUrl
+
+          if (redirectUrl) {
+            const navExtras: NavigationExtras = {
+              queryParamsHandling: "preserve",
+              preserveFragment: true
+            }
+
+            this._loginService.redirectUrl = null
+            this.router.navigate([redirectUrl], navExtras)
+
+          } else {
+            this.router.navigate(['/welcome']);
+          }
         }
       ))
   }
