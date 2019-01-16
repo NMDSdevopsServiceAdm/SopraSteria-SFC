@@ -76,8 +76,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
           this.form.value.fullNameOrId,
           this.form.value.typeOfContract,
           new JobMain(
-            parseInt(this.form.value.jobRole),
-            this.getSelectedJobTitle()
+            parseInt(this.form.value.jobRole)
           )
         )
 
