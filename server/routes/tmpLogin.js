@@ -8,22 +8,6 @@ const validateLoginParameters = (username, password) => {
   return username && typeof username === 'string' && username.length > 0;
 };
 
-const returnDateTime = () => {
-  return (new Date()).toISOString();
-};
-router.route('/hello').get(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').put(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').delete(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').post(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-
 
 // temporary endpoint to reset the first login - must be authorised
 router.use('/resetFirstLogin', Authorization.isAuthorised);

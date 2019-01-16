@@ -3,23 +3,6 @@ const router = express.Router({mergeParams: true});
 const models = require('../models');
 const LaFormatters = require('../models/api/la');
 
-
-const returnDateTime = () => {
-  return (new Date()).toISOString();
-};
-router.route('/hello').get(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').put(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').delete(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').post(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-
 // return the list of all Local Authorities
 router.route('/').get(async (req, res) => {
 
