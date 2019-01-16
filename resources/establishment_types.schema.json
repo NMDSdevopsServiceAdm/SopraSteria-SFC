@@ -305,6 +305,21 @@
                     "type" : "string",
                     "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
                 },
+                "nationalInsuranceNumber" : {
+                    "description": "National insurance number",
+                    "type" : "string",
+                    "pattern" : "[A-Z]{2] [0-9]{2} [0-9]{2} [A-Z]{1}"
+                },
+                "dateOfBirth" : {
+                    "description" : "Date of Birth; YYYY-MM-DD - ISO 8601",
+                    "type" : "string",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                "postcode" : {
+                    "description" : "Postcode of home address",
+                    "type" : "string",
+                    "maxLength": 8
+                },
                 "createdAt" : {
                     "description" : "When the worker record was created",
                     "type" : "date-time"
