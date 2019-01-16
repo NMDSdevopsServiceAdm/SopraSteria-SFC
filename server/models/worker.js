@@ -52,7 +52,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"NationalInsuranceNumber"'
     },
-    dataOfBirth: {
+    dateOfBirth: {
       type: DataTypes.DATE,
       allowNull: true,
       field: '"DateOfBirth"'
