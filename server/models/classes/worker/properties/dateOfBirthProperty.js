@@ -34,22 +34,22 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Prop
     }
     static async cloneFromSequelize(document) {
         // Note - sequelize will serialise a Javascript Date type from the given Worker sequelize model
-        if (document.dataOfBirth) {
-            return new WorkerDateOfBirthProperty(document.dataOfBirth);
+        if (document.dateOfBirth) {
+            return new WorkerDateOfBirthProperty(document.dateOfBirth);
         }
     }
 
     save() {
         if (this.valid) {
             return {
-                dataOfBirth: this.property
+                dateOfBirth: this.property
             };
         }
     }
 
     toJSON() {
         return {
-            dataOfBirth: this.property
+            dateOfBirth: this.property
         }
     }
 
