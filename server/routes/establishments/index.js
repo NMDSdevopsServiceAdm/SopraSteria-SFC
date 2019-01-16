@@ -32,7 +32,7 @@ router.use('/:id/worker', Worker);
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
   const establishmentId = req.establishmentId;
- 
+
   try {
     let results = await models.establishment.findOne({
       where: {
