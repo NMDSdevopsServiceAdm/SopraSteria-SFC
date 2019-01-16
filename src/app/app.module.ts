@@ -56,7 +56,8 @@ import { SelectOtherServicesListComponent } from './features/select-other-servic
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { LogoutComponent } from './features/logout/logout.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
-import { MentalHealthComponent } from './features/mental-health/mental-health.component';
+import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
+import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
 
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
@@ -119,6 +120,7 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     CreateStaffRecordComponent,
     SubmitButtonComponent,
     MentalHealthComponent,
+    MainJobStartDateComponent,
   ],
   imports: [
     BrowserModule,

@@ -13,7 +13,7 @@
     <div class="form-group">
       <div class="field-group mb-5">
         <label class="col-12 col-md-11 col-lg-8">Full name or ID number
-          <input type="text" formControlName="fullNameOrId"
+          <input type="text" formControlName="fullNameOrId" maxlength="50"
             class="form-control col-12" [ngClass]="{'is-invalid': (form.get('fullNameOrId').touched || form.get('fullNameOrId').dirty) && !form.get('fullNameOrId').valid}" />
         </label>
       </div>
