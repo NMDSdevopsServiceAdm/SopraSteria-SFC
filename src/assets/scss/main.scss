@@ -71,7 +71,7 @@ p {
 
   .main-page-container {
 
-    @include rem(padding, 60px 0);
+    @include rem(padding, 60px 0 120px);
   }
 
   .sub-page-container {

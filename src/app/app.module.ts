@@ -49,11 +49,15 @@ import { NumberPositiveOnly } from './shared/number-positive-only.directive';
 import { NoPaste } from './shared/no-paste.directive';
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
+import { WorkerService } from './core/services/worker.service';
 import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
 import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { LogoutComponent } from './features/logout/logout.component';
+import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
+import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
+import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
 
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
@@ -67,6 +71,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/services/auth-interceptor';
 
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
+import { SubmitButtonComponent } from './shared/submit-button/submit-button.component';
 
 @NgModule({
   declarations: [
@@ -112,6 +117,10 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     ContactUsComponent,
     TermsConditionsComponent,
     LogoutComponent,
+    CreateStaffRecordComponent,
+    SubmitButtonComponent,
+    MentalHealthComponent,
+    MainJobStartDateComponent,
   ],
   imports: [
     BrowserModule,
@@ -145,7 +154,8 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
       multi: true
     },
     LocalAuthorityService,
-    AuthGuard
+    AuthGuard,
+    WorkerService,
   ],
   bootstrap: [AppComponent]
 })
