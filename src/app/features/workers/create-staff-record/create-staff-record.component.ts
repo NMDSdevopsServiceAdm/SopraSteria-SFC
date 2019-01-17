@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
-import { Router } from "@angular/router"
+import { ActivatedRoute, Router, ParamMap, Params } from "@angular/router"
+import { switchMap, tap } from "rxjs/operators"
 
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService } from "../../../core/services/worker.service"
@@ -22,6 +23,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     private jobService: JobService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this)
@@ -30,20 +32,21 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   form: FormGroup
   jobsAvailable: Job[] = []
   contractsAvailable: Array<string> = []
+  workerId: string
 
   private subscriptions = []
 
   private isSocialWorkerSelected(): boolean {
-    if (this.form.value.jobRole) {
-      return this.jobsAvailable.some(a => a.id === this.form.value.jobRole && a.title === "Social Worker")
+    if (this.form.value.mainJob) {
+      return this.jobsAvailable.some(a => a.id === this.form.value.mainJob && a.title === "Social Worker")
     }
 
     return false
   }
 
   private getSelectedJobTitle(): string | null {
-    if (this.form.value.jobRole) {
-      const job = this.jobsAvailable.find(j => parseInt(this.form.value.jobRole) === j.id)
+    if (this.form.value.mainJob) {
+      const job = this.jobsAvailable.find(j => parseInt(this.form.value.mainJob) === j.id)
 
       if (job) {
         return job.title
@@ -58,10 +61,10 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       await this.saveHandler()
 
       if (this.isSocialWorkerSelected()) {
-        this.router.navigate(["/mental-health"])
+        this.router.navigate(["/worker/mental-health"])
 
       } else {
-        this.router.navigate(["/main-job-start-date"])
+        this.router.navigate(["/worker/main-job-start-date"])
       }
 
     } catch (err) {
@@ -73,16 +76,23 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     return new Promise((resolve, reject) => {
       if (this.form.valid) {
         const worker = new Worker(
-          this.form.value.fullNameOrId,
-          this.form.value.typeOfContract,
+          this.form.value.nameOrId,
+          this.form.value.contract,
           new JobMain(
-            parseInt(this.form.value.jobRole)
+            parseInt(this.form.value.mainJob)
           )
         )
 
-        this.subscriptions.push(
-          this.workerService.createWorker(worker).subscribe(resolve)
-        )
+        if (this.workerId) {
+          this.subscriptions.push(
+            this.workerService.updateWorker(this.workerId, worker).subscribe(resolve)
+          )
+
+        } else {
+          this.subscriptions.push(
+            this.workerService.createWorker(worker).subscribe(resolve)
+          )
+        }
 
       } else {
         this.messageService.clearError()
@@ -94,10 +104,25 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      fullNameOrId: ["", Validators.required],
-      jobRole: ["", Validators.required],
-      typeOfContract: ["", Validators.required]
+      nameOrId: ["", Validators.required],
+      mainJob: ["", Validators.required],
+      contract: ["", Validators.required]
     })
+
+    const params = this.route.snapshot.paramMap
+    this.workerId = params.has("id") ? params.get("id") : null
+
+    if (this.workerId) {
+      this.subscriptions.push(
+        this.workerService.getWorker(this.workerId).subscribe(worker => {
+          this.form.patchValue({
+            nameOrId: worker.nameOrId,
+            mainJob: worker.mainJob.jobId,
+            contract: worker.contract
+          })
+        })
+      )
+    }
 
     this.contractsAvailable = Object.values(Contracts)
 

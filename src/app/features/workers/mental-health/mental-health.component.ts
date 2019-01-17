@@ -27,8 +27,7 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      await this.saveHandler()
-      this.router.navigate(["/mental-health"])
+      // TODO implement
 
     } catch (err) {
       // keep typescript transpiler silent
@@ -37,15 +36,8 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
 
   saveHandler() {
     return new Promise((resolve, reject) => {
-      if (this.form.valid) {
-        this.subscriptions.push(
-          this.workerService.createWorker(this.form.value).subscribe(resolve))
-
-      } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
-        reject()
-      }
+      // TODO implement
+      resolve()
     })
   }
 

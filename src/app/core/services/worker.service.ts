@@ -52,12 +52,11 @@ export class WorkerService {
       )
   }
 
-  // TODO this probably requires amendments before using
   /*
    * PUT /api/establishment/:establishmentId/worker/:workerId
    */
-  editWorker(workerId: string | number, data) {
-    return this.http.put<any>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`, data, EstablishmentService.getOptions())
+  updateWorker(workerId: string, worker: Worker) {
+    return this.http.put<any>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`, worker, EstablishmentService.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError)

@@ -13,14 +13,14 @@
     <div class="form-group">
       <div class="field-group mb-5">
         <label class="col-12 col-md-11 col-lg-8">Full name or ID number
-          <input type="text" formControlName="fullNameOrId" maxlength="50"
-            class="form-control col-12" [ngClass]="{'is-invalid': (form.get('fullNameOrId').touched || form.get('fullNameOrId').dirty) && !form.get('fullNameOrId').valid}" />
+          <input type="text" formControlName="nameOrId" maxlength="50"
+            class="form-control col-12" [ngClass]="{'is-invalid': (form.get('nameOrId').touched || form.get('nameOrId').dirty) && !form.get('nameOrId').valid}" />
         </label>
       </div>
 
       <div class="field-group mb-5">
         <label>What is their main job role
-          <select formControlName="jobRole" class="form-control">
+          <select formControlName="mainJob" class="form-control">
             <option [value]="null">Select Main Job Role</option>
             <option *ngFor="let job of jobsAvailable" [value]="job.id">
               {{job.title}}
@@ -32,7 +32,7 @@
       <div class="field-group mb-5">
         <label class="d-block">What type of contract do they have?</label>
         <div *ngFor="let contract of contractsAvailable; let idx = index" class="multiple-choice">
-          <input type="radio" formControlName="typeOfContract" class="form-control" [value]="contract" id="contract-type-{{idx}}">
+          <input type="radio" formControlName="contract" class="form-control" [value]="contract" id="contract-type-{{idx}}">
           <label for="contract-type-{{idx}}">{{contract}}</label>
         </div>
       </div>

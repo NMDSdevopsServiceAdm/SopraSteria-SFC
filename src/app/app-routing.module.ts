@@ -186,16 +186,30 @@ const routes: Routes = [
     component: TermsConditionsComponent
   },
   {
-    path: 'create-staff-record',
-    component: CreateStaffRecordComponent
-  },
-  {
-    path: 'mental-health',
-    component: MentalHealthComponent
-  },
-  {
-    path: "main-job-start-date",
-    component: MainJobStartDateComponent
+    path: 'worker',
+    canActivateChild: [AuthGuard],
+    children: [
+      {
+        path: 'create-staff-record/:id',
+        component: CreateStaffRecordComponent,
+        canLoad: [AuthGuard],
+      },
+      {
+        path: 'create-staff-record',
+        component: CreateStaffRecordComponent,
+        canLoad: [AuthGuard],
+      },
+      {
+        path: 'mental-health',
+        component: MentalHealthComponent,
+        canLoad: [AuthGuard],
+      },
+      {
+        path: "main-job-start-date",
+        component: MainJobStartDateComponent,
+        canLoad: [AuthGuard],
+      }
+    ]
   },
   {
     path: "",
