@@ -62,6 +62,18 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"Postcode"'
     },
+    gender : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Female', 'Male', 'Other', 'Don\'t know'],
+      field: '"Gender"'
+    },
+    disability : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', 'Undisclosed', 'Don\'t know'],
+      field: '"Disability"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,

@@ -10,6 +10,8 @@ const mainJobStartDateProperty = require('./properties/mainJobStartDateProperty'
 const nationalInsuranceProperty = require('./properties/nationalInsuranceProperty').WorkerNationalInsuranceNumberProperty;
 const postcodeProperty = require('./properties/postcodeProperty').WorkerPostcodeProperty;
 const dateOfBirthProperty = require('./properties/dateOfBirthProperty').WorkerDateOfBirthProperty;
+const genderProperty = require('./properties/genderProperty').WorkerGenderProperty;
+const disabilityProperty = require('./properties/disabilityProperty').WorkerDisabilityProperty;
 
 const thisManager = new Manager.PropertyManager();
 
@@ -21,6 +23,8 @@ thisManager.registerProperty(mainJobStartDateProperty);
 thisManager.registerProperty(nationalInsuranceProperty);
 thisManager.registerProperty(postcodeProperty);
 thisManager.registerProperty(dateOfBirthProperty);
+thisManager.registerProperty(genderProperty);
+thisManager.registerProperty(disabilityProperty);
 
 exports.manager = thisManager;
 exports.SEQUELIZE_DOCUMENT = Manager.PropertyManager.SEQUELIZE_DOCUMENT;
