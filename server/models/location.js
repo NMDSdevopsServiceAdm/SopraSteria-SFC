@@ -2,15 +2,10 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('location', {
-    cqcid: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
-    },
     locationid: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
+      primaryKey: true,
       unique: true
     },
     locationname: {

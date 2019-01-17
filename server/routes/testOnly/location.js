@@ -31,7 +31,6 @@ const formatAddressResponse = (addresses) => {
   let theseAddresses = [];
 
   addresses.forEach(thisAddress => theseAddresses.push ({
-    cqcid: thisAddress.cqcid,
     address1:thisAddress.addressline1,
     address2:thisAddress.addressline2,
     townAndCity: thisAddress.towncity,
