@@ -27,7 +27,10 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      // TODO implement
+      await this.saveHandler()
+      this.router.navigate(["/main-job-start-date"])
+      // or
+      // this.router.navigate(["/national-insurance-number"])
 
     } catch (err) {
       // keep typescript transpiler silent
@@ -40,7 +43,6 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
       resolve()
     })
   }
-
 
   ngOnInit() {
     this.form = this.formBuilder.group({

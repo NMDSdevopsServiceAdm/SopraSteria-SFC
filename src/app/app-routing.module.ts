@@ -36,6 +36,7 @@ import { LogoutComponent } from './features/logout/logout.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
 import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
 import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
+import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -208,7 +209,13 @@ const routes: Routes = [
         path: "main-job-start-date",
         component: MainJobStartDateComponent,
         canLoad: [AuthGuard],
-      }
+      },
+      {
+        path: "national-insurance-number",
+        component: NationalInsuranceNumberComponent
+        canLoad: [AuthGuard],
+        canActivate: [AuthGuard]
+      },
     ]
   },
   {
