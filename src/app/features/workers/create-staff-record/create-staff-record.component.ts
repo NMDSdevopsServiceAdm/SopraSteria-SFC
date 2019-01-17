@@ -38,7 +38,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   private isSocialWorkerSelected(): boolean {
     if (this.form.value.mainJob) {
-      return this.jobsAvailable.some(a => a.id === this.form.value.mainJob && a.title === "Social Worker")
+      return this.jobsAvailable.some(a => a.id === parseInt(this.form.value.mainJob) && a.title === "Social Worker")
     }
 
     return false
