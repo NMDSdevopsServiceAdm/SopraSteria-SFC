@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, ParamMap, Params } from "@angular/router"
 import { switchMap, tap } from "rxjs/operators"
 
 import { MessageService } from "../../../core/services/message.service"
-import { WorkerService } from "../../../core/services/worker.service"
+import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
 import { JobService } from "../../../core/services/job.service"
 import { Contracts } from "../../../core/constants/contracts.enum"
 import { Job } from "../../../core/model/job.model"
@@ -32,8 +32,8 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   form: FormGroup
   jobsAvailable: Job[] = []
   contractsAvailable: Array<string> = []
-  workerId: string
 
+  private workerId: string
   private subscriptions = []
 
   private isSocialWorkerSelected(): boolean {
@@ -58,13 +58,13 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      await this.saveHandler()
+      const res = await this.saveHandler()
 
       if (this.isSocialWorkerSelected()) {
-        this.router.navigate(["/worker/mental-health"])
+        this.router.navigate([`/worker/mental-health/${res.uid}`])
 
       } else {
-        this.router.navigate(["/worker/main-job-start-date"])
+        this.router.navigate([`/worker/main-job-start-date/${res.uid}`])
       }
 
     } catch (err) {
@@ -72,7 +72,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveHandler() {
+  saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       if (this.form.valid) {
         const worker = new Worker(

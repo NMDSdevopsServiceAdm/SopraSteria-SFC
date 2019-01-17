@@ -193,28 +193,27 @@ const routes: Routes = [
       {
         path: 'create-staff-record/:id',
         component: CreateStaffRecordComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
         path: 'create-staff-record',
         component: CreateStaffRecordComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
-        path: 'mental-health',
+        path: 'mental-health/:id',
         component: MentalHealthComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
-        path: "main-job-start-date",
+        path: 'main-job-start-date/:id',
         component: MainJobStartDateComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
-        path: "national-insurance-number",
-        component: NationalInsuranceNumberComponent
-        canLoad: [AuthGuard],
-        canActivate: [AuthGuard]
+        path: 'national-insurance-number/:id',
+        component: NationalInsuranceNumberComponent,
+        canLoad: [AuthGuard]
       },
     ]
   },

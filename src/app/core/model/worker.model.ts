@@ -5,6 +5,7 @@ export class Worker {
   constructor(
     public nameOrId: string,
     public contract: Contracts,
-    public mainJob: JobMain
+    public mainJob: JobMain,
+    public approvedMentalHealthWorker?: string
   ) {}
 }
