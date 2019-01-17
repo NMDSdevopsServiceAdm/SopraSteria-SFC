@@ -11,7 +11,7 @@
             <a routerLink="/registered-question" title="Create an account">Create an account</a>
           </li>
           <li>
-            <a *ngIf="!isLoggedIn()" routerLink="/login" title="Sign out">Sign in</a>
+            <a *ngIf="!isLoggedIn()" routerLink="/login" title="Sign in">Sign in</a>
             <a *ngIf="isLoggedIn()" href="#" (click)="signOut($event)" title="Sign out">Sign out</a>
           </li>
         </ul>

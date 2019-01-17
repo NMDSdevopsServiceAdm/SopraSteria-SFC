@@ -100,8 +100,8 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
       }
 
     } else {
-      // reset sharing options
-      this._shareOptions.enabled = false
+      // reset sharing options - must continue to enable sharing, but remove all share with options.
+      this._shareOptions.enabled = true
       this._shareOptions.with = []
 
       this.subscriptions.push(
