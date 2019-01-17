@@ -320,6 +320,16 @@
                     "type" : "string",
                     "maxLength": 8
                 },
+                "gender" : {
+                    "description": "The worker's gender",
+                    "type" : "string",
+                    "enum" : ["Female", "Male", "Other", "Don't know"]
+                },
+                "disability" : {
+                    "description": "The worker's disability",
+                    "type" : "string",
+                    "enum" : ["Yes", "No", "Undisclosed", "Don't know"]
+                },
                 "createdAt" : {
                     "description" : "When the worker record was created",
                     "type" : "date-time"
