@@ -66,7 +66,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ['Female', 'Male', 'Other', 'Don\'t know'],
-      field: '"Gender"'
+      field: '"GenderValue"'
     },
     disability : {
       type: DataTypes.ENUM,
@@ -85,6 +85,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: DataTypes.NOW,
       field: 'updated'
+    },
+    updatedBy: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: 'updatedby'
     }
   }, {
     tableName: '"Worker"',

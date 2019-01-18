@@ -87,7 +87,9 @@ router.route('/').post(async (req, res) => {
         }
 
         if (isValidWorker) {
-            await newWorker.save();
+            // note - req.username is assured, vecause it is provided through the
+            //  hasAuthorisedEstablishment middleware which runs on all establishment routes
+            await newWorker.save(req.username);
             return res.status(201).json({
                 uid: newWorker.uid
             });
@@ -128,9 +130,8 @@ router.route('/:workerId').put(async (req, res) => {
             const isValidWorker = await thisWorker.load(req.body);
 
             // this is an update to an existing Worker, so no mandatory properties!
-
             if (isValidWorker) {
-                await thisWorker.save();
+                await thisWorker.save(req.username);
                 return res.status(200).json({
                     uid: thisWorker.uid
                 });

@@ -29,15 +29,13 @@ class Worker {
         this._mainJob = null;
         this._created = null;
         this._updated = null;
+        this._updatedBy = null;
 
         // abstracted properties
         this._properties = WorkerProperties;
 
         // change properties
         this._isNew = false;
-        this._chgNameId = false;
-        this._chgContract = false;
-        this._chgMainJob = false;
         
         // default logging level - errors only
         // TODO: INFO logging on Worker; change to LOG_ERROR only
@@ -122,7 +120,7 @@ class Worker {
 
     // saves the Worker to DB. Returns true if saved; false is not.
     // Throws "WorkerSaveException" on error
-    async save() {
+    async save(savedBy) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -140,6 +138,7 @@ class Worker {
                 const creationDocument = {
                     establishmentFk: this._establishmentId,
                     uid: this.uid,
+                    updatedBy: savedBy,
                     attributes: ['id', 'created', 'updated'],
                 };
 
@@ -157,6 +156,7 @@ class Worker {
                 this._id = sanitisedResults.ID;
                 this._created = sanitisedResults.created;
                 this._updated = sanitisedResults.updated;
+                this._updatedBy = savedBy;
                 this._isNew = false;
                 this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 
@@ -180,6 +180,7 @@ class Worker {
                 const updateDocument = {
                     ...modifedUpdateDocument,
                     updated: updatedTimestamp,
+                    updatedBy: savedBy
                 };
 
                 // now save the document
@@ -197,6 +198,7 @@ class Worker {
                     const updatedRecord = updatedRows[0].get({plain: true});
 
                     this._updated = updatedRecord.updated;
+                    this._updatedBy = savedBy;
                     this._id = updatedRecord.ID;
 
                     this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
@@ -275,6 +277,7 @@ class Worker {
                 this._uid = workerUid;
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
+                this._updatedBy = fetchResults.updatedBy;
 
                 // load extendable properties
                 await this._properties.restore(fetchResults, SEQUELIZE_DOCUMENT_TYPE);
@@ -313,7 +316,7 @@ class Worker {
                     attributes: ['id', 'title']
                   }
             ],
-            attributes: ['uid', 'nameId', 'contract'],
+            attributes: ['uid', 'nameId', 'contract', "created", "updated", "updatedBy"],
             order: [
                 ['updated', 'DESC']
             ]           
@@ -328,7 +331,10 @@ class Worker {
                     mainJob: {
                         jobId: thisWorker.mainJob.id,
                         title: thisWorker.mainJob.title
-                    }
+                    },
+                    created:  thisWorker.created.toJSON(),
+                    updated: thisWorker.updated.toJSON(),
+                    updatedBy: thisWorker.updatedBy
                 })
             });
         }
@@ -345,7 +351,8 @@ class Worker {
         const myDefaultJSON = {
             uid:  this.uid,
             created:  this.created.toJSON(),
-            updated: this.updated.toJSON()
+            updated: this.updated.toJSON(),
+            updatedBy: this.updatedBy
         };
 
         // TODO: JSON schema validation
@@ -367,6 +374,9 @@ class Worker {
     }
     get updated() {
         return this._updated;
+    }
+    get updatedBy() {
+        return this._updatedBy;
     }
 
 
