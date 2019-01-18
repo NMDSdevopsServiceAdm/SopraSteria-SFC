@@ -36,6 +36,7 @@ import { LogoutComponent } from './features/logout/logout.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
 import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
 import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
+import { NotFoundComponent } from './features/not-found/not-found.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -210,6 +211,10 @@ const routes: Routes = [
         canLoad: [AuthGuard],
       }
     ]
+  },
+  {
+    path: "404",
+    component: NotFoundComponent
   },
   {
     path: "",
