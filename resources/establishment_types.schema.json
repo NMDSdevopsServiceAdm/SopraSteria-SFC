@@ -273,6 +273,90 @@
             },
             "required" : ["enabled"]
         },
+        "ChangeHistory" : {
+            "description": "A reverse chronological set of change events. TODO: Add a tighter restriction on required, because before and after are only required when event is changed only, and property only required when event is saved or changed.",
+            "type" : "array",
+            "items" : [
+                {
+                    "properties": {
+                        "when" : {
+                            "description": "The timestamp of the change event",
+                            "type" : "date-time"
+                        },
+                        "event" : {
+                            "description": "The event type",
+                            "type" : "string",
+                            "enum" : ["created", "updated", "saved", "changed"]
+                        },
+                        "by" : {
+                            "description" : "The username of who effected the change event",
+                            "type" : "string"
+                        },
+                        "property" : {
+                            "description": "The name of the property which has been changed; this is optional if this history is embedded within a property",
+                            "type" : "string"
+                        },
+                        "before" : {
+                            "description" : "The value before the change; any JSON type"
+                        },
+                        "after" : {
+                            "description": "The value after the change; any JSON type"
+                        }
+                    },
+                    "required" : ["when", "event", "by"]
+                }
+            ]
+        },
+        "PropertyChangeStatus" : {
+            "description": "Used by extended change properties, that can report on their current changd/saved status",
+            "properties" : {
+                "lastSavedBy" : {
+                    "description": "The username of the person who last saved (with or without change) this property",
+                    "type" : "string"
+                },
+                "lastChangedBy" : {
+                    "description": "The username of the person who last changed (value change) this property",
+                    "type" : "string"
+                },
+                "lastSaved" : {
+                    "description": "The timestamp of when last saved (with or without change) this property",
+                    "type" : "string"
+                },
+                "lastChanged" : {
+                    "description": "The timestamp of when last changed (value change) this property",
+                    "type" : "string"
+                }
+            },
+            "required" : ["lastSavedBy", "lastChangedBy", "lastSaved", "lastChanged", "changeHistory"]
+        },
+        "WorkerGender" : {
+            "description": "The worker's gender",
+            "oneOf": [
+                {
+                    "description": "Simple Gender type",
+                    "type" : "string",
+                    "enum" : ["Female", "Male", "Other", "Don't know"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Gender with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "enum" : ["Female", "Male", "Other", "Don't know"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
         "Worker" : {
             "description" : "A Worker belongs to a single Establishment",
             "properties" : {
@@ -322,8 +406,7 @@
                 },
                 "gender" : {
                     "description": "The worker's gender",
-                    "type" : "string",
-                    "enum" : ["Female", "Male", "Other", "Don't know"]
+                    "$ref" : "#/definitions/WorkerGender"
                 },
                 "disability" : {
                     "description": "The worker's disability",
@@ -337,9 +420,16 @@
                 "updatedAt" : {
                     "description": "When the worker record was last updated",
                     "type" : "date-time"
+                },
+                "updatedBy" : {
+                    "description" : "The username of the last person to update the Worker",
+                    "type" : "string"
+                },
+                "history" : {
+                    "$ref" : "#/definitions/ChangeHistory"
                 }
             },
-            "required" : ["uid", "nameOrId", "contractType", "mainJob"]
+            "required" : ["uid", "nameOrId", "contractType", "mainJob", "createdAt", "updatedAt", "updatedBy"]
         },
         "Establishment" : {
             "description" : "A physical location offering care services; can be commercial or private location",

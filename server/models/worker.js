@@ -96,11 +96,6 @@ module.exports = function(sequelize, DataTypes) {
     schema: 'cqc',
     createdAt: false,
     updatedAt: false,    // intentionally keeping these false; updated timestamp will be managed within the Worker business model not this DB model
-    uniqueKeys: {
-      nameId_unique: {
-        fields: ['establishmentFk', 'nameId']
-      }
-    }
   });
 
   Worker.associate = (models) => {
@@ -114,6 +109,11 @@ module.exports = function(sequelize, DataTypes) {
       targetKey: 'id',
       as: 'mainJob'
     });
+    Worker.hasMany(models.workerAudit, {
+      foreignKey: 'workerFk',
+      sourceKey: 'id',
+      as: 'auditEvents'
+    })
   };
 
   return Worker;

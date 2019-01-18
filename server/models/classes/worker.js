@@ -30,6 +30,7 @@ class Worker {
         this._created = null;
         this._updated = null;
         this._updatedBy = null;
+        this._auditEvents = null;
 
         // abstracted properties
         this._properties = WorkerProperties;
@@ -142,23 +143,35 @@ class Worker {
                     attributes: ['id', 'created', 'updated'],
                 };
 
-                // now append the extendable properties.
-                // Note - although the POST (create) has a default
-                //   set of mandatory properties, there is no reason
-                //   why we cannot create a Worker record with more properties
-                const modifedCreationDocument = this._properties.save(creationDocument);
+                // need to create the Worker record and the Worker Audit event
+                //  in one transaction
+                await models.sequelize.transaction(async t => {
+                    // now append the extendable properties.
+                    // Note - although the POST (create) has a default
+                    //   set of mandatory properties, there is no reason
+                    //   why we cannot create a Worker record with more properties
+                    const modifedCreationDocument = this._properties.save(creationDocument);
 
-                // now save the document
-                let creation = await models.worker.create(modifedCreationDocument);
+                    // now save the document
+                    let creation = await models.worker.create(modifedCreationDocument);
 
-                const sanitisedResults = creation.get({plain: true});
+                    const sanitisedResults = creation.get({plain: true});
 
-                this._id = sanitisedResults.ID;
-                this._created = sanitisedResults.created;
-                this._updated = sanitisedResults.updated;
-                this._updatedBy = savedBy;
-                this._isNew = false;
-                this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
+                    this._id = sanitisedResults.ID;
+                    this._created = sanitisedResults.created;
+                    this._updated = sanitisedResults.updated;
+                    this._updatedBy = savedBy;
+                    this._isNew = false;
+
+                    // having the worker id we can now created the audit record
+                    await models.workerAudit.create({
+                        workerFk: this._id,
+                        username: savedBy,
+                        type: 'created',
+                    });
+
+                    this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
+                });
                 
             } catch (err) {
                 // if the name/Id property is known, use it in the error message
@@ -174,43 +187,56 @@ class Worker {
             try {
                 const updatedTimestamp = new Date();
 
-                // now append the extendable properties
-                const modifedUpdateDocument = this._properties.save({});
+                // need to update the existing Worker record and add an
+                //  updated audit event within a single transaction
+                await models.sequelize.transaction(async t => {
+                    // now append the extendable properties
+                    const modifedUpdateDocument = this._properties.save({});
 
-                const updateDocument = {
-                    ...modifedUpdateDocument,
-                    updated: updatedTimestamp,
-                    updatedBy: savedBy
-                };
+                    const updateDocument = {
+                        ...modifedUpdateDocument,
+                        updated: updatedTimestamp,
+                        updatedBy: savedBy
+                    };
 
-                // now save the document
-                let [updatedRecordCount, updatedRows] =
-                    await models.worker.update(updateDocument,
-                                               {
-                                                    returning: true,
-                                                    where: {
-                                                        uid: this.uid
-                                                    },
-                                                    attributes: ['id', 'updated'],
-                                               });
+                    // now save the document
+                    let [updatedRecordCount, updatedRows] =
+                        await models.worker.update(updateDocument,
+                                                {
+                                                        returning: true,
+                                                        where: {
+                                                            uid: this.uid
+                                                        },
+                                                        attributes: ['id', 'updated'],
+                                                });
 
-                if (updatedRecordCount === 1) {
-                    const updatedRecord = updatedRows[0].get({plain: true});
+                    if (updatedRecordCount === 1) {
+                        const updatedRecord = updatedRows[0].get({plain: true});
 
-                    this._updated = updatedRecord.updated;
-                    this._updatedBy = savedBy;
-                    this._id = updatedRecord.ID;
+                        this._updated = updatedRecord.updated;
+                        this._updatedBy = savedBy;
+                        this._id = updatedRecord.ID;
 
-                    this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
+                        // having updated the record, create the audit event
+                        await models.workerAudit.create({
+                            workerFk: this._id,
+                            username: savedBy,
+                            type: 'updated',
+                        });
 
-                } else {
-                    const nameId = this._properties.get('NameOrId');
-                    throw new WorkerExceptions.WorkerSaveException(null,
-                                                                this.uid,
-                                                                nameId ? nameId.property : null,
-                                                                err,
-                                                                `Failed to update resulting worker record with uid: ${this._uid}`);
-                }
+                        this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
+
+                    } else {
+                        const nameId = this._properties.get('NameOrId');
+                        throw new WorkerExceptions.WorkerSaveException(null,
+                                                                    this.uid,
+                                                                    nameId ? nameId.property : null,
+                                                                    err,
+                                                                    `Failed to update resulting worker record with uid: ${this._uid}`);
+                    }
+
+
+                });
                 
             } catch (err) {
                 // if the name/Id property is known, use it in the error message
@@ -242,7 +268,7 @@ class Worker {
     // loads the Worker (with given id) from DB, but only if it belongs to the given Establishment
     // returns true on success; false if no Worker
     // Can throw WorkerRestoreException exception.
-    async restore(workerUid) {
+    async restore(workerUid, showHistory=false) {
         if (!workerUid) {
             throw new WorkerExceptions.WorkerRestoreException(null,
                 null,
@@ -257,7 +283,7 @@ class Worker {
             //  fetch, we are sure to only fetch those
             //  worker records associated to the given
             //   establishment
-            const fetchResults = await models.worker.findOne({
+            const fetchQuery = {
                 where: {
                     establishmentFk: this._establishmentId,
                     uid: workerUid
@@ -269,7 +295,20 @@ class Worker {
                         attributes: ['id', 'title']
                     }
                 ]
-            });
+            };
+
+            // if history of the Worker is also required; attach the association
+            //  and order in reverse chronological
+            if (showHistory) {
+                fetchQuery.include.push({
+                    model: models.workerAudit,
+                    as: 'auditEvents',
+                    order: [
+                        ['when', 'DESC']
+                    ]
+                });
+            }
+            const fetchResults = await models.worker.findOne(fetchQuery);
 
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
@@ -278,6 +317,10 @@ class Worker {
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
+
+                if (fetchResults.auditEvents) {
+                    this._auditEvents = fetchResults.auditEvents;
+                }
 
                 // load extendable properties
                 await this._properties.restore(fetchResults, SEQUELIZE_DOCUMENT_TYPE);
@@ -342,8 +385,22 @@ class Worker {
         return allWorkers;
     };
 
+    // helper returns a set 'json ready' objects for representing a Worker's overall
+    //  change history, from a given set of audit events (those events being created
+    //  or updated only)
+    formatWorkerHistoryEvents(auditEvents) {
+        return auditEvents.filter(thisEvent => ['created', 'updated'].includes(thisEvent.type))
+            .map(thisEvent => {
+                return {
+                    when: thisEvent.when,
+                    username: thisEvent.username,
+                    event: thisEvent.type
+                };
+            });
+    };
+
     // returns a Javascript object which can be used to present as JSON
-    toJSON() {
+    toJSON(showHistory=false) {
         // JSON representation of extendable properties
         const myJSON = this._properties.toJSON();
 
@@ -358,7 +415,8 @@ class Worker {
         // TODO: JSON schema validation
         return {
             ...myDefaultJSON,
-            ...myJSON
+            ...myJSON,
+            history: this.formatWorkerHistoryEvents(this._auditEvents)
         };
     }
 
