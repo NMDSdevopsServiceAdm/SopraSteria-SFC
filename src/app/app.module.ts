@@ -53,12 +53,15 @@ import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
 import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
+import { LogoutComponent } from './features/logout/logout.component';
+
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
 import { MessageService } from './core/services/message.service';
 import { FeedbackService } from './core/services/feedback.service';
 import { EstablishmentService } from './core/services/establishment.service';
 import { LocalAuthorityService } from './core/services/localAuthority.service';
+import { AuthGuard } from './core/services/auth-guard.service';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/services/auth-interceptor';
@@ -108,6 +111,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     FeedbackComponent,
     ContactUsComponent,
     TermsConditionsComponent,
+    LogoutComponent,
   ],
   imports: [
     BrowserModule,
@@ -140,7 +144,8 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
       useClass: AuthInterceptor,
       multi: true
     },
-    LocalAuthorityService
+    LocalAuthorityService,
+    AuthGuard
   ],
   bootstrap: [AppComponent]
 })

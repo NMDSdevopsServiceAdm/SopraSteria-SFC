@@ -1,0 +1,44 @@
+.auth-controls {
+  display: inline-block;
+  line-height: .5rem;
+  vertical-align: text-bottom;
+  margin-top: 10px;
+  text-align: right;
+
+  @include media(map-get($breakpoints, laptop)) {
+    margin-top: 0;
+    padding-right: 0;
+  }
+
+  ul {
+    display: inline-block;
+
+    li {
+      display: inline-block;
+      padding: 0 1.5rem;
+
+      & ~ li {
+        border-left: 1px solid map-get($color, black);
+      }
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+
+      a,
+      a:visited {
+        font-size: 1.5rem;
+        text-decoration: none;
+        color: map-get($color, black);
+
+        @include media(map-get($breakpoints, laptop)) {
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
+}

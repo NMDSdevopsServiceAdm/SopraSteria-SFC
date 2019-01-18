@@ -3,6 +3,10 @@
   //@include rem(padding, 30px 0 0 0);
 }
 
+.main-page-container > .btn-container {
+  margin-top: 5rem;
+}
+
 .btn {
   width: 100%;
   border: none;
@@ -23,6 +27,7 @@
   }
 
   &.btn-primary {
+    letter-spacing: 1px;
     background-color: $sfc-btn-primary-green;
 
     &:hover,
