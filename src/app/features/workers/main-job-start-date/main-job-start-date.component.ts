@@ -35,13 +35,11 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       if (this.form.valid) {
-        // TODO implement
-
-        // const { day, month, year } = this.form.value
-        // this.worker.mainJobStartDate = `${year}-${month}-${day}`
-        // this.subscriptions.push(
-        //   this.workerService.updateWorker(this.workerId, worker).subscribe(resolve)
-        // )
+        const { day, month, year } = this.form.value
+        this.worker.mainJobStartDate = `${year}-${month}-${day}`
+        this.subscriptions.push(
+          this.workerService.updateWorker(this.workerId, worker).subscribe(resolve)
+        )
 
       } else {
         this.messageService.clearError()

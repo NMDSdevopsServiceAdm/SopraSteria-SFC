@@ -1,0 +1,11 @@
+<fieldset>
+  <label>Day
+    <input type="number" formControlName="{{formControlPrefix}}day" class="form-control" [value]="value.day" min="1" step="1" [ngClass]="{'is-invalid': (form.get('{{formControlPrefix}}day').touched || form.get('{{formControlPrefix}}day').dirty) && !form.get('{{formControlPrefix}}day').valid }">
+  </label>
+  <label>Month
+    <input type="number" formControlName="{{formControlPrefix}}month" class="form-control" [value]="value.month" min="1" step="1" appNumberMax="12" [ngClass]="{'is-invalid': (form.get('{{formControlPrefix}}month').touched || form.get('{{formControlPrefix}}month').dirty) && !form.get('{{formControlPrefix}}month').valid }">
+  </label>
+  <label>Year
+    <input type="number" formControlName="{{formControlPrefix}}year" class="form-control" [value]="value.year" min="1" step="1" appNumberMax="" [ngClass]="{'is-invalid': (form.get('{{formControlPrefix}}year').touched || form.get('{{formControlPrefix}}year').dirty) && !form.get('{{formControlPrefix}}year').valid }">
+  </label>
+</fieldset>
