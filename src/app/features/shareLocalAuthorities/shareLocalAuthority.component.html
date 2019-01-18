@@ -1,12 +1,18 @@
 <div class="main-page-container col-12">
-  <header>
-    <h1 class="h1">Sharing data with local authorities</h1>
-    <p class="page-description">Select which local authorities you would like to share your data with.</p>
-  </header>
+  <div id="back" class="back-link">
+    <a routerLink="/share-options">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
 
   <form novalidate
     (ngSubmit)="onSubmit()"
     [formGroup]="shareLocalAuthoritiesForm">
+
+    <header>
+      <h1 class="h1">Sharing data with local authorities</h1>
+      <p class="page-description">Select which local authorities you would like to share your data with.</p>
+    </header>
 
     <ng-template [ngIf]="isSharingEnabled" [ngIfElse]="notSharing">
       <div class="form-group mb-5">
@@ -15,11 +21,11 @@
               <input type="checkbox"
                 id="primaryAuthorityCtl"
                 formControlName="primaryAuthorityCtl"
-                class="form-control">  
+                class="form-control">
           </div>
           <div class="col-11">
               <label for="primaryAuthorityCtl" class="page-emphasis">{{ primaryAuthorityName }}</label>
-              <p class="page-comment">This is the local authority you are located in</p>    
+              <p class="page-comment">This is the local authority you are located in</p>
           </div>
         </div>
 
@@ -29,9 +35,9 @@
         <div class="form-group mb-5 col-12 p-0">
           <div formArrayName="authoritiesCtl">
             <!-- Note - it is significant that each record/row within the authorityCtl array
-                 is placed within a div having that formArrayName - otherwise, you 
+                 is placed within a div having that formArrayName - otherwise, you
                  cannot use [formGroupName] -->
-            
+
             <div class="row column-des">
               <p *ngIf="hasLocalAuthorities" class="page-emphasis">Local authorities</p>
             </div>
@@ -73,7 +79,7 @@
       <div class="btn-container">
         <button type="submit" class="btn btn-primary">Save and continue</button>
       </div>
-  
+
     </ng-template>
 
     <ng-template #notSharing>
@@ -87,4 +93,3 @@
 
   </form>
 </div>
-
