@@ -29,19 +29,18 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
   private worker: Worker
   private workerId: string
 
-  answersAvailable = ["Yes", "No", "Don't know"]
+  answersAvailable = [ "Yes", "No", "Don't know" ]
 
   async submitHandler() {
     try {
       await this.saveHandler()
 
-      // TODO uncomment when API ready
-      // if (this.worker.otherJob === "Social Worker") {
-      // this.router.navigate([`/worker/national-insurance-number/${this.workerId}`])
+      if (this.worker.otherJobs && this.worker.otherJobs.length) {
+        this.router.navigate([`/worker/national-insurance-number/${this.workerId}`])
 
-      // } else {
-      this.router.navigate([`/worker/main-job-start-date/${this.workerId}`])
-      // }
+      } else {
+        this.router.navigate([`/worker/main-job-start-date/${this.workerId}`])
+      }
 
     } catch (err) {
       // keep typescript transpiler silent

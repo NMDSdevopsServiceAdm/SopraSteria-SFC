@@ -8,7 +8,6 @@ import { WorkerService, WorkerEditResponse } from "../../../core/services/worker
 import { JobService } from "../../../core/services/job.service"
 import { Contracts } from "../../../core/constants/contracts.enum"
 import { Job } from "../../../core/model/job.model"
-import { JobMain } from "../../../core/model/job-main.model"
 import { Worker } from "../../../core/model/worker.model"
 
 
@@ -75,13 +74,13 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       if (this.form.valid) {
-        const worker = new Worker(
-          this.form.value.nameOrId,
-          this.form.value.contract,
-          new JobMain(
-            parseInt(this.form.value.mainJob)
-          )
-        )
+        const worker = {
+          nameOrId: this.form.value.nameOrId,
+          contract: this.form.value.contract,
+          mainJob: {
+            jobId: parseInt(this.form.value.mainJob)
+          }
+        }
 
         if (this.workerId) {
           this.subscriptions.push(
