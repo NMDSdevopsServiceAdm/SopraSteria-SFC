@@ -298,16 +298,25 @@ class Worker {
             };
 
             // if history of the Worker is also required; attach the association
-            //  and order in reverse chronological
+            //  and order in reverse chronological - note, order on id (not when)
+            //  because ID is primay key and hence indexed
             if (showHistory) {
                 fetchQuery.include.push({
                     model: models.workerAudit,
-                    as: 'auditEvents',
-                    order: [
-                        ['when', 'DESC']
-                    ]
+                    as: 'auditEvents'
                 });
+                fetchQuery.order = [
+                    [
+                        {
+                            model: models.workerAudit,
+                            as: 'auditEvents'
+                        },
+                        'id',
+                        'DESC'
+                    ]
+                ];
             }
+            
             const fetchResults = await models.worker.findOne(fetchQuery);
 
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
@@ -389,7 +398,8 @@ class Worker {
     //  change history, from a given set of audit events (those events being created
     //  or updated only)
     formatWorkerHistoryEvents(auditEvents) {
-        return auditEvents.filter(thisEvent => ['created', 'updated'].includes(thisEvent.type))
+        if (auditEvents) {
+            return auditEvents.filter(thisEvent => ['created', 'updated'].includes(thisEvent.type))
             .map(thisEvent => {
                 return {
                     when: thisEvent.when,
@@ -397,6 +407,9 @@ class Worker {
                     event: thisEvent.type
                 };
             });
+        } else {
+            return null;
+        }
     };
 
     // returns a Javascript object which can be used to present as JSON
