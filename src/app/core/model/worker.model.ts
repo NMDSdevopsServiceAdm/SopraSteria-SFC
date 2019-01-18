@@ -6,6 +6,7 @@ export class Worker {
     public nameOrId: string,
     public contract: Contracts,
     public mainJob: JobMain,
-    public approvedMentalHealthWorker?: string
+    public approvedMentalHealthWorker?: string,
+    public mainJobStartDate?: string
   ) {}
 }

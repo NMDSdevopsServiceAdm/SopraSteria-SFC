@@ -13,14 +13,20 @@ import { Worker } from "../../../core/model/worker.model"
 export class MainJobStartDateComponent implements OnInit, OnDestroy {
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private router: Router,
-    private messageService: MessageService) {
+    private route: ActivatedRoute,
+    private workerService: WorkerService,
+    private messageService: MessageService
+  ) {
     this.saveHandler = this.saveHandler.bind(this)
   }
 
   form: FormGroup
+
   private subscriptions = []
+  private worker: Worker
+  private workerId: string
 
   async submitHandler() {
     try {
@@ -38,7 +44,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
         const { day, month, year } = this.form.value
         this.worker.mainJobStartDate = `${year}-${month}-${day}`
         this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, worker).subscribe(resolve)
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve)
         )
 
       } else {
@@ -50,7 +56,31 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // TODO implement
+    this.form = this.formBuilder.group({
+      day: ["", Validators.required],
+      month: ["", Validators.required],
+      year: ["", Validators.required]
+    })
+
+    const params = this.route.snapshot.paramMap
+    this.workerId = params.has("id") ? params.get("id") : null
+
+    if (this.workerId) {
+      this.subscriptions.push(
+        this.workerService.getWorker(this.workerId).subscribe(worker => {
+          this.worker = worker
+
+          if (worker.mainJobStartDate) {
+            const date = worker.mainJobStartDate.split("-")
+            this.form.patchValue({
+              day: date[0],
+              month: date[1],
+              year: date[2],
+            })
+          }
+        })
+      )
+    }
   }
 
   ngOnDestroy() {

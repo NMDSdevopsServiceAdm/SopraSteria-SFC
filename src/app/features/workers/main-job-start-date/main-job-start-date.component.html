@@ -6,13 +6,14 @@
 
     <header>
       <h1 class="h1">What date did they start their main job role?</h1>
+      <p class="page-input-info">For example, 31 3 1980</p>
     </header>
 
     <app-messages></app-messages>
 
     <div class="form-group">
       <div class="field-group mb-5">
-        <app-date-picker [values]="values" [form]="form"></app-date-picker>
+        <app-date-picker [values]="values" [formGroup]="form"></app-date-picker>
       </div>
     </div>
 

@@ -14,11 +14,11 @@ import { Worker } from "../../../core/model/worker.model"
 export class MentalHealthComponent implements OnInit, OnDestroy {
 
   constructor(
-    private workerService: WorkerService,
     private formBuilder: FormBuilder,
-    private messageService: MessageService,
+    private router: Router,
     private route: ActivatedRoute,
-    private router: Router
+    private workerService: WorkerService,
+    private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this)
   }

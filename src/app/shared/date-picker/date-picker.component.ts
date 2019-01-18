@@ -8,8 +8,9 @@ import { FormGroup } from "@angular/forms"
 export class DatePickerComponent implements OnInit {
 
   @Input() formControlPrefix: string = ""
-  @Input() form: FormGroup
+  @Input() formGroup: FormGroup
   @Input() values: Array<string | number>
+  @Input() label: string = ""
 
   constructor() { }
 
