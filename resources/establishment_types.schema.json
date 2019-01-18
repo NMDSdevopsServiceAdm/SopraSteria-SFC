@@ -7,6 +7,10 @@
             "type" : "integer",
             "minimum" : 0
         },
+        "uid" : {
+            "type" : "string",
+            "pattern": "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$"
+        },
         "Username" : {
             "type" : "string",
             "minLength": 3,
@@ -150,7 +154,7 @@
                 }
             }
         },
-        "job" : {
+        "Job" : {
             "description": "An individual job total",
             "type" : "object",
             "properties": {
@@ -171,20 +175,20 @@
             },
             "required" : ["jobId"]
         },
-        "jobs" : {
+        "Jobs" : {
             "description": "The collective definition of number of vacancies, starters and leavers atytributed to a given establishment. Each is optional, but if given, overwrites all existing jobs of that type",
             "type" : "object",
             "properties" : {
                 "Vacancies": {
                     "type" : "array",
                     "items" : [{
-                        "$ref" : "#/definitions/job"
+                        "$ref" : "#/definitions/Job"
                     }]
                 },
                 "starters": {
                     "type" : "array",
                     "items" : [{
-                        "$ref" : "#/definitions/job"
+                        "$ref" : "#/definitions/Job"
                     }]
                 },
                 "leavers": {
@@ -269,6 +273,74 @@
             },
             "required" : ["enabled"]
         },
+        "Worker" : {
+            "description" : "A Worker belongs to a single Establishment",
+            "properties" : {
+                "uid" : {
+                    "description" : "A unique identifier for a Worker",
+                    "$ref" : "#/definitions/uid"
+                },
+                "nameOrId" : {
+                    "description" : "The name or id (staff number) of the worker - unique to the Establishment",
+                    "type"  : "string",
+                    "maxLength": 50
+                },
+                "contract" : {
+                    "description": "The employment contract associated to this worker",
+                    "type" : "string",
+                    "enum" : ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]
+                },
+                "mainJob" : {
+                    "description": "The main job/activity associated with this worker; can have other job roles too - see 'otherJobs' below",
+                    "$ref" : "#/defintions/Job",
+                    "required" : ["jobId", "title"]
+                },
+                "approvedMentalHealthWorker" : {
+                    "description" : "Only to be used if the main job is or other jobs include, 'social worker'",
+                    "type" : "string",
+                    "enum" : ["Yes", "No", "Don't know"]
+                },
+                "mainJobStartDate" : {
+                    "description": "The ISO 8601 format start date attributed to the main job role for this worker; this should be updated if the main job role changes. It's date only (YYYY-MM-DD)",
+                    "type" : "string",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                "nationalInsuranceNumber" : {
+                    "description": "National insurance number",
+                    "type" : "string",
+                    "pattern" : "[A-Z]{2] [0-9]{2} [0-9]{2} [A-Z]{1}"
+                },
+                "dateOfBirth" : {
+                    "description" : "Date of Birth; YYYY-MM-DD - ISO 8601",
+                    "type" : "string",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                "postcode" : {
+                    "description" : "Postcode of home address",
+                    "type" : "string",
+                    "maxLength": 8
+                },
+                "gender" : {
+                    "description": "The worker's gender",
+                    "type" : "string",
+                    "enum" : ["Female", "Male", "Other", "Don't know"]
+                },
+                "disability" : {
+                    "description": "The worker's disability",
+                    "type" : "string",
+                    "enum" : ["Yes", "No", "Undisclosed", "Don't know"]
+                },
+                "createdAt" : {
+                    "description" : "When the worker record was created",
+                    "type" : "date-time"
+                },
+                "updatedAt" : {
+                    "description": "When the worker record was last updated",
+                    "type" : "date-time"
+                }
+            },
+            "required" : ["uid", "nameOrId", "contractType", "mainJob"]
+        },
         "Establishment" : {
             "description" : "A physical location offering care services; can be commercial or private location",
             "type" : "object",
@@ -328,7 +400,15 @@
                     "type" : "integer",
                     "minimum": 0,
                     "maximum": 999
-                }            },
+                },
+                "workers" : {
+                    "description": "An Establishment has zero or more Workers",
+                    "type" : "array",
+                    "items" : [
+                        { "$ref" : "#/definitions/Worker" }
+                    ]
+                }
+            },
             "required" : ["id", "name"]
         }
     },

@@ -41,3 +41,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# node v10+ c8 coverage reporting
+/coverage

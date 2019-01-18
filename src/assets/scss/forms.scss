@@ -27,6 +27,15 @@ form,
     color: $error-red;
   }
 
+  .form-group {
+    margin-top: 3rem;
+    margin-bottom: 5rem;
+  }
+
+  .field-group {
+    margin-bottom: 3rem !important;
+  }
+
   .form-group,
   .field-group {
 
@@ -78,7 +87,8 @@ form,
 
     label, .label {
       padding: 0 0 10px 0;
-      margin: 0;
+      margin: 0 0 2rem 0;
+      letter-spacing: 1px;
 
       @include rem(font-size, 19px);
       @include rem(line-height, 20px);
@@ -112,7 +122,6 @@ form,
 
 @media (min-width: 641px) {
   .multiple-choice {
-    float: left;
   }
 }
 
@@ -128,6 +137,13 @@ form,
   zoom: 1;
   filter: alpha(opacity=0);
   opacity: 0;
+}
+
+label {
+  select,
+  input {
+    margin-top: 10px;
+  }
 }
 
 .multiple-choice label {

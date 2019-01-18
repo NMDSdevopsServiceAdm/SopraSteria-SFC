@@ -5,8 +5,7 @@ import { Message } from "../model/message.model"
 
 @Component({
   selector: 'app-messages',
-  templateUrl: './messages.component.html',
-  styleUrls: ['./messages.component.scss']
+  templateUrl: './messages.component.html'
 })
 export class MessagesComponent implements OnInit, OnDestroy {
   success: any

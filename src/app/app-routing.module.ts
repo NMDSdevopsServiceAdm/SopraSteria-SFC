@@ -33,6 +33,9 @@ import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/s
 import { FeedbackComponent } from './features/feedback/feedback.component';
 import { ContactUsComponent } from "./features/contactUs/contactUs.component";
 import { LogoutComponent } from './features/logout/logout.component';
+import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
+import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
+import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -183,6 +186,32 @@ const routes: Routes = [
     component: TermsConditionsComponent
   },
   {
+    path: 'worker',
+    canActivateChild: [AuthGuard],
+    children: [
+      {
+        path: 'create-staff-record/:id',
+        component: CreateStaffRecordComponent,
+        canLoad: [AuthGuard],
+      },
+      {
+        path: 'create-staff-record',
+        component: CreateStaffRecordComponent,
+        canLoad: [AuthGuard],
+      },
+      {
+        path: 'mental-health',
+        component: MentalHealthComponent,
+        canLoad: [AuthGuard],
+      },
+      {
+        path: "main-job-start-date",
+        component: MainJobStartDateComponent,
+        canLoad: [AuthGuard],
+      }
+    ]
+  },
+  {
     path: "",
     redirectTo: "/welcome",
     pathMatch: "full"
@@ -190,7 +219,7 @@ const routes: Routes = [
   {
     path: "**",
     redirectTo: "/welcome"
-  }
+  },
 ];
 
 @NgModule({
