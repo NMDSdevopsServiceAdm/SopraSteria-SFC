@@ -1,22 +1,36 @@
 // the nameOrId property is a simple string
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
-exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends PropertyPrototype {
-    constructor(nameOrId) {
+exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends ChangePropertyPrototype {
+    constructor() {
         super('NameOrId');
-        super.property = nameOrId;
     }
 
-    static async cloneFromJson(document) {
+    static clone() {
+        return new WorkerNameOrIdProperty();
+    }
+
+    async restoreFromJson(document) {
         if (document.nameOrId) {
-            return new WorkerNameOrIdProperty(document.nameOrId);
+            if (document.nameOrId.length <= 50) {
+                this.property = document.nameOrId;
+            } else {
+                this.property = null;
+            }
         }
     }
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
         if (document.nameId) {
-            return new WorkerNameOrIdProperty(document.nameId);
+            this.property = document.nameId;
+            this.reset();
         }
     }
+
+    get isEqual() {
+        // TODO
+        return true;
+    }
+
     save() {
         return {
             nameId: this.property
@@ -26,10 +40,5 @@ exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends PropertyPr
         return {
             nameOrId: this.property
         }
-    }
-
-    // nameOrId upto 50 characters
-    get valid() {
-        return this.property && this.property.length <= 50;
     }
 };

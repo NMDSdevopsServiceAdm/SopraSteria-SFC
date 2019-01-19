@@ -1,25 +1,41 @@
 // the National Insurance Number property is a type being JobId and Title
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 // database models
 const models = require('../../../index');
 
-exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNumberProperty extends PropertyPrototype {
-    constructor(niNumber) {
+exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNumberProperty extends ChangePropertyPrototype {
+    constructor() {
         super('NationalInsuranceNumber');
-        super.property = niNumber;
+    }
+
+    static clone() {
+        return new WorkerNationalInsuranceNumberProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
+        const niRegex = /^(?!BG)(?!GB)(?!NK)(?!KN)(?!TN)(?!NT)(?!ZZ)(?:[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z])(?:\s*\d\s*){6}([A-D]|\s)$/;
+            
         if (document.nationalInsuranceNumber) {
-            return new WorkerNationalInsuranceNumberProperty(document.nationalInsuranceNumber);
+            if (document.nationalInsuranceNumber.length <= 13 &&
+                niRegex.test(document.nationalInsuranceNumber)) {
+                this.property = document.nationalInsuranceNumber;
+            } else {
+                this.property = null;
+            }
         }
     }
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
         if (document.nationalInsuranceNumber) {
-            return new WorkerNationalInsuranceNumberProperty(document.nationalInsuranceNumber);
+            this.property = document.nationalInsuranceNumber;
+            this.reset();
         }
+    }
+
+    get isEqual() {
+        // TODO
+        return true;
     }
 
     save() {
@@ -32,12 +48,5 @@ exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNum
         return {
             nationalInsuranceNumber: this.property
         }
-    }
-
-    get valid() {
-        // national insurance number format: AA 11 11 11 
-        console.log("")
-        const niRegex = /^(?!BG)(?!GB)(?!NK)(?!KN)(?!TN)(?!NT)(?!ZZ)(?:[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z])(?:\s*\d\s*){6}([A-D]|\s)$/;
-        return this.property && this.property.length <= 13 && niRegex.test(this.property);
     }
 };

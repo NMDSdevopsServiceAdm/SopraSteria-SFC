@@ -1,37 +1,45 @@
 // the Main Job property is a type being JobId and Title
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 // database models
 const models = require('../../../index');
 
-exports.WorkerMainJobProperty = class WorkerMainJobProperty extends PropertyPrototype {
-    constructor(mainJob) {
+exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangePropertyPrototype {
+    constructor() {
         super('MainJob');
-        super.property = mainJob;
+    }
+
+    static clone() {
+        return new WorkerMainJobProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         // TODO: it's a little more than assuming the JSON representation
         if (document.mainJob) {
-            const validatedJob = await WorkerMainJobProperty._validateJob(document.mainJob);
+            const validatedJob = await this._validateJob(document.mainJob);
             if (validatedJob) {
-                return new WorkerMainJobProperty(validatedJob);
+                this.property = validatedJob;
             } else {
-                // we are expecting to restore a main job property, but it is invalid
-                return new WorkerMainJobProperty(null);
+                this.property = null;
             }
         }
     }
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
         if (document.mainJobFk &&
             Number.isInteger(document.mainJobFk) &&
             document.mainJob) {
-            return new WorkerMainJobProperty({
+            this.property = {
                 jobId: document.mainJob.id,
                 title: document.mainJob.title
-            });
+            };
+            this.reset();
         }
+    }
+
+    get isEqual() {
+        // TODO
+        return true;
     }
 
     save() {
@@ -50,11 +58,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends PropertyProt
         }
     }
 
-    get valid() {
-        return WorkerMainJobProperty._valid(this.property);
-    }
-
-    static _valid(jobDef) {
+    _valid(jobDef) {
         // get reference set of jobs to validate against
         if (!jobDef) return false;
 
@@ -70,8 +74,8 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends PropertyProt
 
     // returns false if job definition is not valid, otherwise returns
     //  a well formed job definition using data as given in jobs reference lookup
-    static async _validateJob(jobDef) {
-        if (!WorkerMainJobProperty._valid(jobDef)) return false;
+    async _validateJob(jobDef) {
+        if (!this._valid(jobDef)) return false;
 
         // jobid overrides title, because jobId is indexed whereas title is not!
         let referenceJob = null;

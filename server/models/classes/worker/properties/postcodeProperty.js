@@ -1,25 +1,38 @@
 // the Postcode property is a type being JobId and Title
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
-// database models
-const models = require('../../../index');
+exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends ChangePropertyPrototype {
+    constructor() {
+        super('Postcode');
+    }
 
-exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends PropertyPrototype {
-    constructor(niNumber) {
-        super('NationalInsuranceNumber');
-        super.property = niNumber;
+    static clone() {
+        return new WorkerPostcodeProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
+        const postcodeRegex = /^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$/;
+        // return this.property && ;
         if (document.postcode) {
-            return new WorkerPostcodeProperty(document.postcode);
+            if (document.postcode.length <= 8 &&
+                postcodeRegex.test(document.postcode)) {
+                this.property = document.postcode;
+            } else {
+                this.property = null;
+            }
         }
     }
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
         if (document.postcode) {
-            return new WorkerPostcodeProperty(document.postcode);
+            this.property = document.postcode;
+            this.reset();
         }
+    }
+
+    get isEqual() {
+        // TODO
+        return true;
     }
 
     save() {
@@ -32,10 +45,5 @@ exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends PropertyPr
         return {
             postcode: this.property
         }
-    }
-
-    get valid() {
-        const postcodeRegex = /^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})$/;
-        return this.property && postcodeRegex.test(this.property);
     }
 };

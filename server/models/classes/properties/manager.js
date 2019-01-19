@@ -11,8 +11,8 @@ class PropertyManager {
     static get SEQUELIZE_DOCUMENT() { return 200; }
 
     // adds the property with given name
-    _addProperty(property) {
-        this._properties[property.name] = property;
+    _addProperty(propertyName, property) {
+        this._properties[propertyName] = property;
     }
 
     // returns the property value of given name
@@ -47,55 +47,58 @@ class PropertyManager {
     }
 
     // runs through all known (registered) property types
-    //  restoring from given document type
+    //  restoring from given document type.
     async restore(document, documentType) {
-        // reset of all existing properties
-        this._properties = [];
-
-        const typePromises = [];
-        this._propertyTypes.forEach(async thisType => {
-            let newProperty = null;
-
-            switch (documentType) {
-                case PropertyManager.JSON_DOCUMENT:
-                    typePromises.push(thisType.cloneFromJson(document));
-                    break;
-
-                case PropertyManager.SEQUELIZE_DOCUMENT:
-                    typePromises.push(thisType.cloneFromSequelize(document));
-                    break;
-
-                default:
-                    // do nothing - newProperty remains null
-            }
-        });
-
-        const newProperties = await Promise.all(typePromises);
-
-        // having restored all known properties, add them
-        newProperties.forEach(thisProperty => {
-            // can return undefined from individual clone methods - ignore
-            if (thisProperty) {
-                if (documentType === PropertyManager.SEQUELIZE_DOCUMENT) {
-                    // if restoring from fact (DB), we know the property to be unchanged
-                    thisProperty.reset();
+        // first create any new properties as identified in the given source document
+        //  if they don't already exist
+        try {
+            const initialPropertiesByName = Object.keys(this._properties);
+            this._propertyTypes.forEach(async thisType => {
+                if (!initialPropertiesByName.includes(thisType.name)) {
+                    // clone a new instance of this property and add it to the set of all properties
+                    this._addProperty(thisType.name, thisType.clone());
                 }
-                this._addProperty(thisProperty);
-            }
-        });
+            });
 
+
+            // now for each of the now known properties, restore from the given document
+            const propertyPromises = [];
+            const allKnownPropertiesByName = Object.keys(this._properties);
+            allKnownPropertiesByName.forEach(async thisPropertyName => {
+                const thisProperty = this._properties[thisPropertyName];
+
+                // restoring a property is an async activity
+                switch (documentType) {
+                    case PropertyManager.JSON_DOCUMENT:
+                        propertyPromises.push(thisProperty.restoreFromJson(document));
+                        break;
+
+                    case PropertyManager.SEQUELIZE_DOCUMENT:
+                        propertyPromises.push(thisProperty.restoreFromSequelize(document));
+                        break;
+
+                    default:
+                        // do nothing - newProperty remains null
+                }
+            });
+
+            await Promise.all(propertyPromises);
+        } catch (err) {
+            console.error("Property::Manager restore: ", err);
+        }
 
     };
 
     // runs through all known properties, adding them to the given
-    //  document to save (using sequelize), only if they have been changed.
+    //  document to save (using sequelize), only if they have been modified.
     // Returns modified save document.
     save (document) {
         const allProperties = Object.keys(this._properties);
         allProperties.forEach(thisPropertyType => {
             const thisProperty = this._properties[thisPropertyType];
 
-            if (thisProperty.changed) {
+            if (thisProperty.modified) {
+                console.log("INFO - PropertyManager::save - property with property type: ", thisPropertyType)
                 const saveProperties = thisProperty.save();
 
                 // unlike JSON with allows for rich sub-documents,

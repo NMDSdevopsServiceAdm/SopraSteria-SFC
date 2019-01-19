@@ -1,25 +1,38 @@
 // the contract property is an enumeration
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const CONTRACT_TYPE = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'];
-exports.WorkerContractProperty = class WorkerContractProperty extends PropertyPrototype {
-    constructor(contract) {
+exports.WorkerContractProperty = class WorkerContractProperty extends ChangePropertyPrototype {
+    constructor() {
         super('Contract');
-        super.property = contract;
+    }
+
+    static clone() {
+        return new WorkerContractProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         if (document.contract) {
-            return new WorkerContractProperty(document.contract);
-        } else {
-            return null;
+            if (CONTRACT_TYPE.includes(document.contract)) {
+                this.property = document.contract;
+            } else {
+               this.property = null;
+            }
         }
     }
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
         if (document.contract) {
-            return new WorkerContractProperty(document.contract);
+            this.property = document.contract;
+            this.reset();
         }
+    }
+
+    get isEqual() {
+        // gender is simply a string
+        console.log("WA DEBUG: WorkerContractProperty current/previous values: ", this.property, this.previousProperty)
+        //if (this.property)
+        return true;
     }
 
     save() {
@@ -32,9 +45,5 @@ exports.WorkerContractProperty = class WorkerContractProperty extends PropertyPr
         return {
             contract: this.property
         }
-    }
-
-    get valid() {
-        return this.property && CONTRACT_TYPE.includes(this.property);
     }
 };

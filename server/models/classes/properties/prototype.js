@@ -1,6 +1,6 @@
 class PropertyPrototype {
     constructor(name) {
-        this._changed = false;
+        this._modified = false;
         this._property = null;
         this._name = name;
     }
@@ -11,15 +11,15 @@ class PropertyPrototype {
     }
     set property(value) {
         this._property = value;
-        this._changed = true;
+        this._modified = true;
     }
 
-    // returns true if the property value has been changed
-    get changed() {
-        return this._changed;
+    // returns true if the property value has been modified (doesn't care if the value has changed)
+    get modified() {
+        return this._modified;
     }
     reset() {
-        this._changed = false;
+        this._modified = false;
     }
 
     // returns the "type name" of property
@@ -27,13 +27,22 @@ class PropertyPrototype {
         return this._name;
     }
 
+    // called upon by PropertyManager to create an instance of itself
+    static clone() {
+        throw new Error("Abstract method");
+    }
+
     // is called upon by Property Manager; returns an instance of itself down casted (PropertyPrototype), having    //  found itself within the given JSON document
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
+        // note - always if for the property existing within the document as a single test.
+        // Within that existence test, then test the validity of the property, and if not
+        //  valid, set the property to null (this becoming invalid)
         throw new Error("Abstract method");
     }
     // is called upon by Property Manager; returns an instance of itself down casted
     //  (PropertyPrototype), having found itself within the given sequelize document
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
+        // NOTE - remember to reset having set property
         throw new Error("Abstract method");
     }
 
@@ -50,7 +59,11 @@ class PropertyPrototype {
 
     // returns true if the property is valid; otherwise false
     get valid() {
-        throw new Error("Abstract method");
+        if (this._property) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

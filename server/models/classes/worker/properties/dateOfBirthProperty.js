@@ -1,18 +1,18 @@
 // the DOB (Date of Birth) property is a a date
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 const moment = require('moment');
 
-// database models
-const models = require('../../../index');
-
-exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends PropertyPrototype {
-    constructor(dateOfBirth) {
+exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends ChangePropertyPrototype {
+    constructor() {
         super('DateofBirth');
-        super.property = dateOfBirth;
+    }
+
+    static clone() {
+        return new WorkerDateOfBirthProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         const MINIMUM_AGE=15;
         if (document.dateOfBirth) {
             // mimics main job start date property by ensuring date is a valid date
@@ -25,18 +25,23 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Prop
                 expectedDate.isValid() &&
                 expectedDate.isBefore(thisDate)) {
                 // we have a valid date - but use the rich moment Date as the property value
-                return new WorkerDateOfBirthProperty(expectedDate);
+                this.property = expectedDate;
             } else {
-                return new WorkerDateOfBirthProperty(null);
+                this.property = null;
             }
-
         }
     }
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
         // Note - sequelize will serialise a Javascript Date type from the given Worker sequelize model
         if (document.dateOfBirth) {
-            return new WorkerDateOfBirthProperty(document.dateOfBirth);
+            this.property = document.dateOfBirth;
+            this.reset();
         }
+    }
+
+    get isEqual() {
+        // TODO
+        return true;
     }
 
     save() {
@@ -51,9 +56,5 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Prop
         return {
             dateOfBirth: this.property
         }
-    }
-
-    get valid() {
-        return this.property && this.property.isValid();
     }
 };

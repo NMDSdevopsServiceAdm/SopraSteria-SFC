@@ -1,25 +1,36 @@
 // the contract property is an enumeration
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const DISABILITY_TYPE = ['Yes', 'No', 'Undisclosed', "Don't know"];
-exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends PropertyPrototype {
-    constructor(contract) {
+exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends ChangePropertyPrototype {
+    constructor() {
         super('Disability');
-        super.property = contract;
+    }
+
+    static clone() {
+        return new WorkerDisabilityProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         if (document.disability) {
-            return new WorkerDisabilityProperty(document.disability);
-        } else {
-            return null;
+            if (DISABILITY_TYPE.includes(document.disability)) {
+                this.property = document.disability;
+            } else {
+                this.property = null;
+            }
         }
     }
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
         if (document.disability) {
-            return new WorkerDisabilityProperty(document.disability);
+            this.property = document.disability;
+            this.reset();
         }
+    }
+
+    get isEqual() {
+        // TODO
+        return true;
     }
 
     save() {
@@ -32,9 +43,5 @@ exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends Proper
         return {
             disability: this.property
         }
-    }
-
-    get valid() {
-        return this.property && DISABILITY_TYPE.includes(this.property);
     }
 };

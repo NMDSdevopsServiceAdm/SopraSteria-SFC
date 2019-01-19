@@ -1,25 +1,36 @@
 // the gender property is an enumeration
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const GENDER_TYPE = ['Female', 'Male', 'Other', "Don't know"];
-exports.WorkerGenderProperty = class WorkerGenderProperty extends PropertyPrototype {
-    constructor(contract) {
+exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangePropertyPrototype {
+    constructor() {
         super('Gender');
-        super.property = contract;
+    }
+
+    static clone() {
+        return new WorkerGenderProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         if (document.gender) {
-            return new WorkerGenderProperty(document.gender);
-        } else {
-            return null;
+            if (GENDER_TYPE.includes(document.gender)) {
+                this.property = document.gender;
+            } else {
+                this.property = null;
+            }
         }
     }
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
         if (document.gender) {
-            return new WorkerGenderProperty(document.gender);
+            this.property = document.gender;
+            this.reset();
         }
+    }
+
+    get isEqual() {
+        // TODO
+        return true;
     }
 
     save() {
@@ -32,9 +43,5 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends PropertyProtot
         return {
             gender: this.property
         }
-    }
-
-    get valid() {
-        return this.property && GENDER_TYPE.includes(this.property);
     }
 };

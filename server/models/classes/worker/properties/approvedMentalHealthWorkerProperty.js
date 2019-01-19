@@ -1,25 +1,36 @@
 // the Approved Mental Health Worker property is an enumeration
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const HEALTH_WORKER_TYPE = ['Yes', 'No', "Don't know"];
-exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHealthWorkerProperty extends PropertyPrototype {
-    constructor(value) {
+exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHealthWorkerProperty extends ChangePropertyPrototype {
+    constructor() {
         super('ApprovedMentalHealthWorker');
-        super.property = value;
+    }
+
+    static clone() {
+        return new WorkerApprovedMentalHealthWorkerProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         if (document.approvedMentalHealthWorker) {
-            return new WorkerApprovedMentalHealthWorkerProperty(document.approvedMentalHealthWorker);
-        } else {
-            return null;
+            if (HEALTH_WORKER_TYPE.includes(document.approvedMentalHealthWorker)) {
+                this.property = document.approvedMentalHealthWorker;
+            } else {
+                this.property = null;
+            }
         }
     }
-    static async cloneFromSequelize(document) {
+    async restoreFromSequelize(document) {
         if (document.approvedMentalHealthWorker) {
-            return new WorkerApprovedMentalHealthWorkerProperty(document.approvedMentalHealthWorker);
+            this.property = document.approvedMentalHealthWorker;
+            this.reset();
         }
+    }
+
+    get isEqual() {
+        // TODO
+        return true;
     }
 
     save() {
@@ -32,9 +43,5 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
         return {
             approvedMentalHealthWorker: this.property
         }
-    }
-
-    get valid() {
-        return this.property && HEALTH_WORKER_TYPE.includes(this.property);
     }
 };

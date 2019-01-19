@@ -316,7 +316,7 @@ class Worker {
                     ]
                 ];
             }
-            
+
             const fetchResults = await models.worker.findOne(fetchQuery);
 
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
