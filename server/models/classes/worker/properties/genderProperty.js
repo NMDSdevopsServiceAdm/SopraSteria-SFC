@@ -47,11 +47,7 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
             return {
                 gender : {
                     currentValue: this.property,
-                    lastSavedBy : this.savedBy,
-                    lastChangedBy : this.changedBy ? this.changedBy : null,
-                    lastSaved : this.savedAt.toJSON(),
-                    lastChanged : this.changedAt ? this.changedAt.toJSON() : null,
-                    changeHistory : []
+                    ... this.changePropsToJSON()
                 }
             }
         }

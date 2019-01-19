@@ -421,11 +421,14 @@ class Worker {
 
         // add worker default properties
         const myDefaultJSON = {
-            uid:  this.uid,
-            created:  this.created.toJSON(),
-            updated: this.updated.toJSON(),
-            updatedBy: this.updatedBy
+            uid:  this.uid
         };
+
+        if (showHistory) {
+            myDefaultJSON.created = this.created.toJSON();
+            myDefaultJSON.updated = this.updated.toJSON();
+            myDefaultJSON.updatedBy = this.updatedBy;
+        }
 
         // TODO: JSON schema validation
         let workerHistory = null;

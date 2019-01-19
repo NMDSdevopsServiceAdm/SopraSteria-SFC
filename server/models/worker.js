@@ -18,18 +18,58 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"EstablishmentFK"'
     },
-    nameId: {
+    NameOrIdValue: {
       type: DataTypes.TEXT,
       allowNull: false,
       unique: true,
       len: [0,50],
-      field: '"NameOrID"'
+      field: '"NameOrIdValue"'
     },
-    contract: {
+    NameOrIdSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NameOrIdSavedAt"'
+    },
+    NameOrIdChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NameOrIdChangedAt"'
+    },
+    NameOrIdSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NameOrIdSavedBy"'
+    },
+    NameOrIdChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NameOrIdChangedBy"'
+    },
+    ContractValue: {
       type: DataTypes.ENUM,
       allowNull: false,
       values: ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'],
-      field: '"Contract"'
+      field: '"ContractValue"'
+    },
+    ContractSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ContractSavedAt"'
+    },
+    ContractChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ContractChangedAt"'
+    },
+    ContractSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ContractSavedBy"'
+    },
+    ContractChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ContractChangedBy"'
     },
     mainJobFk : {
       type: DataTypes.INTEGER,

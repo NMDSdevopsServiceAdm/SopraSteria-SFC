@@ -144,6 +144,17 @@ class ChangePropertyPrototype extends PropertyPrototype {
             ...sequelizeSaveDefinition
         };
     }
+
+    // return JSON for the change properties
+    changePropsToJSON() {
+        return {
+            lastSavedBy : this.savedBy ? this.savedBy : null,
+            lastChangedBy : this.changedBy ? this.changedBy : null,
+            lastSaved : this.savedAt ? this.savedAt.toJSON() : null,
+            lastChanged : this.changedAt ? this.changedAt.toJSON() : null,
+            changeHistory : []
+        };
+    }
 }
 
 module.exports.ChangePropertyPrototype = ChangePropertyPrototype;

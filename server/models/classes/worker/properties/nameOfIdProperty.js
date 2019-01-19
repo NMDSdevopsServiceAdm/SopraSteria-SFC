@@ -19,26 +19,35 @@ exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends ChangeProp
             }
         }
     }
-    async restoreFromSequelize(document) {
-        if (document.nameId) {
-            this.property = document.nameId;
-            this.reset();
-        }
+
+    restorePropertyFromSequelize(document) {
+        return document.NameOrIdValue;
+    }
+    savePropertyToSequelize() {
+        return {
+            NameOrIdValue: this.property
+        };
     }
 
     isEqual(currentValue, newValue) {
-        // TODO
-        return true;
+        // name or ID is a simple tring
+        if (currentValue === newValue) return true;
+        else return false;
     }
 
-    save(username) {
-        return {
-            nameId: this.property
-        }
-    }
     toJSON(withHistory=false) {
-        return {
-            nameOrId: this.property
+        if (!withHistory) {
+            // simple form
+            return {
+                nameOrId: this.property
+            }
+        } else {
+            return {
+                nameOrId : {
+                    currentValue: this.property,
+                    ... this.changePropsToJSON()
+                }
+            };
         }
     }
 };

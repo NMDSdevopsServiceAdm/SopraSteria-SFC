@@ -21,29 +21,35 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
             }
         }
     }
-    async restoreFromSequelize(document) {
-        if (document.contract) {
-            this.property = document.contract;
-            this.reset();
-        }
+
+    restorePropertyFromSequelize(document) {
+        return document.ContractValue;
+    }
+    savePropertyToSequelize() {
+        return {
+            ContractValue: this.property
+        };
     }
 
     isEqual(currentValue, newValue) {
-        // gender is simply a string
-        //console.log("WA DEBUG: WorkerContractProperty current/previous values: ", this.property, this.previousProperty)
-        //if (this.property)
-        return true;
-    }
-
-    save(username) {
-        return {
-            contract: this.property
-        }
+        // contract is a simple (enum'd) string
+        if (currentValue === newValue) return true;
+        else return false;
     }
 
     toJSON(withHistory=false) {
-        return {
-            contract: this.property
+        if (!withHistory) {
+            // simple form
+            return {
+                contract: this.property
+            }
+        } else {
+            return {
+                contract : {
+                    currentValue: this.property,
+                    ... this.changePropsToJSON()
+                }
+            }
         }
     }
 };
