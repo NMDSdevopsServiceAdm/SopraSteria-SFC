@@ -357,6 +357,258 @@
                 }
             ]
         },
+        "WorkerNameOrId" : {
+            "description": "The worker's name/id",
+            "oneOf": [
+                {
+                    "description": "Simple name or id (staff number)",
+                    "type"  : "string",
+                    "maxLength": 50
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Name or id with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type"  : "string",
+                                    "maxLength": 50
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerContract" : {
+            "description": "The worker's contract",
+            "oneOf": [
+                {
+                    "description": "Simple contract",
+                    "type" : "string",
+                    "enum" : ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Contract with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "enum" : ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerMainJob" : {
+            "description": "The worker's contract",
+            "oneOf": [
+                {
+                    "description": "Simple main job",
+                    "$ref" : "#/defintions/Job",
+                    "required" : ["jobId", "title"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Main job with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "$ref" : "#/defintions/Job",
+                                    "required" : ["jobId", "title"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerApprovedMentalHealthWorker" : {
+            "description": "The worker's Approval Mental Health Worker status",
+            "oneOf": [
+                {
+                    "description": "Simple Approval Mental Health Worker status",
+                    "type" : "string",
+                    "enum" : ["Yes", "No", "Don't know"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Approval Mental Health Worker status with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "enum" : ["Yes", "No", "Don't know"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerMainJobStartDate" : {
+            "description": "The worker's Main Job Start Date",
+            "oneOf": [
+                {
+                    "description": "Simple Main Job Start Date",
+                    "type" : "string",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Main Job Start Date with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerNationalInsuranceNumber" : {
+            "description": "The worker's NI Number",
+            "oneOf": [
+                {
+                    "description": "Simple NI Number",
+                    "type" : "string",
+                    "pattern" : "[A-Z]{2] [0-9]{2} [0-9]{2} [A-Z]{1}"
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "NI Number with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "pattern" : "[A-Z]{2] [0-9]{2} [0-9]{2} [A-Z]{1}"
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerDateOfBirth" : {
+            "description": "The worker's Date of Birth",
+            "oneOf": [
+                {
+                    "description": "Simple Date of Birth",
+                    "type" : "string",
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Date of Birth with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerPostcode" : {
+            "description": "The worker's Date of Birth",
+            "oneOf": [
+                {
+                    "description": "Simple Date of Birth",
+                    "type" : "string",
+                    "maxLength": 8
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Date of Birth with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "maxLength": 8
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerDisability" : {
+            "description": "The worker's Disability",
+            "oneOf": [
+                {
+                    "description": "Simple Disability",
+                    "type" : "string",
+                    "enum" : ["Yes", "No", "Undisclosed", "Don't know"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Disability with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "enum" : ["Yes", "No", "Undisclosed", "Don't know"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
         "Worker" : {
             "description" : "A Worker belongs to a single Establishment",
             "properties" : {
@@ -366,43 +618,36 @@
                 },
                 "nameOrId" : {
                     "description" : "The name or id (staff number) of the worker - unique to the Establishment",
-                    "type"  : "string",
-                    "maxLength": 50
+                    "$ref" : "#/definitions/WorkerNameOrId"
                 },
                 "contract" : {
                     "description": "The employment contract associated to this worker",
-                    "type" : "string",
-                    "enum" : ["Permanent", "Temporary", "Pool/Bank", "Agency", "Other"]
+                    "$ref" : "#/definitions/WorkerContract"
                 },
                 "mainJob" : {
                     "description": "The main job/activity associated with this worker; can have other job roles too - see 'otherJobs' below",
-                    "$ref" : "#/defintions/Job",
-                    "required" : ["jobId", "title"]
+                    "$ref" : "#/definitions/WorkerMainJob"
                 },
                 "approvedMentalHealthWorker" : {
                     "description" : "Only to be used if the main job is or other jobs include, 'social worker'",
                     "type" : "string",
-                    "enum" : ["Yes", "No", "Don't know"]
+                    "$ref" : "#/definitions/WorkerApprovedMentalHealthWorker"
                 },
                 "mainJobStartDate" : {
                     "description": "The ISO 8601 format start date attributed to the main job role for this worker; this should be updated if the main job role changes. It's date only (YYYY-MM-DD)",
-                    "type" : "string",
-                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                    "$ref" : "#/definitions/WorkerMainJobStartDate"
                 },
                 "nationalInsuranceNumber" : {
                     "description": "National insurance number",
-                    "type" : "string",
-                    "pattern" : "[A-Z]{2] [0-9]{2} [0-9]{2} [A-Z]{1}"
+                    "$ref" : "#/definitions/WorkerNationalInsuranceNumber"
                 },
                 "dateOfBirth" : {
                     "description" : "Date of Birth; YYYY-MM-DD - ISO 8601",
-                    "type" : "string",
-                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                    "$ref" : "#/definitions/WorkerDateOfBirth"
                 },
                 "postcode" : {
                     "description" : "Postcode of home address",
-                    "type" : "string",
-                    "maxLength": 8
+                    "$ref" : "#/definitions/WorkerPostcode"
                 },
                 "gender" : {
                     "description": "The worker's gender",
@@ -410,8 +655,7 @@
                 },
                 "disability" : {
                     "description": "The worker's disability",
-                    "type" : "string",
-                    "enum" : ["Yes", "No", "Undisclosed", "Don't know"]
+                    "$ref" : "#/definitions/WorkerDisability"
                 },
                 "createdAt" : {
                     "description" : "When the worker record was created",
