@@ -48,12 +48,12 @@ class PropertyPrototype {
 
     // is called upon by Property Manager; returns false if nothing to persist, otherwise
     //  an object with a set of properties to merge
-    save() {
+    save(username) {
         throw new Error("Abstract method");
     }
 
     // is called upon by Property Manager; returns an object representing the JSON equivalent
-    toJSON() {
+    toJSON(withHistory=false) {
         throw new Error("Abstract method");
     }
 

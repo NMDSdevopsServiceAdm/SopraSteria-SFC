@@ -56,12 +56,12 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
         }
     }
 
-    get isEqual() {
+    isEqual(currentValue, newValue) {
         // TODO
         return true;
     }
 
-    save() {
+    save(username) {
         if (this.valid) {
             return {
                 mainJobStartDate: this.property
@@ -69,7 +69,7 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
         }
     }
 
-    toJSON() {
+    toJSON(withHistory=false) {
         return {
             mainJobStartDate: this.property
         }

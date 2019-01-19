@@ -26,17 +26,17 @@ exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends ChangeProp
         }
     }
 
-    get isEqual() {
+    isEqual(currentValue, newValue) {
         // TODO
         return true;
     }
 
-    save() {
+    save(username) {
         return {
             nameId: this.property
         }
     }
-    toJSON() {
+    toJSON(withHistory=false) {
         return {
             nameOrId: this.property
         }

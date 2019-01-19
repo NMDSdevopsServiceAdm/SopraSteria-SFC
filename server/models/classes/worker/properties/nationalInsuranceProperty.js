@@ -33,18 +33,18 @@ exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNum
         }
     }
 
-    get isEqual() {
+    isEqual(currentValue, newValue) {
         // TODO
         return true;
     }
 
-    save() {
+    save(username) {
         return {
             nationalInsuranceNumber: this.property
         };    
     }
 
-    toJSON() {
+    toJSON(withHistory=false) {
         return {
             nationalInsuranceNumber: this.property
         }

@@ -39,12 +39,12 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
         }
     }
 
-    get isEqual() {
+    isEqual(currentValue, newValue) {
         // TODO
         return true;
     }
 
-    save() {
+    save(username) {
         if (this.valid) {
             return {
                 dateOfBirth: this.property
@@ -52,7 +52,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
         }
     }
 
-    toJSON() {
+    toJSON(withHistory=false) {
         return {
             dateOfBirth: this.property
         }

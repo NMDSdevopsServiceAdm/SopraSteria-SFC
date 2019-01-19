@@ -92,14 +92,14 @@ class PropertyManager {
     // runs through all known properties, adding them to the given
     //  document to save (using sequelize), only if they have been modified.
     // Returns modified save document.
-    save (document) {
+    save (username, document) {
         const allProperties = Object.keys(this._properties);
         allProperties.forEach(thisPropertyType => {
             const thisProperty = this._properties[thisPropertyType];
 
             if (thisProperty.modified) {
                 console.log("INFO - PropertyManager::save - property with property type: ", thisPropertyType)
-                const saveProperties = thisProperty.save();
+                const saveProperties = thisProperty.save(username);
 
                 // unlike JSON with allows for rich sub-documents,
                 //  sequelize maps onto relational tables which
@@ -113,14 +113,14 @@ class PropertyManager {
     }
 
     // returns a JSON object representation of all known properties
-    toJSON() {
+    toJSON(withHistory=false) {
         let thisJsonObject = {};
         const allProperties = Object.keys(this._properties);
 
         allProperties.forEach(thisProperty => {
             thisJsonObject = {
                 ...thisJsonObject,
-                ...this._properties[thisProperty].toJSON()
+                ...this._properties[thisProperty].toJSON(withHistory)
             }
         });
 

@@ -21,27 +21,39 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
             }
         }
     }
-    async restoreFromSequelize(document) {
-        if (document.gender) {
-            this.property = document.gender;
-            this.reset();
-        }
-    }
 
-    get isEqual() {
-        // TODO
-        return true;
+    restorePropertyFromSequelize(document) {
+        return document.GenderValue;
     }
-
-    save() {
+    savePropertyToSequelize() {
         return {
-            gender: this.property
-        }
+            GenderValue: this.property
+        };
     }
 
-    toJSON() {
-        return {
-            gender: this.property
+    isEqual(currentValue, newValue) {
+        // gender is a simple (enum'd) string
+        if (currentValue === newValue) return true;
+        else return false;
+    }
+
+    toJSON(withHistory=false) {
+        if (!withHistory) {
+            // simple form
+            return {
+                gender: this.property
+            }
+        } else {
+            return {
+                gender : {
+                    currentValue: this.property,
+                    lastSavedBy : this.savedBy,
+                    lastChangedBy : this.changedBy ? this.changedBy : null,
+                    lastSaved : this.savedAt.toJSON(),
+                    lastChanged : this.changedAt ? this.changedAt.toJSON() : null,
+                    changeHistory : []
+                }
+            }
         }
     }
 };

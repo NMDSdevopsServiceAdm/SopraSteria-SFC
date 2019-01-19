@@ -26,6 +26,12 @@ class ChangePropertyPrototype extends PropertyPrototype {
         super(name);
         this._changed = false;
         this._previousValue = null;
+
+        // saved/changed facts
+        this._savedBy = null;
+        this._changedBy = null;
+        this._savedAt = null;
+        this._changedAt = null;
     }
 
     // the encapsulated property
@@ -34,7 +40,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
     }
 
     // throws true if equal, otherwise false
-    get isEqual() {
+    isEqual(currentValue, newValue) {
         throw new Error("Abstract method");
     }
 
@@ -46,7 +52,8 @@ class ChangePropertyPrototype extends PropertyPrototype {
     set property(value) {
         // now check if the property value has changed, which will depend
         //  on the final Property type
-        if (super.property && !this.isEqual) {
+        // console.log("WA DEBUG - ChangePropertyPrototype::set property: value/this: ", value, this)
+        if (this.property && !this.isEqual(this.property, value)) {
             this._previousValue = super.property;
             this._changed = true;
         }
@@ -62,6 +69,80 @@ class ChangePropertyPrototype extends PropertyPrototype {
     reset() {
         this._changed = false;
         super.reset();
+    }
+
+    // saved/changed facts
+    get savedBy() {
+        return this._savedBy;
+    }
+    get changedBy() {
+        return this._changedBy;
+    }
+    get savedAt() {
+        return this._savedAt;
+    }
+    get changedAt() {
+        return this._changedAt;
+    }
+
+    // the property as recovered from the database may not be a simple property.
+    //  The property may be decomposed across mutliple columns/tables.
+    //  Therefore refer to the concrete class to resolve.
+    restorePropertyFromSequelize(document) {
+        throw new Error("Abstract method");
+    }
+
+    // the property as saved to the database may not be a simple property.
+    //  The property may be decomposed across mutliple columns/tables.
+    //  Therefore refer to the concrete class to resolve.
+    savePropertyToSequelize(document) {
+        throw new Error("Abstract method");
+    }
+    
+    // restore property based on property name
+    async restoreFromSequelize(document) {
+        const changePropertyDefaultName = `${this.name}Value`;
+        console.log(`WA DEBUG - attempting to restore ${this.name} given ${changePropertyDefaultName}`)
+
+        if (document[changePropertyDefaultName]) {
+            this.property = this.restorePropertyFromSequelize(document);
+
+            this._changedAt = document[`${this.name}ChangedAt`];
+            this._changedBy = document[`${this.name}ChangedBy`];
+            this._savedAt = document[`${this.name}SavedAt`];
+            this._savedBy = document[`${this.name}SavedBy`];
+
+            // this.property = document.gender;
+            this.reset();
+            console.log(`WA DEBUG - restoring ${this.name}: `, this);
+        }
+    }
+
+    save(username) {
+        console.log(`WA DEBUG - saving ${this.name}`)
+        const sequelizeSaveDefinition = {};
+
+        // refer to concrete class to 
+        const thisPropertyDef = this.savePropertyToSequelize();
+
+        const currentTimestamp = new Date();
+        this._savedAt = currentTimestamp;
+        this._savedBy = username;
+        sequelizeSaveDefinition[`${this.name}SavedAt`] = this._savedAt;
+        sequelizeSaveDefinition[`${this.name}SavedBy`] = this._savedBy;
+
+        // only update the change history if this property has indeed changed
+        if (this.changed) {
+            this._changedBy = username;
+            this._changedAt = currentTimestamp;
+            sequelizeSaveDefinition[`${this.name}ChangedAt`] = this._changedAt;
+            sequelizeSaveDefinition[`${this.name}ChangedBy`] = this._changedBy;    
+        }
+
+        return {
+            ...thisPropertyDef,
+            ...sequelizeSaveDefinition
+        };
     }
 }
 

@@ -28,20 +28,20 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
         }
     }
 
-    get isEqual() {
+    isEqual(currentValue, newValue) {
         // gender is simply a string
-        console.log("WA DEBUG: WorkerContractProperty current/previous values: ", this.property, this.previousProperty)
+        //console.log("WA DEBUG: WorkerContractProperty current/previous values: ", this.property, this.previousProperty)
         //if (this.property)
         return true;
     }
 
-    save() {
+    save(username) {
         return {
             contract: this.property
         }
     }
 
-    toJSON() {
+    toJSON(withHistory=false) {
         return {
             contract: this.property
         }

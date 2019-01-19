@@ -37,12 +37,12 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
         }
     }
 
-    get isEqual() {
+    isEqual(currentValue, newValue) {
         // TODO
         return true;
     }
 
-    save() {
+    save(username) {
         if (this.valid) {
             return {
                 mainJobFk: this.property.jobId
@@ -52,7 +52,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
         throw new Error('MainJob property is not valid for saving');
     }
 
-    toJSON() {
+    toJSON(withHistory=false) {
         return {
             mainJob: this.property
         }

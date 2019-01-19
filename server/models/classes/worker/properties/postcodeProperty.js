@@ -30,18 +30,18 @@ exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends ChangeProp
         }
     }
 
-    get isEqual() {
+    isEqual(currentValue, newValue) {
         // TODO
         return true;
     }
 
-    save() {
+    save(username) {
         return {
             postcode: this.property
         };    
     }
 
-    toJSON() {
+    toJSON(withHistory=false) {
         return {
             postcode: this.property
         }

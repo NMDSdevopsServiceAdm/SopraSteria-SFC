@@ -150,7 +150,7 @@ class Worker {
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
                     //   why we cannot create a Worker record with more properties
-                    const modifedCreationDocument = this._properties.save(creationDocument);
+                    const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
 
                     // now save the document
                     let creation = await models.worker.create(modifedCreationDocument);
@@ -191,7 +191,7 @@ class Worker {
                 //  updated audit event within a single transaction
                 await models.sequelize.transaction(async t => {
                     // now append the extendable properties
-                    const modifedUpdateDocument = this._properties.save({});
+                    const modifedUpdateDocument = this._properties.save(savedBy, {});
 
                     const updateDocument = {
                         ...modifedUpdateDocument,
@@ -318,7 +318,6 @@ class Worker {
             }
 
             const fetchResults = await models.worker.findOne(fetchQuery);
-
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
@@ -340,6 +339,9 @@ class Worker {
             return false;
 
         } catch (err) {
+            // typically errors when making changes to model or database schema!
+            this._log(Worker.LOG_ERROR, err);
+
             throw new WorkerExceptions.WorkerRestoreException(null,
                 this.uid,
                 null,
@@ -415,7 +417,7 @@ class Worker {
     // returns a Javascript object which can be used to present as JSON
     toJSON(showHistory=false) {
         // JSON representation of extendable properties
-        const myJSON = this._properties.toJSON();
+        const myJSON = this._properties.toJSON(showHistory);
 
         // add worker default properties
         const myDefaultJSON = {
@@ -426,10 +428,14 @@ class Worker {
         };
 
         // TODO: JSON schema validation
+        let workerHistory = null;
+        if (showHistory) {
+            workerHistory = this.formatWorkerHistoryEvents(this._auditEvents);
+        }
         return {
             ...myDefaultJSON,
             ...myJSON,
-            history: this.formatWorkerHistoryEvents(this._auditEvents)
+            history: workerHistory
         };
     }
 

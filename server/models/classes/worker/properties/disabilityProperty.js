@@ -28,18 +28,18 @@ exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends Change
         }
     }
 
-    get isEqual() {
+    isEqual(currentValue, newValue) {
         // TODO
         return true;
     }
 
-    save() {
+    save(username) {
         return {
             disability: this.property
         }
     }
 
-    toJSON() {
+    toJSON(withHistory=false) {
         return {
             disability: this.property
         }

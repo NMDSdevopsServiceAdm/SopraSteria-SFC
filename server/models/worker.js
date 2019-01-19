@@ -62,11 +62,31 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"Postcode"'
     },
-    gender : {
+    GenderValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ['Female', 'Male', 'Other', 'Don\'t know'],
       field: '"GenderValue"'
+    },
+    GenderSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"GenderSavedAt"'
+    },
+    GenderChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"GenderChangedAt"'
+    },
+    GenderSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"GenderSavedBy"'
+    },
+    GenderChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"GenderChangedBy"'
     },
     disability : {
       type: DataTypes.ENUM,
