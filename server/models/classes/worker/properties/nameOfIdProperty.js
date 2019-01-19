@@ -31,7 +31,7 @@ exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends ChangeProp
 
     isEqual(currentValue, newValue) {
         // name or ID is a simple tring
-        if (currentValue === newValue) return true;
+        if (currentValue && newValue && currentValue === newValue) return true;
         else return false;
     }
 

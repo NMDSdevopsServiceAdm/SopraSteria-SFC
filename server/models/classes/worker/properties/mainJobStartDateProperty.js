@@ -48,30 +48,35 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
             }
         }
     }
-    async restoreFromSequelize(document) {
-        // Note - sequelize will serialise a Javascript Date type from the given Worker sequelize model
-        if (document.mainJobStartDate) {
-           this.property = document.mainJobStartDate;
-           this.reset();
-        }
+
+    restorePropertyFromSequelize(document) {
+        return new moment(document.MainJobStartDateValue);
+    }
+    savePropertyToSequelize() {
+        return {
+            MainJobStartDateValue: this.property
+        };
     }
 
     isEqual(currentValue, newValue) {
-        // TODO
-        return true;
-    }
-
-    save(username) {
-        if (this.valid) {
-            return {
-                mainJobStartDate: this.property
-            };
-        }
+        // a moment date
+        if (currentValue && newValue && currentValue.isSame(newValue, 'day')) return true;
+        else return false;
     }
 
     toJSON(withHistory=false) {
-        return {
-            mainJobStartDate: this.property
+        if (!withHistory) {
+            // simple form
+            return {
+                mainJobStartDate: this.property.toJSON().slice(0,10)
+            }
+        } else {
+            return {
+                mainJobStartDate : {
+                    currentValue: this.property.toJSON().slice(0,10),
+                    ... this.changePropsToJSON()
+                }
+            }
         }
     }
 };

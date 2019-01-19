@@ -26,27 +26,35 @@ exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNum
             }
         }
     }
-    async restoreFromSequelize(document) {
-        if (document.nationalInsuranceNumber) {
-            this.property = document.nationalInsuranceNumber;
-            this.reset();
-        }
+
+    restorePropertyFromSequelize(document) {
+        return document.NationalInsuranceNumberValue;
+    }
+    savePropertyToSequelize() {
+        return {
+            NationalInsuranceNumberValue: this.property
+        };
     }
 
     isEqual(currentValue, newValue) {
-        // TODO
-        return true;
-    }
-
-    save(username) {
-        return {
-            nationalInsuranceNumber: this.property
-        };    
+        // a simple string compare
+        if (currentValue && newValue && currentValue === newValue) return true;
+        else return false;
     }
 
     toJSON(withHistory=false) {
-        return {
-            nationalInsuranceNumber: this.property
+        if (!withHistory) {
+            // simple form
+            return {
+                nationalInsuranceNumber: this.property
+            }
+        } else {
+            return {
+                nationalInsuranceNumber : {
+                    currentValue: this.property,
+                    ... this.changePropsToJSON()
+                }
+            }
         }
     }
 };

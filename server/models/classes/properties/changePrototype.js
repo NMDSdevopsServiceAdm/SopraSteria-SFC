@@ -21,9 +21,17 @@
 const PropertyPrototype = require('./prototype').PropertyPrototype;
 
 class ChangePropertyPrototype extends PropertyPrototype {
-    constructor(name) {
+    constructor(name, prefix=null) {
         // initialise the base property (name)
         super(name);
+
+        if (prefix) {
+            this._dbPropertyPrefix = prefix;
+        } else {
+            // defaults to the name of the property
+            this._dbPropertyPrefix = name;
+        }
+
         this._changed = false;
         this._previousValue = null;
 
@@ -52,7 +60,6 @@ class ChangePropertyPrototype extends PropertyPrototype {
     set property(value) {
         // now check if the property value has changed, which will depend
         //  on the final Property type
-        // console.log("WA DEBUG - ChangePropertyPrototype::set property: value/this: ", value, this)
         if (this.property && !this.isEqual(this.property, value)) {
             this._previousValue = super.property;
             this._changed = true;
@@ -101,25 +108,21 @@ class ChangePropertyPrototype extends PropertyPrototype {
     
     // restore property based on property name
     async restoreFromSequelize(document) {
-        const changePropertyDefaultName = `${this.name}Value`;
-        console.log(`WA DEBUG - attempting to restore ${this.name} given ${changePropertyDefaultName}`)
+        const changePropertyDefaultName = `${this._dbPropertyPrefix}Value`;
 
         if (document[changePropertyDefaultName]) {
             this.property = this.restorePropertyFromSequelize(document);
-
-            this._changedAt = document[`${this.name}ChangedAt`];
-            this._changedBy = document[`${this.name}ChangedBy`];
-            this._savedAt = document[`${this.name}SavedAt`];
-            this._savedBy = document[`${this.name}SavedBy`];
+            this._changedAt = document[`${this._dbPropertyPrefix}ChangedAt`];
+            this._changedBy = document[`${this._dbPropertyPrefix}ChangedBy`];
+            this._savedAt = document[`${this._dbPropertyPrefix}SavedAt`];
+            this._savedBy = document[`${this._dbPropertyPrefix}SavedBy`];
 
             // this.property = document.gender;
             this.reset();
-            console.log(`WA DEBUG - restoring ${this.name}: `, this);
         }
     }
 
     save(username) {
-        console.log(`WA DEBUG - saving ${this.name}`)
         const sequelizeSaveDefinition = {};
 
         // refer to concrete class to 
@@ -128,15 +131,15 @@ class ChangePropertyPrototype extends PropertyPrototype {
         const currentTimestamp = new Date();
         this._savedAt = currentTimestamp;
         this._savedBy = username;
-        sequelizeSaveDefinition[`${this.name}SavedAt`] = this._savedAt;
-        sequelizeSaveDefinition[`${this.name}SavedBy`] = this._savedBy;
+        sequelizeSaveDefinition[`${this._dbPropertyPrefix}SavedAt`] = this._savedAt;
+        sequelizeSaveDefinition[`${this._dbPropertyPrefix}SavedBy`] = this._savedBy;
 
         // only update the change history if this property has indeed changed
         if (this.changed) {
             this._changedBy = username;
             this._changedAt = currentTimestamp;
-            sequelizeSaveDefinition[`${this.name}ChangedAt`] = this._changedAt;
-            sequelizeSaveDefinition[`${this.name}ChangedBy`] = this._changedBy;    
+            sequelizeSaveDefinition[`${this._dbPropertyPrefix}ChangedAt`] = this._changedAt;
+            sequelizeSaveDefinition[`${this._dbPropertyPrefix}ChangedBy`] = this._changedBy;    
         }
 
         return {

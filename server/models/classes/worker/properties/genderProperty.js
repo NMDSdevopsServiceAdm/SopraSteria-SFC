@@ -33,7 +33,7 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
 
     isEqual(currentValue, newValue) {
         // gender is a simple (enum'd) string
-        if (currentValue === newValue) return true;
+        if (currentValue && newValue && currentValue === newValue) return true;
         else return false;
     }
 

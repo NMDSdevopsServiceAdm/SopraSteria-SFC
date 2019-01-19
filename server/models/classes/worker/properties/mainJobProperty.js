@@ -6,7 +6,7 @@ const models = require('../../../index');
 
 exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangePropertyPrototype {
     constructor() {
-        super('MainJob');
+        super('MainJob', 'MainJobFk');
     }
 
     static clone() {
@@ -25,36 +25,39 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
             }
         }
     }
-    async restoreFromSequelize(document) {
-        if (document.mainJobFk &&
-            Number.isInteger(document.mainJobFk) &&
-            document.mainJob) {
-            this.property = {
+    restorePropertyFromSequelize(document) {
+        if (document.mainJob) {
+            return {
                 jobId: document.mainJob.id,
                 title: document.mainJob.title
             };
-            this.reset();
         }
+    }
+    savePropertyToSequelize() {
+        return {
+            MainJobFkValue: this.property.jobId
+        };
     }
 
     isEqual(currentValue, newValue) {
-        // TODO
-        return true;
-    }
-
-    save(username) {
-        if (this.valid) {
-            return {
-                mainJobFk: this.property.jobId
-            };    
-        }
-
-        throw new Error('MainJob property is not valid for saving');
+        // main job is an object where jobId is the primary key
+        if (currentValue && newValue && currentValue.jobId === newValue.jobId) return true;
+        else return false;
     }
 
     toJSON(withHistory=false) {
-        return {
-            mainJob: this.property
+        if (!withHistory) {
+            // simple form
+            return {
+                mainJob: this.property
+            }
+        } else {
+            return {
+                mainJob : {
+                    currentValue: this.property,
+                    ... this.changePropsToJSON()
+                }
+            }
         }
     }
 

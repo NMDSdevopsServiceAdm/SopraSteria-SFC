@@ -21,27 +21,35 @@ exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends Change
             }
         }
     }
-    async restoreFromSequelize(document) {
-        if (document.disability) {
-            this.property = document.disability;
-            this.reset();
-        }
+
+    restorePropertyFromSequelize(document) {
+        return document.DisabilityValue;
+    }
+    savePropertyToSequelize() {
+        return {
+            DisabilityValue: this.property
+        };
     }
 
     isEqual(currentValue, newValue) {
-        // TODO
-        return true;
-    }
-
-    save(username) {
-        return {
-            disability: this.property
-        }
+        // a simple (enum'd) string compare
+        if (currentValue && newValue && currentValue === newValue) return true;
+        else return false;
     }
 
     toJSON(withHistory=false) {
-        return {
-            disability: this.property
+        if (!withHistory) {
+            // simple form
+            return {
+                disability: this.property
+            }
+        } else {
+            return {
+                disability : {
+                    currentValue: this.property,
+                    ... this.changePropsToJSON()
+                }
+            }
         }
     }
 };

@@ -33,7 +33,7 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
 
     isEqual(currentValue, newValue) {
         // contract is a simple (enum'd) string
-        if (currentValue === newValue) return true;
+        if (currentValue && newValue && currentValue === newValue) return true;
         else return false;
     }
 

@@ -4,7 +4,7 @@ const moment = require('moment');
 
 exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends ChangePropertyPrototype {
     constructor() {
-        super('DateofBirth');
+        super('DateOfBirth');
     }
 
     static clone() {
@@ -31,30 +31,36 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
             }
         }
     }
-    async restoreFromSequelize(document) {
-        // Note - sequelize will serialise a Javascript Date type from the given Worker sequelize model
-        if (document.dateOfBirth) {
-            this.property = document.dateOfBirth;
-            this.reset();
-        }
+
+    restorePropertyFromSequelize(document) {
+        return new moment(document.DateOfBirthValue);
+    }
+    savePropertyToSequelize() {
+        return {
+            DateOfBirthValue: this.property
+        };
     }
 
     isEqual(currentValue, newValue) {
-        // TODO
-        return true;
+        // a moment date
+        if (currentValue && newValue && currentValue.isSame(newValue, 'day')) return true;
+        else return false;
     }
 
-    save(username) {
-        if (this.valid) {
-            return {
-                dateOfBirth: this.property
-            };
-        }
-    }
 
     toJSON(withHistory=false) {
-        return {
-            dateOfBirth: this.property
+        if (!withHistory) {
+            // simple form
+            return {
+                dateOfBirth: this.property.toJSON().slice(0,10)
+            }
+        } else {
+            return {
+                dateOfBirth : {
+                    currentValue: this.property.toJSON().slice(0,10),
+                    ... this.changePropsToJSON()
+                }
+            }
         }
     }
 };

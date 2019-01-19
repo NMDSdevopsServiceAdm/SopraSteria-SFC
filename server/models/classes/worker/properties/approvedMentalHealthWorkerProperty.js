@@ -21,27 +21,36 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
             }
         }
     }
-    async restoreFromSequelize(document) {
-        if (document.approvedMentalHealthWorker) {
-            this.property = document.approvedMentalHealthWorker;
-            this.reset();
-        }
+
+    restorePropertyFromSequelize(document) {
+        return document.ApprovedMentalHealthWorkerValue;
+    }
+    savePropertyToSequelize() {
+        return {
+            ApprovedMentalHealthWorkerValue: this.property
+        };
     }
 
     isEqual(currentValue, newValue) {
-        // TODO
-        return true;
+        // simple (enum'd) string
+        if (currentValue && newValue && currentValue === newValue) return true;
+        else return false;
     }
 
-    save(username) {
-        return {
-            approvedMentalHealthWorker: this.property
-        }
-    }
 
     toJSON(withHistory=false) {
-        return {
-            approvedMentalHealthWorker: this.property
+        if (!withHistory) {
+            // simple form
+            return {
+                approvedMentalHealthWorker: this.property
+            }
+        } else {
+            return {
+                approvedMentalHealthWorker : {
+                    currentValue: this.property,
+                    ... this.changePropsToJSON()
+                }
+            }
         }
     }
 };

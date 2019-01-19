@@ -23,27 +23,37 @@ exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends ChangeProp
             }
         }
     }
-    async restoreFromSequelize(document) {
-        if (document.postcode) {
-            this.property = document.postcode;
-            this.reset();
-        }
+
+    restorePropertyFromSequelize(document) {
+        return document.PostcodeValue;
     }
+    savePropertyToSequelize() {
+        return {
+            PostcodeValue: this.property
+        };
+    }
+
 
     isEqual(currentValue, newValue) {
-        // TODO
-        return true;
+        // a simple string compare
+        if (currentValue && newValue && currentValue === newValue) return true;
+        else return false;
     }
 
-    save(username) {
-        return {
-            postcode: this.property
-        };    
-    }
 
     toJSON(withHistory=false) {
-        return {
-            postcode: this.property
+        if (!withHistory) {
+            // simple form
+            return {
+                postcode: this.property
+            }
+        } else {
+            return {
+                postcode : {
+                    currentValue: this.property,
+                    ... this.changePropsToJSON()
+                }
+            }
         }
     }
 };
