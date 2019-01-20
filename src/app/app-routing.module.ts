@@ -38,6 +38,7 @@ import { MentalHealthComponent } from './features/workers/mental-health/mental-h
 import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
 import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
 import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
+import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -221,6 +222,11 @@ const routes: Routes = [
         component: NationalInsuranceNumberComponent,
         canLoad: [AuthGuard]
       },
+      {
+        path: 'date-of-birth/:id',
+        component: DateOfBirthComponent,
+        canLoad: [AuthGuard]
+      }
     ]
   },
   {

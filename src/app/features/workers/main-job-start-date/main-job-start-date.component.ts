@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
-import { ActivatedRoute, Router, ParamMap, Params } from "@angular/router"
+import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { ActivatedRoute, Router } from "@angular/router"
 
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
 import { Worker } from "../../../core/model/worker.model"
+
 
 @Component({
   selector: 'app-main-job-start-date',

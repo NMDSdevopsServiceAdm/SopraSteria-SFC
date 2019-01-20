@@ -6,5 +6,6 @@ export interface Worker {
   contract: Contracts
   mainJob: Job
   approvedMentalHealthWorker?: string
-  otherJobs?: Job[]
+  otherJobs?: Job[],
+  nationalInsuranceNumber?: string
 }
