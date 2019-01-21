@@ -5,6 +5,12 @@ class PropertyManager {
     constructor() {
         this._properties = {};  // intentionally an object not array
         this._propertyTypes = [];
+
+        
+        // this is a collection of audit events
+        //  that are accummulated during saving
+        //  of all properties
+        this._auditEvents = null;
     }
 
     static get JSON_DOCUMENT() { return 100; }
@@ -23,6 +29,11 @@ class PropertyManager {
             return thisProperty;
         else
             return null;
+    }
+
+    // returns the set of audit events - can be null or empty if no audit
+    get auditEvents() {
+        return this._auditEvents;
     }
 
     // returns true if all properties are valid, else returns the list
@@ -93,19 +104,27 @@ class PropertyManager {
     //  document to save (using sequelize), only if they have been modified.
     // Returns modified save document.
     save (username, document) {
+        // resets all audit events; to build a new set from current properties
+        this._auditEvents = [];
+
         const allProperties = Object.keys(this._properties);
         allProperties.forEach(thisPropertyType => {
             const thisProperty = this._properties[thisPropertyType];
 
             if (thisProperty.modified) {
                 console.log("INFO - PropertyManager::save - property with property type: ", thisPropertyType)
-                const saveProperties = thisProperty.save(username);
+                const { properties:saveProperties, audit: propertyAudit} = thisProperty.save(username);
+
+                console.log("WA DEBUG: property state and events: ", saveProperties, propertyAudit)
 
                 // unlike JSON with allows for rich sub-documents,
                 //  sequelize maps onto relational tables which
                 //  are flat. So rather than containing a sub-document,
                 //  it is necessary to merge properties
                 document = { ...document, ...saveProperties};
+
+                // append the given set of property audit events
+                this._auditEvents = this._auditEvents.concat(propertyAudit);
             }
         });
 

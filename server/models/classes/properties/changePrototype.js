@@ -122,8 +122,10 @@ class ChangePropertyPrototype extends PropertyPrototype {
         }
     }
 
+    // returns the Worker record properties, in addition to a set of auditEvents
     save(username) {
         const sequelizeSaveDefinition = {};
+        const auditEvents = [];
 
         // refer to concrete class to 
         const thisPropertyDef = this.savePropertyToSequelize();
@@ -134,17 +136,38 @@ class ChangePropertyPrototype extends PropertyPrototype {
         sequelizeSaveDefinition[`${this._dbPropertyPrefix}SavedAt`] = this._savedAt;
         sequelizeSaveDefinition[`${this._dbPropertyPrefix}SavedBy`] = this._savedBy;
 
+        // create a 'saved' audit event for this property
+        auditEvents.push({
+            username,
+            type: 'saved',
+            property: this.name
+        });
+
         // only update the change history if this property has indeed changed
         if (this.changed) {
             this._changedBy = username;
             this._changedAt = currentTimestamp;
             sequelizeSaveDefinition[`${this._dbPropertyPrefix}ChangedAt`] = this._changedAt;
-            sequelizeSaveDefinition[`${this._dbPropertyPrefix}ChangedBy`] = this._changedBy;    
+            sequelizeSaveDefinition[`${this._dbPropertyPrefix}ChangedBy`] = this._changedBy;
+            
+            // create a 'changed' audit event for this property
+            auditEvents.push({
+                username,
+                type: 'changed',
+                property: this.name,
+                event: {
+                    current: this.previousProperty,
+                    new: this.property
+                }
+            });
         }
 
         return {
-            ...thisPropertyDef,
-            ...sequelizeSaveDefinition
+            properties: {
+                ...thisPropertyDef,
+                ...sequelizeSaveDefinition
+            },
+            audit: auditEvents
         };
     }
 

@@ -163,12 +163,17 @@ class Worker {
                     this._updatedBy = savedBy;
                     this._isNew = false;
 
-                    // having the worker id we can now created the audit record
-                    await models.workerAudit.create({
+                    // having the worker id we can now create the audit record; inserting the workerFk
+                    const allAuditEvents = [{
                         workerFk: this._id,
                         username: savedBy,
-                        type: 'created',
-                    });
+                        type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
+                            return {
+                                ...thisEvent,
+                                workerFk: this._id
+                            };
+                        }));
+                    await models.workerAudit.bulkCreate(allAuditEvents);
 
                     this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 });
@@ -217,12 +222,17 @@ class Worker {
                         this._updatedBy = savedBy;
                         this._id = updatedRecord.ID;
 
-                        // having updated the record, create the audit event
-                        await models.workerAudit.create({
+                        const allAuditEvents = [{
                             workerFk: this._id,
                             username: savedBy,
-                            type: 'updated',
-                        });
+                            type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
+                                return {
+                                    ...thisEvent,
+                                    workerFk: this._id
+                                };
+                            }));
+                            // having updated the record, create the audit event
+                        await models.workerAudit.bulkCreate(allAuditEvents);
 
                         this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
 
