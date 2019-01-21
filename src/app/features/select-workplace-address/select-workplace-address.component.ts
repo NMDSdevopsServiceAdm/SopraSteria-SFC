@@ -77,11 +77,10 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   }
 
   save() {
-    debugger;
     const locationdata = [this.selectedAddress];
 
     const postcodeObj = { locationdata };
-    debugger;
+
     if (!locationdata[0]) {
       this.addressSelected = false;
     }
