@@ -1,10 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { AbstractControl, FormGroup, FormBuilder, Validators } from "@angular/forms"
 import { ActivatedRoute, Router } from "@angular/router"
 
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
 import { Worker } from "../../../core/model/worker.model"
+import { NIN_PATTERN } from "../../../core/constants/constants"
 
 
 @Component({
@@ -49,15 +50,26 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
 
       } else {
         this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
+
+        if (this.form.value.nin) {
+          this.messageService.show("error", "Invalid National Insurance Number format.")
+
+        } else {
+          this.messageService.show("error", "Please fill the required fields.")
+        }
+
         reject()
       }
     })
   }
 
+  ninValidator(control: AbstractControl) {
+    return control.value && NIN_PATTERN.test(control.value.toUpperCase()) ? null : { validNin: true }
+  }
+
   ngOnInit() {
     this.form = this.formBuilder.group({
-      nin: ["", Validators.required]
+      nin: ["", [Validators.required, this.ninValidator]]
     })
 
     const params = this.route.snapshot.paramMap
