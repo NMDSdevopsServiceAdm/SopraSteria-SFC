@@ -38,7 +38,6 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
 
     this.currentSection = this.currentSection + 1;
 
-    debugger;
     if (this.backLink === '/select-main-service') {
       if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
         this.lastSection = 8;
@@ -95,49 +94,38 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   }
 
   updateSectionNumbers(data) {
-    debugger;
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/confirm-workplace-details');
-
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
-    debugger;
   }
 
   clickBack() {
     const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
     this.currentSection = this.currentSection - 1;
-    debugger;
+
     this.registration.userRoute.route.splice(-1);
-    debugger;
+
 
     //this.updateSectionNumbers(this.registration);
     //this.registration.userRoute = this.registration.userRoute;
     this.registration.userRoute.currentPage = this.currentSection;
     //this.registration.userRoute['route'] = this.registration.userRoute['route'];
-    debugger;
+
     this._registrationService.updateState(this.registration);
 
-    debugger;
     this.router.navigate([this.backLink]);
   }
 
   workplaceNotFound() {
     this.addressPostcode = this.registration.locationdata[0].postalCode;
-    debugger;
 
     this._registrationService.getAddressByPostCode(this.addressPostcode).subscribe(
       (data: RegistrationModel) => {
         if (data.success === 1) {
           this.updateSectionNumbers(data);
-          debugger;
+
           //data = data.postcodedata;
           this._registrationService.updateState(data);
           //this.routingCheck(data);

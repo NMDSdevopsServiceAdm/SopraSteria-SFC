@@ -44,11 +44,19 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     );
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    console.log(this.registration);
 
     this.editPostcode = false;
 
     this.setSectionNumbers();
+
+    // set not registered
+    this.setRegulatedCheckFalse(this.registration);
+  }
+
+  setRegulatedCheckFalse(reg) {
+    // clear default location data
+    reg.locationdata = [{}];
+    reg.locationdata[0]['isRegulated'] = false;
   }
 
   setSectionNumbers() {
