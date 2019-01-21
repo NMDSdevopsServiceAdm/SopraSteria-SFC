@@ -37,7 +37,7 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
         else return false;
     }
 
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
@@ -47,7 +47,7 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
             return {
                 contract : {
                     currentValue: this.property,
-                    ... this.changePropsToJSON()
+                    ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }
         }

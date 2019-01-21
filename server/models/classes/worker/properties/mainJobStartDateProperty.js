@@ -64,7 +64,7 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
         else return false;
     }
 
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
@@ -74,7 +74,7 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
             return {
                 mainJobStartDate : {
                     currentValue: this.property.toJSON().slice(0,10),
-                    ... this.changePropsToJSON()
+                    ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }
         }

@@ -48,7 +48,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
     }
 
 
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
@@ -58,7 +58,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
             return {
                 dateOfBirth : {
                     currentValue: this.property.toJSON().slice(0,10),
-                    ... this.changePropsToJSON()
+                    ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }
         }

@@ -38,7 +38,7 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
     }
 
 
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
@@ -48,7 +48,7 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
             return {
                 approvedMentalHealthWorker : {
                     currentValue: this.property,
-                    ... this.changePropsToJSON()
+                    ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }
         }

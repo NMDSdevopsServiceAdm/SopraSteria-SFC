@@ -37,7 +37,7 @@ exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends Change
         else return false;
     }
 
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
@@ -47,7 +47,7 @@ exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends Change
             return {
                 disability : {
                     currentValue: this.property,
-                    ... this.changePropsToJSON()
+                    ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }
         }

@@ -412,44 +412,80 @@ class Worker {
     formatWorkerHistoryEvents(auditEvents) {
         if (auditEvents) {
             return auditEvents.filter(thisEvent => ['created', 'updated'].includes(thisEvent.type))
-            .map(thisEvent => {
-                return {
-                    when: thisEvent.when,
-                    username: thisEvent.username,
-                    event: thisEvent.type
-                };
-            });
+                               .map(thisEvent => {
+                                    return {
+                                        when: thisEvent.when,
+                                        username: thisEvent.username,
+                                        event: thisEvent.type
+                                    };
+                               });
         } else {
             return null;
         }
     };
 
+    // helper returns a set 'json ready' objects for representing a Worker's audit
+    //  history, from a the given set of audit events including those of individual
+    //  worker properties)
+    formatWorkerHistory(auditEvents) {
+        if (auditEvents) {
+            return auditEvents.map(thisEvent => {
+                                    return {
+                                        when: thisEvent.when,
+                                        username: thisEvent.username,
+                                        event: thisEvent.type,
+                                        property: thisEvent.property,
+                                        change: thisEvent.event
+                                    };
+                               });
+        } else {
+            return null;
+        }
+    };
+
+
     // returns a Javascript object which can be used to present as JSON
-    toJSON(showHistory=false) {
-        // JSON representation of extendable properties
-        const myJSON = this._properties.toJSON(showHistory);
+    //  showHistory appends the historical account of changes at Worker and individual property level
+    //  showHistoryTimeline just returns the history set of audit events for the given Worker
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false) {
+        if (!showHistoryTimeline) {
+            // JSON representation of extendable properties
+            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly);
 
-        // add worker default properties
-        const myDefaultJSON = {
-            uid:  this.uid
-        };
+            // add worker default properties
+            const myDefaultJSON = {
+                uid:  this.uid
+            };
 
-        if (showHistory) {
-            myDefaultJSON.created = this.created.toJSON();
-            myDefaultJSON.updated = this.updated.toJSON();
-            myDefaultJSON.updatedBy = this.updatedBy;
+            if (showHistory) {
+                myDefaultJSON.created = this.created.toJSON();
+                myDefaultJSON.updated = this.updated.toJSON();
+                myDefaultJSON.updatedBy = this.updatedBy;
+            }
+
+            // TODO: JSON schema validation
+            let workerHistory = null;
+            if (showHistory && !showPropertyHistoryOnly) {
+                return {
+                    ...myDefaultJSON,
+                    ...myJSON,
+                    history: this.formatWorkerHistoryEvents(this._auditEvents)
+                };
+            } else {
+                return {
+                    ...myDefaultJSON,
+                    ...myJSON
+                };
+            }
+        } else {
+            return {
+                uid:  this.uid,
+                created: this.created.toJSON(),
+                updated: this.updated.toJSON(),
+                updatedBy: this.updatedBy,
+                history: this.formatWorkerHistory(this._auditEvents)
+            };
         }
-
-        // TODO: JSON schema validation
-        let workerHistory = null;
-        if (showHistory) {
-            workerHistory = this.formatWorkerHistoryEvents(this._auditEvents);
-        }
-        return {
-            ...myDefaultJSON,
-            ...myJSON,
-            history: workerHistory
-        };
     }
 
 

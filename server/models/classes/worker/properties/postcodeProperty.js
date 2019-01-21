@@ -41,7 +41,7 @@ exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends ChangeProp
     }
 
 
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
@@ -51,7 +51,7 @@ exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends ChangeProp
             return {
                 postcode : {
                     currentValue: this.property,
-                    ... this.changePropsToJSON()
+                    ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }
         }

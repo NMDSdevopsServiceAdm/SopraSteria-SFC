@@ -40,6 +40,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
         this._changedBy = null;
         this._savedAt = null;
         this._changedAt = null;
+        this._auditEvents = null;
     }
 
     // the encapsulated property
@@ -91,6 +92,9 @@ class ChangePropertyPrototype extends PropertyPrototype {
     get changedAt() {
         return this._changedAt;
     }
+    get auditEvents() {
+        return this._auditEvents;
+    }
 
     // the property as recovered from the database may not be a simple property.
     //  The property may be decomposed across mutliple columns/tables.
@@ -119,6 +123,12 @@ class ChangePropertyPrototype extends PropertyPrototype {
 
             // this.property = document.gender;
             this.reset();
+        }
+
+        // restore audit events for this property - if defined
+        if (document.auditEvents) {
+            // filter out those for this property only
+            this._auditEvents = document.auditEvents.filter(thisEvent => thisEvent.property == this.name);
         }
     }
 
@@ -171,15 +181,39 @@ class ChangePropertyPrototype extends PropertyPrototype {
         };
     }
 
+    // helper function to format the change history
+    formatChangeHistory(auditEvent) {
+        // when reporting on the change history for 
+        //  a given property, only inclue from the audit:
+        //  1. username
+        //  2. when
+        //  3. type: map to "event"
+        //  4. event: map to "change" [optional]
+        const historyEvent = {
+            username: auditEvent.username,
+            when: auditEvent.when,
+            event: auditEvent.type
+        };
+        if (auditEvent.event) {
+            historyEvent.change = auditEvent.event
+        }
+
+        return historyEvent;
+    }
+
+
     // return JSON for the change properties
-    changePropsToJSON() {
-        return {
+    changePropsToJSON(showPropertyHistoryOnly) {
+        const propertyJSON = {
             lastSavedBy : this.savedBy ? this.savedBy : null,
             lastChangedBy : this.changedBy ? this.changedBy : null,
             lastSaved : this.savedAt ? this.savedAt.toJSON() : null,
-            lastChanged : this.changedAt ? this.changedAt.toJSON() : null,
-            changeHistory : []
+            lastChanged : this.changedAt ? this.changedAt.toJSON() : null
         };
+        if (!showPropertyHistoryOnly && this.auditEvents) {
+            propertyJSON.changeHistory = this.auditEvents.map(this.formatChangeHistory);
+        }
+        return propertyJSON;
     }
 }
 

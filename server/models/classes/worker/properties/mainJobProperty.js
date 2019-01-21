@@ -45,7 +45,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
         else return false;
     }
 
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
@@ -55,7 +55,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
             return {
                 mainJob : {
                     currentValue: this.property,
-                    ... this.changePropsToJSON()
+                    ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }
         }

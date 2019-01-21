@@ -53,7 +53,7 @@ class PropertyPrototype {
     }
 
     // is called upon by Property Manager; returns an object representing the JSON equivalent
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         throw new Error("Abstract method");
     }
 

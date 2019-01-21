@@ -132,14 +132,14 @@ class PropertyManager {
     }
 
     // returns a JSON object representation of all known properties
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         let thisJsonObject = {};
         const allProperties = Object.keys(this._properties);
 
         allProperties.forEach(thisProperty => {
             thisJsonObject = {
                 ...thisJsonObject,
-                ...this._properties[thisProperty].toJSON(withHistory)
+                ...this._properties[thisProperty].toJSON(withHistory, showPropertyHistoryOnly)
             }
         });
 

@@ -35,7 +35,7 @@ exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends ChangeProp
         else return false;
     }
 
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
@@ -45,7 +45,7 @@ exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends ChangeProp
             return {
                 nameOrId : {
                     currentValue: this.property,
-                    ... this.changePropsToJSON()
+                    ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             };
         }

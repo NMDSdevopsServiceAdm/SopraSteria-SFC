@@ -37,7 +37,7 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
         else return false;
     }
 
-    toJSON(withHistory=false) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
@@ -47,7 +47,7 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
             return {
                 gender : {
                     currentValue: this.property,
-                    ... this.changePropsToJSON()
+                    ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }
         }

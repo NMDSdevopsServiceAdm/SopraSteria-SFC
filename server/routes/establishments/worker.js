@@ -42,7 +42,9 @@ router.route('/').get(async (req, res) => {
 router.route('/:workerId').get(async (req, res) => {
     const workerId = req.params.workerId;
     const establishmentId = req.establishmentId;
-    const showHistory = req.query.history === 'true' ? true : false;
+    const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+    const showHistoryTime = req.query.history === 'timeline' ? true : false;
+    const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
     // validating worker id - must be a V4 UUID
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -52,7 +54,7 @@ router.route('/:workerId').get(async (req, res) => {
 
     try {
         if (await thisWorker.restore(workerId, showHistory)) {
-            return res.status(200).json(thisWorker.toJSON(showHistory));
+            return res.status(200).json(thisWorker.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime));
         } else {
             // not found worker
             return res.status(404).send('Not Found');
