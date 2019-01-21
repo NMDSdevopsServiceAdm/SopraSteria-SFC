@@ -112,6 +112,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
     
     // restore property based on property name
     async restoreFromSequelize(document) {
+
         const changePropertyDefaultName = `${this._dbPropertyPrefix}Value`;
 
         if (document[changePropertyDefaultName]) {

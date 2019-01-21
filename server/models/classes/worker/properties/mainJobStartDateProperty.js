@@ -73,7 +73,7 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
         } else {
             return {
                 mainJobStartDate : {
-                    currentValue: this.property.toJSON().slice(0,10),
+                    currentValue: this.property ? this.property.toJSON().slice(0,10) : null,
                     ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }

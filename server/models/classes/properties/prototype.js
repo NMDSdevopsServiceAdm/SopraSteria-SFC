@@ -3,6 +3,7 @@ class PropertyPrototype {
         this._modified = false;
         this._property = null;
         this._name = name;
+        this._notSet = true;
     }
 
     // the encapsulated property
@@ -12,6 +13,9 @@ class PropertyPrototype {
     set property(value) {
         this._property = value;
         this._modified = true;
+
+        // reset the firsttime set status
+        if (this._notSet) this._notSet = false;
     }
 
     // returns true if the property value has been modified (doesn't care if the value has changed)
@@ -20,6 +24,12 @@ class PropertyPrototype {
     }
     reset() {
         this._modified = false;
+    }
+
+    // returns true if the property has not yet been set (ie. it has been cloned by no value assigned)
+    get isInitialised() {
+        if (!this._notSet) return true;
+        else return false;
     }
 
     // returns the "type name" of property
@@ -59,7 +69,7 @@ class PropertyPrototype {
 
     // returns true if the property is valid; otherwise false
     get valid() {
-        if (this._property) {
+        if (this._notSet || this._property) {
             return true;
         } else {
             return false;

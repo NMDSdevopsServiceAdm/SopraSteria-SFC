@@ -23,12 +23,23 @@ class PropertyManager {
 
     // returns the property value of given name
     get(propertyTypeName) {
-        const thisProperty = this._properties[propertyTypeName];
+        let haveProperty = false;
 
-        if (thisProperty)
-            return thisProperty;
-        else
-            return null;
+        try {
+            let isValid = true;   // assume all properties are valid, unless otherwise told
+            const invalidProperties = [];
+            const allProperties = Object.keys(this._properties);
+            allProperties.forEach(thisPropertyType => {
+                const thisProperty = this._properties[thisPropertyType];
+                if (thisProperty.name === propertyTypeName) {
+                    haveProperty = thisProperty;
+                }
+            }); 
+        } catch (err) {
+            console.error(err);
+        }
+
+        return haveProperty;
     }
 
     // returns the set of audit events - can be null or empty if no audit
@@ -39,22 +50,28 @@ class PropertyManager {
     // returns true if all properties are valid, else returns the list
     //  of invalid properties
     get isValid() {
-        let isValid = true;   // assume all properties are valid, unless otherwise told
-        const invalidProperties = [];
-        const allProperties = Object.keys(this._properties);
-        allProperties.forEach(thisPropertyType => {
-            const thisProperty = this._properties[thisPropertyType];
-            if (!thisProperty.valid) {
-                isValid = false;
-                invalidProperties.push(thisPropertyType);
+        try {
+            let isValid = true;   // assume all properties are valid, unless otherwise told
+            const invalidProperties = [];
+            const allProperties = Object.keys(this._properties);
+            allProperties.forEach(thisPropertyType => {
+                const thisProperty = this._properties[thisPropertyType];
+                if (!thisProperty.valid) {
+                    isValid = false;
+                    invalidProperties.push(thisPropertyType);
+                }
+            });
+    
+            if (!isValid) {
+                return invalidProperties;
+            } else {
+                return true;
             }
-        });
-
-        if (!isValid) {
-            return invalidProperties;
-        } else {
-            return true;
+                
+        } catch (err) {
+            console.error(err);
         }
+
     }
 
     // runs through all known (registered) property types
@@ -112,10 +129,7 @@ class PropertyManager {
             const thisProperty = this._properties[thisPropertyType];
 
             if (thisProperty.modified) {
-                console.log("INFO - PropertyManager::save - property with property type: ", thisPropertyType)
                 const { properties:saveProperties, audit: propertyAudit} = thisProperty.save(username);
-
-                console.log("WA DEBUG: property state and events: ", saveProperties, propertyAudit)
 
                 // unlike JSON with allows for rich sub-documents,
                 //  sequelize maps onto relational tables which
@@ -136,10 +150,13 @@ class PropertyManager {
         let thisJsonObject = {};
         const allProperties = Object.keys(this._properties);
 
-        allProperties.forEach(thisProperty => {
-            thisJsonObject = {
-                ...thisJsonObject,
-                ...this._properties[thisProperty].toJSON(withHistory, showPropertyHistoryOnly)
+        allProperties.forEach(thisPropertyName => {
+            const thisProperty = this._properties[thisPropertyName];
+            if (thisProperty.property) {
+                thisJsonObject = {
+                    ...thisJsonObject,
+                    ...thisProperty.toJSON(withHistory, showPropertyHistoryOnly)
+                }
             }
         });
 

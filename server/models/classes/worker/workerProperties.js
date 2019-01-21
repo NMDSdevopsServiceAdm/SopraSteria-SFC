@@ -13,19 +13,28 @@ const dateOfBirthProperty = require('./properties/dateOfBirthProperty').WorkerDa
 const genderProperty = require('./properties/genderProperty').WorkerGenderProperty;
 const disabilityProperty = require('./properties/disabilityProperty').WorkerDisabilityProperty;
 
-const thisManager = new Manager.PropertyManager();
+class WorkerPropertyManager {
+    constructor() {
+        this._thisManager = new Manager.PropertyManager();
 
-thisManager.registerProperty(contractProperty);
-thisManager.registerProperty(nameOrIdProperty);
-thisManager.registerProperty(mainJobProperty);
-thisManager.registerProperty(approvedMentalHealthWorkerProperty);
-thisManager.registerProperty(mainJobStartDateProperty);
-thisManager.registerProperty(nationalInsuranceProperty);
-thisManager.registerProperty(postcodeProperty);
-thisManager.registerProperty(dateOfBirthProperty);
-thisManager.registerProperty(genderProperty);
-thisManager.registerProperty(disabilityProperty);
+        this._thisManager.registerProperty(contractProperty);
+        this._thisManager.registerProperty(nameOrIdProperty);
+        this._thisManager.registerProperty(mainJobProperty);
+        this._thisManager.registerProperty(approvedMentalHealthWorkerProperty);
+        this._thisManager.registerProperty(mainJobStartDateProperty);
+        this._thisManager.registerProperty(nationalInsuranceProperty);
+        this._thisManager.registerProperty(postcodeProperty);
+        this._thisManager.registerProperty(dateOfBirthProperty);
+        this._thisManager.registerProperty(genderProperty);
+        this._thisManager.registerProperty(disabilityProperty);
+    }
 
-exports.manager = thisManager;
+    get manager() {
+        return this._thisManager;
+    }
+
+}
+
+exports.WorkerPropertyManager = WorkerPropertyManager;
 exports.SEQUELIZE_DOCUMENT = Manager.PropertyManager.SEQUELIZE_DOCUMENT;
 exports.JSON_DOCUMENT = Manager.PropertyManager.JSON_DOCUMENT;

@@ -15,7 +15,7 @@ const models = require('../index');
 const WorkerExceptions = require('./worker/workerExceptions');
 
 // Worker properties
-const WorkerProperties = require('./worker/workerProperties').manager;
+const WorkerProperties = require('./worker/workerProperties').WorkerPropertyManager;
 const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_DOCUMENT;
 
@@ -33,7 +33,8 @@ class Worker {
         this._auditEvents = null;
 
         // abstracted properties
-        this._properties = WorkerProperties;
+        const thisWorkerManager = new WorkerProperties();
+        this._properties = thisWorkerManager.manager;
 
         // change properties
         this._isNew = false;
@@ -536,25 +537,29 @@ class Worker {
     // returns true if all mandatory properties for a Worker exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
-
-        const nameIdProperty = this._properties.get('NameOrId');
-        if (!nameIdProperty || !nameIdProperty.valid) {
-            allExistAndValid = false;
-            this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid name or id property');
+        try {
+            const nameIdProperty = this._properties.get('NameOrId');
+            if (!(nameIdProperty && nameIdProperty.isInitialised && nameIdProperty.valid)) {
+                allExistAndValid = false;
+                this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid name or id property');
+            }
+    
+            const mainJobProperty = this._properties.get('MainJob');
+            if (!(mainJobProperty && mainJobProperty.isInitialised && mainJobProperty.valid)) {
+                allExistAndValid = false;
+                this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid main job property');
+            }
+    
+            const contractProperty = this._properties.get('Contract');
+            if (!(contractProperty && contractProperty.isInitialised && contractProperty.valid)) {
+                allExistAndValid = false;
+                this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid contract property');
+            }
+    
+        } catch (err) {
+            console.error(err)
         }
 
-        const mainJobProperty = this._properties.get('MainJob');
-        if (!mainJobProperty || !mainJobProperty.valid) {
-            allExistAndValid = false;
-            this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid main job property');
-        }
-
-        const contractProperty = this._properties.get('Contract');
-
-        if (!contractProperty || !contractProperty.valid) {
-            allExistAndValid = false;
-            this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid contract property');
-        }
 
         return allExistAndValid;
     }

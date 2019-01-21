@@ -51,13 +51,14 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
+
             return {
                 dateOfBirth: this.property.toJSON().slice(0,10)
             }
         } else {
             return {
                 dateOfBirth : {
-                    currentValue: this.property.toJSON().slice(0,10),
+                    currentValue: this.property ? this.property.toJSON().slice(0,10) : null,
                     ... this.changePropsToJSON(showPropertyHistoryOnly)
                 }
             }
