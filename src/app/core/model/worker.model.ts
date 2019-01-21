@@ -1,12 +1,11 @@
 import { Contracts } from "../constants/contracts.enum"
 import { JobMain } from "./job-main.model"
 
-export class Worker {
-  constructor(
-    public nameOrId: string,
-    public contract: Contracts,
-    public mainJob: JobMain,
-    public approvedMentalHealthWorker?: string,
-    public mainJobStartDate?: string
-  ) {}
+export interface Worker {
+  nameOrId: string
+  contract: Contracts
+  mainJob: JobMain
+  approvedMentalHealthWorker?: string
+  mainJobStartDate?: string
+  dateOfBirth?: string
 }

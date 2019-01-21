@@ -1,6 +1,4 @@
-export class JobMain {
-  constructor(
-    public jobId: number,
-    public title?: string
-  ) {}
+export interface JobMain {
+  jobId: number
+  title?: string
 }

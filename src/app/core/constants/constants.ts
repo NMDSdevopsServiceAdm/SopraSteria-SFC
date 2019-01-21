@@ -1,1 +1,2 @@
 export const DEFAULT_DATE_FORMAT = "YYYY-MM-DD"
+export const DEFAULT_DATE_DISPLAY_FORMAT = "DD/MM/YYYY"

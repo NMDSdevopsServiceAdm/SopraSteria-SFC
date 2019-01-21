@@ -1,8 +1,5 @@
 <fieldset [formGroup]="formGroup">
   <legend *ngIf="label">{{label}}</legend>
-  <div *ngIf="formGroup.invalid && formGroup.get('day').dirty && formGroup.get('month').dirty && formGroup.get('year').dirty" class="col-12">
-    <span class="error">Invalid date</span>
-  </div>
   <label class="col-2 col-sm-1">Day
     <input type="number" formControlName="day" class="form-control" min="1" step="1" appNumberMax="31" [ngClass]="{'is-invalid': (formGroup.get('day').touched || formGroup.get('day').dirty) && !formGroup.get('day').valid}">
   </label>
