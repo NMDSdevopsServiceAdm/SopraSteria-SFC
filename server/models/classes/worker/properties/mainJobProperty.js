@@ -41,8 +41,7 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
 
     isEqual(currentValue, newValue) {
         // main job is an object where jobId is the primary key
-        if (currentValue && newValue && currentValue.jobId === newValue.jobId) return true;
-        else return false;
+        return currentValue && newValue && currentValue.jobId === newValue.jobId;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
@@ -50,15 +49,15 @@ exports.WorkerMainJobProperty = class WorkerMainJobProperty extends ChangeProper
             // simple form
             return {
                 mainJob: this.property
-            }
-        } else {
-            return {
-                mainJob : {
-                    currentValue: this.property,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
-            }
+            };
         }
+        
+        return {
+            mainJob : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 
     _valid(jobDef) {

@@ -43,8 +43,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
 
     isEqual(currentValue, newValue) {
         // a moment date
-        if (currentValue && newValue && currentValue.isSame(newValue, 'day')) return true;
-        else return false;
+        return currentValue && newValue && currentValue.isSame(newValue, 'day');
     }
 
 
@@ -54,14 +53,14 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
 
             return {
                 dateOfBirth: this.property.toJSON().slice(0,10)
-            }
-        } else {
-            return {
-                dateOfBirth : {
-                    currentValue: this.property ? this.property.toJSON().slice(0,10) : null,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
-            }
+            };
         }
+        
+        return {
+            dateOfBirth : {
+                currentValue: this.property ? this.property.toJSON().slice(0,10) : null,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

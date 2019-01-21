@@ -33,8 +33,7 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
 
     isEqual(currentValue, newValue) {
         // contract is a simple (enum'd) string
-        if (currentValue && newValue && currentValue === newValue) return true;
-        else return false;
+        return currentValue && newValue && currentValue === newValue;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
@@ -42,14 +41,14 @@ exports.WorkerContractProperty = class WorkerContractProperty extends ChangeProp
             // simple form
             return {
                 contract: this.property
-            }
-        } else {
-            return {
-                contract : {
-                    currentValue: this.property,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
-            }
+            };
         }
+        
+        return {
+            contract : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

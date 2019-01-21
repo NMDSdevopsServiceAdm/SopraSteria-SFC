@@ -60,8 +60,7 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
 
     isEqual(currentValue, newValue) {
         // a moment date
-        if (currentValue && newValue && currentValue.isSame(newValue, 'day')) return true;
-        else return false;
+        return currentValue && newValue && currentValue.isSame(newValue, 'day');
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
@@ -69,14 +68,14 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
             // simple form
             return {
                 mainJobStartDate: this.property.toJSON().slice(0,10)
-            }
-        } else {
-            return {
-                mainJobStartDate : {
-                    currentValue: this.property ? this.property.toJSON().slice(0,10) : null,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
-            }
+            };
         }
+        
+        return {
+            mainJobStartDate : {
+                currentValue: this.property ? this.property.toJSON().slice(0,10) : null,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

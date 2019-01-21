@@ -38,8 +38,7 @@ exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNum
 
     isEqual(currentValue, newValue) {
         // a simple string compare
-        if (currentValue && newValue && currentValue === newValue) return true;
-        else return false;
+        currentValue && newValue && currentValue === newValue;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
@@ -47,14 +46,14 @@ exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNum
             // simple form
             return {
                 nationalInsuranceNumber: this.property
-            }
-        } else {
-            return {
-                nationalInsuranceNumber : {
-                    currentValue: this.property,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
-            }
+            };
         }
+        
+        return {
+            nationalInsuranceNumber : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

@@ -33,8 +33,7 @@ exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends Change
 
     isEqual(currentValue, newValue) {
         // a simple (enum'd) string compare
-        if (currentValue && newValue && currentValue === newValue) return true;
-        else return false;
+        return currentValue && newValue && currentValue === newValue;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
@@ -42,14 +41,14 @@ exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends Change
             // simple form
             return {
                 disability: this.property
-            }
-        } else {
-            return {
-                disability : {
-                    currentValue: this.property,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
-            }
+            };
         }
+        
+        return {
+            disability : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

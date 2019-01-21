@@ -36,8 +36,7 @@ exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends ChangeProp
 
     isEqual(currentValue, newValue) {
         // a simple string compare
-        if (currentValue && newValue && currentValue === newValue) return true;
-        else return false;
+        return currentValue && newValue && currentValue === newValue;
     }
 
 
@@ -46,14 +45,14 @@ exports.WorkerPostcodeProperty = class WorkerPostcodeProperty extends ChangeProp
             // simple form
             return {
                 postcode: this.property
-            }
-        } else {
-            return {
-                postcode : {
-                    currentValue: this.property,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
-            }
+            };
         }
+        
+        return {
+            postcode : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

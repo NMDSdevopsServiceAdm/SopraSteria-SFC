@@ -31,8 +31,7 @@ exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends ChangeProp
 
     isEqual(currentValue, newValue) {
         // name or ID is a simple tring
-        if (currentValue && newValue && currentValue === newValue) return true;
-        else return false;
+        return currentValue && newValue && currentValue === newValue;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
@@ -40,14 +39,14 @@ exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends ChangeProp
             // simple form
             return {
                 nameOrId: this.property
-            }
-        } else {
-            return {
-                nameOrId : {
-                    currentValue: this.property,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
             };
         }
+        
+        return {
+            nameOrId : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

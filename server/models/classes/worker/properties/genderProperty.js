@@ -33,8 +33,7 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
 
     isEqual(currentValue, newValue) {
         // gender is a simple (enum'd) string
-        if (currentValue && newValue && currentValue === newValue) return true;
-        else return false;
+        return currentValue && newValue && currentValue === newValue;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
@@ -42,14 +41,14 @@ exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangeProperty
             // simple form
             return {
                 gender: this.property
-            }
-        } else {
-            return {
-                gender : {
-                    currentValue: this.property,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
-            }
+            };
         }
+        
+        return {
+            gender : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

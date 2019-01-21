@@ -33,8 +33,7 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
 
     isEqual(currentValue, newValue) {
         // simple (enum'd) string
-        if (currentValue && newValue && currentValue === newValue) return true;
-        else return false;
+        return currentValue && newValue && currentValue === newValue;
     }
 
 
@@ -43,14 +42,14 @@ exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHea
             // simple form
             return {
                 approvedMentalHealthWorker: this.property
-            }
-        } else {
-            return {
-                approvedMentalHealthWorker : {
-                    currentValue: this.property,
-                    ... this.changePropsToJSON(showPropertyHistoryOnly)
-                }
-            }
+            };
         }
+        
+        return {
+            approvedMentalHealthWorker : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };
