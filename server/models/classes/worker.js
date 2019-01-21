@@ -381,7 +381,7 @@ class Worker {
                     attributes: ['id', 'title']
                   }
             ],
-            attributes: ['uid', 'nameId', 'contract', "created", "updated", "updatedBy"],
+            attributes: ['uid', 'NameOrIdValue', 'ContractValue', "created", "updated", "updatedBy"],
             order: [
                 ['updated', 'DESC']
             ]           
@@ -391,8 +391,8 @@ class Worker {
             fetchResults.forEach(thisWorker => {
                 allWorkers.push({
                     uid: thisWorker.uid,
-                    nameOrId: thisWorker.nameId,
-                    contract: thisWorker.contract,
+                    nameOrId: thisWorker.NameOrIdValue,
+                    contract: thisWorker.ContractValue,
                     mainJob: {
                         jobId: thisWorker.mainJob.id,
                         title: thisWorker.mainJob.title
@@ -458,11 +458,9 @@ class Worker {
                 uid:  this.uid
             };
 
-            if (showHistory) {
-                myDefaultJSON.created = this.created.toJSON();
-                myDefaultJSON.updated = this.updated.toJSON();
-                myDefaultJSON.updatedBy = this.updatedBy;
-            }
+            myDefaultJSON.created = this.created.toJSON();
+            myDefaultJSON.updated = this.updated.toJSON();
+            myDefaultJSON.updatedBy = this.updatedBy;
 
             // TODO: JSON schema validation
             let workerHistory = null;

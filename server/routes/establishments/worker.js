@@ -32,7 +32,7 @@ router.route('/').get(async (req, res) => {
             workers: allTheseWorkers
         });
     } catch (err) {
-        console.error('worker::GET:all - failed', thisError.message);
+        console.error('worker::GET:all - failed', err);
         return res.status(503).send('Failed to get workers for establishment having id: '+establishmentId);
     }
 });
