@@ -1,5 +1,5 @@
 export class Job {
   id?: number
-  jobId?: number
+  jobId: number
   title?: string
 }

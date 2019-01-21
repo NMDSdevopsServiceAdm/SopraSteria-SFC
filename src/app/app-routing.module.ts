@@ -192,7 +192,7 @@ const routes: Routes = [
     canActivateChild: [AuthGuard],
     children: [
       {
-        path: 'create-staff-record/:id',
+        path: 'edit-staff-record/:id',
         component: CreateStaffRecordComponent,
         canLoad: [AuthGuard]
       },
