@@ -7,7 +7,6 @@ import { WorkerService, WorkerEditResponse } from "../../../core/services/worker
 import { JobService } from "../../../core/services/job.service"
 import { Contracts } from "../../../core/constants/contracts.enum"
 import { Job } from "../../../core/model/job.model"
-import { Worker } from "../../../core/model/worker.model"
 
 
 @Component({
