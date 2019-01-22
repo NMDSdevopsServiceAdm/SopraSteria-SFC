@@ -41,8 +41,8 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
             if (document.mainJobStartDate.length === 10 &&
                 expectedDate.isValid() &&
                 expectedDate.isBefore(thisDate)) {
-                // we have a valid date - but use the rich moment Date as the property value
-                this.property = expectedDate;
+                // we have a valid date - normalise the date to a string (to ensure date only - no time)
+                this.property = expectedDate.toJSON().slice(0,10);
             } else {
                 this.property = null;
             }
@@ -50,30 +50,31 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
     }
 
     restorePropertyFromSequelize(document) {
-        return new moment(document.MainJobStartDateValue);
+        // must be date only part (no time)
+        return new moment(document.MainJobStartDateValue).toJSON().slice(0,10);
     }
     savePropertyToSequelize() {
         return {
-            MainJobStartDateValue: this.property
+            MainJobStartDateValue: new Date(this.property)
         };
     }
 
     isEqual(currentValue, newValue) {
-        // a moment date
-        return currentValue && newValue && currentValue.isSame(newValue, 'day');
+        // a string normalised to date only component in ISO 8603 format
+        return currentValue && newValue && currentValue === newValue;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
-                mainJobStartDate: this.property.toJSON().slice(0,10)
+                mainJobStartDate: this.property
             };
         }
         
         return {
             mainJobStartDate : {
-                currentValue: this.property ? this.property.toJSON().slice(0,10) : null,
+                currentValue: this.property ? this.property : null,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };

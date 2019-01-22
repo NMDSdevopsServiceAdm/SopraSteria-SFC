@@ -24,8 +24,8 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
             if (document.dateOfBirth.length === 10 &&
                 expectedDate.isValid() &&
                 expectedDate.isBefore(thisDate)) {
-                // we have a valid date - but use the rich moment Date as the property value
-                this.property = expectedDate;
+                // we have a valid date - but store property as a normalised string with date only part
+                this.property = expectedDate.toJSON().slice(0,10);
             } else {
                 this.property = null;
             }
@@ -33,17 +33,17 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
     }
 
     restorePropertyFromSequelize(document) {
-        return new moment(document.DateOfBirthValue);
+        return new moment(document.DateOfBirthValue).toJSON().slice(0,10);
     }
     savePropertyToSequelize() {
         return {
-            DateOfBirthValue: this.property
+            DateOfBirthValue: new Date(this.property)
         };
     }
 
     isEqual(currentValue, newValue) {
-        // a moment date
-        return currentValue && newValue && currentValue.isSame(newValue, 'day');
+        // a normalised date only as a string in ISO 8306 format
+        return currentValue && newValue && currentValue === newValue;
     }
 
 
@@ -52,13 +52,13 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
             // simple form
 
             return {
-                dateOfBirth: this.property.toJSON().slice(0,10)
+                dateOfBirth: this.property
             };
         }
         
         return {
             dateOfBirth : {
-                currentValue: this.property ? this.property.toJSON().slice(0,10) : null,
+                currentValue: this.property ? this.property : null,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };
