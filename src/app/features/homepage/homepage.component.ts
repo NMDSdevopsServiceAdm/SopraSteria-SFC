@@ -1,20 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth-service';
+import { EstablishmentService } from '../../core/services/establishment.service';
 
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html'
 })
-export class HomepageComponent implements OnInit {
+export class HomepageComponent implements OnInit, OnDestroy {
   constructor(
     private _loginService: AuthService,
+    private establishmentService: EstablishmentService,
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder) {}
+
+  addWorkerBtnAvailable: boolean;
+
+  private subscriptions = []
 
   get fullname() : string {
     return this._loginService.fullname == null ? 'TODO' : this._loginService.fullname;
@@ -25,10 +31,6 @@ export class HomepageComponent implements OnInit {
 
   get isFirstLoggedIn() : boolean {
     return this._loginService.isFirstLogin == null ? false : this._loginService.isFirstLogin;
-  }
-
-  ngOnInit() {
-
   }
 
   welcomeContinue() {
@@ -42,5 +44,17 @@ export class HomepageComponent implements OnInit {
 
   addWorker() {
     this.router.navigate(['/worker/create-staff-record'])
+  }
+
+  ngOnInit() {
+    this.subscriptions.push(
+      this.establishmentService.getStaff().subscribe(numberOfStaff => {
+        this.addWorkerBtnAvailable = !!numberOfStaff
+      })
+    )
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe())
   }
 }
