@@ -1,4 +1,7 @@
 .btn-container {
+  & ~ .btn-container {
+    margin-top: 3rem;
+  }
 
   //@include rem(padding, 30px 0 0 0);
 }

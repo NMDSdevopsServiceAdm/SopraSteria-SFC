@@ -7,8 +7,7 @@ import { AuthService } from '../../core/services/auth-service';
 
 @Component({
   selector: 'app-homepage',
-  templateUrl: './homepage.component.html',
-  styleUrls: ['./homepage.component.scss']
+  templateUrl: './homepage.component.html'
 })
 export class HomepageComponent implements OnInit {
   constructor(
@@ -29,7 +28,7 @@ export class HomepageComponent implements OnInit {
   }
 
   ngOnInit() {
-  
+
   }
 
   welcomeContinue() {
@@ -39,5 +38,9 @@ export class HomepageComponent implements OnInit {
 
   tryagin() {
     this.router.navigate(['/type-of-employer']);
+  }
+
+  addWorker() {
+    this.router.navigate(['/worker/create-staff-record'])
   }
 }
