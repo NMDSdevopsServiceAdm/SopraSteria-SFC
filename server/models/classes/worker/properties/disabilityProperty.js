@@ -1,40 +1,54 @@
 // the contract property is an enumeration
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const DISABILITY_TYPE = ['Yes', 'No', 'Undisclosed', "Don't know"];
-exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends PropertyPrototype {
-    constructor(contract) {
+exports.WorkerDisabilityProperty = class WorkerDisabilityProperty extends ChangePropertyPrototype {
+    constructor() {
         super('Disability');
-        super.property = contract;
+    }
+
+    static clone() {
+        return new WorkerDisabilityProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         if (document.disability) {
-            return new WorkerDisabilityProperty(document.disability);
-        } else {
-            return null;
-        }
-    }
-    static async cloneFromSequelize(document) {
-        if (document.disability) {
-            return new WorkerDisabilityProperty(document.disability);
+            if (DISABILITY_TYPE.includes(document.disability)) {
+                this.property = document.disability;
+            } else {
+                this.property = null;
+            }
         }
     }
 
-    save() {
+    restorePropertyFromSequelize(document) {
+        return document.DisabilityValue;
+    }
+    savePropertyToSequelize() {
         return {
-            disability: this.property
-        }
+            DisabilityValue: this.property
+        };
     }
 
-    toJSON() {
+    isEqual(currentValue, newValue) {
+        // a simple (enum'd) string compare
+        return currentValue && newValue && currentValue === newValue;
+    }
+
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        if (!withHistory) {
+            // simple form
+            return {
+                disability: this.property
+            };
+        }
+        
         return {
-            disability: this.property
-        }
-    }
-
-    get valid() {
-        return this.property && DISABILITY_TYPE.includes(this.property);
+            disability : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

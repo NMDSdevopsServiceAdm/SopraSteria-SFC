@@ -1,40 +1,54 @@
 // the gender property is an enumeration
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const GENDER_TYPE = ['Female', 'Male', 'Other', "Don't know"];
-exports.WorkerGenderProperty = class WorkerGenderProperty extends PropertyPrototype {
-    constructor(contract) {
+exports.WorkerGenderProperty = class WorkerGenderProperty extends ChangePropertyPrototype {
+    constructor() {
         super('Gender');
-        super.property = contract;
+    }
+
+    static clone() {
+        return new WorkerGenderProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         if (document.gender) {
-            return new WorkerGenderProperty(document.gender);
-        } else {
-            return null;
-        }
-    }
-    static async cloneFromSequelize(document) {
-        if (document.gender) {
-            return new WorkerGenderProperty(document.gender);
+            if (GENDER_TYPE.includes(document.gender)) {
+                this.property = document.gender;
+            } else {
+                this.property = null;
+            }
         }
     }
 
-    save() {
+    restorePropertyFromSequelize(document) {
+        return document.GenderValue;
+    }
+    savePropertyToSequelize() {
         return {
-            gender: this.property
-        }
+            GenderValue: this.property
+        };
     }
 
-    toJSON() {
+    isEqual(currentValue, newValue) {
+        // gender is a simple (enum'd) string
+        return currentValue && newValue && currentValue === newValue;
+    }
+
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        if (!withHistory) {
+            // simple form
+            return {
+                gender: this.property
+            };
+        }
+        
         return {
-            gender: this.property
-        }
-    }
-
-    get valid() {
-        return this.property && GENDER_TYPE.includes(this.property);
+            gender : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

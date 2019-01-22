@@ -1,35 +1,52 @@
 // the nameOrId property is a simple string
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
-exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends PropertyPrototype {
-    constructor(nameOrId) {
+exports.WorkerNameOrIdProperty = class WorkerNameOrIdProperty extends ChangePropertyPrototype {
+    constructor() {
         super('NameOrId');
-        super.property = nameOrId;
     }
 
-    static async cloneFromJson(document) {
+    static clone() {
+        return new WorkerNameOrIdProperty();
+    }
+
+    async restoreFromJson(document) {
         if (document.nameOrId) {
-            return new WorkerNameOrIdProperty(document.nameOrId);
-        }
-    }
-    static async cloneFromSequelize(document) {
-        if (document.nameId) {
-            return new WorkerNameOrIdProperty(document.nameId);
-        }
-    }
-    save() {
-        return {
-            nameId: this.property
-        }
-    }
-    toJSON() {
-        return {
-            nameOrId: this.property
+            if (document.nameOrId.length <= 50) {
+                this.property = document.nameOrId;
+            } else {
+                this.property = null;
+            }
         }
     }
 
-    // nameOrId upto 50 characters
-    get valid() {
-        return this.property && this.property.length <= 50;
+    restorePropertyFromSequelize(document) {
+        return document.NameOrIdValue;
+    }
+    savePropertyToSequelize() {
+        return {
+            NameOrIdValue: this.property
+        };
+    }
+
+    isEqual(currentValue, newValue) {
+        // name or ID is a simple tring
+        return currentValue && newValue && currentValue === newValue;
+    }
+
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        if (!withHistory) {
+            // simple form
+            return {
+                nameOrId: this.property
+            };
+        }
+        
+        return {
+            nameOrId : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };
