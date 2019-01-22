@@ -160,7 +160,15 @@ export class RegistrationService {
 
   private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
     const dataError = new RegistrationTrackerError();
-    dataError.message = error.message;
+
+    if (error.message) {
+      dataError.message =
+        error.message.startsWith("5") ||
+        error.message.startsWith("4") ||
+        error.message.toLowerCase().startsWith("http") ?
+        "Server error. Please try again later, sorry." : error.message
+    }
+
     dataError.success = error.error.success;
     dataError.friendlyMessage = error.error.message;
     return ErrorObservable.create(dataError);
@@ -172,11 +180,3 @@ export class RegistrationService {
 
 
 }
-
-
-
-
-
-
-
-
