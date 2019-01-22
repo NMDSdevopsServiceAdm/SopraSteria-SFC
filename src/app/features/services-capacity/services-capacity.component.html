@@ -1,12 +1,18 @@
 <div class="main-page-container col-12">
-  <header>
-    <h1 class="h1">Capacity of your services</h1>
-    <p class="page-description">You've told us about the services your workplace provides. We need to know what the capacity of these services is.</p>
-  </header>
+  <div id="back" class="back-link">
+    <a routerLink="/select-other-services">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
 
   <form novalidate
     (ngSubmit)="submitHandler()"
     [formGroup]="form">
+
+    <header>
+      <h1 class="h1">Capacity of your services</h1>
+      <p class="page-description">You've told us about the services your workplace provides. We need to know what the capacity of these services is.</p>
+    </header>
 
     <div class="form-group mb-5">
       <div class="col-12 p-0">
