@@ -12,12 +12,12 @@ var locations = require('./server/routes/locations');
 var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
-var sfcreg = require('./server/routes/sfcreg');
-var tmpLogin = require('./server/routes/tmpLogin');
 var establishments = require('./server/routes/establishments');
 var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
+var login = require('./server/routes/login');
+var hashPassword = require('./server/routes/hashPassword');
 
 var errors = require('./server/routes/errors');
 
@@ -48,10 +48,11 @@ app.use('/api/errors', errors);
 app.use('/api/locations', [cacheMiddleware.nocache, locations]);
 app.use('/api/postcodes', [cacheMiddleware.nocache, postcodes]);
 app.use('/api/registration', [cacheMiddleware.nocache, registration]);
-app.use('/api/login', [cacheMiddleware.nocache, tmpLogin]);
+app.use('/api/login', [cacheMiddleware.nocache, login]);
 app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
+app.use('/api/hash', hashPassword);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

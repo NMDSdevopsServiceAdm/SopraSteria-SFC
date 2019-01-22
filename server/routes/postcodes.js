@@ -3,24 +3,6 @@ var router = express.Router();
 const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models/index');
 
-
-const returnDateTime = () => {
-  return (new Date()).toISOString();
-};
-router.route('/hello').get(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').put(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').delete(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-router.route('/hello').post(async (req, res) => {
-  return res.status(200).send(returnDateTime());
-});
-
-
 /* GET with Postcode parameter to find matching addresses */
 router.route('/:postcode')
 

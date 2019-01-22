@@ -23,11 +23,13 @@ $grid-breakpoints: (
 
 $color: (
   link: #1078c7,
+  black: #000,
   white: #fff,
   blue: #0665bc,
   blue-light: #3d85b9,
   grey-light: #dee0e2,
-  grey: #808080
+  grey: #808080,
+  grey-dark: #c9cacc
 );
 
 $breakpoints: (

@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var concatenateAddress = require('../utils/concatenateAddress').concatenateAddress;
 const bodyParser = require('body-parser');
-
+var bcrypt = require('bcrypt-nodejs');
 
 const { Client } = require('pg');
 
@@ -204,7 +204,7 @@ router.route('/')
     var EstablishmentSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 Limit 1';
     var UserInsert = 'INSERT INTO cqc."User"("FullName", "JobTitle", "Email", "Phone", "DateCreated", "EstablishmentID", "AdminUser") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "RegistrationID"';
     var UserSelect = 'SELECT * FROM cqc."User" where "FullName" = $1 Limit 1';
-    var LoginInsert = 'INSERT INTO cqc."Login"("RegistrationID", "Username", "Password", "SecurityQuestion", "SecurityQuestionAnswer", "Active", "InvalidAttempt") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "ID"';
+    var LoginInsert = 'INSERT INTO cqc."Login"("RegistrationID", "Username", "SecurityQuestion", "SecurityQuestionAnswer", "Active", "InvalidAttempt", "Hash") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "ID"';
 
      //db connection
     client.connect();
@@ -273,7 +273,8 @@ router.route('/')
       try {
         // forced error - in absence of unit tests
         //throw new Error("Totally forced")
-        const result = await client.query(LoginInsert,[registrationID, Logindata.UserName, Logindata.Password,Logindata.SecurityQuestion,Logindata.SecurityQuestionAnswer,1,0]);
+        const hash = await bcrypt.hashSync(Logindata.Password, bcrypt.genSaltSync(10), null);
+        const result = await client.query(LoginInsert,[registrationID, Logindata.UserName,Logindata.SecurityQuestion,Logindata.SecurityQuestionAnswer,1,0, hash]);
         loginID = result.rows[0].ID;
 
         // gets this far with no error

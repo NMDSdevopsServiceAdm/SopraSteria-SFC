@@ -70,47 +70,62 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-    if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
-      this._shareOptions.enabled = true
-      this._shareOptions.with = []
+      if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
+        this._shareOptions.enabled = true;
+        this._shareOptions.with = [];
 
-      if (this.shareWithCQCcontrol) {
-        this._shareOptions.with.push(this._withCQC)
-      }
-      if (this.shareWithLocalAuthorityControl) {
-        this._shareOptions.with.push(this._withLocalAuthority)
-      }
+        if (this.shareWithCQCcontrol) {
+          this._shareOptions.with.push(this._withCQC);
+        }
+        if (this.shareWithLocalAuthorityControl) {
+          this._shareOptions.with.push(this._withLocalAuthority);
+        }
 
-      if (this.shareWithLocalAuthorityControl) {
-        // only navigate to share with local authorities if sharing
-        //  has been enabled with Local Authorities
-        this.subscriptions.push(
-          this.establishmentService.postSharingOptions(this._shareOptions)
-            .subscribe(() => {
-              this.router.navigate(['/share-local-authority'])
-            })
-        )
+        if (this.shareWithLocalAuthorityControl) {
+          // only navigate to share with local authorities if sharing
+          //  has been enabled with Local Authorities
+          this.subscriptions.push(
+            this.establishmentService.postSharingOptions(this._shareOptions)
+              .subscribe(() => {
+                this.router.navigate(['/share-local-authority']);
+              })
+          );
+        } else {
+          this.subscriptions.push(
+            this.establishmentService.postSharingOptions(this._shareOptions)
+              .subscribe(() => {
+                this.router.navigate(['/vacancies']);
+              })
+          );
+        }
+
       } else {
+        // reset sharing options - must continue to enable sharing, but remove all share with options.
+        this._shareOptions.enabled = false;
+        this._shareOptions.with = [];
+
         this.subscriptions.push(
           this.establishmentService.postSharingOptions(this._shareOptions)
             .subscribe(() => {
               this.router.navigate(['/vacancies'])
             })
-        );
+        )
       }
+  }
 
-    } else {
-      // reset sharing options
-      this._shareOptions.enabled = false
-      this._shareOptions.with = []
+  goBack(event) {
+    event.preventDefault()
+    this.subscriptions.push(
+      this.establishmentService.getCapacity(true)
+        .subscribe(c => {
+          if (c.allServiceCapacities.length) {
+            this.router.navigate(['/capacity-of-services'])
 
-      this.subscriptions.push(
-        this.establishmentService.postSharingOptions(this._shareOptions)
-          .subscribe(() => {
-            this.router.navigate(['/vacancies'])
-          })
-      )
-    }
+          } else {
+            this.router.navigate(["/select-other-services"])
+          }
+        })
+    )
   }
 
   ngOnInit() {
