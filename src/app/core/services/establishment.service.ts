@@ -46,7 +46,13 @@ export class EstablishmentService {
 
   public set establishmentId(value:number) {
     this._establishmentId = value
-    localStorage.setItem("establishmentId", value.toString())
+
+    if (value) {
+      localStorage.setItem("establishmentId", value.toString())
+
+    } else {
+      localStorage.removeItem("establishmentId")
+    }
   }
 
   public get establishmentId() {
@@ -270,5 +276,9 @@ export class EstablishmentService {
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError)
       );
+  }
+
+  clearSession() {
+    this.establishmentId = null
   }
 }
