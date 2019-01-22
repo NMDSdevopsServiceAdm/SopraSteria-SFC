@@ -65,6 +65,24 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: '"NumberOfStaff"'
+    },
+    vacancies : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ["None","Don't know", "With Jobs"],
+      field: '"Vacancies"'
+    },
+    starters : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ["None","Don't know", "With Jobs"],
+      field: '"Starters"'
+    },
+    leavers : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ["None","Don't know", "With Jobs"],
+      field: '"Leavers"'
     }
   }, {
     tableName: '"Establishment"',

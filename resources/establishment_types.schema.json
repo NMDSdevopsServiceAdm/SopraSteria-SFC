@@ -171,27 +171,35 @@
             },
             "required" : ["jobId"]
         },
+        "EstablishmentJobs" : {
+            "description" : "Covers Vacancies, starters and leavers. Each can either be: 1. A set of individual Jobs, 2. A declaration there are no current vacancies, or 3. A declaration of 'I don't know'",
+            "oneOf" : [
+                {
+                    "description" : "A set of Jobs",
+                    "type" : "array",
+                    "items" : [{
+                        "$ref" : "#/definitions/Job"
+                    }]
+                },
+                {
+                    "description" : "A declaration of none or I don't know",
+                    "type" : "string",
+                    "enum" : ["none", "don't know"]
+                }
+            ]
+        },
         "jobs" : {
             "description": "The collective definition of number of vacancies, starters and leavers atytributed to a given establishment. Each is optional, but if given, overwrites all existing jobs of that type",
             "type" : "object",
             "properties" : {
                 "Vacancies": {
-                    "type" : "array",
-                    "items" : [{
-                        "$ref" : "#/definitions/job"
-                    }]
+                   "$ref" : "#/definitions/EstablishmentJobs"
                 },
                 "starters": {
-                    "type" : "array",
-                    "items" : [{
-                        "$ref" : "#/definitions/job"
-                    }]
+                    "$ref" : "#/definitions/EstablishmentJobs"
                 },
                 "leavers": {
-                    "type" : "array",
-                    "items" : [{
-                        "$ref" : "#/definitions/job"
-                    }]
+                    "$ref" : "#/definitions/EstablishmentJobs"
                 },
                 "TotalVacancies" : {
                     "description" : "The total of all Vacancies - 0, if no Vacancies",

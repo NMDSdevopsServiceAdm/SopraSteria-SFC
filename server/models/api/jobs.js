@@ -7,7 +7,8 @@ const localformatJob = (thisJob) => {
   }
 };
 
-exports.jobsByTypeJSON = (givenJobs) => {
+exports.jobsByTypeJSON = (establishment) => {
+  const givenJobs = establishment.jobs;
   let jobGroupsMap = new Map();
 
   if (givenJobs && Array.isArray(givenJobs)) {
@@ -32,33 +33,41 @@ exports.jobsByTypeJSON = (givenJobs) => {
     jobTypeGroup[value] = key;
   });
 
-
-  // have default (if simply empty) set of vacancies, starters and leavers
-  if (typeof jobTypeGroup['Vacancies'] === 'undefined') {
+  // handle each of Vacancies, Starters and Leavers
+  if (establishment.vacancies && establishment.vacancies != 'With Jobs') {
+    jobTypeGroup['Vacancies'] = establishment.vacancies;
+  } else if (typeof jobTypeGroup['Vacancies'] === 'undefined') {
     jobTypeGroup['Vacancies'] = [];
   }
-  if (typeof jobTypeGroup['Starters'] === 'undefined') {
+
+  console.log("WA DEBUG: establishment starters: ", establishment.starters)
+  if (establishment.starters && establishment.starters != 'With Jobs') {
+    jobTypeGroup['Starters'] = establishment.starters;
+  } else if (typeof jobTypeGroup['Starters'] === 'undefined') {
     jobTypeGroup['Starters'] = [];
   }
-  if (typeof jobTypeGroup['Leavers'] === 'undefined') {
+  
+  if (establishment.leavers && establishment.leavers != 'With Jobs') {
+    jobTypeGroup['Leavers'] = establishment.leavers;
+  } else if (typeof jobTypeGroup['Leavers'] === 'undefined') {
     jobTypeGroup['Leavers'] = [];
   }
 
   // add the totals; totals must always be given even if there no associated jobs
   let totalVacancies = 0;
-  if (jobTypeGroup['Vacancies']) {
+  if (jobTypeGroup['Vacancies'] && Array.isArray(jobTypeGroup['Vacancies'])) {
     jobTypeGroup['Vacancies'].forEach(thisJob => {
       totalVacancies += thisJob.total;
     });
   }
   let totalStarters = 0;
-  if (jobTypeGroup['Starters']) {
+  if (jobTypeGroup['Starters'] && Array.isArray(jobTypeGroup['Starters'])) {
     jobTypeGroup['Starters'].forEach(thisJob => {
       totalStarters += thisJob.total;
     });
-   }
+  }
   let totalLeavers = 0;
-  if (jobTypeGroup['Leavers']) {
+  if (jobTypeGroup['Leavers'] && Array.isArray(jobTypeGroup['Leavers'])) {
     jobTypeGroup['Leavers'].forEach(thisJob => {
       totalLeavers += thisJob.total;
     });
