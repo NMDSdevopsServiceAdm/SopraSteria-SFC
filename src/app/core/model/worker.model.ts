@@ -10,4 +10,5 @@ export interface Worker {
   mainJobStartDate?: string
   nationalInsuranceNumber?: string
   dateOfBirth?: string
+  postcode?: string
 }

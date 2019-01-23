@@ -40,6 +40,7 @@ import { NationalInsuranceNumberComponent } from './features/workers/national-in
 import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
 import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
 import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
+import { GenderComponent } from './features/workers/gender/gender.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -231,6 +232,11 @@ const routes: Routes = [
       {
         path: 'home-postcode/:id',
         component: HomePostcodeComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'gender/:id',
+        component: GenderComponent,
         canLoad: [AuthGuard]
       },
     ]
