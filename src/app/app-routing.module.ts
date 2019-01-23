@@ -39,6 +39,7 @@ import { MainJobStartDateComponent } from './features/workers/main-job-start-dat
 import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
 import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
 import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
+import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -226,7 +227,12 @@ const routes: Routes = [
         path: 'date-of-birth/:id',
         component: DateOfBirthComponent,
         canLoad: [AuthGuard]
-      }
+      },
+      {
+        path: 'home-postcode/:id',
+        component: HomePostcodeComponent,
+        canLoad: [AuthGuard]
+      },
     ]
   },
   {

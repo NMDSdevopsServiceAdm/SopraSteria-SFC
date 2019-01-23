@@ -62,6 +62,7 @@ import { MainJobStartDateComponent } from './features/workers/main-job-start-dat
 import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
 import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
 import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
+import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
 
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
@@ -129,6 +130,7 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     DatePickerComponent,
     OtherJobRolesComponent,
     DateOfBirthComponent,
+    HomePostcodeComponent,
   ],
   imports: [
     BrowserModule,

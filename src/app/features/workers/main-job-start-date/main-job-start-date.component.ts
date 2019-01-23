@@ -7,6 +7,8 @@ import { DEFAULT_DATE_FORMAT } from "../../../core/constants/constants"
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
 import { Worker } from "../../../core/model/worker.model"
+import { DateValidator } from "../../../core/validators/date.validator"
+
 
 
 @Component({
@@ -43,17 +45,24 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
+      const { day, month, year } = this.form.value
+      this.messageService.clearError()
+
       if (this.form.valid) {
-        const { day, month, year } = this.form.value
         this.worker.mainJobStartDate = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
           .format(DEFAULT_DATE_FORMAT)
         this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve)
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
         )
 
       } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
+        if (day && month && year) {
+          this.messageService.show("error", "The date can't be in the future.")
+
+        } else {
+          this.messageService.show("error", "Please fill the required fields.")
+        }
+
         reject()
       }
     })
@@ -65,6 +74,10 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
       month: ["", Validators.required],
       year: ["", Validators.required]
     })
+    this.form.setValidators([
+      DateValidator.dateValid(this.form),
+      DateValidator.datePastOrToday(this.form)
+    ])
 
     const params = this.route.snapshot.paramMap
     this.workerId = params.has("id") ? params.get("id") : null

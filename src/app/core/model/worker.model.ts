@@ -9,4 +9,5 @@ export interface Worker {
   otherJobs?: Job[]
   mainJobStartDate?: string
   nationalInsuranceNumber?: string
+  dateOfBirth?: string
 }
