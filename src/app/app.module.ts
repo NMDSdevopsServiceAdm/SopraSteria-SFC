@@ -47,6 +47,7 @@ import { NumberIntOnly } from './shared/number-int-only.directive';
 import { NumberMax } from './shared/number-max.directive';
 import { NumberPositiveOnly } from './shared/number-positive-only.directive';
 import { NoPaste } from './shared/no-paste.directive';
+import { DatePickerComponent } from './shared/date-picker/date-picker.component';
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
 import { WorkerService } from './core/services/worker.service';
@@ -124,6 +125,7 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     MentalHealthComponent,
     MainJobStartDateComponent,
     NationalInsuranceNumberComponent,
+    DatePickerComponent,
     OtherJobRolesComponent,
   ],
   imports: [

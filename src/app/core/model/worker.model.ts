@@ -7,4 +7,5 @@ export interface Worker {
   mainJob: Job
   approvedMentalHealthWorker?: string
   otherJobs?: Job[]
+  mainJobStartDate?: string
 }

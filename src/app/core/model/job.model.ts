@@ -1,5 +1,5 @@
-export class Job {
-  id?: number
+export interface Job {
   jobId: number
+  id?: number
   title?: string
 }
