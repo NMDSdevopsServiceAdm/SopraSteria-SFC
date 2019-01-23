@@ -45,7 +45,7 @@ export class WorkerService {
    * POST /api/establishment/:establishmentId/worker
    */
   createWorker(data: Worker) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentService.establishmentId}/worker`, data, EstablishmentService.getOptions())
+    return this.http.post<WorkerEditResponse>(`/api/establishment/${this.establishmentService.establishmentId}/worker`, data, EstablishmentService.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError)
@@ -56,18 +56,17 @@ export class WorkerService {
    * PUT /api/establishment/:establishmentId/worker/:workerId
    */
   updateWorker(workerId: string, worker: Worker) {
-    return this.http.put<any>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`, worker, EstablishmentService.getOptions())
+    return this.http.put<WorkerEditResponse>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`, worker, EstablishmentService.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError)
       )
   }
 
-  // TODO this probably requires amendments before using
   /*
    * DELETE /api/establishment/:establishmentId/worker/:workerId
    */
-  deleteWorker(workerId: string | number) {
+  deleteWorker(workerId: string) {
     return this.http.delete<any>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`, EstablishmentService.getOptions())
       .pipe(
         debounceTime(500),
@@ -76,6 +75,10 @@ export class WorkerService {
   }
 }
 
-interface WorkersResponse {
+export interface WorkersResponse {
   workers: Array<Worker>
+}
+
+export interface WorkerEditResponse {
+  uid: string
 }

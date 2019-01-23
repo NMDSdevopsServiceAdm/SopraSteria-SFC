@@ -36,6 +36,8 @@ import { LogoutComponent } from './features/logout/logout.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
 import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
 import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
+import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
+import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -190,25 +192,35 @@ const routes: Routes = [
     canActivateChild: [AuthGuard],
     children: [
       {
-        path: 'create-staff-record/:id',
+        path: 'edit-staff-record/:id',
         component: CreateStaffRecordComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
         path: 'create-staff-record',
         component: CreateStaffRecordComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
-        path: 'mental-health',
+        path: 'mental-health/:id',
         component: MentalHealthComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
-        path: "main-job-start-date",
+        path: 'main-job-start-date/:id',
         component: MainJobStartDateComponent,
-        canLoad: [AuthGuard],
-      }
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'other-job-roles/:id',
+        component: OtherJobRolesComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'national-insurance-number/:id',
+        component: NationalInsuranceNumberComponent,
+        canLoad: [AuthGuard]
+      },
     ]
   },
   {

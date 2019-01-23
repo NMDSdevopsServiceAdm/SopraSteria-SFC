@@ -58,6 +58,8 @@ import { LogoutComponent } from './features/logout/logout.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
 import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
 import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
+import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
+import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
 
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
@@ -121,6 +123,8 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     SubmitButtonComponent,
     MentalHealthComponent,
     MainJobStartDateComponent,
+    NationalInsuranceNumberComponent,
+    OtherJobRolesComponent,
   ],
   imports: [
     BrowserModule,

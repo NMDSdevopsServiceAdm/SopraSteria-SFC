@@ -1,3 +1,20 @@
-<p>
-  main-job-start-date works!
-</p>
+<div class="main-page-container col-12">
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1">What date did they start their main job role?</h1>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="form-group">
+      <div class="field-group mb-5">
+      </div>
+    </div>
+
+    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
+  </form>
+</div>
