@@ -1,40 +1,54 @@
 // the contract property is an enumeration
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const CONTRACT_TYPE = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'];
-exports.WorkerContractProperty = class WorkerContractProperty extends PropertyPrototype {
-    constructor(contract) {
+exports.WorkerContractProperty = class WorkerContractProperty extends ChangePropertyPrototype {
+    constructor() {
         super('Contract');
-        super.property = contract;
+    }
+
+    static clone() {
+        return new WorkerContractProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         if (document.contract) {
-            return new WorkerContractProperty(document.contract);
-        } else {
-            return null;
-        }
-    }
-    static async cloneFromSequelize(document) {
-        if (document.contract) {
-            return new WorkerContractProperty(document.contract);
+            if (CONTRACT_TYPE.includes(document.contract)) {
+                this.property = document.contract;
+            } else {
+               this.property = null;
+            }
         }
     }
 
-    save() {
+    restorePropertyFromSequelize(document) {
+        return document.ContractValue;
+    }
+    savePropertyToSequelize() {
         return {
-            contract: this.property
-        }
+            ContractValue: this.property
+        };
     }
 
-    toJSON() {
+    isEqual(currentValue, newValue) {
+        // contract is a simple (enum'd) string
+        return currentValue && newValue && currentValue === newValue;
+    }
+
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        if (!withHistory) {
+            // simple form
+            return {
+                contract: this.property
+            };
+        }
+        
         return {
-            contract: this.property
-        }
-    }
-
-    get valid() {
-        return this.property && CONTRACT_TYPE.includes(this.property);
+            contract : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

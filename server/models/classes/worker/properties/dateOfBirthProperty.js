@@ -1,18 +1,18 @@
 // the DOB (Date of Birth) property is a a date
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 const moment = require('moment');
 
-// database models
-const models = require('../../../index');
+exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends ChangePropertyPrototype {
+    constructor() {
+        super('DateOfBirth');
+    }
 
-exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends PropertyPrototype {
-    constructor(dateOfBirth) {
-        super('DateofBirth');
-        super.property = dateOfBirth;
+    static clone() {
+        return new WorkerDateOfBirthProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         const MINIMUM_AGE=15;
         if (document.dateOfBirth) {
             // mimics main job start date property by ensuring date is a valid date
@@ -24,36 +24,43 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Prop
             if (document.dateOfBirth.length === 10 &&
                 expectedDate.isValid() &&
                 expectedDate.isBefore(thisDate)) {
-                // we have a valid date - but use the rich moment Date as the property value
-                return new WorkerDateOfBirthProperty(expectedDate);
+                // we have a valid date - but store property as a normalised string with date only part
+                this.property = expectedDate.toJSON().slice(0,10);
             } else {
-                return new WorkerDateOfBirthProperty(null);
+                this.property = null;
             }
-
-        }
-    }
-    static async cloneFromSequelize(document) {
-        // Note - sequelize will serialise a Javascript Date type from the given Worker sequelize model
-        if (document.dateOfBirth) {
-            return new WorkerDateOfBirthProperty(document.dateOfBirth);
         }
     }
 
-    save() {
-        if (this.valid) {
+    restorePropertyFromSequelize(document) {
+        return new moment(document.DateOfBirthValue).toJSON().slice(0,10);
+    }
+    savePropertyToSequelize() {
+        return {
+            DateOfBirthValue: new Date(this.property)
+        };
+    }
+
+    isEqual(currentValue, newValue) {
+        // a normalised date only as a string in ISO 8306 format
+        return currentValue && newValue && currentValue === newValue;
+    }
+
+
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        if (!withHistory) {
+            // simple form
+
             return {
                 dateOfBirth: this.property
             };
         }
-    }
-
-    toJSON() {
+        
         return {
-            dateOfBirth: this.property
-        }
-    }
-
-    get valid() {
-        return this.property && this.property.isValid();
+            dateOfBirth : {
+                currentValue: this.property ? this.property : null,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

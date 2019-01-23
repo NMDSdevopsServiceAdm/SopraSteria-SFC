@@ -1,40 +1,55 @@
 // the Approved Mental Health Worker property is an enumeration
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const HEALTH_WORKER_TYPE = ['Yes', 'No', "Don't know"];
-exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHealthWorkerProperty extends PropertyPrototype {
-    constructor(value) {
+exports.WorkerApprovedMentalHealthWorkerProperty = class WorkerApprovedMentalHealthWorkerProperty extends ChangePropertyPrototype {
+    constructor() {
         super('ApprovedMentalHealthWorker');
-        super.property = value;
+    }
+
+    static clone() {
+        return new WorkerApprovedMentalHealthWorkerProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         if (document.approvedMentalHealthWorker) {
-            return new WorkerApprovedMentalHealthWorkerProperty(document.approvedMentalHealthWorker);
-        } else {
-            return null;
-        }
-    }
-    static async cloneFromSequelize(document) {
-        if (document.approvedMentalHealthWorker) {
-            return new WorkerApprovedMentalHealthWorkerProperty(document.approvedMentalHealthWorker);
+            if (HEALTH_WORKER_TYPE.includes(document.approvedMentalHealthWorker)) {
+                this.property = document.approvedMentalHealthWorker;
+            } else {
+                this.property = null;
+            }
         }
     }
 
-    save() {
+    restorePropertyFromSequelize(document) {
+        return document.ApprovedMentalHealthWorkerValue;
+    }
+    savePropertyToSequelize() {
         return {
-            approvedMentalHealthWorker: this.property
-        }
+            ApprovedMentalHealthWorkerValue: this.property
+        };
     }
 
-    toJSON() {
+    isEqual(currentValue, newValue) {
+        // simple (enum'd) string
+        return currentValue && newValue && currentValue === newValue;
+    }
+
+
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        if (!withHistory) {
+            // simple form
+            return {
+                approvedMentalHealthWorker: this.property
+            };
+        }
+        
         return {
-            approvedMentalHealthWorker: this.property
-        }
-    }
-
-    get valid() {
-        return this.property && HEALTH_WORKER_TYPE.includes(this.property);
+            approvedMentalHealthWorker : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

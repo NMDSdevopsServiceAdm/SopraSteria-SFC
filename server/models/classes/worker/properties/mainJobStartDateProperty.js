@@ -1,18 +1,21 @@
 // the Main Job Start Date property is a a date
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 const moment = require('moment');
 
 // database models
 const models = require('../../../index');
 
-exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty extends PropertyPrototype {
-    constructor(mainJobStartDate) {
+exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty extends ChangePropertyPrototype {
+    constructor() {
         super('MainJobStartDate');
-        super.property = mainJobStartDate;
+    }
+
+    static clone() {
+        return new WorkerMainJobStartDateProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
+    async restoreFromJson(document) {
         if (document.mainJobStartDate) {
             // this is a little more than simply assuming the date as given. JSON
             //  has no specific Date type (JSON Schema supports a date type through
@@ -38,36 +41,42 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
             if (document.mainJobStartDate.length === 10 &&
                 expectedDate.isValid() &&
                 expectedDate.isBefore(thisDate)) {
-                // we have a valid date - but use the rich moment Date as the property value
-                return new WorkerMainJobStartDateProperty(expectedDate);
+                // we have a valid date - normalise the date to a string (to ensure date only - no time)
+                this.property = expectedDate.toJSON().slice(0,10);
             } else {
-                return new WorkerMainJobStartDateProperty(null);
+                this.property = null;
             }
-
-        }
-    }
-    static async cloneFromSequelize(document) {
-        // Note - sequelize will serialise a Javascript Date type from the given Worker sequelize model
-        if (document.mainJobStartDate) {
-            return new WorkerMainJobStartDateProperty(document.mainJobStartDate);
         }
     }
 
-    save() {
-        if (this.valid) {
+    restorePropertyFromSequelize(document) {
+        // must be date only part (no time)
+        return new moment(document.MainJobStartDateValue).toJSON().slice(0,10);
+    }
+    savePropertyToSequelize() {
+        return {
+            MainJobStartDateValue: new Date(this.property)
+        };
+    }
+
+    isEqual(currentValue, newValue) {
+        // a string normalised to date only component in ISO 8603 format
+        return currentValue && newValue && currentValue === newValue;
+    }
+
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        if (!withHistory) {
+            // simple form
             return {
                 mainJobStartDate: this.property
             };
         }
-    }
-
-    toJSON() {
+        
         return {
-            mainJobStartDate: this.property
-        }
-    }
-
-    get valid() {
-        return this.property && this.property.isValid();
+            mainJobStartDate : {
+                currentValue: this.property ? this.property : null,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

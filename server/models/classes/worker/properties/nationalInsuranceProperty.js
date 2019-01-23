@@ -1,43 +1,59 @@
 // the National Insurance Number property is a type being JobId and Title
-const PropertyPrototype = require('../../properties/prototype').PropertyPrototype;
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 // database models
 const models = require('../../../index');
 
-exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNumberProperty extends PropertyPrototype {
-    constructor(niNumber) {
+exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNumberProperty extends ChangePropertyPrototype {
+    constructor() {
         super('NationalInsuranceNumber');
-        super.property = niNumber;
+    }
+
+    static clone() {
+        return new WorkerNationalInsuranceNumberProperty();
     }
 
     // concrete implementations
-    static async cloneFromJson(document) {
-        if (document.nationalInsuranceNumber) {
-            return new WorkerNationalInsuranceNumberProperty(document.nationalInsuranceNumber);
-        }
-    }
-    static async cloneFromSequelize(document) {
-        if (document.nationalInsuranceNumber) {
-            return new WorkerNationalInsuranceNumberProperty(document.nationalInsuranceNumber);
-        }
-    }
-
-    save() {
-        return {
-            nationalInsuranceNumber: this.property
-        };    
-    }
-
-    toJSON() {
-        return {
-            nationalInsuranceNumber: this.property
-        }
-    }
-
-    get valid() {
-        // national insurance number format: AA 11 11 11 
-        console.log("")
+    async restoreFromJson(document) {
         const niRegex = /^(?!BG)(?!GB)(?!NK)(?!KN)(?!TN)(?!NT)(?!ZZ)(?:[A-CEGHJ-PR-TW-Z][A-CEGHJ-NPR-TW-Z])(?:\s*\d\s*){6}([A-D]|\s)$/;
-        return this.property && this.property.length <= 13 && niRegex.test(this.property);
+            
+        if (document.nationalInsuranceNumber) {
+            if (document.nationalInsuranceNumber.length <= 13 &&
+                niRegex.test(document.nationalInsuranceNumber)) {
+                this.property = document.nationalInsuranceNumber;
+            } else {
+                this.property = null;
+            }
+        }
+    }
+
+    restorePropertyFromSequelize(document) {
+        return document.NationalInsuranceNumberValue;
+    }
+    savePropertyToSequelize() {
+        return {
+            NationalInsuranceNumberValue: this.property
+        };
+    }
+
+    isEqual(currentValue, newValue) {
+        // a simple string compare
+        currentValue && newValue && currentValue === newValue;
+    }
+
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        if (!withHistory) {
+            // simple form
+            return {
+                nationalInsuranceNumber: this.property
+            };
+        }
+        
+        return {
+            nationalInsuranceNumber : {
+                currentValue: this.property,
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
     }
 };

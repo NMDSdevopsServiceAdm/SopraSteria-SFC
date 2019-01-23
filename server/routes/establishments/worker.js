@@ -32,15 +32,19 @@ router.route('/').get(async (req, res) => {
             workers: allTheseWorkers
         });
     } catch (err) {
-        console.error('worker::GET:all - failed', thisError.message);
+        console.error('worker::GET:all - failed', err);
         return res.status(503).send('Failed to get workers for establishment having id: '+establishmentId);
     }
 });
 
 // gets requested worker id
+// optional parameter - "history" must equal 1
 router.route('/:workerId').get(async (req, res) => {
     const workerId = req.params.workerId;
     const establishmentId = req.establishmentId;
+    const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+    const showHistoryTime = req.query.history === 'timeline' ? true : false;
+    const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
     // validating worker id - must be a V4 UUID
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -49,8 +53,8 @@ router.route('/:workerId').get(async (req, res) => {
     const thisWorker = new Workers.Worker(establishmentId);
 
     try {
-        if (await thisWorker.restore(workerId)) {
-            return res.status(200).json(thisWorker.toJSON());
+        if (await thisWorker.restore(workerId, showHistory)) {
+            return res.status(200).json(thisWorker.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime));
         } else {
             // not found worker
             return res.status(404).send('Not Found');
@@ -87,7 +91,9 @@ router.route('/').post(async (req, res) => {
         }
 
         if (isValidWorker) {
-            await newWorker.save();
+            // note - req.username is assured, vecause it is provided through the
+            //  hasAuthorisedEstablishment middleware which runs on all establishment routes
+            await newWorker.save(req.username);
             return res.status(201).json({
                 uid: newWorker.uid
             });
@@ -128,9 +134,8 @@ router.route('/:workerId').put(async (req, res) => {
             const isValidWorker = await thisWorker.load(req.body);
 
             // this is an update to an existing Worker, so no mandatory properties!
-
             if (isValidWorker) {
-                await thisWorker.save();
+                await thisWorker.save(req.username);
                 return res.status(200).json({
                     uid: thisWorker.uid
                 });

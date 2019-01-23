@@ -18,61 +18,261 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"EstablishmentFK"'
     },
-    nameId: {
+    NameOrIdValue: {
       type: DataTypes.TEXT,
       allowNull: false,
       unique: true,
       len: [0,50],
-      field: '"NameOrID"'
+      field: '"NameOrIdValue"'
     },
-    contract: {
+    NameOrIdSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NameOrIdSavedAt"'
+    },
+    NameOrIdChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NameOrIdChangedAt"'
+    },
+    NameOrIdSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NameOrIdSavedBy"'
+    },
+    NameOrIdChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NameOrIdChangedBy"'
+    },
+    ContractValue: {
       type: DataTypes.ENUM,
       allowNull: false,
       values: ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'],
-      field: '"Contract"'
+      field: '"ContractValue"'
     },
-    mainJobFk : {
+    ContractSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ContractSavedAt"'
+    },
+    ContractChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ContractChangedAt"'
+    },
+    ContractSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ContractSavedBy"'
+    },
+    ContractChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ContractChangedBy"'
+    },
+    MainJobFkValue : {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: '"MainJobFK"'
+      field: '"MainJobFKValue"'
     },
-    approvedMentalHealthWorker : {
+    MainJobFkSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"MainJobFKSavedAt"'
+    },
+    MainJobFkChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"MainJobFKChangedAt"'
+    },
+    MainJobFkSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"MainJobFKSavedBy"'
+    },
+    MainJobFkChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"MainJobFKChangedBy"'
+    },
+    ApprovedMentalHealthWorkerValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ['Yes', 'No', 'Don\'t know'],
-      field: '"ApprovedMentalHealthWorker"'
+      field: '"ApprovedMentalHealthWorkerValue"'
     },
-    mainJobStartDate: {
+    ApprovedMentalHealthWorkerSavedAt : {
       type: DataTypes.DATE,
       allowNull: true,
-      field: '"MainJobStartDate"'
+      field: '"ApprovedMentalHealthWorkerSavedAt"'
     },
-    nationalInsuranceNumber: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      field: '"NationalInsuranceNumber"'
-    },
-    dateOfBirth: {
+    ApprovedMentalHealthWorkerChangedAt : {
       type: DataTypes.DATE,
       allowNull: true,
-      field: '"DateOfBirth"'
+      field: '"ApprovedMentalHealthWorkerChangedAt"'
     },
-    postcode: {
+    ApprovedMentalHealthWorkerSavedBy : {
       type: DataTypes.TEXT,
       allowNull: true,
-      field: '"Postcode"'
+      field: '"ApprovedMentalHealthWorkerSavedBy"'
     },
-    gender : {
+    ApprovedMentalHealthWorkerChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ApprovedMentalHealthWorkerChangedBy"'
+    },
+    MainJobStartDateValue: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"MainJobStartDateValue"'
+    },
+    MainJobStartDateSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"MainJobStartDateSavedAt"'
+    },
+    MainJobStartDateChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"MainJobStartDateChangedAt"'
+    },
+    MainJobStartDateSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"MainJobStartDateSavedBy"'
+    },
+    MainJobStartDateChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"MainJobStartDateChangedBy"'
+    },
+    NationalInsuranceNumberValue: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NationalInsuranceNumberValue"'
+    },
+    NationalInsuranceNumberSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NationalInsuranceNumberSavedAt"'
+    },
+    NationalInsuranceNumberChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NationalInsuranceNumberChangedAt"'
+    },
+    NationalInsuranceNumberSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NationalInsuranceNumberSavedBy"'
+    },
+    NationalInsuranceNumberChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NationalInsuranceNumberChangedBy"'
+    },
+    DateOfBirthValue: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DateOfBirthValue"'
+    },
+    DateOfBirthSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DateOfBirthSavedAt"'
+    },
+    DateOfBirthChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DateOfBirthChangedAt"'
+    },
+    DateOfBirthSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"DateOfBirthSavedBy"'
+    },
+    DateOfBirthChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"DateOfBirthChangedBy"'
+    },
+    PostcodeValue: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"PostcodeValue"'
+    },
+    PostcodeSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"PostcodeSavedAt"'
+    },
+    PostcodeChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"PostcodeChangedAt"'
+    },
+    PostcodeSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"PostcodeSavedBy"'
+    },
+    PostcodeChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"PostcodeChangedBy"'
+    },
+    GenderValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ['Female', 'Male', 'Other', 'Don\'t know'],
-      field: '"Gender"'
+      field: '"GenderValue"'
     },
-    disability : {
+    GenderSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"GenderSavedAt"'
+    },
+    GenderChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"GenderChangedAt"'
+    },
+    GenderSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"GenderSavedBy"'
+    },
+    GenderChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"GenderChangedBy"'
+    },
+    DisabilityValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ['Yes', 'No', 'Undisclosed', 'Don\'t know'],
-      field: '"Disability"'
+      field: '"DisabilityValue"'
+    },
+    DisabilitySavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DisabilitySavedAt"'
+    },
+    DisabilityChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DisabilityChangedAt"'
+    },
+    DisabilitySavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"DisabilitySavedBy"'
+    },
+    DisabilityChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"DisabilityChangedBy"'
     },
     created: {
       type: DataTypes.DATE,
@@ -85,17 +285,17 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       defaultValue: DataTypes.NOW,
       field: 'updated'
+    },
+    updatedBy: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: 'updatedby'
     }
   }, {
     tableName: '"Worker"',
     schema: 'cqc',
     createdAt: false,
     updatedAt: false,    // intentionally keeping these false; updated timestamp will be managed within the Worker business model not this DB model
-    uniqueKeys: {
-      nameId_unique: {
-        fields: ['establishmentFk', 'nameId']
-      }
-    }
   });
 
   Worker.associate = (models) => {
@@ -105,10 +305,15 @@ module.exports = function(sequelize, DataTypes) {
       as: 'establishment'
     });
     Worker.belongsTo(models.job, {
-      foreignKey: 'mainJobFk',
+      foreignKey: 'MainJobFkValue',
       targetKey: 'id',
       as: 'mainJob'
     });
+    Worker.hasMany(models.workerAudit, {
+      foreignKey: 'workerFk',
+      sourceKey: 'id',
+      as: 'auditEvents'
+    })
   };
 
   return Worker;
