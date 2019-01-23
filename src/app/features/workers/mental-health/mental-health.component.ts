@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
-import { ActivatedRoute, Router, ParamMap, Params } from "@angular/router"
+import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { ActivatedRoute, Router } from "@angular/router"
 
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService } from "../../../core/services/worker.service"
@@ -52,7 +52,7 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
       if (this.form.valid) {
         this.worker.approvedMentalHealthWorker = this.form.value.approvedMentalHealthWorker
         this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve)
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
         )
 
       } else {

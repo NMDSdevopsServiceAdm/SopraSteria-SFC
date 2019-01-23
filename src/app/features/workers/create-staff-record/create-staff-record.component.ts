@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
-import { ActivatedRoute, Router, ParamMap, Params } from "@angular/router"
-import { switchMap, tap } from "rxjs/operators"
+import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { ActivatedRoute, Router } from "@angular/router"
 
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
@@ -84,12 +83,12 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
         if (this.workerId) {
           this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, worker).subscribe(resolve)
+            this.workerService.updateWorker(this.workerId, worker).subscribe(resolve, reject)
           )
 
         } else {
           this.subscriptions.push(
-            this.workerService.createWorker(worker).subscribe(resolve)
+            this.workerService.createWorker(worker).subscribe(resolve, reject)
           )
         }
 

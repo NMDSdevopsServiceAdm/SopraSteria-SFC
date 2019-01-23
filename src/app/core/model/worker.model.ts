@@ -8,4 +8,5 @@ export interface Worker {
   approvedMentalHealthWorker?: string
   otherJobs?: Job[]
   mainJobStartDate?: string
+  nationalInsuranceNumber?: string
 }
