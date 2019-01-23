@@ -41,6 +41,7 @@ import { OtherJobRolesComponent } from './features/workers/other-job-roles/other
 import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
 import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
 import { GenderComponent } from './features/workers/gender/gender.component';
+import { DisabilityComponent } from './features/workers/disability/disability.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -237,6 +238,11 @@ const routes: Routes = [
       {
         path: 'gender/:id',
         component: GenderComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'disability/:id',
+        component: DisabilityComponent,
         canLoad: [AuthGuard]
       },
     ]

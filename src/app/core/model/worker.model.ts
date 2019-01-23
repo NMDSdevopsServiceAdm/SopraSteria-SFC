@@ -11,4 +11,5 @@ export interface Worker {
   nationalInsuranceNumber?: string
   dateOfBirth?: string
   postcode?: string
+  gender?: string
 }
