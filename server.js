@@ -18,6 +18,11 @@ var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
 var login = require('./server/routes/login');
 var hashPassword = require('./server/routes/hashPassword');
+var ethnicity = require('./server/routes/ethnicity');
+var country = require('./server/routes/country');
+var nationality = require('./server/routes/nationalities');
+var qualification = require('./server/routes/qualifications');
+var recruitedFrom = require('./server/routes/recruitedFrom');
 
 var errors = require('./server/routes/errors');
 
@@ -40,6 +45,11 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 // open/reference endpoints
 app.use('/api/services', services);
+app.use('/api/ethnicity', ethnicity);
+app.use('/api/country', country);
+app.use('/api/nationality', nationality);
+app.use('/api/qualification', qualification);
+app.use('/api/recruitedFrom', recruitedFrom);
 app.use('/api/jobs', jobs);
 app.use('/api/localAuthority', la);
 
