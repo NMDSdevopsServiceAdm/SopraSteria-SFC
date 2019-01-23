@@ -65,6 +65,7 @@ import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-b
 import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
 import { GenderComponent } from './features/workers/gender/gender.component';
 import { DisabilityComponent } from './features/workers/disability/disability.component';
+import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
 
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
@@ -135,6 +136,7 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     HomePostcodeComponent,
     GenderComponent,
     DisabilityComponent,
+    EthnicityComponent,
   ],
   imports: [
     BrowserModule,

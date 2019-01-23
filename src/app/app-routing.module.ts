@@ -42,6 +42,7 @@ import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-b
 import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
 import { GenderComponent } from './features/workers/gender/gender.component';
 import { DisabilityComponent } from './features/workers/disability/disability.component';
+import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -243,6 +244,11 @@ const routes: Routes = [
       {
         path: 'disability/:id',
         component: DisabilityComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'ethnicity/:id',
+        component: EthnicityComponent,
         canLoad: [AuthGuard]
       },
     ]
