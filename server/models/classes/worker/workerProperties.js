@@ -12,6 +12,7 @@ const postcodeProperty = require('./properties/postcodeProperty').WorkerPostcode
 const dateOfBirthProperty = require('./properties/dateOfBirthProperty').WorkerDateOfBirthProperty;
 const genderProperty = require('./properties/genderProperty').WorkerGenderProperty;
 const disabilityProperty = require('./properties/disabilityProperty').WorkerDisabilityProperty;
+const ethnicityProperty = require('./properties/ethnicityProperty').WorkerEthnicityProperty;
 
 class WorkerPropertyManager {
     constructor() {
@@ -27,6 +28,7 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(dateOfBirthProperty);
         this._thisManager.registerProperty(genderProperty);
         this._thisManager.registerProperty(disabilityProperty);
+        this._thisManager.registerProperty(ethnicityProperty);
     }
 
     get manager() {
