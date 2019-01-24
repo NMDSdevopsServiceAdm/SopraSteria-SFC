@@ -12,12 +12,12 @@ module.exports = function(sequelize, DataTypes) {
     seq: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'seq'
+      field: 'Seq'
     },
     nationality: {
       type: DataTypes.TEXT,
       allowNull: true,
-      field: '"nationality"'
+      field: '"Nationality"'
     }
   }, {
     tableName: 'Nationality',
