@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
-import { ActivatedRoute, Router, ParamMap, Params } from "@angular/router"
-import { switchMap, tap } from "rxjs/operators"
+import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { ActivatedRoute, Router } from "@angular/router"
 
 import { MessageService } from "../../../core/services/message.service"
-import { WorkerService } from "../../../core/services/worker.service"
+import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
 import { JobService } from "../../../core/services/job.service"
 import { Contracts } from "../../../core/constants/contracts.enum"
 import { Job } from "../../../core/model/job.model"
-import { JobMain } from "../../../core/model/job-main.model"
 import { Worker } from "../../../core/model/worker.model"
 
 
@@ -32,8 +30,8 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   form: FormGroup
   jobsAvailable: Job[] = []
   contractsAvailable: Array<string> = []
-  workerId: string
 
+  private workerId: string
   private subscriptions = []
 
   private isSocialWorkerSelected(): boolean {
@@ -58,13 +56,13 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      await this.saveHandler()
+      const res = await this.saveHandler()
 
       if (this.isSocialWorkerSelected()) {
-        this.router.navigate(["/worker/mental-health"])
+        this.router.navigate([`/worker/mental-health/${res.uid}`])
 
       } else {
-        this.router.navigate(["/worker/main-job-start-date"])
+        this.router.navigate([`/worker/main-job-start-date/${res.uid}`])
       }
 
     } catch (err) {
@@ -72,25 +70,25 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveHandler() {
+  saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       if (this.form.valid) {
-        const worker = new Worker(
-          this.form.value.nameOrId,
-          this.form.value.contract,
-          new JobMain(
-            parseInt(this.form.value.mainJob)
-          )
-        )
+        const worker = {
+          nameOrId: this.form.value.nameOrId,
+          contract: this.form.value.contract,
+          mainJob: {
+            jobId: parseInt(this.form.value.mainJob)
+          }
+        }
 
         if (this.workerId) {
           this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, worker).subscribe(resolve)
+            this.workerService.updateWorker(this.workerId, worker).subscribe(resolve, reject)
           )
 
         } else {
           this.subscriptions.push(
-            this.workerService.createWorker(worker).subscribe(resolve)
+            this.workerService.createWorker(worker).subscribe(resolve, reject)
           )
         }
 

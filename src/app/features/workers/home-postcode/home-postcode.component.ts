@@ -1,24 +1,25 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { AbstractControl, FormGroup, FormBuilder, Validators } from "@angular/forms"
 import { ActivatedRoute, Router } from "@angular/router"
 
 import { MessageService } from "../../../core/services/message.service"
-import { WorkerService } from "../../../core/services/worker.service"
+import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
 import { Worker } from "../../../core/model/worker.model"
+import { POSTCODE_PATTERN } from "../../../core/constants/constants"
 
 
 @Component({
-  selector: 'app-mental-health',
-  templateUrl: './mental-health.component.html'
+  selector: 'app-home-postcode',
+  templateUrl: './home-postcode.component.html'
 })
-export class MentalHealthComponent implements OnInit, OnDestroy {
+export class HomePostcodeComponent implements OnInit, OnDestroy {
 
   constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private route: ActivatedRoute,
     private workerService: WorkerService,
-    private messageService: MessageService
+    private formBuilder: FormBuilder,
+    private messageService: MessageService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this)
   }
@@ -29,18 +30,10 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
   private worker: Worker
   private workerId: string
 
-  answersAvailable = [ "Yes", "No", "Don't know" ]
-
   async submitHandler() {
     try {
       await this.saveHandler()
-
-      if (this.worker.otherJobs && this.worker.otherJobs.length) {
-        this.router.navigate([`/worker/national-insurance-number/${this.workerId}`])
-
-      } else {
-        this.router.navigate([`/worker/main-job-start-date/${this.workerId}`])
-      }
+      this.router.navigate([`/worker/gender/${this.workerId}`])
 
     } catch (err) {
       // keep typescript transpiler silent
@@ -50,22 +43,33 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
   saveHandler() {
     return new Promise((resolve, reject) => {
       if (this.form.valid) {
-        this.worker.approvedMentalHealthWorker = this.form.value.approvedMentalHealthWorker
+        this.worker.postcode = this.form.value.postcode
         this.subscriptions.push(
           this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
         )
 
       } else {
         this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
+
+        if (this.form.value.postcode) {
+          this.messageService.show("error", "Invalid postcode format.")
+
+        } else {
+          this.messageService.show("error", "Please fill the required fields.")
+        }
+
         reject()
       }
     })
   }
 
+  postcodeValidator(control: AbstractControl) {
+    return control.value && POSTCODE_PATTERN.test(control.value) ? null : { validPostcode: true }
+  }
+
   ngOnInit() {
     this.form = this.formBuilder.group({
-      approvedMentalHealthWorker: ["", Validators.required]
+      postcode: ["", [Validators.required, this.postcodeValidator]]
     })
 
     const params = this.route.snapshot.paramMap
@@ -77,7 +81,7 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
           this.worker = worker
 
           this.form.patchValue({
-            approvedMentalHealthWorker: worker.approvedMentalHealthWorker
+            postcode: worker.postcode
           })
         })
       )

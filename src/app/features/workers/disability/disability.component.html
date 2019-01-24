@@ -5,15 +5,15 @@
     [formGroup]="form">
 
     <header>
-      <h1 class="h1">Are they an Approved Mental Health Professional?</h1>
+      <h1 class="h1 col-12 col-lg-8">Do they identify as having a disability?</h1>
     </header>
 
     <app-messages></app-messages>
 
-    <div class="form-group">
+    <div class="form-group mt-5">
       <div class="field-group mb-5">
         <div *ngFor="let answer of answersAvailable; let idx = index" class="multiple-choice">
-          <input type="radio" formControlName="approvedMentalHealthWorker" class="form-control" [value]="answer" id="answer_{{idx}}">
+          <input type="radio" formControlName="disability" class="form-control" [value]="answer" id="answer_{{idx}}">
           <label for="answer_{{idx}}">{{answer}}</label>
         </div>
       </div>

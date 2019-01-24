@@ -8,10 +8,10 @@ import { Worker } from "../../../core/model/worker.model"
 
 
 @Component({
-  selector: 'app-mental-health',
-  templateUrl: './mental-health.component.html'
+  selector: 'app-gender',
+  templateUrl: './gender.component.html'
 })
-export class MentalHealthComponent implements OnInit, OnDestroy {
+export class GenderComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
@@ -29,18 +29,12 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
   private worker: Worker
   private workerId: string
 
-  answersAvailable = [ "Yes", "No", "Don't know" ]
+  answersAvailable = [ "Female", "Male", "Other", "Don't know" ]
 
   async submitHandler() {
     try {
       await this.saveHandler()
-
-      if (this.worker.otherJobs && this.worker.otherJobs.length) {
-        this.router.navigate([`/worker/national-insurance-number/${this.workerId}`])
-
-      } else {
-        this.router.navigate([`/worker/main-job-start-date/${this.workerId}`])
-      }
+      this.router.navigate([`/worker/disability/${this.workerId}`])
 
     } catch (err) {
       // keep typescript transpiler silent
@@ -50,7 +44,7 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
   saveHandler() {
     return new Promise((resolve, reject) => {
       if (this.form.valid) {
-        this.worker.approvedMentalHealthWorker = this.form.value.approvedMentalHealthWorker
+        this.worker.gender = this.form.value.gender
         this.subscriptions.push(
           this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
         )
@@ -65,7 +59,7 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      approvedMentalHealthWorker: ["", Validators.required]
+      gender: ["", Validators.required]
     })
 
     const params = this.route.snapshot.paramMap
@@ -77,7 +71,7 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
           this.worker = worker
 
           this.form.patchValue({
-            approvedMentalHealthWorker: worker.approvedMentalHealthWorker
+            gender: worker.gender
           })
         })
       )

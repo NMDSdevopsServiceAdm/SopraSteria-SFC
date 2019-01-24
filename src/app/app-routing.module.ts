@@ -36,6 +36,13 @@ import { LogoutComponent } from './features/logout/logout.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
 import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
 import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
+import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
+import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
+import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
+import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
+import { GenderComponent } from './features/workers/gender/gender.component';
+import { DisabilityComponent } from './features/workers/disability/disability.component';
+import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -190,25 +197,60 @@ const routes: Routes = [
     canActivateChild: [AuthGuard],
     children: [
       {
-        path: 'create-staff-record/:id',
+        path: 'edit-staff-record/:id',
         component: CreateStaffRecordComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
         path: 'create-staff-record',
         component: CreateStaffRecordComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
-        path: 'mental-health',
+        path: 'mental-health/:id',
         component: MentalHealthComponent,
-        canLoad: [AuthGuard],
+        canLoad: [AuthGuard]
       },
       {
-        path: "main-job-start-date",
+        path: 'main-job-start-date/:id',
         component: MainJobStartDateComponent,
-        canLoad: [AuthGuard],
-      }
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'other-job-roles/:id',
+        component: OtherJobRolesComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'national-insurance-number/:id',
+        component: NationalInsuranceNumberComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'date-of-birth/:id',
+        component: DateOfBirthComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'home-postcode/:id',
+        component: HomePostcodeComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'gender/:id',
+        component: GenderComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'disability/:id',
+        component: DisabilityComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'ethnicity/:id',
+        component: EthnicityComponent,
+        canLoad: [AuthGuard]
+      },
     ]
   },
   {

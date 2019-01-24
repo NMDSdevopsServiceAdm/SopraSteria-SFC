@@ -1,7 +1,12 @@
-app-messages:empty {
-  display: block;
-  height: 1rem;
-  // margin-bottom: 1rem;
+app-messages {
+  &:empty {
+    display: block;
+    height: 1rem;
+  }
+}
+
+form app-messages ~ .form-group {
+  margin-top: 0;
 }
 
 .alert {

@@ -1,0 +1,14 @@
+form,
+.form {
+  .form-group app-date-picker {
+    fieldset label {
+      & ~ label {
+        margin-left: 3rem;
+      }
+
+      input {
+        display: block;
+      }
+    }
+  }
+}
