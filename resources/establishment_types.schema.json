@@ -11,6 +11,10 @@
             "type" : "string",
             "pattern": "^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$"
         },
+        "seq" : {
+            "type" : "integer",
+            "minimum" : 0
+        },
         "Username" : {
             "type" : "string",
             "minLength": 3,
@@ -609,6 +613,117 @@
                 }
             ]
         },
+        "Nationality" : {
+            "description": "A person's nationality",
+            "properties": {
+                "nationalityId" : {
+                    "description": "A unique reference to the Nationality",
+                    "$ref" : "#/definitions/id"
+                },
+                "nationality" : {
+                    "description": "The nationality, e.g. Austrian, Australian"
+                },
+                "seq" : {
+                    "description": "A preferred order in which to present the Nationality if presenting as a list",
+                    "$ref" : "#/definitions/id"
+                }
+            },
+            "required": ["nationalityId"]
+        },
+        "Ethnicity" : {
+            "description": "A person's ethnicity",
+            "properties": {
+                "ethnicityId" : {
+                    "description": "A unique reference to the Ethnicity",
+                    "$ref" : "#/definitions/id"
+                },
+                "ethnicity" : {
+                    "description": "The nationality, e.g. Austrian, Australian",
+                    "type" : "string"
+                },
+                "group" : {
+                    "description": "The ethnic group associated with this ethnicity",
+                    "type" : "string"
+                },
+                "seq" : {
+                    "description": "A preferred order in which to present the Nationality if presenting as a list",
+                    "$ref" : "#/definitions/id"
+                }
+            },
+            "required": ["ethnicityId"]
+        },
+        "Country" : {
+            "description": "A known country within the world",
+            "properties": {
+                "countryId" : {
+                    "description": "A unique reference to the Country",
+                    "$ref" : "#/definitions/id"
+                },
+                "country" : {
+                    "description": "The name of the country, e.g. Austria, Australia",
+                    "type" : "string"
+                },
+                "seq" : {
+                    "description": "A preferred order in which to present the Country if presenting as a list",
+                    "$ref" : "#/definitions/id"
+                }
+            },
+            "required": ["countryId"]
+        },
+        "Country" : {
+            "description": "A known country within the world",
+            "properties": {
+                "countryId" : {
+                    "description": "A unique reference to the Country",
+                    "$ref" : "#/definitions/id"
+                },
+                "country" : {
+                    "description": "The name of the country, e.g. Austria, Australia",
+                    "type" : "string"
+                },
+                "seq" : {
+                    "description": "A preferred order in which to present the Country if presenting as a list",
+                    "$ref" : "#/definitions/id"
+                }
+            },
+            "required": ["countryId"]
+        },
+        "RecruitedFrom" : {
+            "description": "Recruitment Origins; lookup value",
+            "properties": {
+                "recruitedFromId" : {
+                    "description": "A unique reference to the Recruitment Origin",
+                    "$ref" : "#/definitions/id"
+                },
+                "from" : {
+                    "description": "The origin of recruitment",
+                    "type" : "string"
+                },
+                "seq" : {
+                    "description": "A preferred order in which to present the Recruitment Origins if presenting as a list",
+                    "$ref" : "#/definitions/id"
+                }
+            },
+            "required": ["recruitedFromId"]
+        },
+        "Qualification" : {
+            "description": "A given qualification",
+            "properties": {
+                "qualificationId" : {
+                    "description": "A unique reference to the Qualification",
+                    "$ref" : "#/definitions/id"
+                },
+                "title" : {
+                    "description": "The qualification title",
+                    "type" : "string"
+                },
+                "seq" : {
+                    "description": "A preferred order in which to present the Qualification if presenting as a list",
+                    "$ref" : "#/definitions/id"
+                }
+            },
+            "required": ["qualificationId"]
+        },
         "Worker" : {
             "description" : "A Worker belongs to a single Establishment",
             "properties" : {
@@ -656,6 +771,71 @@
                 "disability" : {
                     "description": "The worker's disability",
                     "$ref" : "#/definitions/WorkerDisability"
+                },
+                "ethnicity" : {
+                    "description": "The worker's ethnicity",
+                    "properties": {
+                        "value" : {
+                            "description": "The given ethnicity",
+                            "$ref" : "#/definitions/Ethnicity"
+                        }
+                    },
+                    "required" : ["value"]
+                },
+                "nationality" : {
+                    "description": "The worker's nationality",
+                    "properties": {
+                        "value" : {
+                            "description": "The given nationality",
+                            "type" : "string",
+                            "enum" : ["British", "Other", "Don't know"]
+                        },
+                        "other" : {
+                            "description": "If other, this is the referenced (looked up) Nationality",
+                            "$ref" : "#/definitions/Nationality"
+                        }
+                    },
+                    "required" : ["value"]
+                },
+                "countryOfBirth" : {
+                    "description": "The worker's country of birth",
+                    "properties": {
+                        "value" : {
+                            "description": "The given country of birth",
+                            "type" : "string",
+                            "enum" : ["United Kingdom", "Other", "Don't know"]
+                        },
+                        "other" : {
+                            "description": "If other, this is the referenced (looked up) Country",
+                            "$ref" : "#/definitions/Country"
+                        }
+                    },
+                    "required" : ["value"]
+                },
+                "recruitedFrom" : {
+                    "description": "Previous position from which the worker was recruited from",
+                    "properties": {
+                        "value" : {
+                            "description": "The given recruited from",
+                            "type" : "string",
+                            "enum" : ["Yes", "No"]
+                        },
+                        "from" : {
+                            "description": "If yes, this is the referenced (looked up) recruitment origin",
+                            "$ref" : "#/definitions/RecruitedFrom"
+                        }
+                    },
+                    "required" : ["value"]
+                },
+                "qualification" : {
+                    "description": "Highest Level of qualification for this Worker",
+                    "properties": {
+                        "value" : {
+                            "description": "The given qualification",
+                            "$ref" : "#/definitions/Qualification"
+                        }
+                    },
+                    "required" : ["value"]
                 },
                 "createdAt" : {
                     "description" : "When the worker record was created",

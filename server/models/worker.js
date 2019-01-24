@@ -274,6 +274,149 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"DisabilityChangedBy"'
     },
+    EthnicityFkValue : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"EthnicityFKValue"'
+    },
+    EthnicityFkSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EthnicityFKSavedAt"'
+    },
+    EthnicityFkChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EthnicityFKChangedAt"'
+    },
+    EthnicityFkSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EthnicityFKSavedBy"'
+    },
+    EthnicityFkChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EthnicityFKChangedBy"'
+    },
+    QualificationFkValue : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"QualificationFKValue"'
+    },
+    QualificationFkSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"QualificationFKSavedAt"'
+    },
+    QualificationFkChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"QualificationFKChangedAt"'
+    },
+    QualificationFkSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"QualificationFKSavedBy"'
+    },
+    QualificationFkChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"QualificationFKChangedBy"'
+    },
+    NationalityValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['British', 'Other', 'Don\'t know'],
+      field: '"NationalityValue"'
+    },
+    NationalityOtherFK : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"NationalityOtherFK"'
+    },
+    NationalitySavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NationalitySavedAt"'
+    },
+    NationalityChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NationalityChangedAt"'
+    },
+    NationalitySavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NationalitySavedBy"'
+    },
+    NationalityChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NationalityChangedBy"'
+    },
+    CountryOfBirthValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['United Kingdom', 'Other', 'Don\'t know'],
+      field: '"CountryOfBirthValue"'
+    },
+    CountryOfBirthOtherFK : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"CountryOfBirthOtherFK"'
+    },
+    CountryOfBirthSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CountryOfBirthSavedAt"'
+    },
+    CountryOfBirthChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CountryOfBirthChangedAt"'
+    },
+    CountryOfBirthSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CountryOfBirthSavedBy"'
+    },
+    CountryOfBirthChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CountryOfBirthChangedBy"'
+    },
+    RecruitedFromValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"RecruitedFromValue"'
+    },
+    RecruitedFromOtherFK : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"RecruitedFromOtherFK"'
+    },
+    RecruitedFromSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"RecruitedFromSavedAt"'
+    },
+    RecruitedFromChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"RecruitedFromChangedAt"'
+    },
+    RecruitedFromSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"RecruitedFromSavedBy"'
+    },
+    RecruitedFromChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"RecruitedFromChangedBy"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -313,7 +456,32 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'workerFk',
       sourceKey: 'id',
       as: 'auditEvents'
-    })
+    });
+    Worker.belongsTo(models.ethnicity, {
+      foreignKey: 'EthnicityFkValue',
+      targetKey: 'id',
+      as: 'ethnicity'
+    });
+    Worker.belongsTo(models.nationality, {
+      foreignKey: 'NationalityOtherFK',
+      targetKey: 'id',
+      as: 'nationality'
+    });
+    Worker.belongsTo(models.qualification, {
+      foreignKey: 'QualificationFkValue',
+      targetKey: 'id',
+      as: 'qualification'
+    });
+    Worker.belongsTo(models.country, {
+      foreignKey: 'CountryOfBirthOtherFK',
+      targetKey: 'id',
+      as: 'countryOfBirth'
+    });
+    Worker.belongsTo(models.recruitedFrom, {
+      foreignKey: 'RecruitedFromOtherFK',
+      targetKey: 'id',
+      as: 'recruitedFrom'
+    });
   };
 
   return Worker;
