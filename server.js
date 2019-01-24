@@ -44,14 +44,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // open/reference endpoints
-app.use('/api/services', services);
-app.use('/api/ethnicity', ethnicity);
-app.use('/api/country', country);
-app.use('/api/nationality', nationality);
-app.use('/api/qualification', qualification);
-app.use('/api/recruitedFrom', recruitedFrom);
-app.use('/api/jobs', jobs);
-app.use('/api/localAuthority', la);
+app.use('/api/services', [cacheMiddleware.refcache, services]);
+app.use('/api/ethnicity', [cacheMiddleware.refcache, ethnicity]);
+app.use('/api/country', [cacheMiddleware.refcache, country]);
+app.use('/api/nationality', [cacheMiddleware.refcache, nationality]);
+app.use('/api/qualification', [cacheMiddleware.refcache, qualification]);
+app.use('/api/recruitedFrom', [cacheMiddleware.refcache, recruitedFrom]);
+app.use('/api/jobs', [cacheMiddleware.refcache, jobs]);
+app.use('/api/localAuthority', [cacheMiddleware.refcache, la]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
