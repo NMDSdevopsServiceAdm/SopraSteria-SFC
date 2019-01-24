@@ -73,6 +73,7 @@ import { MessageService } from './core/services/message.service';
 import { FeedbackService } from './core/services/feedback.service';
 import { EstablishmentService } from './core/services/establishment.service';
 import { LocalAuthorityService } from './core/services/localAuthority.service';
+import { EthnicityService } from './core/services/ethnicity.service';
 import { AuthGuard } from './core/services/auth-guard.service';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
@@ -172,6 +173,7 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     LocalAuthorityService,
     AuthGuard,
     WorkerService,
+    EthnicityService,
   ],
   bootstrap: [AppComponent]
 })
