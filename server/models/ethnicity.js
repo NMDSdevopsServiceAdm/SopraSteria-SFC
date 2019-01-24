@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes) {
     seq: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'seq'
+      field: 'Seq'
     },
     group: {
       type: DataTypes.TEXT,
