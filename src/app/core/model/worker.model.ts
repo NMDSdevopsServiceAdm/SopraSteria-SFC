@@ -13,5 +13,8 @@ export interface Worker {
   postcode?: string
   gender?: string
   disability?: string
-  ethnicity?: number
+  ethnicity?: {
+    ethnicityId: number
+    ethnicity?: string
+  }
 }

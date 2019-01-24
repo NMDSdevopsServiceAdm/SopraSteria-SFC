@@ -33,8 +33,12 @@ export class EthnicityComponent implements OnInit, OnDestroy {
   private worker: Worker
   private subscriptions = []
 
+  ethnicitiesUngrouped() {
+    return this.ethnicities[""]
+  }
+
   ethnicityGroups() {
-    return Object.keys(this.ethnicities)
+    return Object.keys(this.ethnicities).filter(e => e.length)
   }
 
   async submitHandler() {
@@ -50,7 +54,9 @@ export class EthnicityComponent implements OnInit, OnDestroy {
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       if (this.form.valid) {
-        this.worker.ethnicity = this.form.value.ethnicity
+        this.worker.ethnicity = {
+          ethnicityId: parseInt(this.form.value.ethnicity)
+        }
         this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
 
       } else {
@@ -72,9 +78,13 @@ export class EthnicityComponent implements OnInit, OnDestroy {
     if (this.workerId) {
       this.subscriptions.push(
         this.workerService.getWorker(this.workerId).subscribe(worker => {
-          this.form.patchValue({
-            ethnicity: worker.ethnicity
-          })
+          this.worker = worker
+
+          if (worker.ethnicity) {
+            this.form.patchValue({
+              ethnicity: worker.ethnicity.ethnicityId
+            })
+          }
         })
       )
     }
