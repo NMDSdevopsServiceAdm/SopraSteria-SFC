@@ -53,11 +53,9 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
                 value: document.NationalityValue,
             };
 
-            console.log("WA DEBUG: restore nationality from db: ", document.NationalityValue, document.nationality)
-
             if (document.NationalityValue === 'Other' && document.nationality) {
                 nationality.other = {
-                    nationalityId: document.nationality.nationalityId,
+                    nationalityId: document.nationality.id,
                     nationality: document.nationality.nationality
                 };
             }
@@ -81,8 +79,8 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
 
     isEqual(currentValue, newValue) {
         // nationality is an object having value and optional nationality lookup (by id)
-        const nationalityEqual = false;
-        if (currentValue.value === 'Other') {
+        let nationalityEqual = false;
+        if (currentValue && newValue && currentValue.value === 'Other') {
             if (currentValue.other && newValue.other && currentValue.other.nationalityId == newValue.other.nationalityId) {
                 nationalityEqual = true;
             }
@@ -114,7 +112,7 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
         if (!nationalityDef) return false;
 
         // must exist a nationalityId or nationality
-        if (!(nationalityDef.nationalityId || nationalityDef.ethnicity)) return false;
+        if (!(nationalityDef.nationalityId || nationalityDef.nationality)) return false;
 
         // if nationalityId is given, it must be an integer
         if (nationalityDef.nationalityId && !(Number.isInteger(nationalityDef.nationalityId))) return false;
@@ -138,7 +136,7 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
                 attributes: ['id', 'nationality'],
             });
         } else {
-            referenceNationality = await models.ethnicity.findOne({
+            referenceNationality = await models.nationality.findOne({
                 where: {
                     nationality: nationalityDef.nationality
                 },
