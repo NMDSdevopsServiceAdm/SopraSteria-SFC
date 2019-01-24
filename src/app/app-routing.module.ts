@@ -43,6 +43,7 @@ import { HomePostcodeComponent } from './features/workers/home-postcode/home-pos
 import { GenderComponent } from './features/workers/gender/gender.component';
 import { DisabilityComponent } from './features/workers/disability/disability.component';
 import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
+import { NationalityComponent } from './features/workers/nationality/nationality.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -249,6 +250,11 @@ const routes: Routes = [
       {
         path: 'ethnicity/:id',
         component: EthnicityComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'nationality/:id',
+        component: NationalityComponent,
         canLoad: [AuthGuard]
       },
     ]
