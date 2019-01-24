@@ -19,7 +19,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"EthnicityGroup"'
     },
-     ethnicity: {
+    ethnicity: {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"Ethnicity"'

@@ -304,6 +304,31 @@ class Worker {
                         model: models.job,
                         as: 'mainJob',
                         attributes: ['id', 'title']
+                    },
+                    {
+                        model: models.ethnicity,
+                        as: 'ethnicity',
+                        attributes: ['id', 'ethnicity']
+                    },
+                    {
+                        model: models.nationality,
+                        as: 'nationality',
+                        attributes: ['id', 'nationality']
+                    },
+                    {
+                        model: models.qualification,
+                        as: 'qualification',
+                        attributes: ['id', 'level']
+                    },
+                    {
+                        model: models.country,
+                        as: 'countryOfBirth',
+                        attributes: ['id', 'country']
+                    },
+                    {
+                        model: models.recruitedFrom,
+                        as: 'recruitedFrom',
+                        attributes: ['id', 'from']
                     }
                 ]
             };
