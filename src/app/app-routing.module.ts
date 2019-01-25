@@ -44,6 +44,8 @@ import { GenderComponent } from './features/workers/gender/gender.component';
 import { DisabilityComponent } from './features/workers/disability/disability.component';
 import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
 import { NationalityComponent } from './features/workers/nationality/nationality.component';
+import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
+import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -255,6 +257,16 @@ const routes: Routes = [
       {
         path: 'nationality/:id',
         component: NationalityComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'recruited-from/:id',
+        component: RecruitedFromComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'adult-social-care-started/:id',
+        component: AdultSocialCareStartedComponent,
         canLoad: [AuthGuard]
       },
     ]
