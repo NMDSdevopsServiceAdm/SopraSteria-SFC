@@ -145,7 +145,7 @@ exports.WorkerCountryProperty = class WorkerCountryProperty extends ChangeProper
         }
 
         if (referenceCountry && referenceCountry.id) {
-            // found a job match
+            // found a country match
             return {
                 countryId: referenceCountry.id,
                 country: referenceCountry.country

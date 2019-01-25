@@ -15,6 +15,7 @@ const disabilityProperty = require('./properties/disabilityProperty').WorkerDisa
 const ethnicityProperty = require('./properties/ethnicityProperty').WorkerEthnicityProperty;
 const nationalityProperty = require('./properties/nationalityProperty').WorkerNationalityProperty;
 const countryProperty = require('./properties/countryProperty').WorkerCountryProperty;
+const recruitedFromProperty = require('./properties/recruitedFromProperty').WorkerRecruitedFromProperty;
 
 class WorkerPropertyManager {
     constructor() {
@@ -33,6 +34,7 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(ethnicityProperty);
         this._thisManager.registerProperty(countryProperty);
         this._thisManager.registerProperty(nationalityProperty);
+        this._thisManager.registerProperty(recruitedFromProperty);
     }
 
     get manager() {

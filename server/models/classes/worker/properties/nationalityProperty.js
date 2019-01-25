@@ -144,7 +144,7 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
         }
 
         if (referenceNationality && referenceNationality.id) {
-            // found a job match
+            // found a nationality match
             return {
                 nationalityId: referenceNationality.id,
                 nationality: referenceNationality.nationality

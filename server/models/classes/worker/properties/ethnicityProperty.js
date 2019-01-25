@@ -97,7 +97,7 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
         }
 
         if (referenceEthnicity && referenceEthnicity.id) {
-            // found a job match
+            // found a ethnicity match
             return {
                 ethnicityId: referenceEthnicity.id,
                 ethnicity: referenceEthnicity.ethnicity
