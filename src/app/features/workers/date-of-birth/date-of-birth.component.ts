@@ -79,7 +79,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
   private calculateHighestAcceptableDate() {
     const date = moment()
-    date.year(date.year() - 16)
+    date.year(date.year() - 14)
     return date
   }
 
@@ -95,7 +95,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       const noBefore = this.calculateLowestAcceptableDate()
       const noAfter = this.calculateHighestAcceptableDate()
 
-      if (date.isBetween(noBefore, noAfter)) {
+      if (date.isBetween(noBefore, noAfter, "day", "[]")) {
         return null
       }
     }
