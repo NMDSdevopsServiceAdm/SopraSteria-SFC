@@ -40,7 +40,7 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
     }
 
     isEqual(currentValue, newValue) {
-        // main job is an object where ethnicityId is the primary key
+        // ethnicity is an object where ethnicityId is the primary key
         return currentValue && newValue && currentValue.ethnicityId === newValue.ethnicityId;
     }
 
