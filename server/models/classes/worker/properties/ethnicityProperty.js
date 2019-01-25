@@ -61,7 +61,6 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
     }
 
     _valid(ethnicityDef) {
-        // get reference set of jobs to validate against
         if (!ethnicityDef) return false;
 
         // must exist a ethnicityId or ethnicity
@@ -79,7 +78,7 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
     async _validateEthnicity(ethnicityDef) {
         if (!this._valid(ethnicityDef)) return false;
 
-        // ethnicityId overrides title, because ethnicityId is indexed whereas ethnicity is not!
+        // ethnicityId overrides ethnicity, because ethnicityId is indexed whereas ethnicity is not!
         let referenceEthnicity = null;
         if (ethnicityDef.ethnicityId) {
             referenceEthnicity = await models.ethnicity.findOne({

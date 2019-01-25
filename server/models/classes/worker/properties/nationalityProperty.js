@@ -108,7 +108,6 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
     }
 
     _valid(nationalityDef) {
-        // get reference set of jobs to validate against
         if (!nationalityDef) return false;
 
         // must exist a nationalityId or nationality
@@ -126,7 +125,7 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
     async _validateNationality(nationalityDef) {
         if (!this._valid(nationalityDef)) return false;
 
-        // nationalityId overrides title, because nationalityId is indexed whereas nationality is not!
+        // nationalityId overrides nationality, because nationalityId is indexed whereas nationality is not!
         let referenceNationality = null;
         if (nationalityDef.nationalityId) {
             referenceNationality = await models.nationality.findOne({
