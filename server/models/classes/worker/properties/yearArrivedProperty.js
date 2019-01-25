@@ -17,7 +17,7 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
         const MAXIMUM_AGE=100;
 
         if (document.yearArrived) {
-            if (YEAR_ARRIVED_TYPE.includes(document.yearArrived)) {
+            if (YEAR_ARRIVED_TYPE.includes(document.yearArrived.value)) {
                 if (document.yearArrived.value === 'Yes') {
                     const thisYear = new Date().getFullYear();
                     
@@ -58,7 +58,7 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
         };
 
         if (document.YearArrivedValue === 'Yes' && document.YearArrivedYear) {
-            yearArrivedDocument.year = moment(document.YearArrivedYear).toJSON().slice(0,10);
+            yearArrivedDocument.year = document.YearArrivedYear;
         }
         return yearArrivedDocument;
     }
