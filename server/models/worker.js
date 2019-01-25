@@ -417,6 +417,89 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"RecruitedFromChangedBy"'
     },
+    BritishCitizenshipValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', "Don't know"],
+      field: '"BritishCitizenshipValue"'
+    },
+    BritishCitizenshipSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"BritishCitizenshipSavedAt"'
+    },
+    BritishCitizenshipChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"BritishCitizenshipChangedAt"'
+    },
+    BritishCitizenshipSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"BritishCitizenshipSavedBy"'
+    },
+    BritishCitizenshipChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"BritishCitizenshipChangedBy"'
+    },
+    YearArrivedValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"YearArrivedValue"'
+    },
+    YearArrivedYear : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"YearArrivedYear"'
+    },
+    YearArrivedSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"YearArrivedSavedAt"'
+    },
+    YearArrivedChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"YearArrivedChangedAt"'
+    },
+    YearArrivedSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"YearArrivedSavedBy"'
+    },
+    YearArrivedChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"YearArrivedChangedBy"'
+    },
+    SocialCareStartDateValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"SocialCareStartDateValue"'
+    },
+    SocialCareStartDateSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"SocialCareStartDateSavedAt"'
+    },
+    SocialCareStartDateChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"SocialCareStartDateChangedAt"'
+    },
+    SocialCareStartDateSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"SocialCareStartDateSavedBy"'
+    },
+    SocialCareStartDateChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"SocialCareStartDateChangedBy"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,

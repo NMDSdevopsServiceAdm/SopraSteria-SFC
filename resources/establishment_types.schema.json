@@ -724,6 +724,56 @@
             },
             "required": ["qualificationId"]
         },
+        "BritishCitizenship" : {
+            "description": "A given citizenship status",
+            "type" : "string",
+            "enum" : ["Yes", "No", "Don't know"]
+        },
+        "YearOfArrival" : {
+            "description": "Year of arrival",
+            "properties": {
+                "value" : {
+                    "description": "Whether they arrived in the UK",
+                    "type" : "string",
+                    "enum" : ["Yes", "No"]
+                },
+                "year" : {
+                    "description": "The year in which they arrived; only relevant if value is 'Yes'",
+                    "type" : "integer"
+                }
+            },
+            "required": ["value"]
+        },
+        "YearOfArrival" : {
+            "description": "Year of arrival",
+            "properties": {
+                "value" : {
+                    "description": "Whether they arrived in the UK",
+                    "type" : "string",
+                    "enum" : ["Yes", "No"]
+                },
+                "year" : {
+                    "description": "The year in which they arrived; only relevant if value is 'Yes'",
+                    "type" : "integer"
+                }
+            },
+            "required": ["value"]
+        },
+        "SocialCareStartDate" : {
+            "description": "If relevant, the year in which work started in social care",
+            "properties": {
+                "value" : {
+                    "description": "If known when the started working in social care",
+                    "type" : "string",
+                    "enum" : ["Yes", "No"]
+                },
+                "year" : {
+                    "description": "The year in which they started",
+                    "type" : "integer"
+                }
+            },
+            "required": ["value"]
+        },
         "Worker" : {
             "description" : "A Worker belongs to a single Establishment",
             "properties" : {
@@ -833,6 +883,36 @@
                         "value" : {
                             "description": "The given qualification",
                             "$ref" : "#/definitions/Qualification"
+                        }
+                    },
+                    "required" : ["value"]
+                },
+                "britishCitizenship" : {
+                    "description": "If relevant, the worker's British Citizenship status",
+                    "properties": {
+                        "value" : {
+                            "description": "The given citizenship status",
+                            "$ref" : "#/definitions/BritishCitizenship"
+                        }
+                    },
+                    "required" : ["value"]
+                },
+                "yearArrived" : {
+                    "description": "If relevant, the year the worker arrived in the UK",
+                    "properties": {
+                        "value" : {
+                            "description": "The given year of arrival",
+                            "$ref" : "#/definitions/YearOfArrival"
+                        }
+                    },
+                    "required" : ["value"]
+                },
+                "socialCareStartDate" : {
+                    "description": "If relevant, the year they started working in social care",
+                    "properties": {
+                        "value" : {
+                            "description": "The given start year",
+                            "$ref" : "#/definitions/SocialCareStartDate"
                         }
                     },
                     "required" : ["value"]
