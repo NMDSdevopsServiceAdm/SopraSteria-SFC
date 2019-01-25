@@ -100,9 +100,9 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
 
           if (worker.recruitedFrom) {
             this.form.patchValue({
-              recruitmentKnown:  worker.recruitedFrom.value,
-              recruitedFromId: worker.recruitedFrom.other ?
-                worker.recruitedFrom.other.recruitedFromId : null
+              recruitmentKnown: worker.recruitedFrom.value,
+              recruitedFromId: worker.recruitedFrom.from ?
+                worker.recruitedFrom.from.recruitedFromId : null
             })
           }
         })
