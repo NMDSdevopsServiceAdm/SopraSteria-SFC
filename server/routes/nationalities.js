@@ -4,15 +4,20 @@ const models = require('../models/index');
 
 /* GET ALL nationalities*/
 router.route('/').get(async function (req, res) {
+  try {
     let results = await models.nationality.findAll({
-        order: [
-          ["seq", "ASC"]
-        ]
-      });
+      order: [
+        ["seq", "ASC"]
+      ]
+    });
 
     res.send({
       nationalities: nationalityJSON(results)
     });
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send();
+  }
 });
 
 function nationalityJSON(givenNationalities){
