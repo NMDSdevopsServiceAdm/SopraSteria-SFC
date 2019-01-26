@@ -1,6 +1,5 @@
 // the Year Arrived property is an enumeration and optional value; that value is a date, moreso, just the year part
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
-const moment = require('moment');
 
 const YEAR_ARRIVED_TYPE = ['Yes', 'No'];
 exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends ChangePropertyPrototype {
