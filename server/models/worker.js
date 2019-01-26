@@ -480,6 +480,11 @@ module.exports = function(sequelize, DataTypes) {
       values: ['Yes', 'No'],
       field: '"SocialCareStartDateValue"'
     },
+    SocialCareStartDateYear : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"SocialCareStartDateYear"'
+    },
     SocialCareStartDateSavedAt : {
       type: DataTypes.DATE,
       allowNull: true,
