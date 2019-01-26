@@ -23,6 +23,9 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
             const maxDate = moment().subtract(MINIMUM_AGE, 'y');
             const minDate = moment().subtract(MAXIMUM_AGE, 'y');
 
+            // TODO - cross validation checks against Social Care Start Date
+            //        and main job start date
+
             if (document.dateOfBirth.length === 10 &&
                 expectedDate.isValid() &&
                 expectedDate.isBefore(maxDate) &&

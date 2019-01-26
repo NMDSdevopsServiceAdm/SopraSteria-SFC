@@ -38,6 +38,8 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
             const expectedDate = moment(document.mainJobStartDate, "YYYY-MM-DD");
             const thisDate = moment();
 
+            // TODO - cross validatin checks with Date of Birth
+
             if (document.mainJobStartDate.length === 10 &&
                 expectedDate.isValid() &&
                 expectedDate.isBefore(thisDate)) {

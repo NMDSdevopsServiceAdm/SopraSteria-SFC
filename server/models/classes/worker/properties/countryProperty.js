@@ -7,7 +7,6 @@ const models = require('../../../index');
 const KNOWN_COUNTRY_OF_BIRTH = ['United Kingdom', 'Other', "Don't know"];
 exports.WorkerCountryProperty = class WorkerCountryProperty extends ChangePropertyPrototype {
     constructor() {
-        console.log("WA DEBUG: WorkerCountryProperty instantiating")
         super('CountryOfBirth');
     }
 
