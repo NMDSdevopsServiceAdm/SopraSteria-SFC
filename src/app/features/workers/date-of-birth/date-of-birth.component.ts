@@ -7,7 +7,6 @@ import { DEFAULT_DATE_FORMAT, DEFAULT_DATE_DISPLAY_FORMAT } from "../../../core/
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
 import { Worker } from "../../../core/model/worker.model"
-import { DateValidator } from "../../../core/validators/date.validator"
 
 
 @Component({
@@ -56,7 +55,10 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
         )
 
       } else {
-        if (day && month && year) {
+        if (Object.keys(this.form.errors).includes("dateValid")) {
+          this.messageService.show("error", "Invalid date format.")
+
+        } else if (Object.keys(this.form.errors).includes("dateBetween")) {
           const noBefore = this.calculateLowestAcceptableDate()
           const noAfter = this.calculateHighestAcceptableDate()
 
@@ -73,14 +75,12 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
   private calculateLowestAcceptableDate() {
     const date = moment()
-    date.year(date.year() - 100)
-    return date
+    return date.year(date.year() - 100)
   }
 
   private calculateHighestAcceptableDate() {
     const date = moment()
-    date.year(date.year() - 16)
-    return date
+    return date.year(date.year() - 14)
   }
 
   formValidator(control: AbstractControl): ValidationErrors {
@@ -100,16 +100,15 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       }
     }
 
-    return { dateBetweenValidator: true }
+    return { dateBetween: true }
   }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      day: ["", Validators.required],
-      month: ["", Validators.required],
-      year: ["", Validators.required]
+      day: [null, Validators.required],
+      month: [null, Validators.required],
+      year: [null, Validators.required]
     })
-    this.form.setValidators([DateValidator.dateValid(this.form), this.formValidator])
 
     const params = this.route.snapshot.paramMap
     this.workerId = params.has("id") ? params.get("id") : null
@@ -122,11 +121,13 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
           if (worker.dateOfBirth) {
             const date = worker.dateOfBirth.split("-")
             this.form.patchValue({
-              year: date[0],
-              month: date[1],
-              day: date[2],
+              year: parseInt(date[0]),
+              month: parseInt(date[1]),
+              day: parseInt(date[2]),
             })
           }
+
+          this.form.setValidators([this.formValidator])
         })
       )
     }

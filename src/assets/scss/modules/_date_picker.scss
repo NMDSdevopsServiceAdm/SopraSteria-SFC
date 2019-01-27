@@ -3,11 +3,20 @@ form,
   .form-group app-date-picker {
     fieldset label {
       & ~ label {
-        margin-left: 3rem;
+        margin-left: 2rem;
       }
 
       input {
         display: block;
+      }
+
+      &.day,
+      &.month {
+        width: 6rem;
+      }
+
+      &.year {
+        width: 9rem;
       }
     }
   }

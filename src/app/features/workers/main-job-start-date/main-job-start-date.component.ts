@@ -10,7 +10,6 @@ import { Worker } from "../../../core/model/worker.model"
 import { DateValidator } from "../../../core/validators/date.validator"
 
 
-
 @Component({
   selector: 'app-main-job-start-date',
   templateUrl: './main-job-start-date.component.html'
@@ -25,6 +24,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
     private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this)
+    this.validateAgainstDateOfBirth = this.validateAgainstDateOfBirth.bind(this)
   }
 
   form: FormGroup
@@ -49,14 +49,19 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        this.worker.mainJobStartDate = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
-          .format(DEFAULT_DATE_FORMAT)
+        this.worker.mainJobStartDate = this.dateFromForm().format(DEFAULT_DATE_FORMAT)
         this.subscriptions.push(
           this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
         )
 
       } else {
-        if (day && month && year) {
+        if (Object.keys(this.form.errors).includes("dateValid")) {
+          this.messageService.show("error", "Invalid date format.")
+
+        } else if (Object.keys(this.form.errors).includes("dateAgainstDob")) {
+          this.messageService.show("error", "The date can't be too near the Date Of Birth.")
+
+        } else if (Object.keys(this.form.errors).includes("dateInPast")) {
           this.messageService.show("error", "The date can't be in the future.")
 
         } else {
@@ -68,16 +73,34 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
     })
   }
 
+  dateFromForm() {
+    const { day, month, year } = this.form.value
+    const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
+    return date
+  }
+
+  validateAgainstDateOfBirth() {
+    if (!this.form) {
+      return null
+    }
+
+    const jobStartDate = this.dateFromForm()
+    const validDateToStartWork =
+      moment(this.worker.dateOfBirth, DEFAULT_DATE_FORMAT).add(14, "years")
+
+    if (jobStartDate.isBefore(validDateToStartWork)) {
+      return { dateAgainstDob: true }
+    }
+
+    return null
+  }
+
   ngOnInit() {
     this.form = this.formBuilder.group({
-      day: ["", Validators.required],
-      month: ["", Validators.required],
-      year: ["", Validators.required]
+      day: [null, Validators.required],
+      month: [null, Validators.required],
+      year: [null, Validators.required]
     })
-    this.form.setValidators([
-      DateValidator.dateValid(this.form),
-      DateValidator.datePastOrToday(this.form)
-    ])
 
     const params = this.route.snapshot.paramMap
     this.workerId = params.has("id") ? params.get("id") : null
@@ -90,11 +113,16 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
           if (worker.mainJobStartDate) {
             const date = worker.mainJobStartDate.split("-")
             this.form.patchValue({
-              year: date[0],
-              month: date[1],
-              day: date[2],
+              year: parseInt(date[0]),
+              month: parseInt(date[1]),
+              day: parseInt(date[2]),
             })
           }
+
+          this.form.setValidators([
+            DateValidator.datePastOrToday(),
+            this.validateAgainstDateOfBirth
+          ])
         })
       )
     }
