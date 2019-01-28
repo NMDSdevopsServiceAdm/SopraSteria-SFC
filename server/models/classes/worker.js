@@ -329,7 +329,13 @@ class Worker {
                         model: models.recruitedFrom,
                         as: 'recruitedFrom',
                         attributes: ['id', 'from']
+                    },
+                    {
+                        model: models.job,
+                        as: 'otherJobs',
+                        attributes: ['id', 'title']
                     }
+
                 ]
             };
 

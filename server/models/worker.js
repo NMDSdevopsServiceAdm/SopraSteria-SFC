@@ -511,6 +511,32 @@ module.exports = function(sequelize, DataTypes) {
       defaultValue: DataTypes.NOW,
       field: 'created'
     },
+    OtherJobsValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', "Don't know"],
+      field: '"OtherJobsValue"'
+    },
+    OtherJobsSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"OtherJobsSavedAt"'
+    },
+    OtherJobsChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"OtherJobsChangedAt"'
+    },
+    OtherJobsSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"OtherJobsSavedBy"'
+    },
+    OtherJobsChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"OtherJobsChangedBy"'
+    },
     updated: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -569,6 +595,12 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'RecruitedFromOtherFK',
       targetKey: 'id',
       as: 'recruitedFrom'
+    });
+    Worker.belongsToMany(models.job, {
+      through: 'workerJobs',
+      foreignKey: 'jobFk',
+      otherKey: 'id',
+      as: 'otherJobs'
     });
   };
 
