@@ -47,21 +47,29 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
 
   saveHandler() {
     return new Promise((resolve, reject) => {
+      const { recruitedFromId, recruitmentKnown } = this.form.controls
+      this.messageService.clearError()
+
       if (this.form.valid) {
-        const { recruitedFromId, recruitmentKnown } = this.form.value
-        this.worker.recruitedFrom = {
-          value: recruitmentKnown,
-          from: {
-            recruitedFromId: parseInt(recruitedFromId)
+        if (recruitmentKnown.value) {
+          this.worker.recruitedFrom = {
+            value: recruitmentKnown.value,
+            from: {
+              recruitedFromId: parseInt(recruitedFromId.value)
+            }
           }
         }
+
         this.subscriptions.push(
           this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
         )
 
       } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill required fields.")
+        if (recruitedFromId.errors &&
+            Object.keys(recruitedFromId.errors).includes("recruitedFromIdValid")) {
+          this.messageService.show("error", "'Recruitment from' has to be provided.")
+        }
+
         reject()
       }
     })
@@ -86,8 +94,8 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      recruitmentKnown: ["", Validators.required],
-      recruitedFromId: ["", this.recruitedFromIdValidator]
+      recruitmentKnown: null,
+      recruitedFromId: [null, this.recruitedFromIdValidator]
     })
 
     const params = this.route.snapshot.paramMap
