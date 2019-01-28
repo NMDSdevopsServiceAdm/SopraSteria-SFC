@@ -38,7 +38,6 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
                         this.property = null;
                     }
 
-
                 } else {
                     // simple year arrived property
                     this.property = {
