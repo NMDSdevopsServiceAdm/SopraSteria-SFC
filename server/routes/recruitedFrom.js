@@ -4,6 +4,7 @@ const models = require('../models/index');
 
 /* GET ALL recruited from */
 router.route('/').get(async function (req, res) {
+  try {
     let results = await models.recruitedFrom.findAll({
         order: [
           ["seq", "ASC"]
@@ -13,6 +14,10 @@ router.route('/').get(async function (req, res) {
     res.send({
       recruitedFrom: recruitedFromJSON(results)
     });
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send();
+  }
 });
 
 function recruitedFromJSON(givenFrom){

@@ -54,7 +54,7 @@ exports.WorkerRecruitedFromProperty = class WorkerRecruitedFromProperty extends 
             };
 
             if (document.RecruitedFromValue === 'Yes' && document.recruitedFrom) {
-                origin.other = {
+                origin.from = {
                     recruitedFromId: document.recruitedFrom.id,
                     from: document.recruitedFrom.from
                 };
@@ -80,7 +80,7 @@ exports.WorkerRecruitedFromProperty = class WorkerRecruitedFromProperty extends 
     isEqual(currentValue, newValue) {
         // Recruited From is an object having value and optional Recruited From lookup (by id)
         let originEqual = false;
-        if (currentValue && newValue && currentValue.value === 'yes') {
+        if (currentValue && newValue && currentValue.value === 'Yes') {
             if (currentValue.from && newValue.from && currentValue.from.recruitedFromId == newValue.from.recruitedFromId) {
                 originEqual = true;
             }

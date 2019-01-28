@@ -4,6 +4,7 @@ const models = require('../models/index');
 
 /* GET ALL  qualifications*/
 router.route('/').get(async function (req, res) {
+  try {
     let results = await models.qualification.findAll({
         order: [
           ["seq", "ASC"]
@@ -13,6 +14,10 @@ router.route('/').get(async function (req, res) {
     res.send({
       qualifications: qualificationJSON(results)
     });
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send();
+  }    
 });
 
 function qualificationJSON(givenQualifications){

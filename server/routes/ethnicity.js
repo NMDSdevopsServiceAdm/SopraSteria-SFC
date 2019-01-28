@@ -4,6 +4,7 @@ const models = require('../models/index');
 
 /* GET ALL ethnicities*/
 router.route('/').get(async function (req, res) {
+  try {
     let results = await models.ethnicity.findAll({
         order: [
           ["seq", "ASC"]
@@ -16,6 +17,10 @@ router.route('/').get(async function (req, res) {
         byGroup: ethnicityByGroupJSON(results)
       }
     });
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send();
+  }
 });
 
 function localFormat(givenEthncity, withGroup=true) {
