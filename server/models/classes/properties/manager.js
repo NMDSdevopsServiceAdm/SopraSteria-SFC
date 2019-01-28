@@ -11,6 +11,10 @@ class PropertyManager {
         //  that are accummulated during saving
         //  of all properties
         this._auditEvents = null;
+
+        // this is a collection of additional models to apply against the Worker
+        this._additionalModels = null;
+
     }
 
     static get JSON_DOCUMENT() { return 100; }
@@ -45,6 +49,11 @@ class PropertyManager {
     // returns the set of audit events - can be null or empty if no audit
     get auditEvents() {
         return this._auditEvents;
+    }
+
+    // returns the set of additional models (it's an object; the attributes are the names of the sequelize models)
+    get additionalModels() {
+        return this._additionalModels;
     }
 
     // returns true if all properties are valid, else returns the list
@@ -117,6 +126,25 @@ class PropertyManager {
 
     };
 
+    // this helper merges the set of additional models - by concatenating arrays if the model already exists
+    _concatenateAdditionalModels(newAdditionalModels) {
+        if (!newAdditionalModels) return;  // no additional models - return doing nothing
+
+        // there can be more than one additional model; iterate across them
+        const modelKeys = Object.keys(newAdditionalModels);
+
+        modelKeys.forEach(thisModelByName => {
+            if (this._additionalModels[thisModelByName]) {
+                // we already have an additional model by this name; concat the entries
+                this._additionalModels[thisModelByName] = this._additionalModels[thisModelByName].concat(newAdditionalModels[thisModelByName]);
+            } else {
+                // just create the new property
+                this._additionalModels[thisModelByName] = newAdditionalModels[thisModelByName];
+            }
+        });
+
+    }
+
     // runs through all known properties, adding them to the given
     //  document to save (using sequelize), only if they have been modified.
     // Returns modified save document.
@@ -124,12 +152,15 @@ class PropertyManager {
         // resets all audit events; to build a new set from current properties
         this._auditEvents = [];
 
+        // reset all additional models; to rebuild only those modified properties
+        this._additionalModels = {};
+
         const allProperties = Object.keys(this._properties);
         allProperties.forEach(thisPropertyType => {
             const thisProperty = this._properties[thisPropertyType];
 
             if (thisProperty.modified) {
-                const { properties:saveProperties, audit: propertyAudit} = thisProperty.save(username);
+                const { properties:saveProperties, audit: propertyAudit, additionalModels} = thisProperty.save(username);
 
                 // unlike JSON with allows for rich sub-documents,
                 //  sequelize maps onto relational tables which
@@ -139,6 +170,9 @@ class PropertyManager {
 
                 // append the given set of property audit events
                 this._auditEvents = this._auditEvents.concat(propertyAudit);
+
+                // and now append any additional models
+                this._concatenateAdditionalModels(additionalModels);
             }
         });
 

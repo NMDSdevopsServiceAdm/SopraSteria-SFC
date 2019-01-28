@@ -744,21 +744,6 @@
             },
             "required": ["value"]
         },
-        "YearOfArrival" : {
-            "description": "Year of arrival",
-            "properties": {
-                "value" : {
-                    "description": "Whether they arrived in the UK",
-                    "type" : "string",
-                    "enum" : ["Yes", "No"]
-                },
-                "year" : {
-                    "description": "The year in which they arrived; only relevant if value is 'Yes'",
-                    "type" : "integer"
-                }
-            },
-            "required": ["value"]
-        },
         "SocialCareStartDate" : {
             "description": "If relevant, the year in which work started in social care",
             "properties": {
@@ -773,6 +758,15 @@
                 }
             },
             "required": ["value"]
+        },
+        "OtherJobs" : {
+            "description": "Other Jobs, attributed to a Worker",
+            "type" : "array",
+            "items": [
+                {
+                    "$ref" : "#/definitions/Job"
+                }
+            ]
         },
         "Worker" : {
             "description" : "A Worker belongs to a single Establishment",
@@ -801,6 +795,10 @@
                 "mainJobStartDate" : {
                     "description": "The ISO 8601 format start date attributed to the main job role for this worker; this should be updated if the main job role changes. It's date only (YYYY-MM-DD)",
                     "$ref" : "#/definitions/WorkerMainJobStartDate"
+                },
+                "otherJobs" : {
+                    "description": "The worker's other jobs, in addition to their main job",
+                    "$ref" : "#/definitions/OtherJobs"
                 },
                 "nationalInsuranceNumber" : {
                     "description": "National insurance number",

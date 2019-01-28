@@ -235,6 +235,36 @@ class Worker {
                             // having updated the record, create the audit event
                         await models.workerAudit.bulkCreate(allAuditEvents);
 
+                        // now - work through any additional models having processed all properties (first delete and then re-create)
+                        const additionalModels = this._properties.additionalModels;
+                        const additionalModelsByname = Object.keys(additionalModels);
+                        const deleteMmodelPromises = [];
+                        additionalModelsByname.forEach(async thisModelByName => {
+                            deleteMmodelPromises.push(
+                                models[thisModelByName].destroy({
+                                    where: {
+                                      workerFk: this._id
+                                    }
+                                  })
+                            );
+                        });
+                        await Promise.all(deleteMmodelPromises);
+                        const createMmodelPromises = [];
+                        additionalModelsByname.forEach(async thisModelByName => {
+                            const thisModelData = additionalModels[thisModelByName];
+                            createMmodelPromises.push(
+                                models[thisModelByName].bulkCreate(thisModelData.map(thisRecord => {
+                                    return {
+                                        ...thisRecord,
+                                        workerFk: this._id
+                                    };
+                                }))
+                            );
+                        });
+                        await Promise.all(createMmodelPromises);
+                        console.log("WA DEBUG - Worker::save - additional models: ", additionalModels)
+
+
                         this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
 
                     } else {

@@ -598,8 +598,9 @@ module.exports = function(sequelize, DataTypes) {
     });
     Worker.belongsToMany(models.job, {
       through: 'workerJobs',
-      foreignKey: 'jobFk',
-      otherKey: 'id',
+      foreignKey: 'workerFk',
+      targetKey: 'workerFk',
+      otherKey: 'jobFk',
       as: 'otherJobs'
     });
   };

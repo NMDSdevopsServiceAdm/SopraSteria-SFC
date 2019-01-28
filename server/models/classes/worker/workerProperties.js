@@ -20,6 +20,7 @@ const qualificationProperty = require('./properties/qualificationProperty').Work
 const britishCitizenshipProperty = require('./properties/britishCitizenshipProperty').WorkerBritishCitizenshipProperty;
 const yearOfArrivalProperty = require('./properties/yearArrivedProperty').WorkerYearArrivedProperty;
 const socialCareStartDateProperty = require('./properties/socialCareStartDateProperty').WorkerSocialCareStartDateProperty;
+const otherJobsProperty = require('./properties/otherJobsProperty').WorkerOtherJobsProperty;
 
 class WorkerPropertyManager {
     constructor() {
@@ -30,6 +31,7 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(mainJobProperty);
         this._thisManager.registerProperty(approvedMentalHealthWorkerProperty);
         this._thisManager.registerProperty(mainJobStartDateProperty);
+        this._thisManager.registerProperty(otherJobsProperty);
         this._thisManager.registerProperty(nationalInsuranceProperty);
         this._thisManager.registerProperty(postcodeProperty);
         this._thisManager.registerProperty(dateOfBirthProperty);
