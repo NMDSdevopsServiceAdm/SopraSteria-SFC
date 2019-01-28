@@ -53,8 +53,6 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
             });
         }
 
-        console.log("WA DEBUG - retgore from DB afte processing: ", otherJobsDocument)
-
         return otherJobsDocument;
     }
     savePropertyToSequelize() {
@@ -78,7 +76,6 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
             };
         }
 
-        console.log("WA DEBUG: serialise to DB docuemnt: ", otherJobsDocument)
         return otherJobsDocument;
     }
 
@@ -86,8 +83,6 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
         // a simple (enum'd) string compare, but more so, if the current and new values are both yes, then
         //   need also to ensure the arrays are equal (equal in value)
         let arraysEqual = true;
-
-        console.log("WA DEBUG - isEqual - new value", newValue)
 
         if (currentValue && newValue && currentValue.value === 'Yes' && newValue.value === 'Yes' &&
             currentValue.otherJobs && newValue.otherJobs) {

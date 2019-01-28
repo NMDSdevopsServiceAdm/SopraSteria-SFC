@@ -262,8 +262,6 @@ class Worker {
                             );
                         });
                         await Promise.all(createMmodelPromises);
-                        console.log("WA DEBUG - Worker::save - additional models: ", additionalModels)
-
 
                         this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
 
