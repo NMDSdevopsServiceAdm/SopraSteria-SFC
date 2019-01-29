@@ -171,11 +171,13 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
             }
 
             if (referenceJob && referenceJob.id) {
-                // found a job match
-                setOfValidatedJobs.push({
-                    jobId: referenceJob.id,
-                    title: referenceJob.title
-                });
+                // found a job match - prevent duplicates by checking if the reference job already exists
+                if (!setOfValidatedJobs.find(thisJob => thisJob.jobId === referenceJob.id)) {
+                    setOfValidatedJobs.push({
+                        jobId: referenceJob.id,
+                        title: referenceJob.title
+                    });    
+                }
             } else {
                 setOfValidatedJobsInvalid = true;
                 break;
