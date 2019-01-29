@@ -15,8 +15,8 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.otherJobs) {
-            if (Array.isArray(document.otherJobs) && document.otherJobs.length > 0) {
+        if (document.otherJobs && Array.isArray(document.otherJobs)) {
+            if (document.otherJobs.length > 0) {
                 const validatedJobs = await this._validateJobs(document.otherJobs);
 
                 if (validatedJobs) {
@@ -35,6 +35,9 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                     value: 'No'
                 };
             }
+        } else {
+            // must be an array
+            this.property = null;
         }
     }
 
@@ -138,9 +141,6 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
     // returns false if job definitions are not valid, otherwise returns
     //  a well formed set of job definitions using data as given in jobs reference lookup
     async _validateJobs(jobsDef) {
-        // jobsDef is an array
-        if (!Array.isArray(jobsDef)) return false;
-
         const setOfValidatedJobs = [];
         let setOfValidatedJobsInvalid = false;
 
