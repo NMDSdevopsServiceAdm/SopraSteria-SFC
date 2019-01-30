@@ -23,8 +23,32 @@ form,
     }
   }
 
+  .error {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 15px;
+    padding: 0;
+    color: $error-red;
+    background-color: map-get($color, white);
+    border: 0;
+
+    ~ .error {
+      margin-top: 1.5rem;
+    }
+  }
+
   .invalid-feedback {
     color: $error-red;
+  }
+
+  .form-group {
+    margin-top: 3rem;
+    margin-bottom: 5rem;
+  }
+
+  .field-group {
+    margin-bottom: 3rem !important;
   }
 
   .form-group,
@@ -78,7 +102,8 @@ form,
 
     label, .label {
       padding: 0 0 10px 0;
-      margin: 0;
+      margin: 0 0 2rem 0;
+      letter-spacing: 1px;
 
       @include rem(font-size, 19px);
       @include rem(line-height, 20px);
@@ -106,13 +131,12 @@ form,
   clear: left;
   position: relative;
   padding: 8px 0 0 45px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   height: 34px;
 }
 
 @media (min-width: 641px) {
   .multiple-choice {
-    float: left;
   }
 }
 
@@ -128,6 +152,13 @@ form,
   zoom: 1;
   filter: alpha(opacity=0);
   opacity: 0;
+}
+
+label {
+  select,
+  input {
+    margin-top: 10px;
+  }
 }
 
 .multiple-choice label {

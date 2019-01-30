@@ -1,0 +1,22 @@
+<div class="main-page-container col-12">
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1">What is their date of birth?</h1>
+      <p class="page-input-info">For example, 31 3 1980</p>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="form-group">
+      <div class="field-group mb-5">
+        <app-date-picker [formGroup]="form"></app-date-picker>
+      </div>
+    </div>
+
+    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
+  </form>
+</div>

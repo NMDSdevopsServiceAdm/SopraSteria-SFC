@@ -1,4 +1,7 @@
 .btn-container {
+  & ~ .btn-container {
+    margin-top: 3rem;
+  }
 
   //@include rem(padding, 30px 0 0 0);
 }
@@ -12,6 +15,7 @@
   border: none;
   border-radius: 0;
   height: 40px;
+  letter-spacing: 1.5px;
 
   @include rem(padding, 0 26px);
   @include box-shadow(0, 2px, 0, 0, $sfc-btn-primary-green-hover);
@@ -51,14 +55,27 @@
     }
   }
 
+  ~ .btn:nth-of-type(2) {
+    margin-top: 10px;
+
+    @include media(map-get($breakpoints, tablet)) {
+      margin-top: inherit;
+    }
+  }
+
   &.btn-link {
-    margin: auto 0;
     font-size: 15px;
     letter-spacing: 1px;
     border: 0;
     color: map-get($color, link);
     text-decoration: underline;
     line-height: 2rem;
+    box-shadow: none;
+
+
+    &.btn-link-no-underline {
+      text-decoration: none;
+    }
 
     @include media(map-get($breakpoints, tablet)) {
       line-height: 20px;

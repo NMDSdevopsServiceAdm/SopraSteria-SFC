@@ -1,0 +1,21 @@
+<div class="main-page-container col-12">
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1 col-12 col-lg-8">What is their home postcode?</h1>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="form-group mt-5">
+      <div class="field-group col-12 col-md-8 col-lg-6">
+        <input type="text" formControlName="postcode" maxlength="12" class="form-control col-12" [ngClass]="{'is-invalid': (form.get('postcode').touched || form.get('postcode').dirty) && !form.get('postcode').valid}" />
+      </div>
+    </div>
+
+    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
+  </form>
+</div>

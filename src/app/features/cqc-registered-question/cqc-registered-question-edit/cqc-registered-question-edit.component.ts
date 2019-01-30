@@ -238,16 +238,14 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   onSubmit() {
 
     this.isRegulated = this.cqcRegisteredQuestionForm.get('registeredQuestionSelected').value;
-    debugger;
+
     if (this.isRegulated === true) {
       const cqcRegisteredPostcode = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode');
       const locationId = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId');
       // Clear value of not cqc registered postcode if previously entered
       //this.notRegisteredPostcode.value = '';
-      debugger;
 
       if ((cqcRegisteredPostcode.value.length > 0) || (locationId.value.length > 0)) {
-        debugger;
         if (this.cqcRegisteredQuestionForm.invalid || this.cqcRegisteredGroup.errors) {
           return;
         }
@@ -322,15 +320,12 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
             this.setSectionNumbers(data);
 
-            debugger;
             //data = data.locationdata;
             this._registrationService.updateState(data);
             this._registrationService.routingCheck(data);
           }
         },
         (err: RegistrationTrackerError) => {
-          debugger;
-          console.log(err);
           this.cqcPostcodeApiError = err.friendlyMessage;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
@@ -346,15 +341,12 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
             this.setSectionNumbers(data);
 
-            debugger;
             //data = data.locationdata;
             this._registrationService.updateState(data);
             this._registrationService.routingCheck(data);
           }
         },
         (err: RegistrationTrackerError) => {
-          debugger;
-          console.log(err);
           this.cqclocationApiError = err.friendlyMessage;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
@@ -370,15 +362,13 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
             this.setSectionNumbers(data);
 
-            debugger;
             //data = data.postcodedata;
             this._registrationService.updateState(data);
             //this.routingCheck(data);
           }
         },
         (err: RegistrationTrackerError) => {
-          debugger;
-          console.log(err);
+
           this.nonCqcPostcodeApiError = err.friendlyMessage;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
@@ -408,7 +398,6 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
   // Routing check
   routingCheck(data) {
-    debugger;
     if (data.length > 1) {
       this.router.navigate(['/select-workplace']);
     } else {
@@ -428,10 +417,6 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     data.userRoute['currentPage'] = this.registration.userRoute['currentPage'] = 1;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/registered-question');
-
-    console.log(data);
-    console.log(this.registration);
-    debugger;
   }
 }
 
