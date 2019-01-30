@@ -538,7 +538,7 @@ module.exports = function(sequelize, DataTypes) {
       field: '"DaysSickValue"'
     },
     DaysSickDays : {
-      type: DataTypes.NUMBER,
+      type: DataTypes.FLOAT,
       allowNull: true,
       field: '"DaysSickDays"'
     },
@@ -595,7 +595,7 @@ module.exports = function(sequelize, DataTypes) {
       field: '"WeeklyHoursAverageValue"'
     },
     WeeklyHoursAverageHours : {
-      type: DataTypes.NUMBER,
+      type: DataTypes.FLOAT,
       allowNull: true,
       field: '"WeeklyHoursAverageHours"'
     },
@@ -626,7 +626,7 @@ module.exports = function(sequelize, DataTypes) {
       field: '"WeeklyHoursContractedValue"'
     },
     WeeklyHoursContractedHours : {
-      type: DataTypes.NUMBER,
+      type: DataTypes.FLOAT,
       allowNull: true,
       field: '"WeeklyHoursContractedHours"'
     },
