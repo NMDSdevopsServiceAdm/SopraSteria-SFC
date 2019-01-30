@@ -505,12 +505,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"SocialCareStartDateChangedBy"'
     },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-      field: 'created'
-    },
     OtherJobsValue : {
       type: DataTypes.ENUM,
       allowNull: true,
@@ -536,6 +530,163 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"OtherJobsChangedBy"'
+    },
+    DaysSickValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"DaysSickValue"'
+    },
+    DaysSickDays : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"DaysSickDays"'
+    },
+    DaysSickSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DaysSickSavedAt"'
+    },
+    DaysSickChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DaysSickChangedAt"'
+    },
+    DaysSickSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"DaysSickSavedBy"'
+    },
+    DaysSickChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"DaysSickChangedBy"'
+    },
+    ZeroHoursContractValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"ZeroHoursContractValue"'
+    },
+    ZeroHoursContractSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ZeroHoursContractSavedAt"'
+    },
+    ZeroHoursContractChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ZeroHoursContractChangedAt"'
+    },
+    ZeroHoursContractSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ZeroHoursContractSavedBy"'
+    },
+    ZeroHoursContractChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ZeroHoursContractChangedBy"'
+    },    
+    WeeklyHoursAverageValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"WeeklyHoursAverageValue"'
+    },
+    WeeklyHoursAverageHours : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"WeeklyHoursAverageHours"'
+    },
+    WeeklyHoursAverageSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"WeeklyHoursAverageSavedAt"'
+    },
+    WeeklyHoursAverageChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"WeeklyHoursAverageChangedAt"'
+    },
+    WeeklyHoursAverageSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"WeeklyHoursAverageSavedBy"'
+    },
+    WeeklyHoursAverageChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"WeeklyHoursAverageChangedBy"'
+    },
+
+    WeeklyHoursContractedValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"WeeklyHoursContractedValue"'
+    },
+    WeeklyHoursContractedHours : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"WeeklyHoursContractedHours"'
+    },
+    WeeklyHoursContractedSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"WeeklyHoursContractedSavedAt"'
+    },
+    WeeklyHoursContractedChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"WeeklyHoursContractedChangedAt"'
+    },
+    WeeklyHoursContractedSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"WeeklyHoursContractedSavedBy"'
+    },
+    WeeklyHoursContractedChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"WeeklyHoursContractedChangedBy"'
+    },
+    AnnualWeeklyPayValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"AnnualWeeklyPayValue"'
+    },
+    AnnualWeeklyPayRate : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"AnnualWeeklyPayRate"'
+    },
+    AnnualWeeklyPaySavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"AnnualWeeklyPaySavedAt"'
+    },
+    AnnualWeeklyPayChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"AnnualWeeklyPayChangedAt"'
+    },
+    AnnualWeeklyPaySavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"AnnualWeeklyPaySavedBy"'
+    },
+    AnnualWeeklyPayChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"AnnualWeeklyPayChangedBy"'
+    },
+    created: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'created'
     },
     updated: {
       type: DataTypes.DATE,
