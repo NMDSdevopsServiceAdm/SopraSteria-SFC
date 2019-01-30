@@ -78,7 +78,6 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
           this.subscriptions.push(
             this.workerService.getWorker(this.workerId).subscribe(worker => {
               this.worker = worker
-              const selectedJobRoles = (FormArray) this.form.controls.selectedJobRoles
 
               const jobs = worker.otherJobs ?
                 availableJobRoles.map(j => this.formBuilder.control({jobId: j.id, title: j.title, checked: worker.otherJobs.some(o => o.jobId === j.id)})) :
