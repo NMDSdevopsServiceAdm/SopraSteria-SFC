@@ -538,7 +538,7 @@ module.exports = function(sequelize, DataTypes) {
       field: '"DaysSickValue"'
     },
     DaysSickDays : {
-      type: DataTypes.INTEGER,
+      type: DataTypes.NUMBER,
       allowNull: true,
       field: '"DaysSickDays"'
     },
@@ -565,7 +565,7 @@ module.exports = function(sequelize, DataTypes) {
     ZeroHoursContractValue : {
       type: DataTypes.ENUM,
       allowNull: true,
-      values: ['Yes', 'No'],
+      values: ['Yes', 'No', 'Don\'t know'],
       field: '"ZeroHoursContractValue"'
     },
     ZeroHoursContractSavedAt : {
@@ -595,7 +595,7 @@ module.exports = function(sequelize, DataTypes) {
       field: '"WeeklyHoursAverageValue"'
     },
     WeeklyHoursAverageHours : {
-      type: DataTypes.INTEGER,
+      type: DataTypes.NUMBER,
       allowNull: true,
       field: '"WeeklyHoursAverageHours"'
     },
@@ -619,7 +619,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"WeeklyHoursAverageChangedBy"'
     },
-
     WeeklyHoursContractedValue : {
       type: DataTypes.ENUM,
       allowNull: true,
@@ -627,7 +626,7 @@ module.exports = function(sequelize, DataTypes) {
       field: '"WeeklyHoursContractedValue"'
     },
     WeeklyHoursContractedHours : {
-      type: DataTypes.INTEGER,
+      type: DataTypes.NUMBER,
       allowNull: true,
       field: '"WeeklyHoursContractedHours"'
     },
@@ -654,7 +653,7 @@ module.exports = function(sequelize, DataTypes) {
     AnnualWeeklyPayValue : {
       type: DataTypes.ENUM,
       allowNull: true,
-      values: ['Yes', 'No'],
+      values: ['Yes', 'No', 'Don\'t know'],
       field: '"AnnualWeeklyPayValue"'
     },
     AnnualWeeklyPayRate : {
