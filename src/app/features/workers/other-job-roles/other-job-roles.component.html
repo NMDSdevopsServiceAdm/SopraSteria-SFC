@@ -1,4 +1,4 @@
-<div class="sub-page-container col-12">
+<div class="main-page-container col-12">
 
   <form novalidate
     (ngSubmit)="submitHandler()"
@@ -6,6 +6,7 @@
 
     <header>
       <h1 class="h1 col-12 col-lg-8">Do they have any other job roles?</h1>
+      <p class="page-input-info">Select all that apply.</p>
     </header>
 
     <app-messages></app-messages>
@@ -16,7 +17,7 @@
           <div class="row mb-4">
             <div class="col-12">
               <label class="check main-body-text p-0">
-                <input type="checkbox" (change)="onChange(job)" />
+                <input type="checkbox" (change)="onChange(job)" [checked]="job.value.checked" />
                 <span class="checkmark"></span>
                 <span class="check-label main-body-text mt-0">{{job.value.title}}</span>
               </label>
