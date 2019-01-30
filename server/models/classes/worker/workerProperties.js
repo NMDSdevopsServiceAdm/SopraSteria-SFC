@@ -20,6 +20,12 @@ const qualificationProperty = require('./properties/qualificationProperty').Work
 const britishCitizenshipProperty = require('./properties/britishCitizenshipProperty').WorkerBritishCitizenshipProperty;
 const yearOfArrivalProperty = require('./properties/yearArrivedProperty').WorkerYearArrivedProperty;
 const socialCareStartDateProperty = require('./properties/socialCareStartDateProperty').WorkerSocialCareStartDateProperty;
+const otherJobsProperty = require('./properties/otherJobsProperty').WorkerOtherJobsProperty;
+const daysSickProperty = require('./properties/daysSickProperty').WorkerDaysSickProperty;
+const zeroHoursProperty = require('./properties/zeroContractProperty').WorkerZeroContractProperty;
+const weeklyHoursAverageProperty = require('./properties/weeklyHoursAverageProperty').WorkerWeeklyHoursAverageProperty;
+const weeklyHoursContractedProperty = require('./properties/weeklyHoursContractedProperty').WorkerWeeklyHoursContractedProperty;
+const annualHourlyPayProperty = require('./properties/annualHourlyPayProperty').WorkerAnnualHourlyPayProperty;
 
 class WorkerPropertyManager {
     constructor() {
@@ -30,6 +36,7 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(mainJobProperty);
         this._thisManager.registerProperty(approvedMentalHealthWorkerProperty);
         this._thisManager.registerProperty(mainJobStartDateProperty);
+        this._thisManager.registerProperty(otherJobsProperty);
         this._thisManager.registerProperty(nationalInsuranceProperty);
         this._thisManager.registerProperty(postcodeProperty);
         this._thisManager.registerProperty(dateOfBirthProperty);
@@ -42,6 +49,12 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(yearOfArrivalProperty);
         this._thisManager.registerProperty(recruitedFromProperty);
         this._thisManager.registerProperty(socialCareStartDateProperty);
+        this._thisManager.registerProperty(daysSickProperty);
+        this._thisManager.registerProperty(zeroHoursProperty);
+        this._thisManager.registerProperty(weeklyHoursAverageProperty);
+        this._thisManager.registerProperty(weeklyHoursContractedProperty);
+        this._thisManager.registerProperty(annualHourlyPayProperty);
+
         this._thisManager.registerProperty(qualificationProperty);
     }
 
