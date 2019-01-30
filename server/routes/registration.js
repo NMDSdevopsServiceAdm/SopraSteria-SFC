@@ -23,15 +23,15 @@ if (config.dialectOptions) {
   }
 }
 
-
 const client = new Client({
   user: config.username,
   host: config.host,
   database: config.database,
   password: config.password,
   port: config.port,
-  ssl: config.dialectOptions.ssl
+  ssl : config.dialectOptions.ssl
 });
+
 
 // Check if service exists
 router.get('/service/:name', function (req, res) {

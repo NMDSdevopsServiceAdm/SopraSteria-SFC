@@ -18,7 +18,6 @@ var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
 var login = require('./server/routes/login');
-var hashPassword = require('./server/routes/hashPassword');
 var ethnicity = require('./server/routes/ethnicity');
 var country = require('./server/routes/country');
 var nationality = require('./server/routes/nationalities');
@@ -63,7 +62,7 @@ app.use('/api/login', [cacheMiddleware.nocache, login]);
 app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
-app.use('/api/hash', hashPassword);
+
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

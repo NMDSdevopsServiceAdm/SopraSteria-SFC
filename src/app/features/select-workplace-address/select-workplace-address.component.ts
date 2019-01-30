@@ -27,11 +27,14 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   lastSection: number;
   backLink: string;
 
+  // Set up Validation messages
+  addressSelected: boolean;
+
   constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
 
   ngOnInit() {
     this.selectWorkplaceAddressForm = this.fb.group({
-      selectWorkplaceAddressSelected: '',
+      selectWorkplaceAddressSelected: ['', [Validators.required]],
       postcodeInput: ['', Validators.maxLength(8)]
     });
 
@@ -51,6 +54,7 @@ export class SelectWorkplaceAddressComponent implements OnInit {
 
     // set not registered
     this.setRegulatedCheckFalse(this.registration);
+    this.addressSelected = true;
   }
 
   setRegulatedCheckFalse(reg) {
@@ -74,22 +78,27 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   save() {
     const locationdata = [this.selectedAddress];
 
-    const postcodeObj = {
-      locationdata
-    };
+    const postcodeObj = { locationdata };
 
-    this.locationdata.push(postcodeObj);
-
-    this.updateSectionNumbers(this.locationdata[0]);
-
-    this._registrationService.updateState(this.locationdata[0]);
-
-    if (this.registration.locationdata[0].locationName === '') {
-
-      this.router.navigate(['/enter-workplace-address']);
+    if (!locationdata[0]) {
+      this.addressSelected = false;
     }
     else {
-      this.router.navigate(['/select-main-service']);
+      this.addressSelected = true;
+
+      this.locationdata.push(postcodeObj);
+
+      this.updateSectionNumbers(this.locationdata[0]);
+
+      this._registrationService.updateState(this.locationdata[0]);
+
+      if (this.registration.locationdata[0].locationName === '') {
+
+        this.router.navigate(['/enter-workplace-address']);
+      }
+      else {
+        this.router.navigate(['/select-main-service']);
+      }
     }
 
   }
