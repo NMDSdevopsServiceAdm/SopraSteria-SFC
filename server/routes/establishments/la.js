@@ -50,7 +50,7 @@ router.route('/').get(async (req, res) => {
     });
     //const primaryAuthorityCustodianCode = primaryAuthority.local_custodian_code;
 
-    if (results && results.id && (establishmentId === results.id)) {
+    if (results && results.id && (establishmentId === results.id) && primaryAuthority.theAuthority && primaryAuthority.theAuthority) {
       res.status(200);
       return res.json(formatLAResponse(results, primaryAuthority));
     } else {
