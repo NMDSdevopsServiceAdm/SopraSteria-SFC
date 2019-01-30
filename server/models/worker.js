@@ -650,36 +650,36 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"WeeklyHoursContractedChangedBy"'
     },
-    AnnualWeeklyPayValue : {
+    AnnualHourlyPayValue : {
       type: DataTypes.ENUM,
       allowNull: true,
-      values: ['Yes', 'No', 'Don\'t know'],
-      field: '"AnnualWeeklyPayValue"'
+      values: ['Hourly', 'Annually', 'Don\'t know'],
+      field: '"AnnualHourlyPayValue"'
     },
-    AnnualWeeklyPayRate : {
-      type: DataTypes.INTEGER,
+    AnnualHourlyPayRate : {
+      type: DataTypes.FLOAT,
       allowNull: true,
-      field: '"AnnualWeeklyPayRate"'
+      field: '"AnnualHourlyPayRate"'
     },
-    AnnualWeeklyPaySavedAt : {
+    AnnualHourlyPaySavedAt : {
       type: DataTypes.DATE,
       allowNull: true,
-      field: '"AnnualWeeklyPaySavedAt"'
+      field: '"AnnualHourlyPaySavedAt"'
     },
-    AnnualWeeklyPayChangedAt : {
+    AnnualHourlyPayChangedAt : {
       type: DataTypes.DATE,
       allowNull: true,
-      field: '"AnnualWeeklyPayChangedAt"'
+      field: '"AnnualHourlyPayChangedAt"'
     },
-    AnnualWeeklyPaySavedBy : {
+    AnnualHourlyPaySavedBy : {
       type: DataTypes.TEXT,
       allowNull: true,
-      field: '"AnnualWeeklyPaySavedBy"'
+      field: '"AnnualHourlyPaySavedBy"'
     },
-    AnnualWeeklyPayChangedBy : {
+    AnnualHourlyPayChangedBy : {
       type: DataTypes.TEXT,
       allowNull: true,
-      field: '"AnnualWeeklyPayChangedBy"'
+      field: '"AnnualHourlyPayChangedBy"'
     },
     created: {
       type: DataTypes.DATE,

@@ -759,6 +759,83 @@
             },
             "required": ["value"]
         },
+        "DaysSick" : {
+            "description": "If relevant, number of days sick within a given year",
+            "properties": {
+                "value" : {
+                    "description": "If known the number of days sick",
+                    "type" : "string",
+                    "enum" : ["Yes", "No"]
+                },
+                "year" : {
+                    "description": "If value is 'Yes', the number of days sick",
+                    "type" : "number",
+                    "minimum": 0,
+                    "maximum": 366
+                }
+            },
+            "required": ["value"]
+        },
+        "ZeroHoursContract" : {
+            "description": "Whether the given worker is on zero hours contract or not",
+            "type" : "string",
+            "enum" : ["Yes", "No", "Don't know"]
+        },
+        "WorkingHours" : {
+            "description": "The given working hours (average or contracted)",
+            "properties": {
+                "value" : {
+                    "description": "If known the working hours",
+                    "type" : "string",
+                    "enum" : ["Yes", "No"]
+                },
+                "year" : {
+                    "description": "If value is 'Yes', the number of working hours",
+                    "type" : "number",
+                    "minimum": 0,
+                    "maximum": 65
+                }
+            },
+            "required": ["value"]
+        },
+        "HourlyPayRate": {
+            "description": "Hourly pay rate - min and max warrants a separate type from annual pay rate",
+            "type" : "number",
+            "minimum": 2.50,
+            "maximum": 100
+        },
+        "AnnualPayRate": {
+            "description": "Annual pay rate - min and max warrants a separate type from weekly pay rate",
+            "type" : "number",
+            "minimum": 500,
+            "maximum": 200000
+
+        },
+        "PayRate" : {
+            "description" : "Weekly or Annual pay rate",
+            "oneOf" : [
+                {
+                    "$ref" : "#/definitions/HourlyPayRate"
+                },
+                {
+                    "$ref" : "#/definitions/AnnualPayRate"
+                }
+            ]
+        },
+        "WorkingPayRate" : {
+            "description": "Hourly or Annual Pay Rate for a Worker",
+            "properties": {
+                "value" : {
+                    "description": "If pay rate is known",
+                    "type" : "string",
+                    "enum" : ["Hourly", "Annually", "Don't know"]
+                },
+                "pay" : {
+                    "$ref" : "#/definitions/PayRate"
+                }
+            },
+            "required": ["value"]
+        },
         "OtherJobs" : {
             "description": "Other Jobs, attributed to a Worker",
             "type" : "array",
@@ -914,6 +991,26 @@
                         }
                     },
                     "required" : ["value"]
+                },
+                "daysSick" : {
+                    "description" : "The workers current number of days sick, if known",
+                    "$ref" : "#/definitions/DaysSick"
+                },
+                "zeroHoursContract" : {
+                    "description" : "If the work is on a zero hours contract",
+                    "$ref" : "#/definitions/ZeroHoursContract"
+                },
+                "weeklyHoursAverage" : {
+                    "description" : "The average weekly working hours",
+                    "$ref" : "#/definitions/WorkingHours"
+                },
+                "weeklyHoursContracted" : {
+                    "description" : "The contracted weekly working hours",
+                    "$ref" : "#/definitions/WorkingHours"
+                },
+                "annualHourlyPay" : {
+                    "description" : "The weekly/annual pay rate if known",
+                    "$ref" : "#/definitions/WorkingPayRate"
                 },
                 "createdAt" : {
                     "description" : "When the worker record was created",
