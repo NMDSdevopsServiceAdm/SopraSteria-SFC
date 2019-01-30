@@ -122,6 +122,13 @@ form,
       @include rem(margin, 0 0 20px 0);
     }
   }
+
+  .multiple-choice label {
+    display: inline-block;
+    line-height: 3.4rem;
+    margin: 0;
+  }
+
 }
 
 // Multiple choice styles
@@ -130,9 +137,8 @@ form,
   float: none;
   clear: left;
   position: relative;
-  padding: 8px 0 0 45px;
+  padding-left: 45px;
   margin-bottom: 20px;
-  height: 34px;
 }
 
 @media (min-width: 641px) {
@@ -187,6 +193,7 @@ label {
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
   border-radius: 50%;
+  // transform: translateY(35%);
 }
 
 .multiple-choice [type=radio] + label::after {

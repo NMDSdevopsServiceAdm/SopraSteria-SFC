@@ -9,8 +9,7 @@ import { Job } from "../../core/model/job.model"
 
 @Component({
   selector: "app-vacancies",
-  templateUrl: "./vacancies.component.html",
-  styleUrls: ["./vacancies.component.scss"]
+  templateUrl: "./vacancies.component.html"
 })
 export class VacanciesComponent implements OnInit, OnDestroy {
   constructor(
@@ -23,13 +22,13 @@ export class VacanciesComponent implements OnInit, OnDestroy {
     this.validatorRecordJobId = this.validatorRecordJobId.bind(this)
   }
 
-  vacanciesForm: FormGroup
+  form: FormGroup
   total: number = 0
   jobsAvailable: Job[] = []
 
   private subscriptions = []
 
-  noVacanciesReasonOptions = [
+  noRecordsReasons = [
     {
       label: "There are no current staff vacancies.",
       value: "no-staff"
@@ -56,14 +55,14 @@ export class VacanciesComponent implements OnInit, OnDestroy {
   }
 
   submitHandler(): void {
-    const { vacancyControl, noVacanciesReason } = this.vacanciesForm.controls
+    const { recordsControl, noRecordsReason } = this.form.controls
 
-    if (noVacanciesReason.value === "dont-know") {
+    if (noRecordsReason.value === "dont-know") {
       this.router.navigate(["/starters"])
 
     } else {
-      if (this.vacanciesForm.valid || noVacanciesReason.value === "no-staff") {
-        const vacanciesFromForm = this.vacanciesForm.valid ? this.vacanciesForm.controls.vacancyControl.value : []
+      if (this.form.valid || noRecordsReason.value === "no-staff") {
+        const vacanciesFromForm = this.form.valid ? this.form.controls.recordsControl.value : []
         const vacancies = vacanciesFromForm.map(v => ({ jobId: parseFloat(v.jobId), total: v.total }));
 
         this.subscriptions.push(
@@ -80,34 +79,34 @@ export class VacanciesComponent implements OnInit, OnDestroy {
   }
 
   jobsLeft(idx) {
-    const vacancyControl = <FormArray> this.vacanciesForm.controls.vacancyControl
-    const thisVacancy = vacancyControl.controls[idx]
-    return this.jobsAvailable.filter(j => !vacancyControl.controls.some(v => v !== thisVacancy && parseFloat(v.value.jobId) === j.id))
+    const recordsControl = <FormArray> this.form.controls.recordsControl
+    const thisVacancy = recordsControl.controls[idx]
+    return this.jobsAvailable.filter(j => !recordsControl.controls.some(v => v !== thisVacancy && parseFloat(v.value.jobId) === j.id))
   }
 
   addVacancy(): void {
-    const vacancyControl = <FormArray> this.vacanciesForm.controls.vacancyControl
+    const recordsControl = <FormArray> this.form.controls.recordsControl
 
-    vacancyControl.push(
+    recordsControl.push(
       this.createVacancyControlItem()
     )
   }
 
   isJobsNotTakenLeft() {
-    return this.jobsAvailable.length !== this.vacanciesForm.controls.vacancyControl.value.length
+    return this.jobsAvailable.length !== this.form.controls.recordsControl.value.length
   }
 
   removeVacancy(index): void {
-    (<FormArray> this.vacanciesForm.controls.vacancyControl).removeAt(index)
+    (this.form.controls.recordsControl as FormArray).removeAt(index)
   }
 
   validatorRecordTotal(control) {
-    return control.value !== null || this.vacanciesForm.controls.noVacanciesReason.value.length ?
+    return control.value !== null || this.form.controls.noRecordsReason.value.length ?
       {} : { "total": true }
   }
 
   validatorRecordJobId(control) {
-    return control.value !== null || this.vacanciesForm.controls.noVacanciesReason.value.length ?
+    return control.value !== null || this.form.controls.noRecordsReason.value.length ?
       {} : { "jobId": true }
   }
 
@@ -125,51 +124,51 @@ export class VacanciesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions.push(this.jobService.getJobs().subscribe(jobs => this.jobsAvailable = jobs))
 
-    this.vacanciesForm = this.fb.group({
-      vacancyControl: this.fb.array([]),
-      noVacanciesReason: ""
+    this.form = this.fb.group({
+      recordsControl: this.fb.array([]),
+      noRecordsReason: ""
     })
 
-    const vacancyControl = <FormArray> this.vacanciesForm.controls.vacancyControl
+    const recordsControl = <FormArray> this.form.controls.recordsControl
 
     this.subscriptions.push(
       this.establishmentService.getVacancies().subscribe(vacancies => {
         if (vacancies.length) {
-          vacancies.forEach(v => vacancyControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)))
+          vacancies.forEach(v => recordsControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)))
 
         } else {
-          vacancyControl.push(this.createVacancyControlItem())
+          recordsControl.push(this.createVacancyControlItem())
         }
       })
     )
 
-    this.total = this.calculateTotal(vacancyControl.value)
+    this.total = this.calculateTotal(recordsControl.value)
 
     this.subscriptions.push(
-      vacancyControl.valueChanges.subscribe(value => {
+      recordsControl.valueChanges.subscribe(value => {
         this.total = this.calculateTotal(value)
 
         if (document.activeElement && document.activeElement.getAttribute("type") !== "radio") {
-          this.vacanciesForm.patchValue({
-            noVacanciesReason: ""
+          this.form.patchValue({
+            noRecordsReason: ""
           }, { emitEvent: false })
         }
       })
     )
 
     this.subscriptions.push(
-      this.vacanciesForm.controls.noVacanciesReason.valueChanges.subscribe(() => {
-        while (vacancyControl.length > 1) {
-          vacancyControl.removeAt(1)
+      this.form.controls.noRecordsReason.valueChanges.subscribe(() => {
+        while (recordsControl.length > 1) {
+          recordsControl.removeAt(1)
         }
 
-        vacancyControl.reset([], { emitEvent: false })
+        recordsControl.reset([], { emitEvent: false })
         this.total = 0
       })
     )
 
     this.subscriptions.push(
-      this.vacanciesForm.valueChanges.subscribe(() => {
+      this.form.valueChanges.subscribe(() => {
         this.messageService.clearAll()
       })
     )

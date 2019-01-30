@@ -1,4 +1,4 @@
-<div class="main-page-container col-12">
+<div class="starters-screen main-page-container col-12">
   <div id="back" class="back-link">
     <a routerLink="/vacancies">
       <span class="arrow"></span>Back
@@ -29,7 +29,7 @@
                 Number of new starters
               </div>
 
-              <div *ngFor="let record of form.get('recordsControl').controls; let idx = index" [formGroupName]="idx" class="row record">
+              <div *ngFor="let record of form.get('recordsControl').controls; let idx = index" [formGroupName]="idx" class="row record col-12">
                 <div class="col-6 col-sm-7">
                   <select formControlName="jobId" class="form-control">
                     <option [ngValue]="null">Select Job Title</option>
@@ -38,32 +38,32 @@
                     </option>
                   </select>
                 </div>
-                <div class="col-3 col-sm-2">
+                <div class="col-4 col-sm-2">
                   <input type="number" formControlName="total" class="form-control"
-                    appNumberMax="999" appNumberPositiveOnly appNumberIntOnly appNoPaste min="0" step="1"
+                    appNumberMax="999" appNumberPositiveOnly appNumberIntOnly min="0" step="1"
                     [ngClass]="{'is-invalid': (record.get('total').touched || record.get('total').dirty) && !record.get('total').valid }" />
                 </div>
-                <div *ngIf="idx !== 0" class="col-3 center-v no-padding-left">
-                  <button type="button" class="btn-link" (click)="removeRecord(idx)">Remove</button>
+                <div *ngIf="idx !== 0" class="col-1 center-v no-padding-left">
+                  <button type="button" class="btn-link no-padding-left" (click)="removeRecord(idx)">Remove</button>
                 </div>
               </div>
-              <div class="row summary-and-controls mb-5 record">
-                <div class="col-6 col-sm-7 center-v">
-                  <button *ngIf="this.isJobsNotTakenLeft()" type="button" class="btn-link" (click)="addVacancy()">+ Add another new starter</button>
+              <div class="summary-and-controls record row col-12 mb-5">
+                <div class="no-padding-left col-6 col-sm-7 center-v">
+                  <button *ngIf="this.isJobsNotTakenLeft()" type="button" class="btn-link no-padding-left" (click)="addVacancy()">+ Add another new starter</button>
                 </div>
-                <div class="col-5 summary">
+                <div class="summary col-6 col-sm-5">
                   <span>Total: {{total}}</span>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="mb-5">
-              <div *ngFor="let reason of noRecordsReasons; let idx = index" class="row mb-5">
-                <div class="col-12">
-                  <div class="multiple-choice">
-                    <input type="radio" id="selectReason-{{idx}}" formControlName="noRecordsReason" [value]="reason.value" />
-                    <label class="main-body-text p-0" for="selectReason-{{idx}}">{{reason.label}}</label>
-                  </div>
+          <div class="mb-5">
+            <div *ngFor="let reason of noRecordsReasons; let idx = index" class="row mb-5">
+              <div class="col-12">
+                <div class="multiple-choice">
+                  <input type="radio" id="selectReason-{{idx}}" formControlName="noRecordsReason" [value]="reason.value" />
+                  <label class="main-body-text p-0" for="selectReason-{{idx}}">{{reason.label}}</label>
                 </div>
               </div>
             </div>

@@ -9,8 +9,7 @@ import { Job } from "../../core/model/job.model"
 
 @Component({
   selector: 'app-starters',
-  templateUrl: './starters.component.html',
-  styleUrls: ['./starters.component.scss']
+  templateUrl: './starters.component.html'
 })
 export class StartersComponent implements OnInit, OnDestroy {
   constructor(

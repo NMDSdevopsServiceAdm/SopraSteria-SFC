@@ -9,8 +9,7 @@ import { Job } from "../../core/model/job.model"
 
 @Component({
   selector: 'app-leavers',
-  templateUrl: './leavers.component.html',
-  styleUrls: ['./leavers.component.scss']
+  templateUrl: './leavers.component.html'
 })
 export class LeaversComponent implements OnInit, OnDestroy {
   constructor(

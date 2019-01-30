@@ -1,0 +1,63 @@
+.vacancies-screen,
+.starters-screen,
+.leavers-screen {
+  .column-desc {
+    margin-bottom: .5rem;
+
+    > * {
+      font-size: 19px;
+      font-weight: 600;
+      margin: auto 0;
+    }
+  }
+
+  .btn-link {
+    margin: auto 0;
+    font-size: 15px;
+    letter-spacing: 1px;
+    border: 0;
+    color: #1078c7;
+    text-decoration: underline;
+    line-height: 2rem;
+
+    @include media(map-get($breakpoints, tablet)) {
+      line-height: 20px;
+    }
+  }
+
+  .record {
+    & > div:first-child {
+      padding-left: 0;
+    }
+
+    & ~ .record {
+      margin-top: 3rem;
+    };
+    line-height: 32px;
+  }
+
+  .summary-and-controls {
+    line-height: 1rem;
+
+    .summary {
+      display: flex;
+      font-size: 30px;
+      font-weight: 600;
+
+      & > span {
+        word-wrap: normal;
+        // display: block;
+        line-height: 3rem;
+      }
+    }
+  }
+
+  .btn-container {
+    margin-top: 5rem;
+
+    .btn.btn-primary {
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+  }
+}
