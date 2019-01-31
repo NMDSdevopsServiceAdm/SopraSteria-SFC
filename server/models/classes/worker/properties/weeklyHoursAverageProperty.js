@@ -69,10 +69,6 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
     }
 
     isEqual(currentValue, newValue) {
-
-console.log("WA DEBUG: Weekly Average Horus isEqual: current value: ", currentValue)
-console.log("WA DEBUG: Weekly Average Horus isEqual: new value: ", newValue)
-
         // not a simple (enum'd) string compare; if "Yes", also need to compare the hours (just an number)
         let hoursEqual = false;
         if (currentValue && newValue && currentValue.value === 'Yes') {
