@@ -35,6 +35,6 @@ export class NationalityService {
 }
 
 export interface NationalityResponse {
-  id: number,
+  id: number
   nationality: string
 }

@@ -88,6 +88,7 @@ import { AuthInterceptor } from './core/services/auth-interceptor';
 
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 import { SubmitButtonComponent } from './shared/submit-button/submit-button.component';
+import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
 
 @NgModule({
   declarations: [
@@ -150,6 +151,7 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     AdultSocialCareStartedComponent,
     CountryOfBirthComponent,
     BritishCitizenshipComponent,
+    AutoSuggestComponent,
   ],
   imports: [
     BrowserModule,

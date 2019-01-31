@@ -20,7 +20,7 @@ export interface Worker {
   nationality?: {
     value: string,
     other?: {
-      nationalityId: number,
+      nationalityId?: number,
       nationality?: string
     }
   },

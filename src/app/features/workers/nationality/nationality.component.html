@@ -32,14 +32,9 @@
 
         <div *ngIf="form.get('nationalityKnown').value === 'Other'" class="panel panel-border-narrow col-10 col-lg-6 ml-0 mt-5 mb-5 mt-md-0">
           <div class="form-field">
-            <label class="form-label">Nationality
+            <label class="form-label col-12 col-md-9">Nationality
               <span class="example">Optional</span>
-              <select formControlName="nationalityId" class="form-control">
-                <option [ngValue]="null">Select nationality</option>
-                <option *ngFor="let nationality of availableOtherNationalities" [value]="nationality.id">
-                  {{nationality.nationality}}
-                </option>
-              </select>
+              <app-auto-suggest [formGroup]="form" [dataProvider]="nationalityNameFilter" formControlName="nationalityName"></app-auto-suggest>
             </label>
           </div>
         </div>

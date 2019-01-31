@@ -23,7 +23,8 @@ export class NationalityComponent implements OnInit, OnDestroy {
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this)
-    this.nationalityIdValidator = this.nationalityIdValidator.bind(this)
+    this.nationalityNameValidator = this.nationalityNameValidator.bind(this)
+    this.nationalityNameFilter = this.nationalityNameFilter.bind(this)
   }
 
   form: FormGroup
@@ -52,7 +53,7 @@ export class NationalityComponent implements OnInit, OnDestroy {
 
   saveHandler() {
     return new Promise((resolve, reject) => {
-      const { nationalityId, nationalityKnown } = this.form.controls
+      const { nationalityName, nationalityKnown } = this.form.controls
       this.messageService.clearError()
 
       if (this.form.valid) {
@@ -61,9 +62,9 @@ export class NationalityComponent implements OnInit, OnDestroy {
             value: nationalityKnown.value
           }
 
-          if (nationalityId.value) {
+          if (nationalityName.value) {
             this.worker.nationality.other = {
-              nationalityId: parseInt(nationalityId.value)
+              nationality: `${nationalityName.value.charAt(0).toUpperCase()}${nationalityName.value.slice(1)}`
             }
           }
         }
@@ -73,9 +74,13 @@ export class NationalityComponent implements OnInit, OnDestroy {
         )
 
       } else {
-        if (nationalityId.errors &&
-            Object.keys(nationalityId.errors).includes("nationalityIdValid")) {
-          this.messageService.show("error", "'Nationality' must be provided.")
+        if (nationalityName.errors) {
+          if (Object.keys(nationalityName.errors).includes("required")) {
+            this.messageService.show("error", "Nationality must be provided.")
+
+          } else if (Object.keys(nationalityName.errors).includes("validNationality")) {
+            this.messageService.show("error", "Invalid nationality.")
+          }
         }
 
         reject()
@@ -84,26 +89,47 @@ export class NationalityComponent implements OnInit, OnDestroy {
   }
 
   nationalityKnownChangeHandler() {
-    this.form.controls.nationalityId.reset()
+    this.form.controls.nationalityName.reset()
   }
 
-  nationalityIdValidator() {
+  nationalityNameValidator() {
     if (this.form) {
       const { nationalityKnown } = this.form.value
-      const nationalityId = this.form.controls.nationalityId.value
+      const nationalityName = this.form.controls.nationalityName.value
 
       if (nationalityKnown === "Other") {
-        return nationalityId ? null : { nationalityIdValid: true }
+        if (nationalityName) {
+          const nationalityNameLowerCase = nationalityName.toLowerCase()
+          return this.availableOtherNationalities.some(n => n.nationality.toLowerCase() === nationalityNameLowerCase)
+            ? null : { validNationality: true }
+
+        } else {
+          return { required: true }
+        }
       }
     }
 
     return null
   }
 
+  nationalityNameFilter(): string[] {
+    const { nationalityName } = this.form.value
+
+    if (nationalityName && nationalityName.length) {
+      const nationalityNameLowerCase = nationalityName.toLowerCase()
+      return this.availableOtherNationalities
+        .filter(n => n.nationality.toLowerCase().startsWith(nationalityNameLowerCase))
+        .filter(n => n.nationality.toLowerCase() !== nationalityNameLowerCase)
+        .map(n => n.nationality)
+    }
+
+    return []
+  }
+
   ngOnInit() {
     this.form = this.formBuilder.group({
       nationalityKnown: null,
-      nationalityId: [null, this.nationalityIdValidator]
+      nationalityName: [null, this.nationalityNameValidator]
     })
 
     const params = this.route.snapshot.paramMap
@@ -119,7 +145,7 @@ export class NationalityComponent implements OnInit, OnDestroy {
 
             this.form.patchValue({
               nationalityKnown: value,
-              nationalityId: other ? other.nationalityId : null
+              nationalityName: other ? other.nationality : null
             })
           }
         })
