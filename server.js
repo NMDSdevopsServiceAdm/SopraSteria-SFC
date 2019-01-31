@@ -4,7 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+const helmet = require('helmet');
 var cacheMiddleware = require('./server/utils/middleware/noCache');
 
 var routes = require('./server/routes/index');
@@ -17,7 +17,7 @@ var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
 var login = require('./server/routes/login');
-var hashPassword = require('./server/routes/hashPassword');
+
 
 var errors = require('./server/routes/errors');
 
@@ -26,7 +26,7 @@ var testOnly = require('./server/routes/testOnly');
 
 
 var app = express();
-
+app.use(helmet());
 // view engine setup
 app.set('views', path.join(__dirname, '/server/views'));
 app.set('view engine', 'jade');
@@ -52,7 +52,7 @@ app.use('/api/login', [cacheMiddleware.nocache, login]);
 app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
-app.use('/api/hash', hashPassword);
+
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
