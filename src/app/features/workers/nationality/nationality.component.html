@@ -1,3 +1,60 @@
-<p>
-  nationality works!
-</p>
+<div class="main-page-container col-12">
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1">What is their nationality?</h1>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="form-group mt-5">
+      <div class="col-12 p-0">
+        <div class="row">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" formControlName="nationalityKnown" class="form-control" value="British" for="nationalityKnown_british" (change)="nationalityKnownChangeHandler()">
+              <label for="nationalityKnown_british">British</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-5 mt-md-0">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" formControlName="nationalityKnown" class="form-control" value="Other" for="nationalityKnown_other">
+              <label for="nationalityKnown_other">Other</label>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="form.get('nationalityKnown').value === 'Other'" class="panel panel-border-narrow col-10 col-lg-6 ml-0 mt-5 mb-5 mt-md-0">
+          <div class="form-field">
+            <label class="form-label">Nationality
+              <span class="example">Optional</span>
+              <select formControlName="nationalityId" class="form-control">
+                <option [ngValue]="null">Select nationality</option>
+                <option *ngFor="let nationality of availableOtherNationalities" [value]="nationality.id">
+                  {{nationality.nationality}}
+                </option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="row mt-5 mt-md-0">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" formControlName="nationalityKnown" class="form-control" value="Don't know" id="recruitmentKnown_dont_know" (change)="nationalityKnownChangeHandler()">
+              <label for="recruitmentKnown_dont_know">Don't know</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
+  </form>
+</div>

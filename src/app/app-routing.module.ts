@@ -46,6 +46,8 @@ import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.compo
 import { NationalityComponent } from './features/workers/nationality/nationality.component';
 import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
+import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
+import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -267,6 +269,16 @@ const routes: Routes = [
       {
         path: 'adult-social-care-started/:id',
         component: AdultSocialCareStartedComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'country-of-birth/:id',
+        component: CountryOfBirthComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'british-citizenship/:id',
+        component: BritishCitizenshipComponent,
         canLoad: [AuthGuard]
       },
     ]
