@@ -141,6 +141,12 @@ class ChangePropertyPrototype extends PropertyPrototype {
         // refer to concrete class to 
         const thisPropertyDef = this.savePropertyToSequelize();
 
+        // intercept any additional models resulting from the property; remove from the property set
+        let additionalModels = thisPropertyDef.additionalModels;
+        if (additionalModels) {
+            delete thisPropertyDef.additionalModels;
+        }
+
         const currentTimestamp = new Date();
         this._savedAt = currentTimestamp;
         this._savedBy = username;
@@ -155,6 +161,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
         });
 
         // only update the change history if this property has indeed changed
+        //   and only provide additional model if the property has changed
         if (this.changed) {
             this._changedBy = username;
             this._changedAt = currentTimestamp;
@@ -171,6 +178,8 @@ class ChangePropertyPrototype extends PropertyPrototype {
                     new: this.property
                 }
             });
+        } else {
+            additionalModels = null;
         }
 
         return {
@@ -178,7 +187,8 @@ class ChangePropertyPrototype extends PropertyPrototype {
                 ...thisPropertyDef,
                 ...sequelizeSaveDefinition
             },
-            audit: auditEvents
+            audit: auditEvents,
+            additionalModels
         };
     }
 

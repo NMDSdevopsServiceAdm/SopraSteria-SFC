@@ -13,17 +13,23 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
 
     // concrete implementations
     async restoreFromJson(document) {
-        const MINIMUM_AGE=15;
+        const MINIMUM_AGE=14;
+        const MAXIMUM_AGE=100;
         if (document.dateOfBirth) {
             // mimics main job start date property by ensuring date is a valid date
             //  based on leap year/days in month and that date of birth is more than
             //  sixteen years ago.
             const expectedDate = moment(document.dateOfBirth, "YYYY-MM-DD");
-            const thisDate = moment().subtract(MINIMUM_AGE, 'y');
+            const maxDate = moment().subtract(MINIMUM_AGE, 'y');
+            const minDate = moment().subtract(MAXIMUM_AGE, 'y');
+
+            // TODO - cross validation checks against Social Care Start Date
+            //        and main job start date
 
             if (document.dateOfBirth.length === 10 &&
                 expectedDate.isValid() &&
-                expectedDate.isBefore(thisDate)) {
+                expectedDate.isBefore(maxDate) &&
+                expectedDate.isAfter(minDate)) {
                 // we have a valid date - but store property as a normalised string with date only part
                 this.property = expectedDate.toJSON().slice(0,10);
             } else {
@@ -33,7 +39,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
     }
 
     restorePropertyFromSequelize(document) {
-        return new moment(document.DateOfBirthValue).toJSON().slice(0,10);
+        return moment(document.DateOfBirthValue).toJSON().slice(0,10);
     }
     savePropertyToSequelize() {
         return {

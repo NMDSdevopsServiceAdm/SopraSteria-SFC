@@ -417,6 +417,270 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"RecruitedFromChangedBy"'
     },
+    BritishCitizenshipValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', "Don't know"],
+      field: '"BritishCitizenshipValue"'
+    },
+    BritishCitizenshipSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"BritishCitizenshipSavedAt"'
+    },
+    BritishCitizenshipChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"BritishCitizenshipChangedAt"'
+    },
+    BritishCitizenshipSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"BritishCitizenshipSavedBy"'
+    },
+    BritishCitizenshipChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"BritishCitizenshipChangedBy"'
+    },
+    YearArrivedValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"YearArrivedValue"'
+    },
+    YearArrivedYear : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"YearArrivedYear"'
+    },
+    YearArrivedSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"YearArrivedSavedAt"'
+    },
+    YearArrivedChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"YearArrivedChangedAt"'
+    },
+    YearArrivedSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"YearArrivedSavedBy"'
+    },
+    YearArrivedChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"YearArrivedChangedBy"'
+    },
+    SocialCareStartDateValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"SocialCareStartDateValue"'
+    },
+    SocialCareStartDateYear : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"SocialCareStartDateYear"'
+    },
+    SocialCareStartDateSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"SocialCareStartDateSavedAt"'
+    },
+    SocialCareStartDateChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"SocialCareStartDateChangedAt"'
+    },
+    SocialCareStartDateSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"SocialCareStartDateSavedBy"'
+    },
+    SocialCareStartDateChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"SocialCareStartDateChangedBy"'
+    },
+    OtherJobsValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', "Don't know"],
+      field: '"OtherJobsValue"'
+    },
+    OtherJobsSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"OtherJobsSavedAt"'
+    },
+    OtherJobsChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"OtherJobsChangedAt"'
+    },
+    OtherJobsSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"OtherJobsSavedBy"'
+    },
+    OtherJobsChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"OtherJobsChangedBy"'
+    },
+    DaysSickValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"DaysSickValue"'
+    },
+    DaysSickDays : {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+      field: '"DaysSickDays"'
+    },
+    DaysSickSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DaysSickSavedAt"'
+    },
+    DaysSickChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"DaysSickChangedAt"'
+    },
+    DaysSickSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"DaysSickSavedBy"'
+    },
+    DaysSickChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"DaysSickChangedBy"'
+    },
+    ZeroHoursContractValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', 'Don\'t know'],
+      field: '"ZeroHoursContractValue"'
+    },
+    ZeroHoursContractSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ZeroHoursContractSavedAt"'
+    },
+    ZeroHoursContractChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ZeroHoursContractChangedAt"'
+    },
+    ZeroHoursContractSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ZeroHoursContractSavedBy"'
+    },
+    ZeroHoursContractChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ZeroHoursContractChangedBy"'
+    },    
+    WeeklyHoursAverageValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"WeeklyHoursAverageValue"'
+    },
+    WeeklyHoursAverageHours : {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+      field: '"WeeklyHoursAverageHours"'
+    },
+    WeeklyHoursAverageSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"WeeklyHoursAverageSavedAt"'
+    },
+    WeeklyHoursAverageChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"WeeklyHoursAverageChangedAt"'
+    },
+    WeeklyHoursAverageSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"WeeklyHoursAverageSavedBy"'
+    },
+    WeeklyHoursAverageChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"WeeklyHoursAverageChangedBy"'
+    },
+    WeeklyHoursContractedValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No'],
+      field: '"WeeklyHoursContractedValue"'
+    },
+    WeeklyHoursContractedHours : {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+      field: '"WeeklyHoursContractedHours"'
+    },
+    WeeklyHoursContractedSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"WeeklyHoursContractedSavedAt"'
+    },
+    WeeklyHoursContractedChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"WeeklyHoursContractedChangedAt"'
+    },
+    WeeklyHoursContractedSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"WeeklyHoursContractedSavedBy"'
+    },
+    WeeklyHoursContractedChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"WeeklyHoursContractedChangedBy"'
+    },
+    AnnualHourlyPayValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Hourly', 'Annually', 'Don\'t know'],
+      field: '"AnnualHourlyPayValue"'
+    },
+    AnnualHourlyPayRate : {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+      field: '"AnnualHourlyPayRate"'
+    },
+    AnnualHourlyPaySavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"AnnualHourlyPaySavedAt"'
+    },
+    AnnualHourlyPayChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"AnnualHourlyPayChangedAt"'
+    },
+    AnnualHourlyPaySavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"AnnualHourlyPaySavedBy"'
+    },
+    AnnualHourlyPayChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"AnnualHourlyPayChangedBy"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -481,6 +745,13 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'RecruitedFromOtherFK',
       targetKey: 'id',
       as: 'recruitedFrom'
+    });
+    Worker.belongsToMany(models.job, {
+      through: 'workerJobs',
+      foreignKey: 'workerFk',
+      targetKey: 'workerFk',
+      otherKey: 'jobFk',
+      as: 'otherJobs'
     });
   };
 

@@ -40,7 +40,7 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
     }
 
     isEqual(currentValue, newValue) {
-        // main job is an object where ethnicityId is the primary key
+        // ethnicity is an object where ethnicityId is the primary key
         return currentValue && newValue && currentValue.ethnicityId === newValue.ethnicityId;
     }
 
@@ -61,10 +61,9 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
     }
 
     _valid(ethnicityDef) {
-        // get reference set of jobs to validate against
         if (!ethnicityDef) return false;
 
-        // must exist a jobId or title
+        // must exist a ethnicityId or ethnicity
         if (!(ethnicityDef.ethnicityId || ethnicityDef.ethnicity)) return false;
 
         // if ethnicityId is given, it must be an integer
@@ -75,21 +74,21 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
     }
 
     // returns false if ethnicity definition is not valid, otherwise returns
-    //  a well formed job definition using data as given in ethnicity reference lookup
+    //  a well formed ethnicity definition using data as given in ethnicity reference lookup
     async _validateEthnicity(ethnicityDef) {
         if (!this._valid(ethnicityDef)) return false;
 
-        // ethnicityId overrides title, because ethnicityId is indexed whereas ethnicity is not!
-        let referenceJob = null;
+        // ethnicityId overrides ethnicity, because ethnicityId is indexed whereas ethnicity is not!
+        let referenceEthnicity = null;
         if (ethnicityDef.ethnicityId) {
-            referenceJob = await models.ethnicity.findOne({
+            referenceEthnicity = await models.ethnicity.findOne({
                 where: {
                     id: ethnicityDef.ethnicityId
                 },
                 attributes: ['id', 'ethnicity'],
             });
         } else {
-            referenceJob = await models.ethnicity.findOne({
+            referenceEthnicity = await models.ethnicity.findOne({
                 where: {
                     ethnicity: ethnicityDef.ethnicity
                 },
@@ -97,11 +96,11 @@ exports.WorkerEthnicityProperty = class WorkerEthnicityProperty extends ChangePr
             });
         }
 
-        if (referenceJob && referenceJob.id) {
-            // found a job match
+        if (referenceEthnicity && referenceEthnicity.id) {
+            // found a ethnicity match
             return {
-                ethnicityId: referenceJob.id,
-                ethnicity: referenceJob.ethnicity
+                ethnicityId: referenceEthnicity.id,
+                ethnicity: referenceEthnicity.ethnicity
             };
         } else {
             return false;
