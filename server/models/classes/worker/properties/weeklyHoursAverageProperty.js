@@ -55,7 +55,7 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
         };
 
         if (document.WeeklyHoursAverageValue === 'Yes') {
-            hoursDocument.hours = document.WeeklyHoursAverageHours;
+            hoursDocument.hours = parseFloat(document.WeeklyHoursAverageHours);
         }
         return hoursDocument;
     }
@@ -69,6 +69,10 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
     }
 
     isEqual(currentValue, newValue) {
+
+console.log("WA DEBUG: Weekly Average Horus isEqual: current value: ", currentValue)
+console.log("WA DEBUG: Weekly Average Horus isEqual: new value: ", newValue)
+
         // not a simple (enum'd) string compare; if "Yes", also need to compare the hours (just an number)
         let hoursEqual = false;
         if (currentValue && newValue && currentValue.value === 'Yes') {
@@ -77,7 +81,7 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
             hoursEqual = true;
         }
 
-        return currentValue && newValue && currentValue === newValue && hoursEqual;
+        return currentValue && newValue && currentValue.value === newValue.value && hoursEqual;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
