@@ -35,8 +35,8 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      const res = await this.saveHandler()
-      this.router.navigate([`/worker/home-postcode/${res.uid}`])
+      await this.saveHandler()
+      this.router.navigate([`/worker/home-postcode/${this.workerId}`])
 
     } catch (err) {
       // keep typescript transpiler silent
@@ -49,21 +49,24 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        this.worker.dateOfBirth = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
-          .format(DEFAULT_DATE_FORMAT)
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        if (day && month && year) {
+          this.worker.dateOfBirth = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
+            .format(DEFAULT_DATE_FORMAT)
+          this.subscriptions.push(
+            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+          )
+        } else {
+          resolve()
+        }
 
       } else {
-        if (day && month && year) {
+        if (this.form.errors && this.form.errors.required) {
+          this.messageService.show("error", "All fields are required.")
+
+        } else if (day && month && year) {
           const noBefore = this.calculateLowestAcceptableDate()
           const noAfter = this.calculateHighestAcceptableDate()
-
           this.messageService.show("error", `The date has to be between ${noBefore.format(DEFAULT_DATE_DISPLAY_FORMAT)} and ${noAfter.format(DEFAULT_DATE_DISPLAY_FORMAT)}.`)
-
-        } else {
-          this.messageService.show("error", "Please fill the required fields.")
         }
 
         reject()
@@ -73,14 +76,12 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
   private calculateLowestAcceptableDate() {
     const date = moment()
-    date.year(date.year() - 100)
-    return date
+    return date.year(date.year() - 100)
   }
 
   private calculateHighestAcceptableDate() {
     const date = moment()
-    date.year(date.year() - 16)
-    return date
+    return date.year(date.year() - 14)
   }
 
   formValidator(control: AbstractControl): ValidationErrors {
@@ -89,27 +90,32 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
     }
 
     const { day, month, year } = this.form.value
-    const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
 
-    if (date.isValid()) {
-      const noBefore = this.calculateLowestAcceptableDate()
-      const noAfter = this.calculateHighestAcceptableDate()
+    if (day && month && year) {
+      const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
 
-      if (date.isBetween(noBefore, noAfter)) {
-        return null
+      if (date.isValid()) {
+        const noBefore = this.calculateLowestAcceptableDate()
+        const noAfter = this.calculateHighestAcceptableDate()
+
+        if (date.isBetween(noBefore, noAfter, "day", "[]")) {
+          return null
+        }
       }
-    }
 
-    return { dateBetweenValidator: true }
+      return { dateBetweenValidator: true }
+
+    } else {
+      return [day, month, year].every(v => !v) ? null : { required: true }
+    }
   }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      day: ["", Validators.required],
-      month: ["", Validators.required],
-      year: ["", Validators.required]
+      day: null,
+      month: null,
+      year: null,
     })
-    this.form.setValidators([DateValidator.dateValid(this.form), this.formValidator])
 
     const params = this.route.snapshot.paramMap
     this.workerId = params.has("id") ? params.get("id") : null
@@ -122,11 +128,18 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
           if (worker.dateOfBirth) {
             const date = worker.dateOfBirth.split("-")
             this.form.patchValue({
-              year: date[0],
-              month: date[1],
-              day: date[2],
+              year: parseInt(date[0]),
+              month: parseInt(date[1]),
+              day: parseInt(date[2]),
             })
           }
+
+          const formValidators = [
+            DateValidator.dateValid(this.form),
+            this.formValidator
+          ]
+
+          this.form.setValidators(formValidators)
         })
       )
     }
