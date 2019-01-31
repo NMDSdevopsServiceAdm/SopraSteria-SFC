@@ -61,7 +61,13 @@ class ChangePropertyPrototype extends PropertyPrototype {
     set property(value) {
         // now check if the property value has changed, which will depend
         //  on the final Property type
-        if (this.property && !this.isEqual(this.property, value)) {
+
+        if (this.property === null && value !== null) {
+            // this is the first time we are setting a value to the property
+            this._changed = true;
+            this._previousValue = {};
+
+        } else if (this.property && !this.isEqual(this.property, value)) {
             this._previousValue = super.property;
             this._changed = true;
         }
@@ -135,7 +141,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
 
     // returns the Worker record properties, in addition to a set of auditEvents
     save(username) {
-        const sequelizeSaveDefinition = {};
+        let sequelizeSaveDefinition = {};
         const auditEvents = [];
 
         // refer to concrete class to 
@@ -167,6 +173,12 @@ class ChangePropertyPrototype extends PropertyPrototype {
             this._changedAt = currentTimestamp;
             sequelizeSaveDefinition[`${this._dbPropertyPrefix}ChangedAt`] = this._changedAt;
             sequelizeSaveDefinition[`${this._dbPropertyPrefix}ChangedBy`] = this._changedBy;
+
+            // only update the property values if changed
+            sequelizeSaveDefinition = {
+                ...thisPropertyDef,
+                ...sequelizeSaveDefinition
+            };
             
             // create a 'changed' audit event for this property
             auditEvents.push({
@@ -183,10 +195,11 @@ class ChangePropertyPrototype extends PropertyPrototype {
         }
 
         return {
-            properties: {
-                ...thisPropertyDef,
-                ...sequelizeSaveDefinition
-            },
+            // properties: {
+            //     ...thisPropertyDef,
+            //     ...sequelizeSaveDefinition
+            // },
+            properties: sequelizeSaveDefinition,
             audit: auditEvents,
             additionalModels
         };
