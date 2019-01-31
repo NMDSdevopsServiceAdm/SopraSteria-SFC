@@ -299,31 +299,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"EthnicityFKChangedBy"'
     },
-    QualificationFkValue : {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      field: '"QualificationFKValue"'
-    },
-    QualificationFkSavedAt : {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: '"QualificationFKSavedAt"'
-    },
-    QualificationFkChangedAt : {
-      type: DataTypes.DATE,
-      allowNull: true,
-      field: '"QualificationFKChangedAt"'
-    },
-    QualificationFkSavedBy : {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      field: '"QualificationFKSavedBy"'
-    },
-    QualificationFkChangedBy : {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      field: '"QualificationFKChangedBy"'
-    },
     NationalityValue : {
       type: DataTypes.ENUM,
       allowNull: true,
@@ -681,6 +656,160 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"AnnualHourlyPayChangedBy"'
     },
+    CareCertificateValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes, completed', 'Yes, in progress or partially completed', 'No'],
+      field: '"CareCertificateValue"'
+    },
+    CareCertificateSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CareCertificateSavedAt"'
+    },
+    CareCertificateChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CareCertificateChangedAt"'
+    },
+    CareCertificateSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CareCertificateSavedBy"'
+    },
+    CareCertificateChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CareCertificateChangedBy"'
+    },
+    ApprenticeshipTrainingValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', 'Don\'t know'],
+      field: '"ApprenticeshipTrainingValue"'
+    },
+    ApprenticeshipTrainingSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ApprenticeshipTrainingSavedAt"'
+    },
+    ApprenticeshipTrainingChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ApprenticeshipTrainingChangedAt"'
+    },
+    ApprenticeshipTrainingSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ApprenticeshipTrainingSavedBy"'
+    },
+    ApprenticeshipTrainingChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ApprenticeshipTrainingChangedBy"'
+    },
+    QualificationInSocialCareValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', 'Don\'t know'],
+      field: '"QualificationInSocialCareValue"'
+    },
+    QualificationInSocialCareSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"QualificationInSocialCareSavedAt"'
+    },
+    QualificationInSocialCareChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"QualificationInSocialCareChangedAt"'
+    },
+    QualificationInSocialCareSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"QualificationInSocialCareSavedBy"'
+    },
+    QualificationInSocialCareChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"QualificationInSocialCareChangedBy"'
+    },
+    SocialCareQualificationFkValue : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"SocialCareQualificationFKValue"'
+    },
+    SocialCareQualificationFkSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"SocialCareQualificationFKSavedAt"'
+    },
+    SocialCareQualificationFkChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"SocialCareQualificationFKChangedAt"'
+    },
+    SocialCareQualificationFkSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"SocialCareQualificationFKSavedBy"'
+    },
+    SocialCareQualificationFkChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"SocialCareQualificationFKChangedBy"'
+    },
+    OtherQualificationsValue : {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Yes', 'No', 'Don\'t know'],
+      field: '"OtherQualificationsValue"'
+    },
+    OtherQualificationsSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"OtherQualificationsSavedAt"'
+    },
+    OtherQualificationsChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"OtherQualificationsChangedAt"'
+    },
+    OtherQualificationsSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"OtherQualificationsSavedBy"'
+    },
+    OtherQualificationsChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"OtherQualificationsChangedBy"'
+    },
+    HighestQualificationFkValue : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"HighestQualificationFKValue"'
+    },
+    HighestQualificationFkSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"HighestQualificationFKSavedAt"'
+    },
+    HighestQualificationFkChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"HighestQualificationFKChangedAt"'
+    },
+    HighestQualificationFkSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"HighestQualificationFKSavedBy"'
+    },
+    HighestQualificationFkChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"HighestQualificationFKChangedBy"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -732,9 +861,14 @@ module.exports = function(sequelize, DataTypes) {
       as: 'nationality'
     });
     Worker.belongsTo(models.qualification, {
-      foreignKey: 'QualificationFkValue',
+      foreignKey: 'SocialCareQualificationFkValue',
       targetKey: 'id',
-      as: 'qualification'
+      as: 'socialCareQualification'
+    });
+    Worker.belongsTo(models.qualification, {
+      foreignKey: 'HighestQualificationFkValue',
+      targetKey: 'id',
+      as: 'highestQualification'
     });
     Worker.belongsTo(models.country, {
       foreignKey: 'CountryOfBirthOtherFK',

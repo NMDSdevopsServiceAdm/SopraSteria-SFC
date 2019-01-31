@@ -16,7 +16,7 @@ const ethnicityProperty = require('./properties/ethnicityProperty').WorkerEthnic
 const nationalityProperty = require('./properties/nationalityProperty').WorkerNationalityProperty;
 const countryProperty = require('./properties/countryProperty').WorkerCountryProperty;
 const recruitedFromProperty = require('./properties/recruitedFromProperty').WorkerRecruitedFromProperty;
-const qualificationProperty = require('./properties/qualificationProperty').WorkerQualificationProperty;
+const socialCareQualificationProperty = require('./properties/socialCareQualificationProperty').WorkerSocialCareQualificationProperty;
 const britishCitizenshipProperty = require('./properties/britishCitizenshipProperty').WorkerBritishCitizenshipProperty;
 const yearOfArrivalProperty = require('./properties/yearArrivedProperty').WorkerYearArrivedProperty;
 const socialCareStartDateProperty = require('./properties/socialCareStartDateProperty').WorkerSocialCareStartDateProperty;
@@ -55,7 +55,7 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(weeklyHoursContractedProperty);
         this._thisManager.registerProperty(annualHourlyPayProperty);
 
-        this._thisManager.registerProperty(qualificationProperty);
+        this._thisManager.registerProperty(socialCareQualificationProperty);
     }
 
     get manager() {

@@ -4,38 +4,40 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 // database models
 const models = require('../../../index');
 
-exports.WorkerQualificationProperty = class WorkerQualificationProperty extends ChangePropertyPrototype {
+exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificationProperty extends ChangePropertyPrototype {
     constructor() {
-        super('Qualification', 'QualificationFk');
+        super('SocialCareQualification', 'SocialCareQualificationFk');
     }
 
     static clone() {
-        return new WorkerQualificationProperty();
+        return new WorkerSocialCareQualificationProperty();
     }
 
     // concrete implementations
     async restoreFromJson(document) {
         // TODO: it's a little more than assuming the JSON representation
-        if (document.qualification) {
-            const validatedQualification = await this._validateQualification(document.qualification);
+        if (document.socialCareQualification) {
+            console.log("WA DEBUG - serialise from JSON Social Care Qualificatoin: ", document.socialCareQualification)
+            const validatedQualification = await this._validateQualification(document.socialCareQualification);
             if (validatedQualification) {
                 this.property = validatedQualification;
             } else {
                 this.property = null;
             }
         }
+        console.log("WA DEBUG - JSON properety: ", this.property)
     }
     restorePropertyFromSequelize(document) {
-        if (document.qualification) {
+        if (document.socialCareQualification) {
             return {
-                qualificationId: document.qualification.id,
-                title: document.qualification.level
+                qualificationId: document.socialCareQualification.id,
+                title: document.socialCareQualification.level
             };
         }
     }
     savePropertyToSequelize() {
         return {
-            QualificationFkValue: this.property.qualificationId
+            SocialCareQualificationFkValue: this.property.qualificationId
         };
     }
 
@@ -48,12 +50,12 @@ exports.WorkerQualificationProperty = class WorkerQualificationProperty extends 
         if (!withHistory) {
             // simple form
             return {
-                qualification: this.property
+                socialCareQualification: this.property
             };
         }
         
         return {
-            qualification : {
+            socialCareQualification : {
                 currentValue: this.property,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
