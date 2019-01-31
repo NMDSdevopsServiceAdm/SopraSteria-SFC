@@ -72,12 +72,15 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
+      const { nameOrId, contract, mainJob } = this.form.controls
+      this.messageService.clearError()
+
       if (this.form.valid) {
         const worker = {
-          nameOrId: this.form.value.nameOrId,
-          contract: this.form.value.contract,
+          nameOrId: nameOrId.value,
+          contract: contract.value,
           mainJob: {
-            jobId: parseInt(this.form.value.mainJob)
+            jobId: parseInt(mainJob.value)
           }
         }
 
@@ -93,8 +96,18 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
         }
 
       } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
+        if (nameOrId.errors && nameOrId.errors.required) {
+          this.messageService.show("error", "'Full name or ID number' is required.")
+        }
+
+        if (mainJob.errors && mainJob.errors.required) {
+          this.messageService.show("error", "'Main job role' is required.")
+        }
+
+        if (contract.errors && contract.errors.required) {
+          this.messageService.show("error", "'Type of contract' is required.")
+        }
+
         reject()
       }
     })
@@ -102,9 +115,9 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      nameOrId: ["", Validators.required],
-      mainJob: ["", Validators.required],
-      contract: ["", Validators.required]
+      nameOrId: [null, Validators.required],
+      mainJob: [null, Validators.required],
+      contract: [null, Validators.required]
     })
 
     const params = this.route.snapshot.paramMap
