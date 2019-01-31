@@ -195,10 +195,6 @@ class ChangePropertyPrototype extends PropertyPrototype {
         }
 
         return {
-            // properties: {
-            //     ...thisPropertyDef,
-            //     ...sequelizeSaveDefinition
-            // },
             properties: sequelizeSaveDefinition,
             audit: auditEvents,
             additionalModels
