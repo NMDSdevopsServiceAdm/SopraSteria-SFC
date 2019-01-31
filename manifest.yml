@@ -1,5 +1,5 @@
 applications:
-- name: sfcdummy
+- name: sfclab
   memory: 1G
   disk_quota: 1GB
   command: npm run contrast
@@ -11,4 +11,4 @@ applications:
     CONTRAST__AUTHORIZATION: bmFzaXIubXVoYW1tYWRAZXh0LnNvcHJhc3RlcmlhLmNvbTpGTFZYT0Q5RVFJSUZYSUpY
     AGENT__AUTO_UPDATE: false
     AGENT__LOGGER__LEVEL: info
-    SERVER__NAME: sfcdummy
+    SERVER__NAME: sfclab
