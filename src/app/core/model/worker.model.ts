@@ -17,4 +17,11 @@ export interface Worker {
     ethnicityId: number
     ethnicity?: string
   }
+  recruitedFrom?: {
+    value: string,
+    from?: {
+      recruitedFromId: number,
+      from?: string
+    }
+  }
 }
