@@ -27,6 +27,7 @@ const weeklyHoursAverageProperty = require('./properties/weeklyHoursAveragePrope
 const weeklyHoursContractedProperty = require('./properties/weeklyHoursContractedProperty').WorkerWeeklyHoursContractedProperty;
 const annualHourlyPayProperty = require('./properties/annualHourlyPayProperty').WorkerAnnualHourlyPayProperty;
 const careCertificateProperty = require('./properties/careCertificateProperty').WorkerCareCertificateProperty;
+const apprenticeshipProperty = require('./properties/apprenticeshipTrainingProperty').WorkerApprenticeshipTrainingProperty;
 
 class WorkerPropertyManager {
     constructor() {
@@ -56,6 +57,7 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(weeklyHoursContractedProperty);
         this._thisManager.registerProperty(annualHourlyPayProperty);
         this._thisManager.registerProperty(careCertificateProperty);
+        this._thisManager.registerProperty(apprenticeshipProperty);
 
         this._thisManager.registerProperty(socialCareQualificationProperty);
     }

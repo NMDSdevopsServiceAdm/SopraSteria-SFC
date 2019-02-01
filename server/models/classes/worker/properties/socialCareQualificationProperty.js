@@ -25,7 +25,6 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
                 this.property = null;
             }
         }
-        console.log("WA DEBUG - JSON properety: ", this.property)
     }
     restorePropertyFromSequelize(document) {
         if (document.socialCareQualification) {
