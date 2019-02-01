@@ -670,24 +670,6 @@
             },
             "required": ["countryId"]
         },
-        "Country" : {
-            "description": "A known country within the world",
-            "properties": {
-                "countryId" : {
-                    "description": "A unique reference to the Country",
-                    "$ref" : "#/definitions/id"
-                },
-                "country" : {
-                    "description": "The name of the country, e.g. Austria, Australia",
-                    "type" : "string"
-                },
-                "seq" : {
-                    "description": "A preferred order in which to present the Country if presenting as a list",
-                    "$ref" : "#/definitions/id"
-                }
-            },
-            "required": ["countryId"]
-        },
         "RecruitedFrom" : {
             "description": "Recruitment Origins; lookup value",
             "properties": {
@@ -705,24 +687,6 @@
                 }
             },
             "required": ["recruitedFromId"]
-        },
-        "Qualification" : {
-            "description": "A given qualification",
-            "properties": {
-                "qualificationId" : {
-                    "description": "A unique reference to the Qualification",
-                    "$ref" : "#/definitions/id"
-                },
-                "title" : {
-                    "description": "The qualification title",
-                    "type" : "string"
-                },
-                "seq" : {
-                    "description": "A preferred order in which to present the Qualification if presenting as a list",
-                    "$ref" : "#/definitions/id"
-                }
-            },
-            "required": ["qualificationId"]
         },
         "BritishCitizenship" : {
             "description": "A given citizenship status",
@@ -845,6 +809,154 @@
                 }
             ]
         },
+        "WorkerCareCertificate" : {
+            "description": "Whether the worker has a Care Certificate",
+            "oneOf": [
+                {
+                    "description": "Simple Care Certificate",
+                    "type" : "string",
+                    "enum" : ["Yes, completed", "Yes, in progress or partially completed", "No"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Care Certificate with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "enum" : ["Yes, completed", "Yes, in progress or partially completed", "No"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerApprenticeshipTraining" : {
+            "description": "Whether the worker is on apprenticeship",
+            "oneOf": [
+                {
+                    "description": "Simple Apprenticeship Training",
+                    "type" : "string",
+                    "enum" : ["Yes", "No", "Don't know"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Apprenticeship Training with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "enum" : ["Yes", "No", "Don't know"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "WorkerSocialCareQualification" : {
+            "description": "Whether the worker is has any social care specific qualifications",
+            "oneOf": [
+                {
+                    "description": "Simple Social Care Qualification",
+                    "type" : "string",
+                    "enum" : ["Yes", "No", "Don't know"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Social Care Qualification with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "enum" : ["Yes", "No", "Don't know"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "SocialCareQualification" : {
+            "description": "A given qualification",
+            "properties": {
+                "qualificationId" : {
+                    "description": "A unique reference to the Qualification",
+                    "$ref" : "#/definitions/id"
+                },
+                "title" : {
+                    "description": "The qualification title",
+                    "type" : "string"
+                },
+                "seq" : {
+                    "description": "A preferred order in which to present the Qualification if presenting as a list",
+                    "$ref" : "#/definitions/id"
+                }
+            },
+            "required": ["qualificationId"]
+        },
+        "WorkerOtherQualification" : {
+            "description": "Whether the worker is has any other (non social care specific) qualifications",
+            "oneOf": [
+                {
+                    "description": "Simple Other Qualification",
+                    "type" : "string",
+                    "enum" : ["Yes", "No", "Don't know"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Other Qualification with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "enum" : ["Yes", "No", "Don't know"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
+        "HighestQualification" : {
+            "description": "A given qualification",
+            "properties": {
+                "qualificationId" : {
+                    "description": "A unique reference to the Qualification",
+                    "$ref" : "#/definitions/id"
+                },
+                "title" : {
+                    "description": "The qualification title",
+                    "type" : "string"
+                },
+                "seq" : {
+                    "description": "A preferred order in which to present the Qualification if presenting as a list",
+                    "$ref" : "#/definitions/id"
+                }
+            },
+            "required": ["qualificationId"]
+        },
         "Worker" : {
             "description" : "A Worker belongs to a single Establishment",
             "properties" : {
@@ -952,16 +1064,6 @@
                     },
                     "required" : ["value"]
                 },
-                "qualification" : {
-                    "description": "Highest Level of qualification for this Worker",
-                    "properties": {
-                        "value" : {
-                            "description": "The given qualification",
-                            "$ref" : "#/definitions/Qualification"
-                        }
-                    },
-                    "required" : ["value"]
-                },
                 "britishCitizenship" : {
                     "description": "If relevant, the worker's British Citizenship status",
                     "properties": {
@@ -1011,6 +1113,42 @@
                 "annualHourlyPay" : {
                     "description" : "The weekly/annual pay rate if known",
                     "$ref" : "#/definitions/WorkingPayRate"
+                },
+                "careCertificate" : {
+                    "description" : "Whether the worker has, or is doing, a Care Certificate",
+                    "$ref" : "#/definitions/WorkerCareCertificate"
+                },
+                "apprenticeshipTraining" : {
+                    "description" : "Whether the worker is on an apprenticeship",
+                    "$ref" : "#/definitions/WorkerApprenticeshipTraining"
+                },
+                "qualificationInSocialCare" : {
+                    "description" : "Whether the worker has a social care specific qualification",
+                    "$ref" : "#/definitions/WorkerSocialCareQualification"
+                },
+                "socialCareQualification" : {
+                    "description": "The highest Level of social care qualification for this Worker",
+                    "properties": {
+                        "value" : {
+                            "description": "The given qualification",
+                            "$ref" : "#/definitions/SocialCareQualification"
+                        }
+                    },
+                    "required" : ["value"]
+                },
+                "otherQualification" : {
+                    "description" : "Whether the worker has any other (non social care specific) qualification",
+                    "$ref" : "#/definitions/WorkingPayRate"
+                },
+                "highestQualification" : {
+                    "description": "The highest Level of non-social care qualification for this Worker",
+                    "properties": {
+                        "value" : {
+                            "description": "The given qualification",
+                            "$ref" : "#/definitions/HighestQualification"
+                        }
+                    },
+                    "required" : ["value"]
                 },
                 "createdAt" : {
                     "description" : "When the worker record was created",

@@ -16,7 +16,7 @@ const ethnicityProperty = require('./properties/ethnicityProperty').WorkerEthnic
 const nationalityProperty = require('./properties/nationalityProperty').WorkerNationalityProperty;
 const countryProperty = require('./properties/countryProperty').WorkerCountryProperty;
 const recruitedFromProperty = require('./properties/recruitedFromProperty').WorkerRecruitedFromProperty;
-const qualificationProperty = require('./properties/qualificationProperty').WorkerQualificationProperty;
+const socialCareQualificationProperty = require('./properties/socialCareQualificationProperty').WorkerSocialCareQualificationProperty;
 const britishCitizenshipProperty = require('./properties/britishCitizenshipProperty').WorkerBritishCitizenshipProperty;
 const yearOfArrivalProperty = require('./properties/yearArrivedProperty').WorkerYearArrivedProperty;
 const socialCareStartDateProperty = require('./properties/socialCareStartDateProperty').WorkerSocialCareStartDateProperty;
@@ -26,6 +26,11 @@ const zeroHoursProperty = require('./properties/zeroContractProperty').WorkerZer
 const weeklyHoursAverageProperty = require('./properties/weeklyHoursAverageProperty').WorkerWeeklyHoursAverageProperty;
 const weeklyHoursContractedProperty = require('./properties/weeklyHoursContractedProperty').WorkerWeeklyHoursContractedProperty;
 const annualHourlyPayProperty = require('./properties/annualHourlyPayProperty').WorkerAnnualHourlyPayProperty;
+const careCertificateProperty = require('./properties/careCertificateProperty').WorkerCareCertificateProperty;
+const apprenticeshipProperty = require('./properties/apprenticeshipTrainingProperty').WorkerApprenticeshipTrainingProperty;
+const qualificationInSocialCareProperty = require('./properties/qualificationInSocialCareProperty').WorkerQualificationInSocialCareProperty;
+const otherQualificationProperty = require('./properties/otherQualificationProperty').WorkerOtherQualificationProperty;
+const highestQualificationProperty = require('./properties/highestQualificationProperty').WorkerHighestQualificationProperty;
 
 class WorkerPropertyManager {
     constructor() {
@@ -54,8 +59,12 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(weeklyHoursAverageProperty);
         this._thisManager.registerProperty(weeklyHoursContractedProperty);
         this._thisManager.registerProperty(annualHourlyPayProperty);
-
-        this._thisManager.registerProperty(qualificationProperty);
+        this._thisManager.registerProperty(careCertificateProperty);
+        this._thisManager.registerProperty(apprenticeshipProperty);
+        this._thisManager.registerProperty(qualificationInSocialCareProperty);
+        this._thisManager.registerProperty(socialCareQualificationProperty);
+        this._thisManager.registerProperty(otherQualificationProperty);
+        this._thisManager.registerProperty(highestQualificationProperty);
     }
 
     get manager() {
