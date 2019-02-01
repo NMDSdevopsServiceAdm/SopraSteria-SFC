@@ -76,6 +76,17 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
     })
   }
 
+  goBack(event) {
+    event.preventDefault()
+
+    if (this.worker.mainJob.title === "Social Worker") {
+      this.router.navigate([`/worker/mental-health/${this.workerId}`])
+
+    } else {
+      this.router.navigate([`/worker/edit-staff-record/${this.workerId}`])
+    }
+  }
+
   dateFromForm() {
     const { day, month, year } = this.form.value
     const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
