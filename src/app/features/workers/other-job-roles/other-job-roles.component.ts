@@ -37,11 +37,21 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
   async submitHandler() {
     try {
       await this.saveHandler()
-      this.router.navigate([`/worker/national-insurance-number/${this.workerId}`])
+
+      if (this.isOtherJobsSocialWorker() && this.worker.mainJob.title !== "Social Worker") {
+        this.router.navigate([`/worker/mental-health/${this.workerId}`])
+
+      } else {
+        this.router.navigate([`/worker/national-insurance-number/${this.workerId}`])
+      }
 
     } catch (err) {
       // keep typescript transpiler silent
     }
+  }
+
+  private isOtherJobsSocialWorker(): boolean {
+    return this.form.value.selectedJobRoles.some(j => j.checked && j.title === "Social Worker")
   }
 
   saveHandler() {
@@ -58,17 +68,6 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
         reject()
       }
     })
-  }
-
-  goBack(event) {
-    event.preventDefault()
-
-    if (this.worker.mainJob.title === "Social Worker") {
-      this.router.navigate([`/worker/mental-health/${this.workerId}`])
-
-    } else {
-      this.router.navigate([`/worker/main-job-start-date/${this.workerId}`])
-    }
   }
 
   onChange(control) {

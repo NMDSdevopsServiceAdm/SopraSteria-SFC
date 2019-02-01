@@ -30,5 +30,12 @@ export interface Worker {
       recruitedFromId: number,
       from?: string
     }
+  },
+  countryOfBirth?: {
+    value: string,
+    other?: {
+      countryId?: number,
+      nationality?: string
+    }
   }
 }

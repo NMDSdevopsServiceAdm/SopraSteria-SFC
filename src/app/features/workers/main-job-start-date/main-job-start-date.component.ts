@@ -35,8 +35,8 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      const res = await this.saveHandler()
-      this.router.navigate([`/worker/other-job-roles/${res.uid}`])
+      await this.saveHandler()
+      this.router.navigate([`/worker/other-job-roles/${this.workerId}`])
 
     } catch (err) {
       // keep typescript transpiler silent
@@ -45,14 +45,24 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
-      const { day, month, year } = this.form.value
       this.messageService.clearError()
 
       if (this.form.valid) {
-        this.worker.mainJobStartDate = this.dateFromForm().format(DEFAULT_DATE_FORMAT)
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        let newDate: any = this.dateFromForm()
+
+        if (newDate) {
+          newDate = newDate.format(DEFAULT_DATE_FORMAT)
+        }
+
+        if (this.worker.mainJobStartDate !== newDate) {
+          this.worker.mainJobStartDate = newDate
+          this.subscriptions.push(
+            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+          )
+
+        } else {
+          resolve()
+        }
 
       } else {
         if (this.form.errors) {
@@ -90,7 +100,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
   dateFromForm() {
     const { day, month, year } = this.form.value
     const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
-    return date
+    return date.isValid() ? date : null
   }
 
   validateCross() {

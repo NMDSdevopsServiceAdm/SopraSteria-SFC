@@ -43,8 +43,8 @@ export class EthnicityComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      const res = await this.saveHandler()
-      this.router.navigate([`/worker/nationality/${res.uid}`])
+      await this.saveHandler()
+      this.router.navigate([`/worker/nationality/${this.workerId}`])
 
     } catch (err) {
       // keep typescript transpiler silent
@@ -53,14 +53,21 @@ export class EthnicityComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
+      const { ethnicity } = this.form.value
+      this.messageService.clearError()
+
       if (this.form.valid) {
-        this.worker.ethnicity = {
-          ethnicityId: parseInt(this.form.value.ethnicity)
+        const newEthnicity = ethnicity ? parseInt(ethnicity) : ethnicity
+
+        if (!this.worker.ethnicity || this.worker.ethnicity.ethnicityId !== ethnicity) {
+          this.worker.ethnicity = ethnicity ? { ethnicityId: newEthnicity } : ethnicity
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+
+        } else {
+          resolve()
         }
-        this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
 
       } else {
-        this.messageService.clearError()
         this.messageService.show("error", "Please fill the required fields.")
         reject()
       }
@@ -69,7 +76,7 @@ export class EthnicityComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      ethnicity: ["", Validators.required]
+      ethnicity: null
     })
 
     const params = this.route.snapshot.paramMap

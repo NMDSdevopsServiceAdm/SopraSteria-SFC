@@ -42,17 +42,23 @@ export class HomePostcodeComponent implements OnInit, OnDestroy {
 
   saveHandler() {
     return new Promise((resolve, reject) => {
+      const { postcode } = this.form.controls
+      this.messageService.clearError()
+
       if (this.form.valid) {
-        this.worker.postcode = this.form.value.postcode
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        if (this.worker.postcode !== postcode.value) {
+          this.worker.postcode = postcode.value
+          this.subscriptions.push(
+            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+          )
+
+        } else {
+          resolve()
+        }
 
       } else {
-        this.messageService.clearError()
-
-        if (this.form.value.postcode) {
-          this.messageService.show("error", "Invalid postcode format.")
+        if (postcode.errors.validPostcode) {
+          this.messageService.show("error", "Invalid postcode.")
 
         } else {
           this.messageService.show("error", "Please fill the required fields.")
@@ -64,12 +70,12 @@ export class HomePostcodeComponent implements OnInit, OnDestroy {
   }
 
   postcodeValidator(control: AbstractControl) {
-    return control.value && POSTCODE_PATTERN.test(control.value) ? null : { validPostcode: true }
+    return !control.value || POSTCODE_PATTERN.test(control.value) ? null : { validPostcode: true }
   }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      postcode: ["", [Validators.required, this.postcodeValidator]]
+      postcode: [null, this.postcodeValidator]
     })
 
     const params = this.route.snapshot.paramMap
@@ -80,9 +86,11 @@ export class HomePostcodeComponent implements OnInit, OnDestroy {
         this.workerService.getWorker(this.workerId).subscribe(worker => {
           this.worker = worker
 
-          this.form.patchValue({
-            postcode: worker.postcode
-          })
+          if (worker.postcode) {
+            this.form.patchValue({
+              postcode: worker.postcode
+            })
+          }
         })
       )
     }

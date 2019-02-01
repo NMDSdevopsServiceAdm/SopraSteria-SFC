@@ -49,12 +49,15 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        if (day && month && year) {
-          this.worker.dateOfBirth = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
-            .format(DEFAULT_DATE_FORMAT)
+        let newDateOfBirth = day && month && year ?
+          moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT) : null
+
+        if (this.worker.dateOfBirth !== newDateOfBirth) {
+          this.worker.dateOfBirth = newDateOfBirth
           this.subscriptions.push(
             this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
           )
+
         } else {
           resolve()
         }
@@ -75,7 +78,6 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
           } else if (this.form.errors.dateValid) {
             this.messageService.show("error", "Invalid date.")
-
           }
         }
 
@@ -86,7 +88,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
   private calculateLowestAcceptableDate() {
     const date = moment()
-    return date.year(date.year() - 100)
+    return date.year(date.year() - 100).add(1, "d")
   }
 
   private calculateHighestAcceptableDate() {

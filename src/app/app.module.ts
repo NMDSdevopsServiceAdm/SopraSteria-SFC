@@ -72,6 +72,7 @@ import { RecruitedFromComponent } from './features/workers/recruited-from/recrui
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
 import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
+import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
@@ -155,6 +156,7 @@ import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.compone
     CountryOfBirthComponent,
     BritishCitizenshipComponent,
     AutoSuggestComponent,
+    YearArrivedUkComponent,
   ],
   imports: [
     BrowserModule,

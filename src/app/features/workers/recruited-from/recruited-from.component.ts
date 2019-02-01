@@ -51,18 +51,21 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        if (recruitmentKnown.value) {
+        if (!this.worker.recruitedFrom || this.worker.recruitedFrom.value !== recruitmentKnown.value) {
           this.worker.recruitedFrom = {
             value: recruitmentKnown.value,
             from: {
               recruitedFromId: parseInt(recruitedFromId.value)
             }
           }
-        }
 
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+          this.subscriptions.push(
+            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+          )
+
+        } else {
+          resolve()
+        }
 
       } else {
         if (recruitedFromId.errors &&
@@ -73,6 +76,17 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
         reject()
       }
     })
+  }
+
+  goBack(event) {
+    event.preventDefault()
+
+    if (this.worker.countryOfBirth && this.worker.countryOfBirth.value === "United Kingdom") {
+      this.router.navigate([`/worker/country-of-birth/${this.workerId}`])
+
+    } else {
+      this.router.navigate([`/worker/year-arrived-uk/${this.workerId}`])
+    }
   }
 
   recruitmentKnownChangeHandler() {

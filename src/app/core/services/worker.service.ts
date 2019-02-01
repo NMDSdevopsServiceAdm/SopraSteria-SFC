@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core"
 import { HttpClient } from "@angular/common/http"
+import { Observable } from "rxjs"
 import { catchError, debounceTime, map } from "rxjs/operators"
 
 import { HttpErrorHandler } from "./http-error-handler.service"

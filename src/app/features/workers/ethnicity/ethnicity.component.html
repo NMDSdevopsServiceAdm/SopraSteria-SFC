@@ -1,4 +1,9 @@
 <div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a routerLink="/worker/disability/{{workerId}}">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
 
   <form novalidate
     (ngSubmit)="submitHandler()"

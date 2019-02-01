@@ -48,6 +48,7 @@ import { RecruitedFromComponent } from './features/workers/recruited-from/recrui
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
 import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
+import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -262,13 +263,8 @@ const routes: Routes = [
         canLoad: [AuthGuard]
       },
       {
-        path: 'recruited-from/:id',
-        component: RecruitedFromComponent,
-        canLoad: [AuthGuard]
-      },
-      {
-        path: 'adult-social-care-started/:id',
-        component: AdultSocialCareStartedComponent,
+        path: 'british-citizenship/:id',
+        component: BritishCitizenshipComponent,
         canLoad: [AuthGuard]
       },
       {
@@ -277,8 +273,18 @@ const routes: Routes = [
         canLoad: [AuthGuard]
       },
       {
-        path: 'british-citizenship/:id',
-        component: BritishCitizenshipComponent,
+        path: 'year-arrived-uk/:id',
+        component: YearArrivedUkComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'recruited-from/:id',
+        component: RecruitedFromComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'adult-social-care-started/:id',
+        component: AdultSocialCareStartedComponent,
         canLoad: [AuthGuard]
       },
     ]

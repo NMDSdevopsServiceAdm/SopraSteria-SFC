@@ -42,16 +42,24 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
 
   saveHandler() {
     return new Promise((resolve, reject) => {
+      this.messageService.clearError()
+      const { nin } = this.form.controls
+
       if (this.form.valid) {
-        this.worker.nationalInsuranceNumber = this.form.value.nin.toUpperCase()
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        const newNin = nin.value ? nin.value.toUpperCase() : nin.value
+
+        if (this.worker.nationalInsuranceNumber !== newNin) {
+          this.worker.nationalInsuranceNumber = newNin
+          this.subscriptions.push(
+            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+          )
+
+        } else {
+          resolve()
+        }
 
       } else {
-        this.messageService.clearError()
-
-        if (this.form.value.nin) {
+        if (nin.errors.validNin) {
           this.messageService.show("error", "Invalid National Insurance Number format.")
 
         } else {
@@ -64,12 +72,12 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
   }
 
   ninValidator(control: AbstractControl) {
-    return control.value && NIN_PATTERN.test(control.value.toUpperCase()) ? null : { validNin: true }
+    return !control.value || NIN_PATTERN.test(control.value.toUpperCase()) ? null : { validNin: true }
   }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      nin: ["", [Validators.required, this.ninValidator]]
+      nin: [null, this.ninValidator]
     })
 
     const params = this.route.snapshot.paramMap

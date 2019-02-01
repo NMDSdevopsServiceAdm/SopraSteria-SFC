@@ -31,20 +31,23 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   jobsAvailable: Job[] = []
   contractsAvailable: Array<string> = []
 
+  private worker: Worker
   private workerId: string
   private subscriptions = []
 
   private isSocialWorkerSelected(): boolean {
-    if (this.form.value.mainJob) {
-      return this.jobsAvailable.some(a => a.id === parseInt(this.form.value.mainJob) && a.title === "Social Worker")
+    const { mainJob } = this.form.value
+    if (mainJob) {
+      return this.jobsAvailable.some(a => a.id === parseInt(mainJob) && a.title === "Social Worker")
     }
 
     return false
   }
 
   private getSelectedJobTitle(): string | null {
-    if (this.form.value.mainJob) {
-      const job = this.jobsAvailable.find(j => parseInt(this.form.value.mainJob) === j.id)
+    const { mainJob } = this.form.value
+    if (mainJob) {
+      const job = this.jobsAvailable.find(j => parseInt(mainJob) === j.id)
 
       if (job) {
         return job.title
@@ -57,12 +60,13 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   async submitHandler() {
     try {
       const res = await this.saveHandler()
+      const workerId = this.workerId || res.uid
 
       if (this.isSocialWorkerSelected()) {
-        this.router.navigate([`/worker/mental-health/${res.uid}`])
+        this.router.navigate([`/worker/mental-health/${workerId}`])
 
       } else {
-        this.router.navigate([`/worker/main-job-start-date/${res.uid}`])
+        this.router.navigate([`/worker/main-job-start-date/${workerId}`])
       }
 
     } catch (err) {
@@ -76,7 +80,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        const worker = {
+        const newWorker = {
           nameOrId: nameOrId.value,
           contract: contract.value,
           mainJob: {
@@ -85,13 +89,20 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
         }
 
         if (this.workerId) {
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, worker).subscribe(resolve, reject)
-          )
+          if (this.worker.nameOrId !== newWorker.nameOrId ||
+              this.worker.contract !== newWorker.contract ||
+              this.worker.mainJob.jobId !== newWorker.mainJob.jobId) {
+            this.subscriptions.push(
+              this.workerService.updateWorker(this.workerId, newWorker).subscribe(resolve, reject)
+            )
+
+          } else {
+            resolve()
+          }
 
         } else {
           this.subscriptions.push(
-            this.workerService.createWorker(worker).subscribe(resolve, reject)
+            this.workerService.createWorker(newWorker).subscribe(resolve, reject)
           )
         }
 
@@ -126,6 +137,8 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     if (this.workerId) {
       this.subscriptions.push(
         this.workerService.getWorker(this.workerId).subscribe(worker => {
+          this.worker = worker
+
           this.form.patchValue({
             nameOrId: worker.nameOrId,
             mainJob: worker.mainJob.jobId,
