@@ -112,6 +112,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
           return date.isBetween(noBefore, noAfter, "d", "[]") ? null : { dateBetween: true }
         }
       }
+    }
 
     return null
   }
