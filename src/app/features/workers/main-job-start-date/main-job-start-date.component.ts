@@ -24,7 +24,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
     private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this)
-    this.validateAgainstDateOfBirth = this.validateAgainstDateOfBirth.bind(this)
+    this.validateCross = this.validateCross.bind(this)
   }
 
   form: FormGroup
@@ -82,9 +82,9 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
     return date
   }
 
-  validateAgainstDateOfBirth() {
+  validateCross() {
     if (this.form && this.worker.dateOfBirth) {
-      // TODO cross validation
+      // TODO cross validation against DOB and year-of-arrival
     //   const jobStartDate = this.dateFromForm()
     //   const validDateToStartWork =
     //     moment(this.worker.dateOfBirth, DEFAULT_DATE_FORMAT).add(14, "y")
@@ -121,13 +121,10 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
             })
           }
 
-          this.form.setValidators(
-            Validators.compose([
-              this.form.validator,
-              DateValidator.datePastOrToday(),
-              this.validateAgainstDateOfBirth
-            ])
-          )
+          this.form.setValidators([
+            DateValidator.datePastOrToday(),
+            this.validateCross
+          ])
         })
       )
     }
