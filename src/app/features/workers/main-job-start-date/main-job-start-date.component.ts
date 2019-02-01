@@ -57,7 +57,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
       } else {
         if (this.form.errors) {
           if (this.form.errors.required) {
-            this.messageService.show("error", "Please fill the required fields.")
+            this.messageService.show("error", "Please fill required fields.")
 
           } else if (this.form.errors.dateValid) {
             this.messageService.show("error", "Invalid date.")
@@ -99,9 +99,9 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      day: [null, Validators.required],
-      month: [null, Validators.required],
-      year: [null, Validators.required]
+      day: null,
+      month: null,
+      year: null,
     })
 
     const params = this.route.snapshot.paramMap
@@ -121,10 +121,13 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
             })
           }
 
-          this.form.setValidators([
-            DateValidator.datePastOrToday(),
-            this.validateCross
-          ])
+          this.form.setValidators(
+            Validators.compose([
+              this.form.validator,
+              DateValidator.datePastOrToday(),
+              this.validateCross
+            ])
+          )
         })
       )
     }

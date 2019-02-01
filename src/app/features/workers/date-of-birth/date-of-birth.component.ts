@@ -142,6 +142,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
           this.form.setValidators(
             Validators.compose([
+              this.form.validator,
               DateValidator.dateValid(),
               this.formValidator
             ])
