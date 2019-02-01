@@ -56,17 +56,19 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
 
       } else {
         if (this.form.errors) {
-          if (this.form.errors.dateValid) {
+          if (this.form.errors.required) {
+            this.messageService.show("error", "Please fill the required fields.")
+
+          } else if (this.form.errors.dateValid) {
             this.messageService.show("error", "Invalid date.")
 
-          } else if (this.form.errors.dateAgainstDob) {
-            this.messageService.show("error", "The date can't be too near the Date Of Birth.")
+            // TODO cross validation
+          // } else if (this.form.errors.dateAgainstDob) {
+          //   this.messageService.show("error", "The date can't be too near the Date Of Birth.")
 
           } else if (this.form.errors.dateInPast) {
             this.messageService.show("error", "The date can't be in the future.")
           }
-        } else {
-          this.messageService.show("error", "Please fill the required fields.")
         }
 
         reject()
@@ -82,13 +84,14 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
 
   validateAgainstDateOfBirth() {
     if (this.form && this.worker.dateOfBirth) {
-      const jobStartDate = this.dateFromForm()
-      const validDateToStartWork =
-        moment(this.worker.dateOfBirth, DEFAULT_DATE_FORMAT).add(14, "y")
+      // TODO cross validation
+    //   const jobStartDate = this.dateFromForm()
+    //   const validDateToStartWork =
+    //     moment(this.worker.dateOfBirth, DEFAULT_DATE_FORMAT).add(14, "y")
 
-      if (jobStartDate.isBefore(validDateToStartWork)) {
-        return { dateAgainstDob: true }
-      }
+    //   if (jobStartDate.isBefore(validDateToStartWork)) {
+    //     return { dateAgainstDob: true }
+    //   }
     }
 
     return null

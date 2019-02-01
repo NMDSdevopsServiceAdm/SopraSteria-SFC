@@ -7,6 +7,7 @@ import { DEFAULT_DATE_FORMAT, DEFAULT_DATE_DISPLAY_FORMAT } from "../../../core/
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
 import { Worker } from "../../../core/model/worker.model"
+import { DateValidator } from "../../../core/validators/date.validator"
 
 
 @Component({
@@ -61,18 +62,21 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       } else {
         if (this.form.errors) {
           if (this.form.errors.required) {
-            this.messageService.show("error", "All fields are required.")
-
-          } else if (this.form.errors.includes.dateValid) {
-            this.messageService.show("error", "Invalid date format.")
+            this.messageService.show("error", "Please fill required fields.")
 
           } else if (this.form.errors.dateBetween) {
             const noBefore = this.calculateLowestAcceptableDate()
             const noAfter = this.calculateHighestAcceptableDate()
             this.messageService.show("error", `The date has to be between ${noBefore.format(DEFAULT_DATE_DISPLAY_FORMAT)} and ${noAfter.format(DEFAULT_DATE_DISPLAY_FORMAT)}.`)
+
+            // TODO cross validation
+            // } else if (this.form.errors.dateAgainstDob) {
+            //   this.messageService.show("error", "error.")
+
+          } else if (this.form.errors.dateValid) {
+            this.messageService.show("error", "Invalid date.")
+
           }
-        } else {
-          this.messageService.show("error", "Please fill the required fields.")
         }
 
         reject()
@@ -91,24 +95,25 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
   }
 
   formValidator(formGroup: FormGroup): ValidationErrors {
-    if (!this.form) {
-      return null
-    }
+    if (this.form) {
+      const { day, month, year } = this.form.value
 
-    const { day, month, year } = this.form.value
-
-    if (day && month && year) {
-      const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
-
-      if (date.isValid()) {
-        const noBefore = this.calculateLowestAcceptableDate()
-        const noAfter = this.calculateHighestAcceptableDate()
-        return date.isBetween(noBefore, noAfter, "d", "[]") ? null : { dateBetween: true }
+      if (day && month && year) {
+        const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
+        if (date.isValid()) {
+          // TODO cross validation
+          // const mainJobStartDateValid =
+          //   moment(this.worker.mainJobStartDate, DEFAULT_DATE_FORMAT).subtract(14, "y")
+          // if (date.isAfter(mainJobStartDateValid)) {
+          //   return { dateAgainstDob: true }
+          // }
+          const noBefore = this.calculateLowestAcceptableDate()
+          const noAfter = this.calculateHighestAcceptableDate()
+          return date.isBetween(noBefore, noAfter, "d", "[]") ? null : { dateBetween: true }
+        }
       }
 
-    } else {
-      return [day, month, year].every(v => !v) ? null : { required: true }
-    }
+    return null
   }
 
   ngOnInit() {
@@ -137,7 +142,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
           this.form.setValidators(
             Validators.compose([
-              DateValidator.dateValid(this.form),
+              DateValidator.dateValid(),
               this.formValidator
             ])
           )

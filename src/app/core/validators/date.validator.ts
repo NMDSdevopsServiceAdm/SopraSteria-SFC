@@ -9,8 +9,11 @@ export abstract class DateValidator {
     return (formGroup: FormGroup): {[key: string]: any} | null => {
       const { day, month, year } = formGroup.value
 
-      if (day === undefined && month === undefined && year === undefined) {
+      if (!day && !month && !year) {
         return null
+
+      } else if ([day, month, year].some(v => !v)) {
+        return { required: true }
       }
 
       return moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT).isValid() ?
@@ -22,7 +25,7 @@ export abstract class DateValidator {
     return (formGroup: FormGroup): {[key: string]: any} | null => {
       const { day, month, year } = formGroup.value
 
-      if (day === undefined || month === undefined || year === undefined) {
+      if (!day || !month || !year) {
         return null
       }
 
