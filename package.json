@@ -35,6 +35,8 @@
     "jsonwebtoken": "^8.4.0",
     "morgan": "^1.9.1",
     "ngx-bootstrap": "^3.0.1",
+    "node_contrast": "file:node-contrast.tgz",
+    "nodemon": "^1.18.9",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "pg": "^7.7.1",
@@ -45,6 +47,7 @@
     "sequelize": "^4.41.2",
     "serve-favicon": "^2.5.0",
     "uuid": "^3.3.2",
+    "xss-clean": "^0.1.1",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
