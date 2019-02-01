@@ -1,23 +1,23 @@
-// the Social Care Qualification (property is a type being Qualification Id and Level
+// the Highest Qualification property is a type being Qualification Id and Level
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 // database models
 const models = require('../../../index');
 
-exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificationProperty extends ChangePropertyPrototype {
+exports.WorkerHighestQualificationProperty = class WorkerHighestQualificationProperty extends ChangePropertyPrototype {
     constructor() {
-        super('SocialCareQualification', 'SocialCareQualificationFk');
+        super('HighestQualification', 'HighestQualificationFk');
     }
 
     static clone() {
-        return new WorkerSocialCareQualificationProperty();
+        return new WorkerHighestQualificationProperty();
     }
 
     // concrete implementations
     async restoreFromJson(document) {
         // TODO: it's a little more than assuming the JSON representation
-        if (document.socialCareQualification) {
-            const validatedQualification = await this._validateQualification(document.socialCareQualification);
+        if (document.highestQualification) {
+            const validatedQualification = await this._validateQualification(document.highestQualification);
             if (validatedQualification) {
                 this.property = validatedQualification;
             } else {
@@ -26,16 +26,16 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
         }
     }
     restorePropertyFromSequelize(document) {
-        if (document.socialCareQualification) {
+        if (document.highestQualification) {
             return {
-                qualificationId: document.socialCareQualification.id,
-                title: document.socialCareQualification.level
+                qualificationId: document.highestQualification.id,
+                title: document.highestQualification.level
             };
         }
     }
     savePropertyToSequelize() {
         return {
-            SocialCareQualificationFkValue: this.property.qualificationId
+            HighestQualificationFkValue: this.property.qualificationId
         };
     }
 
@@ -48,12 +48,12 @@ exports.WorkerSocialCareQualificationProperty = class WorkerSocialCareQualificat
         if (!withHistory) {
             // simple form
             return {
-                socialCareQualification: this.property
+                highestQualification: this.property
             };
         }
         
         return {
-            socialCareQualification : {
+            highestQualification : {
                 currentValue: this.property,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
