@@ -1,23 +1,23 @@
-// the Qualification (highest) property is a type being Qualification Id and Level
+// the Highest Qualification property is a type being Qualification Id and Level
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 // database models
 const models = require('../../../index');
 
-exports.WorkerQualificationProperty = class WorkerQualificationProperty extends ChangePropertyPrototype {
+exports.WorkerHighestQualificationProperty = class WorkerHighestQualificationProperty extends ChangePropertyPrototype {
     constructor() {
-        super('Qualification', 'QualificationFk');
+        super('HighestQualification', 'HighestQualificationFk');
     }
 
     static clone() {
-        return new WorkerQualificationProperty();
+        return new WorkerHighestQualificationProperty();
     }
 
     // concrete implementations
     async restoreFromJson(document) {
         // TODO: it's a little more than assuming the JSON representation
-        if (document.qualification) {
-            const validatedQualification = await this._validateQualification(document.qualification);
+        if (document.highestQualification) {
+            const validatedQualification = await this._validateQualification(document.highestQualification);
             if (validatedQualification) {
                 this.property = validatedQualification;
             } else {
@@ -26,16 +26,16 @@ exports.WorkerQualificationProperty = class WorkerQualificationProperty extends 
         }
     }
     restorePropertyFromSequelize(document) {
-        if (document.qualification) {
+        if (document.highestQualification) {
             return {
-                qualificationId: document.qualification.id,
-                title: document.qualification.level
+                qualificationId: document.highestQualification.id,
+                title: document.highestQualification.level
             };
         }
     }
     savePropertyToSequelize() {
         return {
-            QualificationFkValue: this.property.qualificationId
+            HighestQualificationFkValue: this.property.qualificationId
         };
     }
 
@@ -48,12 +48,12 @@ exports.WorkerQualificationProperty = class WorkerQualificationProperty extends 
         if (!withHistory) {
             // simple form
             return {
-                qualification: this.property
+                highestQualification: this.property
             };
         }
         
         return {
-            qualification : {
+            highestQualification : {
                 currentValue: this.property,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }

@@ -345,7 +345,12 @@ class Worker {
                     },
                     {
                         model: models.qualification,
-                        as: 'qualification',
+                        as: 'socialCareQualification',
+                        attributes: ['id', 'level']
+                    },
+                    {
+                        model: models.qualification,
+                        as: 'highestQualification',
                         attributes: ['id', 'level']
                     },
                     {

@@ -55,7 +55,7 @@ exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedP
         };
 
         if (document.WeeklyHoursContractedValue === 'Yes') {
-            hoursDocument.hours = document.WeeklyHoursContractedHours;
+            hoursDocument.hours = parseFloat(document.WeeklyHoursContractedHours);
         }
         return hoursDocument;
     }
@@ -77,7 +77,7 @@ exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedP
             hoursEqual = true;
         }
 
-        return currentValue && newValue && currentValue === newValue && hoursEqual;
+        return currentValue && newValue && currentValue.value === newValue.value && hoursEqual;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {

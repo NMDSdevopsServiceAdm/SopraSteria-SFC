@@ -55,7 +55,7 @@ exports.WorkerDaysSickProperty = class WorkerDaysSickProperty extends ChangeProp
         };
 
         if (document.DaysSickValue === 'Yes') {
-            daysSickDocument.year = document.DaysSickDays;
+            daysSickDocument.days = parseFloat(document.DaysSickDays);
         }
         return daysSickDocument;
     }
