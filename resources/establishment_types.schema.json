@@ -1122,7 +1122,7 @@
                     "description" : "Whether the worker is on an apprenticeship",
                     "$ref" : "#/definitions/WorkerApprenticeshipTraining"
                 },
-                "hasSocialCareQualification" : {
+                "qualificationInSocialCare" : {
                     "description" : "Whether the worker has a social care specific qualification",
                     "$ref" : "#/definitions/WorkerSocialCareQualification"
                 },
@@ -1136,7 +1136,7 @@
                     },
                     "required" : ["value"]
                 },
-                "hasOtherQualification" : {
+                "otherQualification" : {
                     "description" : "Whether the worker has any other (non social care specific) qualification",
                     "$ref" : "#/definitions/WorkingPayRate"
                 },

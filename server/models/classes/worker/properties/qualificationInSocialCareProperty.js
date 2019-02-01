@@ -1,21 +1,21 @@
-// the apprenticeship training property is an enumeration
+// the Qualificatoin In Social Care property is an enumeration
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
-const APPRENTICESHIP_TYPE = ['Yes', 'No', 'Don\'t know'];
-exports.WorkerApprenticeshipTrainingProperty = class WorkerApprenticeshipTrainingProperty extends ChangePropertyPrototype {
+const SOCIAL_CARE_QUALIFICATION_TYPE = ['Yes', 'No', 'Don\'t know'];
+exports.WorkerQualificationInSocialCareProperty = class WorkerQualificationInSocialCareProperty extends ChangePropertyPrototype {
     constructor() {
-        super('ApprenticeshipTraining');
+        super('QualificationInSocialCare');
     }
 
     static clone() {
-        return new WorkerApprenticeshipTrainingProperty();
+        return new WorkerQualificationInSocialCareProperty();
     }
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.apprenticeshipTraining) {
-            if (APPRENTICESHIP_TYPE.includes(document.apprenticeshipTraining)) {
-                this.property = document.apprenticeshipTraining;
+        if (document.qualificationInSocialCare) {
+            if (SOCIAL_CARE_QUALIFICATION_TYPE.includes(document.qualificationInSocialCare)) {
+                this.property = document.qualificationInSocialCare;
             } else {
                this.property = null;
             }
@@ -23,16 +23,15 @@ exports.WorkerApprenticeshipTrainingProperty = class WorkerApprenticeshipTrainin
     }
 
     restorePropertyFromSequelize(document) {
-        return document.ApprenticeshipTrainingValue;
+        return document.QualificationInSocialCareValue;
     }
     savePropertyToSequelize() {
         return {
-            ApprenticeshipTrainingValue: this.property
+            QualificationInSocialCareValue: this.property
         };
     }
 
     isEqual(currentValue, newValue) {
-        // Apprenticeship Training is a simple (enum'd) string
         return currentValue && newValue && currentValue === newValue;
     }
 
@@ -40,12 +39,12 @@ exports.WorkerApprenticeshipTrainingProperty = class WorkerApprenticeshipTrainin
         if (!withHistory) {
             // simple form
             return {
-                apprenticeshipTraining: this.property
+                qualificationInSocialCare: this.property
             };
         }
         
         return {
-            apprenticeshipTraining : {
+            qualificationInSocialCare : {
                 currentValue: this.property,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
