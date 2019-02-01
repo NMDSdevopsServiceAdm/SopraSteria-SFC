@@ -7,7 +7,6 @@ import { DEFAULT_DATE_FORMAT, DEFAULT_DATE_DISPLAY_FORMAT } from "../../../core/
 import { MessageService } from "../../../core/services/message.service"
 import { WorkerService, WorkerEditResponse } from "../../../core/services/worker.service"
 import { Worker } from "../../../core/model/worker.model"
-import { DateValidator } from "../../../core/validators/date.validator"
 
 
 @Component({
@@ -60,13 +59,20 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
         }
 
       } else {
-        if (this.form.errors && this.form.errors.required) {
-          this.messageService.show("error", "All fields are required.")
+        if (this.form.errors) {
+          if (this.form.errors.required) {
+            this.messageService.show("error", "All fields are required.")
 
-        } else if (day && month && year) {
-          const noBefore = this.calculateLowestAcceptableDate()
-          const noAfter = this.calculateHighestAcceptableDate()
-          this.messageService.show("error", `The date has to be between ${noBefore.format(DEFAULT_DATE_DISPLAY_FORMAT)} and ${noAfter.format(DEFAULT_DATE_DISPLAY_FORMAT)}.`)
+          } else if (this.form.errors.includes.dateValid) {
+            this.messageService.show("error", "Invalid date format.")
+
+          } else if (this.form.errors.dateBetween) {
+            const noBefore = this.calculateLowestAcceptableDate()
+            const noAfter = this.calculateHighestAcceptableDate()
+            this.messageService.show("error", `The date has to be between ${noBefore.format(DEFAULT_DATE_DISPLAY_FORMAT)} and ${noAfter.format(DEFAULT_DATE_DISPLAY_FORMAT)}.`)
+          }
+        } else {
+          this.messageService.show("error", "Please fill the required fields.")
         }
 
         reject()
@@ -84,7 +90,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
     return date.year(date.year() - 14)
   }
 
-  formValidator(control: AbstractControl): ValidationErrors {
+  formValidator(formGroup: FormGroup): ValidationErrors {
     if (!this.form) {
       return null
     }
@@ -97,13 +103,8 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       if (date.isValid()) {
         const noBefore = this.calculateLowestAcceptableDate()
         const noAfter = this.calculateHighestAcceptableDate()
-
-        if (date.isBetween(noBefore, noAfter, "day", "[]")) {
-          return null
-        }
+        return date.isBetween(noBefore, noAfter, "d", "[]") ? null : { dateBetween: true }
       }
-
-      return { dateBetweenValidator: true }
 
     } else {
       return [day, month, year].every(v => !v) ? null : { required: true }
@@ -134,12 +135,12 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
             })
           }
 
-          const formValidators = [
-            DateValidator.dateValid(this.form),
-            this.formValidator
-          ]
-
-          this.form.setValidators(formValidators)
+          this.form.setValidators(
+            Validators.compose([
+              DateValidator.dateValid(this.form),
+              this.formValidator
+            ])
+          )
         })
       )
     }

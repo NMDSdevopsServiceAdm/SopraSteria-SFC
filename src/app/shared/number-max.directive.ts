@@ -20,7 +20,8 @@ export class NumberMax extends BaseNumber {
       return
     }
 
-    if (!this.isKeyCodeSpecial(keyCode)) {
+    if ((isFinite(parseInt(key)) && !this.isSelectionTypeRange()) ||
+        this.isKeyCodeIncrement(keyCode)) {
       const curVal = this.el.nativeElement.value
       const curValNum = parseFloat(curVal)
       const nextVal = `${isNaN(curVal) ? "" : curVal}${key}`
