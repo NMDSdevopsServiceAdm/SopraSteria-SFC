@@ -72,8 +72,8 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
             value: document.AnnualHourlyPayValue
         };
 
-        if (document.AnnualHourlyPayRate !== "Don't know") {
-            payDocument.rate = document.AnnualHourlyPayRate;
+        if (document.AnnualHourlyPayValue !== "Don't know") {
+            payDocument.rate = parseFloat(document.AnnualHourlyPayRate);
         }
         
         return payDocument;
