@@ -60,6 +60,17 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
     })
   }
 
+  goBack(event) {
+    event.preventDefault()
+
+    if (this.worker.mainJob.title === "Social Worker") {
+      this.router.navigate([`/worker/mental-health/${this.workerId}`])
+
+    } else {
+      this.router.navigate([`/worker/main-job-start-date/${this.workerId}`])
+    }
+  }
+
   onChange(control) {
     control.value.checked = !control.value.checked
   }
