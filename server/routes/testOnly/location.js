@@ -6,6 +6,10 @@ const models = require('../../models');
 //  if passing the limit parameter can vary the set size (defaults to 100)
 router.route('/random').get(async (req, res) => {
   const setSize = req.query.limit ? req.query.limit : 10;
+  const sanitizeSize = req.sanitize(req.query.limit);
+
+  console.log("WA DEBUG : set size: ", setSize);
+  console.log("WA DEBUG : sanitized size: ", sanitizeSize);
 
   try {
     let results = await models.location.findAll({

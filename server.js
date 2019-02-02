@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var helmet = require('helmet');
 var xssClean = require('xss-clean');
+var sanitizer = require('express-sanitizer');
 var cacheMiddleware = require('./server/utils/middleware/noCache');
 
 var routes = require('./server/routes/index');
@@ -48,7 +49,7 @@ app.use('/api', helmet({
     }
 }));
 
-app.use(xssClean);
+app.use(xssClean());
 /*  
  * end security
  */
@@ -62,6 +63,9 @@ app.use(favicon(path.join(__dirname, 'dist/favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(sanitizer());       // used as demonstration on test routes only
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 

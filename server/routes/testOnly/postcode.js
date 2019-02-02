@@ -5,7 +5,7 @@ const models = require('../../models');
 // returns a random set of addresses from the postcode dataset
 //  if passing the limit parameter can vary the set size (defaults to 100)
 router.route('/random').get(async (req, res) => {
-  const setSize = req.query.limit ? req.query.limit : 100;
+  const setSize = req.sanitize(req.query.limit) ? req.sanitize(req.query.limit) : 100;
 
   try {
     let results = await models.pcodedata.findAll({
