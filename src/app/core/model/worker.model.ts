@@ -32,11 +32,12 @@ export interface Worker {
       from?: string
     }
   },
+  britishCitizenship?: string,
   countryOfBirth?: {
     value: string,
     other?: {
       countryId?: number,
       nationality?: string
     }
-  }
+  },
 }
