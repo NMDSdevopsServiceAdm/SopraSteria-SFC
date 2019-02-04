@@ -1,5 +1,14 @@
 applications:
-- name: sfcuat
+- name: sfclab
   memory: 1G
   disk_quota: 1GB
+  command: npm run contrast
   buildpack: nodejs_buildpack
+  env:
+    CONTRAST__ORG_ID: 383500ab-6ac3-4f2f-a654-446c17128276
+    CONTRAST__BASEURL: https://eval.contrastsecurity.com/Contrast/api/ng/$CONTRAST__ORG_ID
+    CONTRAST__API_KEY: xfFhonYE0172F7AozbdA98a5TIaGEIMd
+    CONTRAST__AUTHORIZATION: bmFzaXIubXVoYW1tYWRAZXh0LnNvcHJhc3RlcmlhLmNvbTpGTFZYT0Q5RVFJSUZYSUpY
+    AGENT__AUTO_UPDATE: false
+    AGENT__LOGGER__LEVEL: info
+    SERVER__NAME: sfclab

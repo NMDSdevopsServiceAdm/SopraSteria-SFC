@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "concurrently --kill-others \"ng build --watch --no-delete-output-path\" \"node server.js\"",
+    "postinstall": "/bin/bash resources/download-contrast.sh && npm install node-contrast.tgz",
+    "contrast": "node-contrast server.js",
+    "start": "concurrently --kill-others \"ng build --watch --no-delete-output-path\" \"npm run contrast\"",
     "build": "ng build",
     "build:clean": "rimraf dist",
     "build:prod": "npm run build:clean && ng build --prod",
