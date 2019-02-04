@@ -37,7 +37,7 @@ export interface Worker {
     value: string,
     other?: {
       countryId?: number,
-      nationality?: string
+      country?: string
     }
   },
 }
