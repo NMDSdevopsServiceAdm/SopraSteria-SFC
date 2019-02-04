@@ -61,9 +61,7 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         this.worker.otherJobs = selectedJobRoles.filter(j => j.checked).map(j => ({ jobId: j.jobId }))
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
 
       } else {
         reject()

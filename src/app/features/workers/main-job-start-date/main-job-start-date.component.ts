@@ -49,14 +49,8 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         let newDate: any = this.dateFromForm()
-
-        if (newDate) {
-          this.worker.mainJobStartDate = newDate.format(DEFAULT_DATE_FORMAT)
-        }
-
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        this.worker.mainJobStartDate = newDate ? newDate.format(DEFAULT_DATE_FORMAT) : null
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
 
       } else {
         if (this.form.errors) {

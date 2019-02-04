@@ -2,6 +2,7 @@ import { Contracts } from "../constants/contracts.enum"
 import { Job } from "./job.model"
 
 export interface Worker {
+  uid?: string,
   nameOrId: string
   contract: Contracts
   mainJob: Job

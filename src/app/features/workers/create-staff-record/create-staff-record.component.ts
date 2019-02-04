@@ -80,31 +80,22 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        const newWorker = {
-          nameOrId: nameOrId.value,
-          contract: contract.value,
-          mainJob: {
-            jobId: parseInt(mainJob.value)
+        const worker = this.worker || {}
+        worker.nameOrId = nameOrId.value
+        worker.contract = contract.value
+        worker.mainJob = {
+          jobId: parseInt(mainJob.value)
+        }
+
+        if (worker.otherJobs) {
+          const index  = worker.otherJobs.findIndex(j => j.jobId === worker.mainJob.jobId)
+
+          if (index !== -1) {
+            worker.otherJobs.splice(index, 1)
           }
         }
 
-        if (this.workerId) {
-          if (this.worker.nameOrId !== newWorker.nameOrId ||
-              this.worker.contract !== newWorker.contract ||
-              this.worker.mainJob.jobId !== newWorker.mainJob.jobId) {
-            this.subscriptions.push(
-              this.workerService.updateWorker(this.workerId, newWorker).subscribe(resolve, reject)
-            )
-
-          } else {
-            resolve()
-          }
-
-        } else {
-          this.subscriptions.push(
-            this.workerService.createWorker(newWorker).subscribe(resolve, reject)
-          )
-        }
+        this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject))
 
       } else {
         if (nameOrId.errors && nameOrId.errors.required) {

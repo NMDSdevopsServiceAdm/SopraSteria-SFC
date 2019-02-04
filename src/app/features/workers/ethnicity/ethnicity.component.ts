@@ -58,7 +58,7 @@ export class EthnicityComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         this.worker.ethnicity = ethnicity ? { ethnicityId: parseInt(ethnicity) } : null
-        this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+        this.workerService.setWorker(this.worker).subscribe(resolve, reject)
 
       } else {
         this.messageService.show("error", "Please fill the required fields.")

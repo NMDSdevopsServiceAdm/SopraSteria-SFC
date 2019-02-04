@@ -60,9 +60,7 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
 
       } else {
         if (recruitedFromId.errors &&

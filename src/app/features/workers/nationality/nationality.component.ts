@@ -67,9 +67,7 @@ export class NationalityComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
 
       } else {
         if (nationalityName.errors) {
@@ -91,7 +89,7 @@ export class NationalityComponent implements OnInit, OnDestroy {
   }
 
   nationalityNameValidator() {
-    if (this.form) {
+    if (this.form && this.availableOtherNationalities) {
       const { nationalityKnown } = this.form.value
       const nationalityName = this.form.controls.nationalityName.value
 
@@ -113,7 +111,7 @@ export class NationalityComponent implements OnInit, OnDestroy {
   nationalityNameFilter(): string[] {
     const { nationalityName } = this.form.value
 
-    if (nationalityName && nationalityName.length) {
+    if (this.availableOtherNationalities && nationalityName && nationalityName.length) {
       const nationalityNameLowerCase = nationalityName.toLowerCase()
       return this.availableOtherNationalities
         .filter(n => n.nationality.toLowerCase().startsWith(nationalityNameLowerCase))

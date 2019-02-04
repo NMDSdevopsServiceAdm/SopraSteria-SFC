@@ -52,9 +52,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
         let newDateOfBirth = day && month && year ?
           moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT) : null
         this.worker.dateOfBirth = newDateOfBirth
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
 
       } else {
         if (this.form.errors) {
