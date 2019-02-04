@@ -88,10 +88,15 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
           this.subscriptions.push(
             this.workerService.getWorker(this.workerId).subscribe(worker => {
               this.worker = worker
+              let jobs = null
+              const mainJobIndex = availableJobRoles.findIndex(j => j.id === worker.mainJob.jobId)
+              const availableJobRolesFiltered = availableJobRoles.slice(0)
+              availableJobRolesFiltered.splice(mainJobIndex, 1)
 
-              const jobs = worker.otherJobs ?
-                availableJobRoles.map(j => this.formBuilder.control({jobId: j.id, title: j.title, checked: worker.otherJobs.some(o => o.jobId === j.id)})) :
-                availableJobRoles.map(j => this.formBuilder.control({jobId: j.id, title: j.title, checked: false}))
+              jobs = worker.otherJobs ?
+                availableJobRolesFiltered.map(j => this.formBuilder.control({jobId: j.id, title: j.title, checked: worker.otherJobs.some(o => o.jobId === j.id)})) :
+                availableJobRolesFiltered.map(j => this.formBuilder.control({jobId: j.id, title: j.title, checked: false}))
+
               jobs.forEach(j => (this.form.controls.selectedJobRoles as FormArray).push(j))
             })
           )
