@@ -51,16 +51,10 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       if (this.form.valid) {
         let newDateOfBirth = day && month && year ?
           moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT) : null
-
-        if (this.worker.dateOfBirth !== newDateOfBirth) {
-          this.worker.dateOfBirth = newDateOfBirth
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-          )
-
-        } else {
-          resolve()
-        }
+        this.worker.dateOfBirth = newDateOfBirth
+        this.subscriptions.push(
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+        )
 
       } else {
         if (this.form.errors) {

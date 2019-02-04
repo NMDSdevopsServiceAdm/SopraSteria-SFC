@@ -46,15 +46,10 @@ export class DisabilityComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        if (this.worker.disability !== disability) {
-          this.worker.disability = disability
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-          )
-
-        } else {
-          resolve()
-        }
+        this.worker.disability = disability
+        this.subscriptions.push(
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+        )
 
       } else {
         this.messageService.show("error", "Please fill the required fields.")

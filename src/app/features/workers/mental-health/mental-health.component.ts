@@ -57,15 +57,13 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        if (this.worker.approvedMentalHealthWorker !== approvedMentalHealthWorker) {
+        if (approvedMentalHealthWorker) {
           this.worker.approvedMentalHealthWorker = approvedMentalHealthWorker
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-          )
-
-        } else {
-          resolve()
         }
+
+        this.subscriptions.push(
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+        )
 
       } else {
         this.messageService.show("error", "Please fill required fields.")

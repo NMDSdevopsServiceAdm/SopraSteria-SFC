@@ -51,21 +51,18 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        if (!this.worker.recruitedFrom || this.worker.recruitedFrom.value !== recruitmentKnown.value) {
+        if (recruitmentKnown.value) {
           this.worker.recruitedFrom = {
             value: recruitmentKnown.value,
             from: {
               recruitedFromId: parseInt(recruitedFromId.value)
             }
           }
-
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-          )
-
-        } else {
-          resolve()
         }
+
+        this.subscriptions.push(
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+        )
 
       } else {
         if (recruitedFromId.errors &&

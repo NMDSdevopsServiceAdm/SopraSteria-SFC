@@ -46,15 +46,11 @@ export class HomePostcodeComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        if (this.worker.postcode !== postcode.value) {
           this.worker.postcode = postcode.value
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-          )
 
-        } else {
-          resolve()
-        }
+        this.subscriptions.push(
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+        )
 
       } else {
         if (postcode.errors.validPostcode) {

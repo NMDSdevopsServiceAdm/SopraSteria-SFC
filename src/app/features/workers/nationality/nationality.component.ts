@@ -57,23 +57,19 @@ export class NationalityComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        if (!this.worker.nationality || this.worker.nationality.value !== nationalityKnown.value ||
-            (this.worker.nationality.other && this.worker.nationality.other.nationality !== nationalityName.value)) {
-          this.worker.nationality = nationalityKnown.value ? { value: nationalityKnown.value } : nationalityKnown.value
+        if (nationalityKnown.value) {
+          this.worker.nationality = { value: nationalityKnown.value }
 
           if (nationalityName.value) {
             this.worker.nationality.other = {
               nationality: `${nationalityName.value.charAt(0).toUpperCase()}${nationalityName.value.slice(1)}`
             }
           }
-
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-          )
-
-        } else {
-          resolve()
         }
+
+        this.subscriptions.push(
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+        )
 
       } else {
         if (nationalityName.errors) {

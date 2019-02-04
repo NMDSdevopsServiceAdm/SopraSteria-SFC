@@ -47,15 +47,11 @@ export class GenderComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        if (this.worker.gender !== gender) {
-          this.worker.gender = gender
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-          )
+        this.worker.gender = gender
 
-        } else {
-          resolve()
-        }
+        this.subscriptions.push(
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+        )
 
       } else {
         this.messageService.show("error", "Please fill required fields.")

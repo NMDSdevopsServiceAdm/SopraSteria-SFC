@@ -57,15 +57,8 @@ export class EthnicityComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        const newEthnicity = ethnicity ? parseInt(ethnicity) : ethnicity
-
-        if (!this.worker.ethnicity || this.worker.ethnicity.ethnicityId !== ethnicity) {
-          this.worker.ethnicity = ethnicity ? { ethnicityId: newEthnicity } : ethnicity
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-
-        } else {
-          resolve()
-        }
+        this.worker.ethnicity = ethnicity ? { ethnicityId: parseInt(ethnicity) } : null
+        this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
 
       } else {
         this.messageService.show("error", "Please fill the required fields.")

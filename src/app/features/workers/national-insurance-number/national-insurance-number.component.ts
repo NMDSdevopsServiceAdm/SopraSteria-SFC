@@ -46,17 +46,13 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
       const { nin } = this.form.controls
 
       if (this.form.valid) {
-        const newNin = nin.value ? nin.value.toUpperCase() : nin.value
-
-        if (this.worker.nationalInsuranceNumber !== newNin) {
-          this.worker.nationalInsuranceNumber = newNin
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-          )
-
-        } else {
-          resolve()
+        if (nin.value) {
+          this.worker.nationalInsuranceNumber = nin.value.toUpperCase()
         }
+
+        this.subscriptions.push(
+          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
+        )
 
       } else {
         if (nin.errors.validNin) {
