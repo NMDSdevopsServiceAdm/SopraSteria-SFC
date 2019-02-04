@@ -80,7 +80,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        const worker = this.worker || {}
+        const worker = this.worker || {} as Worker
         worker.nameOrId = nameOrId.value
         worker.contract = contract.value
         worker.mainJob = {
