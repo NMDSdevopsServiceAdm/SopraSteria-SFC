@@ -70,9 +70,7 @@ router.route('/:workerId').get(async (req, res) => {
             `Failed to retrieve worker with uid: ${workerId}`);
 
         console.error('worker::GET/:workerId - failed', thisError.message);
-        //return res.status(503).send(thisError.safe);
-        return res.status(503).send(err);
-
+        return res.status(503).send(thisError.safe);
     }
 });
 
