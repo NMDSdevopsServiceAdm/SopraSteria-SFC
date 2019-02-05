@@ -49,6 +49,7 @@ import { AdultSocialCareStartedComponent } from './features/workers/adult-social
 import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
+import { DaysOfSicknessComponent } from './features/workers/days-of-sickness/days-of-sickness.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -285,6 +286,11 @@ const routes: Routes = [
       {
         path: 'adult-social-care-started/:id',
         component: AdultSocialCareStartedComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'days-of-sickness/:id',
+        component: DaysOfSicknessComponent,
         canLoad: [AuthGuard]
       },
     ]
