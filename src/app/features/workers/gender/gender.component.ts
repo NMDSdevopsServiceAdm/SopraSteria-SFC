@@ -43,15 +43,15 @@ export class GenderComponent implements OnInit, OnDestroy {
 
   saveHandler() {
     return new Promise((resolve, reject) => {
+      const { gender } = this.form.value
+      this.messageService.clearError()
+
       if (this.form.valid) {
-        this.worker.gender = this.form.value.gender
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        this.worker.gender = gender
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
 
       } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
+        this.messageService.show("error", "Please fill required fields.")
         reject()
       }
     })
@@ -59,7 +59,7 @@ export class GenderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      gender: ["", Validators.required]
+      gender: null
     })
 
     const params = this.route.snapshot.paramMap
@@ -70,9 +70,11 @@ export class GenderComponent implements OnInit, OnDestroy {
         this.workerService.getWorker(this.workerId).subscribe(worker => {
           this.worker = worker
 
-          this.form.patchValue({
-            gender: worker.gender
-          })
+          if (worker.gender) {
+            this.form.patchValue({
+              gender: worker.gender
+            })
+          }
         })
       )
     }

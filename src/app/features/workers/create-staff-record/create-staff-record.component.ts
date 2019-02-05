@@ -31,20 +31,23 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   jobsAvailable: Job[] = []
   contractsAvailable: Array<string> = []
 
+  private worker: Worker
   private workerId: string
   private subscriptions = []
 
   private isSocialWorkerSelected(): boolean {
-    if (this.form.value.mainJob) {
-      return this.jobsAvailable.some(a => a.id === parseInt(this.form.value.mainJob) && a.title === "Social Worker")
+    const { mainJob } = this.form.value
+    if (mainJob) {
+      return this.jobsAvailable.some(a => a.id === parseInt(mainJob) && a.title === "Social Worker")
     }
 
     return false
   }
 
   private getSelectedJobTitle(): string | null {
-    if (this.form.value.mainJob) {
-      const job = this.jobsAvailable.find(j => parseInt(this.form.value.mainJob) === j.id)
+    const { mainJob } = this.form.value
+    if (mainJob) {
+      const job = this.jobsAvailable.find(j => parseInt(mainJob) === j.id)
 
       if (job) {
         return job.title
@@ -57,12 +60,13 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   async submitHandler() {
     try {
       const res = await this.saveHandler()
+      const workerId = this.workerId || res.uid
 
       if (this.isSocialWorkerSelected()) {
-        this.router.navigate([`/worker/mental-health/${res.uid}`])
+        this.router.navigate([`/worker/mental-health/${workerId}`])
 
       } else {
-        this.router.navigate([`/worker/main-job-start-date/${res.uid}`])
+        this.router.navigate([`/worker/main-job-start-date/${workerId}`])
       }
 
     } catch (err) {
@@ -72,29 +76,40 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
+      const { nameOrId, contract, mainJob } = this.form.controls
+      this.messageService.clearError()
+
       if (this.form.valid) {
-        const worker = {
-          nameOrId: this.form.value.nameOrId,
-          contract: this.form.value.contract,
-          mainJob: {
-            jobId: parseInt(this.form.value.mainJob)
+        const worker = this.worker || {} as Worker
+        worker.nameOrId = nameOrId.value
+        worker.contract = contract.value
+        worker.mainJob = {
+          jobId: parseInt(mainJob.value)
+        }
+
+        if (worker.otherJobs) {
+          const index  = worker.otherJobs.findIndex(j => j.jobId === worker.mainJob.jobId)
+
+          if (index !== -1) {
+            worker.otherJobs.splice(index, 1)
           }
         }
 
-        if (this.workerId) {
-          this.subscriptions.push(
-            this.workerService.updateWorker(this.workerId, worker).subscribe(resolve, reject)
-          )
-
-        } else {
-          this.subscriptions.push(
-            this.workerService.createWorker(worker).subscribe(resolve, reject)
-          )
-        }
+        this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject))
 
       } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
+        if (nameOrId.errors && nameOrId.errors.required) {
+          this.messageService.show("error", "'Full name or ID number' is required.")
+        }
+
+        if (mainJob.errors && mainJob.errors.required) {
+          this.messageService.show("error", "'Main job role' is required.")
+        }
+
+        if (contract.errors && contract.errors.required) {
+          this.messageService.show("error", "'Type of contract' is required.")
+        }
+
         reject()
       }
     })
@@ -102,9 +117,9 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      nameOrId: ["", Validators.required],
-      mainJob: ["", Validators.required],
-      contract: ["", Validators.required]
+      nameOrId: [null, Validators.required],
+      mainJob: [null, Validators.required],
+      contract: [null, Validators.required]
     })
 
     const params = this.route.snapshot.paramMap
@@ -113,6 +128,8 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     if (this.workerId) {
       this.subscriptions.push(
         this.workerService.getWorker(this.workerId).subscribe(worker => {
+          this.worker = worker
+
           this.form.patchValue({
             nameOrId: worker.nameOrId,
             mainJob: worker.mainJob.jobId,

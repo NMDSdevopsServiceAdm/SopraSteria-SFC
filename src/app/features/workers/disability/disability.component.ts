@@ -42,14 +42,14 @@ export class DisabilityComponent implements OnInit, OnDestroy {
 
   saveHandler() {
     return new Promise((resolve, reject) => {
+      const { disability } = this.form.value
+      this.messageService.clearError()
+
       if (this.form.valid) {
-        this.worker.disability = this.form.value.disability
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        this.worker.disability = disability
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
 
       } else {
-        this.messageService.clearError()
         this.messageService.show("error", "Please fill the required fields.")
         reject()
       }
@@ -58,7 +58,7 @@ export class DisabilityComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      disability: ["", Validators.required]
+      disability: null
     })
 
     const params = this.route.snapshot.paramMap
@@ -69,9 +69,11 @@ export class DisabilityComponent implements OnInit, OnDestroy {
         this.workerService.getWorker(this.workerId).subscribe(worker => {
           this.worker = worker
 
-          this.form.patchValue({
-            disability: worker.disability
-          })
+          if (worker.disability) {
+            this.form.patchValue({
+              disability: worker.disability
+            })
+          }
         })
       )
     }

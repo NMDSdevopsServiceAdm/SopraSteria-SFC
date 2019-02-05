@@ -35,8 +35,8 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      const res = await this.saveHandler()
-      this.router.navigate([`/worker/home-postcode/${res.uid}`])
+      await this.saveHandler()
+      this.router.navigate([`/worker/home-postcode/${this.workerId}`])
 
     } catch (err) {
       // keep typescript transpiler silent
@@ -49,21 +49,28 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       this.messageService.clearError()
 
       if (this.form.valid) {
-        this.worker.dateOfBirth = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
-          .format(DEFAULT_DATE_FORMAT)
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        let newDateOfBirth = day && month && year ?
+          moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT) : null
+        this.worker.dateOfBirth = newDateOfBirth
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
 
       } else {
-        if (day && month && year) {
-          const noBefore = this.calculateLowestAcceptableDate()
-          const noAfter = this.calculateHighestAcceptableDate()
+        if (this.form.errors) {
+          if (this.form.errors.required) {
+            this.messageService.show("error", "Please fill required fields.")
 
-          this.messageService.show("error", `The date has to be between ${noBefore.format(DEFAULT_DATE_DISPLAY_FORMAT)} and ${noAfter.format(DEFAULT_DATE_DISPLAY_FORMAT)}.`)
+          } else if (this.form.errors.dateBetween) {
+            const noBefore = this.calculateLowestAcceptableDate()
+            const noAfter = this.calculateHighestAcceptableDate()
+            this.messageService.show("error", `The date has to be between ${noBefore.format(DEFAULT_DATE_DISPLAY_FORMAT)} and ${noAfter.format(DEFAULT_DATE_DISPLAY_FORMAT)}.`)
 
-        } else {
-          this.messageService.show("error", "Please fill the required fields.")
+            // TODO cross validation
+            // } else if (this.form.errors.dateAgainstDob) {
+            //   this.messageService.show("error", "error.")
+
+          } else if (this.form.errors.dateValid) {
+            this.messageService.show("error", "Invalid date.")
+          }
         }
 
         reject()
@@ -73,43 +80,43 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
   private calculateLowestAcceptableDate() {
     const date = moment()
-    date.year(date.year() - 100)
-    return date
+    return date.year(date.year() - 100).add(1, "d")
   }
 
   private calculateHighestAcceptableDate() {
     const date = moment()
-    date.year(date.year() - 16)
-    return date
+    return date.year(date.year() - 14)
   }
 
-  formValidator(control: AbstractControl): ValidationErrors {
-    if (!this.form) {
-      return null
-    }
+  formValidator(formGroup: FormGroup): ValidationErrors {
+    if (this.form) {
+      const { day, month, year } = this.form.value
 
-    const { day, month, year } = this.form.value
-    const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
-
-    if (date.isValid()) {
-      const noBefore = this.calculateLowestAcceptableDate()
-      const noAfter = this.calculateHighestAcceptableDate()
-
-      if (date.isBetween(noBefore, noAfter)) {
-        return null
+      if (day && month && year) {
+        const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT)
+        if (date.isValid()) {
+          // TODO cross validation
+          // const mainJobStartDateValid =
+          //   moment(this.worker.mainJobStartDate, DEFAULT_DATE_FORMAT).subtract(14, "y")
+          // if (date.isAfter(mainJobStartDateValid)) {
+          //   return { dateAgainstDob: true }
+          // }
+          const noBefore = this.calculateLowestAcceptableDate()
+          const noAfter = this.calculateHighestAcceptableDate()
+          return date.isBetween(noBefore, noAfter, "d", "[]") ? null : { dateBetween: true }
+        }
       }
     }
 
-    return { dateBetweenValidator: true }
+    return null
   }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      day: ["", Validators.required],
-      month: ["", Validators.required],
-      year: ["", Validators.required]
+      day: null,
+      month: null,
+      year: null,
     })
-    this.form.setValidators([DateValidator.dateValid(this.form), this.formValidator])
 
     const params = this.route.snapshot.paramMap
     this.workerId = params.has("id") ? params.get("id") : null
@@ -122,11 +129,19 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
           if (worker.dateOfBirth) {
             const date = worker.dateOfBirth.split("-")
             this.form.patchValue({
-              year: date[0],
-              month: date[1],
-              day: date[2],
+              year: parseInt(date[0]),
+              month: parseInt(date[1]),
+              day: parseInt(date[2]),
             })
           }
+
+          this.form.setValidators(
+            Validators.compose([
+              this.form.validator,
+              DateValidator.dateValid(),
+              this.formValidator
+            ])
+          )
         })
       )
     }

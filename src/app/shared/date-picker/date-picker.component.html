@@ -1,12 +1,12 @@
 <fieldset [formGroup]="formGroup">
   <legend *ngIf="label">{{label}}</legend>
-  <label class="col-2 col-sm-1">Day
-    <input type="number" formControlName="day" class="form-control" min="1" step="1" appNumberMax="31" [ngClass]="{'is-invalid': (formGroup.get('day').touched || formGroup.get('day').dirty) && !formGroup.get('day').valid}">
+  <label class="day">Day
+    <input type="number" formControlName="day" class="form-control" min="1" step="1" [appNumberMax]="31" appNumberPositiveOnly [appNumberDigitsMax]="2" [ngClass]="{'is-invalid': (formGroup.get('day').touched || formGroup.get('day').dirty) && !formGroup.get('day').valid}">
   </label>
-  <label class="col-2 col-sm-1">Month
-    <input type="number" formControlName="month" class="form-control" min="1" step="1" appNumberMax="12" [ngClass]="{'is-invalid': (formGroup.get('month').touched || formGroup.get('month').dirty) && !formGroup.get('month').valid}">
+  <label class="month">Month
+    <input type="number" formControlName="month" class="form-control" min="1" step="1" [appNumberMax]="12" appNumberPositiveOnly [appNumberDigitsMax]="2" [ngClass]="{'is-invalid': (formGroup.get('month').touched || formGroup.get('month').dirty) && !formGroup.get('month').valid}">
   </label>
-  <label class="col-3 col-sm-2 col-md-2">Year
-    <input type="number" formControlName="year" class="form-control" min="1" step="1" appNumberMax="9999" [ngClass]="{'is-invalid': (formGroup.get('year').touched || formGroup.get('year').dirty) && !formGroup.get('year').valid}">
+  <label class="year">Year
+    <input type="number" formControlName="year" class="form-control" min="0" step="1" [appNumberMax]="9999" appNumberPositiveOnly [appNumberDigitsMax]="4" [ngClass]="{'is-invalid': (formGroup.get('year').touched || formGroup.get('year').dirty) && !formGroup.get('year').valid}">
   </label>
 </fieldset>

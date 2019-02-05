@@ -47,6 +47,7 @@ import { NumberIntOnly } from './shared/number-int-only.directive';
 import { NumberMax } from './shared/number-max.directive';
 import { NumberPositiveOnly } from './shared/number-positive-only.directive';
 import { NoPaste } from './shared/no-paste.directive';
+import { NumberDigitsMax } from './shared/number-digits-max.directive';
 import { DatePickerComponent } from './shared/date-picker/date-picker.component';
 import { LocationService } from './core/services/location.service';
 import { RegistrationService } from './core/services/registration.service';
@@ -66,6 +67,12 @@ import { HomePostcodeComponent } from './features/workers/home-postcode/home-pos
 import { GenderComponent } from './features/workers/gender/gender.component';
 import { DisabilityComponent } from './features/workers/disability/disability.component';
 import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
+import { NationalityComponent } from './features/workers/nationality/nationality.component';
+import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
+import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
+import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
+import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
+import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
@@ -73,13 +80,17 @@ import { MessageService } from './core/services/message.service';
 import { FeedbackService } from './core/services/feedback.service';
 import { EstablishmentService } from './core/services/establishment.service';
 import { LocalAuthorityService } from './core/services/localAuthority.service';
+import { EthnicityService } from './core/services/ethnicity.service';
 import { AuthGuard } from './core/services/auth-guard.service';
+import { RecruitmentService } from './core/services/recruitment.service';
+import { NationalityService } from './core/services/nationality.service';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/services/auth-interceptor';
 
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 import { SubmitButtonComponent } from './shared/submit-button/submit-button.component';
+import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
 
 @NgModule({
   declarations: [
@@ -108,7 +119,9 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     Number,
     NumberIntOnly,
     NumberMax,
+    NoPaste,
     NumberPositiveOnly,
+    NumberDigitsMax,
     VacanciesComponent,
     ConfirmVacanciesComponent,
     StartersComponent,
@@ -137,6 +150,13 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     GenderComponent,
     DisabilityComponent,
     EthnicityComponent,
+    NationalityComponent,
+    RecruitedFromComponent,
+    AdultSocialCareStartedComponent,
+    CountryOfBirthComponent,
+    BritishCitizenshipComponent,
+    AutoSuggestComponent,
+    YearArrivedUkComponent,
   ],
   imports: [
     BrowserModule,
@@ -172,6 +192,9 @@ import { SubmitButtonComponent } from './shared/submit-button/submit-button.comp
     LocalAuthorityService,
     AuthGuard,
     WorkerService,
+    EthnicityService,
+    RecruitmentService,
+    NationalityService,
   ],
   bootstrap: [AppComponent]
 })

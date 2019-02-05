@@ -35,7 +35,7 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler()
 
-      if (this.worker.otherJobs && this.worker.otherJobs.length) {
+      if (this.isOtherJobsSocialWorker()) {
         this.router.navigate([`/worker/national-insurance-number/${this.workerId}`])
 
       } else {
@@ -47,25 +47,40 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
     }
   }
 
+  private isOtherJobsSocialWorker() {
+    return this.worker.otherJobs && this.worker.otherJobs.some(j => j.title === "Social Worker")
+  }
+
   saveHandler() {
     return new Promise((resolve, reject) => {
+      const { approvedMentalHealthWorker } = this.form.value
+      this.messageService.clearError()
+
       if (this.form.valid) {
-        this.worker.approvedMentalHealthWorker = this.form.value.approvedMentalHealthWorker
-        this.subscriptions.push(
-          this.workerService.updateWorker(this.workerId, this.worker).subscribe(resolve, reject)
-        )
+        this.worker.approvedMentalHealthWorker = approvedMentalHealthWorker
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
 
       } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
+        this.messageService.show("error", "Please fill required fields.")
         reject()
       }
     })
   }
 
+  goBack(event) {
+    event.preventDefault()
+
+    if (this.isOtherJobsSocialWorker()) {
+      this.router.navigate([`/worker/other-job-roles/${this.workerId}`])
+
+    } else {
+      this.router.navigate([`/worker/edit-staff-record/${this.workerId}`])
+    }
+  }
+
   ngOnInit() {
     this.form = this.formBuilder.group({
-      approvedMentalHealthWorker: ["", Validators.required]
+      approvedMentalHealthWorker: null
     })
 
     const params = this.route.snapshot.paramMap

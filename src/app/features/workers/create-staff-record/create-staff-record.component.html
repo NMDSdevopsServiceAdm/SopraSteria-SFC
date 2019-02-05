@@ -21,7 +21,7 @@
       <div class="field-group mb-5">
         <label>What is their main job role
           <select formControlName="mainJob" class="form-control">
-            <option [value]="null">Select Main Job Role</option>
+            <option [ngValue]="null">Select Main Job Role</option>
             <option *ngFor="let job of jobsAvailable" [value]="job.id">
               {{job.title}}
             </option>

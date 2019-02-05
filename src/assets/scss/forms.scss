@@ -105,6 +105,12 @@ form,
       margin: 0 0 2rem 0;
       letter-spacing: 1px;
 
+      span.example {
+        display: block;
+        margin: 2rem 0;
+        color: map-get($color, grey);
+      }
+
       @include rem(font-size, 19px);
       @include rem(line-height, 20px);
     }

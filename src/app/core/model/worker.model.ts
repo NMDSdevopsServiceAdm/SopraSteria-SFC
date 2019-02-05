@@ -2,6 +2,7 @@ import { Contracts } from "../constants/contracts.enum"
 import { Job } from "./job.model"
 
 export interface Worker {
+  uid?: string,
   nameOrId: string
   contract: Contracts
   mainJob: Job
@@ -13,4 +14,29 @@ export interface Worker {
   postcode?: string
   gender?: string
   disability?: string
+  ethnicity?: {
+    ethnicityId: number
+    ethnicity?: string
+  },
+  nationality?: {
+    value: string,
+    other?: {
+      nationalityId?: number,
+      nationality?: string
+    }
+  },
+  recruitedFrom?: {
+    value: string,
+    from?: {
+      recruitedFromId: number,
+      from?: string
+    }
+  },
+  countryOfBirth?: {
+    value: string,
+    other?: {
+      countryId?: number,
+      nationality?: string
+    }
+  }
 }

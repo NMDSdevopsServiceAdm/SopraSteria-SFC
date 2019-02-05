@@ -10,30 +10,25 @@ import { BaseNumber } from "./base-number.directive"
   selector: "input[type=number]"
 })
 export class Number extends BaseNumber {
+
+  private pattern = /^-?\d*/
+
   constructor(private el: ElementRef) {
     super()
   }
 
-  previousValue = null
-
   @HostListener("keydown", ["$event"])
   onKeyDown(event: KeyboardEvent) {
     const { key, keyCode } = event
-    
-    if (!this.isKeyCodeSpecial(keyCode) &&
-        !this.isKeyCodeIncrement(keyCode) &&
-        !this.isKeyCodeDecrement(keyCode)) {
+
+    if (isFinite(parseInt(key)) ||
+        this.isKeyCodeIncrement(keyCode) ||
+        this.isKeyCodeDecrement(keyCode)) {
       const curVal = this.el.nativeElement.value
-      const nextVal = `${this.previousValue ? this.previousValue : curVal}${key}`
+      const nextVal = `${curVal}${key}`
 
-      if (/(^-?0\d+)|(^\,)|(-{2,})|(\.{2,})|(\,{2,})|(\d+-)|[\+]/.test(nextVal)) {
+      if (!this.pattern.test(nextVal)) {
         event.preventDefault()
-        
-      } else if (this.isKeyCodeMinus(keyCode)) {
-        this.previousValue = `${curVal}${key}`
-
-      } else {
-        this.previousValue = null
       }
     }
   }
