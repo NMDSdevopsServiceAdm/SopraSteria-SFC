@@ -42,6 +42,6 @@ export interface Worker {
   },
   yearArrived?: {
     value: string,
-    year: string
+    year: number
   },
 }
