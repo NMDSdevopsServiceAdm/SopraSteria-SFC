@@ -122,13 +122,12 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/select-workplace');
+  }
 
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
+  setRegulatedCheckFalse(data) {
+    // clear default location data
+    data.locationdata = [{}];
+    data.locationdata[0]['isRegulated'] = false;
   }
 
   workplaceNotFound() {
@@ -138,22 +137,13 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
       (data: RegistrationModel) => {
         if (data.success === 1) {
           this.updateSectionNumbers(data);
+          this.setRegulatedCheckFalse(data);
           //data = data.postcodedata;
           this._registrationService.updateState(data);
           //this.routingCheck(data);
           this.router.navigate(["/select-workplace-address"])
         }
       }
-      // ,
-      // (err: RegistrationTrackerError) => {
-      //   console.log(err);
-      //   this.nonCqcPostcodeApiError = err.friendlyMessage;
-      //   //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
-      // },
-      // () => {
-      //   console.log('Get location by postcode complete');
-      //   this.router.navigate(['/select-workplace-address']);
-      // }
     );
   }
 
