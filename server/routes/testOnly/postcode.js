@@ -12,6 +12,12 @@ router.route('/random').get(async (req, res) => {
       order: [
         models.sequelize.random()
       ],
+      where: {
+        local_custodian_code: [119, 121, 235, 350, 2741, 2830, 4210, 4520, 4525, 5150, 5450, 5870, 5900],
+        postcode: {
+          [models.Sequelize.Op.ne]: ''
+        }
+      },
       limit: setSize
     });
 

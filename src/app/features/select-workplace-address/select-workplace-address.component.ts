@@ -54,7 +54,6 @@ export class SelectWorkplaceAddressComponent implements OnInit {
 
     // set not registered
     this.setRegulatedCheckFalse(this.registration);
-
     this.addressSelected = true;
   }
 
