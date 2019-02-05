@@ -84,6 +84,7 @@ import { EthnicityService } from './core/services/ethnicity.service';
 import { AuthGuard } from './core/services/auth-guard.service';
 import { RecruitmentService } from './core/services/recruitment.service';
 import { NationalityService } from './core/services/nationality.service';
+import { CountryService } from './core/services/country.service';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './core/services/auth-interceptor';
@@ -195,6 +196,7 @@ import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.compone
     EthnicityService,
     RecruitmentService,
     NationalityService,
+    CountryService,
   ],
   bootstrap: [AppComponent]
 })
