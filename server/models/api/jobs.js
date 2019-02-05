@@ -40,7 +40,6 @@ exports.jobsByTypeJSON = (establishment) => {
     jobTypeGroup['Vacancies'] = [];
   }
 
-  console.log("WA DEBUG: establishment starters: ", establishment.starters)
   if (establishment.starters && establishment.starters != 'With Jobs') {
     jobTypeGroup['Starters'] = establishment.starters;
   } else if (typeof jobTypeGroup['Starters'] === 'undefined') {
