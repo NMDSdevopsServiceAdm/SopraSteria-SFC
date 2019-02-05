@@ -3,7 +3,6 @@ var router = express.Router();
 const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models/index');
 
-
 // GET Location API by locationId
 router.route('/lid/:locationId')
 

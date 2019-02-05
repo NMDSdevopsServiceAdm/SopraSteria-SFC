@@ -37,7 +37,7 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     this.postcodeApiError = false;
 
     this.selectWorkplaceAddressForm = this.fb.group({
-      selectWorkplaceAddressSelected: '',
+      selectWorkplaceAddressSelected: ['', [Validators.required]],
       postcodeInput: ['', Validators.maxLength(8)]
     });
 
