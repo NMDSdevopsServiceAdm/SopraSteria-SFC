@@ -73,6 +73,7 @@ import { AdultSocialCareStartedComponent } from './features/workers/adult-social
 import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
+import { DaysOfSicknessComponent } from './features/workers/days-of-sickness/days-of-sickness.component';
 
 import { JobService } from './core/services/job.service';
 import { HttpErrorHandler } from './core/services/http-error-handler.service';
@@ -92,7 +93,6 @@ import { AuthInterceptor } from './core/services/auth-interceptor';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 import { SubmitButtonComponent } from './shared/submit-button/submit-button.component';
 import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -158,6 +158,7 @@ import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.compone
     BritishCitizenshipComponent,
     AutoSuggestComponent,
     YearArrivedUkComponent,
+    DaysOfSicknessComponent,
   ],
   imports: [
     BrowserModule,

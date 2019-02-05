@@ -44,4 +44,8 @@ export interface Worker {
     value: string,
     year: number
   },
+  socialCareStartDate?: {
+    value: string,
+    year: number
+  },
 }
