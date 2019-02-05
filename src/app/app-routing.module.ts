@@ -50,6 +50,7 @@ import { CountryOfBirthComponent } from './features/workers/country-of-birth/cou
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { DaysOfSicknessComponent } from './features/workers/days-of-sickness/days-of-sickness.component';
+import { ContractWithZeroHoursComponent } from './features/workers/contract-with-zero-hours/contract-with-zero-hours.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -291,6 +292,11 @@ const routes: Routes = [
       {
         path: 'days-of-sickness/:id',
         component: DaysOfSicknessComponent,
+        canLoad: [AuthGuard]
+      },
+      {
+        path: 'contract-with-zero-hours/:id',
+        component: ContractWithZeroHoursComponent,
         canLoad: [AuthGuard]
       },
     ]
