@@ -48,4 +48,8 @@ export interface Worker {
     value: string,
     year: number
   },
+  daysSick?: {
+    value: number,
+    days?: number
+  },
 }
