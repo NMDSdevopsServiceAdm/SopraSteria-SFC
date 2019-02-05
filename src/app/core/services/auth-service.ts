@@ -146,7 +146,8 @@ export class AuthService {
   }
 
   logout() {
-    this._session = null
-    this.token = null
+    if (localStorage.getItem('auth-token')) {
+      localStorage.clear();
+    }
   }
 }
