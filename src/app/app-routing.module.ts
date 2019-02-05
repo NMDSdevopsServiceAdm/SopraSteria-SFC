@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AuthGuard } from "./core/services/auth-guard.service"
+import { AuthGuard } from './core/services/auth-guard.service';
+import { RegisterGuard } from './core/guards/register/register.guard';
 
 import { LoginComponent } from './features/login/login.component';
 //import { RegisterComponent } from './features/register/register.component';
@@ -51,52 +52,62 @@ const routes: Routes = [
     component: LoginComponent
   },
   {
-    path: 'registered-question',
-    component: CqcRegisteredQuestionComponent,
-  },
-  {
     path: 'sign-out',
     component: LogoutComponent
   },
   {
+    path: 'registered-question',
+    component: CqcRegisteredQuestionComponent,
+  },
+  {
     path: 'select-workplace',
-    component: SelectWorkplaceComponent
+    component: SelectWorkplaceComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'confirm-workplace-details',
-    component: ConfirmWorkplaceDetailsComponent
-  },
-  {
-    path: 'select-workplace-address',
-    component: SelectWorkplaceAddressComponent
+    component: ConfirmWorkplaceDetailsComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'user-details',
-    component: UserDetailsComponent
+    component: UserDetailsComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'create-username',
-    component: CreateUsernameComponent
+    component: CreateUsernameComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'security-question',
-    component: SecurityQuestionComponent
+    component: SecurityQuestionComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'confirm-account-details',
-    component: ConfirmAccountDetailsComponent
+    component: ConfirmAccountDetailsComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'registration-complete',
-    component: RegistrationCompleteComponent
+    component: RegistrationCompleteComponent,
+    canActivate: [RegisterGuard],
+  },
+  {
+    path: 'select-workplace-address',
+    component: SelectWorkplaceAddressComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'enter-workplace-address',
-    component: EnterWorkplaceAddressComponent
+    component: EnterWorkplaceAddressComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'select-main-service',
-    component: SelectMainServiceComponent
+    component: SelectMainServiceComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'continue-creating-account',

@@ -54,30 +54,6 @@ export class SelectMainServiceComponent implements OnInit {
     this.setSectionNumbers();
   }
 
-  setSectionNumbers() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
-
-    this.currentSection = this.currentSection + 1;
-    if (this.backLink === '/registered-question') {
-      this.lastSection = 7;
-    }
-    else if (this.backLink === '/select-workplace') {
-      this.lastSection = 8;
-    }
-    else if (this.backLink === '/enter-workplace-address') {
-      this.lastSection = 9;
-    }
-    else if (this.backLink === '/confirm-workplace-details') {
-      if (this.registration.userRoute[1].route === '/select-workplace') {
-        this.lastSection = 8;
-      }
-      else {
-        this.lastSection = 7;
-      }
-    }
-  }
-
   clickBack() {
     const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
@@ -138,18 +114,35 @@ export class SelectMainServiceComponent implements OnInit {
 
   }
 
+  setSectionNumbers() {
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+    this.currentSection = this.currentSection + 1;
+
+    if (this.backLink === '/registered-question') {
+      this.lastSection = 7;
+    }
+    else if (this.backLink === '/select-workplace') {
+      this.lastSection = 8;
+    }
+    else if (this.backLink === '/enter-workplace-address') {
+      this.lastSection = 9;
+    }
+    else if (this.backLink === '/confirm-workplace-details') {
+      if (this.registration.userRoute[1].route === '/select-workplace') {
+        this.lastSection = 8;
+      }
+      else {
+        this.lastSection = 7;
+      }
+    }
+  }
+
   updateSectionNumbers(data) {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/select-main-service');
-
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
   }
 
 }

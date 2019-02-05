@@ -78,18 +78,13 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   }
 
   save() {
-    //this._registrationService.getLocationByLocationId(this.selectedAddressId);
-    //const isRegulatedAddress = [this.registration[0].locationdata[0].locationId];
+
     this.isRegulatedCheck(this.registration);
 
-    //console.log(isRegulatedAddress);
-    //this.registration.locationdata[0].prevPage = 'confirm-workplace-details';
-    //this.registration.locationdata[0].currentPage = this.currentSection;
     this.updateSectionNumbers(this.registration);
 
     this._registrationService.updateState(this.registration);
 
-    //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/user-details']);
   }
 
@@ -107,15 +102,17 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
 
     this.registration.userRoute.route.splice(-1);
 
-
-    //this.updateSectionNumbers(this.registration);
-    //this.registration.userRoute = this.registration.userRoute;
     this.registration.userRoute.currentPage = this.currentSection;
-    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
 
     this._registrationService.updateState(this.registration);
 
     this.router.navigate([this.backLink]);
+  }
+
+  setRegulatedCheckFalse(data) {
+    // clear default location data
+    data.locationdata = [{}];
+    data.locationdata[0]['isRegulated'] = false;
   }
 
   workplaceNotFound() {
@@ -125,6 +122,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
       (data: RegistrationModel) => {
         if (data.success === 1) {
           this.updateSectionNumbers(data);
+          this.setRegulatedCheckFalse(data);
 
           //data = data.postcodedata;
           this._registrationService.updateState(data);
