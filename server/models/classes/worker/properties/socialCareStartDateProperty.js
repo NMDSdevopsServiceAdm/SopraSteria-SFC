@@ -28,7 +28,7 @@ exports.WorkerSocialCareStartDateProperty = class WorkerSocialCareStartDatePrope
                     if (document.socialCareStartDate.year &&
                         Number.isInteger(document.socialCareStartDate.year) &&
                         document.socialCareStartDate.year <= thisYear &&
-                        document.socialCareStartDate.year > (thisYear - MAXIMUM_AGE)) {
+                        document.socialCareStartDate.year >= (thisYear - MAXIMUM_AGE)) {
                         
                         this.property = {
                             value: document.socialCareStartDate.value,
