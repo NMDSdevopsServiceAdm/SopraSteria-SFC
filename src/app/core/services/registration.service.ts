@@ -19,36 +19,35 @@ const initialRegistration: RegistrationModel = {
     route: []
   },
   locationdata: [{
-    addressLine1: '14 Shepherd\'s Court',
-    addressLine2: '111 High Street',
-    county: 'Berkshire',
-    locationId: '1-1000270393',
-    locationName: 'Red Kite Home Care',
-    mainService: 'Homecare agencies',
-    postalCode: 'SL1 7JZ',
-    townCity: 'Slough',
-    isRegulated: true,
+    addressLine1: '',
+    addressLine2: '',
+    county: '',
+    locationId: '',
+    locationName: '',
+    mainService: '',
+    postalCode: '',
+    townCity: '',
+    isRegulated: null,
     user: {
-      fullname: 'Mike Wazowski',
-      jobTitle: 'Scaring assistant',
-      emailAddress: 'mike.wazowski@monsters.inc',
-      contactNumber: '07828732666',
-      username: 'cyclops',
-      password: 'password1',
-      securityQuestion: 'Who is my partner',
-      securityAnswer: 'James P.Sulivan'
+      fullname: '',
+      jobTitle: '',
+      emailAddress: '',
+      contactNumber: '',
+      username: '',
+      password: '',
+      securityQuestion: '',
+      securityAnswer: ''
     }
   }],
   postcodedata: [{
     locationName: '',
-    addressLine1: '14 Shepherd\'s Court',
-    addressLine2: '111 High Street',
-    townCity: 'Slough',
-    county: 'Berkshire',
-    postalCode: 'SL1 7JZ'
+    addressLine1: '',
+    addressLine2: '',
+    townCity: '',
+    county: '',
+    postalCode: ''
   }]
 };
-
 
 @Injectable({
   providedIn: 'root'
@@ -110,19 +109,6 @@ export class RegistrationService {
       .pipe(
         catchError(err => this.handleHttpError(err))
       );
-    // .subscribe(
-    //   (data: RegistrationModel) => {
-    //     this.updateState(data);
-
-    //     // this.router.navigate(['/select-workplace-address']);
-
-    //   },
-    //   (err: any) => console.log(err),
-    //   () => {
-    //     console.log('Updated locations by postcode complete');
-    //     console.log(this._registration$);
-    //   }
-    // );
   }
 
   getMainServices(id: boolean) {
