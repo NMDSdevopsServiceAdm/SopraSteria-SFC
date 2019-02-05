@@ -28,7 +28,6 @@ export class CountryService {
   getCountries(): Observable<CountryResponse[]> {
     return this.http.get<any>("/api/country", this.getOptions())
       .pipe(
-        debounceTime(500),
         map(res => res.countries),
         catchError(this.httpErrorHandler.handleHttpError))
   }
