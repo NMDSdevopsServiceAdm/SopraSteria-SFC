@@ -40,4 +40,8 @@ export interface Worker {
       country?: string
     }
   },
+  yearArrived?: {
+    value: string,
+    year: number
+  },
 }
