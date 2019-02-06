@@ -22,8 +22,8 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
   SelectOtherServiceForm: FormGroup;
   isInvalid: boolean;
   checked: boolean;
-  postOtherServicesdata: any = [];
   obj;
+  checkboxesSelected;
 
   private subscriptions = []
 
@@ -45,8 +45,6 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
     });
 
     this.getAllServices();
-
-    // build the 
   }
 
   getAllServices() {
@@ -56,6 +54,14 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
         (data: any) => {
           this.otherServicesData = data.allOtherServices;
           this.mainService = data.mainService.name;
+
+          this.checkboxesSelected = [];
+          // otherServices is a grouped (by category) set of services - denormalise
+          data.otherServices.forEach(thisServiceCategory => {
+            thisServiceCategory.services.forEach(thisService => {
+              this.checkboxesSelected.push(thisService.id);
+            })
+          })
         },
         (err) => {
           console.log(err);
@@ -67,21 +73,30 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
     )
   }
 
+  toggleCheckbox($event: any) {
+    const eventId = $event.id;
+    const serviceId = $event.value;
+
+    if ($event.checked) {
+      // add the serviceId to the known set of selected checkbox; but opnly if it
+      //  doesn't already exist
+      if (!this.checkboxesSelected.includes(serviceId)) {
+        this.checkboxesSelected.push(parseInt(serviceId));
+      }
+    } else {
+      // remove the given service id
+      const foundServiceIdIndex = this.checkboxesSelected.indexOf(parseInt(serviceId));
+      if (foundServiceIdIndex !== -1) this.checkboxesSelected.splice(foundServiceIdIndex, 1);
+    }
+  }
 
   async onSubmit() {
-    let selectedValues = this.SelectOtherServiceForm.get('otherServiceSelected').value
-
-    // TODO - expecting selectedValues to be an array
-    selectedValues = [
-      selectedValues
-    ];
     const otherServicesSelected : PostServicesModel = {
-      services: selectedValues.map(thisValue => {
+      services: this.checkboxesSelected.map(thisValue => {
           return {
             id: parseInt(thisValue)
           }
         })
-        
     }
 
     // always save back to backend API, even if there are (now) no other services
@@ -91,7 +106,6 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
           (data: any) => {
             this.subscriptions.push(
               this._eSService.getCapacity(true).subscribe(c => {
-                console.log("WA DEBUG: capacities returned after updating other servcies: ", c)
                 if (c.allServiceCapacities.length) {
                   this.router.navigate(['/capacity-of-services'])
                 } else {
