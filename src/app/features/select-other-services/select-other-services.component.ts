@@ -18,8 +18,6 @@ import { PostServicesModel } from '../../core/model/postServices.model';
 })
 export class SelectOtherServicesComponent implements OnInit, OnDestroy {
   mainService: string;
-  isRegistered: boolean;
-  servicesData: {};
   otherServicesData = [];
   SelectOtherServiceForm: FormGroup;
   isInvalid: boolean;
@@ -43,12 +41,12 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.SelectOtherServiceForm = this.fb.group({
-      otherServiceSelected: ['']
+      otherServiceSelected: [''],
     });
 
-    this.isRegistered = true;
-
     this.getAllServices();
+
+    // build the 
   }
 
   getAllServices() {
@@ -56,11 +54,6 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
     this._eSService.getAllServices()
       .subscribe(
         (data: any) => {
-
-          // Check if other services are already set
-          this.checkIsServiceSet(data);
-
-          this.servicesData = data;
           this.otherServicesData = data.allOtherServices;
           this.mainService = data.mainService.name;
         },
@@ -74,96 +67,47 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
     )
   }
 
-  // Check if services exists and if so create services obj
-  checkIsServiceSet(data) {
-
-    data.otherServices.forEach(category => {
-      category.services.forEach(service => {
-
-        this.obj = {
-          services: [{
-            'id': service.id,
-            'name': service.name
-          }]
-        };
-
-        this.obj.services.forEach(thisService => {
-          this.postOtherServicesdata.push(thisService);
-        });
-      });
-    });
-  }
-
-  toggleCheckbox($event: any) {
-    if ($event.checked) {
-      const $id = $event.id;
-      const $name = $event.value;
-      const $idToNum = parseInt($id);
-
-      this.obj = {
-        services: [{
-          'id': $idToNum,
-          'name': $name
-        }]
-      };
-
-      for (let i = 0; i < this.obj.services.length; i++) {
-        this.postOtherServicesdata.push(this.obj.services[i]);
-      }
-    }
-    else {
-      const $id = $event.id;
-      const $idToNum = parseInt($id);
-
-      for (let i = 0; i < this.postOtherServicesdata.length; i++) {
-        if ($idToNum === this.postOtherServicesdata[i].id) {
-          delete this.postOtherServicesdata[i];
-        }
-      }
-    }
-  }
 
   async onSubmit() {
-    try {
-      await this.save()
+    let selectedValues = this.SelectOtherServiceForm.get('otherServiceSelected').value
 
-      this.subscriptions.push(
-        this._eSService.getCapacity(true).subscribe(c => {
-          if (c.allServiceCapacities.length) {
-            this.router.navigate(['/capacity-of-services'])
-
-          } else {
-            this.router.navigate(['/share-options'])
+    // TODO - expecting selectedValues to be an array
+    selectedValues = [
+      selectedValues
+    ];
+    const otherServicesSelected : PostServicesModel = {
+      services: selectedValues.map(thisValue => {
+          return {
+            id: parseInt(thisValue)
           }
         })
-      )
-    } catch (e) {
-      // keep the JS transpiler silent lack of rejected path
+        
     }
-  }
 
-  save() {
-    return new Promise((resolve, reject) => {
-    if (this.postOtherServicesdata.length > 0) {
+    // always save back to backend API, even if there are (now) no other services
     this.subscriptions.push(
-    this._eSService.postOtherServices(this.postOtherServicesdata)
-      .subscribe(
-        (data: any) => {
-          console.log(data);
-        },
-        (err) => {
-          console.log(err);
-          reject(err)
-        },
-        () => {
-          this.router.navigate(['/capacity-of-services'])
-        }
-      )
-    )
-    } else {
-      resolve()
-    }
-    })
+      this._eSService.postOtherServices(otherServicesSelected)
+        .subscribe(
+          (data: any) => {
+            this.subscriptions.push(
+              this._eSService.getCapacity(true).subscribe(c => {
+                console.log("WA DEBUG: capacities returned after updating other servcies: ", c)
+                if (c.allServiceCapacities.length) {
+                  this.router.navigate(['/capacity-of-services'])
+                } else {
+                  this.router.navigate(['/share-options'])
+                }
+              })
+            )
+          },
+          (err) => {
+            console.log(err);
+          },
+          () => {
+            // Removing any navigation as 
+          }
+        )
+    )  
   }
 
   ngOnDestroy() {

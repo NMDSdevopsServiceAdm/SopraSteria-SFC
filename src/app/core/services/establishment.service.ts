@@ -264,8 +264,7 @@ export class EstablishmentService {
 
   // POST other services
   postOtherServices(obj: PostServicesModel) {
-    const $obj = { services: obj };
-    return this.http.post<PostServicesModel>(`/api/establishment/${this.establishmentId}/services`, $obj, EstablishmentService.getOptions())
+    return this.http.post<PostServicesModel>(`/api/establishment/${this.establishmentId}/services`, obj, EstablishmentService.getOptions())
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError)

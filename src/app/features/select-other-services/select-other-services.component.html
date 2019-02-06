@@ -29,21 +29,17 @@
           <label class="main-body-text-bold mb-4 p-0 d-block" *ngIf="item.category">{{ item.category }}</label>
 
           <div *ngFor="let data of item.services">
-            <div class="row mb-4">
+            <div class="row mb-4" *ngIf="data.isCQC === regulatedCheck">
               <div class="col-12">
-
-                <label class="check main-body-text p-0" for="{{ data.id }}">
-                  <input type="checkbox" id="{{ data.id }}" formControlName="otherServiceSelected"
-                    [checked]="data.isMyService" value="{{ data.name }}" (change)="toggleCheckbox($event.target)" />
-                  <span class="checkmark"></span>
-
-                  <span class="check-label main-body-text mt-0">{{ data.name }}</span>
-                </label>
-
+                <div class="multiple-choice">
+                  <input type="radio" id="{{ data.id }}" value="{{ data.id }}" formControlName="otherServiceSelected">
+                  <label class="main-body-text p-0" for="{{ data.id }}">{{ data.name }}</label>
+                </div>
               </div>
             </div>
           </div>
         </div>
+  
       </div>
 
     </div>
