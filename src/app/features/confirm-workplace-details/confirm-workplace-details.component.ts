@@ -38,7 +38,6 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
 
     this.currentSection = this.currentSection + 1;
 
-    debugger;
     if (this.backLink === '/select-main-service') {
       if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
         this.lastSection = 8;
@@ -50,21 +49,6 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
         this.lastSection = 7;
       }
     }
-    // if (this.backLink === '/select-workplace') {
-    //   this.lastSection = 8;
-    // }
-
-    // if ((this.prevPage === 'registered-question') && (this.currentSection === 2)) {
-    //   //this.currentSection = '2';
-    //   this.lastSection = 7;
-    // }
-    // else if ((this.prevPage === 'select-workplace') && (this.currentSection === 3)) {
-    //   //this.currentSection = '3';
-    //   this.lastSection = 7;
-    // }
-    // else if ((this.prevPage === 'select-main-service') && (this.currentSection === 4)) {
-    //   this.lastSection = 8;
-    // }
   }
 
   isRegulatedCheck(id: any) {
@@ -79,65 +63,52 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   }
 
   save() {
-    //this._registrationService.getLocationByLocationId(this.selectedAddressId);
-    //const isRegulatedAddress = [this.registration[0].locationdata[0].locationId];
+
     this.isRegulatedCheck(this.registration);
 
-    //console.log(isRegulatedAddress);
-    //this.registration.locationdata[0].prevPage = 'confirm-workplace-details';
-    //this.registration.locationdata[0].currentPage = this.currentSection;
     this.updateSectionNumbers(this.registration);
 
     this._registrationService.updateState(this.registration);
 
-    //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/user-details']);
   }
 
   updateSectionNumbers(data) {
-    debugger;
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/confirm-workplace-details');
-
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
-    debugger;
   }
 
   clickBack() {
     const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
     this.currentSection = this.currentSection - 1;
-    debugger;
-    this.registration.userRoute.route.splice(-1);
-    debugger;
 
-    //this.updateSectionNumbers(this.registration);
-    //this.registration.userRoute = this.registration.userRoute;
+    this.registration.userRoute.route.splice(-1);
+
     this.registration.userRoute.currentPage = this.currentSection;
-    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
-    debugger;
+
     this._registrationService.updateState(this.registration);
 
-    debugger;
     this.router.navigate([this.backLink]);
+  }
+
+  setRegulatedCheckFalse(data) {
+    // clear default location data
+    data.locationdata = [{}];
+    data.locationdata[0]['isRegulated'] = false;
   }
 
   workplaceNotFound() {
     this.addressPostcode = this.registration.locationdata[0].postalCode;
-    debugger;
 
     this._registrationService.getAddressByPostCode(this.addressPostcode).subscribe(
       (data: RegistrationModel) => {
         if (data.success === 1) {
           this.updateSectionNumbers(data);
-          debugger;
+          this.setRegulatedCheckFalse(data);
+
           //data = data.postcodedata;
           this._registrationService.updateState(data);
           //this.routingCheck(data);

@@ -202,14 +202,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     this.setSectionNumbers();
   }
 
-  setSectionNumbers() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
-
-    this.currentSection = this.currentSection + 1;
-    this.lastSection = 8;
-  }
-
   // -- START -- Set validation handlers
   setPostcodeMessage(c: AbstractControl): void {
     this.postcodeMessage = '';
@@ -321,16 +313,12 @@ export class EnterWorkplaceAddressComponent implements OnInit {
 
     // this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
-    console.log(this.registration);
-
     this.registration.locationdata[0]['postalCode'] = postcodeValue;
     this.registration.locationdata[0]['addressLine1'] = address1Value;
     this.registration.locationdata[0]['addressLine2'] = address2Value;
     this.registration.locationdata[0]['townCity'] = townCityValue;
     this.registration.locationdata[0]['county'] = countyValue;
     this.registration.locationdata[0]['locationName'] = wpNameValue;
-
-    console.log(this.registration.locationdata.length);
 
     const updateRegistration = this.registration.locationdata[0];
 
@@ -342,20 +330,19 @@ export class EnterWorkplaceAddressComponent implements OnInit {
 
   }
 
+  setSectionNumbers() {
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+
+    this.currentSection = this.currentSection + 1;
+    this.lastSection = 8;
+  }
+
   updateSectionNumbers(data) {
-    debugger;
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/enter-workplace-address');
-
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
-    debugger;
   }
 
 }

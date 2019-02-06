@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AuthGuard } from "./core/services/auth-guard.service"
+import { AuthGuard } from './core/services/auth-guard.service';
+import { RegisterGuard } from './core/guards/register/register.guard';
 
 import { LoginComponent } from './features/login/login.component';
-//import { RegisterComponent } from './features/register/register.component';
+// import { RegisterComponent } from './features/register/register.component';
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
 import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
 import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
@@ -31,8 +32,18 @@ import { ServicesCapacityComponent } from './features/services-capacity/services
 import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
 import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
-import { ContactUsComponent } from "./features/contactUs/contactUs.component";
+import { ContactUsComponent } from './features/contactUs/contactUs.component';
 import { LogoutComponent } from './features/logout/logout.component';
+// import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
+// import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
+// import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
+// import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
+// import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
+// import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
+// import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
+// import { GenderComponent } from './features/workers/gender/gender.component';
+// import { DisabilityComponent } from './features/workers/disability/disability.component';
+// import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
@@ -41,52 +52,62 @@ const routes: Routes = [
     component: LoginComponent
   },
   {
-    path: 'registered-question',
-    component: CqcRegisteredQuestionComponent,
-  },
-  {
     path: 'sign-out',
     component: LogoutComponent
   },
   {
+    path: 'registered-question',
+    component: CqcRegisteredQuestionComponent,
+  },
+  {
     path: 'select-workplace',
-    component: SelectWorkplaceComponent
+    component: SelectWorkplaceComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'confirm-workplace-details',
-    component: ConfirmWorkplaceDetailsComponent
-  },
-  {
-    path: 'select-workplace-address',
-    component: SelectWorkplaceAddressComponent
+    component: ConfirmWorkplaceDetailsComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'user-details',
-    component: UserDetailsComponent
+    component: UserDetailsComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'create-username',
-    component: CreateUsernameComponent
+    component: CreateUsernameComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'security-question',
-    component: SecurityQuestionComponent
+    component: SecurityQuestionComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'confirm-account-details',
-    component: ConfirmAccountDetailsComponent
+    component: ConfirmAccountDetailsComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'registration-complete',
-    component: RegistrationCompleteComponent
+    component: RegistrationCompleteComponent,
+    canActivate: [RegisterGuard],
+  },
+  {
+    path: 'select-workplace-address',
+    component: SelectWorkplaceAddressComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'enter-workplace-address',
-    component: EnterWorkplaceAddressComponent
+    component: EnterWorkplaceAddressComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'select-main-service',
-    component: SelectMainServiceComponent
+    component: SelectMainServiceComponent,
+    canActivate: [RegisterGuard],
   },
   {
     path: 'continue-creating-account',
@@ -182,15 +203,76 @@ const routes: Routes = [
     path: 'terms-and-conditions',
     component: TermsConditionsComponent
   },
+  // {
+  //   path: 'worker',
+  //   canActivateChild: [AuthGuard],
+  //   children: [
+  //     {
+  //       path: 'edit-staff-record/:id',
+  //       component: CreateStaffRecordComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'create-staff-record',
+  //       component: CreateStaffRecordComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'mental-health/:id',
+  //       component: MentalHealthComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'main-job-start-date/:id',
+  //       component: MainJobStartDateComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'other-job-roles/:id',
+  //       component: OtherJobRolesComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'national-insurance-number/:id',
+  //       component: NationalInsuranceNumberComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'date-of-birth/:id',
+  //       component: DateOfBirthComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'home-postcode/:id',
+  //       component: HomePostcodeComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'gender/:id',
+  //       component: GenderComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'disability/:id',
+  //       component: DisabilityComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //     {
+  //       path: 'ethnicity/:id',
+  //       component: EthnicityComponent,
+  //       canLoad: [AuthGuard]
+  //     },
+  //   ]
+  // },
   {
-    path: "",
-    redirectTo: "/welcome",
-    pathMatch: "full"
+    path: '',
+    redirectTo: '/welcome',
+    pathMatch: 'full'
   },
   {
-    path: "**",
-    redirectTo: "/welcome"
-  }
+    path: '**',
+    redirectTo: '/welcome'
+  },
 ];
 
 @NgModule({
