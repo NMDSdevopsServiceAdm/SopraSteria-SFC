@@ -26,7 +26,7 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
                     if (document.yearArrived.year &&
                         Number.isInteger(document.yearArrived.year) &&
                         document.yearArrived.year <= thisYear &&
-                        document.yearArrived.year > (thisYear - MAXIMUM_AGE)) {
+                        document.yearArrived.year >= (thisYear - MAXIMUM_AGE)) {
                         
                         this.property = {
                             value: document.yearArrived.value,
