@@ -67,7 +67,6 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
           console.log(err);
         },
         () => {
-          console.log('Got all services');
         }
       )
     )
