@@ -46,7 +46,6 @@ import { Number } from './shared/number.directive';
 import { NumberIntOnly } from './shared/number-int-only.directive';
 import { NumberMax } from './shared/number-max.directive';
 import { NumberPositiveOnly } from './shared/number-positive-only.directive';
-import { NoPaste } from './shared/no-paste.directive';
 import { NumberDigitsMax } from './shared/number-digits-max.directive';
 import { DatePickerComponent } from './shared/date-picker/date-picker.component';
 import { LocationService } from './core/services/location.service';
@@ -123,7 +122,6 @@ import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.compone
     Number,
     NumberIntOnly,
     NumberMax,
-    NoPaste,
     NumberPositiveOnly,
     NumberDigitsMax,
     VacanciesComponent,
