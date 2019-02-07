@@ -124,19 +124,25 @@ export class StartersComponent implements OnInit, OnDestroy {
     })
 
     const recordsControl = <FormArray> this.form.controls.recordsControl
-    const noVacanciesReasonControl = this.form.controls.noVacanciesReason
 
     this.subscriptions.push(
       this.establishmentService.getStarters().subscribe(starters => {
         if (starters === 'None') {
+          // Even if "None" option on restore, want a single job role shown
+          recordsControl.push(this.createRecordItem())
+          
           this.form.patchValue({noRecordsReason: 'no-new'}, { emitEvent: true })
         } else if (starters === 'Don\'t know') {
+          // Even if "Don't know" option on restore, want a single job role shown
+          recordsControl.push(this.createRecordItem())
+          
           this.form.patchValue({noRecordsReason: 'dont-know'}, { emitEvent: true })
         }
         else if (Array.isArray(starters) && starters.length) {
           starters.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)))
         } else {
-          starters.push(this.createRecordItem())
+          // If no options and no starters (the value has never been set) - just the default (select job) drop down
+          recordsControl.push(this.createRecordItem())
         }
       })
     )

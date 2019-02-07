@@ -139,18 +139,24 @@ export class VacanciesComponent implements OnInit, OnDestroy {
     })
 
     const vacancyControl = <FormArray> this.vacanciesForm.controls.vacancyControl
-    const noVacanciesReasonControl = this.vacanciesForm.controls.noVacanciesReason
 
     this.subscriptions.push(
       this.establishmentService.getVacancies().subscribe(vacancies => {
         if (vacancies === 'None') {
+          // Even if "None" option on restore, want a single job role shown
+          vacancyControl.push(this.createVacancyControlItem())
+          
           this.vacanciesForm.patchValue({noVacanciesReason: 'no-staff'}, { emitEvent: true })
         } else if (vacancies === 'Don\'t know') {
+          // Even if "Don't know" option on restore, want a single job role shown
+          vacancyControl.push(this.createVacancyControlItem())
+
           this.vacanciesForm.patchValue({noVacanciesReason: 'dont-know'}, { emitEvent: true })
         }
         else if (Array.isArray(vacancies) && vacancies.length) {
           vacancies.forEach(v => vacancyControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)))
         } else {
+          // If no options and no vacancies (the value has never been set) - just the default (select job) drop down
           vacancyControl.push(this.createVacancyControlItem())
         }
       })

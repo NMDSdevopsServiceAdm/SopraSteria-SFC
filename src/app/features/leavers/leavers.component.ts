@@ -127,14 +127,21 @@ export class LeaversComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.establishmentService.getLeavers().subscribe(leavers => {
         if (leavers === 'None') {
+          // Even if "None" option, want a single job role shown
+          recordsControl.push(this.createRecordItem())
+          
           this.form.patchValue({noRecordsReason: 'no-new'}, { emitEvent: true })
         } else if (leavers === 'Don\'t know') {
+          // Even if "Don'#t know" option on restore, want a single job role shown
+          recordsControl.push(this.createRecordItem())
+          
           this.form.patchValue({noRecordsReason: 'dont-know'}, { emitEvent: true })
         }
         else if (Array.isArray(leavers) && leavers.length) {
           leavers.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)))
         } else {
-          leavers.push(this.createRecordItem())
+          // If no options and no leavers (the value has never been set) - just the default (select job) drop down
+          recordsControl.push(this.createRecordItem())
         }
       })
     )
