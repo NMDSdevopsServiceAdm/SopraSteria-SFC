@@ -53,7 +53,6 @@ import { RegistrationService } from './core/services/registration.service';
 import { WorkerService } from './core/services/worker.service';
 import { HomepageComponent } from './features/homepage/homepage.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
-import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { LogoutComponent } from './features/logout/logout.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
@@ -117,7 +116,6 @@ import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.compone
     ContinueCreatingAccountComponent,
     HomepageComponent,
     SelectOtherServicesComponent,
-    SelectOtherServicesListComponent,
     TypeOfEmployerComponent,
     Number,
     NumberIntOnly,
