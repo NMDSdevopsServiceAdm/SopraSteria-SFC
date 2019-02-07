@@ -14,7 +14,7 @@ router.route('/').get(async (req, res) => {
       where: {
         id: establishmentId
       },
-      attributes: ['id', 'name'],
+      attributes: ['id', 'name', 'vacancies', 'starters', 'leavers'],
       include: [
         {
           model: models.establishmentJobs,
@@ -61,15 +61,42 @@ router.route('/').post(async (req, res) => {
     return res.status(400).send(`Unexpected jobs: ${givenJobs}`);
   }
 
+  // each of vacancies, starters or leavers (if defined) must either by an array or
+  //  a string of "None" or "Don't know"
+  const jobDeclaration = ["None", "Don't know"];
+  if (givenJobs.vacancies) {
+    if (!(Array.isArray(givenJobs.vacancies) ||
+         jobDeclaration.includes(givenJobs.vacancies))) {
+          console.error('establishment::jobs POST - unexpected  vacancies: ', givenJobs.vacancies);
+          return res.status(400).send(`Unexpected vacancies: ${givenJobs.vacancies}`);
+    }
+  }
+  if (givenJobs.starters) {
+    if (!(Array.isArray(givenJobs.starters) ||
+         jobDeclaration.includes(givenJobs.starters))) {
+          console.error('establishment::jobs POST - unexpected  starters: ', givenJobs.starters);
+          return res.status(400).send(`Unexpected starters: ${givenJobs.starters}`);
+    }
+  }
+  if (givenJobs.leavers) {
+    if (!(Array.isArray(givenJobs.leavers) ||
+         jobDeclaration.includes(givenJobs.leavers))) {
+          console.error('establishment::jobs POST - unexpected  leavers: ', givenJobs.leavers);
+          return res.status(400).send(`Unexpected leavers: ${givenJobs.leavers}`);
+    }
+  }
+
   try {
-    let results = await models.establishment.findOne({
+    let thisEstablishment = await models.establishment.findOne({
       where: {
         id: establishmentId
       },
-      attributes: ['id', 'name']
+      attributes: ['id', 'name', 'vacancies', 'starters', 'leavers']
     });
 
-    if (results && results.id && (establishmentId === results.id)) {
+    if (thisEstablishment && thisEstablishment.id && (establishmentId === thisEstablishment.id)) {
+      const establishmentRecord = thisEstablishment;
+
       // when processing the job, we need to ensure they are one of the known jobs
       const allJobsResult = await models.job.findAll({
         attributes: ['id']
@@ -87,7 +114,8 @@ router.route('/').post(async (req, res) => {
       // TODO: Could do with some refactoring for each job type
       await models.sequelize.transaction(async t => {
         // first process vacancies
-        if (givenJobs.vacancies && Array.isArray(givenJobs.vacancies)) {
+        if (givenJobs.vacancies) {
+          // vacancies is defined; delete all known vanancies for this Establishment
           await models.establishmentJobs.destroy({
             where: {
               type: 'Vacancies',
@@ -96,23 +124,36 @@ router.route('/').post(async (req, res) => {
           });
 
           // now iterate through the vacancies
-          const vacancyRecords = [];
-          givenJobs.vacancies.forEach(thisVacancy => {
-            if (isValidJobEntry(thisVacancy, allJobs)) {
-              vacancyRecords.push(
-                models.establishmentJobs.create({
-                  jobId: thisVacancy.jobId,
-                  total: thisVacancy.total,
-                  establishmentId,
-                  type: 'Vacancies'
-                })
-              );
-            }
-          });
-          await Promise.all(vacancyRecords);
+          if (Array.isArray(givenJobs.vacancies)) {
+            const vacancyRecords = [];
+            givenJobs.vacancies.forEach(thisVacancy => {
+              if (isValidJobEntry(thisVacancy, allJobs)) {
+                vacancyRecords.push(
+                  models.establishmentJobs.create({
+                    jobId: thisVacancy.jobId,
+                    total: thisVacancy.total,
+                    establishmentId,
+                    type: 'Vacancies'
+                  })
+                );
+              }
+            });
+            await Promise.all(vacancyRecords);
+
+            // update the Establishment vacancies declaration
+            await establishmentRecord.update({
+              vacancies: 'With Jobs'
+            });
+          } else {
+            // no vacancies given, so simply update the Establishment vacancies declaration
+            await establishmentRecord.update({
+              vacancies: givenJobs.vacancies
+            });
+          }
         }
 
-        if (givenJobs.starters && Array.isArray(givenJobs.starters)) {
+        if (givenJobs.starters) {
+          // starters are declared; delete all existing starter records for this Establishment
           await models.establishmentJobs.destroy({
             where: {
               type: 'Starters',
@@ -121,23 +162,38 @@ router.route('/').post(async (req, res) => {
           });
 
           // now iterate through the vacancies
-          const starterRecords = [];
-          givenJobs.starters.forEach(thisStarter => {
-            if (isValidJobEntry(thisStarter, allJobs)) {
-              starterRecords.push(
-                models.establishmentJobs.create({
-                  jobId: thisStarter.jobId,
-                  total: thisStarter.total,
-                  establishmentId,
-                  type: 'Starters'
-                })
-              );
-            }
-          });
-          await Promise.all(starterRecords);
+          if (Array.isArray(givenJobs.starters)) {
+            const starterRecords = [];
+            givenJobs.starters.forEach(thisStarter => {
+              if (isValidJobEntry(thisStarter, allJobs)) {
+                starterRecords.push(
+                  models.establishmentJobs.create({
+                    jobId: thisStarter.jobId,
+                    total: thisStarter.total,
+                    establishmentId,
+                    type: 'Starters'
+                  })
+                );
+              }
+            });
+            await Promise.all(starterRecords);
+
+            // update the Establishment starters declaration
+            await establishmentRecord.update({
+              starters: 'With Jobs'
+            });
+
+          } else {
+            // no starters given, so simply update the Establishment starters declaration
+            await establishmentRecord.update({
+              starters: givenJobs.starters
+            });
+          }
+
         }
 
-        if (givenJobs.leavers && Array.isArray(givenJobs.leavers)) {
+        if (givenJobs.leavers) {
+          // leavers are declared; delete all existing leaver records for this Establishment
           await models.establishmentJobs.destroy({
             where: {
               type: 'Leavers',
@@ -146,20 +202,33 @@ router.route('/').post(async (req, res) => {
           });
 
           // now iterate through the vacancies
-          const leaverRecords = [];
-          givenJobs.leavers.forEach(thisLeaver => {
-            if (isValidJobEntry(thisLeaver, allJobs)) {
-              leaverRecords.push(
-                models.establishmentJobs.create({
-                  jobId: thisLeaver.jobId,
-                  total: thisLeaver.total,
-                  establishmentId,
-                  type: 'Leavers'
-                })
-              );
-            }
-          });
-          await Promise.all(leaverRecords);
+          if (Array.isArray(givenJobs.leavers)) {
+            const leaverRecords = [];
+            givenJobs.leavers.forEach(thisLeaver => {
+              if (isValidJobEntry(thisLeaver, allJobs)) {
+                leaverRecords.push(
+                  models.establishmentJobs.create({
+                    jobId: thisLeaver.jobId,
+                    total: thisLeaver.total,
+                    establishmentId,
+                    type: 'Leavers'
+                  })
+                );
+              }
+            });
+            await Promise.all(leaverRecords);
+
+            // update the Establishment leavers declaration
+            await establishmentRecord.update({
+              leavers: 'With Jobs'
+            });
+
+          } else {
+            // no leavers given, so simply update the Establishment leavers declaration
+            await establishmentRecord.update({
+              leavers: givenJobs.leavers
+            });
+          }
         }
       });
 
@@ -168,7 +237,7 @@ router.route('/').post(async (req, res) => {
         where: {
           id: establishmentId
         },
-        attributes: ['id', 'name'],
+        attributes: ['id', 'name', 'vacancies', 'starters', 'leavers'],
         include: [{
           model: models.establishmentJobs,
           as: 'jobs',
@@ -197,7 +266,7 @@ router.route('/').post(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::jobs POST - failed', err);
-    return res.status(503).send(`Unable to update Establishment with jobs: ${req.params.id}/${givenEmployerType}`);
+    return res.status(503).send(`Unable to update Establishment with jobs: ${req.params.id}`);
   }
 });
 
@@ -232,7 +301,7 @@ const formatJobResponse = (establishment) => {
   return {
     id: establishment.id,
     name: establishment.name,
-    jobs: JobFormatters.jobsByTypeJSON(establishment.jobs)
+    jobs: JobFormatters.jobsByTypeJSON(establishment)
   };
 }
 

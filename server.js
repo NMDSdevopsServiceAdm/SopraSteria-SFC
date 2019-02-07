@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 const helmet = require('helmet');
 var cacheMiddleware = require('./server/utils/middleware/noCache');
+var refCacheMiddleware = require('./server/utils/middleware/refCache');
 
 var routes = require('./server/routes/index');
 var locations = require('./server/routes/locations');
@@ -17,7 +18,11 @@ var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
 var login = require('./server/routes/login');
-
+var ethnicity = require('./server/routes/ethnicity');
+var country = require('./server/routes/country');
+var nationality = require('./server/routes/nationalities');
+var qualification = require('./server/routes/qualifications');
+var recruitedFrom = require('./server/routes/recruitedFrom');
 
 var errors = require('./server/routes/errors');
 
@@ -39,9 +44,14 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // open/reference endpoints
-app.use('/api/services', services);
-app.use('/api/jobs', jobs);
-app.use('/api/localAuthority', la);
+app.use('/api/services', [refCacheMiddleware.refcache, services]);
+app.use('/api/ethnicity', [refCacheMiddleware.refcache, ethnicity]);
+app.use('/api/country', [refCacheMiddleware.refcache, country]);
+app.use('/api/nationality', [refCacheMiddleware.refcache, nationality]);
+app.use('/api/qualification', [refCacheMiddleware.refcache, qualification]);
+app.use('/api/recruitedFrom', [refCacheMiddleware.refcache, recruitedFrom]);
+app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
+app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 
 // transaction endpoints
 app.use('/api/errors', errors);

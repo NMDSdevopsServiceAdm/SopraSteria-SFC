@@ -53,8 +53,9 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           console.error('isAuthenticated - given and known establishment id do not match');
           return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
         }
+
         req.establishmentId =   claim.EstblishmentId ;        
-        req.Username= claim.Username;
+        req.username= claim.sub;
         req.isAdmin = claim.isAdmin;
         next();
         

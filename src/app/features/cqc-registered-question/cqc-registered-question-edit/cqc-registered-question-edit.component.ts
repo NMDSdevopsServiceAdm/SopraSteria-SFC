@@ -379,6 +379,3 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     reg.locationdata[0]['isRegulated'] = false;
   }
 }
-
-
-

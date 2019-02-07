@@ -1,0 +1,35 @@
+<div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a routerLink="/worker/disability/{{workerId}}">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1">What is their ethnicity?</h1>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="form-group mt-5">
+      <div class="field-group mb-5">
+        <label>Ethnicity
+          <span class="example">For example, White and Black African</span>
+          <select formControlName="ethnicity" class="form-control">
+            <option class="form-control" [ngValue]="null">Select ethnicity</option>
+            <option *ngFor="let ethnicity of ethnicitiesUngrouped()" class="form-control" [value]="ethnicity.id">{{ethnicity.ethnicity}}</option>
+            <optgroup *ngFor="let groupName of ethnicityGroups()" label="{{groupName}}">
+              <option *ngFor="let ethnicity of ethnicities[groupName]" class="form-control" [value]="ethnicity.id">{{ethnicity.ethnicity}}</option>
+            </optgroup>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
+  </form>
+</div>

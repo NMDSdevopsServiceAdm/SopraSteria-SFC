@@ -16,6 +16,7 @@ const ShareData = require('./shareData');
 const Staff = require('./staff');
 const Jobs = require('./jobs');
 const LA = require('./la');
+const Worker = require('./worker');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -26,11 +27,12 @@ router.use('/:id/share', ShareData);
 router.use('/:id/staff', Staff);
 router.use('/:id/jobs', Jobs);
 router.use('/:id/localAuthorities', LA);
+router.use('/:id/worker', Worker);
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
   const establishmentId = req.establishmentId;
- 
+
   try {
     let results = await models.establishment.findOne({
       where: {

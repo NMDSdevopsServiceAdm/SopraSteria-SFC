@@ -101,9 +101,23 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   }
 
   workplaceNotFound() {
-    this.router.navigate(["/select-workplace-address"]);
+    this.addressPostcode = this.registration.locationdata[0].postalCode;
+
+    this._registrationService.getAddressByPostCode(this.addressPostcode).subscribe(
+      (data: RegistrationModel) => {
+        if (data.success === 1) {
+          this.updateSectionNumbers(data);
+          this.setRegulatedCheckFalse(data);
+
+          //data = data.postcodedata;
+          this._registrationService.updateState(data);
+          //this.routingCheck(data);
+        }
+
+        this.router.navigate(["/select-workplace-address"])
+      }
+    );
   }
 
 }
-
 

@@ -1,5 +1,5 @@
 export abstract class BaseNumber {
-  private static specialKeyCodes: Array<number> = [ 9, 35, 36, 37, 39, 91 ]
+  private static specialKeyCodes: number[] = [ 8, 9, 35, 36, 37, 39, 91 ]
 
   protected isKeyCodeSpecial(keyCode) {
     return BaseNumber.specialKeyCodes.some(k => k === keyCode)
@@ -27,5 +27,9 @@ export abstract class BaseNumber {
 
   protected isKeyCodeDot(keyCode) {
     return keyCode === 190
+  }
+
+  protected isSelectionTypeRange() {
+    return document.getSelection().type === "Range"
   }
 }

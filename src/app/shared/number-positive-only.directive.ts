@@ -14,7 +14,9 @@ export class NumberPositiveOnly extends BaseNumber {
   onKeyDown(event: KeyboardEvent) {
     const { key, keyCode } = event
 
-    if (!this.isKeyCodeSpecial(keyCode)) {
+    if ((isFinite(parseInt(key)) && !this.isSelectionTypeRange()) ||
+        this.isKeyCodeIncrement(keyCode) ||
+        this.isKeyCodeDecrement(keyCode)) {
       const curVal = parseFloat(this.el.nativeElement.value)
       const nextVal = `${isNaN(curVal) ? "" : curVal}${key}`
 
