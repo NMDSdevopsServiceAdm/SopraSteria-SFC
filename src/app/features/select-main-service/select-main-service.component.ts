@@ -42,6 +42,8 @@ export class SelectMainServiceComponent implements OnInit {
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
+    this.setSectionNumbers();
+
     // Get main services
     this.getMainServices();
 
@@ -51,31 +53,7 @@ export class SelectMainServiceComponent implements OnInit {
     );
 
     this.isInvalid = false;
-    this.setSectionNumbers();
-  }
 
-  setSectionNumbers() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
-
-    this.currentSection = this.currentSection + 1;
-    if (this.backLink === '/registered-question') {
-      this.lastSection = 7;
-    }
-    else if (this.backLink === '/select-workplace') {
-      this.lastSection = 8;
-    }
-    else if (this.backLink === '/enter-workplace-address') {
-      this.lastSection = 9;
-    }
-    else if (this.backLink === '/confirm-workplace-details') {
-      if (this.registration.userRoute[1].route === '/select-workplace') {
-        this.lastSection = 8;
-      }
-      else {
-        this.lastSection = 7;
-      }
-    }
   }
 
   clickBack() {
@@ -84,7 +62,7 @@ export class SelectMainServiceComponent implements OnInit {
     this.currentSection = this.currentSection - 1;
     this.registration.userRoute.route.splice(-1);
 
-    //this.updateSectionNumbers(this.registration);
+    this.updateSectionNumbers(this.registration);
     //this.registration.userRoute = this.registration.userRoute;
     this.registration.userRoute.currentPage = this.currentSection;
     //this.registration.userRoute['route'] = this.registration.userRoute['route'];
@@ -138,18 +116,35 @@ export class SelectMainServiceComponent implements OnInit {
 
   }
 
+  setSectionNumbers() {
+    this.currentSection = this.registration.userRoute.currentPage;
+    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
+    this.currentSection = this.currentSection + 1;
+
+    if (this.backLink === '/registered-question') {
+      this.lastSection = 7;
+    }
+    else if (this.backLink === '/select-workplace') {
+      this.lastSection = 8;
+    }
+    else if (this.backLink === '/enter-workplace-address') {
+      this.lastSection = 9;
+    }
+    else if (this.backLink === '/confirm-workplace-details') {
+      if (this.registration.userRoute[1].route === '/select-workplace') {
+        this.lastSection = 8;
+      }
+      else {
+        this.lastSection = 7;
+      }
+    }
+  }
+
   updateSectionNumbers(data) {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/select-main-service');
-
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
   }
 
 }

@@ -92,7 +92,6 @@ export class CreateUsernameComponent implements OnInit {
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    //console.log(this.registration);
 
     // Create username watcher
     this.getCreateUsernameInput.valueChanges.pipe(
@@ -147,27 +146,13 @@ export class CreateUsernameComponent implements OnInit {
 
   checkUsernameDuplicate(value) {
 
-    //const username = this.getCreateUsernameInput();
-    debugger;
     this._registrationService.getUsernameDuplicate(value)
-    // .subscribe(
-    //   res => {
-    //     // console.log(res)
-    //     debugger;
-    //     if (res.status === '1') {
-    //       debugger;
-    //       this.usernameApiError = res.message;
-    //       //this.setCreateUsernameMessage(this.getCreateUsernameInput);
-    //     }
-    //   }
-    // );
     .subscribe(
       (data: RegistrationModel) => {
         if (data['status'] === '1') {
 
           this.usernameApiError = data.message;
 
-          debugger;
           this.setCreateUsernameMessage(this.getCreateUsernameInput);
 
         }
@@ -176,7 +161,6 @@ export class CreateUsernameComponent implements OnInit {
         }
       },
       (err: RegistrationTrackerError) => {
-        debugger;
         console.log(err);
         this.usernameApiError = err.message;
         this.setCreateUsernameMessage(this.getCreateUsernameInput);
@@ -194,9 +178,8 @@ export class CreateUsernameComponent implements OnInit {
 
     this.currentSection = this.currentSection + 1;
 
-    debugger;
     if (this.backLink === '/user-details') {
-      debugger;
+
       if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
         this.lastSection = 8;
       }
@@ -217,7 +200,6 @@ export class CreateUsernameComponent implements OnInit {
         key => this.usernameMessage += this.usernameMessages[key]).join(' ');
     }
 
-    //this.submittedUsername = false;
   }
 
   setPasswordMessage(c: AbstractControl): void {
@@ -228,7 +210,6 @@ export class CreateUsernameComponent implements OnInit {
         key => this.passwordMessage += this.passwordMessages[key]).join(' ');
     }
 
-    //this.submittedPassword = false;
   }
 
   setConfirmPasswordMessage(c: AbstractControl): void {
@@ -244,7 +225,6 @@ export class CreateUsernameComponent implements OnInit {
       }
     }
 
-    //this.submittedConfirmPassword = false;
   }
 
   changeDetails(): void {
@@ -274,10 +254,6 @@ export class CreateUsernameComponent implements OnInit {
     // stop here if form is invalid
     if (this.createUserNamePasswordForm.invalid || this.usernameApiError) {
 
-      //this.isSubmitted = false;
-      //this.submittedUsername = false;
-      //this.submittedPassword = false;
-      //this.submittedConfirmPassword = false;
       return;
     }
     else {
@@ -289,7 +265,6 @@ export class CreateUsernameComponent implements OnInit {
 
     const createUsernameValue = this.createUserNamePasswordForm.get('createUsernameInput').value;
     const createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
-    //let confirmPasswordValue = this.createUserNamePasswordForm.get('confirmPasswordInput').value;
 
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       // Get updated form results
@@ -318,66 +293,31 @@ export class CreateUsernameComponent implements OnInit {
 
     this._registrationService.updateState(this.registration);
 
-    //this._registrationService.routingCheck(this.registration);
-
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       this.router.navigate(['/confirm-account-details']);
     }
     else {
       this.router.navigate(['/security-question']);
     }
-
-
-    //routerLink = "/security-question"
   }
 
   updateSectionNumbers(data) {
-    debugger;
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/create-username');
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
-    debugger;
   }
 
   clickBack() {
     const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
     this.currentSection = this.currentSection - 1;
-    debugger;
     this.registration.userRoute.route.splice(-1);
-    debugger;
 
-    //this.updateSectionNumbers(this.registration);
-    //this.registration.userRoute = this.registration.userRoute;
     this.registration.userRoute.currentPage = this.currentSection;
-    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
-    debugger;
+
     this._registrationService.updateState(this.registration);
 
-    debugger;
     this.router.navigate([this.backLink]);
   }
 }
-
-// Check for content in both CQC registered input fields
-// function matchInputValues(c: AbstractControl): { [key: string]: boolean } | null {
-//   const passwordControl = c.get('createPasswordInput');
-//   const confirmPasswordControl = c.get('confirmPasswordInput');
-
-//   if (confirmPasswordControl.pristine) {
-//     return null;
-//   }
-
-//   if (passwordControl.value === confirmPasswordControl.value) {
-//     return null;
-//   }
-
-//   return { 'notMatched': true };
-// }

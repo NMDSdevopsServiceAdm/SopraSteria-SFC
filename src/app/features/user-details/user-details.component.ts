@@ -93,7 +93,7 @@ export class UserDetailsComponent implements OnInit {
       userEmailInput: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
       userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
 
-      
+
     });
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
