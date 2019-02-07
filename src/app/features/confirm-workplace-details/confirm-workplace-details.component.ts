@@ -99,11 +99,10 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
     data.locationdata = [{}];
     data.locationdata[0]['isRegulated'] = false;
   }
-
+  
   workplaceNotFound() {
     this.router.navigate(["/select-workplace-address"]);
   }
 
 }
-
 

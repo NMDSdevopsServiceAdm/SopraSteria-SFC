@@ -378,7 +378,25 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     reg.locationdata = [{}];
     reg.locationdata[0]['isRegulated'] = false;
   }
+
+  updateSectionNumbers(data) {
+    if (this.registration.userRoute) {
+      data['userRoute'] = this.registration.userRoute;
+      data.userRoute['currentPage'] = this.registration.userRoute['currentPage'];
+      data.userRoute['route'] = this.registration.userRoute['route'];
+      data.userRoute['route'].push('/registered-question');
+    }
+    else {
+      data['userRoute'] = {};
+      data.userRoute['currentPage'] = this.currentSection;
+      data.userRoute['route'] = [];
+      data.userRoute['route'].push('/registered-question');
+    }
+  }
+
+  setRegulatedCheckFalse(reg) {
+    // clear default location data
+    reg.locationdata = [{}];
+    reg.locationdata[0]['isRegulated'] = false;
+  }
 }
-
-
-
