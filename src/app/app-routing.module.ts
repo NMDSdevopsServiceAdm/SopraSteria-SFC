@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AuthGuard } from './core/services/auth-guard.service';
+import { AuthGuard } from "./core/services/auth-guard.service";
 import { RegisterGuard } from './core/guards/register/register.guard';
 
 import { LoginComponent } from './features/login/login.component';
@@ -56,12 +56,8 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
 
 const routes: Routes = [
   {
-    path: "login",
+    path: 'login',
     component: LoginComponent
-  },
-  {
-    path: 'sign-out',
-    component: LogoutComponent
   },
   {
     path: 'registered-question',
@@ -211,7 +207,6 @@ const routes: Routes = [
     path: 'terms-and-conditions',
     component: TermsConditionsComponent
   },
-<<<<<<< registration-test
   // {
   //   path: 'worker',
   //   canActivateChild: [AuthGuard],
