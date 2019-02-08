@@ -5,7 +5,6 @@ const axios = require('axios');
 
 // to #asc-wds-dev - 
 const slackWebHookUrl = process.env.SLACK_URL ? process.env.SLACK_URL : null;
-// https://hooks.slack.com/services/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
 
 // log to slack; if given level is less than equal to environment Slack log level
 const SLACK_TRACE = 5;
