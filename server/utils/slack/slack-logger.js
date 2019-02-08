@@ -7,25 +7,24 @@ const axios = require('axios');
 const slackWebHookUrl = process.env.SLACK_URL ? process.env.SLACK_URL : null;
 // https://hooks.slack.com/services/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
 
-// log to console, if given level is less than equal to environment log level
-const SLACK_TRACE=5;
-const SLACK_INFO=3;
-const SLACK_WARN=2;
-const SLACK_ERROR=1;
-const SLACK_DISABLED=0;
+// log to slack; if given level is less than equal to environment Slack log level
+const SLACK_TRACE = 5;
+const SLACK_INFO = 3;
+const SLACK_WARN = 2;
+const SLACK_ERROR = 1;
+const SLACK_DISABLED = 0;
 
 // posts the given "Slack formatted" message
 const postToSlack = async (slackMsg) => {
-  console.log("This is my slack message: ", slackMsg)
     try {
         const apiResponse = await axios.post(
-          slackWebHookUrl,
-          slackMsg,       // the data
-          {
-              headers: {
-                  'Content-Type': 'application/json',
-              }
-          });
+            slackWebHookUrl,
+            slackMsg,       // the data
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
     } catch (err) {
         // silently discard errors
         console.error("Failed to post to Slack: ", err);
@@ -45,22 +44,21 @@ const logToSlack = async (level, slackMsg) => {
 };
 
 exports.info = async (title, msg) => {
-  await logToSlack(SLACK_INFO, {
-      text: `INFO`,
-      username: 'markdownbot',
-      markdwn: true,
-      attachments: [
-          {
-              color: 'good',
-              title,
-              text: msg
-          }
-      ]
-  });
+    await logToSlack(SLACK_INFO, {
+        text: `INFO`,
+        username: 'markdownbot',
+        markdwn: true,
+        attachments: [
+            {
+                color: 'good',
+                title,
+                text: msg
+            }
+        ]
+    });
 }
 
 exports.warn = async (title, msg) => {
-    // logWarn(...theArgs);
     await logToSlack(SLACK_WARN, {
         text: `WARNING`,
         username: 'markdownbot',
@@ -76,7 +74,6 @@ exports.warn = async (title, msg) => {
 }
 
 exports.error = async (title, msg) => {
-    // logError(...theArgs);
     await logToSlack(SLACK_ERROR, {
         text: `ERROR`,
         username: 'markdownbot',
@@ -92,7 +89,6 @@ exports.error = async (title, msg) => {
 }
 
 exports.trace = async (title, msg) => {
-    // logTrace(theArgs);
     await logToSlack(SLACK_TRACE, {
         text: `TRACE`,
         username: 'markdownbot',
