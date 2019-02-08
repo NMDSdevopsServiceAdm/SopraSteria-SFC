@@ -104,9 +104,6 @@ app.use('/api/test', sanitizer());       // used as demonstration on test routes
 
 
 app.use(cookieParser());
-
-
-
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // open/reference endpoints
