@@ -4,19 +4,25 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+const helmet = require('helmet');
 var cacheMiddleware = require('./server/utils/middleware/noCache');
+var refCacheMiddleware = require('./server/utils/middleware/refCache');
 
 var routes = require('./server/routes/index');
 var locations = require('./server/routes/locations');
 var postcodes = require('./server/routes/postcodes');
 var services = require('./server/routes/services');
 var registration = require('./server/routes/registration');
-var tmpLogin = require('./server/routes/tmpLogin');
 var establishments = require('./server/routes/establishments');
 var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
+var login = require('./server/routes/login');
+var ethnicity = require('./server/routes/ethnicity');
+var country = require('./server/routes/country');
+var nationality = require('./server/routes/nationalities');
+var qualification = require('./server/routes/qualifications');
+var recruitedFrom = require('./server/routes/recruitedFrom');
 
 var errors = require('./server/routes/errors');
 
@@ -25,7 +31,7 @@ var testOnly = require('./server/routes/testOnly');
 
 
 var app = express();
-
+app.use(helmet());
 // view engine setup
 app.set('views', path.join(__dirname, '/server/views'));
 app.set('view engine', 'jade');
@@ -38,19 +44,25 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // open/reference endpoints
-app.use('/api/services', services);
-app.use('/api/jobs', jobs);
-app.use('/api/localAuthority', la);
+app.use('/api/services', [refCacheMiddleware.refcache, services]);
+app.use('/api/ethnicity', [refCacheMiddleware.refcache, ethnicity]);
+app.use('/api/country', [refCacheMiddleware.refcache, country]);
+app.use('/api/nationality', [refCacheMiddleware.refcache, nationality]);
+app.use('/api/qualification', [refCacheMiddleware.refcache, qualification]);
+app.use('/api/recruitedFrom', [refCacheMiddleware.refcache, recruitedFrom]);
+app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
+app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
 app.use('/api/locations', [cacheMiddleware.nocache, locations]);
 app.use('/api/postcodes', [cacheMiddleware.nocache, postcodes]);
 app.use('/api/registration', [cacheMiddleware.nocache, registration]);
-app.use('/api/login', [cacheMiddleware.nocache, tmpLogin]);
+app.use('/api/login', [cacheMiddleware.nocache, login]);
 app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
+
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

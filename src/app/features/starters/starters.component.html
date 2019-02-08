@@ -1,4 +1,9 @@
 <div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a routerLink="/vacancies">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
 
   <form novalidate
     (ngSubmit)="submitHandler()"
@@ -12,7 +17,7 @@
 
     <app-messages></app-messages>
 
-    <div class="form-group mb-5">
+    <div class="form-group mb-5 mt-5">
       <div class="col-12 p-0">
         <div formArrayName="recordsControl">
           <div class="row column-desc">
@@ -35,7 +40,7 @@
             </div>
             <div class="col-3 col-sm-2">
               <input type="number" formControlName="total" class="form-control"
-                appNumberMax="999" appNumberPositiveOnly appNumberIntOnly appNoPaste min="0" step="1"
+                [appNumberMax]="999" appNumberPositiveOnly appNumberIntOnly [appNumberDigitsMax]="3" min="0" step="1"
                 [ngClass]="{'is-invalid': (record.get('total').touched || record.get('total').dirty) && !record.get('total').valid }" />
             </div>
             <div *ngIf="idx !== 0" class="col-3 center-v no-padding-left">

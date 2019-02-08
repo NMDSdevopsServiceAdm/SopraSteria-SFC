@@ -42,25 +42,32 @@ export class LeaversComponent implements OnInit, OnDestroy {
 
   submitHandler(): void {
     const { recordsControl, noRecordsReason } = this.form.controls
-
-    if (noRecordsReason.value === "dont-know") {
-      this.router.navigate(["/staff"])
+    if (this.form.valid || noRecordsReason.value === "no-new" || noRecordsReason.value === "dont-know") {
+      // regardless of which option is chosen, must always submit to backend
+      let leaversToSubmit = null
+      let nextStepNavigation = null
+      
+      if (noRecordsReason.value === 'dont-know')  {
+        leaversToSubmit = 'Don\'t know'
+        nextStepNavigation = '/staff'
+      } else if (noRecordsReason.value === 'no-new') {
+        leaversToSubmit = 'None'
+        nextStepNavigation = '/staff'
+      } else {
+        // default being to send the set of all the current jobs which then need to be confirmed.
+        leaversToSubmit =  recordsControl.value.map(v => ({ jobId: parseInt(v.jobId), total: v.total }));
+        nextStepNavigation = '/confirm-leavers';
+      }
+      
+      this.subscriptions.push(
+        this.establishmentService.postLeavers(leaversToSubmit)
+          .subscribe(() => {
+            this.router.navigate([nextStepNavigation])
+          }))
 
     } else {
-      if (this.form.valid || noRecordsReason.value === "no-new") {
-        const recordsFromForm = this.form.valid ? this.form.controls.recordsControl.value : []
-        const records = recordsFromForm.map(v => ({ jobId: parseFloat(v.jobId), total: v.total }));
-
-        this.subscriptions.push(
-          this.establishmentService.postLeavers(records)
-            .subscribe(() => {
-              this.router.navigate(["/confirm-leavers"])
-            }))
-
-      } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
-      }
+      this.messageService.clearError()
+      this.messageService.show("error", "Please fill the required fields.")
     }
   }
 
@@ -118,11 +125,22 @@ export class LeaversComponent implements OnInit, OnDestroy {
     const recordsControl = <FormArray> this.form.controls.recordsControl
 
     this.subscriptions.push(
-      this.establishmentService.getLeavers().subscribe(item => {
-        if (item.length) {
-          item.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)))
-
+      this.establishmentService.getLeavers().subscribe(leavers => {
+        if (leavers === 'None') {
+          // Even if "None" option, want a single job role shown
+          recordsControl.push(this.createRecordItem())
+          
+          this.form.patchValue({noRecordsReason: 'no-new'}, { emitEvent: true })
+        } else if (leavers === 'Don\'t know') {
+          // Even if "Don'#t know" option on restore, want a single job role shown
+          recordsControl.push(this.createRecordItem())
+          
+          this.form.patchValue({noRecordsReason: 'dont-know'}, { emitEvent: true })
+        }
+        else if (Array.isArray(leavers) && leavers.length) {
+          leavers.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)))
         } else {
+          // If no options and no leavers (the value has never been set) - just the default (select job) drop down
           recordsControl.push(this.createRecordItem())
         }
       })

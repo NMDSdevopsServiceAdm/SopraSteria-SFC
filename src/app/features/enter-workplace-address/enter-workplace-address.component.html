@@ -6,7 +6,7 @@
     </a>
   </div>
 
-  <p class="h5">Section 3 of 9</p>
+  <!-- <p class="h5">Section 3 of 9</p> -->
   <h1 class="h1">Enter your workplace address</h1>
 
   <form novalidate
@@ -120,7 +120,7 @@
 
           <span class="invalid-feedback">
             <span *ngIf="submittedWpNameInput && getWpName.hasError('maxlength')" class="main-body-text mb-2">
-              The Workplace name must be no longer than 40 characters.
+              The Workplace name must be no longer than 120 characters.
             </span>
             <span *ngIf="submittedWpNameInput && getWpName.hasError('required')" class="main-body-text mb-2">
               Please enter your Workplace name.

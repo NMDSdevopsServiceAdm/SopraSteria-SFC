@@ -5,7 +5,7 @@ h1, .h1 {
 
   @include rem(padding, 0 0 50px 0);
   @include rem(font-size, 48px);
-  @include rem(line-height, 48px);
+  @include rem(line-height, 58px);
 }
 
 h2, .h2 {
@@ -120,11 +120,14 @@ strong {
 
 .main-page-container {
   header {
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
 
     h1 {
       padding: 0;
-      margin-bottom: 3rem;
+
+      ~ * {
+        margin-top: 3rem;
+      }
     }
   }
 }

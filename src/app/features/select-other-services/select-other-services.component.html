@@ -1,4 +1,9 @@
 <div class="sub-page-container col-12">
+  <div id="back" class="back-link">
+    <a routerLink="/type-of-employer">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
 
   <form novalidate
     (ngSubmit)="onSubmit()"
@@ -27,18 +32,19 @@
             <div class="row mb-4">
               <div class="col-12">
 
-                <label class="check main-body-text p-0" for="{{ data.id }}">
-                  <input type="checkbox" id="{{ data.id }}" formControlName="otherServiceSelected"
-                    [checked]="data.isMyService" value="{{ data.name }}" (change)="toggleCheckbox($event.target)" />
-                  <span class="checkmark"></span>
+                  <label class="check main-body-text p-0" for="{{ data.id }}">
+                    <input type="checkbox" id="{{ data.id }}" formControlName="otherServiceSelected"
+                    [checked]="checkboxesSelected.includes(data.id)" value="{{ data.id }}" (change)="toggleCheckbox($event.target)" />
+                    <span class="checkmark"></span>
 
-                  <span class="check-label main-body-text mt-0">{{ data.name }}</span>
-                </label>
+                    <span class="check-label main-body-text mt-0">{{ data.name }}</span>
+                  </label>
 
               </div>
             </div>
           </div>
         </div>
+  
       </div>
 
     </div>

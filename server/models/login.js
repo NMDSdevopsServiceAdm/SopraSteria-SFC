@@ -1,5 +1,6 @@
 /* jshint indent: 2 */
 const models = require('./index');
+var bcrypt = require('bcrypt-nodejs');
 
 module.exports = function(sequelize, DataTypes) {
   const Login = sequelize.define('login', {
@@ -21,11 +22,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       unique: true,
       field: '"Username"'
-    },
-    password: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      field: "Password"
     },
     securityQuestion: {
       type: DataTypes.TEXT,
@@ -51,7 +47,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       field: '"FirstLogin'
+    },
+    Hash: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: "Hash"
     }
+
   }, {
     tableName: '"Login"',
     schema: 'cqc',
@@ -59,6 +61,21 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: false
   });
 
+  // uses the current 
+  Login.prototype.hashPassword = function () {
+    return bcrypt.hashSync(this.password, bcrypt.genSaltSync(10), null);
+  };
+
+  Login.prototype.comparePassword = function (passw, cb) {
+
+    bcrypt.compare(passw, this.Hash, function (err, isMatch) {
+     // console.log("inside")
+        if (err) {
+            return cb(err);
+        }
+        cb(null, isMatch);
+    });
+  };
   Login.associate = (models) => {
     Login.belongsTo(models.user, {
       foreignKey: 'registrationId',

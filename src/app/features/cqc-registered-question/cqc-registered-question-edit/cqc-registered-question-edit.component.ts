@@ -37,6 +37,10 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   cqclocationApiError: string;
   nonCqcPostcodeApiError: string;
 
+  currentSection: number;
+  lastSection: number;
+  backLink: string;
+
   private cqcRegPostcodeMessages = {
     maxlength: 'Your postcode must be no longer than 8 characters.',
     bothHaveContent: 'Both have content.',
@@ -141,17 +145,6 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
             //this.submittedCqcRegLocationId = false;
             this.setCqcRegisteredLocationIdMessage(this.cqcRegisteredLocationId);
           }
-          // else if (this.cqcRegisteredPostcode.errors) {
-          //   this.isSubmitted = true;
-          //   this.submittedCqcRegPostcode = true;
-          //   this.submittedCqcRegLocationId = true;
-          // }
-          // if (!this.cqcRegisteredPostcode.errors && !this.cqcRegisteredLocationId.errors) {
-          //   this.isSubmitted = true;
-          //   this.submittedCqcRegPostcode = true;
-          //   this.submittedCqcRegLocationId = true;
-          // }
-
         }
         else {
           this.isSubmitted = false;
@@ -171,6 +164,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     // -- END -- Validation check watchers
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
+
+    this.setSectionNumbers();
   }
 
   // -- START -- Set validation handlers
@@ -182,14 +177,6 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         key => this.cqcRegPostcodeMessage += this.cqcRegPostcodeMessages[key]).join(' ');
     }
     else {
-      // if (this.cqcRegisteredLocationId.errors) {
-      //   this.isSubmitted = false;
-      // }
-      // else if (!this.cqcRegisteredPostcode.errors) {
-      //   // this.isSubmitted = true;
-      //   // this.submittedCqcRegPostcode = true;
-      //   // this.submittedCqcRegLocationId = true;
-      // }
       if (this.isSubmitted && !this.cqcRegisteredLocationId.errors) {
         this.save();
       }
@@ -204,15 +191,6 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         key => this.cqcRegLocationIdMessage += this.cqcRegLocationIdMessages[key]).join('<br />');
     }
     else {
-      // if (this.cqcRegisteredPostcode.errors) {
-      //   this.isSubmitted = false;
-      // }
-      // else if (!this.cqcRegisteredLocationId.errors) {
-      //   debugger;
-      //   // this.isSubmitted = true;
-      //   // this.submittedCqcRegPostcode = true;
-      //   // this.submittedCqcRegLocationId = true;
-      // }
       if (this.isSubmitted && !this.cqcRegisteredPostcode.errors) {
         this.save();
       }
@@ -238,16 +216,14 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   onSubmit() {
 
     this.isRegulated = this.cqcRegisteredQuestionForm.get('registeredQuestionSelected').value;
-    debugger;
+
     if (this.isRegulated === true) {
       const cqcRegisteredPostcode = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode');
       const locationId = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId');
       // Clear value of not cqc registered postcode if previously entered
       //this.notRegisteredPostcode.value = '';
-      debugger;
 
       if ((cqcRegisteredPostcode.value.length > 0) || (locationId.value.length > 0)) {
-        debugger;
         if (this.cqcRegisteredQuestionForm.invalid || this.cqcRegisteredGroup.errors) {
           return;
         }
@@ -269,48 +245,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       }
     }
   }
-        // if (this.cqcRegisteredPostcode.errors) {
-        //   debugger;
-        //   this.isSubmitted = true;
-        //   this.submittedCqcRegPostcode = false;
-        // }
-        // else {
-        //   debugger;
-        //   this.isSubmitted = true;
-        //   this.submittedCqcRegPostcode = true;
-        //   this.save();
-        // }
-      //}
-      // if (locationId.value.length > 0) {
-      //   debugger;
-      //   if (this.cqcRegisteredLocationId.errors) {
-      //     debugger;
-      //     this.isSubmitted = true;
-      //     this.submittedCqcRegLocationId = false;
-      //   }
-      //   else {
-      //     debugger;
-      //     this.isSubmitted = true;
-      //     this.submittedCqcRegLocationId = true;
-      //     this.save();
-      //   }
-      // }
-
-      // if (!locationId.value && !cqcRegisteredPostcode.value)  {
-      //   cqcRegisteredPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
-      //   locationId.setValidators([Validators.required, Validators.maxLength(50)]);
-      //   cqcRegisteredPostcode.updateValueAndValidity();
-      //   locationId.updateValueAndValidity();
-      // }
-    //}
-    // else if (isRegulated === 'false') {
-    //   debugger;
-    //   this.save();
-    // }
-
 
   save() {
-
     const cqcRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode').value;
     const locationIdValue = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId').value;
     const notRegisteredPostcodeValue = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode').value;
@@ -320,17 +256,14 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         (data: RegistrationModel) => {
           if (data.success === 1) {
 
-            this.setSectionNumbers(data);
+            this.updateSectionNumbers(data);
 
-            debugger;
             //data = data.locationdata;
             this._registrationService.updateState(data);
             this._registrationService.routingCheck(data);
           }
         },
         (err: RegistrationTrackerError) => {
-          debugger;
-          console.log(err);
           this.cqcPostcodeApiError = err.friendlyMessage;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
@@ -344,17 +277,14 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         (data: RegistrationModel) => {
           if (data.success === 1) {
 
-            this.setSectionNumbers(data);
+            this.updateSectionNumbers(data);
 
-            debugger;
             //data = data.locationdata;
             this._registrationService.updateState(data);
             this._registrationService.routingCheck(data);
           }
         },
         (err: RegistrationTrackerError) => {
-          debugger;
-          console.log(err);
           this.cqclocationApiError = err.friendlyMessage;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
@@ -368,17 +298,16 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
         (data: RegistrationModel) => {
           if (data.success === 1) {
 
-            this.setSectionNumbers(data);
+            this.updateSectionNumbers(data);
+            this.setRegulatedCheckFalse(data);
 
-            debugger;
             //data = data.postcodedata;
             this._registrationService.updateState(data);
             //this.routingCheck(data);
           }
         },
         (err: RegistrationTrackerError) => {
-          debugger;
-          console.log(err);
+
           this.nonCqcPostcodeApiError = err.friendlyMessage;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
@@ -408,7 +337,6 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
   // Routing check
   routingCheck(data) {
-    debugger;
     if (data.length > 1) {
       this.router.navigate(['/select-workplace']);
     } else {
@@ -422,18 +350,32 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     }
   }
 
-  setSectionNumbers(data) {
+  setSectionNumbers() {
+    this.currentSection = 0;
+    this.backLink = '/login';
 
-    data['userRoute'] = this.registration.userRoute;
-    data.userRoute['currentPage'] = this.registration.userRoute['currentPage'] = 1;
-    data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/registered-question');
+    this.currentSection = this.currentSection + 1;
+    this.lastSection = 8;
+  }
 
-    console.log(data);
-    console.log(this.registration);
-    debugger;
+  updateSectionNumbers(data) {
+    if (this.registration.userRoute) {
+      data['userRoute'] = this.registration.userRoute;
+      data.userRoute['currentPage'] = this.registration.userRoute['currentPage'];
+      data.userRoute['route'] = this.registration.userRoute['route'];
+      data.userRoute['route'].push('/registered-question');
+    }
+    else {
+      data['userRoute'] = {};
+      data.userRoute['currentPage'] = this.currentSection;
+      data.userRoute['route'] = [];
+      data.userRoute['route'].push('/registered-question');
+    }
+  }
+
+  setRegulatedCheckFalse(reg) {
+    // clear default location data
+    reg.locationdata = [{}];
+    reg.locationdata[0]['isRegulated'] = false;
   }
 }
-
-
-

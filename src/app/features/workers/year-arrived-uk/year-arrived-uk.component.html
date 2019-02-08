@@ -1,0 +1,50 @@
+<div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a routerLink="/worker/country-of-birth/{{workerId}}">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1 col-12 col-lg-8">Do you know what year they arrived in the UK?</h1>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="form-group mt-5">
+      <div class="col-12 p-0">
+        <div class="row">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" formControlName="yearKnown" class="form-control" value="Yes" for="yearKnown_yes">
+              <label for="yearKnown_yes">Yes</label>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="form.get('yearKnown').value === 'Yes'" class="panel panel-border-narrow col-6 col-sm-4 col-md-3 col-lg-2 ml-0 mt-5 mb-5 mt-md-0">
+          <div class="form-field">
+            <label class="form-label">Year
+              <input type="number" formControlName="year" class="form-control" min="1" step="1" appNumberPositiveOnly [appNumberDigitsMax]="4" [ngClass]="{'is-invalid': (form.get('year').touched || form.get('year').dirty) && !form.get('year').valid}">
+            </label>
+          </div>
+        </div>
+
+        <div class="row mt-5 mt-md-0">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" formControlName="yearKnown" class="form-control" value="No" id="yearKnown_no" (change)="yearKnownChangeHandler()">
+              <label for="yearKnown_no">No</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
+  </form>
+</div>

@@ -16,6 +16,7 @@ const ShareData = require('./shareData');
 const Staff = require('./staff');
 const Jobs = require('./jobs');
 const LA = require('./la');
+const Worker = require('./worker');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -26,20 +27,11 @@ router.use('/:id/share', ShareData);
 router.use('/:id/staff', Staff);
 router.use('/:id/jobs', Jobs);
 router.use('/:id/localAuthorities', LA);
+router.use('/:id/worker', Worker);
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
   const establishmentId = req.establishmentId;
-
-  // must provide the establishment ID and it must be a number
-  if (!req.params.id || isNaN(parseInt(req.params.id))) {
-    console.error('establishment root GET - missing establishment id parameter');
-   return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
-  }
-  if (establishmentId !== parseInt(req.params.id)) {
-    console.error('establishment root GET - given and known establishment id do not match');
-    return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
-  }
 
   try {
     let results = await models.establishment.findOne({
@@ -100,6 +92,7 @@ router.route('/:id').get(async (req, res) => {
         }
       ]
     });
+
 
     if (results && results.id && (establishmentId === results.id)) {
       res.status(200);

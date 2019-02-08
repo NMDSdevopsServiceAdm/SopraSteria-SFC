@@ -2,4 +2,4 @@ applications:
 - name: sfcdev
   memory: 1G
   disk_quota: 1GB
-  buildpack: nodejs_buildpack
+  buildpack: https://github.com/cloudfoundry/nodejs-buildpack.git#v1.6.32

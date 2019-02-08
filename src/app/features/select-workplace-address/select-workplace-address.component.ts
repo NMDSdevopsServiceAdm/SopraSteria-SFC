@@ -17,21 +17,27 @@ export class SelectWorkplaceAddressComponent implements OnInit {
   registration: RegistrationModel;
   selectedAddress: string;
   editPostcode: boolean;
+  postcodeValue: string;
   locationdata = [];
 
   cqcPostcodeApiError: string;
   cqclocationApiError: string;
-  nonCqcPostcodeApiError: string;
+  postcodeApiError: boolean;
+  selectAddressMessage: boolean;
 
   currentSection: number;
   lastSection: number;
   backLink: string;
 
+
   constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
 
   ngOnInit() {
+    this.selectAddressMessage = false;
+    this.postcodeApiError = false;
+
     this.selectWorkplaceAddressForm = this.fb.group({
-      selectWorkplaceAddressSelected: '',
+      selectWorkplaceAddressSelected: ['', [Validators.required]],
       postcodeInput: ['', Validators.maxLength(8)]
     });
 
@@ -44,11 +50,73 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     );
 
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    console.log(this.registration);
-
     this.editPostcode = false;
 
+
     this.setSectionNumbers();
+
+    // Check if postcode already exists on load
+    this.checkExistingPostcode(this.registration);
+
+    // set not registered
+    this.setRegulatedCheckFalse(this.registration);
+  }
+
+  setRegulatedCheckFalse(data) {
+    // clear default location data
+    data.locationdata = [{}];
+    data.locationdata[0]['isRegulated'] = false;
+  }
+
+  checkExistingPostcode(data) {
+
+    if (data.locationdata[0].postalCode) {
+      this.postcodeValue = data.locationdata[0].postalCode;
+    }
+    else if (data.postcodedata[0].postalCode) {
+      this.postcodeValue = data.postcodedata[0].postalCode;
+    }
+
+    if ((data.locationdata.length <= 1) && data.locationdata[0].postalCode) {
+      const existingPostcode = data.locationdata[0].postalCode;
+      this.updatePostcode(existingPostcode);
+    }
+  }
+
+  selectWorkplaceAddressChanged(value: string): void {
+    this.selectedAddress = this.registration.postcodedata[value];
+    this.selectAddressMessage = false;
+  }
+
+  save() {
+
+    if (!this.selectedAddress) {
+      this.selectAddressMessage = true;
+    }
+    else {
+
+      const locationdata = [this.selectedAddress];
+
+      const postcodeObj = {
+        locationdata
+      };
+
+      postcodeObj.locationdata[0]['isRegulated'] = false;
+
+      this.updateSectionNumbers(postcodeObj);
+
+      this._registrationService.updateState(postcodeObj);
+
+      if (this.registration.locationdata[0].locationName === '') {
+
+        this.router.navigate(['/enter-workplace-address']);
+      }
+      else {
+        this.router.navigate(['/select-main-service']);
+      }
+
+    }
+
   }
 
   setSectionNumbers() {
@@ -59,71 +127,42 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     this.lastSection = 8;
   }
 
-  selectWorkplaceAddressChanged(value: string): void {
-    this.selectedAddress = this.registration.postcodedata[value];
-  }
-
-  save() {
-    const locationdata = [this.selectedAddress];
-
-    const postcodeObj = {
-      locationdata
-    };
-
-    this.locationdata.push(postcodeObj);
-
-    this.updateSectionNumbers(this.locationdata[0]);
-
-    this._registrationService.updateState(this.locationdata[0]);
-
-    if (this.registration.locationdata[0].locationName === '') {
-
-      this.router.navigate(['/enter-workplace-address']);
-    }
-    else {
-      this.router.navigate(['/select-main-service']);
-    }
-
-  }
-
   updateSectionNumbers(data) {
-    data['userRoute'] = this.registration.userRoute;
+    data['userRoute'] = this.registration.userRoute || {};
     data.userRoute['currentPage'] = this.currentSection;
-    data.userRoute['route'] = this.registration.userRoute['route'];
+    data.userRoute['route'] = (this.registration.userRoute && this.registration.userRoute['route']) || [];
     data.userRoute['route'].push('/select-workplace-address');
-
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
   }
 
   postcodeChange() {
     this.editPostcode = true;
   }
 
-  updatePostcode() {
-    const postcodeValue = this.selectWorkplaceAddressForm.get('postcodeInput').value;
+  updatePostcode(existingPostcode) {
+    if (!existingPostcode) {
+      this.postcodeValue = this.selectWorkplaceAddressForm.get('postcodeInput').value;
+    }
+    else {
+      this.postcodeValue = existingPostcode;
+    }
 
-    this._registrationService.getUpdatedAddressByPostCode(postcodeValue)
+    this._registrationService.getUpdatedAddressByPostCode(this.postcodeValue)
       .subscribe(
         (data: RegistrationModel) => {
+          this.setRegulatedCheckFalse(data);
           this._registrationService.updateState(data);
-
-          // this.router.navigate(['/select-workplace-address']);
-
         },
-        (err: any) => console.log(err),
+        (err: any) => {
+          //this.nonCqcPostcodeApiError = err.friendlyMessage;
+          this.postcodeApiError = true;
+        },
         () => {
           console.log('Updated locations by postcode complete');
-          console.log(this._registrationService);
+          this.postcodeApiError = false;
         }
       );
 
     this.editPostcode = false;
-    //console.log(this.registration);
   }
 
 }

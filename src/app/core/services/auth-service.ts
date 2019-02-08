@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable, isDevMode } from '@angular/core';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -33,6 +33,7 @@ interface LoggedInSession {
   mainService: LoggedInMainService;
 };
 
+// TODO this file should be renamed to auth.service
 @Injectable({
   providedIn: 'root'
 })
@@ -40,11 +41,11 @@ export class AuthService {
   // Observable login source
   private _auth$: BehaviorSubject<LoginApiModel> = new BehaviorSubject<LoginApiModel>(initialRegistration);
 
-  private _loginToken: string = null;
-
   // hold the response from login
   private _session: LoggedInSession = null;
   private _token: string = null;
+
+  redirectUrl: string = null
 
   // Observable login stream
   public auth$: Observable<LoginApiModel> = this._auth$.asObservable();
@@ -54,9 +55,8 @@ export class AuthService {
               private httpErrorHandler: HttpErrorHandler,
               private router: Router) { }
 
-  // returns true if logged in; otherwise false
   public get isLoggedIn(): boolean {
-    return this._session ? true : false;
+    return !!this.token
   }
 
   public get establishment() : LoggedInEstablishment {
@@ -99,18 +99,33 @@ export class AuthService {
     }
   }
 
-  // sets the session token - note; this should proberly be saved to local storage - but also with an expiry.
-  public set token(authorization:string) {
-    this._token = authorization;
+  set token(token: string) {
+    this._token = token
+
+    if (token) {
+      localStorage.setItem("auth-token", token)
+
+    } else {
+      localStorage.removeItem("auth-token")
+    }
+  }
+
+  get token() {
+    if (!this._token) {
+      this._token = localStorage.getItem("auth-token")
+    }
+
+    return this._token
+  }
+
+  authorise(token) {
+    this.token = token
   }
 
   postLogin(id: any) {
     const $value = id;
-    const options = { headers: { 'Content-type': 'application/json',  observe: "response" as 'body', responseType: "json" } };
-    return this.http.post<any>('/api/login/', $value, options)
-      .pipe(
-        catchError(this.httpErrorHandler.handleHttpError)
-      );
+    const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
+    return this.http.post<any>('/api/login/', $value, { headers: requestHeaders, observe: 'response' });
   }
 
   private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
@@ -130,9 +145,11 @@ export class AuthService {
     this._session = data;
   }
 
-
-
-
-
-
+  logout() {
+    this._session = null;
+    this.token = null;
+    if (localStorage.getItem('auth-token')) {
+      localStorage.clear();
+    }
+  }
 }
