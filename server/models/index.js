@@ -24,9 +24,18 @@ if (config.dialectOptions) {
   }
 }
 
+// setup connection pool
+config.pool = {
+  max: 5,
+  min: 5,
+  //idle: 10000,
+};
+
 if (config.use_env_variable) {
+  console.log("WA DEBUG - sequelize initialisation 1")
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
+  console.log("WA DEBUG - sequelize initialisation 1")
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 

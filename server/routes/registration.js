@@ -306,7 +306,6 @@ router.route('/')
           });
           const sanitisedEstablishmentResults = establishmentCreation.get({plain: true});
           Estblistmentdata.id = sanitisedEstablishmentResults.EstablishmentID;
-          console.log("WA DEBUG - establishment id: ", Estblistmentdata.id)
 
 
           // now create user
@@ -322,7 +321,6 @@ router.route('/')
           });
           const sanitisedUserResults = userCreation.get({plain: true});
           Userdata.registrationID = sanitisedUserResults.RegistrationID;
-          console.log("WA DEBUG - registration id: ", Userdata.registrationID)
 
           // now create login
           defaultError = responseErrors.login;
@@ -335,11 +333,9 @@ router.route('/')
             securityAnswer: Logindata.SecurityQuestionAnswer,
             isActive: true,
             invalidAttempt: 0,
-            firstLogin: true,
           });
           const sanitisedLoginResults = loginCreation.get({plain: true});
           Logindata.id = sanitisedLoginResults.ID;
-          console.log("WA DEBUG - login id: ", Logindata.id)
 
           // gets here on success
           res.status(200);
@@ -357,10 +353,7 @@ router.route('/')
 
         if (!defaultError) defaultError = responseErrors.default;
 
-        //console.log("WA DEBUG - caught exception of type: ", typeof err, defaultError, err.name, err.errors);
-
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
-          console.log("WA DEBUG - constraint error: ", err.parent.constraint)
           // we can expect one of three unique constraint failures which will override the default error
           if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration_with_locationid') {
             defaultError = responseErrors.duplicateCQC;
