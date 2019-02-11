@@ -1,41 +1,59 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from "@angular/forms"
-import { ActivatedRoute, Router } from "@angular/router"
-
-import { MessageService } from "../../../core/services/message.service"
-import { WorkerService } from "../../../core/services/worker.service"
-import { Worker } from "../../../core/model/worker.model"
-
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Worker } from '../../../core/model/worker.model';
+import { MessageService } from '../../../core/services/message.service';
+import { WorkerService } from '../../../core/services/worker.service';
 
 @Component({
   selector: 'app-british-citizenship',
-  templateUrl: './british-citizenship.component.html'
+  templateUrl: './british-citizenship.component.html',
 })
 export class BritishCitizenshipComponent implements OnInit, OnDestroy {
+  public answersAvailable = ['Yes', 'No', `Don't know`];
+  public form: FormGroup;
+  private subscriptions = [];
+  private worker: Worker;
+  private workerId: string;
 
   constructor(
     private formBuilder: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute,
     private workerService: WorkerService,
-    private messageService: MessageService
+    private messageService: MessageService,
   ) {
-    this.saveHandler = this.saveHandler.bind(this)
+    this.saveHandler = this.saveHandler.bind(this);
   }
 
-  form: FormGroup
+  ngOnInit() {
+    this.form = this.formBuilder.group({
+      citizenship: null,
+    });
 
-  private subscriptions = []
-  private worker: Worker
-  private workerId: string
+    this.workerId = this.workerService.workerId;
 
-  answersAvailable = [ "Yes", "No", "Don't know" ]
+    this.subscriptions.push(
+      this.workerService.getWorker(this.workerId).subscribe(worker => {
+        this.worker = worker;
+
+        if (worker.britishCitizenship) {
+          this.form.patchValue({
+            citizenship: worker.britishCitizenship,
+          });
+        }
+      }),
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.messageService.clearAll();
+  }
 
   async submitHandler() {
     try {
-      await this.saveHandler()
-      this.router.navigate([`/worker/country-of-birth/${this.workerId}`])
-
+      await this.saveHandler();
+      this.router.navigate(['/worker/country-of-birth']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -43,45 +61,16 @@ export class BritishCitizenshipComponent implements OnInit, OnDestroy {
 
   saveHandler() {
     return new Promise((resolve, reject) => {
-      const { citizenship } = this.form.value
-      this.messageService.clearError()
+      const { citizenship } = this.form.value;
+      this.messageService.clearError();
 
       if (this.form.valid) {
-        this.worker.britishCitizenship = citizenship
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject))
-
+        this.worker.britishCitizenship = citizenship;
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
-        this.messageService.show("error", "Please fill the required fields.")
-        reject()
+        this.messageService.show('error', 'Please fill the required fields.');
+        reject();
       }
-    })
-  }
-
-  ngOnInit() {
-    this.form = this.formBuilder.group({
-      citizenship: null
-    })
-
-    const params = this.route.snapshot.paramMap
-    this.workerId = params.has("id") ? params.get("id") : null
-
-    if (this.workerId) {
-      this.subscriptions.push(
-        this.workerService.getWorker(this.workerId).subscribe(worker => {
-          this.worker = worker
-
-          if (worker.britishCitizenship) {
-            this.form.patchValue({
-              citizenship: worker.britishCitizenship
-            })
-          }
-        })
-      )
-    }
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe())
-    this.messageService.clearAll()
+    });
   }
 }
