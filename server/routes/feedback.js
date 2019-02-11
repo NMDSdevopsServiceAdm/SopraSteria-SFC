@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 const models = require('../models');
 
+const slack = require('../utils/slack/slack-logger');
+
 // note - intentionally no get for feedback
 
 // submit feedback
@@ -21,12 +23,17 @@ router.route('/').post(async (req, res) => {
       return res.status(400).send('Unexpected input; expected either or both of "doing what" or "tell us"; got neither');
     }
 
-    let results = await models.feedback.create({
+    const feedbackMsg = {
       doingWhat,
       tellUs,
       name: req.body.name,
       email: req.body.email
-    });
+    };
+    let results = await models.feedback.create(feedbackMsg);
+
+    // send feedback via slack
+    slack.info("Feedback", JSON.stringify(feedbackMsg, null, 2));
+
 
     if (results) {
       return res.status(201).send();

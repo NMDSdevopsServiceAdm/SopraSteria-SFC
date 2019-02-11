@@ -4,9 +4,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-const helmet = require('helmet');
+
+// caching middleware - ref and transactional
 var cacheMiddleware = require('./server/utils/middleware/noCache');
 var refCacheMiddleware = require('./server/utils/middleware/refCache');
+
+// security libraries
+var helmet = require('helmet');
+var xssClean = require('xss-clean');
+var sanitizer = require('express-sanitizer');
 
 var routes = require('./server/routes/index');
 var locations = require('./server/routes/locations');
@@ -31,7 +37,52 @@ var testOnly = require('./server/routes/testOnly');
 
 
 var app = express();
-app.use(helmet());
+
+/*  
+ * security - incorproate helmet & xss-clean (de facto/good practice headers) across all endpoints
+ */
+
+// exclude middleware for given API path - used to exclude xss-clean to be able to demonstrate express-sanitizer on /api/test
+var unless = function(root, path, middleware) {
+    return function(req, res, next) {
+        const rootRegex = new RegExp('^' + root);
+        const excludePathRegex = new RegExp('^' + root + '/' + path);
+
+        // first, if the exclude root, simply move on
+        if (excludePathRegex.test(req.path)) {
+            return next();
+        } else if (rootRegex.test(req.path)) {
+            // matches on the root path, and is not excluded
+            return middleware(req, res, next);
+        } else {
+            // doesn't match the root path, so move on
+            return next();
+        }
+    };
+};
+
+// disable Helmet's caching - because we control that directly - cahcing is not enabled by default; but explicitly disabling it here
+// set frame policy to deny
+// only use on '/api' endpoint, because these changes may otherwise impact on the UI.
+app.use('/api', helmet({
+    noCache: false,
+    frameguard: {
+        action: 'deny'
+    },
+    contentSecurityPolicy : {
+        directives: {
+            defaultSrc: ["'self'"]
+        }
+    }
+}));
+
+// encodes all URL parameters
+app.use(unless('/api', 'test', xssClean()));
+
+/*  
+ * end security
+ */
+
 // view engine setup
 app.set('views', path.join(__dirname, '/server/views'));
 app.set('view engine', 'jade');
@@ -40,6 +91,18 @@ app.use(favicon(path.join(__dirname, 'dist/favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+/*  
+ * security - removes unwanted HTML from data
+ */
+
+app.use('/api/test', sanitizer());       // used as demonstration on test routes only
+
+/*  
+ * end security
+ */
+
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 
