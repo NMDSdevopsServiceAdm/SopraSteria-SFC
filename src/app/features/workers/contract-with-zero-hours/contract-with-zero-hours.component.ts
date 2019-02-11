@@ -37,7 +37,7 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
 
         if (worker.zeroHoursContract) {
           this.form.patchValue({
-            value: worker.zeroHoursContract,
+            zeroHoursContract: worker.zeroHoursContract,
           });
         }
       })
@@ -77,9 +77,7 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
-        if (zeroHoursContract.errors && zeroHoursContract.errors.required) {
-          this.messageService.show('error', 'Please fill the required fields.');
-        }
+        this.messageService.show('error', 'Please fill the required fields.');
 
         reject();
       }
