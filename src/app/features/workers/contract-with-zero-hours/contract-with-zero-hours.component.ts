@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Worker } from 'src/app/core/model/worker.model';
 import { MessageService } from 'src/app/core/services/message.service';
 import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
+import { Contracts } from 'src/app/core/constants/contracts.enum';
 
 @Component({
   selector: 'app-contract-with-zero-hours',
@@ -52,7 +53,10 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      if (this.worker.zeroHoursContract === 'Yes') {
+      if (
+        this.worker.zeroHoursContract === 'Yes' ||
+        [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
+      ) {
         this.router.navigate([`/worker/average-weekly-hours`]);
       } else {
         this.router.navigate([`/worker/average-contracted-hours`]);
