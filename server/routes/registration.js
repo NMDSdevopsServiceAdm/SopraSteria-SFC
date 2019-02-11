@@ -3,185 +3,235 @@ var router = express.Router();
 var concatenateAddress = require('../utils/concatenateAddress').concatenateAddress;
 const bodyParser = require('body-parser');
 var bcrypt = require('bcrypt-nodejs');
-
 const slack = require('../utils/slack/slack-logger');
-const { Client } = require('pg');
 
-// TODO - copied from model/index.js; this will be removed when registration is refactored to using sequelize''
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')[env];
-// allow override of any config value from environment variable
-config.host = process.env.DB_HOST ?  process.env.DB_HOST : config.host;
-config.port = process.env.DB_PORT ?  process.env.DB_PORT : config.port;
-config.database = process.env.DB_NAME ?  process.env.DB_NAME : config.database;
-config.username = process.env.DB_USER ?  process.env.DB_USER : config.username;
-config.password = process.env.DB_PASS ?  process.env.DB_PASS : config.password;
-if (config.dialectOptions) {
-  config.dialectOptions.ssl = process.env.DB_SSL && parseInt(process.env.DB_SSL) === 1 ?  true : false;
-} else {
-  config.dialectOptions = {
-    ssl: process.env.DB_SSL && parseInt(process.env.DB_SSL) === 1 ?  true : false
-  }
-}
+const models = require('../models');
 
-const client = new Client({
-  user: config.username,
-  host: config.host,
-  database: config.database,
-  password: config.password,
-  port: config.port,
-  ssl : config.dialectOptions.ssl
-});
+class RegistrationException {
+  constructor(originalError, errCode, errMessage) {
+    this.err = originalError;
+    this.errCode = errCode;
+    this.errMessage = errMessage;
+  };
+
+  toString() {
+    return `${this.errCode}: ${this.errMessage}`;
+  };
+};
 
 
 // Check if service exists
-router.get('/service/:name', function (req, res) {
-  client.connect() 
-  var serviceNameSelect = 'SELECT * FROM cqc."services" where "name" = $1 Limit 1'
-  client.query(serviceNameSelect,[req.params.name],function(err,result) {         
-        if (result.rowCount == 0) {
-          res.json({
-            status: '0',
-            message: 'name not found',
-          });
+router.get('/service/:name', async (req, res) => {
+  const requestedServiceName = req.params.name;
+  try {
+    const results = await models.services.findOne({
+      where: {
+        name: requestedServiceName
+      }
+    });
 
-        } else {
-          res.json({
-            status: '1',
-            message: 'name found',
-          });
-        }                 
-  })
-
+    if (results && results.id && (requestedServiceName === results.name)) {
+      return res.status(200).json({
+        status: '1',
+        message: `Service name '${requestedServiceName}' found`,
+      });
+    } else {
+      return res.status(200).json({
+        status: '0',
+        message: `Service name '${requestedServiceName}' not found`,
+      });
+    }
+  
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('registration GET service/:name - failed', err);
+    return res.status(503).send(`Unable to retrive service by name: ${requestedServiceName}`);
+  }
 });
 
-// RETURNS ALL THE USERS IN THE DATABASE
-router.get('/username', function (req, res) {
+router.get('/username', (req, res) => {
   // this is a false trap for empty username lookup requests from the UI
-  return res.json({
+  return res.status(200).json({
     status: '0',
     message: 'Username not found',
   });
 });
-router.get('/username/:username', function (req, res) {
+router.get('/username/:username', async (req, res) => {
+  const requestedUsername = req.params.username;
   try {
-    client.connect()
-    var UserNameSelect = 'SELECT * FROM cqc."Login" where "Username" = $1 Limit 1'
-
-
-    client.query(UserNameSelect,[req.params.username],function(err,result) {      
-      if (err) {
-        // TODO: Return a 500 error - but the UI can't actually handle this currently, so make it look like the user does not exist (low noise on the UI)
-        //return res.status(500).semd('Unable to get usernames');
-        return res.json({
-          status: '0',
-          message: 'Username not found',
-        });
-      }   
-      if (result.rowCount == 0) {
-        return res.json({
-          status: '0',
-          message: 'Username not found',
-        });
-  
-      } else {
-        return res.json({
-          status: '1',
-          message: 'Username found',
-        });
-      }                 
+    const results = await models.login.findOne({
+      where: {
+        username: requestedUsername
+      }
     });
+
+    if (results && results.id && (requestedUsername === results.username)) {
+      return res.status(200).json({
+        status: '1',
+        message: `Username '${requestedUsername}' found`,
+      });
+    } else {
+      return res.status(200).json({
+        status: '0',
+        message: `Username '${requestedUsername}' not found`,
+      });
+    }
+
   } catch (err) {
-    // TODO: Return a 500 error - but the UI can't actually handle this currently, so make it look like the user does not exist (low noise on the UI)
-    //return res.status(500).semd('Unable to get usernames');
+    // TODO - improve logging/error reporting
+    console.error('registration GET username/:username - failed', err);
     return res.json({
       status: '0',
-      message: 'Username not found',
+      message: `Username '${requestedUsername}' not found`,
     });
   }
-
 });
 
-// RETURNS ALL THE USERS IN THE DATABASE
-router.get('/estbname/:name', function (req, res) {
-  client.connect()
-  var UserNameSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 Limit 1'   
-  client.query(UserNameSelect,[req.params.name],function(err,result) {         
-        if (result.rowCount == 0) {
-          res.json({
-            status: '0',
-            message: 'Establishment name not found',
-          });
+router.get('/estbname/:name', async (req, res) => {
+  const requestedEstablishmentName = req.params.name;
+  try {
+    const results = await models.establishment.findOne({
+      where: {
+        name: requestedEstablishmentName
+      }
+    });
 
-        } else {
-          res.json({
-            status: '1',
-            message: 'Establishment name found',
-          });
-        }          
-     
-  })
-
-});
-
-// RETURNS ALL THE USERS IN THE DATABASE
-router.get('/estb/:name&:locationid', function (req, res) {
-  client.connect()
-  var UserNameSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 and "LocationID" = $2 Limit 1'
-  var Userdata = {
-    Name : req.params.name,
-    locationid : req.params.locationid,
-  }
-
-  client.query(UserNameSelect, [Userdata.Name,Userdata.locationid],function(err,result) {
-    if (result.rows.length == 0) {
-      res.json({
-        status: '0',
-        message: 'Establishment not found',
-      });
-
-    } else {
-      res.json({
+    if (results && results.id && (requestedEstablishmentName === results.name)) {
+      return res.status(200).json({
         status: '1',
-        message: 'Establishment found',
+        message: `Establishment by name '${requestedEstablishmentName}' found`,
       });
-    }              
-  })
-  
+    } else {
+      return res.status(200).json({
+        status: '0',
+        message: `Establishment by name '${requestedEstablishmentName}' not found`,
+      });
+    }
+
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('registration GET estbname/:name - failed', err);
+    return res.json({
+      status: '0',
+      message: `Establishment by name '${requestedEstablishmentName}' not found`,
+    });
+  }
 });
+
+router.get('/estb/:name/:locationid', async (req, res) => {
+  const requestedEstablishmentName = req.params.name;
+  const requestedEstablishmentLocationId = req.params.locationid;
+  try {
+    const results = await models.establishment.findOne({
+      where: {
+        name: requestedEstablishmentName,
+        locationId: requestedEstablishmentLocationId
+      }
+    });
+
+    if (results && results.id && (requestedEstablishmentName === results.name)) {
+      return res.status(200).json({
+        status: '1',
+        message: `Establishment by name '${requestedEstablishmentName}' and by location id '${requestedEstablishmentLocationId}' found`,
+      });
+    } else {
+      return res.status(200).json({
+        status: '0',
+        message: `Establishment by name '${requestedEstablishmentName}' and by location id '${requestedEstablishmentLocationId}' not found`,
+      });
+    }
+
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('registration GET /estb/:name&:locationid - failed', err);
+    return res.json({
+      status: '0',
+      message: `Establishment by name '${requestedEstablishmentName}' and by location id '${requestedEstablishmentLocationId}' not found`,
+    });
+  }
+});
+
+const responseErrors = {
+  default: {
+    errCode: -1,
+    errMessage: 'Registration Error'
+  },
+  eastablishment: {
+    errCode: -2,
+    errMessage: 'Registration: Failed to create Establishment'
+  },
+  user: {
+    errCode: -3,
+    errMessage: 'Registration: Failed to create User'
+  },
+  login: {
+    errCode: -4,
+    errMessage: 'Registration: Failed to create Login'
+  },
+  duplicateNonCQC: {
+    errCode: -100,
+    errMessage: 'Duplicate non-CQC Establishment',
+    db_constraint: 'Establishment_unique_registration'
+  },
+  duplicateCQC: {
+    errCode: -150,
+    errMessage: 'Duplicate CQC Establishment',
+    db_constraint: 'Establishment_unique_registration_with_locationid'
+  },
+  duplicateUsername: {
+    errCode: -200,
+    errMessage: 'Duplicate Username',
+    db_constraint: 'uc_Login_Username'
+  },
+  unexpectedMainServiceId: {
+    errCode: -300,
+    errMessage: 'Unexpected main service id'
+  },
+  unknownLocation: {
+    errCode: -400,
+    errMessage: 'Unknown location',
+    db_constraint: 'uc_Login_Username'
+  },
+};
 
 router.route('/')
-  .get(async function(req, res) {
+  .get((req, res) => {
     res.json({
       status: 'API id Working',
       message: 'Registration API',
     });
   })
 
-  .post(async function(req, res) {
-    //retrieve the incoming json //skipping the model generation and mapping
-    // var  insertModel = req.body;
-
+  .post(async (req, res) => {
     //basic validation
     if(JSON.stringify(req.body) == '{}') {
-			res.status(404);
-			res.json({
+			return res.status(404).json({
 				"success" : 0,
 				"message" : "Parameters missing"
 			});
-			return false;
-	  }
+    }
 
-    var Estblistmentdata = {
-         Name : req.body[0].locationName,
-         Address : concatenateAddress(req.body[0].addressLine1, req.body[0].addressLine2, req.body[0].townCity, req.body[0].county),
-         LocationID: req.body[0].locationId,
-         PostCode: req.body[0].postalCode,
-         MainService: req.body[0].mainService,
-         MainServiceId : null,
-         IsRegulated: req.body[0].isRegulated
-    };
-    var Userdata = {
+    // TODO: JSON Schema validation
+
+
+    let defaultError = responseErrors.default;
+    try {
+      // location ID is only relevant for CQC sites - namely isRegulated is true
+      if (!req.body[0].isRegulated) {
+        delete req.body[0].locationId;
+      }
+
+      // extract establishment, user and login data from given input
+      const Estblistmentdata = {
+        Name : req.body[0].locationName,
+        Address : concatenateAddress(req.body[0].addressLine1, req.body[0].addressLine2, req.body[0].townCity, req.body[0].county),
+        LocationID: req.body[0].locationId,
+        PostCode: req.body[0].postalCode,
+        MainService: req.body[0].mainService,
+        MainServiceId : null,
+        IsRegulated: req.body[0].isRegulated
+      };
+      const Userdata = {
         FullName : req.body[0].user.fullname,
         JobTitle : req.body[0].user.jobTitle,
         Email    : req.body[0].user.emailAddress,
@@ -189,8 +239,8 @@ router.route('/')
         DateCreated: new Date(),
         EstablishmentID:0,
         AdminUser: true
-    };
-    var Logindata = {
+      };
+      var Logindata = {
         RegistrationId:0,
         UserName: req.body[0].user.username,
         Password: req.body[0].user.password,
@@ -198,94 +248,149 @@ router.route('/')
         SecurityQuestionAnswer: req.body[0].user.securityAnswer,
         Active:true,
         InvalidAttempt:0
-    };
-   
-    //sql
-    var EstablishmentInsert = 'INSERT INTO cqc."Establishment" ("Name", "Address", "LocationID", "PostCode", "MainServiceId", "IsRegulated") VALUES ($1,$2,$3,$4,$5,$6) RETURNING "EstablishmentID"';
-    var EstablishmentSelect = 'SELECT * FROM cqc."Establishment" where "Name" = $1 Limit 1';
-    var UserInsert = 'INSERT INTO cqc."User"("FullName", "JobTitle", "Email", "Phone", "DateCreated", "EstablishmentID", "AdminUser") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "RegistrationID"';
-    var UserSelect = 'SELECT * FROM cqc."User" where "FullName" = $1 Limit 1';
-    var LoginInsert = 'INSERT INTO cqc."Login"("RegistrationID", "Username", "SecurityQuestion", "SecurityQuestionAnswer", "Active", "InvalidAttempt", "Hash") VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING "ID"';
+      };
 
-     //db connection
-    client.connect();
 
-    // there are multiple steps to regiastering a new user/establishment. They must be done in entirety (all or nothing).
-    // 1. looking the main service; to get ID
-    // 2. Create Establishment record, to get Establishment ID
-    // 3. Create User record (using Establishment ID) to get Registration ID
-    // 4. Create Login record (using Registration ID)
-
-    // if any part fails, it all fails. So wrap into a single transaction; commit on success and rollback on failure.
-
-    // this could fail because:
-    //  1. Unexpected error - database connection/database state
-    //  2. Establishment table constraints fail - name is not unique
-    //  3. Login table constraints fail - username is not unique
-    const errOnService = new Error("Registration: Failed to identify main service");
-    const errOnEstablishment = new Error("Registration: Failed to create Establishment");
-    const errOnUser = new Error("Registration: Failed to create User");
-    const errOnLogin = new Error("Registration: Failed to create Login");
-
-    try {
-      const serviceNameSelect = 'SELECT * FROM cqc."services" where "name" = $1 Limit 1';
-
-      let serviceResults = null;
+      // there are multiple steps to regiastering a new user/establishment. They must be done in entirety (all or nothing).
+      // 1. looking the main service; to get ID
+      // 2. Create Establishment record, to get Establishment ID
+      // 3. Create User record (using Establishment ID) to get Registration ID
+      // 4. Create Login record (using Registration ID)
       try {
-        serviceResults = await client.query(serviceNameSelect,[Estblistmentdata.MainService]);
+        // if any part fails, it all fails. So wrap into a single transaction; commit on success and rollback on failure.
+        await models.sequelize.transaction(async t => {
+          // first - validate given main service id, for which the main service id is dependent on whether the site is CQC regulated or not
+          let serviceResults = null;
+          if (Estblistmentdata.IsRegulated) {
+            // if a regulated (CQC) site, then can use any of the services as long as they are a main service
+            serviceResults = await models.services.findOne({
+              where: {
+                name: Estblistmentdata.MainService,
+                isMain: true
+              }
+            });
+          } else {
+            // a non-CQC site can only use non-CQC services
+            serviceResults = await models.services.findOne({
+              where: {
+                name: Estblistmentdata.MainService,
+                iscqcregistered: false,
+                isMain: true
+              }
+            });
+          }
 
-        if (serviceResults.rowCount > 0) {
-          Estblistmentdata.MainServiceId = serviceResults.rows[0].id
+          if (serviceResults && serviceResults.id && (Estblistmentdata.MainService === serviceResults.name)) {
+            Estblistmentdata.MainServiceId = serviceResults.id
+          } else {
+            throw new RegistrationException(
+              `Lookup on services for '${Estblistmentdata.MainService}' being cqc registered (${Estblistmentdata.IsRegulated}) resulted with zero records`,
+              responseErrors.unexpectedMainServiceId.errCode,
+              responseErrors.unexpectedMainServiceId.errMessage
+            );
+          }
+
+          // now create establishment
+          defaultError = responseErrors.establishment;
+          const establishmentCreation = await models.establishment.create({
+            name: Estblistmentdata.Name,
+            address: Estblistmentdata.Address,
+            locationId: Estblistmentdata.LocationID,
+            postcode: Estblistmentdata.PostCode,
+            mainServiceId: Estblistmentdata.MainServiceId,
+            isRegulated: Estblistmentdata.IsRegulated,
+            shareData: false,
+            shareWithCQC: false,
+            shareWithLA: false,
+          });
+          const sanitisedEstablishmentResults = establishmentCreation.get({plain: true});
+          Estblistmentdata.id = sanitisedEstablishmentResults.EstablishmentID;
+
+
+          // now create user
+          defaultError = responseErrors.user;
+          const userCreation = await models.user.create({
+            establishmentId: Estblistmentdata.id,
+            fullname: Userdata.FullName,
+            jobTitle: Userdata.JobTitle,
+            email: Userdata.Email,
+            phone: Userdata.Phone,
+            created: Userdata.DateCreated,
+            isAdmin: true,
+          });
+          const sanitisedUserResults = userCreation.get({plain: true});
+          Userdata.registrationID = sanitisedUserResults.RegistrationID;
+
+          // now create login
+          defaultError = responseErrors.login;
+          const passwordHash = await bcrypt.hashSync(Logindata.Password, bcrypt.genSaltSync(10), null);
+          const loginCreation = await models.login.create({
+            registrationId: Userdata.registrationID,
+            username: Logindata.UserName,
+            Hash: passwordHash,
+            securityQuestion: Logindata.SecurityQuestion,
+            securityAnswer: Logindata.SecurityQuestionAnswer,
+            isActive: true,
+            invalidAttempt: 0,
+          });
+          const sanitisedLoginResults = loginCreation.get({plain: true});
+          Logindata.id = sanitisedLoginResults.ID;
+
+          // gets here on success
+          res.status(200);
+          res.json({
+            "status" : 1,
+            "message" : "Establishment and primary user successfully created",
+            "establishmentId" : Estblistmentdata.id,
+            "primaryUser" : Logindata.UserName
+          }); 
+        });
+
+      } catch (err) {
+        // if we've already found a specific registration error, re-throw the error
+        if (err instanceof RegistrationException) throw err;
+
+        if (!defaultError) defaultError = responseErrors.default;
+
+        if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+          // we can expect one of three unique constraint failures which will override the default error
+          if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration_with_locationid') {
+            defaultError = responseErrors.duplicateCQC;
+          } else if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration') {
+            defaultError = responseErrors.duplicateNonCQC;
+          } else if (err.parent.constraint && err.parent.constraint === 'uc_Login_Username') {
+            defaultError = responseErrors.duplicateUsername;
+          }
         }
-      } catch (err) {
-        // TODO: need a better method of handling error
-        console.err(err);
-        throw errOnService;
-      }
-      
-      let establishmentID = null;
-      try {
-        await client.query('BEGIN');
-        // forced error - in absence of unit tests
-        //throw new Error("Totally forced")
-        const result = await client.query(EstablishmentInsert, [Estblistmentdata.Name,Estblistmentdata.Address,Estblistmentdata.LocationID,Estblistmentdata.PostCode,Estblistmentdata.MainServiceId,Estblistmentdata.IsRegulated]);
-        establishmentID = result.rows[0].EstablishmentID;
 
-      } catch (err) {
-        // TODO: need a better method of handling error
-        console.error(err);
-        throw errOnEstablishment;
+        // TODO: trap for location foreign key failure
+        if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
+          if (err.parent.constraint && err.parent.constraint === 'estloc_fk') {
+            defaultError = responseErrors.unknownLocation;
+          }
+        }
+        
+        throw new RegistrationException(
+          err,
+          defaultError.errCode,
+          defaultError.errMessage
+        );
       }
 
-      let registrationID = null;
-      try {
-        // forced error - in absence of unit tests
-        //throw new Error("Totally forced")
-        const result = await client.query(UserInsert,[Userdata.FullName,Userdata.JobTitle,Userdata.Email,Userdata.Phone,Userdata.DateCreated,establishmentID,1]);
-        registrationID = result.rows[0].RegistrationID;
+    } catch (err) {
+        // failed to fully register a new user/establishment - full rollback
+        console.error("Registration: rolling back all changes because: ", err.errCode, err.errMessage);
+        if (err.errCode > -99) {
+          console.error("Registration: original error: ", err.err);
+        }
 
-      } catch (err) {
-        // TODO: need a better method of handling error
-        console.error(err);
-        throw errOnUser;
-      }
-
-      let loginID = null;
-      try {
-        // forced error - in absence of unit tests
-        //throw new Error("Totally forced")
-        const hash = await bcrypt.hashSync(Logindata.Password, bcrypt.genSaltSync(10), null);
-        const result = await client.query(LoginInsert,[registrationID, Logindata.UserName,Logindata.SecurityQuestion,Logindata.SecurityQuestionAnswer,1,0, hash]);
-        loginID = result.rows[0].ID;
-
-        // gets this far with no error
-        await client.query('COMMIT');
-
-      } catch (err) {
-        // TODO: need a better method of handling error
-        console.error(err);
-        throw errOnLogin;
-      }
+        if (err.errCode > -99) {
+          // we have an unexpected error
+          res.status(500);
+        } else {
+          // we have an expected error owing to given client data
+          res.status(400);
+        }
 
       // post via Slack, but remove sensitive data
       const slackMsg = req.body[0];
@@ -294,27 +399,11 @@ router.route('/')
       delete slackMsg.user.securityAnswer;
       slack.info("Registration", JSON.stringify(slackMsg, null, 2));
 
-      // gets here on success
-      res.status(200);
-      res.json({
-        "success" : 1,
-        "message" : "Record added Successfully",
-        "establishmentId" : establishmentID
-      });
-
-    } catch (err) {
-      // failed to fully register a new user/establishment - full rollback
-      console.error("Registration: rolling back all changes");
-      await client.query('ROLLBACK');
-      res.status(500);
-      res.json({
-        "success" : 0,
-        "message" : err.message
-      });
-    } finally {
-      client.end;
+        res.json({
+          "status" : err.errCode,
+          "message" : err.errMessage
+        });
     }
-  })
-;  // ends router.route('/')
+  });  // ends router.route('/').post
 
 module.exports = router;

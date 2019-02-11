@@ -24,6 +24,13 @@ if (config.dialectOptions) {
   }
 }
 
+// setup connection pool
+config.pool = {
+  max: 5,
+  min: 5,
+  //idle: 10000,
+};
+
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
