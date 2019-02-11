@@ -4,14 +4,12 @@ import { Router } from '@angular/router';
 import { Worker } from 'src/app/core/model/worker.model';
 import { MessageService } from 'src/app/core/services/message.service';
 import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
-import { Contracts } from 'src/app/core/constants/contracts.enum';
 
 @Component({
   selector: 'app-average-weekly-hours',
   templateUrl: './average-weekly-hours.component.html',
 })
 export class AverageWeeklyHoursComponent implements OnInit, OnDestroy {
-
   public form: FormGroup;
   private worker: Worker;
   private workerId: string;
@@ -22,8 +20,7 @@ export class AverageWeeklyHoursComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private formBuilder: FormBuilder,
     private router: Router
-  ) {
-  }
+  ) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
@@ -40,7 +37,7 @@ export class AverageWeeklyHoursComponent implements OnInit, OnDestroy {
         if (worker.weeklyHoursAverage) {
           this.form.patchValue({
             weeklyHoursAverageKnown: worker.weeklyHoursAverage.value,
-            weeklyHoursAverage: worker.weeklyHoursAverage.hours
+            weeklyHoursAverage: worker.weeklyHoursAverage.hours,
           });
         }
       })
@@ -68,7 +65,7 @@ export class AverageWeeklyHoursComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
-      const { weeklyHoursAverageKnown, weeklyHoursAverage} = this.form.controls;
+      const { weeklyHoursAverageKnown, weeklyHoursAverage } = this.form.controls;
       this.messageService.clearError();
 
       if (this.form.valid) {
