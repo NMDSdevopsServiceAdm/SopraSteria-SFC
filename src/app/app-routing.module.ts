@@ -51,6 +51,7 @@ import { RecruitedFromComponent } from './features/workers/recruited-from/recrui
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 import { EditWorkerComponent } from './features/workers/edit-worker/edit-worker.component';
+import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
 
 const routes: Routes = [
   {
@@ -300,6 +301,11 @@ const routes: Routes = [
         component: ContractWithZeroHoursComponent,
         canLoad: [AuthGuard],
       },
+      {
+        path: 'average-weekly-hours',
+        component: AverageWeeklyHoursComponent,
+        canLoad: [AuthGuard],
+      }
     ],
   },
   {

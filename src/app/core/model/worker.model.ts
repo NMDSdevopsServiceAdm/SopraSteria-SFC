@@ -53,4 +53,8 @@ export interface Worker {
     days?: number;
   };
   zeroHoursContract: string;
+  weeklyHoursAverage: {
+    value: string;
+    hours: number;
+  };
 }
