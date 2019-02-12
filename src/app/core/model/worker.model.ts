@@ -57,4 +57,6 @@ export interface Worker {
     value: string;
     hours: number;
   };
+  qualificationInSocialCare: string;
+  otherQualification: string;
 }

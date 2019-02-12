@@ -32,6 +32,7 @@ import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-emp
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
+import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
 import { ContractWithZeroHoursComponent } from './features/workers/contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
@@ -39,6 +40,7 @@ import { CreateStaffRecordComponent } from './features/workers/create-staff-reco
 import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './features/workers/days-of-sickness/days-of-sickness.component';
 import { DisabilityComponent } from './features/workers/disability/disability.component';
+import { EditWorkerComponent } from './features/workers/edit-worker/edit-worker.component';
 import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
 import { GenderComponent } from './features/workers/gender/gender.component';
 import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
@@ -47,11 +49,10 @@ import { MentalHealthComponent } from './features/workers/mental-health/mental-h
 import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './features/workers/nationality/nationality.component';
 import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
+import { OtherQualificationsComponent } from './features/workers/other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
-import { EditWorkerComponent } from './features/workers/edit-worker/edit-worker.component';
-import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
 
 const routes: Routes = [
   {
@@ -305,7 +306,12 @@ const routes: Routes = [
         path: 'average-weekly-hours',
         component: AverageWeeklyHoursComponent,
         canLoad: [AuthGuard],
-      }
+      },
+      {
+        path: 'other-qualifications',
+        component: OtherQualificationsComponent,
+        canLoad: [AuthGuard],
+      },
     ],
   },
   {

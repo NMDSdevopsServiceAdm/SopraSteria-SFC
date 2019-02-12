@@ -74,6 +74,7 @@ import { MentalHealthComponent } from './features/workers/mental-health/mental-h
 import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './features/workers/nationality/nationality.component';
 import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
+import { OtherQualificationsComponent } from './features/workers/other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
@@ -153,6 +154,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     ContractWithZeroHoursComponent,
     EditWorkerComponent,
     AverageWeeklyHoursComponent,
+    OtherQualificationsComponent,
   ],
   imports: [
     BrowserModule,
