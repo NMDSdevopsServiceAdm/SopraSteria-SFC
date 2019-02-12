@@ -57,6 +57,7 @@ import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-emp
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
+import { BlankCardComponent } from './features/workers/blank-card.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
 import { ContractWithZeroHoursComponent } from './features/workers/contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
@@ -74,6 +75,7 @@ import { NationalInsuranceNumberComponent } from './features/workers/national-in
 import { NationalityComponent } from './features/workers/nationality/nationality.component';
 import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
 import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
+import { SalaryComponent } from './features/workers/salary/salary.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
 import { DatePickerComponent } from './shared/date-picker/date-picker.component';
@@ -151,6 +153,8 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     DaysOfSicknessComponent,
     ContractWithZeroHoursComponent,
     EditWorkerComponent,
+    SalaryComponent,
+    BlankCardComponent,
   ],
   imports: [
     BrowserModule,

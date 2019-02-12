@@ -53,4 +53,8 @@ export interface Worker {
     days?: number;
   };
   zeroHoursContract: string;
+  annualHourlyPay: {
+    value: string;
+    rate: number;
+  };
 }
