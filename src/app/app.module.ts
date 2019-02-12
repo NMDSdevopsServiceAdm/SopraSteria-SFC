@@ -59,6 +59,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
 import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
+import { CareCertificateComponent } from './features/workers/care-certificate/care-certificate.component';
 import { ContractWithZeroHoursComponent } from './features/workers/contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
@@ -153,6 +154,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     ContractWithZeroHoursComponent,
     EditWorkerComponent,
     AverageWeeklyHoursComponent,
+    CareCertificateComponent,
   ],
   imports: [
     BrowserModule,
