@@ -57,6 +57,7 @@ import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-emp
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
+import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
 import { ContractWithZeroHoursComponent } from './features/workers/contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
@@ -151,6 +152,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     DaysOfSicknessComponent,
     ContractWithZeroHoursComponent,
     EditWorkerComponent,
+    AverageWeeklyHoursComponent,
   ],
   imports: [
     BrowserModule,
