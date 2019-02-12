@@ -310,7 +310,7 @@ const routes: Routes = [
       {
         path: 'social-care-qualification',
         component: SocialCareQualificationComponent,
-        canLoad: [AuthGuard],ß
+        canLoad: [AuthGuard],
       },
     ],
   },
