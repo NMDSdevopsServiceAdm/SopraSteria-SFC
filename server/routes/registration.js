@@ -335,6 +335,13 @@ router.route('/')
           });
           const sanitisedLoginResults = loginCreation.get({plain: true});
           Logindata.id = sanitisedLoginResults.ID;
+          
+          // post via Slack, but remove sensitive data
+          const slackMsg = req.body[0];
+          delete slackMsg.user.password;
+          delete slackMsg.user.securityQuestion;
+          delete slackMsg.user.securityAnswer;
+          slack.info("Registration", JSON.stringify(slackMsg, null, 2));
 
           // gets here on success
           res.status(200);
@@ -391,14 +398,6 @@ router.route('/')
           // we have an expected error owing to given client data
           res.status(400);
         }
-
-      // post via Slack, but remove sensitive data
-      const slackMsg = req.body[0];
-      delete slackMsg.user.password;
-      delete slackMsg.user.securityQuestion;
-      delete slackMsg.user.securityAnswer;
-      slack.info("Registration", JSON.stringify(slackMsg, null, 2));
-
         res.json({
           "status" : err.errCode,
           "message" : err.errMessage
