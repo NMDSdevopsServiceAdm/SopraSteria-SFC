@@ -57,4 +57,5 @@ export interface Worker {
     value: string;
     hours: number;
   };
+  apprenticeshipTraining: string;
 }
