@@ -57,7 +57,7 @@ export class AverageContractedHoursComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      this.router.navigate([`/worker/payment-terms`]);
+      this.router.navigate(['/worker/salary']);
     } catch (err) {
       // keep typescript transpiler silent
     }
