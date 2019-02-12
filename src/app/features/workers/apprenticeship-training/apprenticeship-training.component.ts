@@ -52,7 +52,7 @@ export class ApprenticeshipTrainingComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-        this.router.navigate(['/worker/social-care-qualification']);
+      this.router.navigate(['/worker/social-care-qualification']);
     } catch (err) {
       // keep typescript transpiler silent
     }
