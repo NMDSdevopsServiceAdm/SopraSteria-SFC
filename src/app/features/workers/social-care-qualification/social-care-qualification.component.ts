@@ -52,7 +52,11 @@ export class SocialCareQualificationComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      this.router.navigate(['/worker/']);
+      if (this.worker.qualificationInSocialCare === 'Yes') {
+        this.router.navigate(['/worker/level-of-social-care-qualification']);
+      } else {
+        this.router.navigate(['/worker/other-qualifications']);
+      }
     } catch (err) {
       // keep typescript transpiler silent
     }
