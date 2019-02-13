@@ -57,5 +57,14 @@ export interface Worker {
     value: string;
     hours: number;
   };
+  weeklyHoursContracted: {
+    value: string;
+    hours: number;
+  };
+  annualHourlyPay: {
+    value: string;
+    rate: number;
+  };
+  careCertificate: string;
   apprenticeshipTraining: string;
 }
