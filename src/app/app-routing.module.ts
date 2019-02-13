@@ -60,6 +60,9 @@ import { SocialCareQualificationLevelComponent } from './features/workers/social
 import { SocialCareQualificationComponent } from './features/workers/social-care-qualification/social-care-qualification.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
+import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { ProblemWithTheServicePagesComponent } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
+import { ServiceUnavailablePagesComponent } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
 
 const routes: Routes = [
   {
@@ -213,6 +216,18 @@ const routes: Routes = [
   {
     path: 'terms-and-conditions',
     component: TermsConditionsComponent,
+  },
+  {
+    path: 'page-not-found',
+    component: PageNotFoundPagesComponent,
+  },
+  {
+    path: 'problem-with-the-service',
+    component: ProblemWithTheServicePagesComponent,
+  },
+  {
+    path: 'service-unavailable',
+    component: ServiceUnavailablePagesComponent,
   },
   {
     path: 'worker',
