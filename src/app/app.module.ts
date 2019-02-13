@@ -21,6 +21,7 @@ import { LocalAuthorityService } from './core/services/localAuthority.service';
 import { LocationService } from './core/services/location.service';
 import { MessageService } from './core/services/message.service';
 import { NationalityService } from './core/services/nationality.service';
+import { QualificationService } from './core/services/qualification.service';
 import { RecruitmentService } from './core/services/recruitment.service';
 import { RegistrationService } from './core/services/registration.service';
 import { WorkerService } from './core/services/worker.service';
@@ -81,6 +82,7 @@ import { OtherJobRolesComponent } from './features/workers/other-job-roles/other
 import { OtherQualificationsComponent } from './features/workers/other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
 import { SalaryComponent } from './features/workers/salary/salary.component';
+import { SocialCareQualificationLevelComponent } from './features/workers/social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './features/workers/social-care-qualification/social-care-qualification.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
@@ -166,6 +168,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     CareCertificateComponent,
     ApprenticeshipTrainingComponent,
     SocialCareQualificationComponent,
+    SocialCareQualificationLevelComponent,
     OtherQualificationsComponent,
   ],
   imports: [
@@ -190,6 +193,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     LocationService,
     RegistrationService,
     JobService,
+    QualificationService,
     MessageService,
     HttpErrorHandler,
     FeedbackService,

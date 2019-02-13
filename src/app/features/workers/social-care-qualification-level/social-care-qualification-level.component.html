@@ -1,0 +1,45 @@
+<div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a routerLink="/worker/social-care-qualification">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1">What is the highest level of their social care qualifications?</h1>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="row summary-and-controls mb-5 record">
+      <div class="col-12">
+        <button type="button" class="btn-link" data-toggle="collapse" data-target="#trigger1">Help with qualification levels</button>
+        <div id="trigger1" class="collapse panel panel-border-narrow col-10 col-lg-8 mt-4">
+          <p class="main-body-text">
+            You can find more information about qualification levels here:<br />
+            <a href="https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels">
+              https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="field-group mb-5">
+      <label>Qualification level
+        <select formControlName="qualification" class="form-control">
+          <option [ngValue]="null">Select Qualification Level</option>
+          <option *ngFor="let qualification of qualifications" [value]="qualification.id">
+            {{qualification.level}}
+          </option>
+        </select>
+      </label>
+    </div>
+
+    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
+  </form>
+</div>
