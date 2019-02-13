@@ -1,54 +1,50 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from "@angular/forms"
-import { Router } from "@angular/router"
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { Router } from '@angular/router';
 
-import { MessageService } from "../../core/services/message.service"
-import { EstablishmentService } from "../../core/services/establishment.service"
+import { MessageService } from '../../core/services/message.service';
+import { EstablishmentService } from '../../core/services/establishment.service';
 
 import { SharingOptionsModel } from '../../core/model/sharingOptions.model';
-
 
 @Component({
   selector: 'app-shareOptions',
   templateUrl: './shareOptions.component.html',
-  styleUrls: ['./shareOptions.component.scss']
+  styleUrls: ['./shareOptions.component.scss'],
 })
 export class ShareOptionsComponent implements OnInit, OnDestroy {
-  private _withLocalAuthority: string = 'Local Authority';
-  private _withCQC: string = 'CQC';
+  private _withLocalAuthority = 'Local Authority';
+  private _withCQC = 'CQC';
 
   constructor(
     private router: Router,
     private establishmentService: EstablishmentService,
     private messageService: MessageService,
-    private fb: FormBuilder) {
+    private fb: FormBuilder
+  ) {}
 
-  }
-
-  private shareOptionsForm: FormGroup
-  private subscriptions = []
+  private shareOptionsForm: FormGroup;
+  private subscriptions = [];
 
   private _shareOptions: SharingOptionsModel = null;
 
   // form controls
   get shareWithCQCcontrol() {
-    return this.shareOptionsForm.get('shareWithCQCctl').value
+    return this.shareOptionsForm.get('shareWithCQCctl').value;
   }
-  set shareWithCQCcontrol(value:boolean) {
-    this.shareOptionsForm.get('shareWithCQCctl').patchValue(true, {onlySelf:true, emitEvent: false});
+  set shareWithCQCcontrol(value: boolean) {
+    this.shareOptionsForm.get('shareWithCQCctl').patchValue(true, { onlySelf: true, emitEvent: false });
   }
   get shareWithLocalAuthorityControl(): boolean {
     return this.shareOptionsForm.get('shareWithLocalAuthorityCtl').value;
   }
   set shareWithLocalAuthorityControl(value: boolean) {
-    this.shareOptionsForm.get('shareWithLocalAuthorityCtl').patchValue(true, {onlySelf:true, emitEvent: false});
+    this.shareOptionsForm.get('shareWithLocalAuthorityCtl').patchValue(true, { onlySelf: true, emitEvent: false });
   }
 
   private get isShareWithCQCEnabled(): boolean {
     if (this._shareOptions) {
-      if (this._shareOptions.enabled &&
-          this._shareOptions.with &&
-          this._shareOptions.with.includes(this._withCQC)) {
+      if (this._shareOptions.enabled && this._shareOptions.with && this._shareOptions.with.includes(this._withCQC)) {
         return true;
       } else {
         return false;
@@ -58,9 +54,11 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
   }
   private get isShareWithLAEnabled(): boolean {
     if (this._shareOptions) {
-      if (this._shareOptions.enabled &&
-          this._shareOptions.with &&
-          this._shareOptions.with.includes(this._withLocalAuthority)) {
+      if (
+        this._shareOptions.enabled &&
+        this._shareOptions.with &&
+        this._shareOptions.with.includes(this._withLocalAuthority)
+      ) {
         return true;
       } else {
         return false;
@@ -70,62 +68,56 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
-      if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
-        this._shareOptions.enabled = true;
-        this._shareOptions.with = [];
+    if (this.shareWithCQCcontrol || this.shareWithLocalAuthorityControl) {
+      this._shareOptions.enabled = true;
+      this._shareOptions.with = [];
 
-        if (this.shareWithCQCcontrol) {
-          this._shareOptions.with.push(this._withCQC);
-        }
-        if (this.shareWithLocalAuthorityControl) {
-          this._shareOptions.with.push(this._withLocalAuthority);
-        }
-
-        if (this.shareWithLocalAuthorityControl) {
-          // only navigate to share with local authorities if sharing
-          //  has been enabled with Local Authorities
-          this.subscriptions.push(
-            this.establishmentService.postSharingOptions(this._shareOptions)
-              .subscribe(() => {
-                this.router.navigate(['/share-local-authority']);
-              })
-          );
-        } else {
-          this.subscriptions.push(
-            this.establishmentService.postSharingOptions(this._shareOptions)
-              .subscribe(() => {
-                this.router.navigate(['/vacancies']);
-              })
-          );
-        }
-
-      } else {
-        // reset sharing options - must continue to enable sharing, but remove all share with options.
-        this._shareOptions.enabled = false;
-        this._shareOptions.with = [];
-
-        this.subscriptions.push(
-          this.establishmentService.postSharingOptions(this._shareOptions)
-            .subscribe(() => {
-              this.router.navigate(['/vacancies'])
-            })
-        )
+      if (this.shareWithCQCcontrol) {
+        this._shareOptions.with.push(this._withCQC);
       }
+      if (this.shareWithLocalAuthorityControl) {
+        this._shareOptions.with.push(this._withLocalAuthority);
+      }
+
+      if (this.shareWithLocalAuthorityControl) {
+        // only navigate to share with local authorities if sharing
+        //  has been enabled with Local Authorities
+        this.subscriptions.push(
+          this.establishmentService.postSharingOptions(this._shareOptions).subscribe(() => {
+            this.router.navigate(['/share-local-authority']);
+          })
+        );
+      } else {
+        this.subscriptions.push(
+          this.establishmentService.postSharingOptions(this._shareOptions).subscribe(() => {
+            this.router.navigate(['/vacancies']);
+          })
+        );
+      }
+    } else {
+      // reset sharing options - must continue to enable sharing, but remove all share with options.
+      this._shareOptions.enabled = false;
+      this._shareOptions.with = [];
+
+      this.subscriptions.push(
+        this.establishmentService.postSharingOptions(this._shareOptions).subscribe(() => {
+          this.router.navigate(['/vacancies']);
+        })
+      );
+    }
   }
 
   goBack(event) {
-    event.preventDefault()
+    event.preventDefault();
     this.subscriptions.push(
-      this.establishmentService.getCapacity(true)
-        .subscribe(c => {
-          if (c.allServiceCapacities.length) {
-            this.router.navigate(['/capacity-of-services'])
-
-          } else {
-            this.router.navigate(["/select-other-services"])
-          }
-        })
-    )
+      this.establishmentService.getCapacity(true).subscribe(c => {
+        if (c.allServiceCapacities.length) {
+          this.router.navigate(['/capacity-of-services']);
+        } else {
+          this.router.navigate(['/select-other-services']);
+        }
+      })
+    );
   }
 
   ngOnInit() {
@@ -154,7 +146,7 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe())
+    this.subscriptions.forEach(s => s.unsubscribe());
     this.messageService.clearAll();
   }
 }
