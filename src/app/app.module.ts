@@ -57,6 +57,7 @@ import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-emp
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
+import { AverageContractedHoursComponent } from './features/workers/average-contracted-hours/average-contracted-hours.component';
 import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
 import { BlankCardComponent } from './features/workers/blank-card.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
@@ -155,6 +156,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     ContractWithZeroHoursComponent,
     EditWorkerComponent,
     AverageWeeklyHoursComponent,
+    AverageContractedHoursComponent,
     SalaryComponent,
     BlankCardComponent,
   ],
