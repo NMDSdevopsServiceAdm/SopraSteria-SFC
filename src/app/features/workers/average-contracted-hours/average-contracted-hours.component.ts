@@ -70,7 +70,9 @@ export class AverageContractedHoursComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
-        worker.weeklyHoursContracted = { value: weeklyHoursContractedKnown.value, hours: weeklyHoursContracted.value };
+        worker.weeklyHoursContracted = weeklyHoursContractedKnown.value
+          ? { value: weeklyHoursContractedKnown.value, hours: weeklyHoursContracted.value }
+          : null;
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
