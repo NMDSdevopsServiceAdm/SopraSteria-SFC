@@ -78,6 +78,7 @@ import { MentalHealthComponent } from './features/workers/mental-health/mental-h
 import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './features/workers/nationality/nationality.component';
 import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
+import { OtherQualificationsComponent } from './features/workers/other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
 import { SalaryComponent } from './features/workers/salary/salary.component';
 import { SocialCareQualificationComponent } from './features/workers/social-care-qualification/social-care-qualification.component';
@@ -165,6 +166,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     CareCertificateComponent,
     ApprenticeshipTrainingComponent,
     SocialCareQualificationComponent,
+    OtherQualificationsComponent,
   ],
   imports: [
     BrowserModule,

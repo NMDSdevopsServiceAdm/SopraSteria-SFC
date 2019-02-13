@@ -68,4 +68,5 @@ export interface Worker {
   careCertificate: string;
   apprenticeshipTraining: string;
   qualificationInSocialCare: string;
+  otherQualification: string;
 }
