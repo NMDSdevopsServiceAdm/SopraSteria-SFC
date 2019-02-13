@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
-import { HttpErrorHandler } from "./http-error-handler.service"
+import { HttpErrorHandler } from './http-error-handler.service';
 import { LoginApiModel } from '../model/loginApi.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
@@ -19,23 +19,23 @@ const initialRegistration: LoginApiModel = {
 
 interface LoggedInMainService {
   id: number;
-  name: string
+  name: string;
 }
 interface LoggedInEstablishment {
   id: number;
   name: string;
-  isRegulated: boolean
-};
+  isRegulated: boolean;
+}
 interface LoggedInSession {
-  fullname: string,
-  isFirstLogin: boolean,
+  fullname: string;
+  isFirstLogin: boolean;
   establishment: LoggedInEstablishment;
   mainService: LoggedInMainService;
-};
+}
 
 // TODO this file should be renamed to auth.service
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   // Observable login source
@@ -45,42 +45,39 @@ export class AuthService {
   private _session: LoggedInSession = null;
   private _token: string = null;
 
-  redirectUrl: string = null
+  redirectUrl: string = null;
 
   // Observable login stream
   public auth$: Observable<LoginApiModel> = this._auth$.asObservable();
 
-
-  constructor(private http: HttpClient,
-              private httpErrorHandler: HttpErrorHandler,
-              private router: Router) { }
+  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler, private router: Router) {}
 
   public get isLoggedIn(): boolean {
-    return !!this.token
+    return !!this.token;
   }
 
-  public get establishment() : LoggedInEstablishment {
+  public get establishment(): LoggedInEstablishment {
     if (this._session) {
       return this._session.establishment;
     } else {
       return null;
     }
   }
-  public get mainService() : LoggedInMainService {
+  public get mainService(): LoggedInMainService {
     if (this._session) {
       return this._session.mainService;
     } else {
       return null;
     }
   }
-  public get fullname() : string {
+  public get fullname(): string {
     if (this._session) {
       return this._session.fullname;
     } else {
       return null;
     }
   }
-  public get isFirstLogin() : boolean {
+  public get isFirstLogin(): boolean {
     if (this._session) {
       return this._session.isFirstLogin;
     } else {
@@ -100,26 +97,25 @@ export class AuthService {
   }
 
   set token(token: string) {
-    this._token = token
+    this._token = token;
 
     if (token) {
-      localStorage.setItem("auth-token", token)
-
+      localStorage.setItem('auth-token', token);
     } else {
-      localStorage.removeItem("auth-token")
+      localStorage.removeItem('auth-token');
     }
   }
 
   get token() {
     if (!this._token) {
-      this._token = localStorage.getItem("auth-token")
+      this._token = localStorage.getItem('auth-token');
     }
 
-    return this._token
+    return this._token;
   }
 
   authorise(token) {
-    this.token = token
+    this.token = token;
   }
 
   postLogin(id: any) {
@@ -146,10 +142,11 @@ export class AuthService {
   }
 
   logout() {
-    this._session = null;
-    this.token = null;
     if (localStorage.getItem('auth-token')) {
       localStorage.clear();
+      this._session = null;
+      this.token = null;
+      this.router.navigate(['/login']);
     }
   }
 }
