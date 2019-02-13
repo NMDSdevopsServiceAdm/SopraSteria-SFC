@@ -1,5 +1,5 @@
-import { Contracts } from '../constants/contracts.enum';
-import { Job } from './job.model';
+import { Contracts } from "../constants/contracts.enum";
+import { Job } from "./job.model";
 
 export interface Worker {
   uid?: string;
@@ -68,5 +68,9 @@ export interface Worker {
   careCertificate: string;
   apprenticeshipTraining: string;
   qualificationInSocialCare: string;
+  socialCareQualification: {
+    qualificationId: number;
+    title?: string;
+  };
   otherQualification: string;
 }

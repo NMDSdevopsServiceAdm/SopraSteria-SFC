@@ -68,7 +68,7 @@ export class SalaryComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     if (
-      this.worker.zeroHoursContract === 'YES' ||
+      this.worker.zeroHoursContract === 'Yes' ||
       [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
     ) {
       this.router.navigate(['/worker/average-weekly-hours']);

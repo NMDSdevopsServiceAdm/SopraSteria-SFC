@@ -4,13 +4,15 @@ import { Router } from '@angular/router';
 import { Worker } from 'src/app/core/model/worker.model';
 import { MessageService } from 'src/app/core/services/message.service';
 import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
+import { QualificationService } from 'src/app/core/services/qualification.service';
+import { Qualification } from 'src/app/core/model/qualification.model';
 
 @Component({
-  selector: 'app-other-qualifications',
-  templateUrl: './other-qualifications.component.html',
+  selector: 'app-social-care-qualification-level',
+  templateUrl: './social-care-qualification-level.component.html',
 })
-export class OtherQualificationsComponent implements OnInit, OnDestroy {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy {
+  public qualifications: Qualification[];
   public form: FormGroup;
   private worker: Worker;
   private workerId: string;
@@ -20,23 +22,30 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private qualificationService: QualificationService,
   ) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      otherQualification: null,
+      qualification: null,
     });
 
     this.workerId = this.workerService.workerId;
 
     this.subscriptions.push(
+      this.qualificationService.getQualifications().subscribe(qualifications => {
+        this.qualifications = qualifications;
+      })
+    );
+
+    this.subscriptions.push(
       this.workerService.getWorker(this.workerId).subscribe(worker => {
         this.worker = worker;
 
-        if (worker.otherQualification) {
+        if (worker.socialCareQualification) {
           this.form.patchValue({
-            otherQualification: worker.otherQualification,
+            qualification: worker.socialCareQualification.qualificationId,
           });
         }
       })
@@ -48,25 +57,11 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
     this.messageService.clearAll();
   }
 
-  goBack(event) {
-    event.preventDefault();
-
-    if (this.worker.qualificationInSocialCare === 'Yes') {
-      this.router.navigate(['/worker/social-care-qualification-level']);
-    } else {
-      this.router.navigate(['/worker/social-care-qualification']);
-    }
-  }
-
   async submitHandler() {
     try {
       await this.saveHandler();
 
-      if (this.worker.otherQualification === 'Yes') {
-        this.router.navigate(['/worker/level-of-other-qualifications']);
-      } else {
-        this.router.navigate(['/worker/summary']);
-      }
+      this.router.navigate(['/worker/other-qualifications']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -74,12 +69,14 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
-      const { otherQualification } = this.form.controls;
+      const { qualification } = this.form.controls;
       this.messageService.clearError();
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
-        worker.otherQualification = otherQualification.value;
+        worker.socialCareQualification = {
+          qualificationId: parseInt(qualification.value, 10),
+        };
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
