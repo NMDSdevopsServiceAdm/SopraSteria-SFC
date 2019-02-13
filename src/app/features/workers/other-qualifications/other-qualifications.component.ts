@@ -63,7 +63,7 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
       await this.saveHandler();
 
       if (this.worker.otherQualification === 'Yes') {
-        this.router.navigate(['/worker/level-of-other-qualifications']);
+        this.router.navigate(['/worker/other-qualifications-level']);
       } else {
         this.router.navigate(['/worker/summary']);
       }
