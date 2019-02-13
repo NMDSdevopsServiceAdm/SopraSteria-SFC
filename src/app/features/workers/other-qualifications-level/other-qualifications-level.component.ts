@@ -1,16 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Qualification } from 'src/app/core/model/qualification.model';
 import { Worker } from 'src/app/core/model/worker.model';
 import { MessageService } from 'src/app/core/services/message.service';
+import { QualificationService } from 'src/app/core/services/qualification.service';
 import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
 
 @Component({
-  selector: 'app-other-qualifications',
-  templateUrl: './other-qualifications.component.html',
+  selector: 'app-other-qualifications-level',
+  templateUrl: './other-qualifications-level.component.html',
 })
-export class OtherQualificationsComponent implements OnInit, OnDestroy {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+export class OtherQualificationsLevelComponent implements OnInit, OnDestroy {
+  public qualifications: Qualification[];
   public form: FormGroup;
   private worker: Worker;
   private workerId: string;
@@ -20,23 +22,30 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private qualificationService: QualificationService
   ) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      otherQualification: null,
+      qualification: [null, Validators.required],
     });
 
     this.workerId = this.workerService.workerId;
 
     this.subscriptions.push(
+      this.qualificationService.getQualifications().subscribe(qualifications => {
+        this.qualifications = qualifications;
+      })
+    );
+
+    this.subscriptions.push(
       this.workerService.getWorker(this.workerId).subscribe(worker => {
         this.worker = worker;
 
-        if (worker.otherQualification) {
+        if (worker.highestQualification) {
           this.form.patchValue({
-            otherQualification: worker.otherQualification,
+            qualification: worker.highestQualification.qualificationId,
           });
         }
       })
@@ -48,25 +57,11 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
     this.messageService.clearAll();
   }
 
-  goBack(event) {
-    event.preventDefault();
-
-    if (this.worker.qualificationInSocialCare === 'Yes') {
-      this.router.navigate(['/worker/social-care-qualification-level']);
-    } else {
-      this.router.navigate(['/worker/social-care-qualification']);
-    }
-  }
-
   async submitHandler() {
     try {
       await this.saveHandler();
 
-      if (this.worker.otherQualification === 'Yes') {
-        this.router.navigate(['/worker/other-qualifications-level']);
-      } else {
-        this.router.navigate(['/worker/summary']);
-      }
+      this.router.navigate(['/worker/summary']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -74,15 +69,23 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
-      const { otherQualification } = this.form.controls;
+      const { qualification } = this.form.controls;
       this.messageService.clearError();
+
+      console.log(this.form.valid, this.form.errors);
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
-        worker.otherQualification = otherQualification.value;
+        worker.highestQualification = {
+          qualificationId: parseInt(qualification.value, 10),
+        };
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
+        if (qualification.errors.required) {
+          this.messageService.show('error', 'Please fill required fields.');
+        }
+
         reject();
       }
     });

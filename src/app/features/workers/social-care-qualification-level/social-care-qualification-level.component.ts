@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Qualification } from 'src/app/core/model/qualification.model';
 import { Worker } from 'src/app/core/model/worker.model';
 import { MessageService } from 'src/app/core/services/message.service';
-import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
 import { QualificationService } from 'src/app/core/services/qualification.service';
-import { Qualification } from 'src/app/core/model/qualification.model';
+import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
 
 @Component({
   selector: 'app-social-care-qualification-level',
@@ -28,7 +28,7 @@ export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy 
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      qualification: null,
+      qualification: [null, Validators.required],
     });
 
     this.workerId = this.workerService.workerId;
@@ -80,6 +80,10 @@ export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy 
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
+        if (qualification.errors.required) {
+          this.messageService.show('error', 'Please fill required fields.');
+        }
+
         reject();
       }
     });
