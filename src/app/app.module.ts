@@ -87,6 +87,7 @@ import { WeeklyContractedHoursComponent } from './features/workers/weekly-contra
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
 import { DatePickerComponent } from './shared/date-picker/date-picker.component';
+import { DetailsComponent } from './shared/details/details.component';
 import { NumberDigitsMax } from './shared/number-digits-max.directive';
 import { NumberIntOnly } from './shared/number-int-only.directive';
 import { NumberMax } from './shared/number-max.directive';
@@ -170,6 +171,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     SocialCareQualificationComponent,
     SocialCareQualificationLevelComponent,
     OtherQualificationsComponent,
+    DetailsComponent,
   ],
   imports: [
     BrowserModule,
