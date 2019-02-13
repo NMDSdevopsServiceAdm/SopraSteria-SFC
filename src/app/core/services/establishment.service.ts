@@ -44,7 +44,6 @@ export class EstablishmentService {
   private _establishmentId: number = null;
 
   public set establishmentId(value: number) {
-    debugger;
     this._establishmentId = value;
     localStorage.setItem('establishmentId', value.toString());
   }
