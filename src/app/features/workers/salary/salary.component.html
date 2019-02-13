@@ -1,0 +1,70 @@
+<div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a href="#" (click)="goBack($event)">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1">Are they paid hourly or annually?</h1>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="form-group mt-5">
+      <div class="col-12 p-0">
+        <div class="row">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" formControlName="terms" class="form-control" value="Hourly" for="terms_hourly">
+              <label for="terms_hourly">Hourly</label>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="form.get('terms').value === 'Hourly'" class="panel panel-border-narrow ml-0 mt-5 mb-5 mt-md-0">
+          <div class="form-field">
+            <label class="form-label">Standard hourly rate
+              <span class="example">For example 10.40</span>
+              <input type="number" formControlName="rate" class="form-control" min="0" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('rate').touched || form.get('rate').dirty) && !form.get('rate').valid}">
+            </label>
+          </div>
+        </div>
+
+        <div class="row mt-5 mt-md-0">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" formControlName="terms" class="form-control" value="Annually" id="terms_annually">
+              <label for="terms_annually">Annually</label>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="form.get('terms').value === 'Annually'" class="panel panel-border-narrow ml-0 mt-5 mb-5 mt-md-0">
+          <div class="form-field">
+            <label class="form-label">Standard annual rate
+              <span class="example">For example 30000</span>
+              <input type="number" formControlName="rate" class="form-control" min="0" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('rate').touched || form.get('rate').dirty) && !form.get('rate').valid}">
+            </label>
+          </div>
+        </div>
+
+        <div class="row mt-5 mt-md-0">
+          <div class="col-12">
+            <div class="multiple-choice">
+              <input type="radio" formControlName="terms" class="form-control" value="Don't know" id="terms_unknown">
+              <label for="terms_unknown">Don't know</label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
+  </form>
+</div>
