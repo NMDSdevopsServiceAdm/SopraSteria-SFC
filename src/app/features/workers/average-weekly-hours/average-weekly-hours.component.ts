@@ -70,7 +70,9 @@ export class AverageWeeklyHoursComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
-        worker.weeklyHoursAverage = { value: weeklyHoursAverageKnown.value, hours: weeklyHoursAverage.value };
+        worker.weeklyHoursAverage = weeklyHoursAverageKnown.value
+          ? { value: weeklyHoursAverageKnown.value, hours: weeklyHoursAverage.value }
+          : null;
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {

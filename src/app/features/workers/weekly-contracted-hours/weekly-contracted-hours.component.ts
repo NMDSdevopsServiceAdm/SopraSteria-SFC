@@ -6,10 +6,10 @@ import { MessageService } from 'src/app/core/services/message.service';
 import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
 
 @Component({
-  selector: 'app-average-contracted-hours',
-  templateUrl: './average-contracted-hours.component.html',
+  selector: 'app-weekly-contracted-hours',
+  templateUrl: './weekly-contracted-hours.component.html',
 })
-export class AverageContractedHoursComponent implements OnInit, OnDestroy {
+export class WeeklyContractedHoursComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   private worker: Worker;
   private workerId: string;
@@ -70,7 +70,9 @@ export class AverageContractedHoursComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
-        worker.weeklyHoursContracted = { value: weeklyHoursContractedKnown.value, hours: weeklyHoursContracted.value };
+        worker.weeklyHoursContracted = weeklyHoursContractedKnown.value
+          ? { value: weeklyHoursContractedKnown.value, hours: weeklyHoursContracted.value }
+          : null;
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {

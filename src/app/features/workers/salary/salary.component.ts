@@ -73,7 +73,7 @@ export class SalaryComponent implements OnInit, OnDestroy {
     ) {
       this.router.navigate(['/worker/average-weekly-hours']);
     } else {
-      this.router.navigate(['/worker/average-contracted-hours']);
+      this.router.navigate(['/worker/weekly-contracted-hours']);
     }
   }
 
@@ -94,10 +94,7 @@ export class SalaryComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
-        worker.annualHourlyPay = {
-          value: terms.value,
-          rate: rate.value,
-        };
+        worker.annualHourlyPay = terms.value ? { value: terms.value, rate: rate.value } : null;
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
