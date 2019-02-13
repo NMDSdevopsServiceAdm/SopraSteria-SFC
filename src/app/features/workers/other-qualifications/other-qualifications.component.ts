@@ -52,7 +52,7 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     if (this.worker.qualificationInSocialCare === 'Yes') {
-      this.router.navigate(['/worker/level-of-social-care-qualification']);
+      this.router.navigate(['/worker/social-care-qualification-level']);
     } else {
       this.router.navigate(['/worker/social-care-qualification']);
     }
