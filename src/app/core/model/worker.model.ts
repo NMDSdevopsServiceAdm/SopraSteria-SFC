@@ -65,4 +65,5 @@ export interface Worker {
     value: string;
     rate: number;
   };
+  careCertificate: string;
 }
