@@ -66,4 +66,5 @@ export interface Worker {
     rate: number;
   };
   careCertificate: string;
+  apprenticeshipTraining: string;
 }

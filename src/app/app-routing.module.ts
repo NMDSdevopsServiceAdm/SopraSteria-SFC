@@ -32,6 +32,7 @@ import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-emp
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
+import { ApprenticeshipTrainingComponent } from './features/workers/apprenticeship-training/apprenticeship-training.component';
 import { AverageContractedHoursComponent } from './features/workers/average-contracted-hours/average-contracted-hours.component';
 import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
 import { BlankCardComponent } from './features/workers/blank-card.component';
@@ -323,6 +324,11 @@ const routes: Routes = [
       {
         path: 'care-certificate',
         component: CareCertificateComponent,
+        canLoad: [AuthGuard],
+      },
+      {
+        path: 'apprenticeship-training',
+        component: ApprenticeshipTrainingComponent,
         canLoad: [AuthGuard],
       },
       {
