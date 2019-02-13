@@ -59,7 +59,6 @@ import { UserDetailsComponent } from './features/user-details/user-details.compo
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './features/workers/apprenticeship-training/apprenticeship-training.component';
-import { AverageContractedHoursComponent } from './features/workers/average-contracted-hours/average-contracted-hours.component';
 import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
 import { BlankCardComponent } from './features/workers/blank-card.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
@@ -84,6 +83,7 @@ import { RecruitedFromComponent } from './features/workers/recruited-from/recrui
 import { SalaryComponent } from './features/workers/salary/salary.component';
 import { SocialCareQualificationLevelComponent } from './features/workers/social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './features/workers/social-care-qualification/social-care-qualification.component';
+import { WeeklyContractedHoursComponent } from './features/workers/weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
 import { DatePickerComponent } from './shared/date-picker/date-picker.component';
@@ -162,7 +162,7 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     ContractWithZeroHoursComponent,
     EditWorkerComponent,
     AverageWeeklyHoursComponent,
-    AverageContractedHoursComponent,
+    WeeklyContractedHoursComponent,
     SalaryComponent,
     BlankCardComponent,
     CareCertificateComponent,

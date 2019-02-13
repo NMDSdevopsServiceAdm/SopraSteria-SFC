@@ -6,10 +6,10 @@ import { MessageService } from 'src/app/core/services/message.service';
 import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
 
 @Component({
-  selector: 'app-average-contracted-hours',
-  templateUrl: './average-contracted-hours.component.html',
+  selector: 'app-weekly-contracted-hours',
+  templateUrl: './weekly-contracted-hours.component.html',
 })
-export class AverageContractedHoursComponent implements OnInit, OnDestroy {
+export class WeeklyContractedHoursComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   private worker: Worker;
   private workerId: string;

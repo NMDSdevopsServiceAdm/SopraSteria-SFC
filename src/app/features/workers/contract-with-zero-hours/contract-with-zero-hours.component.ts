@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Contracts } from 'src/app/core/constants/contracts.enum';
 import { Worker } from 'src/app/core/model/worker.model';
 import { MessageService } from 'src/app/core/services/message.service';
 import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
-import { Contracts } from 'src/app/core/constants/contracts.enum';
 
 @Component({
   selector: 'app-contract-with-zero-hours',
@@ -59,7 +59,7 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
       ) {
         this.router.navigate([`/worker/average-weekly-hours`]);
       } else {
-        this.router.navigate([`/worker/average-contracted-hours`]);
+        this.router.navigate([`/worker/weekly-contracted-hours`]);
       }
     } catch (err) {
       // keep typescript transpiler silent

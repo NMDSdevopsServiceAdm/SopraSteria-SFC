@@ -73,7 +73,7 @@ export class SalaryComponent implements OnInit, OnDestroy {
     ) {
       this.router.navigate(['/worker/average-weekly-hours']);
     } else {
-      this.router.navigate(['/worker/average-contracted-hours']);
+      this.router.navigate(['/worker/weekly-contracted-hours']);
     }
   }
 
