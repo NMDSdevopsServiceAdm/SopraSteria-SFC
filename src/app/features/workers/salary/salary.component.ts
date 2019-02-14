@@ -35,7 +35,7 @@ export class SalaryComponent implements OnInit, OnDestroy {
       rate.reset();
 
       if (val === 'Hourly') {
-        rate.setValidators([Validators.min(2.5), Validators.max(100), Validators.required]);
+        rate.setValidators([Validators.min(2.5), Validators.max(200), Validators.required]);
       } else if (val === 'Annually') {
         rate.setValidators([Validators.min(500), Validators.max(200000), Validators.required]);
       }

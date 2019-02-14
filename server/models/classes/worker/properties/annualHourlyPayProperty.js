@@ -13,7 +13,7 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
 
     // concrete implementations
     async restoreFromJson(document) {
-        const MAXIMUM_HOURLY_PAY=100;
+        const MAXIMUM_HOURLY_PAY=200;
         const MAXIMUM_ANNUAL_PAY=200000;
         const MINIMUM_HOURLY_PAY=2.5;
         const MINIMUM_ANNUAL_PAY=500;
