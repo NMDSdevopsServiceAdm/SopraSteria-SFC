@@ -117,6 +117,36 @@ router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
   }
 });
 
+router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
+  const requestedUsernameOrEmail = req.params.usernameOrEmail;
+
+  try {
+    // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
+    const loginResults = await models.login.findOne({
+      where: {
+          username: requestedUsernameOrEmail
+      }
+    });
+    const userResults = await models.user.findOne({
+      where: {
+          email: requestedUsernameOrEmail
+      }
+    });
+
+    if ((loginResults && loginResults.id && (requestedUsernameOrEmail === loginResults.username)) ||
+        (userResults && userResults.id && (requestedUsernameOrEmail === userResults.email))) {
+      return res.status(200).send();
+    } else {
+      return res.status(404).send();
+    }
+
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('registration GET u/usernameOrEmail/:usernameOrEmail - failed', err);
+    return res.status(503).send();
+  }
+});
+
 router.get('/estbname/:name', async (req, res) => {
   const requestedEstablishmentName = req.params.name;
   try {
