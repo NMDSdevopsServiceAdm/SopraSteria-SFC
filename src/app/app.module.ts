@@ -1,71 +1,101 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
-
-import { AppRoutingModule } from './app-routing.module';
+import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-
+import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './features/login/login.component';
-import { RegisterComponent } from './features/register/register.component';
-import { HeaderComponent } from './core/header/header.component';
 import { FooterComponent } from './core/footer/footer.component';
-
-import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
-import { CqcRegisteredQuestionEditComponent } from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
-
-import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
-import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
-import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
-import { UserDetailsComponent } from './features/user-details/user-details.component';
-import { CreateUsernameComponent } from './features/create-username/create-username.component';
-import { SecurityQuestionComponent } from './features/security-question/security-question.component';
-import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
-import { RegistrationCompleteComponent } from './features/registration-complete/registration-complete.component';
-import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
-import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
-import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
-import { VacanciesComponent } from './features/vacancies/vacancies.component';
-import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component';
-import { StartersComponent } from './features/starters/starters.component';
-import { ConfirmStartersComponent } from './features/confirm-starters/confirm-starters.component';
-import { LeaversComponent } from './features/leavers/leavers.component';
-import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leavers.component';
-import { StaffComponent } from './features/staff/staff.component';
-import { ServicesCapacityComponent } from './features/services-capacity/services-capacity.component';
-import { SharingComponent } from './features/sharing/sharing.component';
+import { HeaderComponent } from './core/header/header.component';
 import { MessagesComponent } from './core/messages/messages.component';
+import { AuthGuard } from './core/services/auth-guard.service';
+import { AuthInterceptor } from './core/services/auth-interceptor';
+import { CountryService } from './core/services/country.service';
+import { EstablishmentService } from './core/services/establishment.service';
+import { EthnicityService } from './core/services/ethnicity.service';
+import { FeedbackService } from './core/services/feedback.service';
+import { HttpErrorHandler } from './core/services/http-error-handler.service';
+import { JobService } from './core/services/job.service';
+import { LocalAuthorityService } from './core/services/localAuthority.service';
+import { LocationService } from './core/services/location.service';
+import { MessageService } from './core/services/message.service';
+import { NationalityService } from './core/services/nationality.service';
+import { QualificationService } from './core/services/qualification.service';
+import { RecruitmentService } from './core/services/recruitment.service';
+import { RegistrationService } from './core/services/registration.service';
+import { WorkerService } from './core/services/worker.service';
+import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
+import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leavers.component';
+import { ConfirmStartersComponent } from './features/confirm-starters/confirm-starters.component';
+import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component';
+import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
+import { ContactUsComponent } from './features/contactUs/contactUs.component';
+import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
+import { CqcRegisteredQuestionEditComponent } from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
+import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
+import { CreateUsernameComponent } from './features/create-username/create-username.component';
+import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
+import { FeedbackComponent } from './features/feedback/feedback.component';
+import { HomepageComponent } from './features/homepage/homepage.component';
+import { LeaversComponent } from './features/leavers/leavers.component';
+import { LoginComponent } from './features/login/login.component';
+import { LogoutComponent } from './features/logout/logout.component';
+import { RegisterComponent } from './features/register/register.component';
+import { RegistrationCompleteComponent } from './features/registration-complete/registration-complete.component';
+import { SecurityQuestionComponent } from './features/security-question/security-question.component';
+import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
+import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
+import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
+import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
+import { ServicesCapacityComponent } from './features/services-capacity/services-capacity.component';
 import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
 import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
-import { FeedbackComponent } from './features/feedback/feedback.component';
-import { ContactUsComponent } from './features/contactUs/contactUs.component';
-
-import { Number } from './shared/number.directive';
+import { SharingComponent } from './features/sharing/sharing.component';
+import { StaffComponent } from './features/staff/staff.component';
+import { StartersComponent } from './features/starters/starters.component';
+import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
+import { UserDetailsComponent } from './features/user-details/user-details.component';
+import { VacanciesComponent } from './features/vacancies/vacancies.component';
+import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
+import { ApprenticeshipTrainingComponent } from './features/workers/apprenticeship-training/apprenticeship-training.component';
+import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
+import { BlankCardComponent } from './features/workers/blank-card.component';
+import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
+import { CareCertificateComponent } from './features/workers/care-certificate/care-certificate.component';
+import { ContractWithZeroHoursComponent } from './features/workers/contract-with-zero-hours/contract-with-zero-hours.component';
+import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
+import { CreateStaffRecordStartScreenComponent } from './features/workers/create-staff-record-start-screen/create-staff-record-start-screen.component';
+import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
+import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
+import { DaysOfSicknessComponent } from './features/workers/days-of-sickness/days-of-sickness.component';
+import { DisabilityComponent } from './features/workers/disability/disability.component';
+import { EditWorkerComponent } from './features/workers/edit-worker/edit-worker.component';
+import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
+import { GenderComponent } from './features/workers/gender/gender.component';
+import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
+import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
+import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
+import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
+import { NationalityComponent } from './features/workers/nationality/nationality.component';
+import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
+import { OtherQualificationsLevelComponent } from './features/workers/other-qualifications-level/other-qualifications-level.component';
+import { OtherQualificationsComponent } from './features/workers/other-qualifications/other-qualifications.component';
+import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
+import { SalaryComponent } from './features/workers/salary/salary.component';
+import { SocialCareQualificationLevelComponent } from './features/workers/social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationComponent } from './features/workers/social-care-qualification/social-care-qualification.component';
+import { WeeklyContractedHoursComponent } from './features/workers/weekly-contracted-hours/weekly-contracted-hours.component';
+import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
+import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
+import { DatePickerComponent } from './shared/date-picker/date-picker.component';
+import { DetailsComponent } from './shared/details/details.component';
+import { NumberDigitsMax } from './shared/number-digits-max.directive';
 import { NumberIntOnly } from './shared/number-int-only.directive';
 import { NumberMax } from './shared/number-max.directive';
 import { NumberPositiveOnly } from './shared/number-positive-only.directive';
-import { NoPaste } from './shared/no-paste.directive';
-import { LocationService } from './core/services/location.service';
-import { RegistrationService } from './core/services/registration.service';
-import { HomepageComponent } from './features/homepage/homepage.component';
-import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
-import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
-import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
-import { LogoutComponent } from './features/logout/logout.component';
-
-import { JobService } from './core/services/job.service';
-import { HttpErrorHandler } from './core/services/http-error-handler.service';
-import { MessageService } from './core/services/message.service';
-import { FeedbackService } from './core/services/feedback.service';
-import { EstablishmentService } from './core/services/establishment.service';
-import { LocalAuthorityService } from './core/services/localAuthority.service';
-import { AuthGuard } from './core/services/auth-guard.service';
-
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './core/services/auth-interceptor';
-
+import { Number } from './shared/number.directive';
+import { SubmitButtonComponent } from './shared/submit-button/submit-button.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
 @NgModule({
@@ -90,12 +120,12 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     ContinueCreatingAccountComponent,
     HomepageComponent,
     SelectOtherServicesComponent,
-    SelectOtherServicesListComponent,
     TypeOfEmployerComponent,
     Number,
     NumberIntOnly,
     NumberMax,
     NumberPositiveOnly,
+    NumberDigitsMax,
     VacanciesComponent,
     ConfirmVacanciesComponent,
     StartersComponent,
@@ -112,6 +142,40 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     ContactUsComponent,
     TermsConditionsComponent,
     LogoutComponent,
+    CreateStaffRecordComponent,
+    SubmitButtonComponent,
+    MentalHealthComponent,
+    MainJobStartDateComponent,
+    NationalInsuranceNumberComponent,
+    DatePickerComponent,
+    OtherJobRolesComponent,
+    DateOfBirthComponent,
+    HomePostcodeComponent,
+    GenderComponent,
+    DisabilityComponent,
+    EthnicityComponent,
+    NationalityComponent,
+    RecruitedFromComponent,
+    AdultSocialCareStartedComponent,
+    CountryOfBirthComponent,
+    BritishCitizenshipComponent,
+    AutoSuggestComponent,
+    YearArrivedUkComponent,
+    DaysOfSicknessComponent,
+    ContractWithZeroHoursComponent,
+    EditWorkerComponent,
+    AverageWeeklyHoursComponent,
+    WeeklyContractedHoursComponent,
+    SalaryComponent,
+    BlankCardComponent,
+    CareCertificateComponent,
+    ApprenticeshipTrainingComponent,
+    SocialCareQualificationComponent,
+    SocialCareQualificationLevelComponent,
+    OtherQualificationsComponent,
+    OtherQualificationsLevelComponent,
+    DetailsComponent,
+    CreateStaffRecordStartScreenComponent,
   ],
   imports: [
     BrowserModule,
@@ -123,18 +187,19 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
       {
         path: '',
         redirectTo: '/login',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       {
         path: 'login',
-        component: LoginComponent
-      }
-    ])
+        component: LoginComponent,
+      },
+    ]),
   ],
   providers: [
     LocationService,
     RegistrationService,
     JobService,
+    QualificationService,
     MessageService,
     HttpErrorHandler,
     FeedbackService,
@@ -142,11 +207,16 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
+      multi: true,
     },
     LocalAuthorityService,
-    AuthGuard
+    AuthGuard,
+    WorkerService,
+    EthnicityService,
+    RecruitmentService,
+    NationalityService,
+    CountryService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

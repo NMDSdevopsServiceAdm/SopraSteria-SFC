@@ -1,35 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-
-import { Router, ActivatedRoute } from '@angular/router';
-
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
+import { EstablishmentService } from '../../core/services/establishment.service';
 
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
-  styleUrls: ['./homepage.component.scss']
 })
-export class HomepageComponent implements OnInit {
+export class HomepageComponent implements OnInit, OnDestroy {
   constructor(
     private _loginService: AuthService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private fb: FormBuilder) {}
+    private establishmentService: EstablishmentService,
+    private router: Router
+  ) {}
 
-  get fullname() : string {
+  addWorkerBtnAvailable: boolean;
+
+  private subscriptions = [];
+
+  get fullname(): string {
     return this._loginService.fullname == null ? 'TODO' : this._loginService.fullname;
   }
-  get establishmentName() : string {
+  get establishmentName(): string {
     return this._loginService.establishment.name == null ? 'TODO' : this._loginService.establishment.name;
   }
 
-  get isFirstLoggedIn() : boolean {
+  get isFirstLoggedIn(): boolean {
     return this._loginService.isFirstLogin == null ? false : this._loginService.isFirstLogin;
-  }
-
-  ngOnInit() {
-  
   }
 
   welcomeContinue() {
@@ -39,5 +36,21 @@ export class HomepageComponent implements OnInit {
 
   tryagin() {
     this.router.navigate(['/type-of-employer']);
+  }
+
+  addWorker() {
+    this.router.navigate(['/worker/start-screen']);
+  }
+
+  ngOnInit() {
+    this.subscriptions.push(
+      this.establishmentService.getStaff().subscribe(numberOfStaff => {
+        this.addWorkerBtnAvailable = !!numberOfStaff;
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 }
