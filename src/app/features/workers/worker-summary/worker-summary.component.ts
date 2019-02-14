@@ -1,5 +1,5 @@
+import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Contracts } from 'src/app/core/constants/contracts.enum';
 import { Worker } from 'src/app/core/model/worker.model';
 import { WorkerService } from 'src/app/core/services/worker.service';
@@ -14,7 +14,7 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   private workerId: string;
   private subscriptions = [];
 
-  constructor(private router: Router, private workerService: WorkerService) {}
+  constructor(private _location: Location, private workerService: WorkerService) {}
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
@@ -30,6 +30,7 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
       [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
     );
   }
+
   get displayWeeklyContractedHours() {
     return !this.displayAverageWeeklyHours;
   }
@@ -51,6 +52,6 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   goBack(event) {
     event.preventDefault();
 
-    this.router.navigate(['/welcome']);
+    this._location.back();
   }
 }
