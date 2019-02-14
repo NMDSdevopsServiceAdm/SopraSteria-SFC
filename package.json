@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "concurrently --kill-others \"ng build --watch --no-delete-output-path\" \"node server.js\"",
+    "start": "concurrently --kill-others \"ng build --watch --no-delete-output-path\" \"cross-env NODE_ENV=production node server.js\"",
     "build": "ng build",
     "build:clean": "rimraf dist",
     "build:prod": "npm run build:clean && ng build --prod",
@@ -11,7 +11,8 @@
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "server:coverage": "c8 node server.js"
+    "server:coverage": "c8 node server.js",
+    "metrics": "opener http://localhost:3000/apimetrics/ui"
   },
   "private": true,
   "dependencies": {
@@ -50,6 +51,7 @@
     "sequelize": "^4.41.2",
     "serve-favicon": "^2.5.0",
     "slack": "^11.0.1",
+    "swagger-stats": "^0.95.7",
     "util": "^0.11.1",
     "uuid": "^3.3.2",
     "xss-clean": "^0.1.1",
@@ -65,6 +67,7 @@
     "@types/node": "~8.9.4",
     "angular-in-memory-web-api": "^0.7.0",
     "codelyzer": "~4.5.0",
+    "cross-env": "^5.2.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~3.0.0",
@@ -73,6 +76,7 @@
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "nodemon": "^1.18.9",
+    "opener": "^1.5.1",
     "protractor": "~5.4.0",
     "rimraf": "^2.6.2",
     "ts-node": "~7.0.0",

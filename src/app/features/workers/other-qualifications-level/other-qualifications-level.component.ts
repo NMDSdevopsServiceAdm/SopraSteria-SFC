@@ -1,17 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Contracts } from 'src/app/core/constants/contracts.enum';
+import { Qualification } from 'src/app/core/model/qualification.model';
 import { Worker } from 'src/app/core/model/worker.model';
 import { MessageService } from 'src/app/core/services/message.service';
+import { QualificationService } from 'src/app/core/services/qualification.service';
 import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
 
 @Component({
-  selector: 'app-contract-with-zero-hours',
-  templateUrl: './contract-with-zero-hours.component.html',
+  selector: 'app-other-qualifications-level',
+  templateUrl: './other-qualifications-level.component.html',
 })
-export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
-  public answersAvailable = ['Yes', 'No', `Don't know`];
+export class OtherQualificationsLevelComponent implements OnInit, OnDestroy {
+  public qualifications: Qualification[];
   public form: FormGroup;
   private worker: Worker;
   private workerId: string;
@@ -21,23 +22,30 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private qualificationService: QualificationService
   ) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      zeroHoursContract: null,
+      qualification: [null, Validators.required],
     });
 
     this.workerId = this.workerService.workerId;
 
     this.subscriptions.push(
+      this.qualificationService.getQualifications().subscribe(qualifications => {
+        this.qualifications = qualifications;
+      })
+    );
+
+    this.subscriptions.push(
       this.workerService.getWorker(this.workerId).subscribe(worker => {
         this.worker = worker;
 
-        if (worker.zeroHoursContract) {
+        if (worker.highestQualification) {
           this.form.patchValue({
-            zeroHoursContract: worker.zeroHoursContract,
+            qualification: worker.highestQualification.qualificationId,
           });
         }
       })
@@ -53,14 +61,7 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      if (
-        this.worker.zeroHoursContract === 'Yes' ||
-        [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-      ) {
-        this.router.navigate([`/worker/average-weekly-hours`]);
-      } else {
-        this.router.navigate([`/worker/weekly-contracted-hours`]);
-      }
+      this.router.navigate(['/worker/summary']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -68,16 +69,22 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
-      const { zeroHoursContract } = this.form.controls;
+      const { qualification } = this.form.controls;
       this.messageService.clearError();
+
+      console.log(this.form.valid, this.form.errors);
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
-        worker.zeroHoursContract = zeroHoursContract.value;
+        worker.highestQualification = {
+          qualificationId: parseInt(qualification.value, 10),
+        };
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
-        this.messageService.show('error', 'Please fill the required fields.');
+        if (qualification.errors.required) {
+          this.messageService.show('error', 'Please fill required fields.');
+        }
 
         reject();
       }

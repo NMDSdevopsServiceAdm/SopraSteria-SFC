@@ -59,13 +59,13 @@ import { UserDetailsComponent } from './features/user-details/user-details.compo
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './features/workers/apprenticeship-training/apprenticeship-training.component';
-import { AverageContractedHoursComponent } from './features/workers/average-contracted-hours/average-contracted-hours.component';
 import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
 import { BlankCardComponent } from './features/workers/blank-card.component';
 import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './features/workers/care-certificate/care-certificate.component';
 import { ContractWithZeroHoursComponent } from './features/workers/contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
+import { CreateStaffRecordStartScreenComponent } from './features/workers/create-staff-record-start-screen/create-staff-record-start-screen.component';
 import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
 import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './features/workers/days-of-sickness/days-of-sickness.component';
@@ -79,14 +79,18 @@ import { MentalHealthComponent } from './features/workers/mental-health/mental-h
 import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './features/workers/nationality/nationality.component';
 import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
+import { OtherQualificationsLevelComponent } from './features/workers/other-qualifications-level/other-qualifications-level.component';
 import { OtherQualificationsComponent } from './features/workers/other-qualifications/other-qualifications.component';
 import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
 import { SalaryComponent } from './features/workers/salary/salary.component';
 import { SocialCareQualificationLevelComponent } from './features/workers/social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './features/workers/social-care-qualification/social-care-qualification.component';
+import { WeeklyContractedHoursComponent } from './features/workers/weekly-contracted-hours/weekly-contracted-hours.component';
+import { WorkerSummaryComponent } from './features/workers/worker-summary/worker-summary.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
 import { DatePickerComponent } from './shared/date-picker/date-picker.component';
+import { DetailsComponent } from './shared/details/details.component';
 import { NumberDigitsMax } from './shared/number-digits-max.directive';
 import { NumberIntOnly } from './shared/number-int-only.directive';
 import { NumberMax } from './shared/number-max.directive';
@@ -165,7 +169,7 @@ import { ServiceUnavailablePagesComponent } from './core/error/service-unavailab
     ContractWithZeroHoursComponent,
     EditWorkerComponent,
     AverageWeeklyHoursComponent,
-    AverageContractedHoursComponent,
+    WeeklyContractedHoursComponent,
     SalaryComponent,
     BlankCardComponent,
     CareCertificateComponent,
@@ -176,6 +180,10 @@ import { ServiceUnavailablePagesComponent } from './core/error/service-unavailab
     PageNotFoundPagesComponent,
     ProblemWithTheServicePagesComponent,
     ServiceUnavailablePagesComponent,
+    OtherQualificationsLevelComponent,
+    DetailsComponent,
+    WorkerSummaryComponent,
+    CreateStaffRecordStartScreenComponent,
   ],
   imports: [
     BrowserModule,
