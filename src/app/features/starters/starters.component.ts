@@ -43,24 +43,32 @@ export class StartersComponent implements OnInit, OnDestroy {
   submitHandler(): void {
     const { recordsControl, noRecordsReason } = this.form.controls
 
-    if (noRecordsReason.value === "dont-know") {
-      this.router.navigate(["/leavers"])
+    if (this.form.valid || noRecordsReason.value === "no-new" || noRecordsReason.value === "dont-know") {
+      // regardless of which option is chosen, must always submit to backend
+      let startersToSubmit = null
+      let nextStepNavigation = null
+      
+      if (noRecordsReason.value === 'dont-know')  {
+        startersToSubmit = 'Don\'t know'
+        nextStepNavigation = '/leavers'
+      } else if (noRecordsReason.value === 'no-new') {
+        startersToSubmit = 'None'
+        nextStepNavigation = '/leavers'
+      } else {
+        // default being to send the set of all the current jobs which then need to be confirmed.
+        startersToSubmit =  recordsControl.value.map(v => ({ jobId: parseInt(v.jobId), total: v.total }));
+        nextStepNavigation = '/confirm-starters';
+      }
+      
+      this.subscriptions.push(
+        this.establishmentService.postStarters(startersToSubmit)
+          .subscribe(() => {
+            this.router.navigate([nextStepNavigation])
+          }))
 
     } else {
-      if (this.form.valid || noRecordsReason.value === "no-new") {
-        const startersFromForm = this.form.valid ? this.form.controls.recordsControl.value : []
-        const starters = startersFromForm.map(v => ({ jobId: parseFloat(v.jobId), total: v.total }));
-
-        this.subscriptions.push(
-          this.establishmentService.postStarters(starters)
-            .subscribe(() => {
-              this.router.navigate(["/confirm-starters"])
-            }))
-
-      } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
-      }
+      this.messageService.clearError()
+      this.messageService.show("error", "Please fill the required fields.")
     }
   }
 
@@ -118,11 +126,22 @@ export class StartersComponent implements OnInit, OnDestroy {
     const recordsControl = <FormArray> this.form.controls.recordsControl
 
     this.subscriptions.push(
-      this.establishmentService.getStarters().subscribe(vacancies => {
-        if (vacancies.length) {
-          vacancies.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)))
-
+      this.establishmentService.getStarters().subscribe(starters => {
+        if (starters === 'None') {
+          // Even if "None" option on restore, want a single job role shown
+          recordsControl.push(this.createRecordItem())
+          
+          this.form.patchValue({noRecordsReason: 'no-new'}, { emitEvent: true })
+        } else if (starters === 'Don\'t know') {
+          // Even if "Don't know" option on restore, want a single job role shown
+          recordsControl.push(this.createRecordItem())
+          
+          this.form.patchValue({noRecordsReason: 'dont-know'}, { emitEvent: true })
+        }
+        else if (Array.isArray(starters) && starters.length) {
+          starters.forEach(v => recordsControl.push(this.createRecordItem(v.jobId.toString(), v.total)))
         } else {
+          // If no options and no starters (the value has never been set) - just the default (select job) drop down
           recordsControl.push(this.createRecordItem())
         }
       })

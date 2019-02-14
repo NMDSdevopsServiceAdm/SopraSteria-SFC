@@ -4,8 +4,15 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-const helmet = require('helmet');
+
+// caching middleware - ref and transactional
 var cacheMiddleware = require('./server/utils/middleware/noCache');
+var refCacheMiddleware = require('./server/utils/middleware/refCache');
+
+// security libraries
+var helmet = require('helmet');
+var xssClean = require('xss-clean');
+var sanitizer = require('express-sanitizer');
 
 var routes = require('./server/routes/index');
 var locations = require('./server/routes/locations');
@@ -17,7 +24,11 @@ var jobs = require('./server/routes/jobs');
 var la = require('./server/routes/la');
 var feedback = require('./server/routes/feedback');
 var login = require('./server/routes/login');
-
+var ethnicity = require('./server/routes/ethnicity');
+var country = require('./server/routes/country');
+var nationality = require('./server/routes/nationalities');
+var qualification = require('./server/routes/qualifications');
+var recruitedFrom = require('./server/routes/recruitedFrom');
 
 var errors = require('./server/routes/errors');
 
@@ -26,7 +37,52 @@ var testOnly = require('./server/routes/testOnly');
 
 
 var app = express();
-app.use(helmet());
+
+/*  
+ * security - incorproate helmet & xss-clean (de facto/good practice headers) across all endpoints
+ */
+
+// exclude middleware for given API path - used to exclude xss-clean to be able to demonstrate express-sanitizer on /api/test
+var unless = function(root, path, middleware) {
+    return function(req, res, next) {
+        const rootRegex = new RegExp('^' + root);
+        const excludePathRegex = new RegExp('^' + root + '/' + path);
+
+        // first, if the exclude root, simply move on
+        if (excludePathRegex.test(req.path)) {
+            return next();
+        } else if (rootRegex.test(req.path)) {
+            // matches on the root path, and is not excluded
+            return middleware(req, res, next);
+        } else {
+            // doesn't match the root path, so move on
+            return next();
+        }
+    };
+};
+
+// disable Helmet's caching - because we control that directly - cahcing is not enabled by default; but explicitly disabling it here
+// set frame policy to deny
+// only use on '/api' endpoint, because these changes may otherwise impact on the UI.
+app.use('/api', helmet({
+    noCache: false,
+    frameguard: {
+        action: 'deny'
+    },
+    contentSecurityPolicy : {
+        directives: {
+            defaultSrc: ["'self'"]
+        }
+    }
+}));
+
+// encodes all URL parameters
+app.use(unless('/api', 'test', xssClean()));
+
+/*  
+ * end security
+ */
+
 // view engine setup
 app.set('views', path.join(__dirname, '/server/views'));
 app.set('view engine', 'jade');
@@ -35,13 +91,30 @@ app.use(favicon(path.join(__dirname, 'dist/favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+/*  
+ * security - removes unwanted HTML from data
+ */
+
+app.use('/api/test', sanitizer());       // used as demonstration on test routes only
+
+/*  
+ * end security
+ */
+
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // open/reference endpoints
-app.use('/api/services', services);
-app.use('/api/jobs', jobs);
-app.use('/api/localAuthority', la);
+app.use('/api/services', [refCacheMiddleware.refcache, services]);
+app.use('/api/ethnicity', [refCacheMiddleware.refcache, ethnicity]);
+app.use('/api/country', [refCacheMiddleware.refcache, country]);
+app.use('/api/nationality', [refCacheMiddleware.refcache, nationality]);
+app.use('/api/qualification', [refCacheMiddleware.refcache, qualification]);
+app.use('/api/recruitedFrom', [refCacheMiddleware.refcache, recruitedFrom]);
+app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
+app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 
 // transaction endpoints
 app.use('/api/errors', errors);

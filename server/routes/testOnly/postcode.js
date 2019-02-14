@@ -5,13 +5,19 @@ const models = require('../../models');
 // returns a random set of addresses from the postcode dataset
 //  if passing the limit parameter can vary the set size (defaults to 100)
 router.route('/random').get(async (req, res) => {
-  const setSize = req.query.limit ? req.query.limit : 100;
+  const setSize = req.sanitize(req.query.limit) ? req.sanitize(req.query.limit) : 100;
 
   try {
     let results = await models.pcodedata.findAll({
       order: [
         models.sequelize.random()
       ],
+      where: {
+        local_custodian_code: [119, 121, 235, 350, 2741, 2830, 4210, 4520, 4525, 5150, 5450, 5870, 5900],
+        postcode: {
+          [models.Sequelize.Op.ne]: ''
+        }
+      },
       limit: setSize
     });
 

@@ -1,0 +1,123 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import * as moment from 'moment';
+import { Worker } from '../../../core/model/worker.model';
+import { MessageService } from '../../../core/services/message.service';
+import { WorkerService } from '../../../core/services/worker.service';
+
+@Component({
+  selector: 'app-year-arrived-uk',
+  templateUrl: './year-arrived-uk.component.html',
+})
+export class YearArrivedUkComponent implements OnInit, OnDestroy {
+  public form: FormGroup;
+  private subscriptions = [];
+  private worker: Worker;
+  private workerId: string;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private workerService: WorkerService,
+    private messageService: MessageService,
+  ) {
+    this.saveHandler = this.saveHandler.bind(this);
+    this.yearKnownChangeHandler = this.yearKnownChangeHandler.bind(this);
+    this.yearValidator = this.yearValidator.bind(this);
+  }
+
+  ngOnInit() {
+    this.form = this.formBuilder.group({
+      yearKnown: null,
+      year: [null, this.yearValidator],
+    });
+
+    this.workerId = this.workerService.workerId;
+
+    this.subscriptions.push(
+      this.workerService.getWorker(this.workerId).subscribe(worker => {
+        this.worker = worker;
+
+        if (worker.yearArrived) {
+          this.form.patchValue({
+            yearKnown: worker.yearArrived.value,
+            year: worker.yearArrived.year ? worker.yearArrived.year : null,
+          });
+        }
+      }),
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.messageService.clearAll();
+  }
+
+  async submitHandler() {
+    try {
+      await this.saveHandler();
+      this.router.navigate(['/worker/recruited-from']);
+    } catch (err) {
+      // keep typescript transpiler silent
+    }
+  }
+
+  saveHandler() {
+    return new Promise((resolve, reject) => {
+      const { yearKnown, year } = this.form.controls;
+      this.messageService.clearError();
+
+      if (this.form.valid) {
+        if (yearKnown.value) {
+          this.worker.yearArrived = {
+            value: yearKnown.value,
+            year: year.value,
+          };
+        }
+
+        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+      } else {
+        if (year.errors.required) {
+          this.messageService.show('error', 'Year is required.');
+        } else if (year.errors.yearDigits) {
+          this.messageService.show('error', 'Year must have 4 digits.');
+        } else if (year.errors.yearInFuture) {
+          this.messageService.show('error', `Year can't be in future.`);
+        } else if (year.errors.yearTooEarly) {
+          this.messageService.show('error', `Year can't be earlier than 100 year ago.`);
+        }
+
+        reject();
+      }
+    });
+  }
+
+  yearKnownChangeHandler() {
+    this.form.controls.year.reset();
+  }
+
+  yearValidator() {
+    if (this.form) {
+      const { yearKnown, year } = this.form.value;
+
+      if (yearKnown === 'Yes') {
+        if (year) {
+          const currentYear = moment().year();
+
+          if (currentYear - year < 0) {
+            return { yearInFuture: true };
+          } else if (currentYear - year > 100) {
+            return { yearTooEarly: true };
+          }
+
+          return year.toString().length < 4 ? { yearDigits: true } : null;
+        } else {
+          return { required: true };
+        }
+      }
+    }
+
+    return null;
+  }
+}

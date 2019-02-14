@@ -58,24 +58,32 @@ export class VacanciesComponent implements OnInit, OnDestroy {
   submitHandler(): void {
     const { vacancyControl, noVacanciesReason } = this.vacanciesForm.controls
 
-    if (noVacanciesReason.value === "dont-know") {
-      this.router.navigate(["/starters"])
+    if (this.vacanciesForm.valid || noVacanciesReason.value === "no-staff" || noVacanciesReason.value === "dont-know") {
+      // regardless of which option is chosen, must always submit to backend
+      let vacanciesToSubmit = null
+      let nextStepNavigation = null
+      
+      if (noVacanciesReason.value === 'dont-know')  {
+        vacanciesToSubmit = 'Don\'t know'
+        nextStepNavigation = '/starters'
+      } else if (noVacanciesReason.value === 'no-staff') {
+        vacanciesToSubmit = 'None'
+        nextStepNavigation = '/starters'
+      } else {
+        // default being to send the set of all the current jobs which then need to be confirmed.
+        vacanciesToSubmit =  vacancyControl.value.map(v => ({ jobId: parseInt(v.jobId), total: v.total }));
+        nextStepNavigation = '/confirm-vacancies';
+      }
+      
+      this.subscriptions.push(
+        this.establishmentService.postVacancies(vacanciesToSubmit)
+          .subscribe(() => {
+            this.router.navigate([nextStepNavigation])
+          }))
 
     } else {
-      if (this.vacanciesForm.valid || noVacanciesReason.value === "no-staff") {
-        const vacanciesFromForm = this.vacanciesForm.valid ? this.vacanciesForm.controls.vacancyControl.value : []
-        const vacancies = vacanciesFromForm.map(v => ({ jobId: parseFloat(v.jobId), total: v.total }));
-
-        this.subscriptions.push(
-          this.establishmentService.postVacancies(vacancies)
-            .subscribe(() => {
-              this.router.navigate(["/confirm-vacancies"])
-            }))
-
-      } else {
-        this.messageService.clearError()
-        this.messageService.show("error", "Please fill the required fields.")
-      }
+      this.messageService.clearError()
+      this.messageService.show("error", "Please fill the required fields.")
     }
   }
 
@@ -134,10 +142,22 @@ export class VacanciesComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.establishmentService.getVacancies().subscribe(vacancies => {
-        if (vacancies.length) {
-          vacancies.forEach(v => vacancyControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)))
+        if (vacancies === 'None') {
+          // Even if "None" option on restore, want a single job role shown
+          // to force another deployment
+          vacancyControl.push(this.createVacancyControlItem())
+          
+          this.vacanciesForm.patchValue({noVacanciesReason: 'no-staff'}, { emitEvent: true })
+        } else if (vacancies === 'Don\'t know') {
+          // Even if "Don't know" option on restore, want a single job role shown
+          vacancyControl.push(this.createVacancyControlItem())
 
+          this.vacanciesForm.patchValue({noVacanciesReason: 'dont-know'}, { emitEvent: true })
+        }
+        else if (Array.isArray(vacancies) && vacancies.length) {
+          vacancies.forEach(v => vacancyControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)))
         } else {
+          // If no options and no vacancies (the value has never been set) - just the default (select job) drop down
           vacancyControl.push(this.createVacancyControlItem())
         }
       })
