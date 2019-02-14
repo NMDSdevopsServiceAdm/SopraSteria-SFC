@@ -59,6 +59,7 @@ import { SalaryComponent } from './features/workers/salary/salary.component';
 import { SocialCareQualificationLevelComponent } from './features/workers/social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './features/workers/social-care-qualification/social-care-qualification.component';
 import { WeeklyContractedHoursComponent } from './features/workers/weekly-contracted-hours/weekly-contracted-hours.component';
+import { WorkerSummaryComponent } from './features/workers/worker-summary/worker-summary.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
 
@@ -353,6 +354,11 @@ const routes: Routes = [
       {
         path: 'other-qualifications-level',
         component: OtherQualificationsLevelComponent,
+        canLoad: [AuthGuard],
+      },
+      {
+        path: 'summary',
+        component: WorkerSummaryComponent,
         canLoad: [AuthGuard],
       },
       {
