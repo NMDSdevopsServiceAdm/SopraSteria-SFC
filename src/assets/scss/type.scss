@@ -100,10 +100,12 @@ strong {
   @include rem(line-height, 24px);
 }
 
-.fs-19 {
-
+%fs-19 {
   @include rem(font-size, 19px);
   @include rem(line-height, 19px);
+}
+.fs-19 {
+  @extend %fs-19;
 }
 
 .fs-16 {
@@ -128,6 +130,41 @@ strong {
       ~ * {
         margin-top: 3rem;
       }
+    }
+  }
+}
+
+ul.list {
+  @extend %fs-19;
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-left: 0;
+  list-style-type: none;
+
+  // Add a top margin for nested lists
+  .list {
+    margin-top: 10px;
+  }
+
+  & > li {
+    margin-bottom: 5px;
+  }
+
+  &.list--bullet {
+    padding-left: 20px;
+    list-style-type: disc;
+
+    & > li {
+      list-style-type: disc;
+    }
+  }
+
+  &.list--number {
+    padding-left: 20px;
+    list-style-type: decimal;
+
+    & > li {
+      list-style-type: decimal;
     }
   }
 }
