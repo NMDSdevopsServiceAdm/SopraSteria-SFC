@@ -25,6 +25,7 @@ interface LoggedInEstablishment {
   id: number;
   name: string;
   isRegulated: boolean;
+  nmdsId: string
 }
 interface LoggedInSession {
   fullname: string;

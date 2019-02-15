@@ -24,6 +24,9 @@ export class HomepageComponent implements OnInit, OnDestroy {
   get establishmentName(): string {
     return this._loginService.establishment.name == null ? 'TODO' : this._loginService.establishment.name;
   }
+  get establishmentNmdsId(): string {
+    return this._loginService.establishment.nmdsId == null ? 'TODO' : this._loginService.establishment.nmdsId;
+  }
 
   get isFirstLoggedIn(): boolean {
     return this._loginService.isFirstLogin == null ? false : this._loginService.isFirstLogin;
