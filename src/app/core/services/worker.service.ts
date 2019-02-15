@@ -22,6 +22,10 @@ export class WorkerService {
   private _worker$ = new BehaviorSubject<Worker>(null);
   private worker$ = this._worker$.asObservable();
 
+  // All workers store
+  private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
+  public workers$: Observable<Worker> = this._workers$.asObservable();
+
   constructor(
     private http: HttpClient,
     private httpErrorHandler: HttpErrorHandler,
@@ -48,6 +52,10 @@ export class WorkerService {
       const observable$ = worker.uid ? this.updateWorker(worker) : this.createWorker(worker);
       return observable$.pipe(tap(() => this._worker$.next(worker)));
     }
+  }
+
+  updateState(data) {
+    this._workers$.next(data);
   }
 
   /*

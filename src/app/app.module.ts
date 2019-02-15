@@ -98,6 +98,9 @@ import { NumberPositiveOnly } from './shared/number-positive-only.directive';
 import { Number } from './shared/number.directive';
 import { SubmitButtonComponent } from './shared/submit-button/submit-button.component';
 import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
+import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { ProblemWithTheServicePagesComponent } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
+import { ServiceUnavailablePagesComponent } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
 
 @NgModule({
   declarations: [
@@ -174,6 +177,9 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     SocialCareQualificationComponent,
     SocialCareQualificationLevelComponent,
     OtherQualificationsComponent,
+    PageNotFoundPagesComponent,
+    ProblemWithTheServicePagesComponent,
+    ServiceUnavailablePagesComponent,
     OtherQualificationsLevelComponent,
     DetailsComponent,
     WorkerSummaryComponent,

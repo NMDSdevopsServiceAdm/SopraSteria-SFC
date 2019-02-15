@@ -2,15 +2,21 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth-service';
 import { EstablishmentService } from '../../core/services/establishment.service';
+import { Worker } from '../../core/model/worker.model';
+import { WorkerService } from '../../core/services/worker.service';
 
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
 })
 export class HomepageComponent implements OnInit, OnDestroy {
+
+  workers: Worker;
+
   constructor(
     private _loginService: AuthService,
     private establishmentService: EstablishmentService,
+    private _workerService: WorkerService,
     private router: Router
   ) {}
 
@@ -47,6 +53,41 @@ export class HomepageComponent implements OnInit, OnDestroy {
       this.establishmentService.getStaff().subscribe(numberOfStaff => {
         this.addWorkerBtnAvailable = !!numberOfStaff;
       })
+    );
+
+    this._workerService.workers$.subscribe(workers => this.workers = workers);
+    this.getWorkers(this.establishmentService.establishmentId);
+  }
+
+  getWorkers(estId) {
+    console.log(estId);
+
+    this._workerService.getAllWorkers()
+      .subscribe(
+        (data: Worker[]) => {
+          this._workerService.updateState(data);
+        },
+        (err: any) => {
+
+        },
+        () => {
+          console.log(this.workers);
+        }
+      );
+  }
+
+  editThisWorker(workerId) {
+
+    this._workerService.getWorker(workerId).subscribe(
+      (data: Worker) => {
+        //this._workerService.updateState(data);
+      },
+      (err: any) => {
+
+      },
+      () => {
+        console.log(this.workers);
+      }
     );
   }
 
