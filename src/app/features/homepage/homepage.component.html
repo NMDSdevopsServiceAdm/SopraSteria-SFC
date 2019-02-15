@@ -19,6 +19,24 @@
     </div>
     <div *ngIf="addWorkerBtnAvailable" class="btn-container">
       <button class="btn btn-primary" type="button" (click)="addWorker()" class="btn btn-primary">Add a worker</button>
+
+      <div class="">
+        <h2 class="main-body-text-bold mt-5">Current workers list</h2>
+
+        <div class="col-12 mt-3">
+          <div class="main-text col-12 p-0">
+            <div class="row border-line-bottom" *ngFor="let item of workers; let i = index;">
+              <div class="tb-cell col-2 pt-3 pb-3 pr-2"><strong>{{ item.nameOrId }}</strong></div>
+              <div class="tb-cell col-4 pt-3 pb-3 pr-2">{{ item.mainJob.title }}</div>
+              <div class="tb-cell col-4 pt-3 pb-3 pr-2">{{ item.updated }}</div>
+              <div class="tb-cell text-right col-2 pt-3 pb-3">
+                <a routerLink="" title="Edit worker details" (click)="editThisWorker(item.uid)">edit</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </ng-template>
 
