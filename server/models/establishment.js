@@ -86,7 +86,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     nmdsId: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
       field: '"NmdsID"'
     },
   }, {

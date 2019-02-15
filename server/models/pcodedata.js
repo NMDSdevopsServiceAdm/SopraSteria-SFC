@@ -51,9 +51,9 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   PcodeData.associate = (models) => {
-    PcodeData.belongsTo(models.localAuthority, {
+    PcodeData.belongsTo(models.cssr, {
       foreignKey: 'local_custodian_code',
-      targetKey: 'custodianCode',
+      targetKey: 'localCustodianCode',
       as: 'theAuthority'
     });
   };
