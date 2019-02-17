@@ -80,15 +80,7 @@ router.route('/:id').get(async (req, res) => {
         {
           model: models.establishmentLocalAuthority,
           as: 'localAuthorities',
-          attributes: ['id'],
-          // include: [{
-          //   model: models.localAuthority,
-          //   as: 'reference',
-          //   attributes: ['custodianCode', 'name'],
-          //   order: [
-          //     ['name', 'ASC']
-          //   ]
-          // }]
+          attributes: ['id', 'cssrId', 'cssr'],
         }
       ]
     });
