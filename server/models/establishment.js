@@ -83,7 +83,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
       field: '"Leavers"'
-    }
+    },
+    nmdsId: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: '"NmdsID"'
+    },
   }, {
     tableName: '"Establishment"',
     schema: 'cqc',

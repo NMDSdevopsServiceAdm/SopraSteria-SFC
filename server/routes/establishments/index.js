@@ -80,15 +80,7 @@ router.route('/:id').get(async (req, res) => {
         {
           model: models.establishmentLocalAuthority,
           as: 'localAuthorities',
-          attributes: ['id'],
-          include: [{
-            model: models.localAuthority,
-            as: 'reference',
-            attributes: ['custodianCode', 'name'],
-            order: [
-              ['name', 'ASC']
-            ]
-          }]
+          attributes: ['id', 'cssrId', 'cssr'],
         }
       ]
     });
@@ -118,6 +110,7 @@ const formatEstablishmentResponse = (establishment) => {
     postcode: establishment.postcode,
     locationRef: establishment.locationId,
     isRegulated: establishment.isRegulated,
+    nmdsId: establishment.nmdsId,
     employerType: establishment.employerType,
     numberOfStaff: establishment.numberOfStaff,
     share: ShareFormatters.shareDataJSON(establishment, establishment.localAuthorities),
