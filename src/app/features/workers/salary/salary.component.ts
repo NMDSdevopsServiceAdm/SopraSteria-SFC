@@ -98,8 +98,10 @@ export class SalaryComponent implements OnInit, OnDestroy {
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
+        // TODO - ideally, the min and max values should be constants - and shared equally between onNgInit when creating the form control and here within onSubmit.
+        //  Look to improving when implementing cross-validation checks.
         if (terms.value === 'Hourly' && rate.errors) {
-          this.messageService.show('error', 'Hourly rate must be between £2.50 and £100.');
+          this.messageService.show('error', 'Hourly rate must be between £2.50 and £200.');
         }
 
         if (terms.value === 'Annually' && rate.errors) {
