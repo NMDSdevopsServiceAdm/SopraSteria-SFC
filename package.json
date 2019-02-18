@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "concurrently --kill-others \"ng build\" \"cross-env NODE_ENV=production node server.js\"",
+    "start": "npm run build && cross-env NODE_ENV=production node server.js",
     "dev": "npm-run-all -p -l build:watch api:proxy",
     "build": "ng build",
     "build:clean": "rimraf dist",
