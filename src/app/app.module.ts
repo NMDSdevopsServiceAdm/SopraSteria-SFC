@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
+import { WorkersModule } from '@features/workers/workers.module';
 import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,7 +14,6 @@ import { ProblemWithTheServicePagesComponent } from './core/error/problem-with-t
 import { ServiceUnavailablePagesComponent } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
 import { FooterComponent } from './core/footer/footer.component';
 import { HeaderComponent } from './core/header/header.component';
-import { MessagesComponent } from './core/messages/messages.component';
 import { AuthGuard } from './core/services/auth-guard.service';
 import { AuthInterceptor } from './core/services/auth-interceptor';
 import { CountryService } from './core/services/country.service';
@@ -62,37 +62,6 @@ import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
-import { AdultSocialCareStartedComponent } from './features/workers/adult-social-care-started/adult-social-care-started.component';
-import { ApprenticeshipTrainingComponent } from './features/workers/apprenticeship-training/apprenticeship-training.component';
-import { AverageWeeklyHoursComponent } from './features/workers/average-weekly-hours/average-weekly-hours.component';
-import { BlankCardComponent } from './features/workers/blank-card.component';
-import { BritishCitizenshipComponent } from './features/workers/british-citizenship/british-citizenship.component';
-import { CareCertificateComponent } from './features/workers/care-certificate/care-certificate.component';
-import { ContractWithZeroHoursComponent } from './features/workers/contract-with-zero-hours/contract-with-zero-hours.component';
-import { CountryOfBirthComponent } from './features/workers/country-of-birth/country-of-birth.component';
-import { CreateStaffRecordStartScreenComponent } from './features/workers/create-staff-record-start-screen/create-staff-record-start-screen.component';
-import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
-import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
-import { DaysOfSicknessComponent } from './features/workers/days-of-sickness/days-of-sickness.component';
-import { DisabilityComponent } from './features/workers/disability/disability.component';
-import { EditWorkerComponent } from './features/workers/edit-worker/edit-worker.component';
-import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
-import { GenderComponent } from './features/workers/gender/gender.component';
-import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
-import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
-import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
-import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
-import { NationalityComponent } from './features/workers/nationality/nationality.component';
-import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
-import { OtherQualificationsLevelComponent } from './features/workers/other-qualifications-level/other-qualifications-level.component';
-import { OtherQualificationsComponent } from './features/workers/other-qualifications/other-qualifications.component';
-import { RecruitedFromComponent } from './features/workers/recruited-from/recruited-from.component';
-import { SalaryComponent } from './features/workers/salary/salary.component';
-import { SocialCareQualificationLevelComponent } from './features/workers/social-care-qualification-level/social-care-qualification-level.component';
-import { SocialCareQualificationComponent } from './features/workers/social-care-qualification/social-care-qualification.component';
-import { WeeklyContractedHoursComponent } from './features/workers/weekly-contracted-hours/weekly-contracted-hours.component';
-import { WorkerSummaryComponent } from './features/workers/worker-summary/worker-summary.component';
-import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
 
 @NgModule({
   declarations: [
@@ -120,7 +89,6 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
     VacanciesComponent,
     ConfirmVacanciesComponent,
     StartersComponent,
-    MessagesComponent,
     ConfirmStartersComponent,
     LeaversComponent,
     ConfirmLeaversComponent,
@@ -132,40 +100,9 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
     FeedbackComponent,
     ContactUsComponent,
     LogoutComponent,
-    CreateStaffRecordComponent,
-    MentalHealthComponent,
-    MainJobStartDateComponent,
-    NationalInsuranceNumberComponent,
-    OtherJobRolesComponent,
-    DateOfBirthComponent,
-    HomePostcodeComponent,
-    GenderComponent,
-    DisabilityComponent,
-    EthnicityComponent,
-    NationalityComponent,
-    RecruitedFromComponent,
-    AdultSocialCareStartedComponent,
-    CountryOfBirthComponent,
-    BritishCitizenshipComponent,
-    YearArrivedUkComponent,
-    DaysOfSicknessComponent,
-    ContractWithZeroHoursComponent,
-    EditWorkerComponent,
-    AverageWeeklyHoursComponent,
-    WeeklyContractedHoursComponent,
-    SalaryComponent,
-    BlankCardComponent,
-    CareCertificateComponent,
-    ApprenticeshipTrainingComponent,
-    SocialCareQualificationComponent,
-    SocialCareQualificationLevelComponent,
-    OtherQualificationsComponent,
     PageNotFoundPagesComponent,
     ProblemWithTheServicePagesComponent,
     ServiceUnavailablePagesComponent,
-    OtherQualificationsLevelComponent,
-    WorkerSummaryComponent,
-    CreateStaffRecordStartScreenComponent,
     TermsConditionsComponent,
   ],
   imports: [
@@ -186,6 +123,7 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
       },
     ]),
     SharedModule,
+    WorkersModule,
   ],
   providers: [
     LocationService,

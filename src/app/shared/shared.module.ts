@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { DetailsComponent } from './components/details/details.component';
+import { MessagesComponent } from './components/messages/messages.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
 import { NumberDigitsMax } from './directives/number-digits-max.directive';
 import { NumberIntOnly } from './directives/number-int-only.directive';
@@ -20,6 +21,7 @@ import { Number } from './directives/number.directive';
     AutoSuggestComponent,
     DatePickerComponent,
     DetailsComponent,
+    MessagesComponent,
     SubmitButtonComponent,
     NumberDigitsMax,
     NumberIntOnly,
@@ -31,6 +33,7 @@ import { Number } from './directives/number.directive';
     AutoSuggestComponent,
     DatePickerComponent,
     DetailsComponent,
+    MessagesComponent,
     SubmitButtonComponent,
     NumberDigitsMax,
     NumberIntOnly,
