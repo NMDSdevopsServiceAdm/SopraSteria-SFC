@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -167,6 +168,7 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
     OtherQualificationsLevelComponent,
     WorkerSummaryComponent,
     CreateStaffRecordStartScreenComponent,
+    TermsConditionsComponent
   ],
   imports: [
     BrowserModule,
