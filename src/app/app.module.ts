@@ -4,16 +4,6 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { AutoSuggestComponent } from '@shared/components/auto-suggest/auto-suggest.component';
-import { DatePickerComponent } from '@shared/components/date-picker/date-picker.component';
-import { DetailsComponent } from '@shared/components/details/details.component';
-import { SubmitButtonComponent } from '@shared/components/submit-button/submit-button.component';
-import { TermsConditionsComponent } from '@shared/components/terms-conditions/terms-conditions.component';
-import { NumberDigitsMax } from '@shared/directives/number-digits-max.directive';
-import { NumberIntOnly } from '@shared/directives/number-int-only.directive';
-import { NumberMax } from '@shared/directives/number-max.directive';
-import { NumberPositiveOnly } from '@shared/directives/number-positive-only.directive';
-import { Number } from '@shared/directives/number.directive';
 import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -128,11 +118,6 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
     HomepageComponent,
     SelectOtherServicesComponent,
     TypeOfEmployerComponent,
-    Number,
-    NumberIntOnly,
-    NumberMax,
-    NumberPositiveOnly,
-    NumberDigitsMax,
     VacanciesComponent,
     ConfirmVacanciesComponent,
     StartersComponent,
@@ -147,14 +132,11 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
     ShareOptionsComponent,
     FeedbackComponent,
     ContactUsComponent,
-    TermsConditionsComponent,
     LogoutComponent,
     CreateStaffRecordComponent,
-    SubmitButtonComponent,
     MentalHealthComponent,
     MainJobStartDateComponent,
     NationalInsuranceNumberComponent,
-    DatePickerComponent,
     OtherJobRolesComponent,
     DateOfBirthComponent,
     HomePostcodeComponent,
@@ -166,7 +148,6 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
     AdultSocialCareStartedComponent,
     CountryOfBirthComponent,
     BritishCitizenshipComponent,
-    AutoSuggestComponent,
     YearArrivedUkComponent,
     DaysOfSicknessComponent,
     ContractWithZeroHoursComponent,
@@ -184,7 +165,6 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
     ProblemWithTheServicePagesComponent,
     ServiceUnavailablePagesComponent,
     OtherQualificationsLevelComponent,
-    DetailsComponent,
     WorkerSummaryComponent,
     CreateStaffRecordStartScreenComponent,
   ],
