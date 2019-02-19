@@ -520,9 +520,6 @@ router.post('/requestPasswordReset', async (req, res) => {
     return res.status(400).send();
   }
   const givenEmailOrUsername = escape(req.body.usernameOrEmail);
-
-  console.log("WA DEBUG: given username or email: ", givenEmailOrUsername)
-
   
   // for automated testing, allow the expiry to be overridden by a given TTL parameter (in seconds)
   //  only for localhost/dev
@@ -537,7 +534,7 @@ router.post('/requestPasswordReset', async (req, res) => {
       include: [
         {
           model: models.user,
-          attributes: ['email'],
+          attributes: ['email', 'fullname', 'id'],
         }
       ]
     });
@@ -550,37 +547,38 @@ router.post('/requestPasswordReset', async (req, res) => {
     if ((loginResults && loginResults.id && (givenEmailOrUsername === loginResults.username)) ||
         (userResults && userResults.id && (givenEmailOrUsername === userResults.email))) {
 
-      let sendToAddress = null, sendToName = null, userReqigstrationId = null;
-      if (userReuslts && userResults.email) {
+      //console.log("WA DEBUG - have matched on login or user", loginResults.user)
+
+      let sendToAddress = null, sendToName = null, userRegistrationId = null;
+      if (userResults && userResults.email) {
         sendToAddress = userResults.email;
         sendToName = userResults.fullname;
-        userReqigstrationId = userResults.id;
+        userRegistrationId = userResults.id;
       } else if (loginResults && loginResults.user && loginResults.user.email) {
         sendToAddress = loginResults.user.email;
-        sendToname = loginResults.user.fullname;
-        userReqigstrationId = loginResults.user.id;
+        sendToName = loginResults.user.fullname;
+        userRegistrationId = loginResults.user.id;
       }
-      
-      if (sendToAddress || sendToName || userReqigstrationId) {
+
+      if (sendToAddress===null || sendToName===null || userRegistrationId===null) {
         throw new Error(`Unexpected error: failed to retrieve registration ID/name/email address (${givenEmailOrUsername}) on either user or login`);
       }
 
       const requestUuid = uuid.v4();
       const now = new Date();
-      const expiresIn = now + expiresTTLms;
-
-      console.log("now: ", now.toISOString());
-      console.log("24 hours: ", twentyFourHours.toISOString());
+      const expiresIn = new Date(now.getTime() + expiresTTLms);
 
       const requestTrackerResponse = await models.passwordTracking.create({
-        userFk: userReqigstrationId,
+        userFk: userRegistrationId,
         created: now.toISOString(),
         expires: expiresIn.toISOString(),
         uuid: requestUuid
       });
 
-      const resetLink = `${req.get('host')}/api/registration/validateResetPassword?reset?${requestUuid}`;
-      console.log("WA DEBUG: request link: ", resetLink);
+      const resetLink = `${req.protocol}://${req.get('host')}/api/registration/validateResetPassword?reset=${requestUuid}`;
+
+      // TODO: send email with link - https://trello.com/c/ONiKc7Ck
+
       if (isLocal(req)) {
         return res.status(200).json({resetLink});
       } else {
