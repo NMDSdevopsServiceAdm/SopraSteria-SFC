@@ -17,7 +17,7 @@ exports.loginJWT = (ttlHours, establishmentId, username, isAdmin) => {
 };
 
 // this generates the password reset JWT
-exports.passwordResetJWT = (ttlHours, username, name, resetUUID) => {
+exports.passwordResetJWT = (ttlMinutes, username, name, resetUUID) => {
 
   var claims = {
     sub: username,
@@ -27,5 +27,5 @@ exports.passwordResetJWT = (ttlHours, username, name, resetUUID) => {
     resetUUID,
   }
 
-  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlHours}h`});
+  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});
 }
