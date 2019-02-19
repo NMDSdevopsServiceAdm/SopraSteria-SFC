@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var concatenateAddress = require('../utils/concatenateAddress').concatenateAddress;
-const bodyParser = require('body-parser');
+const uuid = require('uuid');
+const isLocal = require('../utils/security/isLocalTest').isLocal;
 var bcrypt = require('bcrypt-nodejs');
 const slack = require('../utils/slack/slack-logger');
 
@@ -510,5 +511,92 @@ router.route('/')
         });
     }
   });  // ends router.route('/').post
+
+
+
+router.post('/requestPasswordReset', async (req, res) => {
+  // parse input - escaped to prevent SQL injection
+  if (!req.body.usernameOrEmail) {
+    return res.status(400).send();
+  }
+  const givenEmailOrUsername = escape(req.body.usernameOrEmail);
+
+  console.log("WA DEBUG: given username or email: ", givenEmailOrUsername)
+
+  
+  // for automated testing, allow the expiry to be overridden by a given TTL parameter (in seconds)
+  //  only for localhost/dev
+  const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 60*24*1000; // 24 hours
+
+  try {
+    // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
+    const loginResults = await models.login.findOne({
+      where: {
+          username: givenEmailOrUsername
+      },
+      include: [
+        {
+          model: models.user,
+          attributes: ['email'],
+        }
+      ]
+    });
+    const userResults = await models.user.findOne({
+      where: {
+          email: givenEmailOrUsername
+      }
+    });
+
+    if ((loginResults && loginResults.id && (givenEmailOrUsername === loginResults.username)) ||
+        (userResults && userResults.id && (givenEmailOrUsername === userResults.email))) {
+
+      let sendToAddress = null, sendToName = null, userReqigstrationId = null;
+      if (userReuslts && userResults.email) {
+        sendToAddress = userResults.email;
+        sendToName = userResults.fullname;
+        userReqigstrationId = userResults.id;
+      } else if (loginResults && loginResults.user && loginResults.user.email) {
+        sendToAddress = loginResults.user.email;
+        sendToname = loginResults.user.fullname;
+        userReqigstrationId = loginResults.user.id;
+      }
+      
+      if (sendToAddress || sendToName || userReqigstrationId) {
+        throw new Error(`Unexpected error: failed to retrieve registration ID/name/email address (${givenEmailOrUsername}) on either user or login`);
+      }
+
+      const requestUuid = uuid.v4();
+      const now = new Date();
+      const expiresIn = now + expiresTTLms;
+
+      console.log("now: ", now.toISOString());
+      console.log("24 hours: ", twentyFourHours.toISOString());
+
+      const requestTrackerResponse = await models.passwordTracking.create({
+        userFk: userReqigstrationId,
+        created: now.toISOString(),
+        expires: expiresIn.toISOString(),
+        uuid: requestUuid
+      });
+
+      const resetLink = `${req.get('host')}/api/registration/validateResetPassword?reset?${requestUuid}`;
+      console.log("WA DEBUG: request link: ", resetLink);
+      if (isLocal(req)) {
+        return res.status(200).json({resetLink});
+      } else {
+        return res.status(200).send();
+      }
+ 
+    } else {
+      // non-disclosure - if account is not found, return 200 anyway - suggesting that an email has been found
+      return res.status(200).send();
+    }
+
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('registration POST /requestPasswordReset - failed', err);
+    return res.status(503).send();
+  }
+});
 
 module.exports = router;
