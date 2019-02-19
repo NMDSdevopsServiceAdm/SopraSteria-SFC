@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { ProblemWithTheServicePagesComponent } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
+import { ServiceUnavailablePagesComponent } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
 import { WorkerGuard } from './core/services/worker-guard.service';
@@ -62,10 +65,7 @@ import { SocialCareQualificationComponent } from './features/workers/social-care
 import { WeeklyContractedHoursComponent } from './features/workers/weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSummaryComponent } from './features/workers/worker-summary/worker-summary.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
-import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
-import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
-import { ProblemWithTheServicePagesComponent } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
-import { ServiceUnavailablePagesComponent } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
+import { TermsConditionsComponent } from './shared/components/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
   {
