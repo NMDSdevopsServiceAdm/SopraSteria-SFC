@@ -8,6 +8,8 @@ const slack = require('../utils/slack/slack-logger');
 
 const models = require('../models');
 
+const generateJWT = require('../utils/security/generateJWT');
+
 class RegistrationException {
   constructor(originalError, errCode, errMessage) {
     this.err = originalError;
@@ -610,7 +612,7 @@ router.post('/requestPasswordReset', async (req, res) => {
       // TODO: send email with link - https://trello.com/c/ONiKc7Ck
 
       if (isLocal(req)) {
-        return res.status(200).json({resetLink});
+        return res.status(200).json({resetLink, uuid:requestUuid});
       } else {
         return res.status(200).send();
       }
@@ -626,5 +628,98 @@ router.post('/requestPasswordReset', async (req, res) => {
     return res.status(503).send();
   }
 });
+
+router.post('/validateResetPassword', async (req, res) => {
+  if (!req.body.uuid) {
+    console.error('No UUID');
+    return res.status(400).send();
+  }
+  // parse input - escaped to prevent SQL injection
+  const givenUuid = escape(req.body.uuid);
+  const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
+
+  if (!uuidV4Regex.test(givenUuid)) {
+    console.error('Invalid UUID');
+    return res.status(400).send();
+  }
+  
+  try {
+    // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
+    const passTokenResults = await models.passwordTracking.findOne({
+      where: {
+        uuid: givenUuid
+      }
+    });
+
+    if (passTokenResults && passTokenResults.id) {
+
+      // now check if the token has expired or already been consumed
+      const now = new Date().getTime();
+      if (passTokenResults.expires.getTime() < now) {
+        console.error(`registration POST /validateResetPassword - reset token (${givenUuid}) expired`);
+        return res.status(403).send();
+      }
+
+      if (passTokenResults.completed) {
+        console.error(`registration POST /validateResetPassword - reset token (${givenUuid}) has already been used`);
+        return res.status(401).send();
+      }
+
+      // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User/Login details.
+      const userResults = await models.user.findOne({
+        where: {
+          id: passTokenResults.userFk
+        },
+        include: [
+          {
+            model: models.login,
+            attributes: ['username'],
+          }
+        ]
+      });
+
+      if (userResults && userResults.id && userResults.id === passTokenResults.userFk) {
+        // generate JWT and attach it to the header (Authorization)
+        const JWTexpiryInMinutes = 15;
+        const token = generateJWT.passwordResetJWT(JWTexpiryInMinutes, userResults.login.username, userResults.fullname , givenUuid);
+
+        res.set({
+          'Authorization': 'Bearer ' + token
+        });
+
+        // mark the given reset as completed
+        await models.passwordTracking.update({
+            completed: new Date()
+          },
+          {
+            where: {
+              uuid: givenUuid
+          }
+        });
+
+        return res.status(200).json({
+          username: userResults.login.username,
+          fullname: userResults.fullname,
+        });
+
+      } else {
+        throw new Error(`Failed to find user matching reset token (${givenUuid})`);
+      }
+
+      
+ 
+    } else {
+      // token not found
+      console.error(`registration POST /validateResetPassword - reset token (${givenUuid}) not found`);
+      return res.status(404).send();
+    }
+
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('registration POST /validateResetPassword - failed', err);
+    return res.status(503).send();
+  }
+});
+
 
 module.exports = router;

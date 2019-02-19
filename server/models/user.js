@@ -56,7 +56,11 @@ module.exports = function(sequelize, DataTypes) {
     User.belongsTo(models.establishment, {
       foreignKey : 'establishmentId',
       targetKey: 'id'
-    })
+    });
+    User.hasOne(models.login, {
+      foreignKey : 'id',
+      targetKey: 'registrationId'
+    });
   };
   return User;
 };
