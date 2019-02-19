@@ -31,6 +31,11 @@ router.route('/').post(async (req, res) => {
             where: {}
         });
 
+        // accounts
+        await models.passwordTracking.destroy({
+            where: {}
+        });
+
         // registration
         await models.login.destroy({
             where: {}
@@ -43,9 +48,10 @@ router.route('/').post(async (req, res) => {
         });
     });
 
-    res.status(200).send('success');
+    return res.status(200).send('success');
 
   } catch (err) {
+    console.error(err);
     return res.status(503).send('Failed');
   }
 });
