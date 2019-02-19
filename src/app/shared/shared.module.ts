@@ -6,6 +6,7 @@ import { DatePickerComponent } from './components/date-picker/date-picker.compon
 import { DetailsComponent } from './components/details/details.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
+import { NoPaste } from './directives/no-paste.directive';
 import { NumberDigitsMax } from './directives/number-digits-max.directive';
 import { NumberIntOnly } from './directives/number-int-only.directive';
 import { NumberMax } from './directives/number-max.directive';
@@ -23,6 +24,7 @@ import { Number } from './directives/number.directive';
     DetailsComponent,
     MessagesComponent,
     SubmitButtonComponent,
+    NoPaste,
     NumberDigitsMax,
     NumberIntOnly,
     NumberMax,
@@ -35,6 +37,7 @@ import { Number } from './directives/number.directive';
     DetailsComponent,
     MessagesComponent,
     SubmitButtonComponent,
+    NoPaste,
     NumberDigitsMax,
     NumberIntOnly,
     NumberMax,
