@@ -19,7 +19,6 @@ export class WorkerGuard implements CanActivateChild {
     //const workerId = this.workerService.workerId;
     const workerId = this._workerService.worker.uid;
 
-
     if (!workerId) {
       return this.denyAccess();
     }
