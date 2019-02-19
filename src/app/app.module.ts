@@ -4,8 +4,13 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
+import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { ProblemWithTheServicePagesComponent } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
+import { ServiceUnavailablePagesComponent } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
 import { FooterComponent } from './core/footer/footer.component';
 import { HeaderComponent } from './core/header/header.component';
 import { MessagesComponent } from './core/messages/messages.component';
@@ -88,19 +93,6 @@ import { SocialCareQualificationComponent } from './features/workers/social-care
 import { WeeklyContractedHoursComponent } from './features/workers/weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSummaryComponent } from './features/workers/worker-summary/worker-summary.component';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
-import { AutoSuggestComponent } from './shared/auto-suggest/auto-suggest.component';
-import { DatePickerComponent } from './shared/date-picker/date-picker.component';
-import { DetailsComponent } from './shared/details/details.component';
-import { NumberDigitsMax } from './shared/number-digits-max.directive';
-import { NumberIntOnly } from './shared/number-int-only.directive';
-import { NumberMax } from './shared/number-max.directive';
-import { NumberPositiveOnly } from './shared/number-positive-only.directive';
-import { Number } from './shared/number.directive';
-import { SubmitButtonComponent } from './shared/submit-button/submit-button.component';
-import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
-import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
-import { ProblemWithTheServicePagesComponent } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
-import { ServiceUnavailablePagesComponent } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
 
 @NgModule({
   declarations: [
@@ -125,11 +117,6 @@ import { ServiceUnavailablePagesComponent } from './core/error/service-unavailab
     HomepageComponent,
     SelectOtherServicesComponent,
     TypeOfEmployerComponent,
-    Number,
-    NumberIntOnly,
-    NumberMax,
-    NumberPositiveOnly,
-    NumberDigitsMax,
     VacanciesComponent,
     ConfirmVacanciesComponent,
     StartersComponent,
@@ -144,14 +131,11 @@ import { ServiceUnavailablePagesComponent } from './core/error/service-unavailab
     ShareOptionsComponent,
     FeedbackComponent,
     ContactUsComponent,
-    TermsConditionsComponent,
     LogoutComponent,
     CreateStaffRecordComponent,
-    SubmitButtonComponent,
     MentalHealthComponent,
     MainJobStartDateComponent,
     NationalInsuranceNumberComponent,
-    DatePickerComponent,
     OtherJobRolesComponent,
     DateOfBirthComponent,
     HomePostcodeComponent,
@@ -163,7 +147,6 @@ import { ServiceUnavailablePagesComponent } from './core/error/service-unavailab
     AdultSocialCareStartedComponent,
     CountryOfBirthComponent,
     BritishCitizenshipComponent,
-    AutoSuggestComponent,
     YearArrivedUkComponent,
     DaysOfSicknessComponent,
     ContractWithZeroHoursComponent,
@@ -181,9 +164,9 @@ import { ServiceUnavailablePagesComponent } from './core/error/service-unavailab
     ProblemWithTheServicePagesComponent,
     ServiceUnavailablePagesComponent,
     OtherQualificationsLevelComponent,
-    DetailsComponent,
     WorkerSummaryComponent,
     CreateStaffRecordStartScreenComponent,
+    TermsConditionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -202,6 +185,7 @@ import { ServiceUnavailablePagesComponent } from './core/error/service-unavailab
         component: LoginComponent,
       },
     ]),
+    SharedModule,
   ],
   providers: [
     LocationService,

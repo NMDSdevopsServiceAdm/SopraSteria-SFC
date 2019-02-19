@@ -20,7 +20,7 @@ export class SubmitButtonComponent {
         // keep typescript transpiler silent
       }
     } else {
-      throw new TypeError("'saveCallback' function not provided!");
+      throw new TypeError(`'saveCallback' function not provided!`);
     }
   }
 
