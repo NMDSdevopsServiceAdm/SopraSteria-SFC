@@ -4,6 +4,17 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { AutoSuggestComponent } from '@shared/components/auto-suggest/auto-suggest.component';
+import { DatePickerComponent } from '@shared/components/date-picker/date-picker.component';
+import { DetailsComponent } from '@shared/components/details/details.component';
+import { SubmitButtonComponent } from '@shared/components/submit-button/submit-button.component';
+import { TermsConditionsComponent } from '@shared/components/terms-conditions/terms-conditions.component';
+import { NumberDigitsMax } from '@shared/directives/number-digits-max.directive';
+import { NumberIntOnly } from '@shared/directives/number-int-only.directive';
+import { NumberMax } from '@shared/directives/number-max.directive';
+import { NumberPositiveOnly } from '@shared/directives/number-positive-only.directive';
+import { Number } from '@shared/directives/number.directive';
+import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
@@ -92,17 +103,6 @@ import { WeeklyContractedHoursComponent } from './features/workers/weekly-contra
 import { WorkerSummaryComponent } from './features/workers/worker-summary/worker-summary.component';
 import { WorkersModule } from './features/workers/workers.module';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
-import { AutoSuggestComponent } from './shared/components/auto-suggest/auto-suggest.component';
-import { DatePickerComponent } from './shared/components/date-picker/date-picker.component';
-import { DetailsComponent } from './shared/components/details/details.component';
-import { SubmitButtonComponent } from './shared/components/submit-button/submit-button.component';
-import { TermsConditionsComponent } from './shared/components/terms-conditions/terms-conditions.component';
-import { NumberDigitsMax } from './shared/number-digits-max.directive';
-import { NumberIntOnly } from './shared/number-int-only.directive';
-import { NumberMax } from './shared/number-max.directive';
-import { NumberPositiveOnly } from './shared/number-positive-only.directive';
-import { Number } from './shared/number.directive';
-import { SharedModule } from './shared/shared.module';
 
 
 @NgModule({
