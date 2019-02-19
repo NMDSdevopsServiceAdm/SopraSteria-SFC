@@ -92,9 +92,7 @@ import { SocialCareQualificationLevelComponent } from './features/workers/social
 import { SocialCareQualificationComponent } from './features/workers/social-care-qualification/social-care-qualification.component';
 import { WeeklyContractedHoursComponent } from './features/workers/weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSummaryComponent } from './features/workers/worker-summary/worker-summary.component';
-import { WorkersModule } from './features/workers/workers.module';
 import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-arrived-uk.component';
-
 
 @NgModule({
   declarations: [
@@ -168,7 +166,7 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
     OtherQualificationsLevelComponent,
     WorkerSummaryComponent,
     CreateStaffRecordStartScreenComponent,
-    TermsConditionsComponent
+    TermsConditionsComponent,
   ],
   imports: [
     BrowserModule,
@@ -187,7 +185,6 @@ import { YearArrivedUkComponent } from './features/workers/year-arrived-uk/year-
         component: LoginComponent,
       },
     ]),
-    WorkersModule,
     SharedModule,
   ],
   providers: [
