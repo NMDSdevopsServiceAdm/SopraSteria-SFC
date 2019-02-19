@@ -5,9 +5,8 @@
  var router = express.Router();
  require('../utils/security/passport')(passport);
 const Login = require('../models').login;
-const Authorization = require('../utils/security/isAuthenticated');
 
-Token_Secret = Authorization.getTokenSecret();
+const generateJWT = require('../utils/security/generateJWT');
 
 router.post('/',async function(req, res) {
    Login
@@ -39,21 +38,13 @@ router.post('/',async function(req, res) {
             message: 'Authentication failed.',
           });
         }
-   login.comparePassword(req.body.password, (err, isMatch) => {
-      if (isMatch && !err) {
 
-        var claims = {
-          EstblishmentId: login.user.establishmentId,
-          isAdmin: login.user.isAdmin,
-          sub: req.body.username,
-          aud: "ADS-WDS",
-          iss: process.env.TOKEN_ISS ? process.env.TOKEN_ISS : "http://localhost:3000"
-        }
-
-        var date = new Date().getTime();
-        date += (12 * 60 * 60 * 1000);        
-
-        var token = jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: "12h"});        
+        login.comparePassword(req.body.password, (err, isMatch) => {
+          if (isMatch && !err) {
+            console.log("WA DEBUG - inside login endpoint - user: ", login.user.isAdmin)
+            const token = generateJWT.loginJWT(12, login.user.establishmentId, req.body.username, login.user.isAdmin);
+            var date = new Date().getTime();
+            date += (12 * 60 * 60 * 1000);          
    
             const response = formatSuccessulLoginResponse(
               login.user.fullname,
@@ -66,22 +57,21 @@ router.post('/',async function(req, res) {
             // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
             if (!login.firstLogin) {
                 login.update({
-                firstLogin: new Date()
-              });
+                  firstLogin: new Date()
+                });
             }
-          token = 'Bearer ' + token;
-          const headers = {
-            'Authorization': token
-          };
-          res.set(headers);
-          res.status(200);
-          return res.json(response);
+
+            return res.set({'Authorization': 'Bearer ' + token}).status(200).json(response);
+
           } else {
-            res.status(401).send({success: false, msg: 'Authentication failed.'});
+              res.status(401).send({success: false, msg: 'Authentication failed.'});
           }
         })
       })
-      .catch((error) => res.status(400).send(error));
+      .catch((error) => {
+        console.error(error);
+        return res.status(400).send(error);
+      });
 });
 
 // TODO: enforce JSON schema

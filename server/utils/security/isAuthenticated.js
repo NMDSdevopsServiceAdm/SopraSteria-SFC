@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const AUTH_HEADER = 'authorization';
+const thisIss = process.env.TOKEN_ISS ? process.env.TOKEN_ISS : "http://localhost:3000";
 
 exports.getTokenSecret = () => {
   return process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
@@ -7,14 +8,13 @@ exports.getTokenSecret = () => {
 
 // this util middleware will block if the given request is not authorised
 exports.isAuthorised = (req, res , next) => {
-
-  let token = getToken(req.headers[AUTH_HEADER]);
+  const token = getToken(req.headers[AUTH_HEADER]);
 
   if (token) {
     var dec = getverify(token, Token_Secret);
 
     jwt.verify(token, Token_Secret, function (err, claim) {
-      if (err) {
+      if (err || claim.aud !== 'ADS-WDS' || claim.iss !== thisIss) {
         return res.status(401).send({
           sucess: false,
           message: 'token is invalid'
@@ -32,12 +32,11 @@ exports.isAuthorised = (req, res , next) => {
 // this util middleware will block if the given request is not authorised but will also extract
 //  the EstablishmentID token, and make it available on the request
 exports.hasAuthorisedEstablishment = (req, res, next) => {
-
-  let token = getToken(req.headers[AUTH_HEADER]);
+  const token = getToken(req.headers[AUTH_HEADER]);
   
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
-      if (err) {
+      if (err || claim.aud !== 'ADS-WDS' || claim.iss !== thisIss) {
         return res.status(401).send({
           sucess: false,
           message: 'token is invalid'
@@ -67,7 +66,6 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
     // not authenticated
     res.status(401).send('Requires authorisation');
   }
-
 }
 
 getToken = function (headers) {
@@ -82,3 +80,25 @@ getToken = function (headers) {
   }
   return null;
 };
+
+exports.isAuthorisedPasswdReset = (req, res, next) => {
+  const token = getToken(req.headers[AUTH_HEADER]);
+
+  if (token) {
+    var dec = getverify(token, Token_Secret);
+
+    jwt.verify(token, Token_Secret, function (err, claim) {
+      if (err || claim.aud !== 'ADS-WDS-password-reset' || claim.iss !== thisIss) {
+        return res.status(401).send({
+          sucess: false,
+          message: 'token is invalid'
+        });
+      } else {      
+        next();
+      }      
+    });    
+  } else {
+    // not authenticated
+    res.status(401).send('Requires authorisation');
+  }
+}
