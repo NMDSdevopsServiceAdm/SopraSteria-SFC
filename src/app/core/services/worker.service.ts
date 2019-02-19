@@ -20,7 +20,7 @@ export interface WorkerEditResponse {
 export class WorkerService {
   private _workerId: string = null;
   private _worker$ = new BehaviorSubject<Worker>(null);
-  private worker$ = this._worker$.asObservable();
+  public worker$ = this._worker$.asObservable();
 
   // All workers store
   private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
@@ -55,7 +55,13 @@ export class WorkerService {
   }
 
   updateState(data) {
-    this._workers$.next(data);
+    if (data.length > 1) {
+      this._workers$.next(data);
+    }
+    else {
+      this._worker$.next(data);
+    }
+
   }
 
   /*
