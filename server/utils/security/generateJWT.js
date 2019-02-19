@@ -9,7 +9,7 @@ exports.loginJWT = (ttlHours, establishmentId, username, isAdmin) => {
     EstblishmentId: establishmentId,
     isAdmin: isAdmin ? true : false,
     sub: username,
-    aud: "ADS-WDS",
+    aud: 'ADS-WDS',
     iss: process.env.TOKEN_ISS ? process.env.TOKEN_ISS : "http://localhost:3000"
   }
 
