@@ -1,3 +1,8 @@
+const isLocal = (req) => {
+  const testOnlyHostRestrictionRegex = /^(localhost|sfcdev\.cloudapps\.digital)/;
+  return req.get('host').match(testOnlyHostRestrictionRegex);
+};
+
 // this util middleware will block if the given request is not issued to localhost or the dev environment
 exports.isAuthorised = (req, res, next) => {
   if (isLocal(req)) {
@@ -8,7 +13,4 @@ exports.isAuthorised = (req, res, next) => {
   }
 };
 
-exports.isLocal = (req) => {
-  const testOnlyHostRestrictionRegex = /^(localhost|sfcdev\.cloudapps\.digital)/;
-  return req.get('host').match(testOnlyHostRestrictionRegex);
-};
+exports.isLocal = isLocal;
