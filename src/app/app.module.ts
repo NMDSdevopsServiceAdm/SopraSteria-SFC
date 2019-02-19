@@ -5,7 +5,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
-import { WorkersModule } from '@features/workers/workers.module';
 import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -123,7 +122,6 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
       },
     ]),
     SharedModule,
-    WorkersModule,
   ],
   providers: [
     LocationService,
