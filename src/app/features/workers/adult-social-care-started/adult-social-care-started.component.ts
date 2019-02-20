@@ -91,7 +91,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
         } else if (value.errors.yearInFuture) {
           this.messageService.show('error', `Year can't be in the future.`);
         } else if (value.errors.yearTooEarly) {
-          this.messageService.show('error', `Year can't be earlier than 100s year ago.`);
+          this.messageService.show('error', `Year can't be earlier than 100 years ago.`);
         }
 
         reject();
