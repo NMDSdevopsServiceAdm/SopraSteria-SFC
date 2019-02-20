@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivateChild, Router } from '@angular/router';
+import { WorkerService } from '@core/services/worker.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map, take } from 'rxjs/operators';
-import { WorkerService } from './worker.service';
 
 @Injectable({
   providedIn: 'root',

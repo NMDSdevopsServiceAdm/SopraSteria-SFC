@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WorkerGuard } from '@core/services/worker-guard.service';
+import { WorkerGuard } from '@core/guards/worker/worker-guard.service';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
@@ -149,7 +149,7 @@ const routes: Routes = [
       {
         path: 'summary',
         component: WorkerSummaryComponent,
-      }
+      },
     ],
   },
   {
@@ -164,6 +164,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class WorkersRoutingModule { }
+export class WorkersRoutingModule {}
