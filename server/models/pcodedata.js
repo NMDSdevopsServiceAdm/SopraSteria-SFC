@@ -45,7 +45,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     tableName: 'pcodedata',
-    schema: 'cqc',
+    schema: 'cqcref',
     createdAt: false,
     updatedAt: false
   });
