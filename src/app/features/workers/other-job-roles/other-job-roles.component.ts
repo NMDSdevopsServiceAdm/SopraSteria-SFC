@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Job } from '@core/model/job.model';
+import { Worker } from '@core/model/worker.model';
+import { JobService } from '@core/services/job.service';
+import { MessageService } from '@core/services/message.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { Job } from '../../../core/model/job.model';
-import { Worker } from '../../../core/model/worker.model';
-import { JobService } from '../../../core/services/job.service';
-import { MessageService } from '../../../core/services/message.service';
-import { WorkerService } from '../../../core/services/worker.service';
 
 @Component({
   selector: 'app-other-job-roles',
@@ -24,7 +24,7 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService,
-    private jobService: JobService,
+    private jobService: JobService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
@@ -52,16 +52,16 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
                     jobId: j.id,
                     title: j.title,
                     checked: worker.otherJobs.some(o => o.jobId === j.id),
-                  }),
+                  })
                 )
               : availableJobRolesFiltered.map(j =>
-                  this.formBuilder.control({ jobId: j.id, title: j.title, checked: false }),
+                  this.formBuilder.control({ jobId: j.id, title: j.title, checked: false })
                 );
 
             jobs.forEach(j => (this.form.controls.selectedJobRoles as FormArray).push(j));
-          }),
+          })
         );
-      }),
+      })
     );
   }
 
@@ -85,7 +85,7 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
   }
 
   private isOtherJobsSocialWorker(): boolean {
-    return this.form.value.selectedJobRoles.some(j => j.checked && j.title === 'Social Worker');
+    return this.form.value.selectedJobRoles.some(j => j.checked && j.jobId === 27);
   }
 
   saveHandler() {
@@ -94,7 +94,7 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        this.worker.otherJobs = selectedJobRoles.filter(j => j.checked).map(j => ({ jobId: j.jobId }));
+        this.worker.otherJobs = selectedJobRoles.filter(j => j.checked).map(j => ({ jobId: j.jobId, title: j.title }));
         this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         reject();
