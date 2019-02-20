@@ -49,6 +49,16 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
     this.messageService.clearAll();
   }
 
+  goBack(event: Event) {
+    event.preventDefault();
+
+    if ([Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
+      this.router.navigate(['/worker/days-of-sickness']);
+    } else {
+      this.router.navigate(['/worker/adult-social-care-started']);
+    }
+  }
+
   async submitHandler() {
     try {
       await this.saveHandler();
