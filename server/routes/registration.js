@@ -324,7 +324,7 @@ router.route('/')
             
             // must escape the string to prevent SQL injection
             const fuzzyCssrNmdsIdMatch = await models.sequelize.query(
-                `select "Cssr"."NmdsIDLetter" from cqc.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`,
+                `select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`,
                 {
                   type: models.sequelize.QueryTypes.SELECT
                 }
