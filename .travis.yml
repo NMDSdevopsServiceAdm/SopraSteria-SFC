@@ -88,4 +88,4 @@ deploy:
     on:
         branch: master
 notifications:
-    slack: nmdsworkspace:iWywrkfRNuPKdFlYUZfI6Oka
+    slack: skills-for-care:Co9S4WS4ZitevGOyBrEb6yEL
