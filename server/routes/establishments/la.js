@@ -32,20 +32,43 @@ router.route('/').get(async (req, res) => {
     let primaryAuthorityCssr = null;
 
     if (results && results.postcode) {
-      //  using just the first half of the postcode
-      const [firstHalfOfPostcode] = results.postcode.split(' '); 
+      // lookup primary authority by trying to resolve on specific postcode code
+      const cssrResults = await models.pcodedata.findOne({
+        where: {
+          postcode: results.postcode,
+        },
+        include: [{
+          model: models.cssr,
+          as: 'theAuthority',
+          attributes: ['id', 'name', 'nmdsIdLetter']
+        }]
+      });
       
-      // must escape the string to prevent SQL injection
-      const fuzzyCssrIdMatch = await models.sequelize.query(
-        `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
-        {
-          type: models.sequelize.QueryTypes.SELECT
-        }
-      );
-      if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
+      if (cssrResults && cssrResults.postcode === results.postcode &&
+          cssrResults.theAuthority && cssrResults.theAuthority.id &&
+          Number.isInteger(cssrResults.theAuthority.id)) {
+        
         primaryAuthorityCssr = {
-          id: fuzzyCssrIdMatch[0].CssrID,
-          name: fuzzyCssrIdMatch[0].CssR
+          id: cssrResults.theAuthority.id,
+          name: cssrResults.theAuthority.name
+        };
+
+      } else {
+        //  using just the first half of the postcode
+        const [firstHalfOfPostcode] = results.postcode.split(' '); 
+        
+        // must escape the string to prevent SQL injection
+        const fuzzyCssrIdMatch = await models.sequelize.query(
+          `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
+          {
+            type: models.sequelize.QueryTypes.SELECT
+          }
+        );
+        if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
+          primaryAuthorityCssr = {
+            id: fuzzyCssrIdMatch[0].CssrID,
+            name: fuzzyCssrIdMatch[0].CssR
+          }
         }
       }
     }
