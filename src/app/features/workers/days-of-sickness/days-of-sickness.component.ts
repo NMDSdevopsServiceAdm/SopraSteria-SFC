@@ -79,8 +79,6 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
       } else {
         if (value.errors.required) {
           this.messageService.show('error', `'Number of days' is required.`);
-        } else if (value.errors.yearTooEarly) {
-          this.messageService.show('error', `Year can't be earlier than 100 year ago.`);
         }
 
         reject();
