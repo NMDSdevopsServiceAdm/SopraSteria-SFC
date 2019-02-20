@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NIN_PATTERN } from '../../../core/constants/constants';
-import { Worker } from '../../../core/model/worker.model';
-import { MessageService } from '../../../core/services/message.service';
-import { WorkerService } from '../../../core/services/worker.service';
+import { NIN_PATTERN } from '@core/constants/constants';
+import { Worker } from '@core/model/worker.model';
+import { MessageService } from '@core/services/message.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-national-insurance-number',
@@ -57,7 +57,7 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveHandler() {
+  saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       this.messageService.clearError();
       const { nin } = this.form.controls;

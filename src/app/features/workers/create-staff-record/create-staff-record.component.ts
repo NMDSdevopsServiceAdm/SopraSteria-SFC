@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Contracts } from '../../../core/constants/contracts.enum';
-import { Job } from '../../../core/model/job.model';
-import { Worker } from '../../../core/model/worker.model';
-import { JobService } from '../../../core/services/job.service';
-import { MessageService } from '../../../core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '../../../core/services/worker.service';
+import { Contracts } from '@core/constants/contracts.enum';
+import { Job } from '@core/model/job.model';
+import { Worker } from '@core/model/worker.model';
+import { JobService } from '@core/services/job.service';
+import { MessageService } from '@core/services/message.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-create-staff-record',
@@ -25,7 +25,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     private jobService: JobService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private router: Router,
+    private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
@@ -49,7 +49,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
             mainJob: worker.mainJob.jobId,
             contract: worker.contract,
           });
-        }),
+        })
       );
     }
 
@@ -74,7 +74,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      const res = await this.saveHandler();
+      const res = await this.saveHandler() as WorkerEditResponse;
 
       this.workerService.workerId = res.uid;
 

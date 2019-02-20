@@ -5,7 +5,7 @@ import { Job } from '@core/model/job.model';
 import { Worker } from '@core/model/worker.model';
 import { JobService } from '@core/services/job.service';
 import { MessageService } from '@core/services/message.service';
-import { WorkerService } from '@core/services/worker.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -88,7 +88,7 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
     return this.form.value.selectedJobRoles.some(j => j.checked && j.jobId === 27);
   }
 
-  saveHandler() {
+  saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       const { selectedJobRoles } = this.form.value;
       this.messageService.clearError();

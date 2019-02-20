@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Contracts } from 'src/app/core/constants/contracts.enum';
-import { Worker } from 'src/app/core/model/worker.model';
-import { MessageService } from 'src/app/core/services/message.service';
-import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
+import { Contracts } from '@core/constants/contracts.enum';
+import { Worker } from '@core/model/worker.model';
+import { MessageService } from '@core/services/message.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-contract-with-zero-hours',
@@ -22,7 +22,9 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private formBuilder: FormBuilder,
     private router: Router
-  ) {}
+  ) {
+    this.saveHandler = this.saveHandler.bind(this);
+  }
 
   ngOnInit() {
     this.form = this.formBuilder.group({

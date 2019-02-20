@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DEFAULT_DATE_DISPLAY_FORMAT, DEFAULT_DATE_FORMAT } from '@core/constants/constants';
+import { Worker } from '@core/model/worker.model';
+import { MessageService } from '@core/services/message.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { DateValidator } from '@core/validators/date.validator';
 import * as moment from 'moment';
-import { DEFAULT_DATE_DISPLAY_FORMAT, DEFAULT_DATE_FORMAT } from '../../../core/constants/constants';
-import { Worker } from '../../../core/model/worker.model';
-import { MessageService } from '../../../core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '../../../core/services/worker.service';
-import { DateValidator } from '../../../core/validators/date.validator';
 
 @Component({
   selector: 'app-date-of-birth',
@@ -22,7 +22,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private router: Router,
     private workerService: WorkerService,
-    private messageService: MessageService,
+    private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
     this.formValidator = this.formValidator.bind(this);
@@ -51,9 +51,9 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
         }
 
         this.form.setValidators(
-          Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator]),
+          Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator])
         );
-      }),
+      })
     );
   }
 
@@ -93,8 +93,8 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
             this.messageService.show(
               'error',
               `The date has to be between ${noBefore.format(DEFAULT_DATE_DISPLAY_FORMAT)} and ${noAfter.format(
-                DEFAULT_DATE_DISPLAY_FORMAT,
-              )}.`,
+                DEFAULT_DATE_DISPLAY_FORMAT
+              )}.`
             );
 
             // TODO cross validation

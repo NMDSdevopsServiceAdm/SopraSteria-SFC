@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Worker } from '@core/model/worker.model';
+import { MessageService } from '@core/services/message.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
-import { Worker } from '../../../core/model/worker.model';
-import { MessageService } from '../../../core/services/message.service';
-import { WorkerService } from '../../../core/services/worker.service';
 
 @Component({
   selector: 'app-year-arrived-uk',
@@ -63,7 +63,7 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveHandler() {
+  saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       const { yearKnown, year } = this.form.controls;
       this.messageService.clearError();
