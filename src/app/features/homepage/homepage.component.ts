@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Worker } from '../../core/model/worker.model';
 import { AuthService } from '../../core/services/auth-service';
 import { EstablishmentService } from '../../core/services/establishment.service';
-import { Worker } from '../../core/model/worker.model';
 import { WorkerService } from '../../core/services/worker.service';
 
 @Component({
@@ -80,25 +80,8 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
 
   editThisWorker(workerId) {
-
-    this._workerService.getWorker(workerId).subscribe(
-      (data: Worker) => {
-
-        this._workerService.updateState(data);
-
-        // Needs to be completed to check for 'Social worker' in 'otherJobs' also.
-        if (this.workers[0].mainJob.title === 'Social worker') {
-          this.router.navigate(['/worker/mental-health']);
-        }
-        else {
-          this.router.navigate(['/worker/main-job-start-date']);
-        }
-      },
-      (err: any) => {
-
-      },
-      () => {}
-    );
+    this._workerService.workerId = workerId;
+    this.router.navigate(['worker/edit-staff-record']);
   }
 
   ngOnDestroy() {
