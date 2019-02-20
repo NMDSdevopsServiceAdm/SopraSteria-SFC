@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Qualification } from 'src/app/core/model/qualification.model';
-import { Worker } from 'src/app/core/model/worker.model';
-import { MessageService } from 'src/app/core/services/message.service';
-import { QualificationService } from 'src/app/core/services/qualification.service';
-import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
+import { Qualification } from '@core/model/qualification.model';
+import { Worker } from '@core/model/worker.model';
+import { MessageService } from '@core/services/message.service';
+import { QualificationService } from '@core/services/qualification.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-social-care-qualification-level',
@@ -24,7 +24,9 @@ export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy 
     private formBuilder: FormBuilder,
     private router: Router,
     private qualificationService: QualificationService,
-  ) {}
+  ) {
+    this.saveHandler = this.saveHandler.bind(this);
+  }
 
   ngOnInit() {
     this.form = this.formBuilder.group({

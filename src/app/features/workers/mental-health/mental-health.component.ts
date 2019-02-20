@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
-import { WorkerService } from '@core/services/worker.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-mental-health',
@@ -66,7 +66,7 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
     return this.worker.otherJobs && this.worker.otherJobs.some(j => j.jobId === 27);
   }
 
-  saveHandler() {
+  saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       const { approvedMentalHealthWorker } = this.form.value;
       this.messageService.clearError();

@@ -1,5 +1,5 @@
 import { Component, OnDestroy } from '@angular/core';
-import { WorkerService } from 'src/app/core/services/worker.service';
+import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   templateUrl: './edit-worker.component.html',

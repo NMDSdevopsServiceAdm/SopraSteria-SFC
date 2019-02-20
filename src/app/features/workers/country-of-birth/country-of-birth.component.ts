@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Worker } from '../../../core/model/worker.model';
-import { CountryResponse, CountryService } from '../../../core/services/country.service';
-import { MessageService } from '../../../core/services/message.service';
-import { WorkerService } from '../../../core/services/worker.service';
+import { Worker } from '@core/model/worker.model';
+import { CountryResponse, CountryService } from '@core/services/country.service';
+import { MessageService } from '@core/services/message.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-country-of-birth',
@@ -22,7 +22,7 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
     private countryService: CountryService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private router: Router,
+    private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
     this.cobNameValidator = this.cobNameValidator.bind(this);
@@ -49,7 +49,7 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
             cobName: other ? other.country : null,
           });
         }
-      }),
+      })
     );
 
     this.subscriptions.push(this.countryService.getCountries().subscribe(res => (this.availableOtherCountries = res)));
@@ -84,7 +84,7 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveHandler() {
+  saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       const { cobName, cobKnown } = this.form.controls;
       this.messageService.clearError();
