@@ -85,7 +85,7 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
         } else if (year.errors.yearInFuture) {
           this.messageService.show('error', `Year can't be in future.`);
         } else if (year.errors.yearTooEarly) {
-          this.messageService.show('error', `Year can't be earlier than 100 year ago.`);
+          this.messageService.show('error', `Year can't be earlier than 100 years ago.`);
         }
 
         reject();
