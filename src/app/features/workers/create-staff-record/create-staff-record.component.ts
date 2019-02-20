@@ -74,7 +74,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      const res = await this.saveHandler() as WorkerEditResponse;
+      const res = await this.saveHandler();
 
       this.workerService.workerId = res.uid;
 
