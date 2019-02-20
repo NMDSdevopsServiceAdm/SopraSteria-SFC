@@ -3,16 +3,19 @@
   "version": "0.0.1",
   "scripts": {
     "ng": "ng",
-    "start": "concurrently --kill-others \"ng build --watch --no-delete-output-path\" \"cross-env NODE_ENV=production node server.js\"",
+    "start": "npm run build && cross-env NODE_ENV=production node server.js",
+    "dev": "npm-run-all -p -l build:watch api:proxy",
     "build": "ng build",
     "build:clean": "rimraf dist",
+    "build:watch": "ng build --watch --no-delete-output-path",
     "build:prod": "npm run build:clean && ng build --prod",
     "test": "ng test",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "server:coverage": "c8 node server.js",
-    "metrics": "opener http://localhost:3000/apimetrics/ui"
+    "metrics": "opener http://localhost:3000/apimetrics/ui",
+    "api:proxy": "node proxy.js"
   },
   "private": true,
   "dependencies": {
@@ -33,6 +36,7 @@
     "concurrently": "^4.1.0",
     "cookie-parser": "^1.4.3",
     "core-js": "^2.5.4",
+    "express-http-proxy": "^1.5.1",
     "express-sanitizer": "^1.0.5",
     "helmet": "^3.15.0",
     "jade": "^1.11.0",
@@ -76,6 +80,8 @@
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
     "nodemon": "^1.18.9",
+    "npm": "^6.8.0",
+    "npm-run-all": "^4.1.5",
     "opener": "^1.5.1",
     "protractor": "~5.4.0",
     "rimraf": "^2.6.2",

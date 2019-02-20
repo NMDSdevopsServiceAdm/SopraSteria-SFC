@@ -35,7 +35,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
       year: null,
     });
 
-    this.workerId = this.workerService.workerId;
+    this.workerId = this.workerService.worker.uid;
 
     this.subscriptions.push(
       this.workerService.getWorker(this.workerId).subscribe(worker => {

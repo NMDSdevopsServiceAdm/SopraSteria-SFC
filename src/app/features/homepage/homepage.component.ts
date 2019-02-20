@@ -83,14 +83,21 @@ export class HomepageComponent implements OnInit, OnDestroy {
 
     this._workerService.getWorker(workerId).subscribe(
       (data: Worker) => {
-        //this._workerService.updateState(data);
+
+        this._workerService.updateState(data);
+
+        // Needs to be completed to check for 'Social worker' in 'otherJobs' also.
+        if (this.workers[0].mainJob.title === 'Social worker') {
+          this.router.navigate(['/worker/mental-health']);
+        }
+        else {
+          this.router.navigate(['/worker/main-job-start-date']);
+        }
       },
       (err: any) => {
 
       },
-      () => {
-        console.log(this.workers);
-      }
+      () => {}
     );
   }
 
