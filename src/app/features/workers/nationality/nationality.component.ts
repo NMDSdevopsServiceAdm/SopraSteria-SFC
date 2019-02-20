@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Worker } from '../../../core/model/worker.model';
-import { MessageService } from '../../../core/services/message.service';
-import { NationalityResponse, NationalityService } from '../../../core/services/nationality.service';
-import { WorkerService } from '../../../core/services/worker.service';
+import { Worker } from '@core/model/worker.model';
+import { MessageService } from '@core/services/message.service';
+import { NationalityResponse, NationalityService } from '@core/services/nationality.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-nationality',
@@ -76,7 +76,7 @@ export class NationalityComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveHandler() {
+  saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       const { nationalityName, nationalityKnown } = this.form.controls;
       this.messageService.clearError();

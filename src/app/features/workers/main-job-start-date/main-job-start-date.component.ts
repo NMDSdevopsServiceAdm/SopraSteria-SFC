@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { DEFAULT_DATE_FORMAT } from '@core/constants/constants';
+import { Worker } from '@core/model/worker.model';
+import { MessageService } from '@core/services/message.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { DateValidator } from '@core/validators/date.validator';
 import * as moment from 'moment';
-import { DEFAULT_DATE_FORMAT } from '../../../core/constants/constants';
-import { Worker } from '../../../core/model/worker.model';
-import { MessageService } from '../../../core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '../../../core/services/worker.service';
-import { DateValidator } from '../../../core/validators/date.validator';
 
 @Component({
   selector: 'app-main-job-start-date',
@@ -22,7 +22,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private router: Router,
     private workerService: WorkerService,
-    private messageService: MessageService,
+    private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
     this.validateCross = this.validateCross.bind(this);
@@ -35,7 +35,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
       year: null,
     });
 
-    this.workerId = this.workerService.workerId;
+    this.workerId = this.workerService.worker.uid;
 
     this.subscriptions.push(
       this.workerService.getWorker(this.workerId).subscribe(worker => {
@@ -51,9 +51,9 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
         }
 
         this.form.setValidators(
-          Validators.compose([this.form.validator, DateValidator.datePastOrToday(), this.validateCross]),
+          Validators.compose([this.form.validator, DateValidator.datePastOrToday(), this.validateCross])
         );
-      }),
+      })
     );
   }
 

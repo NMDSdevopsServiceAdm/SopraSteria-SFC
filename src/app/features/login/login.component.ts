@@ -5,20 +5,20 @@ import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
 
 //import { LoginUser } from './login-user';
 
-import { MessageService } from "../../core/services/message.service"
+import { MessageService } from '../../core/services/message.service';
 import { AuthService } from '../../core/services/auth-service';
-import { EstablishmentService } from "../../core/services/establishment.service"
+import { EstablishmentService } from '../../core/services/establishment.service';
 
 import { LoginApiModel } from '../../core/model/loginApi.model';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
-  //loginUser = new LoginUser();
+  // loginUser = new LoginUser();
 
   login: LoginApiModel;
 
@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   usernameValue: string;
   userPasswordValue: string;
 
-  private subscriptions = []
+  private subscriptions = [];
 
   // Set up Validation messages
   usernameMessage: string;
@@ -38,7 +38,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder) {}
+    private fb: FormBuilder
+  ) {}
 
   // Get user fullname
   get getUsernameInput() {
@@ -53,18 +54,18 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required, Validators.maxLength(120)]],
-      password: ['', [Validators.required, Validators.maxLength(120)]]
+      password: ['', [Validators.required, Validators.maxLength(120)]],
     });
 
     this.subscriptions.push(
       this.loginForm.valueChanges.subscribe(value => {
         if (this.loginForm.valid) {
-          this.messageService.clearError()
-        }})
-    )
+          this.messageService.clearError();
+        }
+      })
+    );
 
-    this.subscriptions.push(
-      this._loginService.auth$.subscribe(login => this.login = login))
+    this.subscriptions.push(this._loginService.auth$.subscribe(login => (this.login = login)));
   }
 
   onSubmit() {
@@ -72,10 +73,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.userPasswordValue = this.getPasswordInput.value;
 
     if (this.loginForm.invalid) {
-      this.messageService.clearError()
-      this.messageService.show("error", "Please fill the required fields.")
-    }
-    else {
+      this.messageService.clearError();
+      this.messageService.show('error', 'Please fill the required fields.');
+    } else {
       this.save();
     }
   }
@@ -83,45 +83,44 @@ export class LoginComponent implements OnInit, OnDestroy {
   save() {
     this.login.username = this.usernameValue;
     this.login.password = this.userPasswordValue;
-    this.messageService.clearError()
+    this.messageService.clearError();
 
     this.subscriptions.push(
-    this._loginService.postLogin(this.login)
-      .subscribe(
-        (response) => {
+      this._loginService.postLogin(this.login).subscribe(
+        response => {
           this._loginService.updateState(response.body);
 
           // // update the establishment service state with the given establishment oid
           this.establishmentService.establishmentId = response.body.establishment.id;
 
-          const token = response.headers.get('authorization')
-          this._loginService.authorise(token)
+          const token = response.headers.get('authorization');
+          this._loginService.authorise(token);
         },
-        (err) => {
-          const message = err.error.message || "Invalid username or password."
-          this.messageService.show("error", message)
+        err => {
+          const message = err.error.message || 'Invalid username or password.';
+          this.messageService.show('error', message);
         },
         () => {
-          const redirectUrl = this._loginService.redirectUrl
+          const redirectUrl = this._loginService.redirectUrl;
 
           if (redirectUrl) {
             const navExtras: NavigationExtras = {
-              queryParamsHandling: "preserve",
-              preserveFragment: true
-            }
+              queryParamsHandling: 'preserve',
+              preserveFragment: true,
+            };
 
-            this._loginService.redirectUrl = null
-            this.router.navigate([redirectUrl], navExtras)
-
+            this._loginService.redirectUrl = null;
+            this.router.navigate([redirectUrl], navExtras);
           } else {
             this.router.navigate(['/welcome']);
           }
         }
-      ))
+      )
+    );
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe())
-    this.messageService.clearAll()
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.messageService.clearAll();
   }
 }

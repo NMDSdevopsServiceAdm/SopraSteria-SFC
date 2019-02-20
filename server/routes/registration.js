@@ -192,6 +192,14 @@ const responseErrors = {
     errMessage: 'Unknown location',
     db_constraint: 'uc_Login_Username'
   },
+  unknownNMDSsequence: {
+    errCode: -500,
+    errMessage: 'Unknown NMDS Sequence'
+  },
+  unknownNMDSLetter: {
+    errCode: -600,
+    errMessage: 'Unknown NMDS Letter/CSSR Region'
+  },
 };
 
 router.route('/')
@@ -290,6 +298,64 @@ router.route('/')
             );
           }
 
+          // need to create an NMDS ID - which is a combination of the CSSR nmds letter and a unique sequence number
+          // first find the associated CSSR NMDS letter using the postcode given for this establishment. Note - there
+          //  might not be an associated pcodedata record
+          const cssrResults = await models.pcodedata.findOne({
+            where: {
+              postcode: Estblistmentdata.PostCode,
+            },
+            include: [{
+              model: models.cssr,
+              as: 'theAuthority',
+              attributes: ['id', 'name', 'nmdsIdLetter']
+            }]
+          });
+
+          let nmdsLetter = null;
+          if (cssrResults && cssrResults.postcode === Estblistmentdata.PostCode &&
+              cssrResults.theAuthority && cssrResults.theAuthority.id &&
+              Number.isInteger(cssrResults.theAuthority.id)) {
+            nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
+          } else {
+            // if, there is no direct match on pcodedata using the Establishment's postcode, then a more fuzzy match is done
+            //  using just the first half of the postcode
+            const [firstHalfOfPostcode] = Estblistmentdata.PostCode.split(' '); 
+            
+            // must escape the string to prevent SQL injection
+            const fuzzyCssrNmdsIdMatch = await models.sequelize.query(
+                `select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`,
+                {
+                  type: models.sequelize.QueryTypes.SELECT
+                }
+              );
+            if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
+              nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
+            }
+          }
+
+          let nextNmdsIdSeqNumber = 0;
+          const nextNmdsIdSeqNumberResults = await models.sequelize.query(
+              'SELECT nextval(\'cqc."NmdsID_seq"\')',
+              {
+                type: models.sequelize.QueryTypes.SELECT
+              });
+          if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
+            nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
+          } else {
+            // no sequence number
+            console.error("Failed to get next sequence number for Establishment: ", nextNmdsIdSeqNumberResults);
+            throw new RegistrationException(
+              'Failed to get next sequence number for Establishment',
+              responseErrors.unknownNMDSsequence.errCode,
+              responseErrors.unknownNMDSsequence.errMessage
+            );
+          }
+
+          if (nmdsLetter) {
+            Estblistmentdata.NmdsId = `${nmdsLetter}${nextNmdsIdSeqNumber}`;
+          }
+
           // now create establishment
           defaultError = responseErrors.establishment;
           const establishmentCreation = await models.establishment.create({
@@ -302,6 +368,7 @@ router.route('/')
             shareData: false,
             shareWithCQC: false,
             shareWithLA: false,
+            nmdsId: Estblistmentdata.NmdsId
           });
           const sanitisedEstablishmentResults = establishmentCreation.get({plain: true});
           Estblistmentdata.id = sanitisedEstablishmentResults.EstablishmentID;
@@ -341,6 +408,7 @@ router.route('/')
           delete slackMsg.user.password;
           delete slackMsg.user.securityQuestion;
           delete slackMsg.user.securityAnswer;
+          slackMsg.NmdsId = Estblistmentdata.NmdsId;
           slack.info("Registration", JSON.stringify(slackMsg, null, 2));
 
           // gets here on success
@@ -349,11 +417,14 @@ router.route('/')
             "status" : 1,
             "message" : "Establishment and primary user successfully created",
             "establishmentId" : Estblistmentdata.id,
-            "primaryUser" : Logindata.UserName
+            "primaryUser" : Logindata.UserName.postcode,
+            "nmdsId": Estblistmentdata.NmdsId ? Estblistmentdata.NmdsId : 'undefined'
           }); 
         });
 
       } catch (err) {
+        console.error('Caught exception in registration: ', err);
+
         // if we've already found a specific registration error, re-throw the error
         if (err instanceof RegistrationException) throw err;
 
@@ -368,6 +439,11 @@ router.route('/')
           } else if (err.parent.constraint && err.parent.constraint === 'uc_Login_Username') {
             defaultError = responseErrors.duplicateUsername;
           }
+        }
+
+        // catch when the nmdsId is undefined
+        if (err.name && err.name === 'SequelizeValidationError' && err.errors[0].path === 'nmdsId') {
+          defaultError = responseErrors.unknownNMDSLetter;
         }
 
         // TODO: trap for location foreign key failure

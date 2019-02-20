@@ -3,7 +3,7 @@
   <h1 class="h1">Welcome {{ fullname }}</h1>
 
   <ng-template [ngIf]="isFirstLoggedIn" [ngIfElse]="welcomeBack">
-    <p class="main-body-text mb-5 d-block col-12 col-md-10 p-0">This is the first time you've signed in to the service, so we need a few details from you about {{ establishmentName }}.</p>
+    <p class="main-body-text mb-5 d-block col-12 col-md-10 p-0">This is the first time you've signed in to the service, so we need a few details from you about {{ establishmentName }} ({{ establishmentNmdsId }}).</p>
     <p class="main-body-text mb-5 d-block col-12 col-md-10 p-0">We have some questions which shouldn't take more than a few minutes to answer.</p>
     <div class="btn-container">
       <button class="btn btn-primary" type="submit" (click)="welcomeContinue()">Continue</button>
@@ -19,6 +19,24 @@
     </div>
     <div *ngIf="addWorkerBtnAvailable" class="btn-container">
       <button class="btn btn-primary" type="button" (click)="addWorker()" class="btn btn-primary">Add a worker</button>
+
+      <div>
+        <h2 class="main-body-text-bold mt-5">Current workers list</h2>
+
+        <div class="col-12 mt-3">
+          <div class="main-text col-12 p-0">
+            <div class="row border-line-bottom" *ngFor="let item of workers; let i = index;">
+              <div class="tb-cell col-2 pt-3 pb-3 pr-2"><strong>{{ item.nameOrId }}</strong></div>
+              <div class="tb-cell col-4 pt-3 pb-3 pr-2">{{ item.mainJob.title }}</div>
+              <div class="tb-cell col-4 pt-3 pb-3 pr-2">{{ item.updated }}</div>
+              <div class="tb-cell text-right col-2 pt-3 pb-3">
+                <button type="button" title="Edit worker details" (click)="editThisWorker(item.uid)">edit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </ng-template>
 

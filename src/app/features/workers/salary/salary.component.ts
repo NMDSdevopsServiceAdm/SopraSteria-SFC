@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Contracts } from 'src/app/core/constants/contracts.enum';
-import { Worker } from 'src/app/core/model/worker.model';
-import { MessageService } from 'src/app/core/services/message.service';
-import { WorkerEditResponse, WorkerService } from 'src/app/core/services/worker.service';
+import { Contracts } from '@core/constants/contracts.enum';
+import { Worker } from '@core/model/worker.model';
+import { MessageService } from '@core/services/message.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-salary',
@@ -21,7 +21,9 @@ export class SalaryComponent implements OnInit, OnDestroy {
     private messageService: MessageService,
     private formBuilder: FormBuilder,
     private router: Router
-  ) {}
+  ) {
+    this.saveHandler = this.saveHandler.bind(this);
+  }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
@@ -35,7 +37,7 @@ export class SalaryComponent implements OnInit, OnDestroy {
       rate.reset();
 
       if (val === 'Hourly') {
-        rate.setValidators([Validators.min(2.5), Validators.max(100), Validators.required]);
+        rate.setValidators([Validators.min(2.5), Validators.max(200), Validators.required]);
       } else if (val === 'Annually') {
         rate.setValidators([Validators.min(500), Validators.max(200000), Validators.required]);
       }
@@ -98,8 +100,12 @@ export class SalaryComponent implements OnInit, OnDestroy {
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
+        // TODO - ideally, the min and max values should be constants
+        // and shared equally between onNgInit when creating the form control
+        // and here within onSubmit.
+        // Look to improving when implementing cross-validation checks.
         if (terms.value === 'Hourly' && rate.errors) {
-          this.messageService.show('error', 'Hourly rate must be between £2.50 and £100.');
+          this.messageService.show('error', 'Hourly rate must be between £2.50 and £200.');
         }
 
         if (terms.value === 'Annually' && rate.errors) {

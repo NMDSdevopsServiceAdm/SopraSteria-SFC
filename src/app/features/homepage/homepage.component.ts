@@ -1,16 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Worker } from '../../core/model/worker.model';
 import { AuthService } from '../../core/services/auth-service';
 import { EstablishmentService } from '../../core/services/establishment.service';
+import { WorkerService } from '../../core/services/worker.service';
 
 @Component({
   selector: 'app-homepage',
   templateUrl: './homepage.component.html',
 })
 export class HomepageComponent implements OnInit, OnDestroy {
+
+  workers: Worker;
+
   constructor(
     private _loginService: AuthService,
     private establishmentService: EstablishmentService,
+    private _workerService: WorkerService,
     private router: Router
   ) {}
 
@@ -23,6 +29,9 @@ export class HomepageComponent implements OnInit, OnDestroy {
   }
   get establishmentName(): string {
     return this._loginService.establishment.name == null ? 'TODO' : this._loginService.establishment.name;
+  }
+  get establishmentNmdsId(): string {
+    return this._loginService.establishment.nmdsId == null ? 'TODO' : this._loginService.establishment.nmdsId;
   }
 
   get isFirstLoggedIn(): boolean {
@@ -48,6 +57,31 @@ export class HomepageComponent implements OnInit, OnDestroy {
         this.addWorkerBtnAvailable = !!numberOfStaff;
       })
     );
+
+    this._workerService.workers$.subscribe(workers => this.workers = workers);
+    this.getWorkers(this.establishmentService.establishmentId);
+  }
+
+  getWorkers(estId) {
+    console.log(estId);
+
+    this._workerService.getAllWorkers()
+      .subscribe(
+        (data: Worker[]) => {
+          this._workerService.updateState(data);
+        },
+        (err: any) => {
+
+        },
+        () => {
+          console.log(this.workers);
+        }
+      );
+  }
+
+  editThisWorker(workerId) {
+    this._workerService.workerId = workerId;
+    this.router.navigate(['worker/edit-staff-record']);
   }
 
   ngOnDestroy() {

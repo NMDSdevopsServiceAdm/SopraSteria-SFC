@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Contracts } from '@core/constants/contracts.enum';
+import { Worker } from '@core/model/worker.model';
+import { MessageService } from '@core/services/message.service';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
-import { Worker } from '../../../core/model/worker.model';
-import { MessageService } from '../../../core/services/message.service';
-import { WorkerService } from '../../../core/services/worker.service';
 
 @Component({
   selector: 'app-adult-social-care-started',
@@ -20,7 +21,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private router: Router,
     private workerService: WorkerService,
-    private messageService: MessageService,
+    private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
     this.otherChangeHandler = this.otherChangeHandler.bind(this);
@@ -45,7 +46,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
             value: worker.socialCareStartDate.year ? worker.socialCareStartDate.year : null,
           });
         }
-      }),
+      })
     );
   }
 
@@ -57,13 +58,18 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
   async submitHandler() {
     try {
       await this.saveHandler();
-      this.router.navigate(['/worker/days-of-sickness']);
+
+      if ([Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
+        this.router.navigate(['/worker/days-of-sickness']);
+      } else {
+        this.router.navigate(['/worker/contract-with-zero-hours']);
+      }
     } catch (err) {
       // keep typescript transpiler silent
     }
   }
 
-  saveHandler() {
+  saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       const { valueKnown, value } = this.form.controls;
       this.messageService.clearError();
