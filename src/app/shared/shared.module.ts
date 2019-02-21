@@ -6,7 +6,6 @@ import { DatePickerComponent } from './components/date-picker/date-picker.compon
 import { DetailsComponent } from './components/details/details.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
-import { Number } from './directives/number.directive';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule],
@@ -16,7 +15,6 @@ import { Number } from './directives/number.directive';
     DetailsComponent,
     MessagesComponent,
     SubmitButtonComponent,
-    Number,
   ],
   exports: [
     AutoSuggestComponent,
@@ -24,7 +22,6 @@ import { Number } from './directives/number.directive';
     DetailsComponent,
     MessagesComponent,
     SubmitButtonComponent,
-    Number,
   ],
 })
 export class SharedModule {}
