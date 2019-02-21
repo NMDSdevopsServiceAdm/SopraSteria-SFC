@@ -62,7 +62,6 @@ router.route('/resetPassword').post(async (req, res) => {
                     property: 'password',
                     event: {}
                 };
-                console.log("WA DEBUG - audit event: ", auditEvent)
                 await models.userAudit.create(auditEvent);
 
                 // mark the given reset as completed
