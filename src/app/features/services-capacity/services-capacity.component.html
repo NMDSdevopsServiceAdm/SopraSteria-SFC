@@ -26,7 +26,7 @@
               <label>{{question.question}}
                 <input type="number" [formControlName]="question.questionId"
                   class="form-control"
-                  min="0" step="1"
+                  min="0" max="999999999" step="1"
                   [ngClass]="{'is-invalid': (form.get(question.questionId.toString()).touched || form.get(question.questionId.toString()).dirty) && !form.get(question.questionId.toString()).valid }" />
               </label>
             </div>
