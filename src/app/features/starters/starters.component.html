@@ -30,6 +30,16 @@
           </div>
 
           <div *ngFor="let record of form.get('recordsControl').controls; let idx = index" [formGroupName]="idx" class="row record">
+            <ng-container *ngIf="record.get('total')?.errors">
+              <div *ngIf="record.get('total').errors.max || record.get('total').errors.min" class="alert alert-danger col-12">
+                <p *ngIf="record.get('total').errors.max">
+                  Number of starters must be {{ record.get('total').errors.max.max }} or less
+                </p>
+                <p *ngIf="record.get('total').errors.min">
+                  Number of starters must be {{ record.get('total').errors.min.min }} or more
+                </p>
+              </div>
+            </ng-container>
             <div class="col-6 col-sm-7">
               <select formControlName="jobId" class="form-control">
                 <option [ngValue]="null">Select Job Title</option>
@@ -40,7 +50,7 @@
             </div>
             <div class="col-3 col-sm-2">
               <input type="number" formControlName="total" class="form-control"
-                min="0" step="1"
+                min="0" max="999" step="1"
                 [ngClass]="{'is-invalid': (record.get('total').touched || record.get('total').dirty) && !record.get('total').valid }" />
             </div>
             <div *ngIf="idx !== 0" class="col-3 center-v no-padding-left">

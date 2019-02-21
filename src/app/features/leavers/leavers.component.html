@@ -30,14 +30,14 @@
           </div>
 
           <div *ngFor="let record of form.get('recordsControl').controls; let idx = index" [formGroupName]="idx" class="row record">
-              <div *ngIf="record.get('total').errors?.max || record.get('total').errors?.min" class="alert alert-danger col-12">
-                <p *ngIf="record.get('total').errors.max">
-                  Number of leavers must be {{ record.get('total').errors.max.max }} or less
-                </p>
-                <p *ngIf="record.get('total').errors.min">
-                  Number of leavers must be {{ record.get('total').errors.min.min }} or more
-                </p>
-              </div>
+            <div *ngIf="record.get('total').errors?.max || record.get('total').errors?.min" class="alert alert-danger col-12">
+              <p *ngIf="record.get('total').errors.max">
+                Number of leavers must be {{ record.get('total').errors.max.max }} or less
+              </p>
+              <p *ngIf="record.get('total').errors.min">
+                Number of leavers must be {{ record.get('total').errors.min.min }} or more
+              </p>
+            </div>
             <div class="col-6 col-sm-7">
               <select formControlName="jobId" class="form-control">
                 <option [ngValue]="null">Select Job Title</option>
