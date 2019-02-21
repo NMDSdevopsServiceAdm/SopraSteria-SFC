@@ -121,7 +121,6 @@ router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
   const requestedUsernameOrEmail = req.params.usernameOrEmail;
 
@@ -152,8 +151,6 @@ router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
   }
 });
 
-=======
->>>>>>> 195b062f31bb8665a496a4c9b2d2a5feb5acbb6c
 router.get('/estbname/:name', async (req, res) => {
   const requestedEstablishmentName = req.params.name;
   try {
@@ -566,7 +563,7 @@ router.post('/requestPasswordReset', async (req, res) => {
     return res.status(400).send();
   }
   const givenEmailOrUsername = escape(req.body.usernameOrEmail);
-  
+
   // for automated testing, allow the expiry to be overridden by a given TTL parameter (in seconds)
   //  only for localhost/dev
   const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 60*24*1000; // 24 hours
@@ -585,7 +582,7 @@ router.post('/requestPasswordReset', async (req, res) => {
         }
       ]
     });
-    const userResults = await models.user.findOne({
+    const userResults = await models.user.findAll({
       where: {
           email: givenEmailOrUsername
       },
@@ -599,16 +596,15 @@ router.post('/requestPasswordReset', async (req, res) => {
       ]
     });
 
-    if ((loginResults && loginResults.id && (givenEmailOrUsername === loginResults.username)) ||
-        (userResults && userResults.id && (givenEmailOrUsername === userResults.email))) {
 
-      //console.log("WA DEBUG - have matched on login or user", loginResults.user)
+    if ((loginResults && loginResults.id && (givenEmailOrUsername === loginResults.username)) ||
+        (userResults && userResults.length === 1 && (givenEmailOrUsername === userResults[0].email))) {
 
       let sendToAddress = null, sendToName = null, userRegistrationId = null;
-      if (userResults && userResults.email) {
-        sendToAddress = userResults.email;
-        sendToName = userResults.fullname;
-        userRegistrationId = userResults.id;
+      if (userResults && userResults.length === 1 && userResults[0].email) {
+        sendToAddress = userResults[0].email;
+        sendToName = userResults[0].fullname;
+        userRegistrationId = userResults[0].id;
       } else if (loginResults && loginResults.user && loginResults.user.email) {
         sendToAddress = loginResults.user.email;
         sendToName = loginResults.user.fullname;
@@ -623,7 +619,7 @@ router.post('/requestPasswordReset', async (req, res) => {
       const now = new Date();
       const expiresIn = new Date(now.getTime() + expiresTTLms);
 
-      const requestTrackerResponse = await models.passwordTracking.create({
+      await models.passwordTracking.create({
         userFk: userRegistrationId,
         created: now.toISOString(),
         expires: expiresIn.toISOString(),
