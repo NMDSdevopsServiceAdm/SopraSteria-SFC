@@ -30,7 +30,7 @@
           <div class="form-field">
             <label class="form-label">Number of days
               <span class="example">For example, 1.5</span>
-              <input type="number" formControlName="value" class="form-control col-5 col-md-5" min="0" step="0.5" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('value').touched || form.get('value').dirty) && !form.get('value').valid}">
+              <input type="number" formControlName="value" class="form-control col-5 col-md-5" min="0" step="0.5" [ngClass]="{'is-invalid': (form.get('value').touched || form.get('value').dirty) && !form.get('value').valid}">
             </label>
           </div>
         </div>

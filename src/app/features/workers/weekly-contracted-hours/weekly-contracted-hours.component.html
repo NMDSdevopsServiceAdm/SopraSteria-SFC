@@ -29,7 +29,7 @@
         <div *ngIf="form.get('weeklyHoursContractedKnown').value === 'Yes'" class="panel panel-border-narrow ml-0 mt-5 mb-5 mt-md-0">
           <div class="form-field">
             <label class="form-label">Contracted weekly hours
-              <input type="number" formControlName="weeklyHoursContracted" class="form-control" min="0" max="65" step="0.5" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('weeklyHoursContracted').touched || form.get('weeklyHoursContracted').dirty) && !form.get('weeklyHoursContracted').valid}">
+              <input type="number" formControlName="weeklyHoursContracted" class="form-control" min="0" max="65" step="0.5" [ngClass]="{'is-invalid': (form.get('weeklyHoursContracted').touched || form.get('weeklyHoursContracted').dirty) && !form.get('weeklyHoursContracted').valid}">
             </label>
           </div>
         </div>

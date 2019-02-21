@@ -30,7 +30,7 @@
           <div class="form-field">
             <label class="form-label">Standard hourly rate
               <span class="example">For example 10.40</span>
-              <input type="number" formControlName="rate" class="form-control" min="0" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('rate').touched || form.get('rate').dirty) && !form.get('rate').valid}">
+              <input type="number" formControlName="rate" class="form-control" min="0" [ngClass]="{'is-invalid': (form.get('rate').touched || form.get('rate').dirty) && !form.get('rate').valid}">
             </label>
           </div>
         </div>
@@ -48,7 +48,7 @@
           <div class="form-field">
             <label class="form-label">Standard annual rate
               <span class="example">For example 30000</span>
-              <input type="number" formControlName="rate" class="form-control" min="0" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('rate').touched || form.get('rate').dirty) && !form.get('rate').valid}">
+              <input type="number" formControlName="rate" class="form-control" min="0" [ngClass]="{'is-invalid': (form.get('rate').touched || form.get('rate').dirty) && !form.get('rate').valid}">
             </label>
           </div>
         </div>

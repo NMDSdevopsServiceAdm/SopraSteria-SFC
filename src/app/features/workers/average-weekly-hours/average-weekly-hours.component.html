@@ -29,7 +29,7 @@
         <div *ngIf="form.get('weeklyHoursAverageKnown').value === 'Yes'" class="panel panel-border-narrow ml-0 mt-5 mb-5 mt-md-0">
           <div class="form-field">
             <label class="form-label">Average weekly hours
-              <input type="number" formControlName="weeklyHoursAverage" class="form-control" min="0" max="65" step="0.5" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('weeklyHoursAverage').touched || form.get('weeklyHoursAverage').dirty) && !form.get('weeklyHoursAverage').valid}">
+              <input type="number" formControlName="weeklyHoursAverage" class="form-control" min="0" max="65" step="0.5" [ngClass]="{'is-invalid': (form.get('weeklyHoursAverage').touched || form.get('weeklyHoursAverage').dirty) && !form.get('weeklyHoursAverage').valid}">
             </label>
           </div>
         </div>

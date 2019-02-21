@@ -6,7 +6,6 @@ import { DatePickerComponent } from './components/date-picker/date-picker.compon
 import { DetailsComponent } from './components/details/details.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
-import { NumberPositiveOnly } from './directives/number-positive-only.directive';
 import { Number } from './directives/number.directive';
 
 @NgModule({
@@ -17,7 +16,6 @@ import { Number } from './directives/number.directive';
     DetailsComponent,
     MessagesComponent,
     SubmitButtonComponent,
-    NumberPositiveOnly,
     Number,
   ],
   exports: [
@@ -26,7 +24,6 @@ import { Number } from './directives/number.directive';
     DetailsComponent,
     MessagesComponent,
     SubmitButtonComponent,
-    NumberPositiveOnly,
     Number,
   ],
 })
