@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
@@ -59,11 +58,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      if ([Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
-        this.router.navigate(['/worker/days-of-sickness']);
-      } else {
-        this.router.navigate(['/worker/contract-with-zero-hours']);
-      }
+      this.router.navigate(['/worker/days-of-sickness']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -91,7 +86,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
         } else if (value.errors.yearInFuture) {
           this.messageService.show('error', `Year can't be in the future.`);
         } else if (value.errors.yearTooEarly) {
-          this.messageService.show('error', `Year can't be earlier than 100 year ago.`);
+          this.messageService.show('error', `Year can't be earlier than 100 years ago.`);
         }
 
         reject();
