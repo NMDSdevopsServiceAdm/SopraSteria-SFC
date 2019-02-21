@@ -35,6 +35,9 @@ router.route('/').post(async (req, res) => {
         await models.passwordTracking.destroy({
             where: {}
         });
+        await models.userAudit.destroy({
+            where: {}
+        });
 
         // registration
         await models.login.destroy({
