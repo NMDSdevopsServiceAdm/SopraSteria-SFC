@@ -572,7 +572,8 @@ router.post('/requestPasswordReset', async (req, res) => {
     // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
     const loginResults = await models.login.findOne({
       where: {
-          username: givenEmailOrUsername
+          username: givenEmailOrUsername,
+          isActive: true
       },
       include: [
         {
@@ -584,7 +585,15 @@ router.post('/requestPasswordReset', async (req, res) => {
     const userResults = await models.user.findOne({
       where: {
           email: givenEmailOrUsername
-      }
+      },
+      include: [
+        {
+          model: models.login,
+          where: {
+            isActive: true
+          }
+        }
+      ]
     });
 
     if ((loginResults && loginResults.id && (givenEmailOrUsername === loginResults.username)) ||
@@ -696,16 +705,6 @@ router.post('/validateResetPassword', async (req, res) => {
 
         res.set({
           'Authorization': 'Bearer ' + token
-        });
-
-        // mark the given reset as completed
-        await models.passwordTracking.update({
-            completed: new Date()
-          },
-          {
-            where: {
-              uuid: givenUuid
-          }
         });
 
         return res.status(200).json({

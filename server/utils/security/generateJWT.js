@@ -4,7 +4,6 @@ const Token_Secret = Authorization.getTokenSecret();
 
 // this generates the login JWT
 exports.loginJWT = (ttlHours, establishmentId, username, isAdmin) => {
-  console.log("WA DEBUG: is Admin: ", isAdmin)
   var claims = {
     EstblishmentId: establishmentId,
     isAdmin: isAdmin ? true : false,
