@@ -172,3 +172,11 @@ p {
 
   @include rem(padding, 40px 0);
 }
+
+/* TODO: Validation Errors per field */
+.row.record .alert {
+  padding-left: 15px;
+  p {
+    margin-bottom: 0;
+  }
+}
