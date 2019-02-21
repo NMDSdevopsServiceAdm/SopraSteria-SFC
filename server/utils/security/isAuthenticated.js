@@ -11,7 +11,7 @@ exports.isAuthorised = (req, res , next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
 
   if (token) {
-    var dec = getverify(token, Token_Secret);
+    // var dec = getverify(token, Token_Secret);
 
     jwt.verify(token, Token_Secret, function (err, claim) {
       if (err || claim.aud !== 'ADS-WDS' || claim.iss !== thisIss) {
@@ -85,15 +85,16 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
 
   if (token) {
-    var dec = getverify(token, Token_Secret);
-
     jwt.verify(token, Token_Secret, function (err, claim) {
       if (err || claim.aud !== 'ADS-WDS-password-reset' || claim.iss !== thisIss) {
-        return res.status(401).send({
-          sucess: false,
-          message: 'token is invalid'
-        });
-      } else {      
+        console.error('Password reset token is invalid');
+        return res.status(403).send('Invalid token');
+
+      } else {
+        // extract token claims and add to the request for subsequent use
+        req.resetUuid = claim.resetUUID;
+        req.username = claim.sub;
+        req.fullname = claim.name;
         next();
       }      
     });    
