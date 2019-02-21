@@ -110,6 +110,10 @@ router.post('/',async function(req, res) {
           
               }
 
+              // TODO - could implement both https://www.npmjs.com/package/request-ip & https://www.npmjs.com/package/iplocation 
+              //        to resolve the client's IP address on login failure, thus being able to audit the source of where the failed
+              //        login came from
+
               // add an audit record
               const auditEvent = {
                 userFk: login.user.id,
