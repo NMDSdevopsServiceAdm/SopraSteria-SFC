@@ -40,7 +40,7 @@
             </div>
             <div class="col-3 col-sm-2">
               <input type="number" formControlName="total" class="form-control"
-                [appNumberDigitsMax]="3" appNumberPositiveOnly min="0" step="1"
+                appNumberPositiveOnly min="0" step="1"
                 [ngClass]="{'is-invalid': (vacancy.get('total').touched || vacancy.get('total').dirty) && !vacancy.get('total').valid }" />
             </div>
             <div *ngIf="idx !== 0" class="col-3 center-v no-padding-left">

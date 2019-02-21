@@ -29,7 +29,7 @@
         <div *ngIf="form.get('valueKnown').value === 'Yes'" class="panel panel-border-narrow col-6 col-sm-4 col-md-3 col-lg-2 ml-0 mt-5 mb-5 mt-md-0">
           <div class="form-field">
             <label class="form-label">Year
-              <input type="number" formControlName="value" class="form-control" min="1" step="1" appNumberPositiveOnly [appNumberDigitsMax]="4" [ngClass]="{'is-invalid': (form.get('value').touched || form.get('value').dirty) && !form.get('value').valid}">
+              <input type="number" formControlName="value" class="form-control" min="1" step="1" appNumberPositiveOnly [ngClass]="{'is-invalid': (form.get('value').touched || form.get('value').dirty) && !form.get('value').valid}">
             </label>
           </div>
         </div>
