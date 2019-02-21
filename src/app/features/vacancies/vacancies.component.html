@@ -30,6 +30,14 @@
           </div>
 
           <div *ngFor="let vacancy of vacanciesForm.get('vacancyControl').controls; let idx = index" [formGroupName]="idx" class="row record">
+            <div *ngIf="record.get('total').errors?.max || record.get('total').errors?.min" class="alert alert-danger col-12">
+              <p *ngIf="record.get('total').errors.max">
+                Number of vacancies must be {{ record.get('total').errors.max.max }} or less
+              </p>
+              <p *ngIf="record.get('total').errors.min">
+                Number of vacancies must be {{ record.get('total').errors.min.min }} or more
+              </p>
+            </div>
             <div class="col-6 col-sm-7">
               <select formControlName="jobId" class="form-control">
                 <option [ngValue]="null">Select Job Title</option>
@@ -40,7 +48,7 @@
             </div>
             <div class="col-3 col-sm-2">
               <input type="number" formControlName="total" class="form-control"
-                min="0" step="1"
+                min="0" max="999" step="1"
                 [ngClass]="{'is-invalid': (vacancy.get('total').touched || vacancy.get('total').dirty) && !vacancy.get('total').valid }" />
             </div>
             <div *ngIf="idx !== 0" class="col-3 center-v no-padding-left">
