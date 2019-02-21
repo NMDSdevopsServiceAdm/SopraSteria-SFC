@@ -72,12 +72,14 @@ export class OtherQualificationsLevelComponent implements OnInit, OnDestroy {
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
       const { qualification } = this.form.controls;
+      const selectedQualification = this.qualifications.filter(q => q.id === parseInt(qualification.value, 10)).pop();
       this.messageService.clearError();
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
         worker.highestQualification = {
-          qualificationId: parseInt(qualification.value, 10),
+          qualificationId: selectedQualification.id,
+          title: selectedQualification.level,
         };
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));

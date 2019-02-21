@@ -35,6 +35,14 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     return !this.displayAverageWeeklyHours;
   }
 
+  get otherJobRoles() {
+    return this.worker.otherJobs.map(job => job.title).join(', ');
+  }
+
+  get salary() {
+    return `£${this.worker.annualHourlyPay.rate} ${this.worker.annualHourlyPay.value}`;
+  }
+
   ngOnInit(): void {
     this.workerId = this.workerService.workerId;
 
