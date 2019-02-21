@@ -121,6 +121,7 @@ router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
   const requestedUsernameOrEmail = req.params.usernameOrEmail;
 
@@ -151,6 +152,8 @@ router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
   }
 });
 
+=======
+>>>>>>> 195b062f31bb8665a496a4c9b2d2a5feb5acbb6c
 router.get('/estbname/:name', async (req, res) => {
   const requestedEstablishmentName = req.params.name;
   try {
