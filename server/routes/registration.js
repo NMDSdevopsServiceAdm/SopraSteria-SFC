@@ -9,6 +9,7 @@ const slack = require('../utils/slack/slack-logger');
 const models = require('../models');
 
 const generateJWT = require('../utils/security/generateJWT');
+const passwordCheck = require('../utils/security/passwordValidation').isPasswordValid;
 
 class RegistrationException {
   constructor(originalError, errCode, errMessage) {
@@ -276,13 +277,23 @@ router.route('/')
   .post(async (req, res) => {
     //basic validation
     if(JSON.stringify(req.body) == '{}') {
-			return res.status(404).json({
+			return res.status(400).json({
 				"success" : 0,
 				"message" : "Parameters missing"
 			});
     }
 
     // TODO: JSON Schema validation
+
+    // Password validation check
+    if (req.body[0] && req.body[0].user && req.body[0].user.password) {
+      if (!passwordCheck(req.body[0].user.password)) {
+        return res.status(400).json({
+          "success" : 0,
+          "message" : "Invalid Password"
+        });
+      }
+    }
 
 
     let defaultError = responseErrors.default;
