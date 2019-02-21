@@ -7,7 +7,6 @@ import { DetailsComponent } from './components/details/details.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
 import { NumberDigitsMax } from './directives/number-digits-max.directive';
-import { NumberIntOnly } from './directives/number-int-only.directive';
 import { NumberMax } from './directives/number-max.directive';
 import { NumberPositiveOnly } from './directives/number-positive-only.directive';
 import { Number } from './directives/number.directive';
@@ -21,7 +20,6 @@ import { Number } from './directives/number.directive';
     MessagesComponent,
     SubmitButtonComponent,
     NumberDigitsMax,
-    NumberIntOnly,
     NumberMax,
     NumberPositiveOnly,
     Number,
@@ -33,7 +31,6 @@ import { Number } from './directives/number.directive';
     MessagesComponent,
     SubmitButtonComponent,
     NumberDigitsMax,
-    NumberIntOnly,
     NumberMax,
     NumberPositiveOnly,
     Number,
