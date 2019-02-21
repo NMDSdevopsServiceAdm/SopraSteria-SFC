@@ -25,8 +25,8 @@
             <div *ngFor="let question of capacity.questions; let idx = index" class="col-12"  >
               <label>{{question.question}}
                 <input type="number" [formControlName]="question.questionId"
-                  class="form-control" appNumberMax="999999999" appNumberPositiveOnly
-                  min="0" step="1" [appNumberMax]="idx === 1 ? form.get(capacity.questions[0].questionId.toString()).value : null"
+                  class="form-control" appNumberPositiveOnly
+                  min="0" step="1"
                   [ngClass]="{'is-invalid': (form.get(question.questionId.toString()).touched || form.get(question.questionId.toString()).dirty) && !form.get(question.questionId.toString()).valid }" />
               </label>
             </div>
