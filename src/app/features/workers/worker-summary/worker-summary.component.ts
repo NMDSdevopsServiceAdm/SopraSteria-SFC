@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
-import moment = require('moment');
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-worker-summary',
@@ -38,6 +38,13 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
 
   get displayYearArrived() {
     return this.worker.countryOfBirth && this.worker.countryOfBirth.value !== 'United Kingdom';
+  }
+
+  get displayMentalHealthProfessional() {
+    return (
+      this.worker.mainJob.title === 'Social Worker' ||
+      (this.worker.otherJobs && this.worker.otherJobs.find(j => j.title === 'Social Worker'))
+    );
   }
 
   get otherJobRoles() {

@@ -305,6 +305,28 @@
       </div>
 
 
+      <div class="govuk-summary-list__row" *ngIf="displayMentalHealthProfessional">
+        <dt class="govuk-summary-list__key">
+          Approved Mental Health Professional
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ worker.approvedMentalHealthWorker ||  '-' }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" routerLink="/worker/mental-health">
+            <ng-container *ngIf="!worker.approvedMentalHealthWorker">
+              Provide information
+              <span class="govuk-visually-hidden"> for</span>
+            </ng-container>
+            <ng-container *ngIf="worker.approvedMentalHealthWorker">
+              Change
+            </ng-container>
+            <span class="govuk-visually-hidden"> approved mental health professional</span>
+          </a>
+        </dd>
+      </div>
+
+
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
           Other job roles
