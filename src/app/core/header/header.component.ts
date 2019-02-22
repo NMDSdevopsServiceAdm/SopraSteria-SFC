@@ -1,6 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-
+import { Component } from '@angular/core';
 import { AuthService } from '../services/auth-service';
 
 @Component({
@@ -8,7 +6,7 @@ import { AuthService } from '../services/auth-service';
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
   isLoggedIn() {
     return this.authService.isLoggedIn;
