@@ -23,17 +23,7 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"Username"'
     },
-    securityQuestion: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      field: '"SecurityQuestion"'
-    },
-    securityAnswer: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      field: '"SecurityQuestionAnswer"'
-    },
-    isActive: {
+   isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       field: '"Active"'

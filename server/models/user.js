@@ -13,27 +13,22 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false,
       unique: false,
-      field: '"FullName"'
+      field: '"FullNameValue"'
     },
     jobTitle: {
       type: DataTypes.TEXT,
       allowNull: false,
-      field: '"JobTitle"'
+      field: '"JobTitleValue"'
     },
     email: {
       type: DataTypes.TEXT,
       allowNull: false,
-      field: "Email"
+      field: "EmailValue"
     },
     phone: {
       type: DataTypes.TEXT,
       allowNull: false,
-      field: '"Phone"'
-    },
-    created: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      field: '"DateCreated"'
+      field: '"PhoneValue"'
     },
     establishmentId: {
       type: DataTypes.INTEGER,
@@ -44,7 +39,34 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       field: '"AdminUser"'
-    }
+    },
+    securityQuestion: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: '"SecurityQuestionValue"'
+    },
+    securityAnswer: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"SecurityQuestionAnswerValue"'
+    },
+    created: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'created'
+    },
+    updated: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'updated'
+    },
+    updatedBy: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: 'updatedby'
+    },
   }, {
     tableName: '"User"',
     schema: 'cqc',

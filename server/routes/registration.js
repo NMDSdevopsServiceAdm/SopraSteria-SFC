@@ -318,6 +318,8 @@ router.route('/')
         JobTitle : req.body[0].user.jobTitle,
         Email    : req.body[0].user.emailAddress,
         Phone    : req.body[0].user.contactNumber,
+        SecurityQuestion: req.body[0].user.securityQuestion,
+        SecurityQuestionAnswer: req.body[0].user.securityAnswer,
         DateCreated: new Date(),
         EstablishmentID:0,
         AdminUser: true
@@ -326,8 +328,6 @@ router.route('/')
         RegistrationId:0,
         UserName: req.body[0].user.username,
         Password: req.body[0].user.password,
-        SecurityQuestion: req.body[0].user.securityQuestion,
-        SecurityQuestionAnswer: req.body[0].user.securityAnswer,
         Active:true,
         InvalidAttempt:0
       };
@@ -456,7 +456,11 @@ router.route('/')
             jobTitle: Userdata.JobTitle,
             email: Userdata.Email,
             phone: Userdata.Phone,
+            securityQuestion: Userdata.SecurityQuestion,
+            securityAnswer: Userdata.SecurityQuestionAnswer,
             created: Userdata.DateCreated,
+            updated: Userdata.DateCreated,
+            updatedBy: Logindata.UserName,
             isAdmin: true,
           });
           const sanitisedUserResults = userCreation.get({plain: true});
@@ -469,8 +473,6 @@ router.route('/')
             registrationId: Userdata.registrationID,
             username: Logindata.UserName,
             Hash: passwordHash,
-            securityQuestion: Logindata.SecurityQuestion,
-            securityAnswer: Logindata.SecurityQuestionAnswer,
             isActive: true,
             invalidAttempt: 0,
           });
