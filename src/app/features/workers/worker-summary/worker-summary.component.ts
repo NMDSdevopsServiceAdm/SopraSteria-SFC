@@ -35,6 +35,10 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     return !this.displayAverageWeeklyHours;
   }
 
+  get displayYearArrived() {
+    return this.worker.countryOfBirth && this.worker.countryOfBirth.value !== 'United Kingdom';
+  }
+
   get otherJobRoles() {
     return this.worker.otherJobs.map(job => job.title).join(', ');
   }
