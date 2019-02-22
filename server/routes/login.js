@@ -125,7 +125,7 @@ router.post('/',async function(req, res) {
               await models.userAudit.create(auditEvent);
             });
 
-            res.status(401).send({success: false, msg: 'Authentication failed.'});
+            return res.status(401).send({success: false, msg: 'Authentication failed.'});
           }
         })
       })
