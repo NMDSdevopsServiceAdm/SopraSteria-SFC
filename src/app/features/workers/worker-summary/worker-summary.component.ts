@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
+import moment = require('moment');
 
 @Component({
   selector: 'app-worker-summary',
@@ -41,6 +42,14 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
 
   get otherJobRoles() {
     return this.worker.otherJobs.map(job => job.title).join(', ');
+  }
+
+  get mainStartDate() {
+    return moment(this.worker.mainJobStartDate).format('DD/MM/YYYY');
+  }
+
+  get dob() {
+    return moment(this.worker.dateOfBirth).format('DD/MM/YYYY');
   }
 
   get salary() {

@@ -84,7 +84,7 @@
           Date of birth
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.dateOfBirth | date:'dd/MM/y'  || '-' }}
+          {{ worker.dateOfBirth ? dob  : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" routerLink="/worker/date-of-birth">
@@ -288,7 +288,7 @@
           Date started
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.mainJobStartDate | date:'dd/MM/y' || '-' }}
+          {{ worker.mainJobStartDate ? mainStartDate : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" routerLink="/worker/main-job-start-date">
