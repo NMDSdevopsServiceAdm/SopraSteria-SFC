@@ -14,7 +14,6 @@ exports.isAuthorised = (req, res , next) => {
     // var dec = getverify(token, Token_Secret);
 
     jwt.verify(token, Token_Secret, function (err, claim) {
-      console.log("WA DEBUG: token aud: ", claim.aud)
       if (err || claim.aud !== 'ADS-WDS' || claim.iss !== thisIss) {
         return res.status(403).send('Invalid Token');
       } else {
