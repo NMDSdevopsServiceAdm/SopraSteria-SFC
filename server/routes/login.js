@@ -35,6 +35,7 @@ router.post('/',async function(req, res) {
       })
       .then((login) => {
         if (!login) {
+          console.error(`Failed to find user account associated with: ${req.body.username} - `, login);
           return res.status(401).send({
             message: 'Authentication failed.',
           });
