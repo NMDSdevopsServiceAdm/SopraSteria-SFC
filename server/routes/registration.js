@@ -103,12 +103,12 @@ router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
     });
     const userResults = await models.user.findOne({
       where: {
-          email: requestedUsernameOrEmail
+          EmailValue: requestedUsernameOrEmail
       }
     });
 
     if ((loginResults && loginResults.id && (requestedUsernameOrEmail === loginResults.username)) ||
-        (userResults && userResults.id && (requestedUsernameOrEmail === userResults.email))) {
+        (userResults && userResults.id && (requestedUsernameOrEmail === userResults.EmailValue))) {
       return res.status(200).send();
     } else {
       return res.status(404).send();
@@ -116,37 +116,7 @@ router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
 
   } catch (err) {
     // TODO - improve logging/error reporting
-    console.error('registration GET u/usernameOrEmail/:usernameOrEmail - failed', err);
-    return res.status(503).send();
-  }
-});
-
-router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
-  const requestedUsernameOrEmail = req.params.usernameOrEmail;
-
-  try {
-    // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
-    const loginResults = await models.login.findOne({
-      where: {
-          username: requestedUsernameOrEmail
-      }
-    });
-    const userResults = await models.user.findOne({
-      where: {
-          email: requestedUsernameOrEmail
-      }
-    });
-
-    if ((loginResults && loginResults.id && (requestedUsernameOrEmail === loginResults.username)) ||
-        (userResults && userResults.id && (requestedUsernameOrEmail === userResults.email))) {
-      return res.status(200).send();
-    } else {
-      return res.status(404).send();
-    }
-
-  } catch (err) {
-    // TODO - improve logging/error reporting
-    console.error('registration GET u/usernameOrEmail/:usernameOrEmail - failed', err);
+    console.error('registration GET /usernameOrEmail/:usernameOrEmail - failed', err);
     return res.status(503).send();
   }
 });
@@ -332,7 +302,6 @@ router.route('/')
         InvalidAttempt:0
       };
 
-
       // there are multiple steps to regiastering a new user/establishment. They must be done in entirety (all or nothing).
       // 1. looking the main service; to get ID
       // 2. Create Establishment record, to get Establishment ID
@@ -443,26 +412,52 @@ router.route('/')
             shareWithCQC: false,
             shareWithLA: false,
             nmdsId: Estblistmentdata.NmdsId
-          });
+          }, {transaction: t});
           const sanitisedEstablishmentResults = establishmentCreation.get({plain: true});
           Estblistmentdata.id = sanitisedEstablishmentResults.EstablishmentID;
 
 
           // now create user
           defaultError = responseErrors.user;
-          const userCreation = await models.user.create({
+          const userRecord = {
             establishmentId: Estblistmentdata.id,
-            fullname: Userdata.FullName,
-            jobTitle: Userdata.JobTitle,
-            email: Userdata.Email,
-            phone: Userdata.Phone,
-            securityQuestion: Userdata.SecurityQuestion,
-            securityAnswer: Userdata.SecurityQuestionAnswer,
+            FullNameValue: Userdata.FullName,
+            FullNameSavedAt: Userdata.DateCreated,
+            FullNameChangedAt: Userdata.DateCreated,
+            FullNameSavedBy: Logindata.UserName,
+            FullNameChangedBy: Logindata.UserName,
+            JobTitleValue: Userdata.JobTitle,
+            JobTitleSavedAt: Userdata.DateCreated,
+            JobTitleChangedAt: Userdata.DateCreated,
+            JobTitleSavedBy: Logindata.UserName,
+            JobTitleChangedBy: Logindata.UserName,
+            EmailValue: Userdata.Email,
+            EmailSavedAt: Userdata.DateCreated,
+            EmailChangedAt: Userdata.DateCreated,
+            EmailSavedBy: Logindata.UserName,
+            EmailChangedBy: Logindata.UserName,
+            PhoneValue: Userdata.Phone,
+            PhoneSavedAt: Userdata.DateCreated,
+            PhoneChangedAt: Userdata.DateCreated,
+            PhoneSavedBy: Logindata.UserName,
+            PhoneChangedBy: Logindata.UserName,
+            SecurityQuestionValue: Userdata.SecurityQuestion,
+            SecurityQuestionSavedAt: Userdata.DateCreated,
+            SecurityQuestionChangedAt: Userdata.DateCreated,
+            SecurityQuestionSavedBy: Logindata.UserName,
+            SecurityQuestionChangedBy: Logindata.UserName,
+            SecurityQuestionAnswerValue: Userdata.SecurityQuestionAnswer,
+            SecurityQuestionAnswerSavedAt: Userdata.DateCreated,
+            SecurityQuestionAnswerChangedAt: Userdata.DateCreated,
+            SecurityQuestionAnswerSavedBy: Logindata.UserName,
+            SecurityQuestionAnswerChangedBy: Logindata.UserName,
             created: Userdata.DateCreated,
             updated: Userdata.DateCreated,
             updatedBy: Logindata.UserName,
             isAdmin: true,
-          });
+          };
+          const userCreation = await models.user.create(userRecord, {transaction: t});
+
           const sanitisedUserResults = userCreation.get({plain: true});
           Userdata.registrationID = sanitisedUserResults.RegistrationID;
 
@@ -475,7 +470,7 @@ router.route('/')
             Hash: passwordHash,
             isActive: true,
             invalidAttempt: 0,
-          });
+          }, {transaction: t});
           const sanitisedLoginResults = loginCreation.get({plain: true});
           Logindata.id = sanitisedLoginResults.ID;
           
@@ -499,7 +494,7 @@ router.route('/')
         });
 
       } catch (err) {
-        console.error('Caught exception in registration: ', err);
+        //console.error('Caught exception in registration: ', err);
 
         // if we've already found a specific registration error, re-throw the error
         if (err instanceof RegistrationException) throw err;
@@ -573,6 +568,7 @@ router.post('/requestPasswordReset', async (req, res) => {
   try {
     // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
     const loginResults = await models.login.findOne({
+      attributes: ['id', 'username'],
       where: {
           username: givenEmailOrUsername,
           isActive: true
@@ -580,17 +576,19 @@ router.post('/requestPasswordReset', async (req, res) => {
       include: [
         {
           model: models.user,
-          attributes: ['email', 'fullname', 'id'],
+          attributes: ['EmailValue', 'FullNameValue', 'id'],
         }
       ]
     });
     const userResults = await models.user.findAll({
+      attributes: ['EmailValue', 'FullNameValue', 'id'],
       where: {
-          email: givenEmailOrUsername
+        EmailValue: givenEmailOrUsername
       },
       include: [
         {
           model: models.login,
+          attributes: ['id', 'username'],
           where: {
             isActive: true
           }
@@ -600,16 +598,16 @@ router.post('/requestPasswordReset', async (req, res) => {
 
 
     if ((loginResults && loginResults.id && (givenEmailOrUsername === loginResults.username)) ||
-        (userResults && userResults.length === 1 && (givenEmailOrUsername === userResults[0].email))) {
+        (userResults && userResults.length === 1 && (givenEmailOrUsername === userResults[0].EmailValue))) {
 
       let sendToAddress = null, sendToName = null, userRegistrationId = null;
-      if (userResults && userResults.length === 1 && userResults[0].email) {
-        sendToAddress = userResults[0].email;
-        sendToName = userResults[0].fullname;
+      if (userResults && userResults.length === 1 && userResults[0].EmailValue) {
+        sendToAddress = userResults[0].EmailValue;
+        sendToName = userResults[0].FullNameValue;
         userRegistrationId = userResults[0].id;
-      } else if (loginResults && loginResults.user && loginResults.user.email) {
-        sendToAddress = loginResults.user.email;
-        sendToName = loginResults.user.fullname;
+      } else if (loginResults && loginResults.user && loginResults.user.EmailValue) {
+        sendToAddress = loginResults.user.EmailValue;
+        sendToName = loginResults.user.FullNameValue;
         userRegistrationId = loginResults.user.id;
       }
 
@@ -702,7 +700,7 @@ router.post('/validateResetPassword', async (req, res) => {
       if (userResults && userResults.id && userResults.id === passTokenResults.userFk) {
         // generate JWT and attach it to the header (Authorization)
         const JWTexpiryInMinutes = 15;
-        const token = generateJWT.passwordResetJWT(JWTexpiryInMinutes, userResults.login.username, userResults.fullname , givenUuid);
+        const token = generateJWT.passwordResetJWT(JWTexpiryInMinutes, userResults.login.username, userResults.FullNameValue , givenUuid);
 
         res.set({
           'Authorization': 'Bearer ' + token
@@ -710,7 +708,7 @@ router.post('/validateResetPassword', async (req, res) => {
 
         return res.status(200).json({
           username: userResults.login.username,
-          fullname: userResults.fullname,
+          fullname: userResults.FullNameValue,
         });
 
       } else {
