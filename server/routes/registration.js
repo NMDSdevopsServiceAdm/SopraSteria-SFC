@@ -503,10 +503,11 @@ router.route('/')
 
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
           // we can expect one of three unique constraint failures which will override the default error
+          // NOTE - this logic here is topsy turvy on the name of the index
           if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration_with_locationid') {
-            defaultError = responseErrors.duplicateCQC;
-          } else if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration') {
             defaultError = responseErrors.duplicateNonCQC;
+          } else if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration') {
+            defaultError = responseErrors.duplicateCQC;
           } else if (err.parent.constraint && err.parent.constraint === 'uc_Login_Username') {
             defaultError = responseErrors.duplicateUsername;
           }
