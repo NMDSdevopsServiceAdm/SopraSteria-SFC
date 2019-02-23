@@ -20,7 +20,7 @@ router.post('/',async function(req, res) {
         attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash'],
         include: [ {
           model: models.user,
-          attributes: ['id', 'fullname', 'email', 'isAdmin','establishmentId'],
+          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId'],
           include: [{
             model: models.establishment,
             attributes: ['id', 'name', 'isRegulated', 'nmdsId'],
@@ -47,7 +47,7 @@ router.post('/',async function(req, res) {
             date += (12 * 60 * 60 * 1000);          
    
             const response = formatSuccessulLoginResponse(
-              login.user.fullname,
+              login.user.FullNameValue,
               login.firstLogin,
               login.user.establishment,
               login.user.establishment.mainService,

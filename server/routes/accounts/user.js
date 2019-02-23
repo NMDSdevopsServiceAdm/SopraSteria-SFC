@@ -39,7 +39,7 @@ router.route('/resetPassword').post(async (req, res) => {
             include: [
                 {
                     model: models.user,
-                    attributes: ['id'],
+                    attributes: ['id', 'FullNameValue'],
                 }
             ]
         });
@@ -118,7 +118,7 @@ router.route('/changePassword').post(async (req, res) => {
             include: [
                 {
                     model: models.user,
-                    attributes: ['id', 'fullname'],
+                    attributes: ['id', 'FullNameValue'],
                 }
             ]
         });
@@ -147,7 +147,7 @@ router.route('/changePassword').post(async (req, res) => {
                         await models.userAudit.create(auditEvent);        
                     });
 
-                    return res.status(200).send(`Changed password for ${login.user.fullname}`);
+                    return res.status(200).send(`Changed password for ${login.user.FullNameValue}`);
 
                 } else {
                     console.error("User /changePassword failed authentication on current password");
