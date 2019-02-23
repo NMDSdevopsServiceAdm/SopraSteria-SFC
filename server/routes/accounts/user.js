@@ -52,7 +52,7 @@ router.route('/resetPassword').post(async (req, res) => {
                     Hash: passwordHash,
                     invalidAttempt: 0,
                     passwdLastChanged: new Date()
-                });
+                }, {transaction: t});
 
                 // and crfeate an audit event
                 const auditEvent = {
@@ -62,7 +62,7 @@ router.route('/resetPassword').post(async (req, res) => {
                     property: 'password',
                     event: {}
                 };
-                await models.userAudit.create(auditEvent);
+                await models.userAudit.create(auditEvent, {transaction: t});
 
                 // mark the given reset as completed
                 await models.passwordTracking.update(
@@ -71,9 +71,11 @@ router.route('/resetPassword').post(async (req, res) => {
                     },
                     {
                         where: {
-                        uuid: req.resetUuid
+                                uuid: req.resetUuid
+                        },
+                        transaction: t
                     }
-                });
+                );
             });
             
         } else {
@@ -134,7 +136,8 @@ router.route('/changePassword').post(async (req, res) => {
                             Hash: passwordHash,
                             invalidAttempt: 0,
                             passwdLastChanged: new Date()
-                        });
+                        },
+                        {transaction: t});
         
                         // and crfeate an audit event
                         const auditEvent = {
@@ -144,7 +147,7 @@ router.route('/changePassword').post(async (req, res) => {
                             property: 'password',
                             event: {}
                         };
-                        await models.userAudit.create(auditEvent);        
+                        await models.userAudit.create(auditEvent, {transaction: t});
                     });
 
                     return res.status(200).send(`Changed password for ${login.user.FullNameValue}`);
@@ -160,7 +163,7 @@ router.route('/changePassword').post(async (req, res) => {
                         const loginUpdate = {
                           invalidAttempt: login.invalidAttempt + 1
                         };
-                        login.update(loginUpdate);
+                        login.update(loginUpdate, {transaction: t});
           
                         // TODO - could implement both https://www.npmjs.com/package/request-ip & https://www.npmjs.com/package/iplocation 
                         //        to resolve the client's IP address on login failure, thus being able to audit the source of where the failed
@@ -174,7 +177,7 @@ router.route('/changePassword').post(async (req, res) => {
                           property: 'password',
                           event: {}
                         };
-                        await models.userAudit.create(auditEvent);
+                        await models.userAudit.create(auditEvent, {transaction: t});
                       });
           
                       return res.status(403).send();

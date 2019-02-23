@@ -63,7 +63,7 @@ router.post('/',async function(req, res) {
               if (!login.firstLogin) {
                 loginUpdate.firstLogin = new Date();
               }
-              login.update(loginUpdate);
+              login.update(loginUpdate, {transaction: t});
 
               // add an audit record
               const auditEvent = {
@@ -73,7 +73,7 @@ router.post('/',async function(req, res) {
                 property: 'password',
                 event: {}
               };
-              await models.userAudit.create(auditEvent);
+              await models.userAudit.create(auditEvent, {transaction: t});
             });
 
             return res.set({'Authorization': 'Bearer ' + token}).status(200).json(response);
@@ -86,7 +86,7 @@ router.post('/',async function(req, res) {
               const loginUpdate = {
                 invalidAttempt: login.invalidAttempt + 1
               };
-              login.update(loginUpdate);
+              login.update(loginUpdate, {transaction: t});
 
               if (login.invalidAttempt === (maxNumberOfFailedAttempts+1)) {
                 // send reset password email
@@ -101,7 +101,7 @@ router.post('/',async function(req, res) {
                   created: now.toISOString(),
                   expires: expiresIn.toISOString(),
                   uuid: requestUuid
-                });
+                }, {transaction: t});
           
                 const resetLink = `${req.protocol}://${req.get('host')}/api/registration/validateResetPassword?reset=${requestUuid}`;
                 console.log("WA TODO - send the email link by email: ", resetLink);
@@ -122,7 +122,7 @@ router.post('/',async function(req, res) {
                 property: 'password',
                 event: {}
               };
-              await models.userAudit.create(auditEvent);
+              await models.userAudit.create(auditEvent, {transaction: t});
             });
 
             return res.status(401).send({success: false, msg: 'Authentication failed.'});
