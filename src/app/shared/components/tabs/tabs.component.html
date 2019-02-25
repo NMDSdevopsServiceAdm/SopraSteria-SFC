@@ -6,7 +6,7 @@
       class="govuk-tabs__tab"
       href="#{{ tab.title }}"
       (click)="selectTab($event, tab)"
-      [class.active]="govuk - tabs__tab - -selected"
+      [class.govuk-tabs__tab--selected]="tab.active"
     >
       {{ tab.title }}
     </a>
