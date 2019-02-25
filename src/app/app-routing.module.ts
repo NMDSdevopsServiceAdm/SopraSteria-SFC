@@ -9,6 +9,7 @@ import { ContactUsComponent } from '@features/contactUs/contactUs.component';
 import { ContinueCreatingAccountComponent } from '@features/continue-creating-account/continue-creating-account.component';
 import { CqcRegisteredQuestionComponent } from '@features/cqc-registered-question/cqc-registered-question.component';
 import { CreateUsernameComponent } from '@features/create-username/create-username.component';
+import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
 import { HomepageComponent } from '@features/homepage/homepage.component';
@@ -204,6 +205,10 @@ const routes: Routes = [
     path: 'worker',
     loadChildren: '@features/workers/workers.module#WorkersModule',
     canLoad: [AuthGuard],
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
   },
   {
     path: '',

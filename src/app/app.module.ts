@@ -61,6 +61,7 @@ import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -103,6 +104,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     ProblemWithTheServicePagesComponent,
     ServiceUnavailablePagesComponent,
     TermsConditionsComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
