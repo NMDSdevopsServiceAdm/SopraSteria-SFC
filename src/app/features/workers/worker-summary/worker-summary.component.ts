@@ -1,6 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import * as moment from 'moment';
@@ -50,11 +51,11 @@ export class WorkerSummaryComponent implements OnInit {
   }
 
   get mainStartDate() {
-    return moment(this.worker.mainJobStartDate).format('DD/MM/YYYY');
+    return moment(this.worker.mainJobStartDate).format(DEFAULT_DATE_DISPLAY_FORMAT);
   }
 
   get dob() {
-    return moment(this.worker.dateOfBirth).format('DD/MM/YYYY');
+    return moment(this.worker.dateOfBirth).format(DEFAULT_DATE_DISPLAY_FORMAT);
   }
 
   get salary() {
