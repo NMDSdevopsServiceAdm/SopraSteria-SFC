@@ -336,7 +336,7 @@
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-job-roles']">
-            <ng-container *ngIf="!worker.otherJobs.length">
+            <ng-container *ngIf="!worker.otherJobs?.length">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
             </ng-container>
