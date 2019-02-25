@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
+import { AuthService } from '@core/services/auth-service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
@@ -12,7 +13,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   public workers: Worker[];
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private workerService: WorkerService) {}
+  constructor(private authService: AuthService, private workerService: WorkerService) {}
+
+  get isFirstLoggedIn(): boolean {
+    return this.authService.isFirstLogin == null ? false : this.authService.isFirstLogin;
+  }
 
   ngOnInit() {
     this.subscriptions.add(

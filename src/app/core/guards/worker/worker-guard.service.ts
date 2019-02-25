@@ -27,7 +27,7 @@ export class WorkerGuard implements CanActivateChild {
   }
 
   denyAccess() {
-    this.router.navigate(['welcome']);
+    this.router.navigate(['dashboard']);
     return of(false);
   }
 }

@@ -13,6 +13,6 @@ export class WorkerSaveSuccessComponent {
   }
 
   returnToDashboard() {
-    this.router.navigate(['/welcome']);
+    this.router.navigate(['/dashboard']);
   }
 }

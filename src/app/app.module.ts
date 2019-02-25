@@ -50,7 +50,6 @@ import { CreateUsernameComponent } from './features/create-username/create-usern
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
-import { HomepageComponent } from './features/homepage/homepage.component';
 import { LeaversComponent } from './features/leavers/leavers.component';
 import { LoginComponent } from './features/login/login.component';
 import { LogoutComponent } from './features/logout/logout.component';
@@ -91,7 +90,6 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     EnterWorkplaceAddressComponent,
     SelectMainServiceComponent,
     ContinueCreatingAccountComponent,
-    HomepageComponent,
     SelectOtherServicesComponent,
     TypeOfEmployerComponent,
     VacanciesComponent,
