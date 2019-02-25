@@ -29,7 +29,7 @@ export class WorkerService {
   constructor(
     private http: HttpClient,
     private httpErrorHandler: HttpErrorHandler,
-    private establishmentService: EstablishmentService,
+    private establishmentService: EstablishmentService
   ) {}
 
   public set workerId(id: string) {
@@ -57,11 +57,9 @@ export class WorkerService {
   updateState(data) {
     if (data.length > 1) {
       this._workers$.next(data);
-    }
-    else {
+    } else {
       this._worker$.next(data);
     }
-
   }
 
   /*
@@ -74,11 +72,11 @@ export class WorkerService {
       return this.http
         .get<Worker>(
           `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
-          EstablishmentService.getOptions(),
+          EstablishmentService.getOptions()
         )
         .pipe(
           debounceTime(500),
-          catchError(this.httpErrorHandler.handleHttpError),
+          catchError(this.httpErrorHandler.handleHttpError)
         );
     }
   }
@@ -90,12 +88,12 @@ export class WorkerService {
     return this.http
       .get<WorkersResponse>(
         `/api/establishment/${this.establishmentService.establishmentId}/worker`,
-        EstablishmentService.getOptions(),
+        EstablishmentService.getOptions()
       )
       .pipe(
         debounceTime(500),
         map(w => w.workers),
-        catchError(this.httpErrorHandler.handleHttpError),
+        catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 
@@ -107,11 +105,11 @@ export class WorkerService {
       .post<WorkerEditResponse>(
         `/api/establishment/${this.establishmentService.establishmentId}/worker`,
         worker,
-        EstablishmentService.getOptions(),
+        EstablishmentService.getOptions()
       )
       .pipe(
         debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError),
+        catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 
@@ -123,11 +121,11 @@ export class WorkerService {
       .put<WorkerEditResponse>(
         `/api/establishment/${this.establishmentService.establishmentId}/worker/${worker.uid}`,
         worker,
-        EstablishmentService.getOptions(),
+        EstablishmentService.getOptions()
       )
       .pipe(
         debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError),
+        catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 
@@ -138,11 +136,11 @@ export class WorkerService {
     return this.http
       .delete<any>(
         `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
-        EstablishmentService.getOptions(),
+        EstablishmentService.getOptions()
       )
       .pipe(
         debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError),
+        catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 }
