@@ -17,7 +17,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions.add(
       this.workerService.getAllWorkers().subscribe(data => {
-        console.log(data);
         this.workers = data;
       })
     );
