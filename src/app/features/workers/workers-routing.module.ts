@@ -35,6 +35,18 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
 
 const routes: Routes = [
   {
+    path: 'start-screen',
+    component: CreateStaffRecordStartScreenComponent,
+  },
+  {
+    path: 'create-staff-record',
+    component: CreateStaffRecordComponent,
+  },
+  {
+    path: 'save-success',
+    component: WorkerSaveSuccessComponent,
+  },
+  {
     path: ':id',
     component: EditWorkerComponent,
     // canActivateChild: [WorkerGuard],
@@ -153,18 +165,6 @@ const routes: Routes = [
         component: WorkerSummaryComponent,
       },
     ],
-  },
-  {
-    path: 'start-screen',
-    component: CreateStaffRecordStartScreenComponent,
-  },
-  {
-    path: 'create-staff-record',
-    component: CreateStaffRecordComponent,
-  },
-  {
-    path: 'save-success',
-    component: WorkerSaveSuccessComponent,
   },
 ];
 
