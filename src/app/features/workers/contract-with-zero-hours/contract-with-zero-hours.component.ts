@@ -54,9 +54,9 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
         this.worker.zeroHoursContract === 'Yes' ||
         [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
       ) {
-        this.router.navigate([`/worker/average-weekly-hours`]);
+        this.router.navigate(['/worker', this.worker.uid, 'average-weekly-hours']);
       } else {
-        this.router.navigate([`/worker/weekly-contracted-hours`]);
+        this.router.navigate(['/worker', this.worker.uid, 'weekly-contracted-hours']);
       }
     } catch (err) {
       // keep typescript transpiler silent

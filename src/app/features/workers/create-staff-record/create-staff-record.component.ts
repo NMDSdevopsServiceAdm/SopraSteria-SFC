@@ -76,12 +76,10 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     try {
       const res = await this.saveHandler();
 
-      this.workerService.workerId = res.uid;
-
       if (this.isSocialWorkerSelected()) {
-        this.router.navigate(['/worker/mental-health/']);
+        this.router.navigate(['/worker', res.uid, 'mental-health']);
       } else {
-        this.router.navigate(['/worker/main-job-start-date/']);
+        this.router.navigate(['/worker', res.uid, 'main-job-start-date']);
       }
     } catch (err) {
       // keep typescript transpiler silent

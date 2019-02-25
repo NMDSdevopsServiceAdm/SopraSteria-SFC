@@ -15,7 +15,6 @@ export class SalaryComponent implements OnInit, OnDestroy {
   public backLink: string;
   public form: FormGroup;
   private worker: Worker;
-  private workerId: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
