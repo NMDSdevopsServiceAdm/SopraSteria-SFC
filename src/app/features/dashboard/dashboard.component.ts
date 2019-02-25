@@ -1,24 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   public workers: Worker[];
-  private subscriptions = [];
+  private subscriptions: Subscription = new Subscription();
 
   constructor(private workerService: WorkerService) {}
 
   ngOnInit() {
-    this.subscriptions.push(
+    this.subscriptions.add(
       this.workerService.getAllWorkers().subscribe(data => {
         console.log(data);
         this.workers = data;
       })
     );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }

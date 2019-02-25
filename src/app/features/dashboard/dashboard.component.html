@@ -63,7 +63,7 @@
                 <tr class="govuk-table__row" *ngFor="let worker of workers">
                   <th class="govuk-table__cell" scope="row"><a [routerLink]="['/worker', worker.uid, 'summary']">{{ worker.nameOrId }}</a></th>
                   <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
-                  <td class="govuk-table__cell">{{ worker.updated }}</td>
+                  <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
                   <td class="govuk-table__cell"><a [routerLink]="['/worker', worker.uid, 'staff-details']">Provide more information</a></td>
                 </tr>
               </tbody>
