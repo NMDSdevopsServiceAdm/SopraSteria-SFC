@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DEFAULT_DATE_DISPLAY_FORMAT, DEFAULT_DATE_FORMAT } from '@core/constants/constants';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@core/validators/date.validator';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-date-of-birth',
@@ -14,12 +15,12 @@ import * as moment from 'moment';
 })
 export class DateOfBirthComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  private subscriptions = [];
   private worker: Worker;
-  private workerId: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService
@@ -29,43 +30,34 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
     this.form = this.formBuilder.group({
       day: null,
       month: null,
       year: null,
     });
+    this.form.setValidators(Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator]));
 
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.dateOfBirth) {
-          const date = worker.dateOfBirth.split('-');
-          this.form.patchValue({
-            year: parseInt(date[0], 10),
-            month: parseInt(date[1], 10),
-            day: parseInt(date[2], 10),
-          });
-        }
-
-        this.form.setValidators(
-          Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator])
-        );
-      })
-    );
+    if (this.worker.dateOfBirth) {
+      const date = this.worker.dateOfBirth.split('-');
+      this.form.patchValue({
+        year: parseInt(date[0], 10),
+        month: parseInt(date[1], 10),
+        day: parseInt(date[2], 10),
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
   async submitHandler() {
     try {
       await this.saveHandler();
-      this.router.navigate(['/worker/home-postcode']);
+      this.router.navigate(['/worker', this.worker.uid, 'home-postcode']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -82,7 +74,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
             ? moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT)
             : null;
         this.worker.dateOfBirth = newDateOfBirth;
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (this.form.errors) {
           if (this.form.errors.required) {
