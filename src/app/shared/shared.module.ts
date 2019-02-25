@@ -9,6 +9,8 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { StartButtonComponent } from './components/start-button/start-button.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
+import { TabComponent } from './components/tabs/tab.component';
+import { TabsComponent } from './components/tabs/tabs.component';
 import { NumberDigitsMax } from './directives/number-digits-max.directive';
 import { NumberIntOnly } from './directives/number-int-only.directive';
 import { NumberMax } from './directives/number-max.directive';
@@ -30,6 +32,8 @@ import { Number } from './directives/number.directive';
     NumberMax,
     NumberPositiveOnly,
     Number,
+    TabComponent,
+    TabsComponent,
   ],
   exports: [
     AutoSuggestComponent,
@@ -44,6 +48,8 @@ import { Number } from './directives/number.directive';
     NumberMax,
     NumberPositiveOnly,
     Number,
+    TabComponent,
+    TabsComponent,
   ],
 })
 export class SharedModule {}
