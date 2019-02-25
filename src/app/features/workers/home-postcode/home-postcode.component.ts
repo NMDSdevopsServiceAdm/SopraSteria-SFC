@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { POSTCODE_PATTERN } from '@core/constants/constants';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home-postcode',
@@ -12,48 +13,42 @@ import { WorkerEditResponse, WorkerService } from '@core/services/worker.service
 })
 export class HomePostcodeComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  private subscriptions = [];
   private worker: Worker;
-  private workerId: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private workerService: WorkerService,
     private formBuilder: FormBuilder,
     private messageService: MessageService,
-    private router: Router,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
     this.form = this.formBuilder.group({
       postcode: [null, this.postcodeValidator],
     });
 
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.postcode) {
-          this.form.patchValue({
-            postcode: worker.postcode,
-          });
-        }
-      }),
-    );
+    if (this.worker.postcode) {
+      this.form.patchValue({
+        postcode: this.worker.postcode,
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
   async submitHandler() {
     try {
       await this.saveHandler();
-      this.router.navigate(['/worker/gender']);
+      this.router.navigate(['/worker', this.worker.uid, 'gender']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -66,7 +61,7 @@ export class HomePostcodeComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         this.worker.postcode = postcode.value;
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (postcode.errors.validPostcode) {
           this.messageService.show('error', 'Invalid postcode.');
