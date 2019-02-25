@@ -55,7 +55,6 @@ const routes: Routes = [
   {
     path: ':id',
     component: EditWorkerComponent,
-    // canActivateChild: [WorkerGuard],
     resolve: { worker: WorkerResolver },
     children: [
       {
