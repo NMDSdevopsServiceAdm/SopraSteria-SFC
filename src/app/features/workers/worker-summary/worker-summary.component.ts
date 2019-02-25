@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+import { DecimalPipe, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
@@ -14,7 +14,12 @@ import * as moment from 'moment';
 export class WorkerSummaryComponent implements OnInit {
   private worker: Worker;
 
-  constructor(private location: Location, private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private location: Location,
+    private route: ActivatedRoute,
+    private router: Router,
+    private decimalPipe: DecimalPipe
+  ) {}
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
@@ -59,7 +64,8 @@ export class WorkerSummaryComponent implements OnInit {
   }
 
   get salary() {
-    return `£${this.worker.annualHourlyPay.rate} ${this.worker.annualHourlyPay.value}`;
+    const formatted = this.decimalPipe.transform(this.worker.annualHourlyPay.rate, '1.2-2');
+    return `£${formatted} ${this.worker.annualHourlyPay.value}`;
   }
 
   ngOnInit(): void {
