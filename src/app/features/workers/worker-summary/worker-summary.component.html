@@ -22,7 +22,7 @@
             {{ worker.nameOrId }}
           </dd>
           <dd class="govuk-summary-list__actions">
-            <a class="govuk-link" routerLink="/worker/edit-staff-record">
+            <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'edit-staff-record']">
                 Change
               <span class="govuk-visually-hidden"> basic record details</span>
             </a>
@@ -65,7 +65,7 @@
           {{ worker.nationalInsuranceNumber || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/national-insurance-number">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'national-insurance-number']">
             <ng-container *ngIf="!worker.nationalInsuranceNumber">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -87,7 +87,7 @@
           {{ worker.dateOfBirth ? dob  : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/date-of-birth">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'date-of-birth']">
             <ng-container *ngIf="!worker.dateOfBirth">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -109,7 +109,7 @@
           {{ worker.postcode || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/home-postcode">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'home-postcode']">
             <ng-container *ngIf="!worker.postcode">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -131,7 +131,7 @@
           {{ worker.gender || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'gender']">
             <ng-container *ngIf="!worker.gender">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -153,7 +153,7 @@
           {{ worker.disability || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/disability">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'disability']">
             <ng-container *ngIf="!worker.disability">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -175,7 +175,7 @@
           {{ worker.ethnicity?.ethnicity || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/ethnicity">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'ethnicity']">
             <ng-container *ngIf="!worker.ethnicity">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -197,7 +197,7 @@
           {{ worker.nationality?.other?.nationality ? worker.nationality?.other?.nationality : worker.nationality?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/nationality">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'nationality']">
             <ng-container *ngIf="!worker.nationality">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -219,7 +219,7 @@
           {{ worker.britishCitizenship || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/british-citizenship">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'british-citizenship']">
             <ng-container *ngIf="!worker.britishCitizenship">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -241,7 +241,7 @@
           {{ worker.countryOfBirth?.other?.country ? worker.countryOfBirth?.other?.country : worker.countryOfBirth?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/country-of-birth">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'country-of-birth']">
             <ng-container *ngIf="!worker.countryOfBirth">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -291,7 +291,7 @@
           {{ worker.mainJobStartDate ? mainStartDate : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/main-job-start-date">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'main-job-start-date']">
             <ng-container *ngIf="!worker.mainJobStartDate">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -335,8 +335,8 @@
           {{ worker.otherJobs?.length ? otherJobRoles : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/other-job-roles">
-            <ng-container *ngIf="!worker.otherJobs?.length">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-job-roles']">
+            <ng-container *ngIf="!worker.otherJobs.length">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
             </ng-container>
@@ -356,7 +356,7 @@
           {{ worker.recruitedFrom?.from?.from ? worker.recruitedFrom?.from?.from : worker.recruitedFrom?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/recruited-from">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'recruited-from']">
             <ng-container *ngIf="!worker.recruitedFrom">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -378,7 +378,7 @@
           {{ worker.socialCareStartDate?.year ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/adult-social-care-started">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'adult-social-care-started']">
             <ng-container *ngIf="!worker.socialCareStartDate">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -400,7 +400,7 @@
           {{ worker.daysSick?.days ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/days-of-sickness">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'days-of-sickness']">
             <ng-container *ngIf="!worker.daysSick">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -422,7 +422,7 @@
           {{ worker.zeroHoursContract || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/contract-with-zero-hours">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'contract-with-zero-hours']">
             <ng-container *ngIf="!worker.zeroHoursContract">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -444,7 +444,7 @@
           {{ worker.weeklyHoursAverage?.hours ? worker.weeklyHoursAverage?.hours : worker.weeklyHoursAverage?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/average-weekly-hours">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'average-weekly-hours']">
             <ng-container *ngIf="!worker.weeklyHoursAverage">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -466,7 +466,7 @@
           {{ worker.weeklyHoursContracted?.hours ? worker.weeklyHoursContracted?.hours : worker.weeklyHoursContracted?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/weekly-contracted-hours">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'weekly-contracted-hours']">
             <ng-container *ngIf="!worker.weeklyHoursContracted">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -488,7 +488,7 @@
           {{ worker.annualHourlyPay?.value ? salary : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/salary">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'salary']">
             <ng-container *ngIf="!worker.annualHourlyPay">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -515,7 +515,7 @@
           {{ worker.careCertificate || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/care-certificate">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'care-certificate']">
             <ng-container *ngIf="!worker.careCertificate">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -537,7 +537,7 @@
           {{ worker.qualificationInSocialCare || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/social-care-qualification">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'social-care-qualification']">
             <ng-container *ngIf="!worker.qualificationInSocialCare">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -559,7 +559,7 @@
           {{ worker.socialCareQualification?.title || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/social-care-qualification-level">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'social-care-qualification-level']">
             <ng-container *ngIf="!worker.socialCareQualification">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -581,7 +581,7 @@
           {{ worker.otherQualification || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/other-qualifications">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-qualifications']">
             <ng-container *ngIf="!worker.otherQualification">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -603,7 +603,7 @@
           {{ worker.highestQualification?.title || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/other-qualifications-level">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-qualifications-level']">
             <ng-container *ngIf="!worker.highestQualification">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -625,7 +625,7 @@
           {{ worker.apprenticeshipTraining || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/apprenticeship-training">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'apprenticeship-training']">
             <ng-container *ngIf="!worker.apprenticeshipTraining">
               Provide information
               <span class="govuk-visually-hidden"> for</span>

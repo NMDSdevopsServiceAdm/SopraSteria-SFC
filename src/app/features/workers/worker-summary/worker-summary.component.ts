@@ -1,9 +1,8 @@
 import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
-import { WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 
 @Component({
@@ -11,12 +10,10 @@ import * as moment from 'moment';
   templateUrl: './worker-summary.component.html',
   styleUrls: ['./worker-summary.component.scss'],
 })
-export class WorkerSummaryComponent implements OnInit, OnDestroy {
+export class WorkerSummaryComponent implements OnInit {
   private worker: Worker;
-  private workerId: string;
-  private subscriptions = [];
 
-  constructor(private location: Location, private router: Router, private workerService: WorkerService) {}
+  constructor(private location: Location, private route: ActivatedRoute, private router: Router) {}
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
@@ -65,17 +62,7 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-      })
-    );
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.worker = this.route.parent.snapshot.data.worker;
   }
 
   goBack(event) {

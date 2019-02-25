@@ -39,6 +39,7 @@ import { ContinueCreatingAccountComponent } from './features/continue-creating-a
 import { CqcRegisteredQuestionEditComponent } from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
 import { CreateUsernameComponent } from './features/create-username/create-username.component';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
 import { HomepageComponent } from './features/homepage/homepage.component';
@@ -61,7 +62,6 @@ import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [

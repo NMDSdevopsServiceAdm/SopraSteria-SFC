@@ -32,6 +32,7 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkerSummaryComponent } from './worker-summary/worker-summary.component';
+import { WorkerResolver } from './worker.resolver';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
@@ -70,5 +71,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WorkerSummaryComponent,
     YearArrivedUkComponent,
   ],
+  providers: [WorkerResolver],
 })
 export class WorkersModule {}
