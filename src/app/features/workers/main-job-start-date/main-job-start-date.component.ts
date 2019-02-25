@@ -33,7 +33,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.worker = this.route.parent.snapshot.data.worker;
 
-    this.backLink = this.worker.mainJob.title === 'Social Worker' ? 'mental-health' : 'edit-staff-record';
+    this.backLink = this.worker.mainJob.title === 'Social Worker' ? 'mental-health' : 'staff-details';
 
     this.form = this.formBuilder.group({
       day: null,

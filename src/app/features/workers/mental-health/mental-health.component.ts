@@ -31,10 +31,10 @@ export class MentalHealthComponent implements OnInit, OnDestroy {
     this.worker = this.route.parent.snapshot.data.worker;
 
     if (this.worker.mainJob.jobId !== 27 && !this.isOtherJobsSocialWorker()) {
-      this.router.navigate(['/worker', this.worker.uid, 'edit-staff-record'], { replaceUrl: true });
+      this.router.navigate(['/worker', this.worker.uid, 'staff-details'], { replaceUrl: true });
     }
 
-    this.backLink = this.isOtherJobsSocialWorker() ? 'other-job-roles' : 'edit-staff-record';
+    this.backLink = this.isOtherJobsSocialWorker() ? 'other-job-roles' : 'staff-details';
 
     this.form = this.formBuilder.group({
       approvedMentalHealthWorker: null,
