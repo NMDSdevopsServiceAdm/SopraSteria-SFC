@@ -269,7 +269,7 @@
           {{ worker.yearArrived?.year ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/year-arrived-uk">
+          <a class="govuk-link" [routerLink]="['/worker/', worker.uid, 'year-arrived-uk']">
             <ng-container *ngIf="!worker.yearArrived">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -313,7 +313,7 @@
           {{ worker.approvedMentalHealthWorker ||  '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" routerLink="/worker/mental-health">
+          <a class="govuk-link" [routerLink]="['/worker/', worker.uid, 'mental-health']">
             <ng-container *ngIf="!worker.approvedMentalHealthWorker">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
