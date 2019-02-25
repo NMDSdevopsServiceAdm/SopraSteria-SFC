@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
@@ -15,7 +16,7 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   private workerId: string;
   private subscriptions = [];
 
-  constructor(private _location: Location, private workerService: WorkerService) {}
+  constructor(private location: Location, private router: Router, private workerService: WorkerService) {}
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
@@ -80,6 +81,10 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   goBack(event) {
     event.preventDefault();
 
-    this._location.back();
+    this.location.back();
+  }
+
+  saveAndComplete() {
+    this.router.navigate(['/worker/save-success']);
   }
 }
