@@ -10,11 +10,11 @@ export class SubmitButtonComponent {
 
   constructor(private router: Router) {}
 
-  async saveAndExit() {
+  async saveAndNavigate(url: string) {
     if (this.saveCallback) {
       try {
         await this.saveCallback();
-        this.router.navigate(['/welcome']);
+        this.router.navigate([url]);
       } catch (err) {
         // this should be already handled by saveCallback()
         // keep typescript transpiler silent
@@ -22,9 +22,5 @@ export class SubmitButtonComponent {
     } else {
       throw new TypeError(`'saveCallback' function not provided!`);
     }
-  }
-
-  viewRecordSummary() {
-    this.router.navigate(['/worker/summary']);
   }
 }
