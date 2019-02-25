@@ -95,10 +95,13 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
+        const job = this.jobsAvailable.find(j => j.id === parseInt(mainJob.value, 10));
+
         worker.nameOrId = nameOrId.value;
         worker.contract = contract.value;
         worker.mainJob = {
-          jobId: parseInt(mainJob.value, 10),
+          jobId: job.id,
+          title: job.title,
         };
 
         if (worker.otherJobs) {

@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-worker-summary',
@@ -33,6 +34,33 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
 
   get displayWeeklyContractedHours() {
     return !this.displayAverageWeeklyHours;
+  }
+
+  get displayYearArrived() {
+    return this.worker.countryOfBirth && this.worker.countryOfBirth.value !== 'United Kingdom';
+  }
+
+  get displayMentalHealthProfessional() {
+    return (
+      this.worker.mainJob.title === 'Social Worker' ||
+      (this.worker.otherJobs && this.worker.otherJobs.find(j => j.title === 'Social Worker'))
+    );
+  }
+
+  get otherJobRoles() {
+    return this.worker.otherJobs.map(job => job.title).join(', ');
+  }
+
+  get mainStartDate() {
+    return moment(this.worker.mainJobStartDate).format('DD/MM/YYYY');
+  }
+
+  get dob() {
+    return moment(this.worker.dateOfBirth).format('DD/MM/YYYY');
+  }
+
+  get salary() {
+    return `£${this.worker.annualHourlyPay.rate} ${this.worker.annualHourlyPay.value}`;
   }
 
   ngOnInit(): void {

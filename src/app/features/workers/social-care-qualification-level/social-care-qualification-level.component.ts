@@ -23,7 +23,7 @@ export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy 
     private messageService: MessageService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private qualificationService: QualificationService,
+    private qualificationService: QualificationService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
@@ -76,8 +76,11 @@ export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy 
 
       if (this.form.valid) {
         const worker = this.worker || ({} as Worker);
+        const selectedQualification = this.qualifications.filter(q => q.id === parseInt(qualification.value, 10)).pop();
+
         worker.socialCareQualification = {
-          qualificationId: parseInt(qualification.value, 10),
+          qualificationId: selectedQualification.id,
+          title: selectedQualification.level,
         };
 
         this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
