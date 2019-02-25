@@ -1,4 +1,4 @@
-import { CommonModule, DecimalPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
@@ -78,6 +78,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WorkerSummaryComponent,
     YearArrivedUkComponent,
   ],
-  providers: [DecimalPipe, WorkerResolver],
+  providers: [WorkerResolver],
 })
 export class WorkersModule {}

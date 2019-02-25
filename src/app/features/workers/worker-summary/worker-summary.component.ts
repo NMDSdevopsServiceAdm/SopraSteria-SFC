@@ -10,6 +10,7 @@ import * as moment from 'moment';
   selector: 'app-worker-summary',
   templateUrl: './worker-summary.component.html',
   styleUrls: ['./worker-summary.component.scss'],
+  providers: [DecimalPipe],
 })
 export class WorkerSummaryComponent implements OnInit {
   private worker: Worker;
