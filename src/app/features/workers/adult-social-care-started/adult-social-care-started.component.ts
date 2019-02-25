@@ -5,6 +5,7 @@ import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-adult-social-care-started',
@@ -12,6 +13,7 @@ import * as moment from 'moment';
 })
 export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  private subscriptions: Subscription = new Subscription;
   private worker: Worker;
 
   constructor(
@@ -43,6 +45,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
@@ -69,7 +72,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
           };
         }
 
-        this.workerService.setWorker(this.worker).subscribe(resolve, reject);
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (value.errors.required) {
           this.messageService.show('error', 'Year is required.');

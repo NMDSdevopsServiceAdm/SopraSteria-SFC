@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-british-citizenship',
@@ -12,12 +13,12 @@ import { WorkerEditResponse, WorkerService } from '@core/services/worker.service
 export class BritishCitizenshipComponent implements OnInit, OnDestroy {
   public answersAvailable = ['Yes', 'No', `Don't know`];
   public form: FormGroup;
-  private subscriptions = [];
   private worker: Worker;
-  private workerId: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService
@@ -26,34 +27,28 @@ export class BritishCitizenshipComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
     this.form = this.formBuilder.group({
       citizenship: null,
     });
 
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.britishCitizenship) {
-          this.form.patchValue({
-            citizenship: worker.britishCitizenship,
-          });
-        }
-      })
-    );
+    if (this.worker.britishCitizenship) {
+      this.form.patchValue({
+        citizenship: this.worker.britishCitizenship,
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
   async submitHandler() {
     try {
       await this.saveHandler();
-      this.router.navigate(['/worker/country-of-birth']);
+      this.router.navigate(['/worker', this.worker.uid, 'country-of-birth']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -66,7 +61,7 @@ export class BritishCitizenshipComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         this.worker.britishCitizenship = citizenship;
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         this.messageService.show('error', 'Please fill the required fields.');
         reject();
