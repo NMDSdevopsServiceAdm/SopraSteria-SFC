@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, empty, Observable } from 'rxjs';
 import { catchError, debounceTime, map, tap } from 'rxjs/operators';
+
 import { Worker } from '../model/worker.model';
 import { EstablishmentService } from './establishment.service';
 import { HttpErrorHandler } from './http-error-handler.service';
@@ -18,7 +19,6 @@ export interface WorkerEditResponse {
   providedIn: 'root',
 })
 export class WorkerService {
-  private _workerId: string = null;
   private _worker$ = new BehaviorSubject<Worker>(null);
   public worker$ = this._worker$.asObservable();
 
@@ -31,14 +31,6 @@ export class WorkerService {
     private httpErrorHandler: HttpErrorHandler,
     private establishmentService: EstablishmentService
   ) {}
-
-  public set workerId(id: string) {
-    this._workerId = id;
-  }
-
-  public get workerId() {
-    return this._workerId;
-  }
 
   public get worker() {
     return this._worker$.value as Worker;
