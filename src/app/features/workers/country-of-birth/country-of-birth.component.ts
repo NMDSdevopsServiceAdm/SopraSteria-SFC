@@ -32,7 +32,12 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableOtherCountries = res)));
+
     this.worker = this.route.parent.snapshot.data.worker;
+
+    this.backLink =
+      this.worker.nationality && this.worker.nationality.value === 'British' ? 'nationality' : 'british-citizenship';
 
     this.form = this.formBuilder.group({
       cobKnown: null,
@@ -47,11 +52,6 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
         cobName: other ? other.country : null,
       });
     }
-
-    this.backLink =
-      this.worker.nationality && this.worker.nationality.value === 'British' ? 'nationality' : 'british-citizenship';
-
-    this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableOtherCountries = res)));
   }
 
   ngOnDestroy() {

@@ -1,25 +1,27 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DEFAULT_DATE_FORMAT } from '@core/constants/constants';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@core/validators/date.validator';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-main-job-start-date',
   templateUrl: './main-job-start-date.component.html',
 })
 export class MainJobStartDateComponent implements OnInit, OnDestroy {
+  public backLink: string;
   public form: FormGroup;
-  private subscriptions = [];
   private worker: Worker;
-  private workerId: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService
@@ -29,43 +31,39 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
+    this.backLink = this.worker.mainJob.title === 'Social Worker' ? 'mental-health' : 'edit-staff-record';
+
     this.form = this.formBuilder.group({
       day: null,
       month: null,
       year: null,
     });
 
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.mainJobStartDate) {
-          const date = worker.mainJobStartDate.split('-');
-          this.form.patchValue({
-            year: parseInt(date[0], 10),
-            month: parseInt(date[1], 10),
-            day: parseInt(date[2], 10),
-          });
-        }
-
-        this.form.setValidators(
-          Validators.compose([this.form.validator, DateValidator.datePastOrToday(), this.validateCross])
-        );
-      })
+    this.form.setValidators(
+      Validators.compose([this.form.validator, DateValidator.datePastOrToday(), this.validateCross])
     );
+
+    if (this.worker.mainJobStartDate) {
+      const date = this.worker.mainJobStartDate.split('-');
+      this.form.patchValue({
+        year: parseInt(date[0], 10),
+        month: parseInt(date[1], 10),
+        day: parseInt(date[2], 10),
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
   async submitHandler() {
     try {
       await this.saveHandler();
-      this.router.navigate(['/worker/other-job-roles']);
+      this.router.navigate(['/worker', this.worker.uid, 'other-job-roles']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -78,7 +76,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
       if (this.form.valid) {
         const newDate: any = this.dateFromForm();
         this.worker.mainJobStartDate = newDate ? newDate.format(DEFAULT_DATE_FORMAT) : null;
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (this.form.errors) {
           if (this.form.errors.required) {
@@ -97,16 +95,6 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
         reject();
       }
     });
-  }
-
-  goBack(event) {
-    event.preventDefault();
-
-    if (this.worker.mainJob.title === 'Social Worker') {
-      this.router.navigate(['/worker/mental-health']);
-    } else {
-      this.router.navigate(['/worker/edit-staff-record']);
-    }
   }
 
   dateFromForm() {
