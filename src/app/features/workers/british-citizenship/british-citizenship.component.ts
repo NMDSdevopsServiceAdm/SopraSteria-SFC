@@ -29,6 +29,10 @@ export class BritishCitizenshipComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.worker = this.route.parent.snapshot.data.worker;
 
+    if (this.worker.nationality && this.worker.nationality.value === 'British') {
+      this.router.navigate(['/worker', this.worker.uid, 'nationality'], { replaceUrl: true });
+    }
+
     this.form = this.formBuilder.group({
       citizenship: null,
     });
