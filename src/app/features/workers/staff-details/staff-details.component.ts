@@ -67,12 +67,12 @@ export class StaffDetailsComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
-      const res = await this.saveHandler();
+      await this.saveHandler();
 
       if (this.isSocialWorkerSelected()) {
-        this.router.navigate(['/worker', res.uid, 'mental-health']);
+        this.router.navigate(['/worker', this.worker.uid, 'mental-health']);
       } else {
-        this.router.navigate(['/worker', res.uid, 'main-job-start-date']);
+        this.router.navigate(['/worker', this.worker.uid, 'main-job-start-date']);
       }
     } catch (err) {
       // keep typescript transpiler silent
