@@ -62,7 +62,7 @@ export class OtherQualificationsLevelComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      this.router.navigate(['summary']);
+      this.router.navigate(['/worker', this.worker.uid, 'summary']);
     } catch (err) {
       // keep typescript transpiler silent
     }
