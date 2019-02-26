@@ -57,20 +57,16 @@ export class WorkerService {
   /*
    * GET /api/establishment/:establishmentId/worker/:workerId
    */
-  getWorker(workerId: string, lazy = true): Observable<Worker> {
-    if (lazy && this._worker$.getValue() && this._worker$.getValue().uid === workerId) {
-      return this.worker$;
-    } else {
-      return this.http
-        .get<Worker>(
-          `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
-          EstablishmentService.getOptions()
-        )
-        .pipe(
-          debounceTime(500),
-          catchError(this.httpErrorHandler.handleHttpError)
-        );
-    }
+  getWorker(workerId: string): Observable<Worker> {
+    return this.http
+      .get<Worker>(
+        `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
+        EstablishmentService.getOptions()
+      )
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError)
+      );
   }
 
   /*
