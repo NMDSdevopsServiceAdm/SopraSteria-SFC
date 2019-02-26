@@ -9,7 +9,7 @@
     width: 100%;
   }
   margin: 0;
-  @include rem(margin-bottom, 30px);
+  @include rem(margin-bottom, 40px);
 }
 
 .govuk-summary-list__row {
@@ -68,7 +68,7 @@
   font-weight: 700;
   // @include govuk-media-query($from: tablet) {
   @media (min-width: map-get($breakpoints, tablet)) {
-    width: 30%;
+    width: 35%;
   }
 }
 
@@ -127,4 +127,16 @@
 .basic-records {
   border: 1px solid map-get($color, grey);
   border-width: 1px 0;
+}
+
+
+h2 {
+  font-weight: 400;
+  color: $light-grey-text;
+}
+
+h3 {
+  font-weight: 700;
+  margin-bottom: 15px;
+  @include rem(font-size, 23px);
 }

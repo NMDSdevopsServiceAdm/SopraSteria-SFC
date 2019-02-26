@@ -1,11 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var concatenateAddress = require('../utils/concatenateAddress').concatenateAddress;
-const bodyParser = require('body-parser');
+const uuid = require('uuid');
+const isLocal = require('../utils/security/isLocalTest').isLocal;
 var bcrypt = require('bcrypt-nodejs');
 const slack = require('../utils/slack/slack-logger');
 
 const models = require('../models');
+
+const generateJWT = require('../utils/security/generateJWT');
+const passwordCheck = require('../utils/security/passwordValidation').isPasswordValid;
 
 class RegistrationException {
   constructor(originalError, errCode, errMessage) {
@@ -84,6 +88,36 @@ router.get('/username/:username', async (req, res) => {
       status: '0',
       message: `Username '${requestedUsername}' not found`,
     });
+  }
+});
+
+router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
+  const requestedUsernameOrEmail = req.params.usernameOrEmail;
+
+  try {
+    // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
+    const loginResults = await models.login.findOne({
+      where: {
+          username: requestedUsernameOrEmail
+      }
+    });
+    const userResults = await models.user.findOne({
+      where: {
+          EmailValue: requestedUsernameOrEmail
+      }
+    });
+
+    if ((loginResults && loginResults.id && (requestedUsernameOrEmail === loginResults.username)) ||
+        (userResults && userResults.id && (requestedUsernameOrEmail === userResults.EmailValue))) {
+      return res.status(200).send();
+    } else {
+      return res.status(404).send();
+    }
+
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('registration GET /usernameOrEmail/:usernameOrEmail - failed', err);
+    return res.status(503).send();
   }
 });
 
@@ -213,13 +247,23 @@ router.route('/')
   .post(async (req, res) => {
     //basic validation
     if(JSON.stringify(req.body) == '{}') {
-			return res.status(404).json({
+			return res.status(400).json({
 				"success" : 0,
 				"message" : "Parameters missing"
 			});
     }
 
     // TODO: JSON Schema validation
+
+    // Password validation check
+    if (req.body[0] && req.body[0].user && req.body[0].user.password) {
+      if (!passwordCheck(req.body[0].user.password)) {
+        return res.status(400).json({
+          "success" : 0,
+          "message" : "Invalid Password"
+        });
+      }
+    }
 
 
     let defaultError = responseErrors.default;
@@ -244,6 +288,8 @@ router.route('/')
         JobTitle : req.body[0].user.jobTitle,
         Email    : req.body[0].user.emailAddress,
         Phone    : req.body[0].user.contactNumber,
+        SecurityQuestion: req.body[0].user.securityQuestion,
+        SecurityQuestionAnswer: req.body[0].user.securityAnswer,
         DateCreated: new Date(),
         EstablishmentID:0,
         AdminUser: true
@@ -252,12 +298,9 @@ router.route('/')
         RegistrationId:0,
         UserName: req.body[0].user.username,
         Password: req.body[0].user.password,
-        SecurityQuestion: req.body[0].user.securityQuestion,
-        SecurityQuestionAnswer: req.body[0].user.securityAnswer,
         Active:true,
         InvalidAttempt:0
       };
-
 
       // there are multiple steps to regiastering a new user/establishment. They must be done in entirety (all or nothing).
       // 1. looking the main service; to get ID
@@ -369,22 +412,52 @@ router.route('/')
             shareWithCQC: false,
             shareWithLA: false,
             nmdsId: Estblistmentdata.NmdsId
-          });
+          }, {transaction: t});
           const sanitisedEstablishmentResults = establishmentCreation.get({plain: true});
           Estblistmentdata.id = sanitisedEstablishmentResults.EstablishmentID;
 
 
           // now create user
           defaultError = responseErrors.user;
-          const userCreation = await models.user.create({
+          const userRecord = {
             establishmentId: Estblistmentdata.id,
-            fullname: Userdata.FullName,
-            jobTitle: Userdata.JobTitle,
-            email: Userdata.Email,
-            phone: Userdata.Phone,
+            FullNameValue: Userdata.FullName,
+            FullNameSavedAt: Userdata.DateCreated,
+            FullNameChangedAt: Userdata.DateCreated,
+            FullNameSavedBy: Logindata.UserName,
+            FullNameChangedBy: Logindata.UserName,
+            JobTitleValue: Userdata.JobTitle,
+            JobTitleSavedAt: Userdata.DateCreated,
+            JobTitleChangedAt: Userdata.DateCreated,
+            JobTitleSavedBy: Logindata.UserName,
+            JobTitleChangedBy: Logindata.UserName,
+            EmailValue: Userdata.Email,
+            EmailSavedAt: Userdata.DateCreated,
+            EmailChangedAt: Userdata.DateCreated,
+            EmailSavedBy: Logindata.UserName,
+            EmailChangedBy: Logindata.UserName,
+            PhoneValue: Userdata.Phone,
+            PhoneSavedAt: Userdata.DateCreated,
+            PhoneChangedAt: Userdata.DateCreated,
+            PhoneSavedBy: Logindata.UserName,
+            PhoneChangedBy: Logindata.UserName,
+            SecurityQuestionValue: Userdata.SecurityQuestion,
+            SecurityQuestionSavedAt: Userdata.DateCreated,
+            SecurityQuestionChangedAt: Userdata.DateCreated,
+            SecurityQuestionSavedBy: Logindata.UserName,
+            SecurityQuestionChangedBy: Logindata.UserName,
+            SecurityQuestionAnswerValue: Userdata.SecurityQuestionAnswer,
+            SecurityQuestionAnswerSavedAt: Userdata.DateCreated,
+            SecurityQuestionAnswerChangedAt: Userdata.DateCreated,
+            SecurityQuestionAnswerSavedBy: Logindata.UserName,
+            SecurityQuestionAnswerChangedBy: Logindata.UserName,
             created: Userdata.DateCreated,
+            updated: Userdata.DateCreated,
+            updatedBy: Logindata.UserName,
             isAdmin: true,
-          });
+          };
+          const userCreation = await models.user.create(userRecord, {transaction: t});
+
           const sanitisedUserResults = userCreation.get({plain: true});
           Userdata.registrationID = sanitisedUserResults.RegistrationID;
 
@@ -395,11 +468,9 @@ router.route('/')
             registrationId: Userdata.registrationID,
             username: Logindata.UserName,
             Hash: passwordHash,
-            securityQuestion: Logindata.SecurityQuestion,
-            securityAnswer: Logindata.SecurityQuestionAnswer,
             isActive: true,
             invalidAttempt: 0,
-          });
+          }, {transaction: t});
           const sanitisedLoginResults = loginCreation.get({plain: true});
           Logindata.id = sanitisedLoginResults.ID;
           
@@ -423,7 +494,7 @@ router.route('/')
         });
 
       } catch (err) {
-        console.error('Caught exception in registration: ', err);
+        //console.error('Caught exception in registration: ', err);
 
         // if we've already found a specific registration error, re-throw the error
         if (err instanceof RegistrationException) throw err;
@@ -432,10 +503,11 @@ router.route('/')
 
         if (err.name && err.name === 'SequelizeUniqueConstraintError') {
           // we can expect one of three unique constraint failures which will override the default error
+          // NOTE - this logic here is topsy turvy on the name of the index
           if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration_with_locationid') {
-            defaultError = responseErrors.duplicateCQC;
-          } else if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration') {
             defaultError = responseErrors.duplicateNonCQC;
+          } else if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration') {
+            defaultError = responseErrors.duplicateCQC;
           } else if (err.parent.constraint && err.parent.constraint === 'uc_Login_Username') {
             defaultError = responseErrors.duplicateUsername;
           }
@@ -480,5 +552,184 @@ router.route('/')
         });
     }
   });  // ends router.route('/').post
+
+
+
+router.post('/requestPasswordReset', async (req, res) => {
+  // parse input - escaped to prevent SQL injection
+  if (!req.body.usernameOrEmail) {
+    return res.status(400).send();
+  }
+  const givenEmailOrUsername = escape(req.body.usernameOrEmail);
+
+  // for automated testing, allow the expiry to be overridden by a given TTL parameter (in seconds)
+  //  only for localhost/dev
+  const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 60*24*1000; // 24 hours
+
+  try {
+    // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
+    const loginResults = await models.login.findOne({
+      attributes: ['id', 'username'],
+      where: {
+          username: givenEmailOrUsername,
+          isActive: true
+      },
+      include: [
+        {
+          model: models.user,
+          attributes: ['EmailValue', 'FullNameValue', 'id'],
+        }
+      ]
+    });
+    const userResults = await models.user.findAll({
+      attributes: ['EmailValue', 'FullNameValue', 'id'],
+      where: {
+        EmailValue: givenEmailOrUsername
+      },
+      include: [
+        {
+          model: models.login,
+          attributes: ['id', 'username'],
+          where: {
+            isActive: true
+          }
+        }
+      ]
+    });
+
+
+    if ((loginResults && loginResults.id && (givenEmailOrUsername === loginResults.username)) ||
+        (userResults && userResults.length === 1 && (givenEmailOrUsername === userResults[0].EmailValue))) {
+
+      let sendToAddress = null, sendToName = null, userRegistrationId = null;
+      if (userResults && userResults.length === 1 && userResults[0].EmailValue) {
+        sendToAddress = userResults[0].EmailValue;
+        sendToName = userResults[0].FullNameValue;
+        userRegistrationId = userResults[0].id;
+      } else if (loginResults && loginResults.user && loginResults.user.EmailValue) {
+        sendToAddress = loginResults.user.EmailValue;
+        sendToName = loginResults.user.FullNameValue;
+        userRegistrationId = loginResults.user.id;
+      }
+
+      if (sendToAddress===null || sendToName===null || userRegistrationId===null) {
+        throw new Error(`Unexpected error: failed to retrieve registration ID/name/email address (${givenEmailOrUsername}) on either user or login`);
+      }
+
+      const requestUuid = uuid.v4();
+      const now = new Date();
+      const expiresIn = new Date(now.getTime() + expiresTTLms);
+
+      await models.passwordTracking.create({
+        userFk: userRegistrationId,
+        created: now.toISOString(),
+        expires: expiresIn.toISOString(),
+        uuid: requestUuid
+      });
+
+      const resetLink = `${req.protocol}://${req.get('host')}/api/registration/validateResetPassword?reset=${requestUuid}`;
+
+      // TODO: send email with link - https://trello.com/c/ONiKc7Ck
+
+      if (isLocal(req)) {
+        return res.status(200).json({resetLink, uuid:requestUuid});
+      } else {
+        return res.status(200).send();
+      }
+ 
+    } else {
+      // non-disclosure - if account is not found, return 200 anyway - suggesting that an email has been found
+      return res.status(200).send();
+    }
+
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('registration POST /requestPasswordReset - failed', err);
+    return res.status(503).send();
+  }
+});
+
+router.post('/validateResetPassword', async (req, res) => {
+  if (!req.body.uuid) {
+    console.error('No UUID');
+    return res.status(400).send();
+  }
+  // parse input - escaped to prevent SQL injection
+  const givenUuid = escape(req.body.uuid);
+  const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
+
+  if (!uuidV4Regex.test(givenUuid)) {
+    console.error('Invalid UUID');
+    return res.status(400).send();
+  }
+  
+  try {
+    // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
+    const passTokenResults = await models.passwordTracking.findOne({
+      where: {
+        uuid: givenUuid
+      }
+    });
+
+    if (passTokenResults && passTokenResults.id) {
+
+      // now check if the token has expired or already been consumed
+      const now = new Date().getTime();
+      if (passTokenResults.expires.getTime() < now) {
+        console.error(`registration POST /validateResetPassword - reset token (${givenUuid}) expired`);
+        return res.status(403).send();
+      }
+
+      if (passTokenResults.completed) {
+        console.error(`registration POST /validateResetPassword - reset token (${givenUuid}) has already been used`);
+        return res.status(401).send();
+      }
+
+      // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User/Login details.
+      const userResults = await models.user.findOne({
+        where: {
+          id: passTokenResults.userFk
+        },
+        include: [
+          {
+            model: models.login,
+            attributes: ['username'],
+          }
+        ]
+      });
+
+      if (userResults && userResults.id && userResults.id === passTokenResults.userFk) {
+        // generate JWT and attach it to the header (Authorization)
+        const JWTexpiryInMinutes = 15;
+        const token = generateJWT.passwordResetJWT(JWTexpiryInMinutes, userResults.login.username, userResults.FullNameValue , givenUuid);
+
+        res.set({
+          'Authorization': 'Bearer ' + token
+        });
+
+        return res.status(200).json({
+          username: userResults.login.username,
+          fullname: userResults.FullNameValue,
+        });
+
+      } else {
+        throw new Error(`Failed to find user matching reset token (${givenUuid})`);
+      }
+
+      
+ 
+    } else {
+      // token not found
+      console.error(`registration POST /validateResetPassword - reset token (${givenUuid}) not found`);
+      return res.status(404).send();
+    }
+
+  } catch (err) {
+    // TODO - improve logging/error reporting
+    console.error('registration POST /validateResetPassword - failed', err);
+    return res.status(503).send();
+  }
+});
+
 
 module.exports = router;

@@ -1,6 +1,6 @@
 <div class="sub-page-container col-12">
   <div id="back" class="back-link">
-    <a (click)="goBack($event)">
+    <a href="#" (click)="goBack($event)">
       <span class="arrow"></span>Back
     </a>
   </div>
@@ -84,7 +84,7 @@
           Date of birth
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.dateOfBirth || '-' }}
+          {{ worker.dateOfBirth ? dob  : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" routerLink="/worker/date-of-birth">
@@ -261,12 +261,34 @@
 
     <dl class="govuk-summary-list">
 
-      <div class="govuk-summary-list__row">
+      <div class="govuk-summary-list__row" *ngIf="displayYearArrived">
         <dt class="govuk-summary-list__key">
-          Date started in main job role
+          Year arrived in the UK
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.mainJobStartDate || '-' }}
+          {{ worker.yearArrived?.year ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" routerLink="/worker/year-arrived-uk">
+            <ng-container *ngIf="!worker.yearArrived">
+              Provide information
+              <span class="govuk-visually-hidden"> for</span>
+            </ng-container>
+            <ng-container *ngIf="worker.yearArrived">
+              Change
+            </ng-container>
+            <span class="govuk-visually-hidden"> year arrived in UK</span>
+          </a>
+        </dd>
+      </div>
+
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Date started
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ worker.mainJobStartDate ? mainStartDate : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" routerLink="/worker/main-job-start-date">
@@ -283,20 +305,42 @@
       </div>
 
 
+      <div class="govuk-summary-list__row" *ngIf="displayMentalHealthProfessional">
+        <dt class="govuk-summary-list__key">
+          Approved Mental Health Professional
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ worker.approvedMentalHealthWorker ||  '-' }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link" routerLink="/worker/mental-health">
+            <ng-container *ngIf="!worker.approvedMentalHealthWorker">
+              Provide information
+              <span class="govuk-visually-hidden"> for</span>
+            </ng-container>
+            <ng-container *ngIf="worker.approvedMentalHealthWorker">
+              Change
+            </ng-container>
+            <span class="govuk-visually-hidden"> approved mental health professional</span>
+          </a>
+        </dd>
+      </div>
+
+
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
           Other job roles
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.otherJobs.length ? worker.otherJobs : '-' }}
+          {{ worker.otherJobs?.length ? otherJobRoles : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" routerLink="/worker/other-job-roles">
-            <ng-container *ngIf="!worker.otherJobs.length">
+            <ng-container *ngIf="!worker.otherJobs?.length">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
             </ng-container>
-            <ng-container *ngIf="worker.otherJobs.length">
+            <ng-container *ngIf="worker.otherJobs?.length">
               Change
             </ng-container>
             <span class="govuk-visually-hidden"> other job roles</span>
@@ -328,7 +372,7 @@
 
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
-          Worked in adult social care since
+          Worked in adult social care
         </dt>
         <dd class="govuk-summary-list__value">
           {{ worker.socialCareStartDate?.year ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-' }}
@@ -350,7 +394,7 @@
 
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
-          Day sickness in last 12 months
+          Sickness in last 12 months
         </dt>
         <dd class="govuk-summary-list__value">
           {{ worker.daysSick?.days ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
@@ -438,10 +482,10 @@
 
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
-          Worker paid
+          Salary
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.annualHourlyPay?.value || '-' }}
+          {{ worker.annualHourlyPay?.value ? salary : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" routerLink="/worker/salary">
@@ -465,7 +509,7 @@
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
-          Started or completed the Care Certificate
+          Care Certificate
         </dt>
         <dd class="govuk-summary-list__value">
           {{ worker.careCertificate || '-' }}
@@ -487,7 +531,7 @@
 
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
-          Any other relevant social care qualification
+          Social Care qualification
         </dt>
         <dd class="govuk-summary-list__value">
           {{ worker.qualificationInSocialCare || '-' }}
@@ -509,7 +553,7 @@
 
       <div class="govuk-summary-list__row" *ngIf="displaySocialCareQualifications">
         <dt class="govuk-summary-list__key">
-          Highest level of other social care qualification
+          Level of Social Care qualification
         </dt>
         <dd class="govuk-summary-list__value">
           {{ worker.socialCareQualification?.title || '-' }}
@@ -531,7 +575,7 @@
 
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
-          Any other qualifications
+          Other qualifications
         </dt>
         <dd class="govuk-summary-list__value">
           {{ worker.otherQualification || '-' }}
@@ -553,7 +597,7 @@
 
       <div class="govuk-summary-list__row" *ngIf="displayOtherQualifications">
         <dt class="govuk-summary-list__key">
-          Highest level of other qualification
+          Level of other qualification
         </dt>
         <dd class="govuk-summary-list__value">
           {{ worker.highestQualification?.title || '-' }}
@@ -575,7 +619,7 @@
 
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
-          Completing apprenticeship training
+          Apprenticeship training
         </dt>
         <dd class="govuk-summary-list__value">
           {{ worker.apprenticeshipTraining || '-' }}
@@ -595,5 +639,11 @@
       </div>
 
     </dl>
+
+    <div class="btn-container container">
+      <div class="row">
+        <button type="button" (click)="saveAndComplete()" class="btn btn-primary">Save and complete</button>
+      </div>
+    </div>
   </ng-container>
 </div>

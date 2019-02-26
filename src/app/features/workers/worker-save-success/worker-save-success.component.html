@@ -1,0 +1,18 @@
+<div class="sub-page-container col-8">
+  <app-panel title="&#10003; Success">
+    The staff record has<br />
+    been saved
+  </app-panel>
+  <h4 class="h4">What you can do next?</h4>
+  <p>You can add more staff records, or return to your homepage</p>
+  <div class="btn-container container">
+    <div class="row">
+      <button type="button" (click)="addAnotherRecord()" class="btn btn-primary">
+        Add another staff record
+      </button>
+      <button type="button" class="btn btn-link btn-link-no-underline" (click)="returnToDashboard()">
+        Return to dashboard
+      </button>
+    </div>
+  </div>
+</div>

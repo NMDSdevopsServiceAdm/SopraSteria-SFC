@@ -6,6 +6,7 @@ import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.com
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { DetailsComponent } from './components/details/details.component';
 import { MessagesComponent } from './components/messages/messages.component';
+import { PanelComponent } from './components/panel/panel.component';
 import { StartButtonComponent } from './components/start-button/start-button.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
 import { NumberDigitsMax } from './directives/number-digits-max.directive';
@@ -21,6 +22,7 @@ import { Number } from './directives/number.directive';
     DatePickerComponent,
     DetailsComponent,
     MessagesComponent,
+    PanelComponent,
     StartButtonComponent,
     SubmitButtonComponent,
     NumberDigitsMax,
@@ -34,6 +36,7 @@ import { Number } from './directives/number.directive';
     DatePickerComponent,
     DetailsComponent,
     MessagesComponent,
+    PanelComponent,
     StartButtonComponent,
     SubmitButtonComponent,
     NumberDigitsMax,

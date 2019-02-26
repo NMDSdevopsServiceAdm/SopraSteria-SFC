@@ -30,18 +30,13 @@ import { SalaryComponent } from './salary/salary.component';
 import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
+import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkerSummaryComponent } from './worker-summary/worker-summary.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
-
 @NgModule({
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    SharedModule,
-    WorkersRoutingModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
   declarations: [
     AdultSocialCareStartedComponent,
     ApprenticeshipTrainingComponent,
@@ -71,8 +66,9 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     SocialCareQualificationLevelComponent,
     SocialCareQualificationComponent,
     WeeklyContractedHoursComponent,
+    WorkerSaveSuccessComponent,
     WorkerSummaryComponent,
     YearArrivedUkComponent,
-  ]
+  ],
 })
-export class WorkersModule { }
+export class WorkersModule {}
