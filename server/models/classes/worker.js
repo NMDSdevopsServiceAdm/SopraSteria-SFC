@@ -154,7 +154,7 @@ class Worker {
                     const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
 
                     // now save the document
-                    let creation = await models.worker.create(modifedCreationDocument);
+                    let creation = await models.worker.create(modifedCreationDocument, {transaction: t});
 
                     const sanitisedResults = creation.get({plain: true});
 
@@ -174,7 +174,7 @@ class Worker {
                                 workerFk: this._id
                             };
                         }));
-                    await models.workerAudit.bulkCreate(allAuditEvents);
+                    await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
 
                     this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 });
@@ -214,6 +214,7 @@ class Worker {
                                                             uid: this.uid
                                                         },
                                                         attributes: ['id', 'updated'],
+                                                        transaction: t,
                                                 });
 
                     if (updatedRecordCount === 1) {
@@ -233,7 +234,7 @@ class Worker {
                                 };
                             }));
                             // having updated the record, create the audit event
-                        await models.workerAudit.bulkCreate(allAuditEvents);
+                        await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
                         const additionalModels = this._properties.additionalModels;

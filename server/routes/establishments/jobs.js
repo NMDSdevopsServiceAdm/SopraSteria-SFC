@@ -116,12 +116,15 @@ router.route('/').post(async (req, res) => {
         // first process vacancies
         if (givenJobs.vacancies) {
           // vacancies is defined; delete all known vanancies for this Establishment
-          await models.establishmentJobs.destroy({
-            where: {
-              type: 'Vacancies',
-              establishmentId
-            }
-          });
+          await models.establishmentJobs.destroy(
+            {
+              where: {
+                type: 'Vacancies',
+                establishmentId
+              }
+            },
+            {transaction: t}
+          );
 
           // now iterate through the vacancies
           if (Array.isArray(givenJobs.vacancies)) {
@@ -134,7 +137,7 @@ router.route('/').post(async (req, res) => {
                     total: thisVacancy.total,
                     establishmentId,
                     type: 'Vacancies'
-                  })
+                  }, {transaction: t})
                 );
               }
             });
@@ -143,23 +146,26 @@ router.route('/').post(async (req, res) => {
             // update the Establishment vacancies declaration
             await establishmentRecord.update({
               vacancies: 'With Jobs'
-            });
+            }, {transaction: t});
           } else {
             // no vacancies given, so simply update the Establishment vacancies declaration
             await establishmentRecord.update({
               vacancies: givenJobs.vacancies
-            });
+            }, {transaction: t});
           }
         }
 
         if (givenJobs.starters) {
           // starters are declared; delete all existing starter records for this Establishment
-          await models.establishmentJobs.destroy({
-            where: {
-              type: 'Starters',
-              establishmentId
-            }
-          });
+          await models.establishmentJobs.destroy(
+            {
+              where: {
+                type: 'Starters',
+                establishmentId
+              }
+            },
+            {transaction: t}
+          );
 
           // now iterate through the vacancies
           if (Array.isArray(givenJobs.starters)) {
@@ -172,7 +178,7 @@ router.route('/').post(async (req, res) => {
                     total: thisStarter.total,
                     establishmentId,
                     type: 'Starters'
-                  })
+                  }, {transaction: t})
                 );
               }
             });
@@ -181,25 +187,28 @@ router.route('/').post(async (req, res) => {
             // update the Establishment starters declaration
             await establishmentRecord.update({
               starters: 'With Jobs'
-            });
+            }, {transaction: t});
 
           } else {
             // no starters given, so simply update the Establishment starters declaration
             await establishmentRecord.update({
               starters: givenJobs.starters
-            });
+            }, {transaction: t});
           }
 
         }
 
         if (givenJobs.leavers) {
           // leavers are declared; delete all existing leaver records for this Establishment
-          await models.establishmentJobs.destroy({
-            where: {
-              type: 'Leavers',
-              establishmentId
-            }
-          });
+          await models.establishmentJobs.destroy(
+            {
+              where: {
+                type: 'Leavers',
+                establishmentId
+              }
+            },
+            {transaction: t}
+          );
 
           // now iterate through the vacancies
           if (Array.isArray(givenJobs.leavers)) {
@@ -212,7 +221,7 @@ router.route('/').post(async (req, res) => {
                     total: thisLeaver.total,
                     establishmentId,
                     type: 'Leavers'
-                  })
+                  }, {transaction: t})
                 );
               }
             });
@@ -221,13 +230,13 @@ router.route('/').post(async (req, res) => {
             // update the Establishment leavers declaration
             await establishmentRecord.update({
               leavers: 'With Jobs'
-            });
+            }, {transaction: t});
 
           } else {
             // no leavers given, so simply update the Establishment leavers declaration
             await establishmentRecord.update({
               leavers: givenJobs.leavers
-            });
+            }, {transaction: t});
           }
         }
       });

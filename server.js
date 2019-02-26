@@ -32,6 +32,7 @@ var country = require('./server/routes/country');
 var nationality = require('./server/routes/nationalities');
 var qualification = require('./server/routes/qualifications');
 var recruitedFrom = require('./server/routes/recruitedFrom');
+var user = require('./server/routes/accounts/user');
 
 var errors = require('./server/routes/errors');
 
@@ -143,6 +144,7 @@ app.use('/api/login', [cacheMiddleware.nocache, login]);
 app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
+app.use('/api/user', [cacheMiddleware.nocache, user]);
 
 
 app.get('*', function(req, res) {

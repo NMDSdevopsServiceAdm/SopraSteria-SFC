@@ -120,11 +120,14 @@ router.route('/').post(async (req, res) => {
       allLAResult.forEach(thisRes => allLAs.push(thisRes.id));
 
       await models.sequelize.transaction(async t => {
-        await models.establishmentLocalAuthority.destroy({
-          where: {
-            establishmentId
-          }
-        });
+        await models.establishmentLocalAuthority.destroy(
+          {
+            where: {
+              establishmentId
+            }
+          },
+          {transaction: t}
+        );
 
         // now iterate through the given set of LAs
         const laRecords = [];
@@ -139,7 +142,7 @@ router.route('/').post(async (req, res) => {
                 cssrId: thisLA.custodianCode,
                 cssr: associatedCssr.name,
                 establishmentId
-              })
+              }, {transaction: t})
             );
           }
         });
