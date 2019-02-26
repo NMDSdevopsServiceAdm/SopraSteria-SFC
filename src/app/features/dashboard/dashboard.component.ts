@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  public establishmentName: string;
+  public establishment: any;
   public fullname: string;
   public workers: Worker[];
   private subscriptions: Subscription = new Subscription();
@@ -28,7 +28,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.establishmentName = this.authService.establishment.name;
+    this.establishment = this.authService.establishment;
     this.fullname = this.authService.fullname;
   }
 
