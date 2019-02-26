@@ -10,6 +10,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  public establishmentName: string;
+  public fullname: string;
   public workers: Worker[];
   private subscriptions: Subscription = new Subscription();
 
@@ -25,6 +27,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.workers = data;
       })
     );
+
+    this.establishmentName = this.authService.establishment.name;
+    this.fullname = this.authService.fullname;
   }
 
   ngOnDestroy() {
