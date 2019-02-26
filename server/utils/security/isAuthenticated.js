@@ -15,13 +15,11 @@ exports.isAuthorised = (req, res , next) => {
 
     jwt.verify(token, Token_Secret, function (err, claim) {
       if (err || claim.aud !== 'ADS-WDS' || claim.iss !== thisIss) {
-        return res.status(401).send({
-          sucess: false,
-          message: 'token is invalid'
-        });
-      } else {      
+        return res.status(403).send('Invalid Token');
+      } else {
+        req.username= claim.sub;
         next();
-      }      
+      }
     });    
   } else {
     // not authenticated
@@ -86,6 +84,9 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
+
+      // can be either a password reset token or a logged in token
+
       if (err || claim.aud !== 'ADS-WDS-password-reset' || claim.iss !== thisIss) {
         console.error('Password reset token is invalid');
         return res.status(403).send('Invalid token');

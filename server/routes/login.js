@@ -20,7 +20,7 @@ router.post('/',async function(req, res) {
         attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash'],
         include: [ {
           model: models.user,
-          attributes: ['id', 'fullname', 'email', 'isAdmin','establishmentId'],
+          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId'],
           include: [{
             model: models.establishment,
             attributes: ['id', 'name', 'isRegulated', 'nmdsId'],
@@ -35,6 +35,7 @@ router.post('/',async function(req, res) {
       })
       .then((login) => {
         if (!login) {
+          console.error(`Failed to find user account associated with: ${req.body.username} - `, login);
           return res.status(401).send({
             message: 'Authentication failed.',
           });
@@ -47,7 +48,7 @@ router.post('/',async function(req, res) {
             date += (12 * 60 * 60 * 1000);          
    
             const response = formatSuccessulLoginResponse(
-              login.user.fullname,
+              login.user.FullNameValue,
               login.firstLogin,
               login.user.establishment,
               login.user.establishment.mainService,
@@ -63,7 +64,7 @@ router.post('/',async function(req, res) {
               if (!login.firstLogin) {
                 loginUpdate.firstLogin = new Date();
               }
-              login.update(loginUpdate);
+              login.update(loginUpdate, {transaction: t});
 
               // add an audit record
               const auditEvent = {
@@ -73,7 +74,7 @@ router.post('/',async function(req, res) {
                 property: 'password',
                 event: {}
               };
-              await models.userAudit.create(auditEvent);
+              await models.userAudit.create(auditEvent, {transaction: t});
             });
 
             return res.set({'Authorization': 'Bearer ' + token}).status(200).json(response);
@@ -86,7 +87,7 @@ router.post('/',async function(req, res) {
               const loginUpdate = {
                 invalidAttempt: login.invalidAttempt + 1
               };
-              login.update(loginUpdate);
+              login.update(loginUpdate, {transaction: t});
 
               if (login.invalidAttempt === (maxNumberOfFailedAttempts+1)) {
                 // send reset password email
@@ -101,7 +102,7 @@ router.post('/',async function(req, res) {
                   created: now.toISOString(),
                   expires: expiresIn.toISOString(),
                   uuid: requestUuid
-                });
+                }, {transaction: t});
           
                 const resetLink = `${req.protocol}://${req.get('host')}/api/registration/validateResetPassword?reset=${requestUuid}`;
                 console.log("WA TODO - send the email link by email: ", resetLink);
@@ -122,10 +123,10 @@ router.post('/',async function(req, res) {
                 property: 'password',
                 event: {}
               };
-              await models.userAudit.create(auditEvent);
+              await models.userAudit.create(auditEvent, {transaction: t});
             });
 
-            res.status(401).send({success: false, msg: 'Authentication failed.'});
+            return res.status(401).send({success: false, msg: 'Authentication failed.'});
           }
         })
       })
