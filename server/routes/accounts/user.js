@@ -8,9 +8,30 @@ const passwordCheck = require('../../utils/security/passwordValidation').isPassw
 
 const bcrypt = require('bcrypt-nodejs');
 
+// all user functionality is encapsulated
+const User = require('../../models/classes/user');
+
 // default route
 router.route('/').get(async (req, res) => {
     res.status(200).send();
+});
+
+
+// returns a list of all users for the given establishment
+router.use('/establishment/:id', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id').get(async (req, res) => {
+    // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+    const establishmentId = req.establishmentId;
+
+    try {
+        const allTheseUsers = await User.User.fetch(establishmentId);
+        return res.status(200).json({
+            users: allTheseUsers
+        });
+    } catch (err) {
+        console.error('user::establishment - failed', err);
+        return res.status(503).send(`Failed to get users for establishment having id: ${establishmentId}`);
+    }
 });
 
 
@@ -18,7 +39,7 @@ router.route('/').get(async (req, res) => {
 router.use('/resetPassword', Authorization.isAuthorisedPasswdReset);
 router.route('/resetPassword').post(async (req, res) => {
     const givenPassword = escape(req.body.password);
-    
+    DB
     if (givenPassword === 'undefined') {
         return res.status(400).send('missing password');
     }

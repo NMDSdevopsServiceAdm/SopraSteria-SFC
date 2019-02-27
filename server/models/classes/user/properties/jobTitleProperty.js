@@ -1,4 +1,5 @@
 // the Job title property is a value only
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 exports.UserJobTitleProperty = class UserJobTitleProperty extends ChangePropertyPrototype {
     constructor() {

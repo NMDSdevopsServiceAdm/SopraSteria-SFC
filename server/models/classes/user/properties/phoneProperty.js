@@ -1,4 +1,6 @@
 // the phone property is a value only - but of a specific pattern
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
+
 exports.UserPhoneProperty = class UserPhoneProperty extends ChangePropertyPrototype {
     constructor() {
         super('Phone');

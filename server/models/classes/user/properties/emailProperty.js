@@ -1,4 +1,5 @@
 // the email property is a value only
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 exports.UserEmailProperty = class UserEmailProperty extends ChangePropertyPrototype {
     constructor() {

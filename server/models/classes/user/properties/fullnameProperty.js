@@ -1,4 +1,5 @@
 // the fullname property is a value only
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 exports.UserFullnameProperty = class UserFullnameProperty extends ChangePropertyPrototype {
     constructor() {

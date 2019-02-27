@@ -1,4 +1,5 @@
 // the Security Question Answer property is a value only
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 exports.UserSecurityQuestionAnswerProperty = class UserSecurityQuestionAnswerProperty extends ChangePropertyPrototype {
     constructor() {

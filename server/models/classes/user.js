@@ -415,15 +415,15 @@ class User {
         const allUsers = [];
         const fetchResults = await models.user.findAll({
             where: {
-                establishmentFk: establishmentId
+                establishmentId: establishmentId
             },
             include: [
                 {
-                    model: models.user,
+                    model: models.login,
                     attributes: ['username']
                   }
             ],
-            attributes: ['id', 'FullNameValue', 'EmailValue'],
+            attributes: ['id', 'FullNameValue', 'EmailValue', 'created', 'updated', 'updatedBy'],
             order: [
                 ['updated', 'DESC']
             ]           
@@ -431,14 +431,15 @@ class User {
 
         if (fetchResults) {
             fetchResults.forEach(thisUser => {
+                console.log("WA DEBUG - this user: ", thisUser)
                 allUsers.push({
                     uid: thisUser.id,
                     fullname: thisUser.FullNameValue,
                     email: thisUser.EmailValue,
                     username: thisUser.login && thisUser.login.username ? thisUser.login.username : null,
-                    created:  thisWorker.created.toJSON(),
-                    updated: thisWorker.updated.toJSON(),
-                    updatedBy: thisWorker.updatedBy
+                    created:  thisUser.created.toJSON(),
+                    updated: thisUser.updated.toJSON(),
+                    updatedBy: thisUser.updatedBy
                 })
             });
         }
@@ -591,7 +592,7 @@ class User {
 
 };
 
-module.exports.Worker = Worker;
+module.exports.User = User;
 
 // sub types
-module.exports.WorkerExceptions = WorkerExceptions;
+module.exports.UserExceptions = UserExceptions;
