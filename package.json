@@ -29,6 +29,7 @@
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
     "@ng-bootstrap/ng-bootstrap": "^3.3.1",
+    "aws-sdk": "^2.407.0",
     "axios": "^0.18.0",
     "bcrypt-nodejs": "0.0.3",
     "bootstrap": "^4.0.0",
