@@ -95,12 +95,12 @@
 
   &--selected {
     @include rem(margin-top, -5px);
-    margin-bottom: -1px;
+    margin-bottom: -5px;
 
     // 1px is compensation for border (otherwise we get a 1px shift)
-    @include rem(padding-top, 14px);
+    @include rem(padding-top, 20px);
     @include rem(padding-right, 19px);
-    @include rem(padding-bottom, 16px);
+    @include rem(padding-bottom, 20px);
     @include rem(padding-left, 19px);
 
     border: 1px solid map-get($color, grey);
@@ -109,7 +109,8 @@
     background-color: map-get($color, white);
 
     &:focus {
-      background-color: transparent;
+      outline: 3px solid #ffbf47;
+      // background-color: transparent;
     }
   }
 }
