@@ -203,6 +203,11 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey : 'registrationId',
       targetKey: 'id'
     });
+    User.hasMany(models.userAudit, {
+      foreignKey: 'userFk',
+      sourceKey: 'id',
+      as: 'auditEvents'
+    });
   };
   return User;
 };
