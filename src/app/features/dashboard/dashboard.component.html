@@ -1,0 +1,84 @@
+<div class="sub-page-container col-12">
+  <div class="row">
+    <div class="col-md-8">
+      <h5>User dashboard</h5>
+      <h3>{{ establishmentName }}</h3>
+      <h1 class="h1">Welcome {{ fullname }}</h1>
+    </div>
+
+    <div class="col-md-4">
+      <p><strong>Contact Skills for Care</strong></p>
+      <p>0113 241 0969</p>
+      <p><a href="mailto:nmds-support@skillsforcare.org.uk">nmds-support@skillsforcare.org.uk</a></p>
+    </div>
+  </div>
+
+  <div class="row">
+    <app-tabs>
+      <app-tab title="Home">
+        <ng-container *ngIf="isFirstLoggedIn">
+          <p class="main-body-text mb-5 d-block col-12 col-md-10 p-0">This is the first time you've signed in to the service, so we need a few details from you about {{ establishment?.name }} ({{ establishment?.nmdsId }}).</p>
+          <p class="main-body-text mb-5 d-block col-12 col-md-10 p-0">We have some questions which shouldn't take more than a few minutes to answer.</p>
+          <div class="btn-container">
+            <a routerLink="/type-of-employer" class="btn btn-primary" role="button">Continue</a>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="!isFirstLoggedIn">
+          <p>
+            Thank you for participating in the development of the new ASC-WDS service and for entering information about your establishment.
+            When we have developed further, this page will become your homepage where there will be navigation to a range of tasks.
+            These will be released periodically in the coming months.
+          </p>
+        </ng-container>
+      </app-tab>
+
+      <app-tab title="Workplace">
+        <div class="btn-container">
+          <a routerLink="/type-of-employer" role="button" class="btn btn-primary">Edit Establishment Information</a>
+        </div>
+      </app-tab>
+
+      <app-tab title="Staff Records" active="true">
+        <div class="row">
+          <div class="col-md-8">
+            <h3 class="fs-24 mb-4 text-weight-bold">Staff records ({{ workers?.length }})</h3>
+          </div>
+          <div class="col-md-4">
+            <a routerLink="/worker/start-screen" role="button" class="btn btn-primary">
+              Add another staff record
+            </a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <p><strong>What you need to do next.</strong></p>
+            <p>Provide more information for # staff records.</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <table class="govuk-table">
+              <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                  <th class="govuk-table__header" scope="col">Staff name</th>
+                  <th class="govuk-table__header" scope="col">Job role</th>
+                  <th class="govuk-table__header" scope="col">Last updated</th>
+                  <th class="govuk-table__header" scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody class="govuk-table__body">
+                <tr class="govuk-table__row" *ngFor="let worker of workers">
+                  <td class="govuk-table__cell" scope="row"><a [routerLink]="['/worker', worker.uid, 'summary']">{{ worker.nameOrId }}</a></td>
+                  <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
+                  <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
+                  <td class="govuk-table__cell"><a [routerLink]="['/worker', worker.uid, 'staff-details']" class="icon-link icon-flag">Provide more information</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </app-tab>
+    </app-tabs>
+  </div>
+</div>

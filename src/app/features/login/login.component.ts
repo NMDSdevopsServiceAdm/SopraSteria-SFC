@@ -1,15 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-
-import { Router, ActivatedRoute, NavigationExtras } from '@angular/router';
-
-//import { LoginUser } from './login-user';
-
-import { MessageService } from '../../core/services/message.service';
-import { AuthService } from '../../core/services/auth-service';
-import { EstablishmentService } from '../../core/services/establishment.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 
 import { LoginApiModel } from '../../core/model/loginApi.model';
+import { AuthService } from '../../core/services/auth-service';
+import { EstablishmentService } from '../../core/services/establishment.service';
+import { MessageService } from '../../core/services/message.service';
+
+//import { LoginUser } from './login-user';
 
 @Component({
   selector: 'app-login',
@@ -112,7 +110,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             this._loginService.redirectUrl = null;
             this.router.navigate([redirectUrl], navExtras);
           } else {
-            this.router.navigate(['/welcome']);
+            this.router.navigate(['/dashboard']);
           }
         }
       )

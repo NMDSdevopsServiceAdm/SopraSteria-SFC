@@ -1,16 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
+import { MomentModule } from 'ngx-moment';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
-import { ProblemWithTheServicePagesComponent } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
-import { ServiceUnavailablePagesComponent } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
+import {
+  ProblemWithTheServicePagesComponent,
+} from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
+import {
+  ServiceUnavailablePagesComponent,
+} from './core/error/service-unavailable-pages/service-unavailable-pages.component';
 import { FooterComponent } from './core/footer/footer.component';
 import { HeaderComponent } from './core/header/header.component';
 import { AuthGuard } from './core/services/auth-guard.service';
@@ -36,12 +42,14 @@ import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-
 import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
 import { ContactUsComponent } from './features/contactUs/contactUs.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
-import { CqcRegisteredQuestionEditComponent } from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
+import {
+  CqcRegisteredQuestionEditComponent,
+} from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
 import { CreateUsernameComponent } from './features/create-username/create-username.component';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
-import { HomepageComponent } from './features/homepage/homepage.component';
 import { LeaversComponent } from './features/leavers/leavers.component';
 import { LoginComponent } from './features/login/login.component';
 import { LogoutComponent } from './features/logout/logout.component';
@@ -82,7 +90,6 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     EnterWorkplaceAddressComponent,
     SelectMainServiceComponent,
     ContinueCreatingAccountComponent,
-    HomepageComponent,
     SelectOtherServicesComponent,
     TypeOfEmployerComponent,
     VacanciesComponent,
@@ -103,6 +110,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     ProblemWithTheServicePagesComponent,
     ServiceUnavailablePagesComponent,
     TermsConditionsComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -122,6 +130,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
       },
     ]),
     SharedModule,
+    MomentModule,
   ],
   providers: [
     LocationService,

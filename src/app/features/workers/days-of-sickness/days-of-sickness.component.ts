@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-days-of-sickness',
@@ -11,15 +12,15 @@ import { WorkerEditResponse, WorkerService } from '@core/services/worker.service
 })
 export class DaysOfSicknessComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  private subscriptions = [];
   private worker: Worker;
-  private workerId: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
-    private messageService: MessageService,
+    private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
     this.otherChangeHandler = this.otherChangeHandler.bind(this);
@@ -27,36 +28,30 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
     this.form = this.formBuilder.group({
       valueKnown: null,
       value: [null, this.valueValidator],
     });
 
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.daysSick) {
-          this.form.patchValue({
-            valueKnown: worker.daysSick.value,
-            value: worker.daysSick.days ? worker.daysSick.days : null,
-          });
-        }
-      }),
-    );
+    if (this.worker.daysSick) {
+      this.form.patchValue({
+        valueKnown: this.worker.daysSick.value,
+        value: this.worker.daysSick.days ? this.worker.daysSick.days : null,
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
   async submitHandler() {
     try {
       await this.saveHandler();
-      this.router.navigate(['/worker/contract-with-zero-hours']);
+      this.router.navigate(['/worker', this.worker.uid, 'contract-with-zero-hours']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -75,7 +70,7 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
           };
         }
 
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (value.errors.required) {
           this.messageService.show('error', `'Number of days' is required.`);

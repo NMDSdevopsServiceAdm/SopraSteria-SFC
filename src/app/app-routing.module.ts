@@ -9,9 +9,9 @@ import { ContactUsComponent } from '@features/contactUs/contactUs.component';
 import { ContinueCreatingAccountComponent } from '@features/continue-creating-account/continue-creating-account.component';
 import { CqcRegisteredQuestionComponent } from '@features/cqc-registered-question/cqc-registered-question.component';
 import { CreateUsernameComponent } from '@features/create-username/create-username.component';
+import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
-import { HomepageComponent } from '@features/homepage/homepage.component';
 import { LeaversComponent } from '@features/leavers/leavers.component';
 import { LoginComponent } from '@features/login/login.component';
 import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
@@ -29,9 +29,14 @@ import { TermsConditionsComponent } from '@features/terms-conditions/terms-condi
 import { TypeOfEmployerComponent } from '@features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from '@features/user-details/user-details.component';
 import { VacanciesComponent } from '@features/vacancies/vacancies.component';
+
 import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
-import { ProblemWithTheServicePagesComponent } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
-import { ServiceUnavailablePagesComponent } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
+import {
+  ProblemWithTheServicePagesComponent,
+} from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
+import {
+  ServiceUnavailablePagesComponent,
+} from './core/error/service-unavailable-pages/service-unavailable-pages.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
 
@@ -97,12 +102,6 @@ const routes: Routes = [
   {
     path: 'continue-creating-account',
     component: ContinueCreatingAccountComponent,
-  },
-  {
-    path: 'welcome',
-    component: HomepageComponent,
-    canLoad: [AuthGuard],
-    canActivate: [AuthGuard],
   },
   {
     path: 'select-other-services',
@@ -206,18 +205,24 @@ const routes: Routes = [
     canLoad: [AuthGuard],
   },
   {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+  },
+  {
     path: '',
-    redirectTo: '/welcome',
+    redirectTo: '/dashboard',
     pathMatch: 'full',
   },
   {
     path: '**',
-    redirectTo: '/welcome',
+    redirectTo: '/dashboard',
   },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { enableTracing: true })],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, empty, Observable } from 'rxjs';
 import { catchError, debounceTime, map, tap } from 'rxjs/operators';
+
 import { Worker } from '../model/worker.model';
 import { EstablishmentService } from './establishment.service';
 import { HttpErrorHandler } from './http-error-handler.service';
@@ -18,7 +19,6 @@ export interface WorkerEditResponse {
   providedIn: 'root',
 })
 export class WorkerService {
-  private _workerId: string = null;
   private _worker$ = new BehaviorSubject<Worker>(null);
   public worker$ = this._worker$.asObservable();
 
@@ -29,16 +29,8 @@ export class WorkerService {
   constructor(
     private http: HttpClient,
     private httpErrorHandler: HttpErrorHandler,
-    private establishmentService: EstablishmentService,
+    private establishmentService: EstablishmentService
   ) {}
-
-  public set workerId(id: string) {
-    this._workerId = id;
-  }
-
-  public get workerId() {
-    return this._workerId;
-  }
 
   public get worker() {
     return this._worker$.value as Worker;
@@ -57,30 +49,24 @@ export class WorkerService {
   updateState(data) {
     if (data.length > 1) {
       this._workers$.next(data);
-    }
-    else {
+    } else {
       this._worker$.next(data);
     }
-
   }
 
   /*
    * GET /api/establishment/:establishmentId/worker/:workerId
    */
-  getWorker(workerId: string, lazy = true): Observable<Worker> {
-    if (lazy && this._worker$.getValue() && this._worker$.getValue().uid === workerId) {
-      return this.worker$;
-    } else {
-      return this.http
-        .get<Worker>(
-          `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
-          EstablishmentService.getOptions(),
-        )
-        .pipe(
-          debounceTime(500),
-          catchError(this.httpErrorHandler.handleHttpError),
-        );
-    }
+  getWorker(workerId: string): Observable<Worker> {
+    return this.http
+      .get<Worker>(
+        `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
+        EstablishmentService.getOptions()
+      )
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError)
+      );
   }
 
   /*
@@ -90,12 +76,12 @@ export class WorkerService {
     return this.http
       .get<WorkersResponse>(
         `/api/establishment/${this.establishmentService.establishmentId}/worker`,
-        EstablishmentService.getOptions(),
+        EstablishmentService.getOptions()
       )
       .pipe(
         debounceTime(500),
         map(w => w.workers),
-        catchError(this.httpErrorHandler.handleHttpError),
+        catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 
@@ -107,11 +93,11 @@ export class WorkerService {
       .post<WorkerEditResponse>(
         `/api/establishment/${this.establishmentService.establishmentId}/worker`,
         worker,
-        EstablishmentService.getOptions(),
+        EstablishmentService.getOptions()
       )
       .pipe(
         debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError),
+        catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 
@@ -123,11 +109,11 @@ export class WorkerService {
       .put<WorkerEditResponse>(
         `/api/establishment/${this.establishmentService.establishmentId}/worker/${worker.uid}`,
         worker,
-        EstablishmentService.getOptions(),
+        EstablishmentService.getOptions()
       )
       .pipe(
         debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError),
+        catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 
@@ -138,11 +124,11 @@ export class WorkerService {
     return this.http
       .delete<any>(
         `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
-        EstablishmentService.getOptions(),
+        EstablishmentService.getOptions()
       )
       .pipe(
         debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError),
+        catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 }

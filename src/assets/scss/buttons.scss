@@ -10,6 +10,11 @@
   margin-top: 5rem;
 }
 
+a[role="button"] {
+  text-decoration: none;
+  line-height: 40px;
+}
+
 .btn {
   width: 100%;
   border: none;

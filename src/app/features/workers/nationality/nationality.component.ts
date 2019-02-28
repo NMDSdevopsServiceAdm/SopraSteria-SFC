@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { NationalityResponse, NationalityService } from '@core/services/nationality.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-nationality',
@@ -13,16 +14,16 @@ import { WorkerEditResponse, WorkerService } from '@core/services/worker.service
 export class NationalityComponent implements OnInit, OnDestroy {
   public availableOtherNationalities: NationalityResponse[];
   public form: FormGroup;
-  private subscriptions = [];
   private worker: Worker;
-  private workerId: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private workerService: WorkerService,
     private nationalityService: NationalityService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private router: Router,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
     this.nationalityNameValidator = this.nationalityNameValidator.bind(this);
@@ -30,35 +31,29 @@ export class NationalityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
     this.form = this.formBuilder.group({
       nationalityKnown: null,
       nationalityName: [null, this.nationalityNameValidator],
     });
 
-    this.workerId = this.workerService.workerId;
+    if (this.worker.nationality) {
+      const { value, other } = this.worker.nationality;
 
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
+      this.form.patchValue({
+        nationalityKnown: value,
+        nationalityName: other ? other.nationality : null,
+      });
+    }
 
-        if (worker.nationality) {
-          const { value, other } = worker.nationality;
-
-          this.form.patchValue({
-            nationalityKnown: value,
-            nationalityName: other ? other.nationality : null,
-          });
-        }
-      }),
-    );
-
-    this.subscriptions.push(
-      this.nationalityService.getNationalities().subscribe(res => (this.availableOtherNationalities = res)),
+    this.subscriptions.add(
+      this.nationalityService.getNationalities().subscribe(res => (this.availableOtherNationalities = res))
     );
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
@@ -67,9 +62,9 @@ export class NationalityComponent implements OnInit, OnDestroy {
       await this.saveHandler();
 
       if (this.worker.nationality && this.worker.nationality.value === 'British') {
-        this.router.navigate(['/worker/country-of-birth']);
+        this.router.navigate(['/worker', this.worker.uid, 'country-of-birth']);
       } else {
-        this.router.navigate(['/worker/british-citizenship']);
+        this.router.navigate(['/worker', this.worker.uid, 'british-citizenship']);
       }
     } catch (err) {
       // keep typescript transpiler silent
@@ -92,7 +87,7 @@ export class NationalityComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (nationalityName.errors) {
           if (Object.keys(nationalityName.errors).includes('required')) {

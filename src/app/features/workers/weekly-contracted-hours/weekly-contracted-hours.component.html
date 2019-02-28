@@ -1,6 +1,6 @@
 <div class="main-page-container col-12">
   <div id="back" class="back-link">
-    <a routerLink="/worker/contract-with-zero-hours">
+    <a [routerLink]="['/worker', worker.uid, 'contract-with-zero-hours']">
       <span class="arrow"></span>Back
     </a>
   </div>

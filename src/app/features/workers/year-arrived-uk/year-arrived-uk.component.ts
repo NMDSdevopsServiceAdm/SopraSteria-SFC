@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-year-arrived-uk',
@@ -12,15 +13,15 @@ import * as moment from 'moment';
 })
 export class YearArrivedUkComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  private subscriptions = [];
   private worker: Worker;
-  private workerId: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
-    private messageService: MessageService,
+    private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
     this.yearKnownChangeHandler = this.yearKnownChangeHandler.bind(this);
@@ -28,36 +29,30 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
     this.form = this.formBuilder.group({
       yearKnown: null,
       year: [null, this.yearValidator],
     });
 
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.yearArrived) {
-          this.form.patchValue({
-            yearKnown: worker.yearArrived.value,
-            year: worker.yearArrived.year ? worker.yearArrived.year : null,
-          });
-        }
-      }),
-    );
+    if (this.worker.yearArrived) {
+      this.form.patchValue({
+        yearKnown: this.worker.yearArrived.value,
+        year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
   async submitHandler() {
     try {
       await this.saveHandler();
-      this.router.navigate(['/worker/recruited-from']);
+      this.router.navigate(['/worker', this.worker.uid, 'recruited-from']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -76,7 +71,7 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
           };
         }
 
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (year.errors.required) {
           this.messageService.show('error', 'Year is required.');

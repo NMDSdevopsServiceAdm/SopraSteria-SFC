@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-apprenticeship-training',
@@ -12,14 +13,14 @@ import { WorkerEditResponse, WorkerService } from '@core/services/worker.service
 export class ApprenticeshipTrainingComponent implements OnInit, OnDestroy {
   public answersAvailable = ['Yes', 'No', `Don't know`];
   public form: FormGroup;
+  private subscriptions: Subscription = new Subscription;
   private worker: Worker;
-  private workerId: string;
-  private subscriptions = [];
 
   constructor(
     private workerService: WorkerService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
@@ -30,23 +31,16 @@ export class ApprenticeshipTrainingComponent implements OnInit, OnDestroy {
       apprenticeshipTraining: null,
     });
 
-    this.workerId = this.workerService.workerId;
+    this.worker = this.route.parent.snapshot.data.worker;
 
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.apprenticeshipTraining) {
-          this.form.patchValue({
-            apprenticeshipTraining: worker.apprenticeshipTraining,
-          });
-        }
-      })
-    );
+    if (this.worker.apprenticeshipTraining) {
+      this.form.patchValue({
+        apprenticeshipTraining: this.worker.apprenticeshipTraining,
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
     this.messageService.clearAll();
   }
 
@@ -54,7 +48,7 @@ export class ApprenticeshipTrainingComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      this.router.navigate(['/worker/social-care-qualification']);
+      this.router.navigate(['/worker', this.worker.uid, 'social-care-qualification']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -69,7 +63,7 @@ export class ApprenticeshipTrainingComponent implements OnInit, OnDestroy {
         const worker = this.worker || ({} as Worker);
         worker.apprenticeshipTraining = apprenticeshipTraining.value;
 
-        this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
         reject();
       }

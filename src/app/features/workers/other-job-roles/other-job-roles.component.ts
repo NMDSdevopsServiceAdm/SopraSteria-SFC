@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Job } from '@core/model/job.model';
 import { Worker } from '@core/model/worker.model';
 import { JobService } from '@core/services/job.service';
@@ -15,12 +15,12 @@ import { Subscription } from 'rxjs';
 export class OtherJobRolesComponent implements OnInit, OnDestroy {
   public availableJobRoles: Job[];
   public form: FormGroup;
-  private subscriptions: Subscription[] = [];
   private worker: Worker;
-  private workerId: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService,
@@ -30,43 +30,38 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
     this.form = this.formBuilder.group({
       selectedJobRoles: this.formBuilder.array([]),
     });
 
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
+    this.subscriptions.add(
       this.jobService.getJobs().subscribe(availableJobRoles => {
-        this.subscriptions.push(
-          this.workerService.getWorker(this.workerId).subscribe(worker => {
-            this.worker = worker;
-            let jobs = null;
-            const mainJobIndex = availableJobRoles.findIndex(j => j.id === worker.mainJob.jobId);
-            const availableJobRolesFiltered = availableJobRoles.slice(0);
-            availableJobRolesFiltered.splice(mainJobIndex, 1);
+        let jobs = null;
+        const mainJobIndex = availableJobRoles.findIndex(j => j.id === this.worker.mainJob.jobId);
+        const availableJobRolesFiltered = availableJobRoles.slice(0);
+        availableJobRolesFiltered.splice(mainJobIndex, 1);
 
-            jobs = worker.otherJobs
-              ? availableJobRolesFiltered.map(j =>
-                  this.formBuilder.control({
-                    jobId: j.id,
-                    title: j.title,
-                    checked: worker.otherJobs.some(o => o.jobId === j.id),
-                  })
-                )
-              : availableJobRolesFiltered.map(j =>
-                  this.formBuilder.control({ jobId: j.id, title: j.title, checked: false })
-                );
+        jobs = this.worker.otherJobs
+          ? availableJobRolesFiltered.map(j =>
+              this.formBuilder.control({
+                jobId: j.id,
+                title: j.title,
+                checked: this.worker.otherJobs.some(o => o.jobId === j.id),
+              })
+            )
+          : availableJobRolesFiltered.map(j =>
+              this.formBuilder.control({ jobId: j.id, title: j.title, checked: false })
+            );
 
-            jobs.forEach(j => (this.form.controls.selectedJobRoles as FormArray).push(j));
-          })
-        );
+        jobs.forEach(j => (this.form.controls.selectedJobRoles as FormArray).push(j));
       })
     );
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
@@ -75,9 +70,9 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
       await this.saveHandler();
 
       if (this.isOtherJobsSocialWorker() && this.worker.mainJob.title !== 'Social Worker') {
-        this.router.navigate(['/worker/mental-health']);
+        this.router.navigate(['/worker', this.worker.uid, 'mental-health']);
       } else {
-        this.router.navigate(['/worker/national-insurance-number']);
+        this.router.navigate(['/worker', this.worker.uid, 'national-insurance-number']);
       }
     } catch (err) {
       // keep typescript transpiler silent
@@ -95,7 +90,7 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         this.worker.otherJobs = selectedJobRoles.filter(j => j.checked).map(j => ({ jobId: j.jobId, title: j.title }));
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         reject();
       }

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-gender',
@@ -12,49 +13,42 @@ import { WorkerEditResponse, WorkerService } from '@core/services/worker.service
 export class GenderComponent implements OnInit, OnDestroy {
   public answersAvailable = ['Female', 'Male', 'Other', `Don't know`];
   public form: FormGroup;
-  private subscriptions = [];
   private worker: Worker;
-  private workerId: string;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
-    private router: Router,
     private route: ActivatedRoute,
+    private router: Router,
     private workerService: WorkerService,
-    private messageService: MessageService,
+    private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
     this.form = this.formBuilder.group({
       gender: null,
     });
 
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.gender) {
-          this.form.patchValue({
-            gender: worker.gender,
-          });
-        }
-      }),
-    );
+    if (this.worker.gender) {
+      this.form.patchValue({
+        gender: this.worker.gender,
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
   async submitHandler() {
     try {
       await this.saveHandler();
-      this.router.navigate(['/worker/disability']);
+      this.router.navigate(['/worker', this.worker.uid, 'disability']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -67,7 +61,7 @@ export class GenderComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         this.worker.gender = gender;
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         this.messageService.show('error', 'Please fill required fields.');
         reject();

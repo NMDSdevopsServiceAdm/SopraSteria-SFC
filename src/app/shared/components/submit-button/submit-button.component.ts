@@ -1,20 +1,24 @@
 import { Component, Input } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-submit-button',
   templateUrl: './submit-button.component.html',
 })
 export class SubmitButtonComponent {
+  public workerId: string;
+
   @Input() saveCallback: Function;
 
-  constructor(private router: Router) {}
+  constructor(private route: ActivatedRoute, private router: Router) {
+    this.workerId = this.route.parent.snapshot.paramMap.get('id');
+  }
 
-  async saveAndNavigate(url: string) {
+  async saveAndNavigate(...args) {
     if (this.saveCallback) {
       try {
         await this.saveCallback();
-        this.router.navigate([url]);
+        this.router.navigate([args.join('/')]);
       } catch (err) {
         // this should be already handled by saveCallback()
         // keep typescript transpiler silent
