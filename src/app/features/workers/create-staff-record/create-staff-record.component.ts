@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Job } from '@core/model/job.model';
 import { Worker } from '@core/model/worker.model';
 import { JobService } from '@core/services/job.service';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-create-staff-record',
@@ -17,14 +18,14 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public jobsAvailable: Job[] = [];
   private worker: Worker;
-  private workerId: string;
-  private subscriptions = [];
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private workerService: WorkerService,
     private jobService: JobService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
@@ -37,29 +38,23 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       contract: [null, Validators.required],
     });
 
-    this.workerId = this.workerService.workerId;
+    this.worker = this.route.parent.snapshot.data.worker;
 
-    if (this.workerId) {
-      this.subscriptions.push(
-        this.workerService.getWorker(this.workerId).subscribe(worker => {
-          this.worker = worker;
-
-          this.form.patchValue({
-            nameOrId: worker.nameOrId,
-            mainJob: worker.mainJob.jobId,
-            contract: worker.contract,
-          });
-        })
-      );
+    if (this.worker) {
+      this.form.patchValue({
+        nameOrId: this.worker.nameOrId,
+        mainJob: this.worker.mainJob.jobId,
+        contract: this.worker.contract,
+      });
     }
 
     this.contractsAvailable = Object.values(Contracts);
 
-    this.subscriptions.push(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
+    this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
@@ -76,12 +71,10 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     try {
       const res = await this.saveHandler();
 
-      this.workerService.workerId = res.uid;
-
       if (this.isSocialWorkerSelected()) {
-        this.router.navigate(['/worker/mental-health/']);
+        this.router.navigate(['/worker', res.uid, 'mental-health']);
       } else {
-        this.router.navigate(['/worker/main-job-start-date/']);
+        this.router.navigate(['/worker', res.uid, 'main-job-start-date']);
       }
     } catch (err) {
       // keep typescript transpiler silent
@@ -112,7 +105,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
         if (nameOrId.errors && nameOrId.errors.required) {
           this.messageService.show('error', `'Full name or ID number' is required.`);

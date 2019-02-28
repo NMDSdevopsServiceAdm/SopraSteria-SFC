@@ -172,3 +172,25 @@ p {
 
   @include rem(padding, 40px 0);
 }
+
+.icon-link {
+  white-space: nowrap;
+  line-height: 24px;
+  text-decoration: none;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: text-bottom;
+
+    width: 24px;
+    height: 24px;
+  }
+
+  &.icon-flag {
+    &:before {
+    background-image: url('/assets/img/flag-orange.svg');
+    }
+  }
+}

@@ -1,13 +1,15 @@
-import { Component, OnDestroy } from '@angular/core';
-import { WorkerService } from '@core/services/worker.service';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   templateUrl: './edit-worker.component.html',
 })
-export class EditWorkerComponent implements OnDestroy {
-  constructor(private workerService: WorkerService) {}
+export class EditWorkerComponent implements OnInit {
+  public data: any;
 
-  ngOnDestroy() {
-    this.workerService.workerId = null;
+  constructor(private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    this.data = this.route.snapshot.data;
   }
 }

@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-adult-social-care-started',
@@ -12,12 +13,12 @@ import * as moment from 'moment';
 })
 export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  private subscriptions = [];
+  private subscriptions: Subscription = new Subscription;
   private worker: Worker;
-  private workerId: string;
 
   constructor(
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService
@@ -33,24 +34,18 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
       value: [null, this.valueValidator],
     });
 
-    this.workerId = this.workerService.workerId;
+    this.worker = this.route.parent.snapshot.data.worker;
 
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.socialCareStartDate) {
-          this.form.patchValue({
-            valueKnown: worker.socialCareStartDate.value,
-            value: worker.socialCareStartDate.year ? worker.socialCareStartDate.year : null,
-          });
-        }
-      })
-    );
+    if (this.worker.socialCareStartDate) {
+      this.form.patchValue({
+        valueKnown: this.worker.socialCareStartDate.value,
+        value: this.worker.socialCareStartDate.year ? this.worker.socialCareStartDate.year : null,
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
@@ -58,7 +53,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      this.router.navigate(['/worker/days-of-sickness']);
+      this.router.navigate(['/worker', this.worker.uid, 'days-of-sickness']);
     } catch (err) {
       // keep typescript transpiler silent
     }
@@ -77,7 +72,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
           };
         }
 
-        this.subscriptions.push(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (value.errors.required) {
           this.messageService.show('error', 'Year is required.');

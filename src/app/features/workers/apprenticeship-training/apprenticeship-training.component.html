@@ -1,6 +1,6 @@
 <div class="main-page-container col-12">
   <div id="back" class="back-link">
-      <a routerLink="/worker/care-certificate">
+      <a [routerLink]="['/worker', worker.uid, 'care-certificate']">
         <span class="arrow"></span>Back
       </a>
     </div>

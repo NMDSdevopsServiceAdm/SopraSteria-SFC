@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-social-care-qualification',
@@ -13,40 +14,34 @@ export class SocialCareQualificationComponent implements OnInit, OnDestroy {
   public answersAvailable = ['Yes', 'No', `Don't know`];
   public form: FormGroup;
   private worker: Worker;
-  private workerId: string;
-  private subscriptions = [];
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private workerService: WorkerService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
 
   ngOnInit() {
+    this.worker = this.route.parent.snapshot.data.worker;
+
     this.form = this.formBuilder.group({
       qualificationInSocialCare: null,
     });
 
-    this.workerId = this.workerService.workerId;
-
-    this.subscriptions.push(
-      this.workerService.getWorker(this.workerId).subscribe(worker => {
-        this.worker = worker;
-
-        if (worker.qualificationInSocialCare) {
-          this.form.patchValue({
-            qualificationInSocialCare: worker.qualificationInSocialCare,
-          });
-        }
-      })
-    );
+    if (this.worker.qualificationInSocialCare) {
+      this.form.patchValue({
+        qualificationInSocialCare: this.worker.qualificationInSocialCare,
+      });
+    }
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
     this.messageService.clearAll();
   }
 
@@ -55,9 +50,9 @@ export class SocialCareQualificationComponent implements OnInit, OnDestroy {
       await this.saveHandler();
 
       if (this.worker.qualificationInSocialCare === 'Yes') {
-        this.router.navigate(['/worker/social-care-qualification-level']);
+        this.router.navigate(['/worker', this.worker.uid, 'social-care-qualification-level']);
       } else {
-        this.router.navigate(['/worker/other-qualifications']);
+        this.router.navigate(['/worker', this.worker.uid, 'other-qualifications']);
       }
     } catch (err) {
       // keep typescript transpiler silent
@@ -73,7 +68,7 @@ export class SocialCareQualificationComponent implements OnInit, OnDestroy {
         const worker = this.worker || ({} as Worker);
         worker.qualificationInSocialCare = qualificationInSocialCare.value;
 
-        this.subscriptions.push(this.workerService.setWorker(worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
       } else {
         reject();
       }
