@@ -26,7 +26,6 @@ exports.UserJobTitleProperty = class UserJobTitleProperty extends ChangeProperty
     }
 
     restorePropertyFromSequelize(document) {
-        console.log("WA DEBUG - job title value: ", document.JobTitleValue)
         return document.JobTitleValue;
     }
     savePropertyToSequelize() {

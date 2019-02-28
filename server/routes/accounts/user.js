@@ -44,7 +44,7 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
     const showHistoryTime = req.query.history === 'timeline' ? true : false;
     const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
-    // validating user id - must be a V4 UUID
+    // validating user id - must be a V4 UUID or it's a username
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
     let byUUID = null, byUsername = null;
     if (uuidRegex.test(userId.toUpperCase())) {
@@ -77,11 +77,66 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
     }
 });
 
+// updates a user with given uid or username
+router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id/:userId').put(async (req, res) => {
+    const userId = req.params.userId;
+    const establishmentId = req.establishmentId;
+
+    // validating user id - must be a V4 UUID or it's a username
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    let byUUID = null, byUsername = null;
+    if (uuidRegex.test(userId.toUpperCase())) {
+        byUUID = userId;
+    } else {
+        byUsername = escape(userId);
+    }
+    
+    const thisUser = new User.User(establishmentId);
+    
+    try {
+        // before updating a Worker, we need to be sure the Worker is
+        //  available to the given establishment. The best way of doing that
+        //  is to restore from given UID
+        if (await thisUser.restore(byUUID, byUsername, null)) {
+            // TODO: JSON validation
+
+            // by loading after the restore, only those properties defined in the
+            //  PUT body will be updated (peristed)
+            const isValidUser = await thisUser.load(req.body);
+
+            // this is an update to an existing User, so no mandatory properties!
+            if (isValidUser) {
+                await thisUser.save(req.username);
+                return res.status(200).json({
+                    uid: thisUser.uid
+                });
+            } else {
+                return res.status(400).send('Unexpected Input.');
+            }
+            
+        } else {
+            // not found worker
+            return res.status(404).send('Not Found');
+        }
+
+    } catch (err) {
+        if (err instanceof User.UserExceptions.UserJsonException) {
+            console.error("User PUT: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof User.UserExceptions.UserSaveException) {
+            console.error("User PUT: ", err.message);
+            return res.status(503).send(err.safe);
+        }
+    }
+});
+
+
 // resets a user's password - must have Authoization header and must be a valid password reset JWT
 router.use('/resetPassword', Authorization.isAuthorisedPasswdReset);
 router.route('/resetPassword').post(async (req, res) => {
     const givenPassword = escape(req.body.password);
-    DB
+    
     if (givenPassword === 'undefined') {
         return res.status(400).send('missing password');
     }

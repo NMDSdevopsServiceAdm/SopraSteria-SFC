@@ -259,7 +259,7 @@ class User {
 
                         this._updated = updatedRecord.updated;
                         this._updatedBy = savedBy;
-                        this._id = updatedRecord.ID;
+                        this._id = updatedRecord.RegistrationID;
 
                         const allAuditEvents = [{
                             userFk: this._id,
@@ -394,6 +394,7 @@ class User {
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
+                this._id = fetchResults.id;
                 this._uid = fetchResults.uid;
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;

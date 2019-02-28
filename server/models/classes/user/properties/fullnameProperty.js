@@ -14,7 +14,7 @@ exports.UserFullnameProperty = class UserFullnameProperty extends ChangeProperty
     async restoreFromJson(document) {
         // fullname must be non-empty and must be no more than 120 character
 
-        if (document.jobTitle) {
+        if (document.fullname) {
             const FULLNAME_MAX_LENGTH=120;
             if (document.fullname.length > 0 &&
                 document.fullname.length <= FULLNAME_MAX_LENGTH) {
@@ -26,7 +26,6 @@ exports.UserFullnameProperty = class UserFullnameProperty extends ChangeProperty
     }
 
     restorePropertyFromSequelize(document) {
-        console.log("WA DEBUG - fullname value: ", document.FullNameValue)
         return document.FullNameValue;
     }
     savePropertyToSequelize() {
