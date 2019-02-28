@@ -34,6 +34,48 @@ router.route('/establishment/:id').get(async (req, res) => {
     }
 });
 
+// gets requested user id or username - using the establishment id extracted for authorised toekn
+// optional parameter - "history" must equal 1
+router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id/:userId').get(async (req, res) => {
+    const userId = req.params.userId;
+    const establishmentId = req.establishmentId;
+    const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+    const showHistoryTime = req.query.history === 'timeline' ? true : false;
+    const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
+
+    // validating user id - must be a V4 UUID
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    let byUUID = null, byUsername = null;
+    if (uuidRegex.test(userId.toUpperCase())) {
+        byUUID = userId;
+    } else {
+        byUsername = escape(userId);
+    }
+
+    const thisUser = new User.User(establishmentId);
+
+    try {
+        if (await thisUser.restore(byUUID, byUsername, showHistory)) {
+            return res.status(200).json(thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime));
+        } else {
+            // not found worker
+            return res.status(404).send('Not Found');
+        }
+
+    } catch (err) {
+        const thisError = new User.UserExceptions.UserRestoreException(
+            null,
+            thisUser.uid,
+            null,
+            err,
+            null,
+            `Failed to retrieve user with uid: ${userId}`);
+
+        console.error('user::GET/:userId - failed', thisError.message);
+        return res.status(503).send(thisError.safe);
+    }
+});
 
 // resets a user's password - must have Authoization header and must be a valid password reset JWT
 router.use('/resetPassword', Authorization.isAuthorisedPasswdReset);

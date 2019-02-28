@@ -19,7 +19,7 @@ const JSON_DOCUMENT_TYPE = require('./user/userProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUMENT;
 
 class User {
-    constructor() {
+    constructor(establishmentId) {
         this._establishmentId = establishmentId;           // NOTE - a User has a direct link to an Establishment; this is likely to change with parent/sub
         this._id = null;
         this._uid = null;
@@ -34,7 +34,7 @@ class User {
 
         // change properties
         this._isNew = false;
-        Question
+        
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
         this._logLevel = User.LOG_INFO;
@@ -321,8 +321,8 @@ class User {
     // loads the User (with given id or username) from DB, but only if it belongs to the given Establishment
     // returns true on success; false if no User
     // Can throw WorkerRestoreException exception.
-    async restore(uid, username, showHistory=false) {
-        if (!uid && !username) {
+    async restore(uid, uname, showHistory=false) {
+        if (!uid && !uname) {
             throw new UserExceptions.UserRestoreException(null,
                 null,
                 null,
@@ -338,19 +338,19 @@ class User {
             //   establishment
             let fetchQuery = null;
             
-            if (username) {
+            if (uname) {
                 // fetch by username
                 fetchQuery = {
                     where: {
-                        establishmentFk: this._establishmentId,
+                        establishmentId: this._establishmentId,
                     },
                     include: [
                         {
                             model: models.login,
                             attributes: ['username'],
-                            where: [
-                                username
-                            ]
+                            where: {
+                                username: uname
+                            }
                         }
                     ]
                 };
@@ -358,7 +358,7 @@ class User {
                 // fetch by username
                 fetchQuery = {
                     where: {
-                        establishmentFk: this._establishmentId,
+                        establishmentId: this._establishmentId,
                         uid: uid
                     },
                     include: [
@@ -390,10 +390,13 @@ class User {
                 ];
             }
 
+            console.log("WA DEBUG: fetch with history: ", fetchQuery)
+
             const fetchResults = await models.user.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
+                this._uid = fetchResults.uid;
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;

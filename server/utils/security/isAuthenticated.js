@@ -43,11 +43,11 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
   
         // must provide the establishment ID and it must be a number
         if (!claim.EstblishmentId || isNaN(parseInt(claim.EstblishmentId))) {
-          console.error('isAuthenticated - missing establishment id parameter');
+          console.error('hasAuthorisedEstablishment - missing establishment id parameter');
           return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
         }
         if (claim.EstblishmentId !== parseInt(req.params.id)) {
-          console.error('isAuthenticated - given and known establishment id do not match');
+          console.error(`hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId})`);
           return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
         }
 
