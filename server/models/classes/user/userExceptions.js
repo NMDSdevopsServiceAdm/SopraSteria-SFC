@@ -1,12 +1,14 @@
 class UserException {
-    constructor (id, name, err, safeErr=null) {
+    constructor (id, uid, name, err, safeErr=null) {
         this._id = id;
+        this._uid = uid;
         this._name = name;
         this._err = err;
         this._safeErr = safeErr;
     };
 
     get id() { return this._id; }
+    get uid() { return this._uid; }
     get name() { return this._name; }
 
     // returns a safe message (undisclosed - safe to return by API)
@@ -25,13 +27,17 @@ class UserException {
 
     // identifier for reporting error is preferred with uid not id
     get identifier() {
-        return this._id;
+        if (this._uid) {
+            return this._uid;
+        } else {
+            return this._id;
+        }
     }
 };
 
 class UserSaveException extends UserException {
     // TODO: parse the sequelize error on create failure
-    constructor(id, name, err, safeErr=null) { super(id, name, err, safeErr); };
+    constructor(id, uid, name, err, safeErr=null) { super(id, uid, name, err, safeErr); };
 
     get safe()  {
         if (super.id === null) {
@@ -48,8 +54,8 @@ class UserRestoreException extends UserException {
     static get NOT_FOUND() { return 100; }      // the User as known by id does not exist
     static get NOT_OWNED() { return 200; }      // the User as known by id does not belong to the Establishment
 
-    constructor(id, name, err, reason=null, safeErr=null) {
-        super(id, name, err, safeErr);
+    constructor(id, uid, name, err, reason=null, safeErr=null) {
+        super(id, uid, name, err, safeErr);
         this._reason=reason;
     };
 
@@ -69,13 +75,13 @@ class UserRestoreException extends UserException {
 
 class UserJsonException extends UserException {
     constructor(err, reason=null, safeErr=null) {
-        super(null, null, err, safeErr);
+        super(null, null, null, err, safeErr);
         this._reason=reason;
     };
 
     get safe()  {
         if (!super.safe) {
-            return `Failed to restore User from JSON: .`;
+            return `Failed to restore User from JSON.`;
         } else {
             return super.safe;
         }
@@ -83,7 +89,7 @@ class UserJsonException extends UserException {
 };
 
 class UserDeleteException extends UserException {
-    constructor(id, name, err, safeErr=null) { super(id, name, err, safeErr); };
+    constructor(id, uid, name, err, safeErr=null) { super(id, uid, name, err, safeErr); };
 
     get safe()  {
         if (!super._safeErr) {

@@ -6,6 +6,7 @@
  * 
  * Also includes representation as JSON, in one or more presentations.
  */
+const uuid = require('uuid');
 
 // database models
 const models = require('../index');
@@ -21,6 +22,7 @@ class User {
     constructor() {
         this._establishmentId = establishmentId;           // NOTE - a User has a direct link to an Establishment; this is likely to change with parent/sub
         this._id = null;
+        this._uid = null;
         this._created = null;
         this._updated = null;
         this._updatedBy = null;
@@ -70,6 +72,9 @@ class User {
     //
     // attributes
     //
+    get uid() {
+        return this._uid;
+    }
     get fullname() {
         const prop = this._properties.get('Fullname');
         return prop ? prop.property : null;
@@ -106,12 +111,13 @@ class User {
 
     // used by save to initialise a new User; returns true if having initialised this user
     _initialise() {
-        if (this._id === null) {
+        if (this._uid === null) {
             this._isNew = true;
+            this._uid = uuid.v4();
             
             if (!this._isEstablishmentIdValid)
                 throw new UserExceptions.UserSaveException(null,
-                                                           this._id,
+                                                           this._uid,
                                                            this.fullname,
                                                            `Unexpected Establishment Id (${this._establishmentId})`,
                                                            'Unknown Establishment');
@@ -156,11 +162,21 @@ class User {
     async save(savedBy) {
         let mustSave = this._initialise();
 
+        if (!this.uid) {
+            this._log(Worker.LOG_ERROR, 'Not able to save an unknown uid');
+            throw new UserExceptions.UserSaveException(null,
+                this.uid,
+                this.fullname,
+                'Not able to save an unknown uid',
+                'User does not exist');
+        }
+
         if (mustSave && this._isNew) {
             // create new User
             try {
                 const creationDocument = {
                     establishmentId: this._establishmentId,
+                    uid: this.uid,
                     updatedBy: savedBy,
                     attributes: ['id', 'created', 'updated'],
                 };
@@ -176,7 +192,7 @@ class User {
 
                     // check all mandatory parameters have been provided
                     if (!this.hasMandatoryProperties) {
-                        throw new UserExceptions.UserSaveException(null, this.fullname, 'Missing Mandatory properties', null);
+                        throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, 'Missing Mandatory properties', null);
                     }
 
                     // now save the document
@@ -202,11 +218,11 @@ class User {
                         }));
                     await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
 
-                    this._log(User.LOG_INFO, `Created User with fullname (${this.fullname}) and id (${this._id})`);
+                    this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
                 });
                 
             } catch (err) {
-                throw new UserExceptions.UserSaveException(null, this.fullname, err, null);
+                throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, null);
             }
         } else {
             // we are updating an existing User
@@ -231,7 +247,7 @@ class User {
                                                  {
                                                     returning: true,
                                                     where: {
-                                                        id: this.id
+                                                        uid: this.uid
                                                     },
                                                     attributes: ['id', 'updated'],
                                                     transaction: t,
@@ -285,16 +301,16 @@ class User {
                         });
                         await Promise.all(createModelPromises);
 
-                        this._log(User.LOG_INFO, `Updated User with id (${this._id}) and name (${this.fullname})`);
+                        this._log(User.LOG_INFO, `Updated User with uid (${this.uid}) and name (${this.fullname})`);
 
                     } else {
-                        throw new UserExceptions.UserSaveException(null, this.fullname, err, `Failed to update resulting user record with id: ${this._id}`);
+                        throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, `Failed to update resulting user record with id: ${this._id}`);
                     }
 
                 });
                 
             } catch (err) {
-                throw new UserExceptions.UserSaveException(null, this.fullname, err, `Failed to update user record with id: ${this._id}`);
+                throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, `Failed to update user record with id: ${this._id}`);
             }
 
         }
@@ -343,7 +359,7 @@ class User {
                 fetchQuery = {
                     where: {
                         establishmentFk: this._establishmentId,
-                        id: uid
+                        uid: uid
                     },
                     include: [
                         {
@@ -398,7 +414,7 @@ class User {
             // typically errors when making changes to model or database schema!
             this._log(User.LOG_ERROR, err);
 
-            throw new UserExceptions.UserRestoreException(null, null, err, null);
+            throw new UserExceptions.UserRestoreException(null, this.uid, null, err, null);
         }
     };
 
@@ -423,7 +439,7 @@ class User {
                     attributes: ['username']
                   }
             ],
-            attributes: ['id', 'FullNameValue', 'EmailValue', 'created', 'updated', 'updatedBy'],
+            attributes: ['uid', 'FullNameValue', 'EmailValue', 'created', 'updated', 'updatedBy'],
             order: [
                 ['updated', 'DESC']
             ]           
@@ -431,9 +447,8 @@ class User {
 
         if (fetchResults) {
             fetchResults.forEach(thisUser => {
-                console.log("WA DEBUG - this user: ", thisUser)
                 allUsers.push({
-                    uid: thisUser.id,
+                    uid: thisUser.uid,
                     fullname: thisUser.FullNameValue,
                     email: thisUser.EmailValue,
                     username: thisUser.login && thisUser.login.username ? thisUser.login.username : null,
@@ -495,7 +510,7 @@ class User {
 
             // add worker default properties
             const myDefaultJSON = {
-                id:  this._id
+                uid:  this.uid
             };
 
             myDefaultJSON.created = this.created.toJSON();
