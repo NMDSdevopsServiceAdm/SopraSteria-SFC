@@ -12,7 +12,7 @@ exports.UserJobTitleProperty = class UserJobTitleProperty extends ChangeProperty
 
     // concrete implementations
     async restoreFromJson(document) {
-        // fullname must be non-empty and must be no more than 120 character
+        // job title must be non-empty and must be no more than 120 character
 
         if (document.jobTitle) {
             const JOB_TITLE_MAX_LENGTH=120;
@@ -26,6 +26,7 @@ exports.UserJobTitleProperty = class UserJobTitleProperty extends ChangeProperty
     }
 
     restorePropertyFromSequelize(document) {
+        console.log("WA DEBUG - job title value: ", document.JobTitleValue)
         return document.JobTitleValue;
     }
     savePropertyToSequelize() {

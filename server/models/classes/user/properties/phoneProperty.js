@@ -12,7 +12,7 @@ exports.UserPhoneProperty = class UserPhoneProperty extends ChangePropertyProtot
 
     // concrete implementations
     async restoreFromJson(document) {
-        // fullname must be non-empty and must be no more than 120 character
+        // phone must be non-empty and must be no more than 120 character
 
         const phonePattern = /^[0-9 x(?=ext 0-9+)]{8,50}$/;
         if (document.phone) {

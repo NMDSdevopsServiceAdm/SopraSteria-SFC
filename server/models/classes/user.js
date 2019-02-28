@@ -390,8 +390,6 @@ class User {
                 ];
             }
 
-            console.log("WA DEBUG: fetch with history: ", fetchQuery)
-
             const fetchResults = await models.user.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
@@ -470,7 +468,7 @@ class User {
     //  or updated only)
     formatWorkerHistoryEvents(auditEvents) {
         if (auditEvents) {
-            return auditEvents.filter(thisEvent => ['created', 'updated'].includes(thisEvent.type))
+            return auditEvents.filter(thisEvent => ['created', 'updated', 'loginSuccess', 'loginFailed', 'loginWhileLocked', 'passwdReset'].includes(thisEvent.type))
                                .map(thisEvent => {
                                     return {
                                         when: thisEvent.when,

@@ -12,7 +12,7 @@ exports.UserSecurityQuestionAnswerProperty = class UserSecurityQuestionAnswerPro
 
     // concrete implementations
     async restoreFromJson(document) {
-        // fullname must be non-empty and must be no more than 120 character
+        // Security Question Answer must be non-empty and must be no more than 120 character
 
         if (document.securityQuestionAnswer) {
             const SECURITY_QUESTION_MAX_LENGTH=255;

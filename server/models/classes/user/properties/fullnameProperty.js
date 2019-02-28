@@ -1,9 +1,9 @@
-// the fullname property is a value only
+// the Full Name property is a value only
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 exports.UserFullnameProperty = class UserFullnameProperty extends ChangePropertyPrototype {
     constructor() {
-        super('Fullname');
+        super('FullName');      // case snesitive match any database column name
     }
 
     static clone() {
@@ -14,7 +14,7 @@ exports.UserFullnameProperty = class UserFullnameProperty extends ChangeProperty
     async restoreFromJson(document) {
         // fullname must be non-empty and must be no more than 120 character
 
-        if (document.fullname) {
+        if (document.jobTitle) {
             const FULLNAME_MAX_LENGTH=120;
             if (document.fullname.length > 0 &&
                 document.fullname.length <= FULLNAME_MAX_LENGTH) {
@@ -26,6 +26,7 @@ exports.UserFullnameProperty = class UserFullnameProperty extends ChangeProperty
     }
 
     restorePropertyFromSequelize(document) {
+        console.log("WA DEBUG - fullname value: ", document.FullNameValue)
         return document.FullNameValue;
     }
     savePropertyToSequelize() {
@@ -35,7 +36,7 @@ exports.UserFullnameProperty = class UserFullnameProperty extends ChangeProperty
     }
 
     isEqual(currentValue, newValue) {
-        // fullname is a simple string
+        // Full Name is a simple string
         return currentValue && newValue && currentValue === newValue;
     }
 
