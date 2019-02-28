@@ -14,8 +14,6 @@ export class TabComponent implements OnInit {
   @Input() active = false;
   public slug: string;
 
-  constructor() {}
-
   ngOnInit() {
     this.slug = slugify.default(this.title, { lower: true });
   }
