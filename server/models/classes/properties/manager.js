@@ -12,6 +12,9 @@ class PropertyManager {
         //  of all properties
         this._auditEvents = null;
 
+        // a cache of modified properties
+        this._modifiedProperties = [];
+
         // this is a collection of additional models to apply against the Worker
         this._additionalModels = null;
 
@@ -151,6 +154,7 @@ class PropertyManager {
     save (username, document) {
         // resets all audit events; to build a new set from current properties
         this._auditEvents = [];
+        this._modifiedProperties = [];
 
         // reset all additional models; to rebuild only those modified properties
         this._additionalModels = {};
@@ -161,6 +165,9 @@ class PropertyManager {
 
             if (thisProperty.modified) {
                 const { properties:saveProperties, audit: propertyAudit, additionalModels} = thisProperty.save(username);
+
+                // cache the set of properties that have been modified
+                this._modifiedProperties.push(thisProperty);
 
                 // unlike JSON with allows for rich sub-documents,
                 //  sequelize maps onto relational tables which
@@ -180,13 +187,16 @@ class PropertyManager {
     }
 
     // returns a JSON object representation of all known properties
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory=false, showPropertyHistoryOnly=true, modifiedPropertiesOnly=false) {
         let thisJsonObject = {};
         const allProperties = Object.keys(this._properties);
 
+        console.log("Manager toJSON - modified only: ", modifiedPropertiesOnly)
+
         allProperties.forEach(thisPropertyName => {
             const thisProperty = this._properties[thisPropertyName];
-            if (thisProperty.property) {
+            if (thisProperty.property && (!modifiedPropertiesOnly || (modifiedPropertiesOnly && thisProperty.modified))) {
+                console.log("WA DEBUG - is modified: ", thisPropertyName, modifiedPropertiesOnly, thisProperty.modified)
                 thisJsonObject = {
                     ...thisJsonObject,
                     ...thisProperty.toJSON(withHistory, showPropertyHistoryOnly)

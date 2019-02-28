@@ -505,10 +505,10 @@ class User {
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at User and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given User
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false) {
         if (!showHistoryTimeline) {
             // JSON representation of extendable properties
-            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly);
+            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties);
 
             // add worker default properties
             const myDefaultJSON = {

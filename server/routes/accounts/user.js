@@ -57,7 +57,7 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
 
     try {
         if (await thisUser.restore(byUUID, byUsername, showHistory)) {
-            return res.status(200).json(thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime));
+            return res.status(200).json(thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false));
         } else {
             // not found worker
             return res.status(404).send('Not Found');
@@ -108,9 +108,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
             // this is an update to an existing User, so no mandatory properties!
             if (isValidUser) {
                 await thisUser.save(req.username);
-                return res.status(200).json({
-                    uid: thisUser.uid
-                });
+                return res.status(200).json(thisUser.toJSON(false, false, false, true));
             } else {
                 return res.status(400).send('Unexpected Input.');
             }
