@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import * as slugify from 'slugify';
 
 @Component({
   selector: 'app-tab',
@@ -8,7 +9,14 @@ import { Component, Input } from '@angular/core';
     </section>
   `,
 })
-export class TabComponent {
+export class TabComponent implements OnInit {
   @Input() title;
   @Input() active = false;
+  public slug: string;
+
+  constructor() {}
+
+  ngOnInit() {
+    this.slug = slugify.default(this.title, { lower: true });
+  }
 }

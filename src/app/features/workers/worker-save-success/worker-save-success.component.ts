@@ -7,12 +7,4 @@ import { Router } from '@angular/router';
 })
 export class WorkerSaveSuccessComponent {
   constructor(private router: Router) {}
-
-  addAnotherRecord() {
-    this.router.navigate(['/worker/create-staff-record']);
-  }
-
-  returnToDashboard() {
-    this.router.navigate(['/dashboard']);
-  }
 }

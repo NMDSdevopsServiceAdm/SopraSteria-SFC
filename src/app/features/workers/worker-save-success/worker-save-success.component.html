@@ -7,12 +7,12 @@
   <p>You can add more staff records, or return to your homepage</p>
   <div class="btn-container container">
     <div class="row">
-      <button type="button" (click)="addAnotherRecord()" class="btn btn-primary">
+      <a routerLink="/worker/create-staff-record" role="button" class="btn btn-primary">
         Add another staff record
-      </button>
-      <button type="button" class="btn btn-link btn-link-no-underline" (click)="returnToDashboard()">
+      </a>
+      <a routerLink="/dashboard" fragment="staff-records" role="button" class="text-link ml-4">
         Return to dashboard
-      </button>
+      </a>
     </div>
   </div>
 </div>
