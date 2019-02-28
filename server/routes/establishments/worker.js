@@ -149,10 +149,10 @@ router.route('/:workerId').put(async (req, res) => {
 
     } catch (err) {
         if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
-            console.error("Worker POST: ", err.message);
+            console.error("Worker PUT: ", err.message);
             return res.status(400).send(err.safe);
         } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
-            console.error("Worker POST: ", err.message);
+            console.error("Worker PUT: ", err.message);
             return res.status(503).send(err.safe);
         }
     }
