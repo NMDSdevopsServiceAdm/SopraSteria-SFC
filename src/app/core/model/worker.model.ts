@@ -77,4 +77,6 @@ export interface Worker {
     qualificationId: number;
     title?: string;
   };
+  created?: string;
+  updated?: string;
 }
