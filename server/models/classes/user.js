@@ -541,6 +541,7 @@ class User {
         } else {
             return {
                 uid:  this.uid,
+                username: this.username,
                 created: this.created.toJSON(),
                 updated: this.updated.toJSON(),
                 updatedBy: this.updatedBy,
