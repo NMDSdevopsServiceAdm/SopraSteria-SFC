@@ -191,12 +191,9 @@ class PropertyManager {
         let thisJsonObject = {};
         const allProperties = Object.keys(this._properties);
 
-        console.log("Manager toJSON - modified only: ", modifiedPropertiesOnly)
-
         allProperties.forEach(thisPropertyName => {
             const thisProperty = this._properties[thisPropertyName];
             if (thisProperty.property && (!modifiedPropertiesOnly || (modifiedPropertiesOnly && thisProperty.modified))) {
-                console.log("WA DEBUG - is modified: ", thisPropertyName, modifiedPropertiesOnly, thisProperty.modified)
                 thisJsonObject = {
                     ...thisJsonObject,
                     ...thisProperty.toJSON(withHistory, showPropertyHistoryOnly)
