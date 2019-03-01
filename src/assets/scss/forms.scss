@@ -184,7 +184,7 @@ label {
 .multiple-choice [type=radio] + label::before {
   content: "";
   border: 2px solid;
-  background: transparent;
+  background: white;
   width: 34px;
   height: 34px;
   position: absolute;
