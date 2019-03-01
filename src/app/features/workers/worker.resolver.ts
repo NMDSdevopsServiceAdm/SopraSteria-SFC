@@ -11,7 +11,7 @@ export class WorkerResolver implements Resolve<any> {
   resolve(route: ActivatedRouteSnapshot) {
     return this.workerService.getWorker(route.paramMap.get('id')).pipe(
       catchError(() => {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
         return of(null);
       })
     );
