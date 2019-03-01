@@ -60,6 +60,32 @@ a[role="button"] {
     }
   }
 
+  &.btn-blue {
+    color: white;
+
+    background-color: map-get($color, blue);
+
+    &:hover,
+    &:active {
+      background-color: map-get($color, blue) !important;
+    }
+
+    &:focus {
+      border: 2px solid $focus-yellow !important;
+      box-shadow: none;
+    }
+
+    &:disabled,
+    &.disabled {
+      background-color: map-get($color, blue);
+
+      &:hover,
+      &:active {
+        background-color: map-get($color, blue) !important;
+      }
+    }
+  }
+
   ~ .btn:nth-of-type(2) {
     margin-top: 10px;
 
