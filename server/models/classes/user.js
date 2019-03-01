@@ -23,6 +23,7 @@ class User {
         this._establishmentId = establishmentId;           // NOTE - a User has a direct link to an Establishment; this is likely to change with parent/sub
         this._id = null;
         this._uid = null;
+        this._username = null;
         this._created = null;
         this._updated = null;
         this._updatedBy = null;
@@ -74,6 +75,9 @@ class User {
     //
     get uid() {
         return this._uid;
+    }
+    get username() {
+        return this._username;
     }
     get fullname() {
         const prop = this._properties.get('Fullname');
@@ -396,6 +400,7 @@ class User {
                 this._isNew = false;
                 this._id = fetchResults.id;
                 this._uid = fetchResults.uid;
+                this._username = fetchResults.login.username;
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
@@ -512,7 +517,8 @@ class User {
 
             // add worker default properties
             const myDefaultJSON = {
-                uid:  this.uid
+                uid:  this.uid,
+                username: this.username,
             };
 
             myDefaultJSON.created = this.created.toJSON();
