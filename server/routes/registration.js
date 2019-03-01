@@ -421,6 +421,7 @@ router.route('/')
           defaultError = responseErrors.user;
           const userRecord = {
             establishmentId: Estblistmentdata.id,
+            uid: uuid.v4(),
             FullNameValue: Userdata.FullName,
             FullNameSavedAt: Userdata.DateCreated,
             FullNameChangedAt: Userdata.DateCreated,
