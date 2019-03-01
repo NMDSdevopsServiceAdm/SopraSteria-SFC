@@ -69,6 +69,7 @@ import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
+import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
 
 @NgModule({
   declarations: [
@@ -111,6 +112,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     ServiceUnavailablePagesComponent,
     TermsConditionsComponent,
     DashboardComponent,
+    StaffRecordsTabComponent,
   ],
   imports: [
     BrowserModule,

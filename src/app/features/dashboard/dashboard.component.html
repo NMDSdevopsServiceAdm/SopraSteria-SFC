@@ -40,44 +40,7 @@
       </app-tab>
 
       <app-tab title="Staff Records" active="true">
-        <div class="row">
-          <div class="col-md-8">
-            <h3 class="fs-24 mb-4 text-weight-bold">Staff records ({{ workers?.length }})</h3>
-          </div>
-          <div class="col-md-4">
-            <a routerLink="/worker/start-screen" role="button" class="btn btn-primary">
-              Add another staff record
-            </a>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12">
-            <p><strong>What you need to do next.</strong></p>
-            <p>Provide more information for # staff records.</p>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12">
-            <table class="govuk-table">
-              <thead class="govuk-table__head">
-                <tr class="govuk-table__row">
-                  <th class="govuk-table__header" scope="col">Staff name</th>
-                  <th class="govuk-table__header" scope="col">Job role</th>
-                  <th class="govuk-table__header" scope="col">Last updated</th>
-                  <th class="govuk-table__header" scope="col">Status</th>
-                </tr>
-              </thead>
-              <tbody class="govuk-table__body">
-                <tr class="govuk-table__row" *ngFor="let worker of workers">
-                  <td class="govuk-table__cell" scope="row"><a [routerLink]="['/worker', worker.uid, 'summary']">{{ worker.nameOrId }}</a></td>
-                  <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
-                  <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
-                  <td class="govuk-table__cell"><a [routerLink]="['/worker', worker.uid, 'staff-details']" class="icon-link icon-flag">Provide more information</a></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <app-staff-records-tab></app-staff-records-tab>
       </app-tab>
     </app-tabs>
   </div>
