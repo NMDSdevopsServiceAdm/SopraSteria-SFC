@@ -170,10 +170,26 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
         localStorage.setItem('stafffailed', `${res.length - complete.length}`);
       });
 
+      await this.saveTotalStaff().catch(error => false);
+
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
     } catch (err) {
       // keep typescript transpiler silent
     }
+  }
+
+  saveTotalStaff(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const { totalStaff } = this.form.controls;
+
+      if (this.form.valid) {
+        this.subscriptions.add(
+          this.establishmentService.postStaff(parseInt(totalStaff.value, 10)).subscribe(resolve, reject)
+        );
+      } else {
+        reject(false);
+      }
+    });
   }
 
   saveHandler(staffRecord): Promise<WorkerEditResponse> {
