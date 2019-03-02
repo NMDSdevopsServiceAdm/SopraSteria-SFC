@@ -3,12 +3,13 @@
     <a routerLink="/worker/start-screen"> <span class="arrow"></span>Back </a>
   </div>
 
-  <app-error-summary></app-error-summary>
+  <app-error-summary
+    *ngIf="form.errors?.addMoreRecords"
+    [errors]="form.errors.addMoreRecords">
+  </app-error-summary>
 
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
     <h1 class="h1">Create your staff records</h1>
-
-    {{ form.errors | json }}
 
     <div class="form-group">
       <div class="field-group mb-5">

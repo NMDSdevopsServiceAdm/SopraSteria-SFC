@@ -39,6 +39,11 @@
 .govuk-error-summary__list {
   margin-top: 0;
   margin-bottom: 0;
+
+  li {
+    color: $error-red;
+    font-weight: 700;
+  }
 }
 
 .govuk-error-summary__list a {

@@ -32,6 +32,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private router: Router
   ) {
+    this.addStaffRecord = this.addStaffRecord.bind(this);
     this.totalStaffValidator = this.totalStaffValidator.bind(this);
   }
 
@@ -126,10 +127,18 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   totalStaffValidator() {
     if (this.form) {
       const { totalStaff, staffRecords } = this.form.value;
-      const calculatedTotalStaff = this.totalWorkers + staffRecords.length;
+      const calculatedTotalStaff = this.totalWorkers + staffRecords.filter(record => record.valid).length;
 
-      if (totalStaff < calculatedTotalStaff) {
-        return { addMoreRecords: true };
+      if (totalStaff > calculatedTotalStaff) {
+        return {
+          addMoreRecords: [
+            { text: `You said you have ${totalStaff} members of staff but you only have ${calculatedTotalStaff}.` },
+            {
+              text: `You need to complete ${totalStaff - calculatedTotalStaff} more records.`,
+              action: this.addStaffRecord,
+            },
+          ],
+        };
       }
     }
 
