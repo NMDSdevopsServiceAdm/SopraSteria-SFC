@@ -1,5 +1,7 @@
+import { Location } from '@angular/common';
 import { AfterContentInit, Component, ContentChildren, QueryList } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+
 import { TabComponent } from './tab.component';
 
 @Component({
@@ -10,14 +12,20 @@ import { TabComponent } from './tab.component';
 export class TabsComponent implements AfterContentInit {
   @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
 
-  constructor(private activatedRoute: ActivatedRoute) {}
+  constructor(private location: Location, private route: ActivatedRoute) {}
 
-  // contentChildren are set
   ngAfterContentInit() {
-    // get all active tabs
+    const hash = this.route.snapshot.fragment;
+    if (hash) {
+      const activeTab = this.tabs.find(tab => tab.slug === hash);
+      if (activeTab) {
+        this.unselectTabs();
+        activeTab.active = true;
+      }
+    }
+
     const activeTabs = this.tabs.filter(tab => tab.active);
 
-    // if there is no active tab set, activate the first
     if (activeTabs.length === 0) {
       this.selectTab(null, this.tabs.first);
     }
@@ -27,10 +35,14 @@ export class TabsComponent implements AfterContentInit {
     if (event) {
       event.preventDefault();
     }
-    // deactivate all tabs
-    this.tabs.toArray().forEach(t => (t.active = false));
 
-    // activate the tab the user has clicked on.
+    this.unselectTabs();
+
+    this.location.replaceState(`${this.route.snapshot.url}#${tab.slug}`);
     tab.active = true;
+  }
+
+  unselectTabs() {
+    this.tabs.toArray().forEach(t => (t.active = false));
   }
 }

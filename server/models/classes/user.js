@@ -1,54 +1,51 @@
 /*
- * worker.js
+ * user.js
  *
- * The encapsulation of a Worker, including all properties, all specific validation (not API, but object validation),
+ * The encapsulation of a User, including all properties, all specific validation (not API, but object validation),
  * saving & restoring of data to database (via sequelize model), construction and deletion.
  * 
  * Also includes representation as JSON, in one or more presentations.
  */
-
 const uuid = require('uuid');
 
 // database models
 const models = require('../index');
 
-const WorkerExceptions = require('./worker/workerExceptions');
+const UserExceptions = require('./user/userExceptions');
 
-// Worker properties
-const WorkerProperties = require('./worker/workerProperties').WorkerPropertyManager;
-const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
-const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_DOCUMENT;
+// User properties
+const UserProperties = require('./user/userProperties').UserPropertyManager;
+const JSON_DOCUMENT_TYPE = require('./user/userProperties').JSON_DOCUMENT;
+const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUMENT;
 
-class Worker {
+class User {
     constructor(establishmentId) {
-        this._establishmentId = establishmentId;
+        this._establishmentId = establishmentId;           // NOTE - a User has a direct link to an Establishment; this is likely to change with parent/sub
         this._id = null;
         this._uid = null;
-        this._contract = null;
-        this._nameId = null;
-        this._mainJob = null;
+        this._username = null;
         this._created = null;
         this._updated = null;
         this._updatedBy = null;
         this._auditEvents = null;
 
         // abstracted properties
-        const thisWorkerManager = new WorkerProperties();
-        this._properties = thisWorkerManager.manager;
+        const thisUserManager = new UserProperties();
+        this._properties =thisUserManager.manager;
 
         // change properties
         this._isNew = false;
         
         // default logging level - errors only
-        // TODO: INFO logging on Worker; change to LOG_ERROR only
-        this._logLevel = Worker.LOG_INFO;
+        // TODO: INFO logging on User; change to LOG_ERROR only
+        this._logLevel = User.LOG_INFO;
     }
 
     // returns true if valid establishment id
     get _isEstablishmentIdValid() {
         if ((this._establishmentId &&
-             Number.isInteger(this._establishmentId) &&
-             this._establishmentId > 0)
+                Number.isInteger(this._establishmentId) &&
+                this._establishmentId > 0)
             ) {
                 return true;
             } else {
@@ -69,22 +66,66 @@ class Worker {
 
     _log(level, msg) {
         if (this._logLevel >= level) {
-            console.log(`TODO: (${level}) - Worker class: `, msg);
+            console.log(`TODO: (${level}) - User class: `, msg);
         }
     }
 
-    // used by save to initialise a new Worker; returns true if having initialised this worker
+    //
+    // attributes
+    //
+    get uid() {
+        return this._uid;
+    }
+    get username() {
+        return this._username;
+    }
+    get fullname() {
+        const prop = this._properties.get('Fullname');
+        return prop ? prop.property : null;
+    };
+    get jobTitle() {
+        const prop = this._properties.get('JobTitle');
+        return prop ? prop.property : null;
+    };
+    get email() {
+        const prop = this._properties.get('Email');
+        return prop ? prop.property : null;
+    };
+    get phone() {
+        const prop = this._properties.get('Phone');
+        return prop ? prop.property : null;
+    };
+    get securityQuestion() {
+        const prop = this._properties.get('SecurityQuestion');
+        return prop ? prop.property : null;
+    };
+    get securityAnswer() {
+        const prop = this._properties.get('SecurityQuestionAnswer');
+        return prop ? prop.property : null;
+    };
+    get created() {
+        return this._created;
+    }
+    get updated() {
+        return this._updated;
+    }
+    get updatedBy() {
+        return this._updatedBy;
+    }
+
+    // used by save to initialise a new User; returns true if having initialised this user
     _initialise() {
         if (this._uid === null) {
             this._isNew = true;
             this._uid = uuid.v4();
-
+            
             if (!this._isEstablishmentIdValid)
-                throw new WorkerExceptions.WorkerSaveException(null,
-                                                               this._uid,
-                                                               this._nameId,
-                                                               `Unexpected Establishment Id (${this._establishmentId})`,
-                                                               'Unknown Establishment');
+                throw new UserExceptions.UserSaveException(null,
+                                                           this._uid,
+                                                           this.fullname,
+                                                           `Unexpected Establishment Id (${this._establishmentId})`,
+                                                           'Unknown Establishment');
+
 
             // note, do not initialise the id as this will be returned by database
             return true;
@@ -93,68 +134,73 @@ class Worker {
         }
     }
 
-    // takes the given JSON document and creates a Worker's set of extendable properties
-    // Returns true if the resulting Worker is valid; otherwise false
+    // takes the given JSON document and creates a User's set of extendable properties
+    // Returns true if the resulting User is valid; otherwise false
     async load(document) {
         try {
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
         } catch (err) {
-            this._log(Worker.LOG_ERROR, `Woker::load - failed: ${err}`);
-            throw new WorkerExceptions.WorkerJsonException(
+            this._log(User.LOG_ERROR, `User::load - failed: ${err}`);
+            throw new UserExceptions.UserJsonException(
                 err,
                 null,
-                'Failed to load Worker from JSON');
+                'Failed to load User from JSON');
         }
         return this.isValid();
     }
 
-    // returns true if Worker is valid, otherwise false
+    // returns true if User is valid, otherwise false
     isValid() {
         // the property manager returns a list of all properties that are invalid; or true
-        const thisWorkerIsValid = this._properties.isValid;
-        if (thisWorkerIsValid === true) {
+        const thisUserIsValid = this._properties.isValid;
+        if (thisUserIsValid === true) {
             return true;
         } else {
-            this._log(Worker.LOG_ERROR, `Worker invalid properties: ${thisWorkerIsValid.toString()}`);
+            this._log(User.LOG_ERROR, `User invalid properties: ${thisUserIsValid.toString()}`);
             return false;
         }
     }
 
-    // saves the Worker to DB. Returns true if saved; false is not.
-    // Throws "WorkerSaveException" on error
+    // saves the User to DB. Returns true if saved; false is not.
+    // Throws "UserSaveException" on error
     async save(savedBy) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
             this._log(Worker.LOG_ERROR, 'Not able to save an unknown uid');
-            throw new WorkerExceptions.WorkerSaveException(null,
+            throw new UserExceptions.UserSaveException(null,
                 this.uid,
-                nameId ? nameId.property : null,
+                this.fullname,
                 'Not able to save an unknown uid',
-                'Worker does not exist');
+                'User does not exist');
         }
 
         if (mustSave && this._isNew) {
-            // create new Worker
+            // create new User
             try {
                 const creationDocument = {
-                    establishmentFk: this._establishmentId,
+                    establishmentId: this._establishmentId,
                     uid: this.uid,
                     updatedBy: savedBy,
                     attributes: ['id', 'created', 'updated'],
                 };
 
-                // need to create the Worker record and the Worker Audit event
+                // need to create the User record and the User Audit event
                 //  in one transaction
                 await models.sequelize.transaction(async t => {
                     // now append the extendable properties.
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
-                    //   why we cannot create a Worker record with more properties
+                    //   why we cannot create a User record with more properties
                     const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
 
+                    // check all mandatory parameters have been provided
+                    if (!this.hasMandatoryProperties) {
+                        throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, 'Missing Mandatory properties', null);
+                    }
+
                     // now save the document
-                    let creation = await models.worker.create(modifedCreationDocument, {transaction: t});
+                    let creation = await models.user.create(modifedCreationDocument, {transaction: t});
 
                     const sanitisedResults = creation.get({plain: true});
 
@@ -164,36 +210,30 @@ class Worker {
                     this._updatedBy = savedBy;
                     this._isNew = false;
 
-                    // having the worker id we can now create the audit record; inserting the workerFk
+                    // having the usser we can now create the audit record; injecting the userFk
                     const allAuditEvents = [{
-                        workerFk: this._id,
+                        userFk: this._id,
                         username: savedBy,
                         type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
                             return {
                                 ...thisEvent,
-                                workerFk: this._id
+                                userFk: this._id
                             };
                         }));
-                    await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
 
-                    this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
+                    this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
                 });
                 
             } catch (err) {
-                // if the name/Id property is known, use it in the error message
-                const nameId = this._properties.get('NameOrId');
-                throw new WorkerExceptions.WorkerSaveException(null,
-                                                               this.uid,
-                                                               nameId ? nameId.property : null,
-                                                               err,
-                                                               null);
+                throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, null);
             }
         } else {
-            // we are updating an existing worker
+            // we are updating an existing User
             try {
                 const updatedTimestamp = new Date();
 
-                // need to update the existing Worker record and add an
+                // need to update the existing User record and add an
                 //  updated audit event within a single transaction
                 await models.sequelize.transaction(async t => {
                     // now append the extendable properties
@@ -207,113 +247,90 @@ class Worker {
 
                     // now save the document
                     let [updatedRecordCount, updatedRows] =
-                        await models.worker.update(updateDocument,
-                                                {
-                                                        returning: true,
-                                                        where: {
-                                                            uid: this.uid
-                                                        },
-                                                        attributes: ['id', 'updated'],
-                                                        transaction: t,
-                                                });
+                        await models.user.update(updateDocument,
+                                                 {
+                                                    returning: true,
+                                                    where: {
+                                                        uid: this.uid
+                                                    },
+                                                    attributes: ['id', 'updated'],
+                                                    transaction: t,
+                                                 }
+                                                );
 
                     if (updatedRecordCount === 1) {
                         const updatedRecord = updatedRows[0].get({plain: true});
 
                         this._updated = updatedRecord.updated;
                         this._updatedBy = savedBy;
-                        this._id = updatedRecord.ID;
+                        this._id = updatedRecord.RegistrationID;
 
                         const allAuditEvents = [{
-                            workerFk: this._id,
+                            userFk: this._id,
                             username: savedBy,
                             type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
                                 return {
                                     ...thisEvent,
-                                    workerFk: this._id
+                                    userFk: this._id
                                 };
                             }));
                             // having updated the record, create the audit event
-                        await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+                        await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
                         const additionalModels = this._properties.additionalModels;
                         const additionalModelsByname = Object.keys(additionalModels);
-                        const deleteMmodelPromises = [];
+                        const deleteModelPromises = [];
                         additionalModelsByname.forEach(async thisModelByName => {
-                            deleteMmodelPromises.push(
+                            deleteModelPromises.push(
                                 models[thisModelByName].destroy({
                                     where: {
-                                      workerFk: this._id
+                                        userFk: this._id
                                     }
                                   })
                             );
                         });
-                        await Promise.all(deleteMmodelPromises);
-                        const createMmodelPromises = [];
+                        await Promise.all(deleteModelPromises);
+                        const createModelPromises = [];
                         additionalModelsByname.forEach(async thisModelByName => {
                             const thisModelData = additionalModels[thisModelByName];
-                            createMmodelPromises.push(
+                            createModelPromises.push(
                                 models[thisModelByName].bulkCreate(thisModelData.map(thisRecord => {
                                     return {
                                         ...thisRecord,
-                                        workerFk: this._id
+                                        userFk: this._id
                                     };
                                 }))
                             );
                         });
-                        await Promise.all(createMmodelPromises);
+                        await Promise.all(createModelPromises);
 
-                        this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
+                        this._log(User.LOG_INFO, `Updated User with uid (${this.uid}) and name (${this.fullname})`);
 
                     } else {
-                        const nameId = this._properties.get('NameOrId');
-                        throw new WorkerExceptions.WorkerSaveException(null,
-                                                                    this.uid,
-                                                                    nameId ? nameId.property : null,
-                                                                    err,
-                                                                    `Failed to update resulting worker record with uid: ${this._uid}`);
+                        throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, `Failed to update resulting user record with id: ${this._id}`);
                     }
-
 
                 });
                 
             } catch (err) {
-                // if the name/Id property is known, use it in the error message
-                const nameId = this._properties.get('NameOrId');
-                throw new WorkerExceptions.WorkerSaveException(null,
-                                                               this.uid,
-                                                               nameId ? nameId.property : null,
-                                                               err,
-                                                               `Failed to update worker record with uid: ${this._uid}`);
+                throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, `Failed to update user record with id: ${this._id}`);
             }
 
-        }
-
-        if (mustSave && !this._isNew) {
-            // update Worker - update timestamp!
-
-        }
-
-        // on successful completion of save, reset all change properties
-        if (mustSave) {
-            this._chgNameId = false;
-            this._chgContract = false;
-            this._chgJob = false;
         }
 
         return mustSave;
     };
 
-    // loads the Worker (with given id) from DB, but only if it belongs to the given Establishment
-    // returns true on success; false if no Worker
+    // loads the User (with given id or username) from DB, but only if it belongs to the given Establishment
+    // returns true on success; false if no User
     // Can throw WorkerRestoreException exception.
-    async restore(workerUid, showHistory=false) {
-        if (!workerUid) {
-            throw new WorkerExceptions.WorkerRestoreException(null,
+    async restore(uid, uname, showHistory=false) {
+        if (!uid && !uname) {
+            throw new UserExceptions.UserRestoreException(null,
                 null,
                 null,
-                'Worker::restore failed: Missing uid',
+                'User::restore failed: Missing uid or username',
                 null,
                 'Unexpected Error');
         }
@@ -321,70 +338,54 @@ class Worker {
         try {
             // by including the establishment id in the
             //  fetch, we are sure to only fetch those
-            //  worker records associated to the given
+            //  User records associated to the given
             //   establishment
-            const fetchQuery = {
-                where: {
-                    establishmentFk: this._establishmentId,
-                    uid: workerUid
-                },
-                include: [
-                    {
-                        model: models.job,
-                        as: 'mainJob',
-                        attributes: ['id', 'title']
+            let fetchQuery = null;
+            
+            if (uname) {
+                // fetch by username
+                fetchQuery = {
+                    where: {
+                        establishmentId: this._establishmentId,
                     },
-                    {
-                        model: models.ethnicity,
-                        as: 'ethnicity',
-                        attributes: ['id', 'ethnicity']
+                    include: [
+                        {
+                            model: models.login,
+                            attributes: ['username'],
+                            where: {
+                                username: uname
+                            }
+                        }
+                    ]
+                };
+            } else {
+                // fetch by username
+                fetchQuery = {
+                    where: {
+                        establishmentId: this._establishmentId,
+                        uid: uid
                     },
-                    {
-                        model: models.nationality,
-                        as: 'nationality',
-                        attributes: ['id', 'nationality']
-                    },
-                    {
-                        model: models.qualification,
-                        as: 'socialCareQualification',
-                        attributes: ['id', 'level']
-                    },
-                    {
-                        model: models.qualification,
-                        as: 'highestQualification',
-                        attributes: ['id', 'level']
-                    },
-                    {
-                        model: models.country,
-                        as: 'countryOfBirth',
-                        attributes: ['id', 'country']
-                    },
-                    {
-                        model: models.recruitedFrom,
-                        as: 'recruitedFrom',
-                        attributes: ['id', 'from']
-                    },
-                    {
-                        model: models.job,
-                        as: 'otherJobs',
-                        attributes: ['id', 'title']
-                    }
+                    include: [
+                        {
+                            model: models.login,
+                            attributes: ['username']
+                        }
+                    ]
+                };
+            }
 
-                ]
-            };
-
-            // if history of the Worker is also required; attach the association
+            // if history of the User is also required; attach the association
             //  and order in reverse chronological - note, order on id (not when)
             //  because ID is primay key and hence indexed
             if (showHistory) {
                 fetchQuery.include.push({
-                    model: models.workerAudit,
+                    model: models.userAudit,
                     as: 'auditEvents'
                 });
                 fetchQuery.order = [
                     [
                         {
-                            model: models.workerAudit,
+                            model: models.userAudit,
                             as: 'auditEvents'
                         },
                         'id',
@@ -393,11 +394,13 @@ class Worker {
                 ];
             }
 
-            const fetchResults = await models.worker.findOne(fetchQuery);
+            const fetchResults = await models.user.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
-                this._uid = workerUid;
+                this._id = fetchResults.id;
+                this._uid = fetchResults.uid;
+                this._username = fetchResults.login.username;
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
@@ -416,68 +419,62 @@ class Worker {
 
         } catch (err) {
             // typically errors when making changes to model or database schema!
-            this._log(Worker.LOG_ERROR, err);
+            this._log(User.LOG_ERROR, err);
 
-            throw new WorkerExceptions.WorkerRestoreException(null,
-                this.uid,
-                null,
-                err,
-                null);
+            throw new UserExceptions.UserRestoreException(null, this.uid, null, err, null);
         }
     };
 
-    // deletes this Worker from DB
-    // Can throw "WorkerDeleteException"
+    // deletes this User from DB
+    // Can throw "UserDeleteException"
     async delete() {
         throw new Error('Not implemented');
     };
 
-    // returns a set of Workers based on given filter criteria (all if no filters defined) - restricted to the given Establishment
+    // returns a set of User based on given filter criteria (all if no filters defined) - restricted to the given Establishment
     static async fetch(establishmentId, filters=null) {
-        const allWorkers = [];
-        const fetchResults = await models.worker.findAll({
+        if (filters) throw new Error("Filters not implemented");
+
+        const allUsers = [];
+        const fetchResults = await models.user.findAll({
             where: {
-                establishmentFk: establishmentId
+                establishmentId: establishmentId
             },
             include: [
                 {
-                    model: models.job,
-                    as: 'mainJob',
-                    attributes: ['id', 'title']
+                    model: models.login,
+                    attributes: ['username']
                   }
             ],
-            attributes: ['uid', 'NameOrIdValue', 'ContractValue', "created", "updated", "updatedBy"],
+            attributes: ['uid', 'FullNameValue', 'EmailValue', 'created', 'updated', 'updatedBy'],
             order: [
                 ['updated', 'DESC']
             ]           
         });
 
         if (fetchResults) {
-            fetchResults.forEach(thisWorker => {
-                allWorkers.push({
-                    uid: thisWorker.uid,
-                    nameOrId: thisWorker.NameOrIdValue,
-                    contract: thisWorker.ContractValue,
-                    mainJob: {
-                        jobId: thisWorker.mainJob.id,
-                        title: thisWorker.mainJob.title
-                    },
-                    created:  thisWorker.created.toJSON(),
-                    updated: thisWorker.updated.toJSON(),
-                    updatedBy: thisWorker.updatedBy
+            fetchResults.forEach(thisUser => {
+                allUsers.push({
+                    uid: thisUser.uid,
+                    fullname: thisUser.FullNameValue,
+                    email: thisUser.EmailValue,
+                    username: thisUser.login && thisUser.login.username ? thisUser.login.username : null,
+                    created:  thisUser.created.toJSON(),
+                    updated: thisUser.updated.toJSON(),
+                    updatedBy: thisUser.updatedBy
                 })
             });
         }
 
-        return allWorkers;
+        return allUsers;
     };
 
-    // helper returns a set 'json ready' objects for representing a Worker's overall
+    // helper returns a set 'json ready' objects for representing a User's overall
     //  change history, from a given set of audit events (those events being created
     //  or updated only)
     formatWorkerHistoryEvents(auditEvents) {
         if (auditEvents) {
-            return auditEvents.filter(thisEvent => ['created', 'updated'].includes(thisEvent.type))
+            return auditEvents.filter(thisEvent => ['created', 'updated', 'loginSuccess', 'loginFailed', 'loginWhileLocked', 'passwdReset'].includes(thisEvent.type))
                                .map(thisEvent => {
                                     return {
                                         when: thisEvent.when,
@@ -490,9 +487,9 @@ class Worker {
         }
     };
 
-    // helper returns a set 'json ready' objects for representing a Worker's audit
+    // helper returns a set 'json ready' objects for representing a User's audit
     //  history, from a the given set of audit events including those of individual
-    //  worker properties)
+    //  User properties)
     formatWorkerHistory(auditEvents) {
         if (auditEvents) {
             return auditEvents.map(thisEvent => {
@@ -511,8 +508,8 @@ class Worker {
 
 
     // returns a Javascript object which can be used to present as JSON
-    //  showHistory appends the historical account of changes at Worker and individual property level
-    //  showHistoryTimeline just returns the history set of audit events for the given Worker
+    //  showHistory appends the historical account of changes at User and individual property level
+    //  showHistoryTimeline just returns the history set of audit events for the given User
     toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false) {
         if (!showHistoryTimeline) {
             // JSON representation of extendable properties
@@ -520,7 +517,8 @@ class Worker {
 
             // add worker default properties
             const myDefaultJSON = {
-                uid:  this.uid
+                uid:  this.uid,
+                username: this.username,
             };
 
             myDefaultJSON.created = this.created.toJSON();
@@ -528,7 +526,6 @@ class Worker {
             myDefaultJSON.updatedBy = this.updatedBy;
 
             // TODO: JSON schema validation
-            let workerHistory = null;
             if (showHistory && !showPropertyHistoryOnly) {
                 return {
                     ...myDefaultJSON,
@@ -544,6 +541,7 @@ class Worker {
         } else {
             return {
                 uid:  this.uid,
+                username: this.username,
                 created: this.created.toJSON(),
                 updated: this.updated.toJSON(),
                 updatedBy: this.updatedBy,
@@ -553,25 +551,8 @@ class Worker {
     }
 
 
-    /*
-     * attributes
-     */
-    get uid() {
-        return this._uid;
-    };
-    get created() {
-        return this._created;
-    }
-    get updated() {
-        return this._updated;
-    }
-    get updatedBy() {
-        return this._updatedBy;
-    }
-
-
     // HELPERS
-    // returns false if establishment is not valid, otherwise returns
+        // returns false if establishment is not valid, otherwise returns
     //  the establishment id
     static async validateEstablishment(establishmentId) {
         if (!establishmentId) return false;
@@ -596,33 +577,38 @@ class Worker {
         return false;
     }
 
-    
-    // returns true if all mandatory properties for a Worker exist and are valid
+
+    // returns true if all mandatory properties for a User exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
         try {
-            const nameIdProperty = this._properties.get('NameOrId');
-            if (!(nameIdProperty && nameIdProperty.isInitialised && nameIdProperty.valid)) {
+            const fullnameProperty = this._properties.get('Fullname');
+            if (!(fullnameProperty && fullnameProperty.isInitialised && fullnameProperty.valid)) {
                 allExistAndValid = false;
-                this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid name or id property');
+                this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid fullname');
             }
     
-            const mainJobProperty = this._properties.get('MainJob');
-            if (!(mainJobProperty && mainJobProperty.isInitialised && mainJobProperty.valid)) {
+            const jobTitle = this._properties.get('JobTitle');
+            if (!(jobTitle && jobTitle.isInitialised && jobTitle.valid)) {
                 allExistAndValid = false;
-                this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid main job property');
+                this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid job title');
             }
-    
-            const contractProperty = this._properties.get('Contract');
-            if (!(contractProperty && contractProperty.isInitialised && contractProperty.valid)) {
+
+            const emailProperty = this._properties.get('Email');
+            if (!(emailProperty && emailProperty.isInitialised && emailProperty.valid)) {
                 allExistAndValid = false;
-                this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid contract property');
+                this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid email');
+            }
+
+            const phoneProperty = this._properties.get('Phone');
+            if (!(phoneProperty && phoneProperty.isInitialised && phoneProperty.valid)) {
+                allExistAndValid = false;
+                this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid phone');
             }
     
         } catch (err) {
             console.error(err)
         }
-
 
         return allExistAndValid;
     }
@@ -630,7 +616,7 @@ class Worker {
 
 };
 
-module.exports.Worker = Worker;
+module.exports.User = User;
 
 // sub types
-module.exports.WorkerExceptions = WorkerExceptions;
+module.exports.UserExceptions = UserExceptions;
