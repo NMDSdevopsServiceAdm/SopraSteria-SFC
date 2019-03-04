@@ -58,12 +58,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
         this.form.updateValueAndValidity();
       })
     );
-    this.subscriptions.add(
-      this.jobService.getJobs().subscribe(jobs => {
-        this.jobsAvailable = jobs;
-        this.jobsAvailable.push({ jobId: 500, id: 500, title: 'FAKE JOB' });
-      })
-    );
+    this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
     this.contractsAvailable = Object.values(Contracts);
 
     this.form = this.formBuilder.group({
