@@ -54,7 +54,7 @@ router.route('/:workerId').get(async (req, res) => {
 
     try {
         if (await thisWorker.restore(workerId, showHistory)) {
-            return res.status(200).json(thisWorker.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime));
+            return res.status(200).json(thisWorker.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false));
         } else {
             // not found worker
             return res.status(404).send('Not Found');
@@ -135,9 +135,10 @@ router.route('/:workerId').put(async (req, res) => {
             // this is an update to an existing Worker, so no mandatory properties!
             if (isValidWorker) {
                 await thisWorker.save(req.username);
-                return res.status(200).json({
-                    uid: thisWorker.uid
-                });
+
+                const exceptionalOverrideHeader = req.headers['x-override-put-return-all'];
+                const showModifiedOnly = exceptionalOverrideHeader ? false : true;
+                return res.status(200).json(thisWorker.toJSON(false, false, false, showModifiedOnly));
             } else {
                 return res.status(400).send('Unexpected Input.');
             }
@@ -149,10 +150,10 @@ router.route('/:workerId').put(async (req, res) => {
 
     } catch (err) {
         if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
-            console.error("Worker POST: ", err.message);
+            console.error("Worker PUT: ", err.message);
             return res.status(400).send(err.safe);
         } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {
-            console.error("Worker POST: ", err.message);
+            console.error("Worker PUT: ", err.message);
             return res.status(503).send(err.safe);
         }
     }
