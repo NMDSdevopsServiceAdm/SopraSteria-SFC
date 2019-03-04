@@ -9,8 +9,4 @@ export class ErrorSummaryComponent implements OnInit {
   @Input() errors;
 
   constructor() {}
-
-  ngOnInit() {
-    console.log(this.errors);
-  }
 }
