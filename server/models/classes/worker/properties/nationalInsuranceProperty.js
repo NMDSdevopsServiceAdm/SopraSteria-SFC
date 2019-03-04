@@ -38,7 +38,7 @@ exports.WorkerNationalInsuranceNumberProperty = class WorkerNationalInsuranceNum
 
     isEqual(currentValue, newValue) {
         // a simple string compare
-        currentValue && newValue && currentValue === newValue;
+        return currentValue && newValue && currentValue === newValue;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
