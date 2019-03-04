@@ -159,13 +159,13 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
         this.saveHandler(control).catch(error => false)
       );
 
-      await Promise.all(promises).then(function(res) {
+      const response = await Promise.all(promises).then(function(res) {
         const complete = res.filter(value => !!value);
-        localStorage.setItem('staffcreated', `${complete.length}`);
-        localStorage.setItem('stafffailed', `${res.length - complete.length}`);
+        return { success: complete.length, failed: res.length - complete.length };
       });
-
       await this.saveTotalStaff().catch(error => false);
+
+      this.workerService.setCreateStaffResponse(response.success, response.failed);
 
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
     } catch (err) {

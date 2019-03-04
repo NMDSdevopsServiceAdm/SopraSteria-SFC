@@ -21,6 +21,7 @@ export interface WorkerEditResponse {
 export class WorkerService {
   private _worker$ = new BehaviorSubject<Worker>(null);
   public worker$ = this._worker$.asObservable();
+  public createStaffResponse = null;
 
   // All workers store
   private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
@@ -130,5 +131,18 @@ export class WorkerService {
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError)
       );
+  }
+
+  setCreateStaffResponse(success: number, failed: number) {
+    this.createStaffResponse = {
+      success,
+      failed,
+    };
+  }
+
+  getCreateStaffResponse() {
+    const temp = this.createStaffResponse;
+    this.createStaffResponse = null;
+    return temp;
   }
 }

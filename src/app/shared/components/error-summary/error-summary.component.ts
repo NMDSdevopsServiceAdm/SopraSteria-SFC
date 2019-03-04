@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-error-summary',
   templateUrl: './error-summary.component.html',
   styleUrls: ['./error-summary.component.scss'],
 })
-export class ErrorSummaryComponent implements OnInit {
+export class ErrorSummaryComponent {
   @Input() errors;
 
   constructor() {}

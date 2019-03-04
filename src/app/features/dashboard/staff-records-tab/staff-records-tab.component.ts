@@ -23,15 +23,7 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
       })
     );
 
-    if (localStorage.getItem('staffcreated') || localStorage.getItem('stafffailed')) {
-      this.createStaffResponse = {
-        success: parseInt(localStorage.getItem('staffcreated'), 10),
-        failed: parseInt(localStorage.getItem('stafffailed'), 10),
-      };
-
-      localStorage.removeItem('staffcreated');
-      localStorage.removeItem('stafffailed');
-    }
+    this.createStaffResponse = this.workerService.getCreateStaffResponse();
   }
 
   ngOnDestroy() {
