@@ -99,8 +99,8 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
     if (this.form) {
       const { valueKnown } = this.form.value;
       const value = this.form.controls.value.value;
-      console.log(value);
-      if (valueKnown === 'Yes' && !isNull(value)) {
+
+      if (valueKnown === 'Yes' && isNull(value)) {
         return { required: true };
       }
     }
