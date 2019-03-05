@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
@@ -13,6 +13,8 @@ import { Subscription } from 'rxjs';
 })
 export class DaysOfSicknessComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public daysSicknessMin = 0;
+  public daysSicknessMax = 366;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -37,7 +39,7 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
 
     this.form = this.formBuilder.group({
       valueKnown: null,
-      value: [null, this.valueValidator],
+      value: [null, [Validators.min(this.daysSicknessMin), Validators.max(this.daysSicknessMax), this.valueValidator]],
     });
 
     if (this.worker.daysSick) {
@@ -79,6 +81,13 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
       } else {
         if (value.errors.required) {
           this.messageService.show('error', `'Number of days' is required.`);
+        }
+
+        if (value.errors.min || value.errors.max) {
+          this.messageService.show(
+            'error',
+            `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}.`
+          );
         }
 
         reject();
