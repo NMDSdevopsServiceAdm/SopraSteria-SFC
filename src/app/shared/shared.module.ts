@@ -10,6 +10,7 @@ import { ErrorSummaryComponent } from './components/error-summary/error-summary.
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { PanelComponent } from './components/panel/panel.component';
+import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { StartButtonComponent } from './components/start-button/start-button.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
@@ -31,16 +32,17 @@ import { Number } from './directives/number.directive';
     InsetTextComponent,
     MessagesComponent,
     PanelComponent,
+    PhaseBannerComponent,
     StartButtonComponent,
+    StatusComponent,
     SubmitButtonComponent,
+    TabComponent,
+    TabsComponent,
     NumberDigitsMax,
     NumberIntOnly,
     NumberMax,
     NumberPositiveOnly,
     Number,
-    StatusComponent,
-    TabComponent,
-    TabsComponent,
   ],
   exports: [
     AutoSuggestComponent,
@@ -50,16 +52,17 @@ import { Number } from './directives/number.directive';
     InsetTextComponent,
     MessagesComponent,
     PanelComponent,
+    PhaseBannerComponent,
     StartButtonComponent,
+    StatusComponent,
     SubmitButtonComponent,
+    TabComponent,
+    TabsComponent,
     NumberDigitsMax,
     NumberIntOnly,
     NumberMax,
     NumberPositiveOnly,
     Number,
-    StatusComponent,
-    TabComponent,
-    TabsComponent,
   ],
 })
 export class SharedModule {}
