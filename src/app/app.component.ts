@@ -18,8 +18,8 @@ export class AppComponent implements OnInit {
       window.scrollTo(0, 0);
     });
 
-    if (localStorage.getItem('auth-token')) {
-      localStorage.clear();
-    }
+    // if (localStorage.getItem('auth-token')) {
+    //   localStorage.clear();
+    // }
   }
 }
