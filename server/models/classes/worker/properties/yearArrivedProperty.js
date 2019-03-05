@@ -76,7 +76,7 @@ exports.WorkerYearArrivedProperty = class WorkerYearArrivedProperty extends Chan
             yearEqual = true;
         }
 
-        return currentValue && newValue && currentValue === newValue && yearEqual;
+        return currentValue && newValue && currentValue.value == newValue.value && yearEqual;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {

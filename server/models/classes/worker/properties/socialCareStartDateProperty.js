@@ -79,7 +79,7 @@ exports.WorkerSocialCareStartDateProperty = class WorkerSocialCareStartDatePrope
             yearEqual = true;
         }
 
-        return currentValue && newValue && currentValue === newValue && yearEqual;
+        return currentValue && newValue && currentValue.value === newValue.value && yearEqual;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
