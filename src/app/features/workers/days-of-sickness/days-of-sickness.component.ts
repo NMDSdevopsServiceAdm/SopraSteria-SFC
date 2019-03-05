@@ -6,6 +6,7 @@ import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { isNull } from 'util';
 
 @Component({
   selector: 'app-days-of-sickness',
@@ -104,7 +105,7 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
       const { valueKnown } = this.form.value;
       const value = this.form.controls.value.value;
 
-      if (valueKnown === 'Yes' && !value) {
+      if (valueKnown === 'Yes' && isNull(value)) {
         return { required: true };
       }
     }
