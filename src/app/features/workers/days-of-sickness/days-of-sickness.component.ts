@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
@@ -29,6 +30,10 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.worker = this.route.parent.snapshot.data.worker;
+
+    if (![Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
+      this.router.navigate(['/worker', this.worker.uid, 'adult-social-care-started'], { replaceUrl: true });
+    }
 
     this.form = this.formBuilder.group({
       valueKnown: null,

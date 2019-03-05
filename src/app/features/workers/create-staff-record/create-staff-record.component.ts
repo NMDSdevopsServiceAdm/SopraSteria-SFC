@@ -8,7 +8,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { reject } from 'q';
 import { Subscription } from 'rxjs';
 
 @Component({
