@@ -48,6 +48,7 @@ import {
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
 import { CreateUsernameComponent } from './features/create-username/create-username.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
 import { LeaversComponent } from './features/leavers/leavers.component';
@@ -64,12 +65,10 @@ import { ServicesCapacityComponent } from './features/services-capacity/services
 import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
 import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
 import { SharingComponent } from './features/sharing/sharing.component';
-import { StaffComponent } from './features/staff/staff.component';
 import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
-import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
 
 @NgModule({
   declarations: [
@@ -99,7 +98,6 @@ import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab
     ConfirmStartersComponent,
     LeaversComponent,
     ConfirmLeaversComponent,
-    StaffComponent,
     ServicesCapacityComponent,
     SharingComponent,
     ShareLocalAuthorityComponent,

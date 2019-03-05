@@ -8,6 +8,11 @@
     [errors]="form.errors.addMoreRecords">
   </app-error-summary>
 
+  <app-error-summary
+    *ngIf="form.errors?.removeRecords"
+    [errors]="form.errors.removeRecords">
+  </app-error-summary>
+
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
     <h1 class="h1">Create your staff records</h1>
 
@@ -15,6 +20,12 @@
       <div class="field-group mb-5">
         <label>
           Total number of staff
+          <div *ngIf="form.controls.totalStaff.errors?.min || form.controls.totalStaff.errors?.max" class="alert alert-danger">
+            <p class="pt-4">Total number of staff must be between 0 and 999.</p>
+          </div>
+          <div *ngIf="form.controls.totalStaff.errors?.required" class="alert alert-danger">
+            <p class="pt-4">Total number of staff is required.</p>
+          </div>
           <span class="example">This includes permanent, temporary, pool/bank or agency staff</span>
           <input
             type="number"
