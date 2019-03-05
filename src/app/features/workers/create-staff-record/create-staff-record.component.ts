@@ -61,7 +61,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     this.contractsAvailable = Object.values(Contracts);
 
     this.form = this.formBuilder.group({
-      totalStaff: [null, [Validators.min(1), Validators.max(999), Validators.required]],
+      totalStaff: [null, [Validators.min(0), Validators.max(999), Validators.required]],
       staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
     });
 
@@ -133,6 +133,17 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
             },
           ],
         };
+      } else if (totalStaff < calculatedTotalStaff) {
+        return {
+          removeRecords: [
+            {
+              text: `You said you have ${totalStaff} members of staff but you have created more.`,
+            },
+            {
+              text: `You need to update your Number of Staff to ${calculatedTotalStaff} or delete some records.`,
+            },
+          ],
+        };
       }
     }
 
@@ -154,6 +165,8 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   async submitHandler() {
     try {
+      await this.saveTotalStaff();
+
       const promises = this.form.controls.staffRecords['controls'].map(control =>
         this.saveHandler(control).catch(error => false)
       );
@@ -162,7 +175,6 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
         const complete = res.filter(value => !!value);
         return { success: complete.length, failed: res.length - complete.length };
       });
-      await this.saveTotalStaff().catch(error => false);
 
       this.workerService.setCreateStaffResponse(response.success, response.failed);
 
@@ -181,7 +193,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
           this.establishmentService.postStaff(parseInt(totalStaff.value, 10)).subscribe(resolve, reject)
         );
       } else {
-        reject(false);
+        reject();
       }
     });
   }
