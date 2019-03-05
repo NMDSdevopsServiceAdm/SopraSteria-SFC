@@ -105,7 +105,7 @@
 				"value" : {
 					"description" : "the textual representation of Employer; enumerated because known values",
                     "type" : "string",
-                    "enum" : ["Private Sector", "Voluntary or Charity", "Other"]
+                    "enum" : ["Private Sector", "Voluntary or Charity", "Other",  "Local Authority (generic/other)", "Local Authority (adult services)"]
 				},
 				"id" : {
 					"description" : "Optional integer representing the employer type: 1=Private, 2=Voluntary, 3=Other",
