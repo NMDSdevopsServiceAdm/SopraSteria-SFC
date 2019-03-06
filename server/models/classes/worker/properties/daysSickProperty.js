@@ -77,7 +77,7 @@ exports.WorkerDaysSickProperty = class WorkerDaysSickProperty extends ChangeProp
             daysEqual = true;
         }
 
-        return currentValue && newValue && currentValue === newValue && daysEqual;
+        return currentValue && newValue && currentValue.value === newValue.value && daysEqual;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {

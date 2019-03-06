@@ -8,9 +8,125 @@ const passwordCheck = require('../../utils/security/passwordValidation').isPassw
 
 const bcrypt = require('bcrypt-nodejs');
 
+// all user functionality is encapsulated
+const User = require('../../models/classes/user');
+
 // default route
 router.route('/').get(async (req, res) => {
     res.status(200).send();
+});
+
+
+// returns a list of all users for the given establishment
+router.use('/establishment/:id', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id').get(async (req, res) => {
+    // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+    const establishmentId = req.establishmentId;
+
+    try {
+        const allTheseUsers = await User.User.fetch(establishmentId);
+        return res.status(200).json({
+            users: allTheseUsers
+        });
+    } catch (err) {
+        console.error('user::establishment - failed', err);
+        return res.status(503).send(`Failed to get users for establishment having id: ${establishmentId}`);
+    }
+});
+
+// gets requested user id or username - using the establishment id extracted for authorised toekn
+// optional parameter - "history" must equal 1
+router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id/:userId').get(async (req, res) => {
+    const userId = req.params.userId;
+    const establishmentId = req.establishmentId;
+    const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+    const showHistoryTime = req.query.history === 'timeline' ? true : false;
+    const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
+
+    // validating user id - must be a V4 UUID or it's a username
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    let byUUID = null, byUsername = null;
+    if (uuidRegex.test(userId.toUpperCase())) {
+        byUUID = userId;
+    } else {
+        byUsername = escape(userId);
+    }
+
+    const thisUser = new User.User(establishmentId);
+
+    try {
+        if (await thisUser.restore(byUUID, byUsername, showHistory)) {
+            return res.status(200).json(thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false));
+        } else {
+            // not found worker
+            return res.status(404).send('Not Found');
+        }
+
+    } catch (err) {
+        const thisError = new User.UserExceptions.UserRestoreException(
+            null,
+            thisUser.uid,
+            null,
+            err,
+            null,
+            `Failed to retrieve user with uid: ${userId}`);
+
+        console.error('user::GET/:userId - failed', thisError.message);
+        return res.status(503).send(thisError.safe);
+    }
+});
+
+// updates a user with given uid or username
+router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id/:userId').put(async (req, res) => {
+    const userId = req.params.userId;
+    const establishmentId = req.establishmentId;
+
+    // validating user id - must be a V4 UUID or it's a username
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    let byUUID = null, byUsername = null;
+    if (uuidRegex.test(userId.toUpperCase())) {
+        byUUID = userId;
+    } else {
+        byUsername = escape(userId);
+    }
+    
+    const thisUser = new User.User(establishmentId);
+    
+    try {
+        // before updating a Worker, we need to be sure the Worker is
+        //  available to the given establishment. The best way of doing that
+        //  is to restore from given UID
+        if (await thisUser.restore(byUUID, byUsername, null)) {
+            // TODO: JSON validation
+
+            // by loading after the restore, only those properties defined in the
+            //  PUT body will be updated (peristed)
+            const isValidUser = await thisUser.load(req.body);
+
+            // this is an update to an existing User, so no mandatory properties!
+            if (isValidUser) {
+                await thisUser.save(req.username);
+                return res.status(200).json(thisUser.toJSON(false, false, false, true));
+            } else {
+                return res.status(400).send('Unexpected Input.');
+            }
+            
+        } else {
+            // not found worker
+            return res.status(404).send('Not Found');
+        }
+
+    } catch (err) {
+        if (err instanceof User.UserExceptions.UserJsonException) {
+            console.error("User PUT: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof User.UserExceptions.UserSaveException) {
+            console.error("User PUT: ", err.message);
+            return res.status(503).send(err.safe);
+        }
+    }
 });
 
 

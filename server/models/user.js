@@ -9,6 +9,12 @@ module.exports = function(sequelize, DataTypes) {
       autoIncrement: true,
       field: '"RegistrationID"'
     },
+    uid: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: true,
+      field: '"UserUID"'
+    },
     establishmentId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -202,6 +208,11 @@ module.exports = function(sequelize, DataTypes) {
     User.hasOne(models.login, {
       foreignKey : 'registrationId',
       targetKey: 'id'
+    });
+    User.hasMany(models.userAudit, {
+      foreignKey: 'userFk',
+      sourceKey: 'id',
+      as: 'auditEvents'
     });
   };
   return User;

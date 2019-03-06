@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './contract-with-zero-hours.component.html',
 })
 export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
+  public backLink: string;
   public answersAvailable = ['Yes', 'No', `Don't know`];
   public form: FormGroup;
   private worker: Worker;
@@ -29,6 +30,10 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.worker = this.route.parent.snapshot.data.worker;
+
+    this.backLink = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
+      ? 'days-of-sickness'
+      : 'adult-social-care-started';
 
     this.form = this.formBuilder.group({
       zeroHoursContract: null,

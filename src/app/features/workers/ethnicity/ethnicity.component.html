@@ -18,7 +18,6 @@
     <div class="form-group mt-5">
       <div class="field-group mb-5">
         <label>Ethnicity
-          <span class="example">For example, White and Black African</span>
           <select formControlName="ethnicity" class="form-control">
             <option class="form-control" [ngValue]="null">Select ethnicity</option>
             <option *ngFor="let ethnicity of ethnicitiesUngrouped()" class="form-control" [value]="ethnicity.id">{{ethnicity.ethnicity}}</option>

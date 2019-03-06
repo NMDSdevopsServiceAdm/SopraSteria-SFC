@@ -1,10 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { isNull } from 'util';
 
 @Component({
   selector: 'app-days-of-sickness',
@@ -12,6 +14,8 @@ import { Subscription } from 'rxjs';
 })
 export class DaysOfSicknessComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public daysSicknessMin = 0;
+  public daysSicknessMax = 366;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -30,9 +34,13 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.worker = this.route.parent.snapshot.data.worker;
 
+    if (![Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
+      this.router.navigate(['/worker', this.worker.uid, 'adult-social-care-started'], { replaceUrl: true });
+    }
+
     this.form = this.formBuilder.group({
       valueKnown: null,
-      value: [null, this.valueValidator],
+      value: [null, [Validators.min(this.daysSicknessMin), Validators.max(this.daysSicknessMax), this.valueValidator]],
     });
 
     if (this.worker.daysSick) {
@@ -76,6 +84,13 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
           this.messageService.show('error', `'Number of days' is required.`);
         }
 
+        if (value.errors.min || value.errors.max) {
+          this.messageService.show(
+            'error',
+            `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}.`
+          );
+        }
+
         reject();
       }
     });
@@ -90,7 +105,7 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
       const { valueKnown } = this.form.value;
       const value = this.form.controls.value.value;
 
-      if (valueKnown === 'Yes' && !value) {
+      if (valueKnown === 'Yes' && isNull(value)) {
         return { required: true };
       }
     }

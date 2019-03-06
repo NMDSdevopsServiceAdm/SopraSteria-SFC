@@ -31,6 +31,38 @@
             "minLength" : 3,
             "maxLength": 120
         },
+        "Email" : {
+            "description" : "Optional email for the feedback",
+            "type" : "string",
+            "minLength" : 3,
+            "maxLength" : 120,
+            "pattern" : "^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"
+        },
+        "JobTitle" : {
+            "description" : "Job Title",
+            "type" : "string",
+            "minLength" : 3,
+            "maxLength" : 120
+        },
+        "SecurityQuestion" : {
+            "description" : "Security Question",
+            "type" : "string",
+            "minLength" : 3,
+            "maxLength" : 255
+        },
+        "SecurityQuestionAnswer" : {
+            "description" : "Security Question's Answer",
+            "type" : "string",
+            "minLength" : 3,
+            "maxLength" : 255
+        },
+        "Phone" : {
+            "description" : "Optional email for the feedback",
+            "type" : "string",
+            "minLength" : 3,
+            "maxLength" : 120,
+            "pattern" : "^[0-9 x(?=ext 0-9+)]{8,50}$"
+        },
         "Address" : {
             "description" : "Concatenated address - excluding postcode",
             "type" : "string",
@@ -73,7 +105,7 @@
 				"value" : {
 					"description" : "the textual representation of Employer; enumerated because known values",
                     "type" : "string",
-                    "enum" : ["Private Sector", "Voluntary or Charity", "Other"]
+                    "enum" : ["Private Sector", "Voluntary or Charity", "Other",  "Local Authority (generic/other)", "Local Authority (adult services)"]
 				},
 				"id" : {
 					"description" : "Optional integer representing the employer type: 1=Private, 2=Voluntary, 3=Other",
@@ -1247,6 +1279,251 @@
             "required" : ["id", "name"]
         }
     },
+    "UsersType": {
+        "description" : "A users' short definition",
+        "type" : "object",
+        "properties" : {
+            "uid" : {
+                "$ref" : "#/definitions/Uid"
+            },
+            "fullname" : {
+                "$ref" : "#/definitions/Fullname"
+            },
+            "email": {
+                "$ref" : "#/definitions/Email"
+            },
+            "username" : {
+                "$ref" : "#/definitions/Username"
+            },
+            "createdAt" : {
+                "description" : "When the worker record was created",
+                "type" : "date-time"
+            },
+            "updatedAt" : {
+                "description": "When the worker record was last updated",
+                "type" : "date-time"
+            },
+            "updatedBy" : {
+                "description" : "The username of the last person to update the Worker",
+                "type" : "string"
+            }
+        },
+        "required": ["uid", "fullname", "email", "username", "created", "updated", "updatedBy"]
+    },
+    "Users" : {
+        "description" : "A list of establishment's users, ordered by updated descending",
+        "type" : "array",
+        "properties" : {
+            "users" : {
+                "type" : "array",
+                "items" : [
+                    {
+                        "$ref" : "#/definitions/UsersType"
+                    }
+                ]
+            }
+        },
+        "required" : ["users"]
+    },
+    "UserFullname" : {
+        "description": "The user's fullname",
+        "oneOf": [
+            {
+                "description": "Simple fullname",
+                "$ref" : "#/definitions/Fullname"
+            },
+            {
+                "allOf" : [
+                    {
+                        "description": "Fullname with change history",
+                        "type" : "object",
+                        "properties": {
+                            "currentValue" : {
+                                "$ref" : "#/definitions/Fullname"
+                            }
+                        },
+                        "required" : ["currentValue"]
+                    },
+                    {
+                        "$ref" : "#/definitions/PropertyChangeStatus"
+                    }
+                ]
+            }
+        ]
+    },
+    "UserEmail" : {
+        "description": "The user's email",
+        "oneOf": [
+            {
+                "description": "Simple email",
+                "$ref" : "#/definitions/Email"
+            },
+            {
+                "allOf" : [
+                    {
+                        "description": "Email with change history",
+                        "type" : "object",
+                        "properties": {
+                            "currentValue" : {
+                                "$ref" : "#/definitions/Email"
+                            }
+                        },
+                        "required" : ["currentValue"]
+                    },
+                    {
+                        "$ref" : "#/definitions/PropertyChangeStatus"
+                    }
+                ]
+            }
+        ]
+    },
+    "UserJobTitle" : {
+        "description": "The user's job title",
+        "oneOf": [
+            {
+                "description": "Simple job title",
+                "$ref" : "#/definitions/Fullname"
+            },
+            {
+                "allOf" : [
+                    {
+                        "description": "Job Title with change history",
+                        "type" : "object",
+                        "properties": {
+                            "currentValue" : {
+                                "$ref" : "#/definitions/Fullname"
+                            }
+                        },
+                        "required" : ["currentValue"]
+                    },
+                    {
+                        "$ref" : "#/definitions/PropertyChangeStatus"
+                    }
+                ]
+            }
+        ]
+    },
+    "UserPhone" : {
+        "description": "The user's phone number",
+        "oneOf": [
+            {
+                "description": "Simple phone",
+                "$ref" : "#/definitions/Phone"
+            },
+            {
+                "allOf" : [
+                    {
+                        "description": "Phone with change history",
+                        "type" : "object",
+                        "properties": {
+                            "currentValue" : {
+                                "$ref" : "#/definitions/Phone"
+                            }
+                        },
+                        "required" : ["currentValue"]
+                    },
+                    {
+                        "$ref" : "#/definitions/PropertyChangeStatus"
+                    }
+                ]
+            }
+        ]
+    },
+    "UserSecurityQuestion" : {
+        "description": "The user's secutity question",
+        "oneOf": [
+            {
+                "description": "Simple Security Question",
+                "$ref" : "#/definitions/SecurityQuestion"
+            },
+            {
+                "allOf" : [
+                    {
+                        "description": "Security Question with change history",
+                        "type" : "object",
+                        "properties": {
+                            "currentValue" : {
+                                "$ref" : "#/definitions/SecurityQuestion"
+                            }
+                        },
+                        "required" : ["currentValue"]
+                    },
+                    {
+                        "$ref" : "#/definitions/PropertyChangeStatus"
+                    }
+                ]
+            }
+        ]
+    },
+    "UserSecurityQuestionAnswer" : {
+        "description": "The user's secutity question answer",
+        "oneOf": [
+            {
+                "description": "Simple Security Question Answer",
+                "$ref" : "#/definitions/SecurityQuestionAnswer"
+            },
+            {
+                "allOf" : [
+                    {
+                        "description": "Security Question Answer with change history",
+                        "type" : "object",
+                        "properties": {
+                            "currentValue" : {
+                                "$ref" : "#/definitions/SecurityQuestionAnswer"
+                            }
+                        },
+                        "required" : ["currentValue"]
+                    },
+                    {
+                        "$ref" : "#/definitions/PropertyChangeStatus"
+                    }
+                ]
+            }
+        ]
+    },
+    "User" : {
+        "description" : "A user definition with/without change history",
+        "type" : "object",
+        "properties" : {
+            "uid" : {
+                "$ref" : "#/definitions/Uid"
+            },
+            "username" : {
+                "$ref" : "#/definitions/Username"
+            },
+            "fullname" : {
+                "$ref" : "#/definitions/UserFullname"
+            },
+            "email": {
+                "$ref" : "#/definitions/UserEmail"
+            },
+            "phone": {
+                "$ref" : "#/definitions/UserPhone"
+            },
+            "jobTitle": {
+                "$ref" : "#/definitions/UserJobTitle"
+            },
+            "securityQuestion": {
+                "$ref" : "#/definitions/UserSecurityQuestion"
+            },
+            "securityQuestionAnswer": {
+                "$ref" : "#/definitions/UserSecurityQuestionAnswer"
+            },
+            "createdAt" : {
+                "description" : "When the worker record was created",
+                "type" : "date-time"
+            },
+            "updatedAt" : {
+                "description": "When the worker record was last updated",
+                "type" : "date-time"
+            },
+            "updatedBy" : {
+                "description" : "The username of the last person to update the Worker",
+                "type" : "string"
+            }
+        },
+        "required": ["uid", "fullname", "created", "updated", "updatedBy"]
+    },
     "Feedback" : {
         "description" : "For capturing user feedback",
         "properties" : {
@@ -1267,17 +1544,10 @@
                 "maxLength" : 500
             },
             "name" : {
-                "description" : "Optional name for the feedback",
-                "type" : "string",
-                "minLength" : 3,
-                "maxLength" : 120
+                "$ref" : "#/definitions/Fullname"
             },
             "email" : {
-                "description" : "Optional email for the feedback",
-                "type" : "string",
-                "minLength" : 3,
-                "maxLength" : 120,
-                "pattern" : "^(([^<>()\[\]\\.,;:\s@\"]+(\.[^<>()\[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"
+                "$ref" : "#/definitions/Email"
             }
         },
         "required" : ["whenDoing", "tellUs"]

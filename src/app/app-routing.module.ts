@@ -23,7 +23,6 @@ import { SelectWorkplaceComponent } from '@features/select-workplace/select-work
 import { ServicesCapacityComponent } from '@features/services-capacity/services-capacity.component';
 import { ShareLocalAuthorityComponent } from '@features/shareLocalAuthorities/shareLocalAuthority.component';
 import { ShareOptionsComponent } from '@features/shareOptions/shareOptions.component';
-import { StaffComponent } from '@features/staff/staff.component';
 import { StartersComponent } from '@features/starters/starters.component';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { TypeOfEmployerComponent } from '@features/type-of-employer/type-of-employer.component';
@@ -148,12 +147,6 @@ const routes: Routes = [
   {
     path: 'confirm-leavers',
     component: ConfirmLeaversComponent,
-    canLoad: [AuthGuard],
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'staff',
-    component: StaffComponent,
     canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },

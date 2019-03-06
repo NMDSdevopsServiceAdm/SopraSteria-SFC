@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
@@ -13,7 +14,7 @@ import { Subscription } from 'rxjs';
 })
 export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  private subscriptions: Subscription = new Subscription;
+  private subscriptions: Subscription = new Subscription();
   private worker: Worker;
 
   constructor(
@@ -53,7 +54,11 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      this.router.navigate(['/worker', this.worker.uid, 'days-of-sickness']);
+      if ([Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
+        this.router.navigate(['/worker', this.worker.uid, 'days-of-sickness']);
+      } else {
+        this.router.navigate(['/worker', this.worker.uid, 'contract-with-zero-hours']);
+      }
     } catch (err) {
       // keep typescript transpiler silent
     }

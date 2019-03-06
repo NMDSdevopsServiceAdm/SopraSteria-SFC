@@ -96,7 +96,7 @@ exports.WorkerAnnualHourlyPayProperty = class WorkerAnnualHourlyPayProperty exte
             rateEqual = true;
         }
 
-        return currentValue && newValue && currentValue === newValue && rateEqual;
+        return currentValue && newValue && currentValue.value === newValue.value && rateEqual;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {

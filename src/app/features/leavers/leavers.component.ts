@@ -49,10 +49,10 @@ export class LeaversComponent implements OnInit, OnDestroy {
       
       if (noRecordsReason.value === 'dont-know')  {
         leaversToSubmit = 'Don\'t know'
-        nextStepNavigation = '/staff'
+        nextStepNavigation = '/dashboard'
       } else if (noRecordsReason.value === 'no-new') {
         leaversToSubmit = 'None'
-        nextStepNavigation = '/staff'
+        nextStepNavigation = '/dashboard'
       } else {
         // default being to send the set of all the current jobs which then need to be confirmed.
         leaversToSubmit =  recordsControl.value.map(v => ({ jobId: parseInt(v.jobId), total: v.total }));

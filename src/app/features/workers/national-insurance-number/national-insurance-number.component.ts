@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './national-insurance-number.component.html',
 })
 export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
+  public backLink: string;
   public form: FormGroup;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
@@ -28,6 +29,8 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.worker = this.route.parent.snapshot.data.worker;
+
+    this.backLink = this.worker.otherJobs.some(j => j.jobId === 27) ? 'mental-health' : 'other-job-roles';
 
     this.form = this.formBuilder.group({
       nin: [null, this.ninValidator],
