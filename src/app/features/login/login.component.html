@@ -2,17 +2,25 @@
   <h1 class="govuk-heading-xl">Sign in</h1>
 
   <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <app-error-summary
+      *ngIf="form.errors?.serverError"
+      [errors]="[{ text: 'Authentication failed.' }]">
+    </app-error-summary>
 
-    <div class="govuk-form-group" [ngClass]="{'govuk-form-group--error': form.get('username').errors && submitted }">
+    <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('username').errors && submitted }">
       <label class="govuk-label" for="username">
         Username
       </label>
-      <span id="username-issued-error" class="govuk-error-message" *ngIf="form.get('username').errors?.required && submitted">
+      <span
+        id="username-issued-error"
+        class="govuk-error-message"
+        *ngIf="form.get('username').errors?.required && submitted"
+      >
         <span class="govuk-visually-hidden">Error:</span> Please enter your Username.
       </span>
       <input
         class="govuk-input govuk-!-width-one-third"
-        [ngClass]="{'govuk-input--error': form.get('username').errors && form.submitted }"
+        [ngClass]="{ 'govuk-input--error': form.get('username').errors && form.submitted }"
         id="username"
         name="username"
         type="text"
@@ -20,11 +28,15 @@
       />
     </div>
 
-    <div class="govuk-form-group" [ngClass]="{'govuk-form-group--error': form.get('password').errors && submitted }">
+    <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('password').errors && submitted }">
       <label class="govuk-label" for="password">
         Password
       </label>
-      <span id="password-issued-error" class="govuk-error-message" *ngIf="form.get('password').errors?.required && submitted">
+      <span
+        id="password-issued-error"
+        class="govuk-error-message"
+        *ngIf="form.get('password').errors?.required && submitted"
+      >
         <span class="govuk-visually-hidden">Error:</span> Please enter your Password.
       </span>
       <input
