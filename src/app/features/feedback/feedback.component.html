@@ -1,37 +1,115 @@
-<div class="main-page-container col-12">
-  <ng-template [ngIf]="pendingFeedback" [ngIfElse]="feedbackSubmitted">
-    <header>
-      <h1 class="h1">Feedback</h1>
-    </header>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
 
-    <form novalidate
-      (ngSubmit)="onSubmit()"
-      [formGroup]="feedbackForm">
+    <ng-template [ngIf]="pendingFeedback" [ngIfElse]="feedbackSubmitted">
+      <h1 class="govuk-heading-xl">Feedback</h1>
 
-      <div class="form-group mb-5">
+      <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+        <div class="govuk-character-count">
+          <div class="govuk-form-group">
+            <label class="govuk-label govuk-label--m" for="more-detail">
+              What were you trying to do?
+            </label>
+            <textarea
+              class="govuk-textarea"
+              id="more-detail"
+              name="more-detail"
+              rows="6"
+            ></textarea>
+          </div>
+          <span class="govuk-hint govuk-character-count__message" aria-live="polite">
+            You can enter up to 200 characters
+          </span>
+        </div>
+
+        <div class="govuk-character-count">
+          <div class="govuk-form-group">
+            <label class="govuk-label govuk-label--m" for="tell-us-about">
+              What would you like to tell us about?
+            </label>
+            <textarea
+              class="govuk-textarea"
+              id="tell-us-about"
+              name="tell-us-about"
+              rows="6"
+            ></textarea>
+          </div>
+          <span class="govuk-hint govuk-character-count__message" aria-live="polite">
+            You can enter up to 200 characters
+          </span>
+        </div>
+
+        <h3 class="govuk-heading-m">If you would like us to respond to your feedback, enter your details below.</h3>
+
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="full-name">
+            Full name
+          </label>
+          <span id="full-name-hint" class="govuk-hint">
+            Optional
+          </span>
+          <input
+            class="govuk-input govuk-input--width-20"
+            id="full-name"
+            name="full-name"
+            type="text"
+            aria-describedby="full-name-hint"
+          />
+        </div>
+
+        <div class="govuk-form-group">
+          <label class="govuk-label" for="email">
+            Email address
+          </label>
+          <span id="email-hint" class="govuk-hint">
+            Optional
+          </span>
+          <input
+            class="govuk-input"
+            id="email"
+            name="email"
+            type="email"
+            aria-describedby="email-hint"
+            autocomplete="email"
+            spellcheck="false"
+          />
+        </div>
+
+        <button type="submit" class="govuk-button">
+          Send
+        </button>
+      </form>
+
+      <!-- <div class="form-group mb-5">
         <div class="row form">
           <p class="col-12 page-title">What were you trying to do?</p>
           <div class="col-12">
-            <div class="col-12" [ngClass]="{'is-invalid': (feedbackForm.get('whenDoingCtl').touched ||
-              feedbackForm.get('whenDoingCtl').dirty) &&
-              !feedbackForm.get('whenDoingCtl').valid }">
+            <div
+              class="col-12"
+              [ngClass]="{
+                'is-invalid':
+                  (form.get('doingWhat').touched || form.get('doingWhat').dirty) &&
+                  !form.get('doingWhat').valid
+              }"
+            >
               <textarea
-                id="whenDoingCtl"
-                formControlName="whenDoingCtl"
+                id="doingWhat"
+                formControlName="doingWhat"
                 class="col-9"
-                [maxlength]="_countdownValidation['whenDoingCtl'].max"
-                (input)="validateCountdown('whenDoingCtl')">
+                [maxlength]="_countdownValidation['doingWhat'].max"
+                (input)="validateCountdown('doingWhat')"
+              >
               </textarea>
               <div class="col-12">
-                  <span class="col-6" id="whenDoingCharCount">{{ countdownWhenDoing() }}</span> characters remaining
-                  <span class="col-6 invalid-feedback">
-                    <span *ngIf="feedbackForm.get('whenDoingCtl').errors?.required" class="main-body-text">
-                      Please give reason.
-                    </span>
-                    <span *ngIf="feedbackForm.get('whenDoingCtl').errors?.maxlength" class="main-body-text">
-                        Must be no longer than {{ (_countdownValidation['whenDoingCtl']).max }} characters.
-                    </span>
+                <span class="col-6" id="whenDoingCharCount">{{ countdownWhenDoing() }}</span> characters remaining
+                <span class="col-6 invalid-feedback">
+                  <span *ngIf="form.get('doingWhat').errors?.required" class="main-body-text">
+                    Please give reason.
                   </span>
+                  <span *ngIf="form.get('doingWhat').errors?.maxlength" class="main-body-text">
+                    Must be no longer than {{ _countdownValidation['doingWhat'].max }} characters.
+                  </span>
+                </span>
               </div>
             </div>
           </div>
@@ -40,98 +118,87 @@
         <div class="row form">
           <p class="col-12 page-title">What would you like to tell us about?</p>
           <div class="col-12">
-            <div class="col-12" [ngClass]="{'is-invalid': (feedbackForm.get('tellUsCtl').touched ||
-              feedbackForm.get('tellUsCtl').dirty) &&
-              !feedbackForm.get('tellUsCtl').valid }">
-                <textarea
-                  id="tellUsCtl"
-                  formControlName="tellUsCtl"
-                  class="col-9"
-                  [maxlength]="_countdownValidation['tellUsCtl'].max"
-                  (input)="validateCountdown('tellUsCtl')">
+            <div
+              class="col-12"
+              [ngClass]="{
+                'is-invalid':
+                  (form.get('tellUs').touched || form.get('tellUs').dirty) && !form.get('tellUs').valid
+              }"
+            >
+              <textarea
+                id="tellUs"
+                formControlName="tellUs"
+                class="col-9"
+                [maxlength]="_countdownValidation['tellUs'].max"
+                (input)="validateCountdown('tellUs')"
+              >
               </textarea>
               <div class="col-12">
-                  <span class="col-6">{{ countdownTellUs() }}</span> characters remaining
-                  <span class="col-6 invalid-feedback">
-                    <span *ngIf="feedbackForm.get('tellUsCtl').errors?.required" class="main-body-text">
-                      Please give reason.
-                    </span>
-                    <span *ngIf="feedbackForm.get('tellUsCtl').errors?.maxlength" class="main-body-text">
-                        Must be no longer than {{ (_countdownValidation['tellUsCtl']).max }} characters.
-                    </span>
+                <span class="col-6">{{ countdownTellUs() }}</span> characters remaining
+                <span class="col-6 invalid-feedback">
+                  <span *ngIf="form.get('tellUs').errors?.required" class="main-body-text">
+                    Please give reason.
                   </span>
+                  <span *ngIf="form.get('tellUs').errors?.maxlength" class="main-body-text">
+                    Must be no longer than {{ _countdownValidation['tellUs'].max }} characters.
+                  </span>
+                </span>
               </div>
-
             </div>
             <div class="col-3"></div>
           </div>
         </div>
 
         <div class="row form">
-          <p class="page-title">If you would like us to respond to your feedback, enter your details below.</p>
-        </div>
-
-        <div class="row form">
           <p class="col-12 form-title">Full name</p>
-          <div class="col-12" [ngClass]="{'is-invalid': (feedbackForm.get('nameCtl').touched ||
-            feedbackForm.get('nameCtl').dirty) &&
-            !feedbackForm.get('nameCtl').valid }">
-              <p class="col-12 form-caveat">Optional</p>
-              <input
-                id="nameCtl"
-                formControlName="nameCtl"
-                class="col-9"
-                >
-              <span class="invalid-feedback">
-                <span *ngIf="feedbackForm.get('nameCtl').errors?.maxlength" class="main-body-text">
-                  Must be no longer than 120 characters.
-                </span>
+          <div
+            class="col-12"
+            [ngClass]="{
+              'is-invalid': (form.get('fullname').touched || form.get('fullname').dirty) && !form.get('fullname').valid
+            }"
+          >
+            <p class="col-12 form-caveat">Optional</p>
+            <input id="fullname" formControlName="fullname" class="col-9" />
+            <span class="invalid-feedback">
+              <span *ngIf="form.get('fullname').errors?.maxlength" class="main-body-text">
+                Must be no longer than 120 characters.
               </span>
+            </span>
           </div>
         </div>
 
         <div class="row form">
           <p class="col-12 form-title">Email</p>
-          <div class="col-12" [ngClass]="{'is-invalid': (feedbackForm.get('emailCtl').touched ||
-          feedbackForm.get('emailCtl').dirty) &&
-          !feedbackForm.get('emailCtl').valid }">
-              <p class="col-12 form-caveat">Optional</p>
-              <input
-                id="emailCtl"
-                formControlName="emailCtl"
-                class="col-9"
-                >
-              <span class="invalid-feedback">
-                <span *ngIf="feedbackForm.get('emailCtl').errors?.maxlength" class="main-body-text">
-                  Must be no longer than 120 characters.
-                </span>
-                <span *ngIf="feedbackForm.get('emailCtl').errors?.email" class="main-body-text">
-                  Must be a valid email format.
-                </span>
+          <div
+            class="col-12"
+            [ngClass]="{
+              'is-invalid': (form.get('email').touched || form.get('email').dirty) && !form.get('email').valid
+            }"
+          >
+            <p class="col-12 form-caveat">Optional</p>
+            <input id="email" formControlName="email" class="col-9" />
+            <span class="invalid-feedback">
+              <span *ngIf="form.get('email').errors?.maxlength" class="main-body-text">
+                Must be no longer than 120 characters.
               </span>
+              <span *ngIf="form.get('email').errors?.email" class="main-body-text">
+                Must be a valid email format.
+              </span>
+            </span>
           </div>
         </div>
       </div>
+    </form> -->
+    </ng-template>
 
-      <div class="row form">
-        <div class="btn-container col-12 ">
-          <button type="submit" class="btn btn-primary">Send</button>
-        </div>
-      </div>
-    </form>
-  </ng-template>
+    <ng-template #feedbackSubmitted>
+      <h1 class="govuk-heading-xl">Thank You</h1>
 
-  <ng-template #feedbackSubmitted>
-    <header>
-      <h1 class="h1">Thank You</h1>
-    </header>
-
-    <div>
       <p>Your feedback has been submitted</p>
-    </div>
-    <div class="btn-container">
-      <button type="submit" class="btn btn-primary" (click)="closeWindow()">Close</button>
-    </div>
-  </ng-template>
 
+      <button type="button" class="govuk-button" (click)="closeWindow()">
+        Close
+      </button>
+    </ng-template>
+  </div>
 </div>
