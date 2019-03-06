@@ -9,6 +9,7 @@ import { CreateUsernameComponent } from '@features/create-username/create-userna
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
@@ -20,17 +21,14 @@ import { TermsConditionsComponent } from '@features/terms-conditions/terms-condi
 import { UserDetailsComponent } from '@features/user-details/user-details.component';
 
 import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServicePagesComponent,
-} from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
+import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ChangePasswordComponent } from './features/change-password/change-password.component';
 import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
-import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
-import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
-import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 
 const routes: Routes = [
   {
@@ -141,7 +139,7 @@ const routes: Routes = [
   },
   {
     path: 'problem-with-the-service',
-    component: ProblemWithTheServicePagesComponent,
+    component: ProblemWithTheServiceComponent,
   },
   {
     path: 'workplace',
