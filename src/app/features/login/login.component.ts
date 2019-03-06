@@ -6,6 +6,7 @@ import { AuthService } from '@core/services/auth-service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { MessageService } from '@core/services/message.service';
+import { Subscription } from 'rxjs';
 
 const PING_INTERVAL = 240;
 const TIMEOUT_INTERVAL = 1800;
@@ -15,15 +16,10 @@ const TIMEOUT_INTERVAL = 1800;
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  form: FormGroup;
+  public form: FormGroup;
   login: LoginApiModel;
-  submitted = false;
-
-  // Login values
-  usernameValue: string;
-  userPasswordValue: string;
-
-  private subscriptions = [];
+  public submitted = false;
+  private subscriptions: Subscription = new Subscription();
 
   // Set up Validation messages
   usernameMessage: string;
@@ -33,57 +29,36 @@ export class LoginComponent implements OnInit, OnDestroy {
     private idleService: IdleService,
     private authService: AuthService,
     private establishmentService: EstablishmentService,
-    private messageService: MessageService,
     private router: Router,
-    private fb: FormBuilder
+    private formBuilder: FormBuilder
   ) {}
 
-  // Get user fullname
-  get getUsernameInput() {
-    return this.form.get('username');
-  }
-
-  // Get user job title
-  get getPasswordInput() {
-    return this.form.get('password');
-  }
-
   ngOnInit() {
-    this.form = this.fb.group({
-      username: ['', [Validators.required, Validators.maxLength(120)]],
-      password: ['', [Validators.required, Validators.maxLength(120)]],
+    this.form = this.formBuilder.group({
+      username: [null, Validators.required],
+      password: [null, Validators.required],
     });
 
-    this.subscriptions.push(
-      this.form.valueChanges.subscribe(value => {
-        if (this.form.valid) {
-          this.messageService.clearError();
-        }
-      })
-    );
+    this.subscriptions.add(this.authService.auth$.subscribe(login => (this.login = login)));
+  }
 
-    this.subscriptions.push(this.authService.auth$.subscribe(login => (this.login = login)));
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   onSubmit() {
     this.submitted = true;
-    this.usernameValue = this.getUsernameInput.value;
-    this.userPasswordValue = this.getPasswordInput.value;
 
-    if (this.form.invalid) {
-      this.messageService.clearError();
-      this.messageService.show('error', 'Please fill the required fields.');
-    } else {
+    if (this.form.valid) {
       this.save();
     }
   }
 
   save() {
-    this.login.username = this.usernameValue;
-    this.login.password = this.userPasswordValue;
-    this.messageService.clearError();
+    this.login.username = this.form.get('username').value;
+    this.login.password = this.form.get('password').value;
 
-    this.subscriptions.push(
+    this.subscriptions.add(
       this.authService.postLogin(this.login).subscribe(
         response => {
           this.authService.updateState(response.body);
@@ -92,6 +67,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.establishmentService.establishmentId = response.body.establishment.id;
 
           const token = response.headers.get('authorization');
+          this.authService.authorise(token);
           this.authService.authorise(token);
 
           this.idleService.init(PING_INTERVAL, TIMEOUT_INTERVAL);
@@ -108,9 +84,8 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate(['/logged-out']);
           });
         },
-        err => {
-          const message = err.error.message || 'Invalid username or password.';
-          this.messageService.show('error', message);
+        error => {
+          this.form.setErrors({ serverError: true });
         },
         () => {
           const redirect = this.authService.redirect;
@@ -129,10 +104,5 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       )
     );
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-    this.messageService.clearAll();
   }
 }
