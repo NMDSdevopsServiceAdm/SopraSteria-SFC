@@ -1,24 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
-
-import { LoginApiModel } from '../../core/model/loginApi.model';
-import { AuthService } from '../../core/services/auth-service';
-import { EstablishmentService } from '../../core/services/establishment.service';
-import { MessageService } from '../../core/services/message.service';
-
-//import { LoginUser } from './login-user';
+import { LoginApiModel } from '@core/model/loginApi.model';
+import { AuthService } from '@core/services/auth-service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MessageService } from '@core/services/message.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  loginForm: FormGroup;
-  // loginUser = new LoginUser();
-
+  form: FormGroup;
   login: LoginApiModel;
+  submitted = false;
 
   // Login values
   usernameValue: string;
@@ -41,23 +36,23 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   // Get user fullname
   get getUsernameInput() {
-    return this.loginForm.get('username');
+    return this.form.get('username');
   }
 
   // Get user job title
   get getPasswordInput() {
-    return this.loginForm.get('password');
+    return this.form.get('password');
   }
 
   ngOnInit() {
-    this.loginForm = this.fb.group({
+    this.form = this.fb.group({
       username: ['', [Validators.required, Validators.maxLength(120)]],
       password: ['', [Validators.required, Validators.maxLength(120)]],
     });
 
     this.subscriptions.push(
-      this.loginForm.valueChanges.subscribe(value => {
-        if (this.loginForm.valid) {
+      this.form.valueChanges.subscribe(value => {
+        if (this.form.valid) {
           this.messageService.clearError();
         }
       })
@@ -67,10 +62,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.submitted = true;
     this.usernameValue = this.getUsernameInput.value;
     this.userPasswordValue = this.getPasswordInput.value;
 
-    if (this.loginForm.invalid) {
+    if (this.form.invalid) {
       this.messageService.clearError();
       this.messageService.show('error', 'Please fill the required fields.');
     } else {
