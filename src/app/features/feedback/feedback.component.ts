@@ -1,121 +1,100 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from "@angular/forms"
-import { Router } from "@angular/router"
-
-import { MessageService } from "../../core/services/message.service"
-
-import { FeedbackService } from "../../core/services/feedback.service"
-import { FeedbackModel } from '../../core/model/feedback.model';
-
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FeedbackModel } from '@core/model/feedback.model';
+import { FeedbackService } from '@core/services/feedback.service';
+import { MessageService } from '@core/services/message.service';
+import { WindowRef } from '@core/services/window.ref';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-feedback',
   templateUrl: './feedback.component.html',
-  styleUrls: ['./feedback.component.scss']
+  styleUrls: ['./feedback.component.scss'],
 })
 export class FeedbackComponent implements OnInit, OnDestroy {
   private _feedback: FeedbackModel = null;
-  private _pendingFeedback: boolean = true;
-
-  constructor(
-    private router: Router,
-    private feedbackService: FeedbackService,
-    private messageService: MessageService,
-    private fb: FormBuilder) {
-
-  }
-
-  private feedbackForm: FormGroup
-  private subscriptions = []
-
+  private _pendingFeedback = true;
+  private form: FormGroup;
+  private subscriptions: Subscription = new Subscription();
   private _countdownValidation = {
-    whenDoingCtl : {
+    doingWhat: {
       max: 500,
       current: 0,
-      remaining: 500 },
-    tellUsCtl : {
+      remaining: 500,
+    },
+    tellUs: {
       max: 500,
       current: 0,
-      remaining: 500
-    }
+      remaining: 500,
+    },
   };
 
+  constructor(
+    private feedbackService: FeedbackService,
+    private messageService: MessageService,
+    private formBuilder: FormBuilder,
+    private windowRef: WindowRef
+  ) {}
+
+  ngOnInit() {
+    // create form controls, including an empty array for the list of authorities
+    // all form controls are empty
+    this.form = this.formBuilder.group({
+      tellUs: [null, [Validators.required, Validators.maxLength(500)]],
+      doingWhat: [null, [Validators.required, Validators.maxLength(500)]],
+      fullname: [null, [Validators.maxLength(120)]],
+      email: [null, [Validators.email, Validators.maxLength(120)]],
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+    this.messageService.clearAll();
+  }
+
   private validateCountdown(control: string): void {
-    (this._countdownValidation[control]).current = this.feedbackForm.get(control).value.toString().length;
-    (this._countdownValidation[control]).remaining = (this._countdownValidation[control]).max - (this._countdownValidation[control]).current;
+    this._countdownValidation[control].current = this.form.get(control).value.toString().length;
+    this._countdownValidation[control].remaining =
+      this._countdownValidation[control].max - this._countdownValidation[control].current;
   }
 
   private countdown(control: string): number {
-    return (this._countdownValidation[control]).remaining;
-  };
+    return this._countdownValidation[control].remaining;
+  }
 
   private countdownWhenDoing(): number {
-    return this.countdown('whenDoingCtl');
+    return this.countdown('doingWhat');
   }
   private countdownTellUs(): number {
-    return this.countdown('tellUsCtl');
+    return this.countdown('tellUs');
   }
 
-  // form controls
-  get tellUscontrol() : string {
-    return this.feedbackForm.get('tellUsCtl').value
-  }
-  get whenDoingControl() : string {
-    return this.feedbackForm.get('whenDoingCtl').value;
-  }
-  get nameControl(): string {
-    return this.feedbackForm.get('nameCtl').value;
-  }
-  get emailControl() : string {
-    return this.feedbackForm.get('emailCtl').value;
-  }
-
-  get pendingFeedback() : boolean {
+  get pendingFeedback(): boolean {
     return this._pendingFeedback;
   }
+
   resetPendingFeedback() {
     this._pendingFeedback = false;
   }
 
   closeWindow() {
-    // close the window
-    this.feedbackService.window.close();
+    this.windowRef.nativeWindow.close();
   }
 
-  onSubmit () {
-    if (this.feedbackForm.valid) {
+  onSubmit() {
+    if (this.form.valid) {
       if (this.pendingFeedback) {
+        const { doingWhat, tellUs, fullname, email } = this.form.controls;
         // not yet submitted feedback, so post feedback
-        this._feedback = {
-          doingWhat: this.whenDoingControl,
-          tellUs: this.tellUscontrol,
-          name: this.nameControl,
-          email: this.emailControl,
+        const request: FeedbackModel = {
+          doingWhat: doingWhat.value,
+          tellUs: tellUs.value,
+          name: fullname.value,
+          email: email.value,
         };
-  
-        this.subscriptions.push(
-          this.feedbackService.post(this._feedback)
-          .subscribe(() => {
-            this.resetPendingFeedback();
-          })
-        );
+
+        this.subscriptions.add(this.feedbackService.post(request).subscribe(() => this.resetPendingFeedback()));
       }
     }
-  }
-
-  ngOnInit() {
-    // create form controls, including an empty array for the list of authorities
-    // all form controls are empty 
-    this.feedbackForm = this.fb.group({
-      tellUsCtl: ['', [Validators.required, Validators.maxLength(500)]],
-      whenDoingCtl: ['', [Validators.required, Validators.maxLength(500)]],
-      nameCtl: ['', [Validators.maxLength(120)]],
-      emailCtl: ['', [Validators.email,Validators.maxLength(120)]],
-    });
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe())
-    this.messageService.clearAll()
   }
 }
