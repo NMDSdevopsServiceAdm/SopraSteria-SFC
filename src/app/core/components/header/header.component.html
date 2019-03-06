@@ -10,18 +10,16 @@
       <ul class="govuk-header__navigation" id="navigation" aria-label="Top Level Navigation">
         <ng-container *ngIf="!isLoggedIn()">
           <li class="govuk-header__navigation-item">
-            <a class="govuk-header__link" routerLink="/registered-question" title="Create an account">
-              Create an account
-            </a>
+            <a class="govuk-header__link" routerLink="/registered-question" title="Create an account">Create an account</a>
           </li>
           <li class="govuk-header__navigation-item">
             <a class="govuk-header__link" routerLink="/login" title="Sign in">Sign in</a>
           </li>
         </ng-container>
         <ng-container *ngIf="isLoggedIn()">
-          <li class="govuk-header__navigation-item">{{ fullname }}</li>
+          <li class="govuk-header__navigation-item">Charlie Francis</li>
           <li class="govuk-header__navigation-item">
-            <a class="govuk-header__link" routerLink="/your-account">Your account</a>
+            <a class="govuk-header__link" routerLink="/your-account">Account</a>
           </li>
           <li class="govuk-header__navigation-item">
             <a class="govuk-header__link" (click)="signOut($event)" title="Logout">Logout</a>
