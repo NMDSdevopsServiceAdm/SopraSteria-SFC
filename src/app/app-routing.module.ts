@@ -1,5 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
+import { RegisterGuard } from '@core/guards/register/register.guard';
+import { AuthGuard } from '@core/services/auth-guard.service';
+import { ChangePasswordComponent } from '@features/change-password/change-password.component';
+import { ChangeUserDetailsComponent } from '@features/change-user-details/change-user-details.component';
+import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
+import { ChangeUserSummaryComponent } from '@features/change-user-summary/change-user-summary.component';
 import { ConfirmAccountDetailsComponent } from '@features/confirm-account-details/confirm-account-details.component';
 import { ConfirmLeaversComponent } from '@features/confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from '@features/confirm-starters/confirm-starters.component';
@@ -12,9 +23,11 @@ import { CreateUsernameComponent } from '@features/create-username/create-userna
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LeaversComponent } from '@features/leavers/leavers.component';
 import { LoginComponent } from '@features/login/login.component';
 import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
+import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SecurityQuestionComponent } from '@features/security-question/security-question.component';
 import { SelectMainServiceComponent } from '@features/select-main-service/select-main-service.component';
 import { SelectOtherServicesComponent } from '@features/select-other-services/select-other-services.component';
@@ -28,19 +41,6 @@ import { TermsConditionsComponent } from '@features/terms-conditions/terms-condi
 import { TypeOfEmployerComponent } from '@features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from '@features/user-details/user-details.component';
 import { VacanciesComponent } from '@features/vacancies/vacancies.component';
-
-import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServicePagesComponent,
-} from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
-import { RegisterGuard } from './core/guards/register/register.guard';
-import { AuthGuard } from './core/services/auth-guard.service';
-import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
-import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
-import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
-import { ChangePasswordComponent } from './features/change-password/change-password.component';
-import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
-import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
 
 const routes: Routes = [
   {
@@ -213,7 +213,11 @@ const routes: Routes = [
   },
   {
     path: 'problem-with-the-service',
-    component: ProblemWithTheServicePagesComponent,
+    component: ProblemWithTheServiceComponent,
+  },
+  {
+    path: 'service-unavailable',
+    component: ServiceUnavailableComponent,
   },
   {
     path: 'worker',
