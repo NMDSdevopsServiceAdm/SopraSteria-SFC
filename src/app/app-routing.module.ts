@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConfirmAccountDetailsComponent } from '@features/confirm-account-details/confirm-account-details.component';
 import { ConfirmWorkplaceDetailsComponent } from '@features/confirm-workplace-details/confirm-workplace-details.component';
-import { ContactUsComponent } from '@features/contactUs/contactUs.component';
+import { ContactUsComponent } from '@features/contact-us/contact-us.component';
 import { ContinueCreatingAccountComponent } from '@features/continue-creating-account/continue-creating-account.component';
 import { CqcRegisteredQuestionComponent } from '@features/cqc-registered-question/cqc-registered-question.component';
 import { CreateUsernameComponent } from '@features/create-username/create-username.component';
