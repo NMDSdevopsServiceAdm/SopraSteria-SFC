@@ -13,8 +13,10 @@ body {
   margin: 0;
 }
 
+// Custom Partials
 @import 'partials/lists';
 
+// Custom Components
 @import 'components/doh-logo';
 @import 'components/footer';
 @import 'components/header';
