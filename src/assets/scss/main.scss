@@ -1,14 +1,21 @@
+
+@import '~govuk-frontend/settings/all';
+
+$govuk-font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',
+sans-serif;
+
 @import '~govuk-frontend/all';
 
 body {
-  font-family: 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',
-  sans-serif;
   font-weight: 300;
   letter-spacing: 0.03em;
   color: black;
+
+  margin: 0;
 }
 
 @import 'partials/lists';
 
 @import 'components/doh-logo';
 @import 'components/footer';
+@import 'components/header';
