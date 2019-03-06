@@ -12,8 +12,4 @@ export class LogoutComponent {
     this.authService.logoutWithoutRouting();
     this.idleService.clear();
   }
-
-  login() {
-    this.router.navigate(['/login']);
-  }
 }
