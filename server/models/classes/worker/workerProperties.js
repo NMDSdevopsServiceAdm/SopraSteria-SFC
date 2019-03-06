@@ -31,11 +31,13 @@ const apprenticeshipProperty = require('./properties/apprenticeshipTrainingPrope
 const qualificationInSocialCareProperty = require('./properties/qualificationInSocialCareProperty').WorkerQualificationInSocialCareProperty;
 const otherQualificationProperty = require('./properties/otherQualificationProperty').WorkerOtherQualificationProperty;
 const highestQualificationProperty = require('./properties/highestQualificationProperty').WorkerHighestQualificationProperty;
+const completedProperty = require('./properties/completedProperty').WorkerCompletedProperty;
 
 class WorkerPropertyManager {
     constructor() {
         this._thisManager = new Manager.PropertyManager();
 
+        this._thisManager.registerProperty(completedProperty);
         this._thisManager.registerProperty(contractProperty);
         this._thisManager.registerProperty(nameOrIdProperty);
         this._thisManager.registerProperty(mainJobProperty);

@@ -121,7 +121,8 @@ class ChangePropertyPrototype extends PropertyPrototype {
 
         const changePropertyDefaultName = `${this._dbPropertyPrefix}Value`;
 
-        if (document[changePropertyDefaultName]) {
+        // false is a valid value - must explicitly check for null.
+        if (document[changePropertyDefaultName]!==null) {
             this.property = this.restorePropertyFromSequelize(document);
             this._changedAt = document[`${this._dbPropertyPrefix}ChangedAt`];
             this._changedBy = document[`${this._dbPropertyPrefix}ChangedBy`];
