@@ -4,6 +4,13 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
+import { FooterComponent } from '@core/components/footer/footer.component';
+import { HeaderComponent } from '@core/components/header/header.component';
 import { HttpInterceptor } from '@core/services/http-interceptor';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
@@ -11,12 +18,6 @@ import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServicePagesComponent,
-} from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
-import { FooterComponent } from './core/footer/footer.component';
-import { HeaderComponent } from './core/header/header.component';
 import { AuthGuard } from './core/services/auth-guard.service';
 import { AuthInterceptor } from './core/services/auth-interceptor';
 import { CountryService } from './core/services/country.service';
@@ -96,7 +97,8 @@ import { UserDetailsComponent } from './features/user-details/user-details.compo
     ContactUsComponent,
     LogoutComponent,
     PageNotFoundComponent,
-    ProblemWithTheServicePagesComponent,
+    ProblemWithTheServiceComponent,
+    ServiceUnavailableComponent,
     TermsConditionsComponent,
     DashboardComponent,
     StaffRecordsTabComponent,
