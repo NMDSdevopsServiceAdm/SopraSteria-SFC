@@ -13,6 +13,7 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { HttpInterceptor } from '@core/services/http-interceptor';
 import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
 import { MomentModule } from 'ngx-moment';
@@ -43,7 +44,7 @@ import { ChangeUserSecurityComponent } from './features/change-user-security/cha
 import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
 import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
-import { ContactUsComponent } from './features/contactUs/contactUs.component';
+import { ContactUsComponent } from './features/contact-us/contact-us.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
 import {
   CqcRegisteredQuestionEditComponent,
@@ -165,6 +166,7 @@ import { UserDetailsComponent } from './features/user-details/user-details.compo
     NationalityService,
     CountryService,
     TrainingService,
+    WindowRef,
   ],
   bootstrap: [AppComponent],
 })
