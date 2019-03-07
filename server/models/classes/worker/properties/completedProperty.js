@@ -16,8 +16,8 @@ exports.WorkerCompletedProperty = class WorkerCompletedProperty extends ChangePr
         if (document.completed || document.completed === false) {
             if (typeof document.completed === 'boolean') {
                 this.property = document.completed;
-            } else if (['true', 'false'].includes(document.completed.toLowerCase())) {
-                this.property = document.completed.toLowerCase() === 'true' ? true : false;
+            } else if (['true', 'false'].includes(document.completed)) {
+                this.property = document.completed === 'true' ? true : false;
             } else {
                 this.property = null;
             }
