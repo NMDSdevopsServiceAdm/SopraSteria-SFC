@@ -997,12 +997,65 @@
             },
             "required": ["qualificationId"]
         },
+        "WorkerCompleted" : {
+            "description": "Whether the worker has been nominated as completed or not",
+            "oneOf": [
+                {
+                    "description": "Simple completed",
+                    "type" : "boolean"
+                },
+                {
+                    "description": "Simple completed",
+                    "type" : "string",
+                    "enum" : ["true", "false"]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Apprenticeship Training with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "string",
+                                    "enum" : ["true", "false"]
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                },
+                {
+                    "allOf" : [
+                        {
+                            "description": "Apprenticeship Training with change history",
+                            "type" : "object",
+                            "properties": {
+                                "currentValue" : {
+                                    "type" : "boolean"
+                                }
+                            },
+                            "required" : ["currentValue"]
+                        },
+                        {
+                            "$ref" : "#/definitions/PropertyChangeStatus"
+                        }
+                    ]
+                }
+            ]
+        },
         "Worker" : {
             "description" : "A Worker belongs to a single Establishment",
             "properties" : {
                 "uid" : {
                     "description" : "A unique identifier for a Worker",
                     "$ref" : "#/definitions/uid"
+                },
+                "completed" : {
+                    "description" : "The nominated completion status on a Worker record; this is declared by User (but can be reset by consequential activities",
+                    "$ref" : "#/definitions/WWorkerCompleted"
                 },
                 "nameOrId" : {
                     "description" : "The name or id (staff number) of the worker - unique to the Establishment",

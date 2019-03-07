@@ -4,7 +4,6 @@ const router = express.Router({mergeParams: true});
 // returns the current time in epoch seconds
 router.route('/').get(async (req, res) => {
     const currentTime = new Date().getTime();
-    console.log("WA DEBUG - inside test only timestamp: ", currentTime)
     res.set({
         'X-Timestamp': currentTime
     });
