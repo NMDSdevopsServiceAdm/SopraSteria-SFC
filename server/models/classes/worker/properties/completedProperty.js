@@ -15,9 +15,9 @@ exports.WorkerCompletedProperty = class WorkerCompletedProperty extends ChangePr
         // a false here is a valid value - storing the property as a string, because all existing logic to check if property is updated/changed/valid et al
         if (document.completed || document.completed === false) {
             if (typeof document.completed === 'boolean') {
-                this.property = document.completed ? 'true' : 'false';
-            } else if (['true', 'false'].includes(document.completed .toLowerCase())) {
-                this.property = document.completedtoLowerCase() === 'true' ? true : 'false';
+                this.property = document.completed;
+            } else if (['true', 'false'].includes(document.completed.toLowerCase())) {
+                this.property = document.completed.toLowerCase() === 'true' ? true : false;
             } else {
                 this.property = null;
             }
@@ -25,7 +25,7 @@ exports.WorkerCompletedProperty = class WorkerCompletedProperty extends ChangePr
     }
 
     restorePropertyFromSequelize(document) {
-        return document.CompletedValue === true ? 'true' : 'false';
+        return document.CompletedValue;
     }
     savePropertyToSequelize() {
         return {
@@ -35,21 +35,20 @@ exports.WorkerCompletedProperty = class WorkerCompletedProperty extends ChangePr
 
     isEqual(currentValue, newValue) {
         // a simple boolean (value) compare - but the property is stored as a string
-        const myResult = currentValue && newValue && currentValue === newValue;
-        return myResult;
+        return currentValue !== null && newValue !== null && currentValue === newValue;
     }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
-                completed: this.property === 'true' ? true : false
+                completed: this.property
             };
         }
         
         return {
             completed : {
-                currentValue: this.property === 'true' ? true : false,
+                currentValue: this.property,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };

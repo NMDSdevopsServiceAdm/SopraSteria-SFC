@@ -67,7 +67,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
             this._changed = true;
             this._previousValue = {};
 
-        } else if (this.property && !this.isEqual(this.property, value)) {
+        } else if (this.property !== null && !this.isEqual(this.property, value)) {
             this._previousValue = super.property;
             this._changed = true;
         }
@@ -129,7 +129,6 @@ class ChangePropertyPrototype extends PropertyPrototype {
             this._savedAt = document[`${this._dbPropertyPrefix}SavedAt`];
             this._savedBy = document[`${this._dbPropertyPrefix}SavedBy`];
 
-            // this.property = document.gender;
             this.reset();
         }
 

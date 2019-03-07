@@ -193,7 +193,7 @@ class PropertyManager {
 
         allProperties.forEach(thisPropertyName => {
             const thisProperty = this._properties[thisPropertyName];
-            if (thisProperty.property && (!modifiedPropertiesOnly || (modifiedPropertiesOnly && thisProperty.modified))) {
+            if (thisProperty.property !== null && (!modifiedPropertiesOnly || (modifiedPropertiesOnly && thisProperty.modified))) {
                 thisJsonObject = {
                     ...thisJsonObject,
                     ...thisProperty.toJSON(withHistory, showPropertyHistoryOnly)
