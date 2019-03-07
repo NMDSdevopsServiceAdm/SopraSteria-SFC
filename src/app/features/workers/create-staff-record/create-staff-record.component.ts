@@ -19,7 +19,6 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   public contractsAvailable: Array<string> = [];
   public jobsAvailable: Job[] = [];
   public totalWorkers = 0;
-  public establishmentStaff = 0;
   public form: FormGroup;
   private subscriptions: Subscription = new Subscription();
 
@@ -48,7 +47,6 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.getStaff().subscribe(establishmentStaff => {
         if (establishmentStaff) {
-          this.establishmentStaff = establishmentStaff;
           this.form.controls.totalStaff.patchValue(establishmentStaff);
           this.form.updateValueAndValidity();
         }
