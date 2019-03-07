@@ -19,7 +19,7 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.getAllWorkers().subscribe(data => {
         this.workers = data;
-        this.incomplete = this.workers.filter(worker => worker.created === worker.updated).length;
+        this.incomplete = this.workers.filter(worker => !worker.completed).length;
       })
     );
 
