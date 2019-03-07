@@ -22,19 +22,27 @@ exports.WorkerCountryProperty = class WorkerCountryProperty extends ChangeProper
             if (KNOWN_COUNTRY_OF_BIRTH.includes(document.countryOfBirth.value)) {
                 // if the given country is other, then need to resolve on the given country
                 if (document.countryOfBirth.value === 'Other') {
-                    const validatedCountry = await this._validateCountry(document.countryOfBirth.other);
 
-                    if (validatedCountry) {
-                        this.property = {
-                            value: document.countryOfBirth.value,
-                            other: {
-                                countryId: validatedCountry.countryId,
-                                country: validatedCountry.country
-                            }
-                        };
+                    // https://trello.com/c/UqLUIYhD - country of birth "other" value is optional
+                    if (document.countryOfBirth.other) {
+                        const validatedCountry = await this._validateCountry(document.countryOfBirth.other);
+
+                        if (validatedCountry) {
+                            this.property = {
+                                value: document.countryOfBirth.value,
+                                other: {
+                                    countryId: validatedCountry.countryId,
+                                    country: validatedCountry.country
+                                }
+                            };
+                        } else {
+                            // invalid other country defintion - fails
+                            this.property = null;
+                        }
                     } else {
-                        // invalid other country defintion - fails
-                        this.property = null;
+                        this.property = {
+                            value: document.countryOfBirth.value
+                        };
                     }
                 } else {
                     this.property = {
@@ -68,7 +76,7 @@ exports.WorkerCountryProperty = class WorkerCountryProperty extends ChangeProper
             CountryOfBirthValue: this.property.value
         };
 
-        if (this.property.value === 'Other') {
+        if (this.property.value === 'Other' && this.property.other) {
             countryRecord.CountryOfBirthOtherFK = this.property.other.countryId;
         } else {
             // reset other country lookup if not Other
@@ -81,7 +89,11 @@ exports.WorkerCountryProperty = class WorkerCountryProperty extends ChangeProper
         // country is an object having value and optional country lookup (by id)
         let countryEqual = false;
         if (currentValue && newValue && currentValue.value === 'Other') {
-            if (currentValue.other && newValue.other && currentValue.other.countryId == newValue.other.countryId) {
+            if (!currentValue.other && !newValue.other && currentValue.value === newValue.value) {
+                // if neither current and new "other" value don't exist and both current and new values are both other, then they are equal
+                countryEqual = true;
+            }
+            else if (currentValue.other && newValue.other && currentValue.other.countryId == newValue.other.countryId) {
                 countryEqual = true;
             }
         } else {

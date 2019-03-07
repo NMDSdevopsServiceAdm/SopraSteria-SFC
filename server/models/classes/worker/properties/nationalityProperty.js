@@ -22,19 +22,26 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
             if (KNOWN_NATIONALITIES.includes(document.nationality.value)) {
                 // if the given nationality is other, then need to resolve on the given nationality
                 if (document.nationality.value === 'Other') {
-                    const validatedNationality = await this._validateNationality(document.nationality.other);
 
-                    if (validatedNationality) {
-                        this.property = {
-                            value: document.nationality.value,
-                            other: {
-                                nationalityId: validatedNationality.nationalityId,
-                                nationality: validatedNationality.nationality
-                            }
-                        };
+                    // https://trello.com/c/CqgkWzya - nationalitty "other" value is optional
+                    if (document.nationality.other) {
+                        const validatedNationality = await this._validateNationality(document.nationality.other);
+                        if (validatedNationality) {
+                            this.property = {
+                                value: document.nationality.value,
+                                other: {
+                                    nationalityId: validatedNationality.nationalityId,
+                                    nationality: validatedNationality.nationality
+                                }
+                            };
+                        } else {
+                            // invalid other nationality defintion - fails
+                            this.property = null;
+                        }
                     } else {
-                        // invalid other nationality defintion - fails
-                        this.property = null;
+                        this.property = {
+                            value: document.nationality.value
+                        };
                     }
                 } else {
                     this.property = {
@@ -68,7 +75,7 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
             NationalityValue: this.property.value
         };
 
-        if (this.property.value === 'Other') {
+        if (this.property.value === 'Other' && this.property.other) {
             nationalityRecord.NationalityOtherFK = this.property.other.nationalityId;
         } else {
             // reset other nationality lookup if not Other
@@ -81,7 +88,10 @@ exports.WorkerNationalityProperty = class WorkerNationalityProperty extends Chan
         // nationality is an object having value and optional nationality lookup (by id)
         let nationalityEqual = false;
         if (currentValue && newValue && currentValue.value === 'Other') {
-            if (currentValue.other && newValue.other && currentValue.other.nationalityId == newValue.other.nationalityId) {
+            if (!currentValue.other && !newValue.other && currentValue.value === newValue.value) {
+                // if neither current and new "other" value don't exist and both current and new values are both other, then they are equal
+                nationalityEqual = true;
+            } else if (currentValue.other && newValue.other && currentValue.other.nationalityId == newValue.other.nationalityId) {
                 nationalityEqual = true;
             }
         } else {
