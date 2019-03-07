@@ -71,8 +71,6 @@ export class EthnicityComponent implements OnInit, OnDestroy {
       const { ethnicity } = this.form.value;
       this.messageService.clearError();
 
-      const ethnicityStr = this.ethnicities;
-
       let result;
       Object.keys(this.ethnicities).forEach(group => {
         this.ethnicities[group].forEach(obj => {
