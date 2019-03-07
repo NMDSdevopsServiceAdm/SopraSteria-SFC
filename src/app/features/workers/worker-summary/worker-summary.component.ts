@@ -1,10 +1,12 @@
 import { DecimalPipe, Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
+import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-worker-summary',
@@ -12,15 +14,21 @@ import * as moment from 'moment';
   styleUrls: ['./worker-summary.component.scss'],
   providers: [DecimalPipe],
 })
-export class WorkerSummaryComponent implements OnInit {
+export class WorkerSummaryComponent implements OnInit, OnDestroy {
   private worker: Worker;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private location: Location,
     private route: ActivatedRoute,
     private router: Router,
-    private decimalPipe: DecimalPipe
+    private decimalPipe: DecimalPipe,
+    private workerService: WorkerService
   ) {}
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
@@ -79,7 +87,22 @@ export class WorkerSummaryComponent implements OnInit {
     this.location.back();
   }
 
-  saveAndComplete() {
-    this.router.navigate(['/worker/save-success']);
+  async saveAndComplete() {
+    try {
+      await this.setWorkerCompleted();
+
+      this.router.navigate(['/worker/save-success']);
+    } catch (err) {
+      // keep typescript transpiler silent
+    }
+  }
+
+  setWorkerCompleted(): Promise<WorkerEditResponse> {
+    return new Promise((resolve, reject) => {
+      const worker = this.worker || ({} as Worker);
+      worker.completed = true;
+
+      this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
+    });
   }
 }
