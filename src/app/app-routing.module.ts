@@ -38,11 +38,21 @@ import {
 } from './core/error/service-unavailable-pages/service-unavailable-pages.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
+import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
+import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
 
 const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+  },
+  {
+    path: 'forgot-your-password',
+    component: ForgotYourPasswordComponent,
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
   },
   {
     path: 'registered-question',
