@@ -19,9 +19,9 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   public contractsAvailable: Array<string> = [];
   public jobsAvailable: Job[] = [];
   public totalWorkers = 0;
-  public establishmentStaff = 0;
   public form: FormGroup;
   private subscriptions: Subscription = new Subscription();
+  public i = 0;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -33,43 +33,51 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
     this.totalStaffValidator = this.totalStaffValidator.bind(this);
+    this.staffRecordsRequiredValidator = this.staffRecordsRequiredValidator.bind(this);
   }
 
   get displayAddMore() {
-    const staffRecordsControl = <FormArray>this.form.controls.staffRecords;
-
-    return staffRecordsControl.controls.some(control => {
+    return this.staffRecordsControl.controls.some(control => {
       return control.get('active').value;
     });
+  }
+
+  get staffRecordsControl() {
+    return <FormArray>this.form.controls.staffRecords;
   }
 
   ngOnInit() {
     this.subscriptions.add(
       this.establishmentService.getStaff().subscribe(establishmentStaff => {
-        this.establishmentStaff = establishmentStaff;
-        this.form.controls.totalStaff.patchValue(establishmentStaff);
-        this.form.updateValueAndValidity();
+        if (establishmentStaff) {
+          this.form.controls.totalStaff.patchValue(establishmentStaff);
+          this.form.updateValueAndValidity();
+        }
       })
     );
     this.subscriptions.add(
       this.workerService.getAllWorkers().subscribe(workers => {
-        this.totalWorkers = workers.length;
-        this.form.updateValueAndValidity();
+        if (workers) {
+          this.totalWorkers = workers.length;
+          this.form.updateValueAndValidity();
+        }
       })
     );
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
     this.contractsAvailable = Object.values(Contracts);
 
     this.form = this.formBuilder.group({
-      totalStaff: [null, [Validators.min(0), Validators.max(999), Validators.required]],
+      totalStaff: [0, [Validators.min(0), Validators.max(999), Validators.required]],
       staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
     });
 
-    this.form.setValidators(this.totalStaffValidator);
+    this.form.setValidators([this.totalStaffValidator, this.staffRecordsRequiredValidator]);
 
     this.form.controls.staffRecords.valueChanges.subscribe(val => {
-      if (this.form.controls.totalStaff.value < val.length) {
-        this.form.controls.totalStaff.patchValue(val.length);
+      const updateTotal = this.totalWorkers + val.length;
+      if (this.form.controls.totalStaff.value < updateTotal) {
+        this.form.controls.totalStaff.patchValue(updateTotal);
+        this.form.updateValueAndValidity();
       }
     });
   }
@@ -89,39 +97,32 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   }
 
   addStaffRecord() {
-    const staffRecordsControl = <FormArray>this.form.controls.staffRecords;
-
     this.closeStaffRecords();
 
-    staffRecordsControl.push(this.createStaffRecordsItem());
+    this.staffRecordsControl.push(this.createStaffRecordsItem());
   }
 
   deleteStaffRecord(i: number) {
-    const staffRecordsControl = <FormArray>this.form.controls.staffRecords;
-
-    staffRecordsControl.controls.splice(i, 1);
+    this.staffRecordsControl.controls.splice(i, 1);
   }
 
   openStaffRecord(i: number) {
-    const staffRecordsControl = <FormArray>this.form.controls.staffRecords;
-
     this.closeStaffRecords();
 
-    staffRecordsControl.controls[i].patchValue({ active: true });
+    this.staffRecordsControl.controls[i].patchValue({ active: true });
   }
 
   closeStaffRecords() {
-    const staffRecordsControl = <FormArray>this.form.controls.staffRecords;
-
-    staffRecordsControl.controls.forEach(control => {
+    this.staffRecordsControl.controls.forEach(control => {
       control.patchValue({ active: false });
     });
   }
 
   totalStaffValidator() {
     if (this.form) {
-      const { totalStaff, staffRecords } = this.form.value;
-      const calculatedTotalStaff = this.totalWorkers + staffRecords.filter(record => record.valid).length;
+      const { totalStaff } = this.form.value;
+      const calculatedTotalStaff =
+        this.totalWorkers + this.staffRecordsControl.controls.filter(control => control.valid).length;
 
       if (totalStaff > calculatedTotalStaff) {
         return {
@@ -148,6 +149,16 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     }
 
     return null;
+  }
+
+  staffRecordsRequiredValidator() {
+    if (this.form) {
+      if (!this.staffRecordsControl.controls.filter(control => control.valid).length) {
+        return { staffRecordsRequired: true };
+      }
+
+      return null;
+    }
   }
 
   validateRecord(index) {
