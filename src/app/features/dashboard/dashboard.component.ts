@@ -17,6 +17,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.establishment = this.authService.establishment;
+    console.log(this.establishment);
     this.fullname = this.authService.fullname;
   }
 }
