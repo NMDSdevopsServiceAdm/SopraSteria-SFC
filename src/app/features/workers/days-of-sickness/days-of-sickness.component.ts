@@ -46,7 +46,7 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
     if (this.worker.daysSick) {
       this.form.patchValue({
         valueKnown: this.worker.daysSick.value,
-        value: this.worker.daysSick.days ? this.worker.daysSick.days : null,
+        value: !isNull(this.worker.daysSick.days) ? this.worker.daysSick.days : null,
       });
     }
   }

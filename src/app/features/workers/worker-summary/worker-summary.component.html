@@ -194,7 +194,7 @@
           Nationality
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.nationality?.other?.nationality ? worker.nationality?.other?.nationality : worker.nationality?.value || '-' }}
+          {{ worker.nationality?.other?.nationality !== null ? worker.nationality?.other?.nationality : worker.nationality?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'nationality']">
@@ -238,7 +238,7 @@
           Country of birth
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.countryOfBirth?.other?.country ? worker.countryOfBirth?.other?.country : worker.countryOfBirth?.value || '-' }}
+          {{ worker.countryOfBirth?.other?.country !== null ? worker.countryOfBirth?.other?.country : worker.countryOfBirth?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'country-of-birth']">
@@ -266,7 +266,7 @@
           Year arrived in the UK
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.yearArrived?.year ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
+          {{ worker.yearArrived?.year !== null ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'year-arrived-uk']">
@@ -353,7 +353,7 @@
           Recruited from
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.recruitedFrom?.from?.from ? worker.recruitedFrom?.from?.from : worker.recruitedFrom?.value || '-' }}
+          {{ worker.recruitedFrom?.from?.from !== null ? worker.recruitedFrom?.from?.from : worker.recruitedFrom?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'recruited-from']">
@@ -375,7 +375,7 @@
           Worked in adult social care
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.socialCareStartDate?.year ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-' }}
+          {{ worker.socialCareStartDate?.year !== null ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'adult-social-care-started']">
@@ -397,7 +397,7 @@
           Sickness in last 12 months
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.daysSick?.days ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
+          {{ worker.daysSick?.days !== null ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'days-of-sickness']">
@@ -441,7 +441,7 @@
           Average weekly working hours
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.weeklyHoursAverage?.hours ? worker.weeklyHoursAverage?.hours : worker.weeklyHoursAverage?.value || '-' }}
+          {{ worker.weeklyHoursAverage?.hours !== null ? worker.weeklyHoursAverage?.hours : worker.weeklyHoursAverage?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'average-weekly-hours']">
@@ -463,7 +463,7 @@
           Contracted weekly hours
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.weeklyHoursContracted?.hours ? worker.weeklyHoursContracted?.hours : worker.weeklyHoursContracted?.value || '-' }}
+          {{ worker.weeklyHoursContracted?.hours !== null ? worker.weeklyHoursContracted?.hours : worker.weeklyHoursContracted?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'weekly-contracted-hours']">
