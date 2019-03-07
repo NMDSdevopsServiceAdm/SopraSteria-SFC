@@ -92,9 +92,7 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
         this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (cobName.errors) {
-          if (Object.keys(cobName.errors).includes('required')) {
-            this.messageService.show('error', 'Country must be provided.');
-          } else if (Object.keys(cobName.errors).includes('validCob')) {
+          if (Object.keys(cobName.errors).includes('validCob')) {
             this.messageService.show('error', 'Invalid country of birth.');
           }
         }
@@ -119,8 +117,6 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
           return this.availableOtherCountries.some(c => c.country.toLowerCase() === cobNameLowerCase)
             ? null
             : { validCob: true };
-        } else {
-          return { required: true };
         }
       }
     }
