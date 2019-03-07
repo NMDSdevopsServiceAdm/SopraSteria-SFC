@@ -37,13 +37,13 @@ export class PasswordResetService {
 
   validatePasswordReset(data) {
     const uuidData = { uuid: data };
-    const options = { 'Content-type': 'application/json' };
+    const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
 
     return this.http
       .post(
         '/api/registration/validateResetPassword',
         uuidData,
-        { headers: options, observe: 'response' }
+        { headers: requestHeaders, observe: 'response' }
       )
       .pipe(
         debounceTime(500),
