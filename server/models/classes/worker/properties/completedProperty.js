@@ -16,7 +16,7 @@ exports.WorkerCompletedProperty = class WorkerCompletedProperty extends ChangePr
         if (document.completed || document.completed === false) {
             if (typeof document.completed === 'boolean') {
                 this.property = document.completed ? 'true' : 'false';
-            } else if (['true', 'false'].includes(givenCompleted.toLowerCase())) {
+            } else if (['true', 'false'].includes(document.completed .toLowerCase())) {
                 this.property = document.completedtoLowerCase() === 'true' ? true : 'false';
             } else {
                 this.property = null;
@@ -25,7 +25,6 @@ exports.WorkerCompletedProperty = class WorkerCompletedProperty extends ChangePr
     }
 
     restorePropertyFromSequelize(document) {
-        console.log("WA DEBUG - restoreFromSequelize - restoring completed from DB", document.CompletedValue)
         return document.CompletedValue === true ? 'true' : 'false';
     }
     savePropertyToSequelize() {
@@ -37,7 +36,6 @@ exports.WorkerCompletedProperty = class WorkerCompletedProperty extends ChangePr
     isEqual(currentValue, newValue) {
         // a simple boolean (value) compare - but the property is stored as a string
         const myResult = currentValue && newValue && currentValue === newValue;
-        console.log("WA DEBUG - completed isEqual, current/new: ", typeof currentValue, typeof newValue, myResult)
         return myResult;
     }
 
