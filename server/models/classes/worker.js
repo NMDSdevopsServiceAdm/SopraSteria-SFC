@@ -407,9 +407,6 @@ class Worker {
                 }
 
                 // load extendable properties
-
-console.log("WA DEBUG: CompletedValue: ", fetchResults.CompletedValue)
-
                 await this._properties.restore(fetchResults, SEQUELIZE_DOCUMENT_TYPE);
 
                 return true;
