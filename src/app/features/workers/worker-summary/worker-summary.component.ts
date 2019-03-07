@@ -60,6 +60,10 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     );
   }
 
+  get displayDaysSickness() {
+    return [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract);
+  }
+
   get otherJobRoles() {
     return this.worker.otherJobs.map(job => job.title).join(', ');
   }
