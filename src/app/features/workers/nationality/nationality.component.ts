@@ -90,9 +90,7 @@ export class NationalityComponent implements OnInit, OnDestroy {
         this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
       } else {
         if (nationalityName.errors) {
-          if (Object.keys(nationalityName.errors).includes('required')) {
-            this.messageService.show('error', 'Nationality must be provided.');
-          } else if (Object.keys(nationalityName.errors).includes('validNationality')) {
+          if (Object.keys(nationalityName.errors).includes('validNationality')) {
             this.messageService.show('error', 'Invalid nationality.');
           }
         }
@@ -117,8 +115,6 @@ export class NationalityComponent implements OnInit, OnDestroy {
           return this.availableOtherNationalities.some(n => n.nationality.toLowerCase() === nationalityNameLowerCase)
             ? null
             : { validNationality: true };
-        } else {
-          return { required: true };
         }
       }
     }
