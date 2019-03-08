@@ -60,7 +60,7 @@ export class PasswordResetService {
       .post<any>(
         '/api/user/resetPassword',
         newPassword,
-        { headers: requestHeaders, responseType: 'text' }
+        { headers: requestHeaders, responseType: 'text' as 'json' }
       )
       .pipe(
         debounceTime(500),
