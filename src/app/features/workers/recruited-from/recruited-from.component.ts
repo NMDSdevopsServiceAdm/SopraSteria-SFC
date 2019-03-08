@@ -84,10 +84,12 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
         if (recruitmentKnown.value) {
           this.worker.recruitedFrom = {
             value: recruitmentKnown.value,
-            from: {
-              recruitedFromId: recruitedObj.id,
-              from: recruitedObj.from,
-            },
+            ...(recruitedObj && {
+              from: {
+                recruitedFromId: recruitedObj.id,
+                from: recruitedObj.from,
+              },
+            }),
           };
         }
 
