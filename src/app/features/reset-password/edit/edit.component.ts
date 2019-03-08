@@ -55,8 +55,9 @@ export class ResetPasswordEditComponent implements OnInit {
       )
     });
 
-    if (this.validatePasswordResetResponse && this.validatePasswordResetResponse.username) {
-      this.name = this.validatePasswordResetResponse.username;
+    debugger;
+    if (this.validatePasswordResetResponse && this.validatePasswordResetResponse.body) {
+      this.name = this.validatePasswordResetResponse.body.username;
     }
 
     this.displayError = false;
