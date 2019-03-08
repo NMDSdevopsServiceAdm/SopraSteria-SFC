@@ -5,13 +5,12 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 import { PasswordResetService } from '@core/services/password-reset.service';
 
-export interface successReset {
+export interface SuccessReset {
   text: string;
 }
 @Component({
   selector: 'app-rp-edit',
   templateUrl: './edit.component.html',
-  styleUrls: ['./edit.component.scss']
 })
 export class ResetPasswordEditComponent implements OnInit {
   public resetPasswordForm: FormGroup;
@@ -19,22 +18,8 @@ export class ResetPasswordEditComponent implements OnInit {
   @Input() headerToken: string;
   public name: string;
   public displayError: boolean;
-  passwordMessage: string;
-  confirmPasswordMessage: string;
 
   @Output() resetPasswordOutput = new EventEmitter();
-
-  private passwordMessages = {
-    minlength: 'Your password must be a minimum of 8 characters.',
-    maxlength: 'Your password must be no longer than 50 characters.',
-    required: 'Please enter your password.',
-    pattern: 'Invalid password',
-  };
-
-  private confirmPasswordMessages = {
-    required: 'Please confirm your password.',
-    notMatched: 'Confirm Password does not match.',
-  };
 
   constructor(
     private fb: FormBuilder,
@@ -76,26 +61,6 @@ export class ResetPasswordEditComponent implements OnInit {
 
     this.displayError = false;
 
-  }
-
-  setPasswordMessage(c: AbstractControl): void {
-    this.passwordMessage = '';
-
-    if (c.errors) {
-      this.passwordMessage = Object.keys(c.errors)
-        .map(key => (this.passwordMessage += this.passwordMessages[key]))
-        .join(' ');
-    }
-  }
-
-  setConfirmPasswordMessage(c: AbstractControl): void {
-    this.confirmPasswordMessage = '';
-
-    if (c.errors) {
-      this.confirmPasswordMessage = Object.keys(c.errors)
-        .map(key => (this.confirmPasswordMessage += this.confirmPasswordMessages[key]))
-        .join(' ');
-    }
   }
 
   onSubmit() {

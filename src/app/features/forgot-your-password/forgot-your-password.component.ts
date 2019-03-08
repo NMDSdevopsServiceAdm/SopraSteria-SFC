@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { PasswordResetService } from '@core/services/password-reset.service';
 import { Subscription } from 'rxjs';
@@ -6,9 +6,8 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-forgot-your-password',
   templateUrl: './forgot-your-password.component.html',
-  styleUrls: ['./forgot-your-password.component.scss']
 })
-export class ForgotYourPasswordComponent implements OnInit {
+export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
   public usernameOrEmail: string;
   uuid: {};
 
@@ -24,6 +23,10 @@ export class ForgotYourPasswordComponent implements OnInit {
     this.submitted = false;
 
     this._passwordResetService.resetPasswordUUID$.subscribe(uuid => (this.uuid = uuid));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   getChildFormData(formData) {

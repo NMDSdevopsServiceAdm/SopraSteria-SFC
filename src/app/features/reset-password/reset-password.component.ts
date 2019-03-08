@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { PasswordResetService } from '@core/services/password-reset.service';
 import { Subscription } from 'rxjs';
@@ -6,9 +6,8 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.scss']
 })
-export class ResetPasswordComponent implements OnInit {
+export class ResetPasswordComponent implements OnInit, OnDestroy {
   public resetLinkResponse: {};
   public validatePasswordResetResponse: {};
   public username = '';
@@ -30,6 +29,10 @@ export class ResetPasswordComponent implements OnInit {
     if (this.resetLinkResponse) {
       this.validatePasswordReset(this.resetLinkResponse);
     }
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   validatePasswordReset(data) {

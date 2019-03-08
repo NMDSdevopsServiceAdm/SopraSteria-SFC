@@ -2,7 +2,6 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, empty, Observable } from 'rxjs';
 import { catchError, debounceTime, map, tap } from 'rxjs/operators';
-import { EstablishmentService } from './establishment.service';
 import { HttpErrorHandler } from './http-error-handler.service';
 
 export interface RequestPasswordResetResponse {
@@ -23,11 +22,13 @@ export class PasswordResetService {
   ) { }
 
   requestPasswordReset(usernameOrEmail: string) {
+    const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
+
     return this.http
       .post<RequestPasswordResetResponse>(
         '/api/registration/requestPasswordReset',
         usernameOrEmail,
-        EstablishmentService.getOptions(),
+        { headers: requestHeaders },
       )
       .pipe(
         debounceTime(500),

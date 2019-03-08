@@ -7,7 +7,6 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-fp-edit',
   templateUrl: './edit.component.html',
-  styleUrls: ['./edit.component.scss']
 })
 export class ForgotYourPasswordEditComponent implements OnInit {
   public forgotPasswordForm: FormGroup;
