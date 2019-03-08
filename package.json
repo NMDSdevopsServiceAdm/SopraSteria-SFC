@@ -15,7 +15,9 @@
     "e2e": "ng e2e",
     "server:coverage": "c8 node server.js",
     "metrics": "opener http://localhost:3000/apimetrics/ui",
-    "api:proxy": "node proxy.js"
+    "api:proxy": "node proxy.js",
+    "api:server": "node server.js",
+    "server": "npm-run-all -p -l build:watch api:server"
   },
   "private": true,
   "dependencies": {

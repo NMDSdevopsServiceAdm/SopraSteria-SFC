@@ -131,35 +131,7 @@ p {
   @include rem(margin, 20px 0 0 0);
 }
 
-.is-invalid {
-  border-left: 10px solid $error-red;
 
-  .invalid-feedback {
-    display: block;
-    color: $error-red;
-    font-weight: 700;
-    margin: 0;
-
-    span {
-      display: block;
-    }
-  }
-
-  input,
-  select,
-  textarea {
-
-    &.ng-dirty.ng-invalid {
-      border-color: $error-red;
-    }
-  }
-  /*input {
-
-      &.input {
-        border-color: $error-red;
-      }
-    }*/
-}
 
 .border-line-bottom {
   border-bottom: 1px solid $headerline-border-grey;
