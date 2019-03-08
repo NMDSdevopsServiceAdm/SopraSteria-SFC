@@ -164,7 +164,34 @@ router.route('/:workerId').delete(async (req, res) => {
     const workerId = req.params.workerId;
     const establishmentId = req.establishmentId;
 
-    return res.status(501).send(`Pending: delete of worker with id (${workerId}) for establishment (${establishmentId})`);
+    // validating worker id - must be a V4 UUID
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
+
+    const thisWorker = new Workers.Worker(establishmentId);
+    
+    try {
+        // before deleting a Worker, we need to be sure the Worker is
+        //  available to the given establishment. The best way of doing that
+        //  is to restore from given UID
+        if (await thisWorker.restore(workerId)) {
+            // now "delete" this Worker by archiving it
+            await thisWorker.archive(req.username);
+            return res.status(204).send();
+        } else {
+            // not found worker
+            return res.status(404).send('Not Found');
+        }
+
+    } catch (err) {
+        if (err instanceof Workers.WorkerExceptions.WorkerDeleteException) {
+            console.error("Worker DELETE: ", err.message);
+            return res.status(503).send(err.safe);
+        } else {
+            console.error("Worker DELETE - unexpected exception: ", err);
+            return res.status(500).send();
+        }
+    }
 });
 
 module.exports = router;
