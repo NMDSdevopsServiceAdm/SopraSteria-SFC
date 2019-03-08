@@ -446,7 +446,7 @@ class Worker {
                     attributes: ['id', 'title']
                   }
             ],
-            attributes: ['uid', 'NameOrIdValue', 'ContractValue', "created", "updated", "updatedBy"],
+            attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", "created", "updated", "updatedBy"],
             order: [
                 ['updated', 'DESC']
             ]           
@@ -462,6 +462,7 @@ class Worker {
                         jobId: thisWorker.mainJob.id,
                         title: thisWorker.mainJob.title
                     },
+                    completed: thisWorker.CompletedValue,
                     created:  thisWorker.created.toJSON(),
                     updated: thisWorker.updated.toJSON(),
                     updatedBy: thisWorker.updatedBy

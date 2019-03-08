@@ -69,6 +69,14 @@ import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
+import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
+import { ForgotYourPasswordConfirmationComponent } from './features/forgot-your-password/confirmation/confirmation.component';
+import { ForgotYourPasswordEditComponent } from './features/forgot-your-password/edit/edit.component';
+import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { ResetPasswordEditComponent } from './features/reset-password/edit/edit.component';
+import { ResetPasswordConfirmationComponent } from './features/reset-password/confirmation/confirmation.component';
+
+
 
 @NgModule({
   declarations: [
@@ -111,6 +119,12 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     TermsConditionsComponent,
     DashboardComponent,
     StaffRecordsTabComponent,
+    ForgotYourPasswordComponent,
+    ForgotYourPasswordConfirmationComponent,
+    ForgotYourPasswordEditComponent,
+    ResetPasswordComponent,
+    ResetPasswordEditComponent,
+    ResetPasswordConfirmationComponent,
   ],
   imports: [
     BrowserModule,

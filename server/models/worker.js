@@ -810,6 +810,31 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"HighestQualificationFKChangedBy"'
     },
+    CompletedValue : {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      field: '"CompletedValue"'
+    },
+    CompletedSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CompletedSavedAt"'
+    },
+    CompletedChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CompletedChangedAt"'
+    },
+    CompletedSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CompletedSavedBy"'
+    },
+    CompletedChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CompletedChangedBy"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,

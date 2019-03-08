@@ -76,13 +76,20 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
       const { recruitedFromId, recruitmentKnown } = this.form.controls;
       this.messageService.clearError();
 
+      const recruitedObj = this.availableRecruitments.find(
+        recruitment => recruitment.id === parseInt(recruitedFromId.value, 10)
+      );
+
       if (this.form.valid) {
         if (recruitmentKnown.value) {
           this.worker.recruitedFrom = {
             value: recruitmentKnown.value,
-            from: {
-              recruitedFromId: parseInt(recruitedFromId.value, 10),
-            },
+            ...(recruitedObj && {
+              from: {
+                recruitedFromId: recruitedObj.id,
+                from: recruitedObj.from,
+              },
+            }),
           };
         }
 

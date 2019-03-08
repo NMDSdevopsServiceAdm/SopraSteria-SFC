@@ -69,7 +69,7 @@ class PropertyPrototype {
 
     // returns true if the property is valid; otherwise false
     get valid() {
-        if (this._notSet || this._property) {
+        if (this._notSet || this._property !== null) {
             return true;
         } else {
             return false;

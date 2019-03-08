@@ -1,13 +1,43 @@
 // Form
 form,
 .form {
-  padding-left: 15px;
 
   &.ng-invalid {
     &.ng-touched,
     &.ng-dirty {
-      border-left: 5px solid $error-red;
+      // border-left: 5px solid $error-red;
+      // padding-left: 15px;
     }
+  }
+
+  .is-invalid {
+    border-left: 5px solid $error-red;
+
+    .invalid-feedback {
+      display: block;
+      color: $error-red;
+      font-weight: 700;
+      margin: 0;
+
+      span {
+        display: block;
+      }
+    }
+
+    input,
+    select,
+    textarea {
+
+      &.ng-dirty.ng-invalid {
+        border-color: $error-red;
+      }
+    }
+    /*input {
+
+        &.input {
+          border-color: $error-red;
+        }
+      }*/
   }
 
   select {
@@ -124,7 +154,7 @@ form,
 
   .field-group {
     &.is-invalid {
-      @include rem(padding, 0 0 0 30px);
+      @include rem(padding, 0 0 0 15px);
       @include rem(margin, 0 0 20px 0);
     }
   }
@@ -316,4 +346,30 @@ label {
   height: 40px;
   display: inline-block;
   vertical-align: middle;
+}
+
+.form-control__currency {
+  display: flex;
+  &::before {
+    content: '£';
+    display: inline-block;
+    border: 2px solid $black;
+    border-right: 0;
+    background: $white;
+    border-radius: 0;
+    outline: none;
+    color: $black;
+    padding: .375rem 1rem;
+    height: 38px;
+    font-weight: 400;
+    line-height: 1.7;
+    margin-top: 10px;
+    vertical-align: top;
+
+    @include rem(font-size, 16px);
+    & .form-control {
+      width: auto;
+      flex: 1;
+    }
+  }
 }

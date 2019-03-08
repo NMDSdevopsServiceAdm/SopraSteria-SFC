@@ -204,7 +204,6 @@ const isValidLAEntry = (entry, allKnownLAs) => {
 };
 
 const formatLAResponse = (establishment, primaryAuthority=null) => {
-  console.log("WA DEBUG: primary authority: ", primaryAuthority)
   // WARNING - do not be tempted to copy the database model as the API response; the API may chose to rename/contain
   //           some attributes
   const response = {

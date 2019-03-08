@@ -67,7 +67,7 @@ class ChangePropertyPrototype extends PropertyPrototype {
             this._changed = true;
             this._previousValue = {};
 
-        } else if (this.property && !this.isEqual(this.property, value)) {
+        } else if (this.property !== null && !this.isEqual(this.property, value)) {
             this._previousValue = super.property;
             this._changed = true;
         }
@@ -121,14 +121,14 @@ class ChangePropertyPrototype extends PropertyPrototype {
 
         const changePropertyDefaultName = `${this._dbPropertyPrefix}Value`;
 
-        if (document[changePropertyDefaultName]) {
+        // false is a valid value - must explicitly check for null.
+        if (document[changePropertyDefaultName]!==null) {
             this.property = this.restorePropertyFromSequelize(document);
             this._changedAt = document[`${this._dbPropertyPrefix}ChangedAt`];
             this._changedBy = document[`${this._dbPropertyPrefix}ChangedBy`];
             this._savedAt = document[`${this._dbPropertyPrefix}SavedAt`];
             this._savedBy = document[`${this._dbPropertyPrefix}SavedBy`];
 
-            // this.property = document.gender;
             this.reset();
         }
 

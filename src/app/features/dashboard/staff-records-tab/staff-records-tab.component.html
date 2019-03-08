@@ -46,10 +46,13 @@
       </thead>
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row" *ngFor="let worker of workers">
-          <td class="govuk-table__cell" scope="row"><a [routerLink]="['/worker', worker.uid, 'summary']">{{ worker.nameOrId }}</a></td>
+          <td class="govuk-table__cell" scope="row">
+            <a *ngIf="worker.completed" [routerLink]="['/worker', worker.uid, 'summary']">{{ worker.nameOrId }}</a>
+            <ng-container *ngIf="!worker.completed">{{ worker.nameOrId }}</ng-container>
+          </td>
           <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
           <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
-          <td class="govuk-table__cell"><a *ngIf="worker.created === worker.updated" [routerLink]="['/worker', worker.uid, 'staff-details']" class="icon-link icon-flag">Provide more information</a></td>
+          <td class="govuk-table__cell"><a *ngIf="!worker.completed" [routerLink]="['/worker', worker.uid, worker.mainJob?.jobId === 27 ? 'mental-health' : 'main-job-start-date']" class="icon-link icon-flag">Provide more information</a></td>
         </tr>
       </tbody>
     </table>

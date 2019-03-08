@@ -79,4 +79,5 @@ export interface Worker {
   };
   created?: string;
   updated?: string;
+  completed?: boolean;
 }

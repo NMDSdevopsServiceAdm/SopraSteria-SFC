@@ -1,12 +1,12 @@
 <div class="sub-page-container col-12">
   <div class="row">
     <div class="col-md-8">
-      <h5>User dashboard</h5>
-      <h3>{{ establishmentName }}</h3>
-      <h1 class="h1">Welcome {{ fullname }}</h1>
+      <h3 class="fs-16"><strong>User dashboard</strong></h3>
+      <h5 class="mt-5">{{ establishment.name}}</h5>
+      <h1 class="h2">Welcome {{ fullname }}</h1>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-4 fs-16">
       <p><strong>Contact Skills for Care</strong></p>
       <p>0113 241 0969</p>
       <p><a href="mailto:nmds-support@skillsforcare.org.uk">nmds-support@skillsforcare.org.uk</a></p>
@@ -39,7 +39,7 @@
         </div>
       </app-tab>
 
-      <app-tab title="Staff Records" active="true">
+      <app-tab title="Staff records" active="true">
         <app-staff-records-tab></app-staff-records-tab>
       </app-tab>
     </app-tabs>
