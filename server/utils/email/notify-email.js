@@ -2,6 +2,9 @@ const uuid = require('uuid');
 const NotifyClient = require('notifications-node-client').NotifyClient;
 const notifyClient = new NotifyClient(process.env.NOTIFY_KEY);
 
+const env = process.env.NODE_ENV || 'localhost';
+const config = require('../../config/config.json')[env];
+
 const PASSWORD_RESET_TEMPLATE = '9e7c58e4-ce49-46e1-89d2-057cdcb4f8f9';
 const REPLY_TO_ID='44e98371-2e44-4c6b-ad76-235136be0f8a';
 
