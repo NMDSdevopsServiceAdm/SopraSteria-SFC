@@ -1,42 +1,43 @@
+const config = require('../../config/config');
 const uuid = require('uuid');
-const NotifyClient = require('notifications-node-client').NotifyClient;
-const notifyClient = new NotifyClient(process.env.NOTIFY_KEY);
 
-const env = process.env.NODE_ENV || 'localhost';
-const config = require('../../config/config.json')[env];
+const GovNotifyClient = require('notifications-node-client').NotifyClient;
+const notifyClient = new GovNotifyClient(config.get('notify.key'));
 
-const PASSWORD_RESET_TEMPLATE = '9e7c58e4-ce49-46e1-89d2-057cdcb4f8f9';
-const REPLY_TO_ID='44e98371-2e44-4c6b-ad76-235136be0f8a';
+const REPLY_TO_ID = config.get('notify.replyTo');
 
-//const EMAIL_ADDRESS = 'warren.ayling@ext.soprasteria.com;peter.woodford@soprasteria.com;maria.fairbank-azcarate@soprasteria.com;ann.shepherd1@soprasteria.com;victoria.garnett@skillsforcare.org.uk;david.griffiths@skillsforcare.org.uk';
-const EMAIL_ADDRESS = [
-    { email: 'warren.ayling@ext.soprasteria.com', name: 'Warren'},
-    { email: 'peter.woodford@soprasteria.com', name: 'Peter'},
-    { email: 'maria.fairbank-azcarate@soprasteria.com', name: 'Maria'},
-    { email: 'ann.shepherd1@soprasteria.com', name: 'Ann'},
-    { email: 'victoria.garnett@skillsforcare.org.uk', name: 'Victoria'},
-    { email: 'david.griffiths@skillsforcare.org.uk', name: 'Dave'}
-];
+exports.sendPasswordReset = async (emailAddress, name, resetUuid) => {
+  const RESET_UUID = uuid.v4();
+  if (
+      config.get('notify.key') === 'unknown' ||
+      config.get('notify.replyTo') === '80d54020-c420-46f1-866d-b8cc3196809d' ||
+      config.get('notify.templates.resetPassword') === '80d54020-c420-46f1-866d-b8cc3196809d'
+     ) {
+    // gov.uk notify is not configured
+    // intentionally living this comment (as assist with supporting in production environment)
+    console.log("INFO - gov.uk notify is not configured");
+    return;
+  }
 
-EMAIL_ADDRESS.forEach(thisEmailAddress => {
-    const RESET_UUID = uuid.v4();
-    notifyClient
-    .sendEmail(
-      PASSWORD_RESET_TEMPLATE,
-      thisEmailAddress.email,
+  try {
+    const response = await notifyClient.sendEmail(
+      config.get('notify.templates.resetPassword'),
+      emailAddress,
       {
           personalisation: {
-              name: thisEmailAddress.name,
-              resetUuid: RESET_UUID
+              name,
+              resetUuid
           },
-          reference: 'password-reset-' + uuid.v4(),
+          reference: config.get('env') + '-password-reset-' + uuid.v4(),
           emailReplyToId: REPLY_TO_ID
       }
     )
-    .then(response => {
-      console.log('SUCCESS: ', thisEmailAddress.name);
-    })
-    .catch(err => {
-      console.error('ERROR: ', thisEmailAddress.name);
-    });
-});
+
+    // intentionally living this comment (as assist with supporting in production environment)
+    console.log('Successfully sent (requested) email to: ', emailAddress);
+  
+  } catch (err) {
+    // localise the exception - failing to send the email should not cause the calling API endpoint to fail
+    console.error('FAILED to send (requets) email to: ', emailAddress);
+  }
+};

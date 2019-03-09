@@ -90,6 +90,24 @@ const config = convict({
           format: '*',
           default: 'unknown',           // note - bug in notify - must provide a default value for it to use env var
           env: "NOTIFY_KEY"
+      },
+      replyTo: {
+        doc: 'The id to use for reply-to',
+        format: function check(val) {
+          const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+          if (!uuidRegex.test(val.toUpperCase())) throw new TypeError('gov.uk notify reply-to id should be a V4 UUID');
+        },
+        default: '80d54020-c420-46f1-866d-b8cc3196809d'
+      },
+      templates: {
+        resetPassword: {
+          doc: 'The template id for sending reset password emails',
+          format: function check(val) {
+            const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+            if (!uuidRegex.test(val.toUpperCase())) throw new TypeError('gov.uk notify template id should be a V4 UUID');
+          },
+          default: '80d54020-c420-46f1-866d-b8cc3196809d'
+        }
       }
   },
   jwt: {
