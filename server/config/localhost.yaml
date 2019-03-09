@@ -3,5 +3,5 @@ slack:
 jwt:
     iss: 'localhost'
 db:
-    pool: 2
+    pool: 5
     ssl: false
