@@ -1,15 +1,17 @@
-var express = require('express');
-var router = express.Router();
-var concatenateAddress = require('../utils/concatenateAddress').concatenateAddress;
+const express = require('express');
+const router = express.Router();
+const concatenateAddress = require('../utils/concatenateAddress').concatenateAddress;
 const uuid = require('uuid');
 const isLocal = require('../utils/security/isLocalTest').isLocal;
-var bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcrypt-nodejs');
 const slack = require('../utils/slack/slack-logger');
 
 const models = require('../models');
 
 const generateJWT = require('../utils/security/generateJWT');
 const passwordCheck = require('../utils/security/passwordValidation').isPasswordValid;
+
+const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
 class RegistrationException {
   constructor(originalError, errCode, errMessage) {
@@ -630,7 +632,8 @@ router.post('/requestPasswordReset', async (req, res) => {
 
       const resetLink = `${req.protocol}://${req.get('host')}/api/registration/validateResetPassword?reset=${requestUuid}`;
 
-      // TODO: send email with link - https://trello.com/c/ONiKc7Ck
+      // send email to recipient with the reset UUID
+      await sendMail(sendToAddress, sendToName, requestUuid);
 
       if (isLocal(req)) {
         return res.status(200).json({resetLink, uuid:requestUuid});

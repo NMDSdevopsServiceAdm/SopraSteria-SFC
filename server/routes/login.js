@@ -9,6 +9,8 @@ const Login = require('../models').login;
 const generateJWT = require('../utils/security/generateJWT');
 const uuid = require('uuid');
 
+const sendMail = require('../utils/email/notify-email').sendPasswordReset;
+
 router.post('/',async function(req, res) {
    Login
       .findOne({
@@ -105,10 +107,13 @@ router.post('/',async function(req, res) {
                 }, {transaction: t});
           
                 const resetLink = `${req.protocol}://${req.get('host')}/api/registration/validateResetPassword?reset=${requestUuid}`;
-                console.log("WA TODO - send the email link by email: ", resetLink);
 
-                // TODO - send the email! - https://trello.com/c/ONiKc7Ck
-          
+                // send email to recipient with the reset UUID
+                try {
+                  await sendMail(login.user.EmailValue, login.user.FullNameValue, requestUuid);
+                } catch (err) {
+                  console.error(err);
+                }
               }
 
               // TODO - could implement both https://www.npmjs.com/package/request-ip & https://www.npmjs.com/package/iplocation 

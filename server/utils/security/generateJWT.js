@@ -1,3 +1,4 @@
+const config = require('../../config/config');
 const jwt = require('jsonwebtoken');
 const Authorization = require('./isAuthenticated');
 const Token_Secret = Authorization.getTokenSecret();
@@ -8,8 +9,8 @@ exports.loginJWT = (ttlHours, establishmentId, username, isAdmin) => {
     EstblishmentId: establishmentId,
     isAdmin: isAdmin ? true : false,
     sub: username,
-    aud: 'ADS-WDS',
-    iss: process.env.TOKEN_ISS ? process.env.TOKEN_ISS : "http://localhost:3000"
+    aud: config.get('jwt.aud.login'),
+    iss: config.get('jwt.iss')
   }
 
   return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlHours}h`});   
@@ -20,8 +21,8 @@ exports.passwordResetJWT = (ttlMinutes, username, name, resetUUID) => {
 
   var claims = {
     sub: username,
-    aud: 'ADS-WDS-password-reset',
-    iss: process.env.TOKEN_ISS ? process.env.TOKEN_ISS : "http://localhost:3000",
+    aud: config.get('jwt.aud.passwordReset'),
+    iss: config.get('jwt.iss'),
     name,
     resetUUID,
   }

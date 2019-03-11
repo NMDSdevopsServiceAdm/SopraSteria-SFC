@@ -5,6 +5,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// app config
+var config = require('./server/config/config');
+
 // caching middleware - ref and transactional
 var cacheMiddleware = require('./server/utils/middleware/noCache');
 var refCacheMiddleware = require('./server/utils/middleware/refCache');
@@ -183,9 +186,8 @@ app.use(function(err, req, res, next) {
 });
 
 var debug = require('debug')('server');
-
-app.set('port', process.env.PORT || 3000);
-
+const listenPort = parseInt(config.get('listen.port'), 10);
+app.set('port', listenPort);
 app.listen(app.get('port'));
 
 console.log('Listening on port: ' + app.get('port'));

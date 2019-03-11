@@ -1,0 +1,11 @@
+slack:
+    level : 3     # enables Slack notifications
+jwt:
+    iss: 'asc-wds.skillsforcare.org.uk'
+db:
+    pool: 5
+    ssl: true       // enables SSL
+notify:
+    replyTo: '44e98371-2e44-4c6b-ad76-235136be0f8a'
+    templates:
+        resetPassword: 'fd430f0d-6609-400a-b171-cf124453ec1c'

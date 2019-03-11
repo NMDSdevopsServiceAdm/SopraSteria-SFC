@@ -326,7 +326,8 @@ class Worker {
             const fetchQuery = {
                 where: {
                     establishmentFk: this._establishmentId,
-                    uid: workerUid
+                    uid: workerUid,
+                    archived: false
                 },
                 include: [
                     {
@@ -426,10 +427,69 @@ class Worker {
         }
     };
 
-    // deletes this Worker from DB
+    // "deletes" this Worker by setting the Worker to archived - does not delete any data!
     // Can throw "WorkerDeleteException"
-    async delete() {
-        throw new Error('Not implemented');
+    async archive(deletedBy) {
+        try {
+            const updatedTimestamp = new Date();
+
+            // need to update the existing Worker record and add an
+            //  deleted audit event within a single transaction
+            await models.sequelize.transaction(async t => {
+                // now append the extendable properties
+                const updateDocument = {
+                    archived: true,
+                    updated: updatedTimestamp,
+                    updatedBy: deletedBy
+                };
+
+                // now save the document
+                let [updatedRecordCount, updatedRows] =
+                    await models.worker.update(updateDocument,
+                                            {
+                                                returning: true,
+                                                where: {
+                                                    uid: this.uid
+                                                },
+                                                attributes: ['id', 'updated'],
+                                                transaction: t,
+                                            });
+
+                if (updatedRecordCount === 1) {
+                    const updatedRecord = updatedRows[0].get({plain: true});
+
+                    this._updated = updatedRecord.updated;
+                    this._updatedBy = deletedBy;
+                    this._id = updatedRecord.ID;
+
+                    const allAuditEvents = [{
+                        workerFk: this._id,
+                        username: deletedBy,
+                        type: 'deleted'}];
+                        // having updated the record, create the audit event
+                    await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+
+                    this._log(Worker.LOG_INFO, `Archived Worker with uid (${this._uid}) and id (${this._id})`);
+
+                } else {
+                    const nameId = this._properties.get('NameOrId');
+                    throw new WorkerExceptions.WorkerDeleteException(null,
+                                                                this.uid,
+                                                                nameId ? nameId.property : null,
+                                                                err,
+                                                                `Failed to update (archive) worker record with uid: ${this._uid}`);
+                }
+            });
+            
+        } catch (err) {
+            // if the name/Id property is known, use it in the error message
+            const nameId = this._properties.get('NameOrId');
+            throw new WorkerExceptions.WorkerDeleteException(null,
+                                                           this.uid,
+                                                           nameId ? nameId.property : null,
+                                                           err,
+                                                           `Failed to delete (archive) worker record with uid: ${this._uid}`);
+        }
     };
 
     // returns a set of Workers based on given filter criteria (all if no filters defined) - restricted to the given Establishment
@@ -437,7 +497,8 @@ class Worker {
         const allWorkers = [];
         const fetchResults = await models.worker.findAll({
             where: {
-                establishmentFk: establishmentId
+                establishmentFk: establishmentId,
+                archived: false
             },
             include: [
                 {
