@@ -1,5 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
+import { ActivatedRoute } from '@angular/router';
+
 import { PasswordResetService } from '@core/services/password-reset.service';
 import { Subscription } from 'rxjs';
 
@@ -9,6 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class ResetPasswordComponent implements OnInit, OnDestroy {
   public resetLinkResponse: {};
+  public resetUuidfromUrl: string;
   public validatePasswordResetResponse: {};
   public username = '';
   public headerToken: string;
@@ -17,17 +20,22 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
   constructor(
     private _passwordResetService: PasswordResetService,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit() {
     this.submitted = false;
 
-    this._passwordResetService.resetPasswordUUID$.subscribe(resetLinkResponse => (
-      this.resetLinkResponse = resetLinkResponse
-    ));
+    this.route.queryParams.subscribe(params => {
+      this.resetUuidfromUrl = params['reset'];
+    });
 
-    if (this.resetLinkResponse) {
-      this.validatePasswordReset(this.resetLinkResponse);
+    this._passwordResetService.resetPasswordUUID$.subscribe(resetLinkResponse => {
+      this.resetLinkResponse = resetLinkResponse;
+    });
+
+    if (this.resetUuidfromUrl) {
+      this.validatePasswordReset(this.resetUuidfromUrl);
     }
   }
 
@@ -37,7 +45,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
   validatePasswordReset(data) {
     this.subscriptions.add(
-      this._passwordResetService.validatePasswordReset(data.uuid).subscribe(res => {
+      this._passwordResetService.validatePasswordReset(data).subscribe(res => {
 
         this.headerToken = res.headers.get('authorization');
 
