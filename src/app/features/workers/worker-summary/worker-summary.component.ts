@@ -65,7 +65,7 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   }
 
   get displayBritishCitizenship() {
-    return !(this.worker.nationality && this.worker.nationality.value !== 'British');
+    return !(this.worker.nationality && this.worker.nationality.value === 'British');
   }
 
   get otherJobRoles() {
