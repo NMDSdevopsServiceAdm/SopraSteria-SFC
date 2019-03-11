@@ -373,3 +373,7 @@ label {
     }
   }
 }
+
+select.form-control:not([size]):not([multiple]) {
+  height: 38px;
+}
