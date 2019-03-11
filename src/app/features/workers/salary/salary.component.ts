@@ -58,7 +58,7 @@ export class SalaryComponent implements OnInit, OnDestroy {
     if (this.worker.annualHourlyPay) {
       this.form.patchValue({
         terms: this.worker.annualHourlyPay.value,
-        rate: this.worker.annualHourlyPay.rate,
+        rate: this.worker.annualHourlyPay.rate.toFixed(2),
       });
     }
   }
