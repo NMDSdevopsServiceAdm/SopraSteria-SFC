@@ -56,9 +56,19 @@ export class SalaryComponent implements OnInit, OnDestroy {
     });
 
     if (this.worker.annualHourlyPay) {
+      let rate = '';
+      switch (this.worker.annualHourlyPay.value) {
+        case 'Annually':
+          rate = this.worker.annualHourlyPay.rate.toFixed(0);
+          break;
+        case 'Hourly':
+          rate = this.worker.annualHourlyPay.rate.toFixed(2);
+          break;
+      }
+
       this.form.patchValue({
         terms: this.worker.annualHourlyPay.value,
-        rate: this.worker.annualHourlyPay.rate,
+        rate: rate,
       });
     }
   }

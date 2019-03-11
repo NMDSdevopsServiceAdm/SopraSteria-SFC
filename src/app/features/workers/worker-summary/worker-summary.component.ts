@@ -81,7 +81,16 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   }
 
   get salary() {
-    const formatted = this.decimalPipe.transform(this.worker.annualHourlyPay.rate, '1.2-2');
+    let format = '1';
+    switch (this.worker.annualHourlyPay.value) {
+      case 'Annually':
+        format = '1.0-0';
+        break;
+      case 'Hourly':
+        format = '1.2-2';
+        break;
+    }
+    const formatted = this.decimalPipe.transform(this.worker.annualHourlyPay.rate, format);
     return `£${formatted} ${this.worker.annualHourlyPay.value}`;
   }
 
