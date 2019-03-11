@@ -64,6 +64,10 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     return [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract);
   }
 
+  get displayBritishCitizenship() {
+    return !(this.worker.nationality && this.worker.nationality.value === 'British');
+  }
+
   get otherJobRoles() {
     return this.worker.otherJobs.map(job => job.title).join(', ');
   }
