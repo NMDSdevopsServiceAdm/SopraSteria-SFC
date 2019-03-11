@@ -75,7 +75,10 @@ export class EthnicityComponent implements OnInit, OnDestroy {
       Object.keys(this.ethnicities).forEach(group => {
         this.ethnicities[group].forEach(obj => {
           if (obj.id === parseInt(ethnicity, 10)) {
-            result = obj;
+            result = {
+              ethnicityId: obj.id,
+              ethnicity: obj.ethnicity,
+            };
           }
         });
       });

@@ -19,7 +19,7 @@
       <div class="field-group mb-5">
         <label>Ethnicity
           <select formControlName="ethnicity" class="form-control">
-            <option class="form-control" [ngValue]="null">Select ethnicity</option>
+            <option class="form-control" value="">Select ethnicity</option>
             <option *ngFor="let ethnicity of ethnicitiesUngrouped()" class="form-control" [value]="ethnicity.id">{{ethnicity.ethnicity}}</option>
             <optgroup *ngFor="let groupName of ethnicityGroups()" label="{{groupName}}">
               <option *ngFor="let ethnicity of ethnicities[groupName]" class="form-control" [value]="ethnicity.id">{{ethnicity.ethnicity}}</option>
