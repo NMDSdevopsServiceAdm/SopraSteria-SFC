@@ -42,17 +42,13 @@ export class WorkerService {
       this._worker$.next(null);
       return empty();
     } else {
-      const observable$ = worker.uid ? this.updateWorker(worker) : this.createWorker(worker);
+      const observable$ = worker.uid ? this.updateWorker(worker.uid, worker) : this.createWorker(worker);
       return observable$.pipe(tap(() => this._worker$.next(worker)));
     }
   }
 
-  updateState(data) {
-    if (data.length > 1) {
-      this._workers$.next(data);
-    } else {
-      this._worker$.next(data);
-    }
+  setState(worker) {
+    this._worker$.next(worker);
   }
 
   /*
@@ -105,11 +101,11 @@ export class WorkerService {
   /*
    * PUT /api/establishment/:establishmentId/worker/:workerId
    */
-  updateWorker(worker: Worker) {
+  updateWorker(workerId: string, props) {
     return this.http
       .put<WorkerEditResponse>(
-        `/api/establishment/${this.establishmentService.establishmentId}/worker/${worker.uid}`,
-        worker,
+        `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
+        props,
         EstablishmentService.getOptions()
       )
       .pipe(
