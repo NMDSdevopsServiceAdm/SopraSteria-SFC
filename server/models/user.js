@@ -15,6 +15,13 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"UserUID"'
     },
+    role: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ['Read', 'Edit'],
+      default: 'Edit',
+      field: '"UserRole"'
+    },
     establishmentId: {
       type: DataTypes.INTEGER,
       allowNull: false,

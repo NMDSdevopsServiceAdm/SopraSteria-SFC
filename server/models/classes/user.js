@@ -443,10 +443,10 @@ class User {
             include: [
                 {
                     model: models.login,
-                    attributes: ['username']
+                    attributes: ['username', 'lastLogin']
                   }
             ],
-            attributes: ['uid', 'FullNameValue', 'EmailValue', 'created', 'updated', 'updatedBy'],
+            attributes: ['uid', 'FullNameValue', 'EmailValue', 'role', 'created', 'updated', 'updatedBy'],
             order: [
                 ['updated', 'DESC']
             ]           
@@ -458,6 +458,8 @@ class User {
                     uid: thisUser.uid,
                     fullname: thisUser.FullNameValue,
                     email: thisUser.EmailValue,
+                    role: thisUser.role,
+                    lastLoggedIn: thisUser.login && thisUser.login.username ? thisUser.login.lastLogin : null,
                     username: thisUser.login && thisUser.login.username ? thisUser.login.username : null,
                     created:  thisUser.created.toJSON(),
                     updated: thisUser.updated.toJSON(),

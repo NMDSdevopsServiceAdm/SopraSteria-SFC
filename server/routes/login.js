@@ -61,7 +61,8 @@ router.post('/',async function(req, res) {
               // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
               // reset the number of failed attempts on any successful login
               const loginUpdate = {
-                invalidAttempt: 0
+                invalidAttempt: 0,
+                lastLogin: new Date(),
               };
               if (!login.firstLogin) {
                 loginUpdate.firstLogin = new Date();
