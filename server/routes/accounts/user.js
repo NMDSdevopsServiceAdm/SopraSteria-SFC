@@ -5,7 +5,7 @@ const router = express.Router();
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
 const passwordCheck = require('../../utils/security/passwordValidation').isPasswordValid;
-
+const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
 
 // all user functionality is encapsulated
@@ -312,5 +312,54 @@ router.route('/changePassword').post(async (req, res) => {
       }
 });
 
+// registers (part add) a new user
+router.use('/add/establishment/:id', Authorization.hasAuthorisedEstablishment);
+router.route('/add/establishment/:id').post(async (req, res) => {
+    // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+    const establishmentId = req.establishmentId;
+
+    // from body expect to find fullname, job title, role, email address and telephone number
+    // if (!(req.body.fullname && req.body.jobTitle && req.body.role && req.body.email && req.body.phone)) {
+    //     return res.status(400).send();
+    // }
+
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 60*24*1000; // 24 hours
+    
+    // use the User properties to load (includes validation)
+    const thisUser = new User.User(establishmentId);
+    
+    try {
+        // TODO: JSON validation
+
+        // by loading after the restore, only those properties defined in the
+        //  PUT body will be updated (peristed)
+        const isValidUser = await thisUser.load(req.body);
+
+        // this is a new User, so check mandatory properties!
+        if (isValidUser) {
+            // this is a part user (register user) - so no audit
+            // Also, because this is a part user (register user) - must send a registration email which means adding
+            //  user tracking
+            await thisUser.save(req.username, true, true, expiresTTLms);
+            return res.status(200).json(thisUser.toJSON(false, false, false, true));
+        } else {
+            return res.status(400).send('Unexpected Input.');
+        }
+
+    } catch (err) {
+        if (err instanceof User.UserExceptions.UserJsonException) {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof User.UserExceptions.UserSaveException && err.message === 'Missing Mandatory properties') {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof User.UserExceptions.UserSaveException) {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(503).send(err.safe);
+        }
+
+        console.error("Unexpected exception: ", err)
+    }
+});
 
 module.exports = router;

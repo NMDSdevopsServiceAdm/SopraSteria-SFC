@@ -424,7 +424,11 @@ router.route('/')
           const userRecord = {
             establishmentId: Estblistmentdata.id,
             uid: uuid.v4(),
-            role: 'Edit',                   // the user who creates the Establishment is automatically given Edit role
+            UserRoleValue: 'Edit',     // the user who creates the Establishment is automatically given Edit role
+            UserRoleValueSavedAt: Userdata.DateCreated,
+            UserRoleValueChangedAt: Userdata.DateCreated,
+            UserRoleValueSavedBy: Logindata.UserName,
+            UserRoleValueChangedBy: Logindata.UserName,
             FullNameValue: Userdata.FullName,
             FullNameSavedAt: Userdata.DateCreated,
             FullNameChangedAt: Userdata.DateCreated,
@@ -458,7 +462,7 @@ router.route('/')
             created: Userdata.DateCreated,
             updated: Userdata.DateCreated,
             updatedBy: Logindata.UserName,
-            isAdmin: true,
+            isAdmin: false,
           };
           const userCreation = await models.user.create(userRecord, {transaction: t});
 

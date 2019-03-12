@@ -15,13 +15,6 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"UserUID"'
     },
-    role: {
-      type: DataTypes.ENUM,
-      allowNull: false,
-      values: ['Read', 'Edit'],
-      default: 'Edit',
-      field: '"UserRole"'
-    },
     establishmentId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -130,7 +123,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     SecurityQuestionValue: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       field: '"SecurityQuestionValue"'
     },
     SecurityQuestionSavedAt : {
@@ -155,7 +148,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     SecurityQuestionAnswerValue: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      allowNull: true,
       field: '"SecurityQuestionAnswerValue"'
     },
     SecurityQuestionAnswerSavedAt : {
@@ -178,9 +171,37 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"SecurityQuestionAnswerChangedBy"'
     },
+    UserRoleValue: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ['Read', 'Edit'],
+      default: 'Edit',
+      field: '"UserRoleValue"'
+    },
+    UserRoleSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"UserRoleSavedAt"'
+    },
+    UserRoleChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"UserRoleChangedAt"'
+    },
+    UserRoleSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"UserRoleSavedBy"'
+    },
+    UserRoleChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"UserRoleChangedBy"'
+    },
     isAdmin: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      default: false,
       field: '"AdminUser"'
     },
     created: {

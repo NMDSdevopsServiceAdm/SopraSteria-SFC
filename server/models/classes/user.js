@@ -11,6 +11,9 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
+// notifications
+const sendAddUserEmail = require('../../utils/email/notify-email').sendAddUser;
+
 const UserExceptions = require('./user/userExceptions');
 
 // User properties
@@ -161,9 +164,36 @@ class User {
         }
     }
 
+    // track new user helper - can only be done within a transaction
+    async trackNewUser(transaction, ttl) {
+        // intentionally now exception handling - to ensure exception passes back up to calling function
+        const fullnameProperty = this._properties.get('FullName').property
+        const emailProperty = this._properties.get('Email').property;
+
+        // generate a new tracking UUID
+        this._trackingUUID = uuid.v4();
+
+        // now add a tracking record
+        const now = new Date();
+        const expiresIn = new Date(now.getTime() + ttl);
+        await models.addUserTracking.create(
+            {
+                userFk: this._id,
+                created: now.toISOString(),
+                expires: expiresIn.toISOString(),
+                uuid: this._trackingUUID
+            },
+            {transaction}
+        );
+
+        // now send the email
+        await sendAddUserEmail(emailProperty, fullnameProperty, this._trackingUUID);
+    }
+
+
     // saves the User to DB. Returns true if saved; false is not.
     // Throws "UserSaveException" on error
-    async save(savedBy) {
+    async save(savedBy, suspendAudit=false, sendEmail=false, ttl=0) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -182,6 +212,7 @@ class User {
                     establishmentId: this._establishmentId,
                     uid: this.uid,
                     updatedBy: savedBy,
+                    isAdmin: false,
                     attributes: ['id', 'created', 'updated'],
                 };
 
@@ -196,7 +227,7 @@ class User {
 
                     // check all mandatory parameters have been provided
                     if (!this.hasMandatoryProperties) {
-                        throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, 'Missing Mandatory properties', null);
+                        throw 'Missing Mandatory properties';
                     }
 
                     // now save the document
@@ -204,24 +235,33 @@ class User {
 
                     const sanitisedResults = creation.get({plain: true});
 
-                    this._id = sanitisedResults.ID;
+                    this._id = sanitisedResults.RegistrationID;
                     this._created = sanitisedResults.created;
                     this._updated = sanitisedResults.updated;
                     this._updatedBy = savedBy;
                     this._isNew = false;
 
-                    // having the usser we can now create the audit record; injecting the userFk
-                    const allAuditEvents = [{
-                        userFk: this._id,
-                        username: savedBy,
-                        type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
-                            return {
-                                ...thisEvent,
-                                userFk: this._id
-                            };
-                        }));
-                    await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    console.log("WA DEBUG - created user with ID: ", this._id, this._uid)
 
+                    // only create the audit records for the new user if not suspended by request
+                    if (!suspendAudit) {
+                        // having the user we can now create the audit record; injecting the userFk
+                        const allAuditEvents = [{
+                            userFk: this._id,
+                            username: savedBy,
+                            type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
+                                return {
+                                    ...thisEvent,
+                                    userFk: this._id
+                                };
+                            }));
+                        await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    }
+
+                    if (sendEmail) {
+                        // need to send an email having added an "Add User" tracking record
+                        await this.trackNewUser(t, ttl);
+                    }
                     this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
                 });
                 
@@ -446,7 +486,7 @@ class User {
                     attributes: ['username', 'lastLogin']
                   }
             ],
-            attributes: ['uid', 'FullNameValue', 'EmailValue', 'role', 'created', 'updated', 'updatedBy'],
+            attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy'],
             order: [
                 ['updated', 'DESC']
             ]           
@@ -458,7 +498,7 @@ class User {
                     uid: thisUser.uid,
                     fullname: thisUser.FullNameValue,
                     email: thisUser.EmailValue,
-                    role: thisUser.role,
+                    role: thisUser.UserRoleValue,
                     lastLoggedIn: thisUser.login && thisUser.login.username ? thisUser.login.lastLogin : null,
                     username: thisUser.login && thisUser.login.username ? thisUser.login.username : null,
                     created:  thisUser.created.toJSON(),
@@ -584,7 +624,7 @@ class User {
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
         try {
-            const fullnameProperty = this._properties.get('Fullname');
+            const fullnameProperty = this._properties.get('FullName');
             if (!(fullnameProperty && fullnameProperty.isInitialised && fullnameProperty.valid)) {
                 allExistAndValid = false;
                 this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid fullname');
@@ -607,7 +647,13 @@ class User {
                 allExistAndValid = false;
                 this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid phone');
             }
-    
+
+            const roleProperty = this._properties.get('UserRole');
+            if (!(roleProperty && roleProperty.isInitialised && roleProperty.valid)) {
+                allExistAndValid = false;
+                this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid role');
+            }
+
         } catch (err) {
             console.error(err)
         }

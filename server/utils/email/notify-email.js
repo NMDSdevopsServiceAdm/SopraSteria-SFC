@@ -7,7 +7,6 @@ const notifyClient = new GovNotifyClient(config.get('notify.key'));
 const REPLY_TO_ID = config.get('notify.replyTo');
 
 exports.sendPasswordReset = async (emailAddress, name, resetUuid) => {
-  const RESET_UUID = uuid.v4();
   if (
       config.get('notify.key') === 'unknown' ||
       config.get('notify.replyTo') === '80d54020-c420-46f1-866d-b8cc3196809d' ||
@@ -15,7 +14,7 @@ exports.sendPasswordReset = async (emailAddress, name, resetUuid) => {
      ) {
     // gov.uk notify is not configured
     // intentionally living this comment (as assist with supporting in production environment)
-    console.log("INFO - gov.uk notify is not configured");
+    console.log("INFO - sendPasswordReset - gov.uk notify is not configured");
     return;
   }
 
@@ -34,10 +33,46 @@ exports.sendPasswordReset = async (emailAddress, name, resetUuid) => {
     )
 
     // intentionally living this comment (as assist with supporting in production environment)
-    console.log('Successfully sent (requested) email to: ', emailAddress);
+    console.log('sendPasswordReset - Successfully sent (requested) email to: ', emailAddress);
   
   } catch (err) {
     // localise the exception - failing to send the email should not cause the calling API endpoint to fail
-    console.error('FAILED to send (requets) email to: ', emailAddress);
+    console.error('sendPasswordReset - FAILED to send (request) email to: ', emailAddress);
+  }
+};
+
+exports.sendAddUser = async (emailAddress, name, addUserUuid) => {
+  if (
+      config.get('notify.key') === 'unknown' ||
+      config.get('notify.replyTo') === '80d54020-c420-46f1-866d-b8cc3196809d' ||
+      config.get('notify.templates.addUser') === '80d54020-c420-46f1-866d-b8cc3196809d'
+     ) {
+    // gov.uk notify is not configured
+    // intentionally living this comment (as assist with supporting in production environment)
+    console.log("INFO - sendAddUser - gov.uk notify is not configured");
+    return;
+  }
+
+  try {
+    const response = await notifyClient.sendEmail(
+      config.get('notify.templates.addUser'),
+      emailAddress,
+      {
+          personalisation: {
+              name,
+              addUserUuid
+          },
+          reference: config.get('env') + '-add-user-' + uuid.v4(),
+          emailReplyToId: REPLY_TO_ID
+      }
+    )
+
+    // intentionally living this comment (as assist with supporting in production environment)
+    console.log('sendAddUser - Successfully sent (requested) email to: ', emailAddress);
+  
+  } catch (err) {
+    // localise the exception - failing to send the email should not cause the calling API endpoint to fail
+    console.error('sendAddUser - FAILED to send (requets) email to: ', emailAddress);
+    console.error(err)
   }
 };

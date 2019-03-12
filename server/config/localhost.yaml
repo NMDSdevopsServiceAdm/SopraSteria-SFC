@@ -5,3 +5,8 @@ jwt:
 db:
     pool: 5
     ssl: false
+notify:
+    replyTo: '73711295-a4da-4303-9127-65be2a409681'
+    templates:
+        resetPassword: 'f2c43610-9ec9-4271-b9b1-dd55569b191c'
+        addUser: 'e581eea2-4206-4c90-8594-4357960e3e74'
