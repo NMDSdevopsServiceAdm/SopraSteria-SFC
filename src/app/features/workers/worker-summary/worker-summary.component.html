@@ -266,7 +266,7 @@
           Year arrived in the UK
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.yearArrived?.year !== null ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
+          {{ worker.yearArrived?.year ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'year-arrived-uk']">
