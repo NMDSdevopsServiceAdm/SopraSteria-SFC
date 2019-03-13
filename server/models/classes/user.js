@@ -206,9 +206,12 @@ class User {
     // returns true if User is valid, otherwise false
     isValid() {
         // must also validate username and password - IF they are defined
+        console.log("WA DEBUG - inside User::isValid")
+
+        console.log("WA DEBUG - inside User::isValid - properties::isValid", this._properties.isValid)
 
         // the property manager returns a list of all properties that are invalid; or true
-        const thisUserIsValid = this._properties.isValid && this.isUsernameValid && this.isPasswordValid;
+        const thisUserIsValid = this._properties.isValid === true && this.isUsernameValid && this.isPasswordValid;
 
         if (thisUserIsValid === true) {
             return true;
