@@ -572,7 +572,7 @@ router.post('/requestPasswordReset', async (req, res) => {
 
   // for automated testing, allow the expiry to be overridden by a given TTL parameter (in seconds)
   //  only for localhost/dev
-  const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 60*24*1000; // 24 hours
+  const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 60*60*24*1000; // 24 hours
 
   try {
     // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
