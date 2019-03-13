@@ -40,5 +40,12 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: false,    // intentionally keeping these false; updated timestamp will be managed within the Worker business model not this DB model
   });
 
+  AddUSerTracking.associate = (models) => {
+    AddUSerTracking.belongsTo(models.user, {
+      foreignKey : 'userFk',
+      targetKey: 'id'
+    });
+  };
+
   return AddUSerTracking;
 };

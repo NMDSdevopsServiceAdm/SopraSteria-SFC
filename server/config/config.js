@@ -140,6 +140,11 @@ const config = convict({
           doc: 'The password reset JWT audience',
           format: String,
           default: 'ADS-WDS-password-reset'
+        },
+        addUser: {
+          doc: 'The add user JWT audience',
+          format: String,
+          default: 'ADS-WDS-add-user'
         }
       }
   },

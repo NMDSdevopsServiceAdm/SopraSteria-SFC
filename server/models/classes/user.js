@@ -206,7 +206,6 @@ class User {
         await sendAddUserEmail(emailProperty, fullnameProperty, this._trackingUUID);
     }
 
-
     // saves the User to DB. Returns true if saved; false is not.
     // Throws "UserSaveException" on error
     async save(savedBy, ttl=0) {

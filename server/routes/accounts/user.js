@@ -7,6 +7,7 @@ const Authorization = require('../../utils/security/isAuthenticated');
 const passwordCheck = require('../../utils/security/passwordValidation').isPasswordValid;
 const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
+const generateJWT = require('../../utils/security/generateJWT');
 
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
@@ -323,7 +324,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
     //     return res.status(400).send();
     // }
 
-    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 60*24*1000; // 24 hours
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
     
     // use the User properties to load (includes validation)
     const thisUser = new User.User(establishmentId);
@@ -365,6 +366,81 @@ router.route('/add/establishment/:id').post(async (req, res) => {
         }
 
         console.error("Unexpected exception: ", err)
+    }
+});
+
+// validates (part add) a new user - not authentication middleware
+router.route('/validateAddUser').post(async (req, res) => {
+    if (!req.body.uuid) {
+        console.error('No UUID');
+        return res.status(400).send();
+    }
+    // parse input - escaped to prevent SQL injection
+    const givenUuid = escape(req.body.uuid);
+    const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
+
+    if (!uuidV4Regex.test(givenUuid)) {
+        console.error('Invalid UUID');
+        return res.status(400).send();
+    }
+    
+    try {
+        // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
+        const passTokenResults = await models.addUserTracking.findOne({
+            where: {
+                uuid: givenUuid
+            },
+            include: [
+                {
+                    model: models.user,
+                    attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'JobTitleValue', 'PhoneValue'],
+                }
+            ]
+        });
+  
+        if (passTokenResults && passTokenResults.id) {
+            // now check if the token has expired or already been consumed
+            const now = new Date().getTime();
+
+            if (passTokenResults.expires.getTime() < now) {
+                console.error(`/add/validateAddUser - reset token (${givenUuid}) expired`);
+                return res.status(403).send();
+            }
+    
+            if (passTokenResults.completed) {
+                console.error(`/add/validateAddUser - reset token (${givenUuid}) has already been used`);
+                return res.status(403).send();
+            }
+    
+            // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User UUID.
+            if (passTokenResults.user && passTokenResults.user.id) {
+                // generate JWT and attach it to the header (Authorization)
+                const JWTexpiryInMinutes = 30;
+                const token = generateJWT.addUserJWT(JWTexpiryInMinutes, passTokenResults.user.uid, passTokenResults.user.FullNameValue , givenUuid);
+        
+                res.set({
+                    'Authorization': 'Bearer ' + token
+                });
+        
+                return res.status(200).json({
+                    fullname: passTokenResults.user.FullNameValue,
+                    jobTitle: passTokenResults.user.JobTitleValue,
+                    email: passTokenResults.user.EmailValue,
+                    phone: passTokenResults.user.PhoneValue,
+                });
+    
+            } else {
+                throw new Error(`Failed to find user matching reset token (${givenUuid})`);
+            }
+
+        } else {
+            // token not found
+            console.error(`/add/validateAddUser - reset token (${givenUuid}) not found`);
+            return res.status(404).send();
+        }
+    } catch (err) {
+        console.error('/add/validateAddUser - failed: ', err);
+        return res.status(503).send();
     }
 });
 
