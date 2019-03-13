@@ -55,7 +55,10 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableOtherCountries = res)));
 
     this.subscriptions.add(
-      this.form.controls.cobKnown.valueChanges.subscribe(() => this.form.controls.cobName.reset())
+      this.form.controls.cobKnown.valueChanges.subscribe(() => {
+        this.form.controls.cobName.reset();
+        this.form.controls.cobName.updateValueAndValidity();
+      })
     );
   }
 

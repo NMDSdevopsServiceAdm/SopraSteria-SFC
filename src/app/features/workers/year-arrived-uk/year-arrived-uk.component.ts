@@ -44,7 +44,13 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.subscriptions.add(this.form.controls.yearKnown.valueChanges.subscribe(() => this.form.controls.year.reset()));
+    this.subscriptions.add(
+      this.form.controls.yearKnown.valueChanges.subscribe(() => {
+        this.messageService.clearAll();
+        this.form.controls.year.reset();
+        this.form.controls.year.updateValueAndValidity();
+      })
+    );
   }
 
   ngOnDestroy() {

@@ -54,7 +54,10 @@ export class NationalityComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.add(
-      this.form.controls.nationalityKnown.valueChanges.subscribe(() => this.form.controls.nationalityName.reset())
+      this.form.controls.nationalityKnown.valueChanges.subscribe(() => {
+        this.form.controls.nationalityName.reset();
+        this.form.controls.nationalityName.updateValueAndValidity();
+      })
     );
   }
 
