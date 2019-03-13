@@ -71,7 +71,15 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        const date = this.dateFromForm();
+        const { day, month, year } = this.form.value;
+        const date =
+          day && month && year
+            ? moment()
+                .date(day)
+                .month(month - 1)
+                .year(year)
+            : null;
+
         const props = {
           mainJobStartDate: date ? date.format(DEFAULT_DATE_FORMAT) : null,
         };
@@ -97,11 +105,5 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
         reject();
       }
     });
-  }
-
-  dateFromForm() {
-    const { day, month, year } = this.form.value;
-    const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT);
-    return date.isValid() ? date : null;
   }
 }
