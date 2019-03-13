@@ -20,6 +20,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"EstablishmentID"'
     },
+    archived: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      default: false,
+      field: '"Archived"'
+    },
     FullNameValue: {
       type: DataTypes.TEXT,
       allowNull: false,

@@ -318,12 +318,6 @@ router.use('/add/establishment/:id', Authorization.hasAuthorisedEstablishment);
 router.route('/add/establishment/:id').post(async (req, res) => {
     // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
     const establishmentId = req.establishmentId;
-
-    // from body expect to find fullname, job title, role, email address and telephone number
-    // if (!(req.body.fullname && req.body.jobTitle && req.body.role && req.body.email && req.body.phone)) {
-    //     return res.status(400).send();
-    // }
-
     const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
     
     // use the User properties to load (includes validation)
@@ -332,8 +326,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
     try {
         // TODO: JSON validation
 
-        // by loading after the restore, only those properties defined in the
-        //  PUT body will be updated (peristed)
+        // only those properties defined in the POST body will be updated (peristed)
         const isValidUser = await thisUser.load(req.body);
 
         // this is a new User, so check mandatory properties!
@@ -414,7 +407,7 @@ router.route('/validateAddUser').post(async (req, res) => {
     
             // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User UUID.
             if (passTokenResults.user && passTokenResults.user.id) {
-                // generate JWT and attach it to the header (Authorization)
+                // generate JWT and attach it to the header (Authorization) - JWT username is the name of the User who registered the user (for audit purposes)
                 const JWTexpiryInMinutes = 30;
                 const token = generateJWT.addUserJWT(JWTexpiryInMinutes, passTokenResults.user.uid, passTokenResults.user.FullNameValue , givenUuid);
         
@@ -441,6 +434,75 @@ router.route('/validateAddUser').post(async (req, res) => {
     } catch (err) {
         console.error('/add/validateAddUser - failed: ', err);
         return res.status(503).send();
+    }
+});
+
+// registers (full add) a new user - authentication middleware is specific to add user token
+router.use('/add', Authorization.isAuthorisedAddUser);
+router.route('/add').post(async (req, res) => {
+    // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+    const addUserUUID = req.addUserUUID;
+   
+    try {
+        // TODO: JSON validation
+
+        // The required User role will obtained from the add user tracking UUID, along with
+        //  the establishment ID that will be used for this new user
+        const trackingResponse = await models.addUserTracking.findOne({
+            where: {
+                uuid: addUserUUID
+            },
+            include: [
+                {
+                    model: models.user,
+                    attributes: ['id', 'uid', 'UserRoleValue', 'establishmentId'],
+                }
+            ]
+        });
+
+        if (trackingResponse && trackingResponse.uuid && trackingResponse.user.uid) {
+            // use the User properties to load (includes validation)
+            const thisUser = new User.User(trackingResponse.user.establishmentId, addUserUUID);
+
+            // only those properties defined in the POST body will be updated (peristed) along with
+            //   the additional role property - ovverwrites against that could be passed in the body
+            const newUserProperties = {
+                ...req.body,
+                role: trackingResponse.user.UserRoleValue
+            };
+
+            const isValidUser = await thisUser.load(newUserProperties);
+            // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!
+            if (isValidUser && thisUser.hasDefaultNewUserProperties) {
+                // this is a part user (register user) - so no audit
+                // Also, because this is a part user (register user) - must send a registration email which means adding
+                //  user tracking
+                await thisUser.save(trackingResponse.by);
+
+                return res.status(200).json(thisUser.toJSON(false, false, false, true));
+            } else {
+                return res.status(400).send('Unexpected Input.');
+            }
+
+        } else {
+            // not found the given add user tracking reference
+            console.error("api/user/add error - failed to match add user tracking and user record");
+            return res.status(404).send();
+        }
+
+    } catch (err) {
+        if (err instanceof User.UserExceptions.UserJsonException) {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof User.UserExceptions.UserSaveException && err.message === 'Duplicate Username') {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(400).send(err.message);
+        } else if (err instanceof User.UserExceptions.UserSaveException) {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(503).send(err.safe);
+        }
+
+        console.error("Unexpected exception: ", err)
     }
 });
 

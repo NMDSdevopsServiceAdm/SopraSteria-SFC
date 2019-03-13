@@ -32,6 +32,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       field: '"Completed"'
+    },
+    by: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: false,
+      field: '"RegisteredBy"'
     }
   }, {
     tableName: '"AddUserTracking"',
