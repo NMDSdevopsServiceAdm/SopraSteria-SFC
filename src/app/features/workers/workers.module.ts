@@ -22,7 +22,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
-import { MentalHealthComponent } from './mental-health/mental-health.component';
+import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -62,7 +62,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     GenderComponent,
     HomePostcodeComponent,
     MainJobStartDateComponent,
-    MentalHealthComponent,
+    MentalHealthProfessionalComponent,
     NationalInsuranceNumberComponent,
     NationalityComponent,
     OtherJobRolesComponent,

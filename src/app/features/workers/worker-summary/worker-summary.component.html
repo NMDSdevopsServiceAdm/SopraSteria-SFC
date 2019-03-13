@@ -313,7 +313,7 @@
           {{ worker.approvedMentalHealthWorker ||  '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'mental-health']">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'mental-health-professional']">
             <ng-container *ngIf="!worker.approvedMentalHealthWorker">
               Provide information
               <span class="govuk-visually-hidden"> for</span>

@@ -30,7 +30,7 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.worker = this.route.parent.snapshot.data.worker;
 
-    this.backLink = this.worker.otherJobs.some(j => j.jobId === 27) ? 'mental-health' : 'other-job-roles';
+    this.backLink = this.worker.otherJobs.some(j => j.jobId === 27) ? 'mental-health-professional' : 'other-job-roles';
 
     this.form = this.formBuilder.group({
       nin: [null, this.ninValidator],

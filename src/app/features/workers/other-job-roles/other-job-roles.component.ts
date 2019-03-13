@@ -70,7 +70,7 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
       await this.saveHandler();
 
       if (this.isOtherJobsSocialWorker() && this.worker.mainJob.title !== 'Social Worker') {
-        this.router.navigate(['/worker', this.worker.uid, 'mental-health']);
+        this.router.navigate(['/worker', this.worker.uid, 'mental-health-professional']);
       } else {
         this.router.navigate(['/worker', this.worker.uid, 'national-insurance-number']);
       }
