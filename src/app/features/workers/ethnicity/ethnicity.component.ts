@@ -6,6 +6,7 @@ import { EthnicityService } from '@core/services/ethnicity.service';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ethnicity',
@@ -29,17 +30,19 @@ export class EthnicityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
     this.form = this.formBuilder.group({
       ethnicity: null,
     });
 
-    if (this.worker.ethnicity) {
-      this.form.patchValue({
-        ethnicity: this.worker.ethnicity.ethnicityId,
-      });
-    }
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.worker.ethnicity) {
+        this.form.patchValue({
+          ethnicity: this.worker.ethnicity.ethnicityId,
+        });
+      }
+    });
 
     this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe(res => (this.ethnicities = res.byGroup)));
   }
@@ -71,21 +74,19 @@ export class EthnicityComponent implements OnInit, OnDestroy {
       const { ethnicity } = this.form.value;
       this.messageService.clearError();
 
-      let result;
-      Object.keys(this.ethnicities).forEach(group => {
-        this.ethnicities[group].forEach(obj => {
-          if (obj.id === parseInt(ethnicity, 10)) {
-            result = {
-              ethnicityId: obj.id,
-              ethnicity: obj.ethnicity,
-            };
-          }
-        });
-      });
-
       if (this.form.valid) {
-        this.worker.ethnicity = ethnicity ? result : null;
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        const props = {
+          ethnicity: {
+            ethnicityId: parseInt(ethnicity, 10),
+          },
+        };
+
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         this.messageService.show('error', 'Please fill the required fields.');
         reject();
