@@ -691,7 +691,7 @@ router.post('/validateResetPassword', async (req, res) => {
 
       if (passTokenResults.completed) {
         console.error(`registration POST /validateResetPassword - reset token (${givenUuid}) has already been used`);
-        return res.status(401).send();
+        return res.status(403).send();
       }
 
       // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User/Login details.
