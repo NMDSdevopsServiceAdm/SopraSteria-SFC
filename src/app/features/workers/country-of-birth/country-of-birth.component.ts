@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { CountryResponse, CountryService } from '@core/services/country.service';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-country-of-birth',
@@ -23,7 +24,6 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
     private countryService: CountryService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
@@ -32,26 +32,31 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableOtherCountries = res)));
-
-    this.worker = this.route.parent.snapshot.data.worker;
-
-    this.backLink =
-      this.worker.nationality && this.worker.nationality.value === 'British' ? 'nationality' : 'british-citizenship';
-
     this.form = this.formBuilder.group({
       cobKnown: null,
       cobName: [null, this.cobNameValidator],
     });
 
-    if (this.worker.countryOfBirth) {
-      const { value, other } = this.worker.countryOfBirth;
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+      this.backLink =
+        this.worker.nationality && this.worker.nationality.value === 'British' ? 'nationality' : 'british-citizenship';
 
-      this.form.patchValue({
-        cobKnown: value,
-        cobName: other ? other.country : null,
-      });
-    }
+      if (this.worker.countryOfBirth) {
+        const { value, other } = this.worker.countryOfBirth;
+
+        this.form.patchValue({
+          cobKnown: value,
+          cobName: other ? other.country : null,
+        });
+      }
+    });
+
+    this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableOtherCountries = res)));
+
+    this.subscriptions.add(
+      this.form.controls.cobKnown.valueChanges.subscribe(() => this.form.controls.cobName.reset())
+    );
   }
 
   ngOnDestroy() {
@@ -63,7 +68,9 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      if (this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom') {
+      const { cobKnown } = this.form.value;
+
+      if (cobKnown === 'United Kingdom') {
         this.router.navigate(['/worker', this.worker.uid, 'recruited-from']);
       } else {
         this.router.navigate(['/worker', this.worker.uid, 'year-arrived-uk']);
@@ -79,31 +86,33 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        if (cobKnown.value) {
-          this.worker.countryOfBirth = { value: cobKnown.value };
+        const props = {
+          ...(cobKnown && {
+            countryOfBirth: {
+              value: cobKnown.value,
+              ...(cobName.value && {
+                other: {
+                  country: cobName.value,
+                },
+              }),
+            },
+          }),
+        };
 
-          if (cobName.value) {
-            this.worker.countryOfBirth.other = {
-              country: `${cobName.value.charAt(0).toUpperCase()}${cobName.value.slice(1)}`,
-            };
-          }
-        }
-
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
-        if (cobName.errors) {
-          if (Object.keys(cobName.errors).includes('validCob')) {
-            this.messageService.show('error', 'Invalid country of birth.');
-          }
+        if (cobName.errors.validCob) {
+          this.messageService.show('error', 'Invalid country of birth.');
         }
 
         reject();
       }
     });
-  }
-
-  cobKnownChangeHandler() {
-    this.form.controls.cobName.reset();
   }
 
   cobNameValidator() {
