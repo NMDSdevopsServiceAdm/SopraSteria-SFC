@@ -73,6 +73,5 @@ exports.sendAddUser = async (emailAddress, name, addUserUuid) => {
   } catch (err) {
     // localise the exception - failing to send the email should not cause the calling API endpoint to fail
     console.error('sendAddUser - FAILED to send (requets) email to: ', emailAddress);
-    console.error(err)
   }
 };
