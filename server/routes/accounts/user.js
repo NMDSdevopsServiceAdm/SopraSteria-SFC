@@ -340,8 +340,14 @@ router.route('/add/establishment/:id').post(async (req, res) => {
             // this is a part user (register user) - so no audit
             // Also, because this is a part user (register user) - must send a registration email which means adding
             //  user tracking
-            await thisUser.save(req.username, true, true, expiresTTLms);
-            return res.status(200).json(thisUser.toJSON(false, false, false, true));
+            await thisUser.save(req.username, expiresTTLms);
+
+            // if local/dev - we're not sending email so return the add user tracking UUID
+            let response = thisUser.toJSON(false, false, false, true);
+            if (isLocal(req)) {
+                response = { ...response, trackingUUID: thisUser.trackingId};
+            }
+            return res.status(200).json(response);
         } else {
             return res.status(400).send('Unexpected Input.');
         }

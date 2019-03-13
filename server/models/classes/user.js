@@ -32,6 +32,10 @@ class User {
         this._updatedBy = null;
         this._auditEvents = null;
 
+        // localised attributes - optional on load
+        this._username = null;
+        this._password = null;
+
         // abstracted properties
         const thisUserManager = new UserProperties();
         this._properties =thisUserManager.manager;
@@ -116,6 +120,10 @@ class User {
         return this._updatedBy;
     }
 
+    get trackingId() {
+        return this._trackingUUID;
+    }
+
     // used by save to initialise a new User; returns true if having initialised this user
     _initialise() {
         if (this._uid === null) {
@@ -142,6 +150,14 @@ class User {
     async load(document) {
         try {
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+
+            // for user, the username and password are additional (non property based) optional attributes
+            if (document.username) {
+                this._username = escape(document.username);
+            }
+            if (document.password) {
+                this._password = escape(document.password);
+            }
         } catch (err) {
             this._log(User.LOG_ERROR, `User::load - failed: ${err}`);
             throw new UserExceptions.UserJsonException(
@@ -193,7 +209,7 @@ class User {
 
     // saves the User to DB. Returns true if saved; false is not.
     // Throws "UserSaveException" on error
-    async save(savedBy, suspendAudit=false, sendEmail=false, ttl=0) {
+    async save(savedBy, ttl=0) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -243,8 +259,8 @@ class User {
 
                     console.log("WA DEBUG - created user with ID: ", this._id, this._uid)
 
-                    // only create the audit records for the new user if not suspended by request
-                    if (!suspendAudit) {
+                    // only create the audit records for the new user the username is known
+                    if (this._username !== null) {
                         // having the user we can now create the audit record; injecting the userFk
                         const allAuditEvents = [{
                             userFk: this._id,
@@ -258,7 +274,8 @@ class User {
                         await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
                     }
 
-                    if (sendEmail) {
+                    // send invitation email if the username is not known
+                    if (this._username === null) {
                         // need to send an email having added an "Add User" tracking record
                         await this.trackNewUser(t, ttl);
                     }
@@ -434,8 +451,9 @@ class User {
                 ];
             }
 
+            // owing to part users (register user) - need to check username exists for a valid restore
             const fetchResults = await models.user.findOne(fetchQuery);
-            if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
+            if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id) && fetchResults.login && fetchResults.login.username) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
                 this._id = fetchResults.id;
