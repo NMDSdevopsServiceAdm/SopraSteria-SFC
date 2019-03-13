@@ -404,7 +404,7 @@
           Sickness in last 12 months
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.daysSick?.days !== null ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
+          {{ worker.daysSick?.days ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'days-of-sickness']">

@@ -6,6 +6,7 @@ import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { isNull } from 'util';
 
 @Component({
@@ -27,28 +28,36 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
     private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
-    this.otherChangeHandler = this.otherChangeHandler.bind(this);
     this.valueValidator = this.valueValidator.bind(this);
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
-    if (![Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
-      this.router.navigate(['/worker', this.worker.uid, 'adult-social-care-started'], { replaceUrl: true });
-    }
-
     this.form = this.formBuilder.group({
       valueKnown: null,
       value: [null, [Validators.min(this.daysSicknessMin), Validators.max(this.daysSicknessMax), this.valueValidator]],
     });
 
-    if (this.worker.daysSick) {
-      this.form.patchValue({
-        valueKnown: this.worker.daysSick.value,
-        value: !isNull(this.worker.daysSick.days) ? this.worker.daysSick.days : null,
-      });
-    }
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (![Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
+        this.router.navigate(['/worker', this.worker.uid, 'adult-social-care-started'], { replaceUrl: true });
+      }
+
+      if (this.worker.daysSick) {
+        this.form.patchValue({
+          valueKnown: this.worker.daysSick.value,
+          value: !isNull(this.worker.daysSick.days) ? this.worker.daysSick.days : null,
+        });
+      }
+    });
+
+    this.subscriptions.add(
+      this.form.controls.valueKnown.valueChanges.subscribe(() => {
+        this.form.controls.value.reset();
+        this.form.controls.value.updateValueAndValidity();
+      })
+    );
   }
 
   ngOnDestroy() {
@@ -78,7 +87,19 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
           };
         }
 
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        const props = {
+          daysSick: {
+            value: valueKnown.value,
+            days: value.value,
+          },
+        };
+
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         if (value.errors.required) {
           this.messageService.show('error', `'Number of days' is required.`);
@@ -94,10 +115,6 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
         reject();
       }
     });
-  }
-
-  otherChangeHandler() {
-    this.form.controls.value.reset();
   }
 
   valueValidator() {
