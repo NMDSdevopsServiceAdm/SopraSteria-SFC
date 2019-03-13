@@ -424,6 +424,7 @@ router.route('/')
           const userRecord = {
             establishmentId: Estblistmentdata.id,
             uid: uuid.v4(),
+            archived: false,
             UserRoleValue: 'Edit',     // the user who creates the Establishment is automatically given Edit role
             UserRoleValueSavedAt: Userdata.DateCreated,
             UserRoleValueChangedAt: Userdata.DateCreated,
