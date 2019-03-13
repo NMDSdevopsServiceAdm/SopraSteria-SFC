@@ -332,7 +332,14 @@
           Other job roles
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.otherJobs?.length ? otherJobRoles : '-' }}
+          <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
+            -
+          </ng-template>
+          <ng-template #otherJobs>
+            <ul>
+              <li *ngFor="let otherJob of worker.otherJobs">{{ otherJob.title }}</li>
+            </ul>
+          </ng-template>
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-job-roles']">

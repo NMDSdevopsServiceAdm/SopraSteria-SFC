@@ -68,10 +68,6 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     return !(this.worker.nationality && this.worker.nationality.value === 'British');
   }
 
-  get otherJobRoles() {
-    return this.worker.otherJobs.map(job => job.title).join(', ');
-  }
-
   get mainStartDate() {
     return moment(this.worker.mainJobStartDate).format(DEFAULT_DATE_DISPLAY_FORMAT);
   }
