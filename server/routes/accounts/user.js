@@ -319,6 +319,12 @@ router.route('/add/establishment/:id').post(async (req, res) => {
     // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
     const establishmentId = req.establishmentId;
     const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
+
+    // ensure only a user having the role of Edit can register a new user
+    if (!(req.role && req.role === 'Edit')) {
+        console.error('/add/establishment/:id - given user does not have sufficient permission')
+        return res.status(403).send();
+    }
     
     // use the User properties to load (includes validation)
     const thisUser = new User.User(establishmentId);

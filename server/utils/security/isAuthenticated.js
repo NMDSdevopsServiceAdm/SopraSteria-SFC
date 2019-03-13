@@ -19,6 +19,7 @@ exports.isAuthorised = (req, res , next) => {
         return res.status(403).send('Invalid Token');
       } else {
         req.username= claim.sub;
+        req.role = claim.role;
         next();
       }
     });    
@@ -54,7 +55,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
 
         req.establishmentId =   claim.EstblishmentId ;        
         req.username= claim.sub;
-        req.isAdmin = claim.isAdmin;
+        req.role = claim.role;
         next();
         
       }     

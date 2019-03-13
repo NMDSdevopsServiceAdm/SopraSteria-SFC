@@ -4,10 +4,10 @@ const Authorization = require('./isAuthenticated');
 const Token_Secret = Authorization.getTokenSecret();
 
 // this generates the login JWT
-exports.loginJWT = (ttlHours, establishmentId, username, isAdmin) => {
+exports.loginJWT = (ttlHours, establishmentId, username, role) => {
   var claims = {
     EstblishmentId: establishmentId,
-    isAdmin: isAdmin ? true : false,
+    role,
     sub: username,
     aud: config.get('jwt.aud.login'),
     iss: config.get('jwt.iss')
