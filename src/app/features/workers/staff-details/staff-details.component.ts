@@ -62,7 +62,9 @@ export class StaffDetailsComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      if (this.worker.mainJob.jobId === 27) {
+      const { mainJob } = this.form.controls;
+
+      if (parseInt(mainJob.value, 10) === 27) {
         this.router.navigate(['/worker', this.worker.uid, 'mental-health']);
       } else {
         this.router.navigate(['/worker', this.worker.uid, 'main-job-start-date']);
