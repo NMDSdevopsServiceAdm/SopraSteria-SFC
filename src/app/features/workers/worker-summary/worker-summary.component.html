@@ -382,7 +382,7 @@
           Worked in adult social care
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.socialCareStartDate?.year !== null ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-' }}
+          {{ worker.socialCareStartDate?.year ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'adult-social-care-started']">
