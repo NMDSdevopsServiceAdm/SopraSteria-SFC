@@ -96,6 +96,8 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
     });
   }
 
+  // TODO: https://trello.com/c/sYDV6vTN
+  // Cross Validation
   yearValidator() {
     if (this.form) {
       const { yearKnown, year } = this.form.value;
