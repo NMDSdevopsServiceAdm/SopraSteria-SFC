@@ -35,7 +35,7 @@ router.route('/establishment/:id').get(async (req, res) => {
     }
 });
 
-// gets requested user id or username - using the establishment id extracted for authorised toekn
+// gets requested user id or username - using the establishment id extracted for authorised token
 // optional parameter - "history" must equal 1
 router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id/:userId').get(async (req, res) => {
@@ -452,8 +452,8 @@ router.route('/add').post(async (req, res) => {
     try {
         // TODO: JSON validation
 
-        // The required User role will obtained from the add user tracking UUID, along with
-        //  the establishment ID that will be used for this new user
+        // The required User role will obtained from the original user record at the time of registration via the
+        //  add user tracking UUID, along with the establishment ID
         const trackingResponse = await models.addUserTracking.findOne({
             where: {
                 uuid: addUserUUID
