@@ -43,7 +43,7 @@ router.post('/',async function(req, res) {
           });
         }
 
-        login.comparePassword(req.body.password, async (err, isMatch) => {
+        login.comparePassword(escape(req.body.password), async (err, isMatch) => {
           if (isMatch && !err) {
             const token = generateJWT.loginJWT(12, login.user.establishmentId, req.body.username, login.user.isAdmin);
             var date = new Date().getTime();
