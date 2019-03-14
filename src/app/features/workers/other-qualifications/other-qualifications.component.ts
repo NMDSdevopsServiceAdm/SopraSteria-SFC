@@ -56,7 +56,9 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      if (this.worker.otherQualification === 'Yes') {
+      const { otherQualification } = this.form.value;
+
+      if (otherQualification === 'Yes') {
         this.router.navigate(['/worker', this.worker.uid, 'other-qualifications-level']);
       } else {
         this.router.navigate(['/worker', this.worker.uid, 'summary']);
