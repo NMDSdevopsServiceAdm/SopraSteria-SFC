@@ -86,12 +86,14 @@ export class AverageWeeklyHoursComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const props = {
-          weeklyHoursAverage: {
-            value: weeklyHoursAverageKnown.value,
-            ...(weeklyHoursAverage.value && {
-              hours: weeklyHoursAverage.value,
-            }),
-          },
+          ...(weeklyHoursAverageKnown.value && {
+            weeklyHoursAverage: {
+              value: weeklyHoursAverageKnown.value,
+              ...(weeklyHoursAverage.value && {
+                hours: weeklyHoursAverage.value,
+              }),
+            },
+          }),
         };
 
         this.subscriptions.add(

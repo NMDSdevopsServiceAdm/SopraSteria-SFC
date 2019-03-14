@@ -80,10 +80,12 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const props = {
-          daysSick: {
-            value: valueKnown.value,
-            days: value.value,
-          },
+          ...(valueKnown.value && {
+            daysSick: {
+              value: valueKnown.value,
+              days: value.value,
+            },
+          }),
         };
 
         this.subscriptions.add(

@@ -82,12 +82,14 @@ export class WeeklyContractedHoursComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const props = {
-          weeklyHoursContracted: {
-            value: weeklyHoursContractedKnown.value,
-            ...(weeklyHoursContracted.value && {
-              hours: weeklyHoursContracted.value,
-            }),
-          },
+          ...(weeklyHoursContractedKnown.value && {
+            weeklyHoursContracted: {
+              value: weeklyHoursContractedKnown.value,
+              ...(weeklyHoursContracted.value && {
+                hours: weeklyHoursContracted.value,
+              }),
+            },
+          }),
         };
 
         this.subscriptions.add(

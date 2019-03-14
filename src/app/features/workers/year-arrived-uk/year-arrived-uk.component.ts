@@ -74,10 +74,12 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const props = {
-          yearArrived: {
-            value: yearKnown.value,
-            year: year.value,
-          },
+          ...(yearKnown.value && {
+            yearArrived: {
+              value: yearKnown.value,
+              year: year.value,
+            },
+          }),
         };
 
         this.subscriptions.add(

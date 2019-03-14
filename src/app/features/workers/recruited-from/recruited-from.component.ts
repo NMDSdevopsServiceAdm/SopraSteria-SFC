@@ -85,14 +85,16 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const props = {
-          recruitedFrom: {
-            value: recruitmentKnown.value,
-            ...(recruitedFromId.value && {
-              from: {
-                recruitedFromId: parseInt(recruitedFromId.value, 10),
-              },
-            }),
-          },
+          ...(recruitmentKnown.value && {
+            recruitedFrom: {
+              value: recruitmentKnown.value,
+              ...(recruitedFromId.value && {
+                from: {
+                  recruitedFromId: parseInt(recruitedFromId.value, 10),
+                },
+              }),
+            },
+          }),
         };
 
         this.subscriptions.add(

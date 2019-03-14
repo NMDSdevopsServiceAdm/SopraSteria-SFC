@@ -89,14 +89,16 @@ export class NationalityComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const props = {
-          nationality: {
-            value: nationalityKnown.value,
-            ...(nationalityName.value && {
-              other: {
-                nationality: nationalityName.value,
-              },
-            }),
-          },
+          ...(nationalityKnown.value && {
+            nationality: {
+              value: nationalityKnown.value,
+              ...(nationalityName.value && {
+                other: {
+                  nationality: nationalityName.value,
+                },
+              }),
+            },
+          }),
         };
 
         this.subscriptions.add(

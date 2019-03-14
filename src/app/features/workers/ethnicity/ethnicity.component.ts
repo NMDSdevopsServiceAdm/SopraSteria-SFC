@@ -75,9 +75,11 @@ export class EthnicityComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const props = {
-          ethnicity: {
-            ethnicityId: parseInt(ethnicity, 10),
-          },
+          ...(ethnicity && {
+            ethnicity: {
+              ethnicityId: parseInt(ethnicity, 10),
+            },
+          }),
         };
 
         this.subscriptions.add(

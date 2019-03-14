@@ -79,10 +79,12 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const props = {
-          socialCareStartDate: {
-            value: valueKnown.value,
-            year: year.value,
-          },
+          ...(valueKnown.value && {
+            socialCareStartDate: {
+              value: valueKnown.value,
+              year: year.value,
+            },
+          }),
         };
 
         this.subscriptions.add(

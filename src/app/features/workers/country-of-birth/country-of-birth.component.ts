@@ -90,7 +90,7 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
 
       if (this.form.valid) {
         const props = {
-          ...(cobKnown && {
+          ...(cobKnown.value && {
             countryOfBirth: {
               value: cobKnown.value,
               ...(cobName.value && {
