@@ -83,6 +83,7 @@ router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishmen
 router.route('/establishment/:id/:userId').put(async (req, res) => {
     const userId = req.params.userId;
     const establishmentId = req.establishmentId;
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
 
     // validating user id - must be a V4 UUID or it's a username
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -108,8 +109,14 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
 
             // this is an update to an existing User, so no mandatory properties!
             if (isValidUser) {
-                await thisUser.save(req.username);
-                return res.status(200).json(thisUser.toJSON(false, false, false, true));
+                await thisUser.save(req.username, expiresTTLms);
+
+                // if local/dev - we're not sending email so return the add user tracking UUID if it exists
+                let response = thisUser.toJSON(false, false, false, true);
+                if (isLocal(req) && thisUser.trackingId) {
+                    response = { ...response, trackingUUID: thisUser.trackingId};
+                }
+                return res.status(200).json(response);
             } else {
                 return res.status(400).send('Unexpected Input.');
             }

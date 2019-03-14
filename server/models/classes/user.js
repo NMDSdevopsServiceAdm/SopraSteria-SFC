@@ -226,6 +226,20 @@ class User {
         // generate a new tracking UUID
         this._trackingUUID = uuid.v4();
 
+        // now before creating a new tracking record, need to close down
+        //  any open tracking records for this user
+        await models.addUserTracking.update(
+            {
+                completed: new Date(),
+            },
+            {
+                transaction,
+                where : {
+                    userFk: this._id
+                },
+            }
+        );
+
         // now add a tracking record
         const now = new Date();
         const expiresIn = new Date(now.getTime() + ttl);
@@ -312,7 +326,7 @@ class User {
                         // also need to complete on the originating add user tracking record
                         const trackingResponse = await models.addUserTracking.update(
                             {
-                                completed: new Date(),
+                                completed: sanitisedResults.created,        // use the very same timestamp as that which the User record was created!
                             },
                             {
                                 transaction: t,
@@ -323,8 +337,6 @@ class User {
                                 plain: false
                             }
                         );
-                        console.log("WA DEBUG tracking response: ", trackingResponse[1][0].dataValues.UserFK)
-                        
 
                         // in addition to marking the tracking record as complete, need to delete the original
                         //  User record used for the registration
@@ -411,17 +423,28 @@ class User {
                         this._updatedBy = savedBy;
                         this._id = updatedRecord.RegistrationID;
 
-                        const allAuditEvents = [{
-                            userFk: this._id,
-                            username: savedBy,
-                            type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
-                                return {
-                                    ...thisEvent,
-                                    userFk: this._id
-                                };
-                            }));
-                            // having updated the record, create the audit event
-                        await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                        // if we're updating a part added user (registered only not completed - username is not known)
+                        //  then we need to complete on any outstanding add user tracking for that user
+                        //  and create another one, which includes sending an email with that tracking request.
+                        if (this._username === null) {
+                            // need to send an email having added an "Add User" tracking record
+                            await this.trackNewUser(savedBy, t, ttl);
+                        }
+
+                        // only create the audit records for the new user the username is known
+                        if (this._username !== null) {
+                            const allAuditEvents = [{
+                                userFk: this._id,
+                                username: savedBy,
+                                type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
+                                    return {
+                                        ...thisEvent,
+                                        userFk: this._id
+                                    };
+                                }));
+                                // having updated the record, create the audit event
+                            await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                        }
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
                         const additionalModels = this._properties.additionalModels;
@@ -510,7 +533,8 @@ class User {
                 fetchQuery = {
                     where: {
                         establishmentId: this._establishmentId,
-                        uid: uid
+                        uid: uid,
+                        archived: false,
                     },
                     include: [
                         {
@@ -541,14 +565,13 @@ class User {
                 ];
             }
 
-            // owing to part users (register user) - need to check username exists for a valid restore
             const fetchResults = await models.user.findOne(fetchQuery);
-            if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id) && fetchResults.login && fetchResults.login.username) {
+            if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
                 this._id = fetchResults.id;
                 this._uid = fetchResults.uid;
-                this._username = fetchResults.login.username;
+                this._username = fetchResults.login && fetchResults.login.username ? fetchResults.login.username : null;
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
