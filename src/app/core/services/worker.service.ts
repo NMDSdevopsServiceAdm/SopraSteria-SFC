@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, empty, Observable } from 'rxjs';
-import { catchError, debounceTime, map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { catchError, debounceTime, map } from 'rxjs/operators';
 
 import { Worker } from '../model/worker.model';
 import { EstablishmentService } from './establishment.service';
@@ -35,16 +35,6 @@ export class WorkerService {
 
   public get worker() {
     return this._worker$.value as Worker;
-  }
-
-  setWorker(worker: Worker): Observable<WorkerEditResponse> {
-    if (worker === null) {
-      this._worker$.next(null);
-      return empty();
-    } else {
-      const observable$ = worker.uid ? this.updateWorker(worker.uid, worker) : this.createWorker(worker);
-      return observable$.pipe(tap(() => this._worker$.next(worker)));
-    }
   }
 
   setState(worker) {
