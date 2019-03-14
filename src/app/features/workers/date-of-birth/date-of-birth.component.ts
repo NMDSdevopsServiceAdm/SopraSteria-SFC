@@ -74,9 +74,9 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
         const date =
           day && month && year
             ? moment()
-                .date(day)
-                .month(month - 1)
                 .year(year)
+                .month(month - 1)
+                .date(day)
             : null;
         const props = {
           dateOfBirth: date ? date.format(DEFAULT_DATE_FORMAT) : null,
@@ -130,9 +130,9 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
       if (day && month && year) {
         const date = moment()
-          .date(day)
+          .year(year)
           .month(month - 1)
-          .year(year);
+          .date(day);
         if (date.isValid()) {
           // TODO: https://trello.com/c/sYDV6vTN
           // Cross Validation
