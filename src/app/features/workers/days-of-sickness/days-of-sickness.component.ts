@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
@@ -22,7 +22,6 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService
@@ -80,13 +79,6 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        if (valueKnown.value) {
-          this.worker.daysSick = {
-            value: valueKnown.value,
-            days: Math.round(value.value * 2) / 2,
-          };
-        }
-
         const props = {
           daysSick: {
             value: valueKnown.value,
