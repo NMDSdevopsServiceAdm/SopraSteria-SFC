@@ -42,7 +42,7 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
             this.formBuilder.control({
               jobId: j.id,
               title: j.title,
-              checked: this.worker.otherJobs.some(o => o.jobId === j.id),
+              checked: this.worker.otherJobs ? this.worker.otherJobs.some(o => o.jobId === j.id) : false,
             })
           );
 
