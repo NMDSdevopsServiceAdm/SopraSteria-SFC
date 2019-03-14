@@ -32,10 +32,6 @@
     line-height: 32px;
 }
 
-.record select {
-    height: 30px;
-}
-
 input[type=checkbox] {
     transform: scale(1.0);
 }
@@ -46,7 +42,7 @@ input[type=radio] {
 .round {
 position: relative;
 }
-  
+
 .round label {
     background-color: #fff;
     border: 1px solid #ccc;
@@ -58,7 +54,7 @@ position: relative;
     top: 0;
     width: 28px;
 }
-  
+
 .round label:after {
     border: 2px solid #fff;
     border-top: none;
@@ -72,16 +68,16 @@ position: relative;
     transform: rotate(-45deg);
     width: 12px;
 }
-  
+
 .round input[type="checkbox"] {
     visibility: hidden;
 }
-  
+
 .round input[type="checkbox"]:checked + label {
     background-color: $sfc-btn-primary-green;
     border-color:  $sfc-btn-primary-green;
 }
-  
+
 .round input[type="checkbox"]:checked + label:after {
     opacity: 1;
 }
