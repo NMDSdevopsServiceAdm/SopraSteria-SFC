@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { EthnicityService } from '@core/services/ethnicity.service';
 import { MessageService } from '@core/services/message.service';
@@ -23,7 +23,6 @@ export class EthnicityComponent implements OnInit, OnDestroy {
     private ethnicityService: EthnicityService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
