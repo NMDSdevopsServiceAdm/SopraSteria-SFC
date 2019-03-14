@@ -75,9 +75,9 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
         const date =
           day && month && year
             ? moment()
-                .date(day)
-                .month(month - 1)
                 .year(year)
+                .month(month - 1)
+                .date(day)
             : null;
 
         const props = {
