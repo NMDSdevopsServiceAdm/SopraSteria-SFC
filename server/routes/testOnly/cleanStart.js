@@ -53,6 +53,12 @@ router.route('/').post(async (req, res) => {
         );
 
         // accounts
+        await models.addUserTracking.destroy(
+            {
+                where: {}
+            },
+            {transaction: t}
+        );
         await models.passwordTracking.destroy(
             {
                 where: {}

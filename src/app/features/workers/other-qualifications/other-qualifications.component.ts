@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-other-qualifications',
@@ -21,27 +22,29 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
-    this.backLink =
-      this.worker.qualificationInSocialCare === 'Yes' ? 'social-care-qualification-level' : 'social-care-qualification';
-
     this.form = this.formBuilder.group({
       otherQualification: null,
     });
 
-    if (this.worker.otherQualification) {
-      this.form.patchValue({
-        otherQualification: this.worker.otherQualification,
-      });
-    }
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+      this.backLink =
+        this.worker.qualificationInSocialCare === 'Yes'
+          ? 'social-care-qualification-level'
+          : 'social-care-qualification';
+
+      if (this.worker.otherQualification) {
+        this.form.patchValue({
+          otherQualification: this.worker.otherQualification,
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -53,7 +56,9 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      if (this.worker.otherQualification === 'Yes') {
+      const { otherQualification } = this.form.value;
+
+      if (otherQualification === 'Yes') {
         this.router.navigate(['/worker', this.worker.uid, 'other-qualifications-level']);
       } else {
         this.router.navigate(['/worker', this.worker.uid, 'summary']);
@@ -69,10 +74,16 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        const worker = this.worker || ({} as Worker);
-        worker.otherQualification = otherQualification.value;
+        const props = {
+          otherQualification: otherQualification.value,
+        };
 
-        this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         reject();
       }

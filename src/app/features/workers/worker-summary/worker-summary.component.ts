@@ -1,12 +1,13 @@
 import { DecimalPipe, Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-worker-summary',
@@ -20,15 +21,10 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
 
   constructor(
     private location: Location,
-    private route: ActivatedRoute,
     private router: Router,
     private decimalPipe: DecimalPipe,
     private workerService: WorkerService
   ) {}
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
@@ -64,8 +60,8 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     return [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract);
   }
 
-  get otherJobRoles() {
-    return this.worker.otherJobs.map(job => job.title).join(', ');
+  get displayBritishCitizenship() {
+    return !(this.worker.nationality && this.worker.nationality.value === 'British');
   }
 
   get mainStartDate() {
@@ -77,12 +73,27 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   }
 
   get salary() {
-    const formatted = this.decimalPipe.transform(this.worker.annualHourlyPay.rate, '1.2-2');
+    let format = '1';
+    switch (this.worker.annualHourlyPay.value) {
+      case 'Annually':
+        format = '1.0-0';
+        break;
+      case 'Hourly':
+        format = '1.2-2';
+        break;
+    }
+    const formatted = this.decimalPipe.transform(this.worker.annualHourlyPay.rate, format);
     return `£${formatted} ${this.worker.annualHourlyPay.value}`;
   }
 
   ngOnInit(): void {
-    this.worker = this.route.parent.snapshot.data.worker;
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   goBack(event) {
@@ -103,10 +114,16 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
 
   setWorkerCompleted(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
-      const worker = this.worker || ({} as Worker);
-      worker.completed = true;
+      const props = {
+        completed: true,
+      };
 
-      this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
+      this.subscriptions.add(
+        this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+          this.workerService.setState({ ...this.worker, ...data });
+          resolve();
+        }, reject)
+      );
     });
   }
 }

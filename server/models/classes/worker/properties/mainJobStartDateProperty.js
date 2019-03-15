@@ -35,7 +35,7 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
             // the easier way to validate a date is to use the Javascript Date object,
             //  but 2019-02-29 is automatically rounded up to 2019-03-01 by Javascript Date
             //  therefore using the impressive "moment" library
-            const expectedDate = moment(document.mainJobStartDate, "YYYY-MM-DD");
+            const expectedDate = moment.utc(document.mainJobStartDate, "YYYY-MM-DD");
             const thisDate = moment();
 
             // TODO - cross validatin checks with Date of Birth

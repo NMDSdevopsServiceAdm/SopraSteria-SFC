@@ -19,6 +19,7 @@ exports.isAuthorised = (req, res , next) => {
         return res.status(403).send('Invalid Token');
       } else {
         req.username= claim.sub;
+        req.role = claim.role;
         next();
       }
     });    
@@ -54,7 +55,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
 
         req.establishmentId =   claim.EstblishmentId ;        
         req.username= claim.sub;
-        req.isAdmin = claim.isAdmin;
+        req.role = claim.role;
         next();
         
       }     
@@ -96,6 +97,32 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
         // extract token claims and add to the request for subsequent use
         req.resetUuid = claim.resetUUID;
         req.username = claim.sub;
+        req.fullname = claim.name;
+        next();
+      }      
+    });    
+  } else {
+    // not authenticated
+    res.status(401).send('Requires authorisation');
+  }
+}
+
+exports.isAuthorisedAddUser = (req, res, next) => {
+  const token = getToken(req.headers[AUTH_HEADER]);
+
+  if (token) {
+    jwt.verify(token, Token_Secret, function (err, claim) {
+
+      // can be either a password reset token or a logged in token
+
+      if (err || claim.aud !== config.get('jwt.aud.addUser') || claim.iss !== thisIss) {
+        console.error('Add User token is invalid');
+        return res.status(403).send('Invalid token');
+
+      } else {
+        // extract token claims and add to the request for subsequent use
+        req.addUserUUID = claim.addUserUUID;
+        req.userUID = claim.sub;
         req.fullname = claim.name;
         next();
       }      

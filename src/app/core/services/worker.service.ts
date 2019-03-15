@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, empty, Observable } from 'rxjs';
-import { catchError, debounceTime, map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { catchError, debounceTime, map } from 'rxjs/operators';
 
 import { Worker } from '../model/worker.model';
 import { EstablishmentService } from './establishment.service';
@@ -37,22 +37,8 @@ export class WorkerService {
     return this._worker$.value as Worker;
   }
 
-  setWorker(worker: Worker): Observable<WorkerEditResponse> {
-    if (worker === null) {
-      this._worker$.next(null);
-      return empty();
-    } else {
-      const observable$ = worker.uid ? this.updateWorker(worker) : this.createWorker(worker);
-      return observable$.pipe(tap(() => this._worker$.next(worker)));
-    }
-  }
-
-  updateState(data) {
-    if (data.length > 1) {
-      this._workers$.next(data);
-    } else {
-      this._worker$.next(data);
-    }
+  setState(worker) {
+    this._worker$.next(worker);
   }
 
   /*
@@ -105,11 +91,11 @@ export class WorkerService {
   /*
    * PUT /api/establishment/:establishmentId/worker/:workerId
    */
-  updateWorker(worker: Worker) {
+  updateWorker(workerId: string, props) {
     return this.http
       .put<WorkerEditResponse>(
-        `/api/establishment/${this.establishmentService.establishmentId}/worker/${worker.uid}`,
-        worker,
+        `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
+        props,
         EstablishmentService.getOptions()
       )
       .pipe(

@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { POSTCODE_PATTERN } from '@core/constants/constants';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home-postcode',
@@ -20,24 +21,25 @@ export class HomePostcodeComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private formBuilder: FormBuilder,
     private messageService: MessageService,
-    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
     this.form = this.formBuilder.group({
       postcode: [null, this.postcodeValidator],
     });
 
-    if (this.worker.postcode) {
-      this.form.patchValue({
-        postcode: this.worker.postcode,
-      });
-    }
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.worker.postcode) {
+        this.form.patchValue({
+          postcode: this.worker.postcode,
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -60,13 +62,19 @@ export class HomePostcodeComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        this.worker.postcode = postcode.value;
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        const props = {
+          postcode: postcode.value,
+        };
+
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         if (postcode.errors.validPostcode) {
           this.messageService.show('error', 'Invalid postcode.');
-        } else {
-          this.messageService.show('error', 'Please fill the required fields.');
         }
 
         reject();

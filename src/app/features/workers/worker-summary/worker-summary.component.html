@@ -211,7 +211,7 @@
       </div>
 
 
-      <div class="govuk-summary-list__row">
+      <div class="govuk-summary-list__row" *ngIf="displayBritishCitizenship">
         <dt class="govuk-summary-list__key">
           British citizenship
         </dt>
@@ -266,7 +266,7 @@
           Year arrived in the UK
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.yearArrived?.year !== null ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
+          {{ worker.yearArrived?.year ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'year-arrived-uk']">
@@ -313,7 +313,7 @@
           {{ worker.approvedMentalHealthWorker ||  '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'mental-health']">
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'mental-health-professional']">
             <ng-container *ngIf="!worker.approvedMentalHealthWorker">
               Provide information
               <span class="govuk-visually-hidden"> for</span>
@@ -332,7 +332,14 @@
           Other job roles
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.otherJobs?.length ? otherJobRoles : '-' }}
+          <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
+            -
+          </ng-template>
+          <ng-template #otherJobs>
+            <ul>
+              <li *ngFor="let otherJob of worker.otherJobs">{{ otherJob.title }}</li>
+            </ul>
+          </ng-template>
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-job-roles']">
@@ -375,7 +382,7 @@
           Worked in adult social care
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.socialCareStartDate?.year !== null ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-' }}
+          {{ worker.socialCareStartDate?.year ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'adult-social-care-started']">
@@ -397,7 +404,7 @@
           Sickness in last 12 months
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ worker.daysSick?.days !== null ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
+          {{ worker.daysSick?.days ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'days-of-sickness']">

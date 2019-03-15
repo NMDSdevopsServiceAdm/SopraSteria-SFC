@@ -223,7 +223,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
           jobId: job.id,
           title: job.title,
         };
-        this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
+        this.subscriptions.add(this.workerService.createWorker(worker).subscribe(resolve, reject));
       } else {
         reject(false);
       }

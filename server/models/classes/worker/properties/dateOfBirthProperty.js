@@ -19,7 +19,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
             // mimics main job start date property by ensuring date is a valid date
             //  based on leap year/days in month and that date of birth is more than
             //  sixteen years ago.
-            const expectedDate = moment(document.dateOfBirth, "YYYY-MM-DD");
+            const expectedDate = moment.utc(document.dateOfBirth, "YYYY-MM-DD");
             const maxDate = moment().subtract(MINIMUM_AGE, 'y');
             const minDate = moment().subtract(MAXIMUM_AGE, 'y');
 
@@ -54,6 +54,7 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
 
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        console.log("WA DEBUG: date of birth property toJSON: ", this.property)
         if (!withHistory) {
             // simple form
 

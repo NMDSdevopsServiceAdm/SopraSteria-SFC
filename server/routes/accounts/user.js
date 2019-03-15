@@ -5,8 +5,9 @@ const router = express.Router();
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
 const passwordCheck = require('../../utils/security/passwordValidation').isPasswordValid;
-
+const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
+const generateJWT = require('../../utils/security/generateJWT');
 
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
@@ -34,7 +35,7 @@ router.route('/establishment/:id').get(async (req, res) => {
     }
 });
 
-// gets requested user id or username - using the establishment id extracted for authorised toekn
+// gets requested user id or username - using the establishment id extracted for authorised token
 // optional parameter - "history" must equal 1
 router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id/:userId').get(async (req, res) => {
@@ -82,6 +83,7 @@ router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishmen
 router.route('/establishment/:id/:userId').put(async (req, res) => {
     const userId = req.params.userId;
     const establishmentId = req.establishmentId;
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
 
     // validating user id - must be a V4 UUID or it's a username
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -107,8 +109,14 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
 
             // this is an update to an existing User, so no mandatory properties!
             if (isValidUser) {
-                await thisUser.save(req.username);
-                return res.status(200).json(thisUser.toJSON(false, false, false, true));
+                await thisUser.save(req.username, expiresTTLms);
+
+                // if local/dev - we're not sending email so return the add user tracking UUID if it exists
+                let response = thisUser.toJSON(false, false, false, true);
+                if (isLocal(req) && thisUser.trackingId) {
+                    response = { ...response, trackingUUID: thisUser.trackingId};
+                }
+                return res.status(200).json(response);
             } else {
                 return res.status(400).send('Unexpected Input.');
             }
@@ -312,5 +320,203 @@ router.route('/changePassword').post(async (req, res) => {
       }
 });
 
+// registers (part add) a new user
+router.use('/add/establishment/:id', Authorization.hasAuthorisedEstablishment);
+router.route('/add/establishment/:id').post(async (req, res) => {
+    // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+    const establishmentId = req.establishmentId;
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
+
+    // ensure only a user having the role of Edit can register a new user
+    if (!(req.role && req.role === 'Edit')) {
+        console.error('/add/establishment/:id - given user does not have sufficient permission')
+        return res.status(403).send();
+    }
+    
+    // use the User properties to load (includes validation)
+    const thisUser = new User.User(establishmentId);
+    
+    try {
+        // TODO: JSON validation
+
+        // only those properties defined in the POST body will be updated (peristed)
+        const isValidUser = await thisUser.load(req.body);
+
+        // this is a new User, so check mandatory properties!
+        if (isValidUser) {
+            // this is a part user (register user) - so no audit
+            // Also, because this is a part user (register user) - must send a registration email which means adding
+            //  user tracking
+            await thisUser.save(req.username, expiresTTLms);
+
+            // if local/dev - we're not sending email so return the add user tracking UUID
+            let response = thisUser.toJSON(false, false, false, true);
+            if (isLocal(req)) {
+                response = { ...response, trackingUUID: thisUser.trackingId};
+            }
+            return res.status(200).json(response);
+        } else {
+            return res.status(400).send('Unexpected Input.');
+        }
+
+    } catch (err) {
+        if (err instanceof User.UserExceptions.UserJsonException) {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof User.UserExceptions.UserSaveException && err.message === 'Missing Mandatory properties') {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof User.UserExceptions.UserSaveException) {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(503).send(err.safe);
+        }
+
+        console.error("Unexpected exception: ", err)
+    }
+});
+
+// validates (part add) a new user - not authentication middleware
+router.route('/validateAddUser').post(async (req, res) => {
+    if (!req.body.uuid) {
+        console.error('No UUID');
+        return res.status(400).send();
+    }
+    // parse input - escaped to prevent SQL injection
+    const givenUuid = escape(req.body.uuid);
+    const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
+
+    if (!uuidV4Regex.test(givenUuid)) {
+        console.error('Invalid UUID');
+        return res.status(400).send();
+    }
+    
+    try {
+        // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
+        const passTokenResults = await models.addUserTracking.findOne({
+            where: {
+                uuid: givenUuid
+            },
+            include: [
+                {
+                    model: models.user,
+                    attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'JobTitleValue', 'PhoneValue'],
+                }
+            ]
+        });
+  
+        if (passTokenResults && passTokenResults.id) {
+            // now check if the token has expired or already been consumed
+            const now = new Date().getTime();
+
+            if (passTokenResults.expires.getTime() < now) {
+                console.error(`/add/validateAddUser - reset token (${givenUuid}) expired`);
+                return res.status(403).send();
+            }
+    
+            if (passTokenResults.completed) {
+                console.error(`/add/validateAddUser - reset token (${givenUuid}) has already been used`);
+                return res.status(403).send();
+            }
+    
+            // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User UUID.
+            if (passTokenResults.user && passTokenResults.user.id) {
+                // generate JWT and attach it to the header (Authorization) - JWT username is the name of the User who registered the user (for audit purposes)
+                const JWTexpiryInMinutes = 30;
+                const token = generateJWT.addUserJWT(JWTexpiryInMinutes, passTokenResults.user.uid, passTokenResults.user.FullNameValue , givenUuid);
+        
+                res.set({
+                    'Authorization': 'Bearer ' + token
+                });
+        
+                return res.status(200).json({
+                    fullname: passTokenResults.user.FullNameValue,
+                    jobTitle: passTokenResults.user.JobTitleValue,
+                    email: passTokenResults.user.EmailValue,
+                    phone: passTokenResults.user.PhoneValue,
+                });
+    
+            } else {
+                throw new Error(`Failed to find user matching reset token (${givenUuid})`);
+            }
+
+        } else {
+            // token not found
+            console.error(`/add/validateAddUser - reset token (${givenUuid}) not found`);
+            return res.status(404).send();
+        }
+    } catch (err) {
+        console.error('/add/validateAddUser - failed: ', err);
+        return res.status(503).send();
+    }
+});
+
+// registers (full add) a new user - authentication middleware is specific to add user token
+router.use('/add', Authorization.isAuthorisedAddUser);
+router.route('/add').post(async (req, res) => {
+    // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+    const addUserUUID = req.addUserUUID;
+   
+    try {
+        // TODO: JSON validation
+
+        // The required User role will obtained from the original user record at the time of registration via the
+        //  add user tracking UUID, along with the establishment ID
+        const trackingResponse = await models.addUserTracking.findOne({
+            where: {
+                uuid: addUserUUID
+            },
+            include: [
+                {
+                    model: models.user,
+                    attributes: ['id', 'uid', 'UserRoleValue', 'establishmentId'],
+                }
+            ]
+        });
+
+        if (trackingResponse && trackingResponse.uuid && trackingResponse.user.uid) {
+            // use the User properties to load (includes validation)
+            const thisUser = new User.User(trackingResponse.user.establishmentId, addUserUUID);
+
+            // only those properties defined in the POST body will be updated (peristed) along with
+            //   the additional role property - ovverwrites against that could be passed in the body
+            const newUserProperties = {
+                ...req.body,
+                role: trackingResponse.user.UserRoleValue
+            };
+
+            const isValidUser = await thisUser.load(newUserProperties);
+            // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!
+            if (isValidUser && thisUser.hasDefaultNewUserProperties) {
+                // this is a part user (register user) - so no audit
+                // Also, because this is a part user (register user) - must send a registration email which means adding
+                //  user tracking
+                await thisUser.save(trackingResponse.by);
+
+                return res.status(200).json(thisUser.toJSON(false, false, false, true));
+            } else {
+                return res.status(400).send('Unexpected Input.');
+            }
+
+        } else {
+            // not found the given add user tracking reference
+            console.error("api/user/add error - failed to match add user tracking and user record");
+            return res.status(404).send();
+        }
+
+    } catch (err) {
+        if (err instanceof User.UserExceptions.UserJsonException) {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof User.UserExceptions.UserSaveException && err.message === 'Duplicate Username') {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(400).send(err.message);
+        } else if (err instanceof User.UserExceptions.UserSaveException) {
+            console.error("/add/establishment/:id POST: ", err.message);
+            return res.status(503).send(err.safe);
+        }
+
+        console.error("Unexpected exception: ", err)
+    }
+});
 
 module.exports = router;
