@@ -413,10 +413,24 @@ router.route('/')
             shareData: false,
             shareWithCQC: false,
             shareWithLA: false,
-            nmdsId: Estblistmentdata.NmdsId
+            nmdsId: Estblistmentdata.NmdsId,
+            created: Userdata.DateCreated,
+            updated: Userdata.DateCreated,
+            updatedBy: Logindata.UserName
           }, {transaction: t});
           const sanitisedEstablishmentResults = establishmentCreation.get({plain: true});
           Estblistmentdata.id = sanitisedEstablishmentResults.EstablishmentID;
+
+          // audit the creation of Establishment
+          await models.establishmentAudit.create(
+            {
+              establishmentFk: Estblistmentdata.id,
+              username: Logindata.UserName,
+              when: Userdata.DateCreated,
+              type: 'created'
+            },
+            {transaction: t}
+          );
 
 
           // now create user
@@ -469,6 +483,17 @@ router.route('/')
 
           const sanitisedUserResults = userCreation.get({plain: true});
           Userdata.registrationID = sanitisedUserResults.RegistrationID;
+
+          // audit the creation of User
+          await models.userAudit.create(
+            {
+              userFk: Userdata.registrationID,
+              username: Logindata.UserName,
+              when: Userdata.DateCreated,
+              type: 'created'
+            },
+            {transaction: t}
+          );
 
           // now create login
           defaultError = responseErrors.login;
