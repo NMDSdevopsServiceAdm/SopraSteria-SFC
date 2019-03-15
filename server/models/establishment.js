@@ -9,6 +9,12 @@ module.exports = function(sequelize, DataTypes) {
       autoIncrement: true,
       field: '"EstablishmentID"'
     },
+    uid: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: true,
+      field: '"EstablishmentUID"'
+    },
     name: {
       type: DataTypes.TEXT,
       allowNull: false,
