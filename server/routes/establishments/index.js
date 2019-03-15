@@ -117,7 +117,10 @@ const formatEstablishmentResponse = (establishment) => {
     mainService: ServiceFormatters.singleService(establishment.mainService),
     otherServices: ServiceFormatters.createServicesByCategoryJSON(establishment.otherServices),
     capacities: CapacityFormatters.capacitiesJSON(establishment.capacity),
-    jobs: JobFormatters.jobsByTypeJSON(establishment.jobs)
+    jobs: JobFormatters.jobsByTypeJSON(establishment.jobs),
+    created: establishment.created,
+    updated: establishment.updated,
+    updatedBy: establishment.updatedBy
   };
 }
 
