@@ -89,6 +89,23 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"NmdsID"'
     },
+    created: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'created'
+    },
+    updated: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'updated'
+    },
+    updatedBy: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: 'updatedby'
+    },
   }, {
     tableName: '"Establishment"',
     schema: 'cqc',
