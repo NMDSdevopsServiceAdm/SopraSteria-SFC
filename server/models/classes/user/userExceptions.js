@@ -100,8 +100,24 @@ class UserDeleteException extends UserException {
     };
 };
 
+class UserValidationException extends UserException {
+    constructor(err, reason=null, safeErr=null) {
+        super(null, null, null, err, safeErr);
+        this._reason=reason;
+    };
+
+    get safe()  {
+        if (!super.safe) {
+            return `User failed validation.`;
+        } else {
+            return super.safe;
+        }
+    };
+};
+
 
 module.exports.UserSaveException = UserSaveException;
 module.exports.UserRestoreException = UserRestoreException;
 module.exports.UserDeleteException = UserDeleteException;
 module.exports.UserJsonException = UserJsonException;
+module.exports.UserValidationException = UserValidationException;

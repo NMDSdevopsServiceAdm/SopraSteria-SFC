@@ -22,7 +22,7 @@ router.post('/',async function(req, res) {
         attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash'],
         include: [ {
           model: models.user,
-          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId'],
+          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId', "UserRoleValue"],
           include: [{
             model: models.establishment,
             attributes: ['id', 'name', 'isRegulated', 'nmdsId'],
@@ -45,13 +45,14 @@ router.post('/',async function(req, res) {
 
         login.comparePassword(escape(req.body.password), async (err, isMatch) => {
           if (isMatch && !err) {
-            const token = generateJWT.loginJWT(12, login.user.establishmentId, req.body.username, login.user.isAdmin);
+            const token = generateJWT.loginJWT(12, login.user.establishmentId, req.body.username, login.user.UserRoleValue);
             var date = new Date().getTime();
             date += (12 * 60 * 60 * 1000);          
    
             const response = formatSuccessulLoginResponse(
               login.user.FullNameValue,
               login.firstLogin,
+              login.user.UserRoleValue,
               login.user.establishment,
               login.user.establishment.mainService,
               new Date(date).toISOString()
@@ -61,7 +62,8 @@ router.post('/',async function(req, res) {
               // check if this is the first time logged in and if so, update the "FirstLogin" timestamp
               // reset the number of failed attempts on any successful login
               const loginUpdate = {
-                invalidAttempt: 0
+                invalidAttempt: 0,
+                lastLogin: new Date(),
               };
               if (!login.firstLogin) {
                 loginUpdate.firstLogin = new Date();
@@ -142,11 +144,12 @@ router.post('/',async function(req, res) {
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, firstLoginDate, establishment, mainService, expiryDate) => {
+const formatSuccessulLoginResponse = (fullname, firstLoginDate, role, establishment, mainService, expiryDate) => {
   // note - the mainService can be null
   return {
     fullname,
     isFirstLogin: firstLoginDate ? false : true,
+    role,
     establishment: {
       id: establishment.id,
       name: establishment.name,

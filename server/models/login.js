@@ -49,6 +49,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"PasswdLastChanged'
     },
+    lastLogin: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LastLoggedIn"'
+    }
   }, {
     tableName: '"Login"',
     schema: 'cqc',

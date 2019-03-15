@@ -104,7 +104,15 @@ const config = convict({
           doc: 'The template id for sending reset password emails',
           format: function check(val) {
             const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-            if (!uuidRegex.test(val.toUpperCase())) throw new TypeError('gov.uk notify template id should be a V4 UUID');
+            if (!uuidRegex.test(val.toUpperCase())) throw new TypeError('gov.uk notify reset password template id should be a V4 UUID');
+          },
+          default: '80d54020-c420-46f1-866d-b8cc3196809d'
+        },
+        addUser: {
+          doc: 'The template id for sending user registration emails',
+          format: function check(val) {
+            const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+            if (!uuidRegex.test(val.toUpperCase())) throw new TypeError('gov.uk notify add user template id should be a V4 UUID');
           },
           default: '80d54020-c420-46f1-866d-b8cc3196809d'
         }
@@ -132,6 +140,11 @@ const config = convict({
           doc: 'The password reset JWT audience',
           format: String,
           default: 'ADS-WDS-password-reset'
+        },
+        addUser: {
+          doc: 'The add user JWT audience',
+          format: String,
+          default: 'ADS-WDS-add-user'
         }
       }
   },
