@@ -264,7 +264,7 @@ class User {
         let mustSave = this._initialise();
 
         if (!this.uid) {
-            this._log(Worker.LOG_ERROR, 'Not able to save an unknown uid');
+            this._log(User.LOG_ERROR, 'Not able to save an unknown uid');
             throw new UserExceptions.UserSaveException(null,
                 this.uid,
                 this.fullname,
