@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-8">
       <h3 class="fs-16"><strong>User dashboard</strong></h3>
-      <h5 class="mt-5">{{ establishment.name}}</h5>
+      <h5 class="mt-5">{{ establishment?.name }}</h5>
       <h1 class="h2">Welcome {{ fullname }}</h1>
     </div>
 
@@ -17,8 +17,13 @@
     <app-tabs>
       <app-tab title="Home">
         <ng-container *ngIf="isFirstLoggedIn">
-          <p class="main-body-text mb-5 d-block col-12 col-md-10 p-0">This is the first time you've signed in to the service, so we need a few details from you about {{ establishment?.name }} ({{ establishment?.nmdsId }}).</p>
-          <p class="main-body-text mb-5 d-block col-12 col-md-10 p-0">We have some questions which shouldn't take more than a few minutes to answer.</p>
+          <p class="main-body-text mb-5 d-block col-12 col-md-10 p-0">
+            This is the first time you've signed in to the service, so we need a few details from you about
+            {{ establishment?.name }} ({{ establishment?.nmdsId }}).
+          </p>
+          <p class="main-body-text mb-5 d-block col-12 col-md-10 p-0">
+            We have some questions which shouldn't take more than a few minutes to answer.
+          </p>
           <div class="btn-container">
             <a routerLink="/type-of-employer" class="btn btn-primary" role="button">Continue</a>
           </div>
@@ -26,9 +31,9 @@
 
         <ng-container *ngIf="!isFirstLoggedIn">
           <p>
-            Thank you for participating in the development of the new ASC-WDS service and for entering information about your establishment.
-            When we have developed further, this page will become your homepage where there will be navigation to a range of tasks.
-            These will be released periodically in the coming months.
+            Thank you for participating in the development of the new ASC-WDS service and for entering information about
+            your establishment. When we have developed further, this page will become your homepage where there will be
+            navigation to a range of tasks. These will be released periodically in the coming months.
           </p>
         </ng-container>
       </app-tab>

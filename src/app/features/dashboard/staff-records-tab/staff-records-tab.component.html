@@ -52,7 +52,7 @@
           </td>
           <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
           <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
-          <td class="govuk-table__cell"><a *ngIf="!worker.completed" [routerLink]="['/worker', worker.uid, worker.mainJob?.jobId === 27 ? 'mental-health' : 'main-job-start-date']" class="icon-link icon-flag">Provide more information</a></td>
+          <td class="govuk-table__cell"><a *ngIf="!worker.completed" [routerLink]="['/worker', worker.uid, worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date']" class="icon-link icon-flag">Provide more information</a></td>
         </tr>
       </tbody>
     </table>

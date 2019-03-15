@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { DEFAULT_DATE_DISPLAY_FORMAT, DEFAULT_DATE_FORMAT } from '@core/constants/constants';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
@@ -8,6 +8,7 @@ import { WorkerEditResponse, WorkerService } from '@core/services/worker.service
 import { DateValidator } from '@core/validators/date.validator';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-date-of-birth',
@@ -20,7 +21,6 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService
@@ -30,8 +30,6 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
     this.form = this.formBuilder.group({
       day: null,
       month: null,
@@ -39,14 +37,18 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
     });
     this.form.setValidators(Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator]));
 
-    if (this.worker.dateOfBirth) {
-      const date = this.worker.dateOfBirth.split('-');
-      this.form.patchValue({
-        year: parseInt(date[0], 10),
-        month: parseInt(date[1], 10),
-        day: parseInt(date[2], 10),
-      });
-    }
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.worker.dateOfBirth) {
+        const date = moment(this.worker.dateOfBirth, DEFAULT_DATE_FORMAT);
+        this.form.patchValue({
+          year: date.year(),
+          month: date.month() + 1,
+          day: date.date(),
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -69,12 +71,23 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        const newDateOfBirth =
+        const date =
           day && month && year
-            ? moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT).format(DEFAULT_DATE_FORMAT)
+            ? moment()
+                .year(year)
+                .month(month - 1)
+                .date(day)
             : null;
-        this.worker.dateOfBirth = newDateOfBirth;
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        const props = {
+          dateOfBirth: date ? date.format(DEFAULT_DATE_FORMAT) : null,
+        };
+
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         if (this.form.errors) {
           if (this.form.errors.required) {
@@ -89,9 +102,8 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
               )}.`
             );
 
-            // TODO cross validation
-            // } else if (this.form.errors.dateAgainstDob) {
-            //   this.messageService.show("error", "error.")
+            // TODO: https://trello.com/c/sYDV6vTN
+            // Cross Validation
           } else if (this.form.errors.dateValid) {
             this.messageService.show('error', 'Invalid date.');
           }
@@ -103,13 +115,13 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
   }
 
   private calculateLowestAcceptableDate() {
-    const date = moment();
-    return date.year(date.year() - 100).add(1, 'd');
+    return moment()
+      .subtract(100, 'years')
+      .add(1, 'days');
   }
 
   private calculateHighestAcceptableDate() {
-    const date = moment();
-    return date.year(date.year() - 14);
+    return moment().subtract(14, 'years');
   }
 
   formValidator(formGroup: FormGroup): ValidationErrors {
@@ -117,14 +129,13 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       const { day, month, year } = this.form.value;
 
       if (day && month && year) {
-        const date = moment(`${year}-${month}-${day}`, DEFAULT_DATE_FORMAT);
+        const date = moment()
+          .year(year)
+          .month(month - 1)
+          .date(day);
         if (date.isValid()) {
-          // TODO cross validation
-          // const mainJobStartDateValid =
-          //   moment(this.worker.mainJobStartDate, DEFAULT_DATE_FORMAT).subtract(14, "y")
-          // if (date.isAfter(mainJobStartDateValid)) {
-          //   return { dateAgainstDob: true }
-          // }
+          // TODO: https://trello.com/c/sYDV6vTN
+          // Cross Validation
           const noBefore = this.calculateLowestAcceptableDate();
           const noAfter = this.calculateHighestAcceptableDate();
           return date.isBetween(noBefore, noAfter, 'd', '[]') ? null : { dateBetween: true };

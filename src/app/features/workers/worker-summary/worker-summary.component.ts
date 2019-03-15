@@ -1,12 +1,13 @@
 import { DecimalPipe, Location } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-worker-summary',
@@ -20,15 +21,10 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
 
   constructor(
     private location: Location,
-    private route: ActivatedRoute,
     private router: Router,
     private decimalPipe: DecimalPipe,
     private workerService: WorkerService
   ) {}
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
 
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
@@ -68,10 +64,6 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     return !(this.worker.nationality && this.worker.nationality.value === 'British');
   }
 
-  get otherJobRoles() {
-    return this.worker.otherJobs.map(job => job.title).join(', ');
-  }
-
   get mainStartDate() {
     return moment(this.worker.mainJobStartDate).format(DEFAULT_DATE_DISPLAY_FORMAT);
   }
@@ -95,7 +87,13 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.worker = this.route.parent.snapshot.data.worker;
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   goBack(event) {
@@ -116,10 +114,16 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
 
   setWorkerCompleted(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
-      const worker = this.worker || ({} as Worker);
-      worker.completed = true;
+      const props = {
+        completed: true,
+      };
 
-      this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
+      this.subscriptions.add(
+        this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+          this.workerService.setState({ ...this.worker, ...data });
+          resolve();
+        }, reject)
+      );
     });
   }
 }
