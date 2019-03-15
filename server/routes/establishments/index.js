@@ -105,6 +105,7 @@ const formatEstablishmentResponse = (establishment) => {
   //           some attributes (viz. locationId below)
   return {
     id: establishment.id,
+    uid: establishment.uid,
     name: establishment.name,
     address: establishment.address,
     postcode: establishment.postcode,

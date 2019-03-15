@@ -403,7 +403,9 @@ router.route('/')
 
           // now create establishment
           defaultError = responseErrors.establishment;
+          Estblistmentdata.eUID = uuid.v4();
           const establishmentCreation = await models.establishment.create({
+            uid: Estblistmentdata.eUID,
             name: Estblistmentdata.Name,
             address: Estblistmentdata.Address,
             locationId: Estblistmentdata.LocationID,
@@ -431,7 +433,6 @@ router.route('/')
             },
             {transaction: t}
           );
-
 
           // now create user
           defaultError = responseErrors.user;
@@ -522,7 +523,8 @@ router.route('/')
             "status" : 1,
             "message" : "Establishment and primary user successfully created",
             "establishmentId" : Estblistmentdata.id,
-            "primaryUser" : Logindata.UserName.postcode,
+            "establishmentUid" : Estblistmentdata.eUID,
+            "primaryUser" : Logindata.UserName,
             "nmdsId": Estblistmentdata.NmdsId ? Estblistmentdata.NmdsId : 'undefined'
           }); 
         });
