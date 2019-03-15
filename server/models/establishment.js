@@ -120,6 +120,11 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Establishment.associate = (models) => {
+    Establishment.hasMany(models.user, {
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'users'
+    });
     Establishment.belongsTo(models.services, {
       foreignKey: 'mainServiceId',
       targetKey: 'id',
@@ -145,6 +150,11 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
       as: 'localAuthorities'
+    });
+    Establishment.hasMany(models.establishmentAudit, {
+      foreignKey: 'establishmentFk',
+      sourceKey: 'id',
+      as: 'auditEvents'
     });
   };
 
