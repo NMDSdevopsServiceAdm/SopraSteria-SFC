@@ -9,6 +9,9 @@ const CapacityFormatters = require('../../models/api/capacity');
 const ShareFormatters = require('../../models/api/shareData');
 const JobFormatters = require('../../models/api/jobs');
 
+// all user functionality is encapsulated
+const Establishment = require('../../models/classes/establishment');
+
 const EmployerType = require('./employerType');
 const Services = require('./services');
 const Capacity = require('./capacity');
@@ -28,6 +31,52 @@ router.use('/:id/staff', Staff);
 router.use('/:id/jobs', Jobs);
 router.use('/:id/localAuthorities', LA);
 router.use('/:id/worker', Worker);
+
+
+// gets requested establishment
+// optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
+router.use('/:id/alt', Authorization.hasAuthorisedEstablishment);
+router.route('/:id/alt').get(async (req, res) => {
+    const establishmentId = req.establishmentId;
+    const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+    const showHistoryTime = req.query.history === 'timeline' ? true : false;
+    const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
+
+    // validating establishment id - must be a V4 UUID or it's an id
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    let byUUID = null, byID = null;
+    if (typeof establishmentId === 'string' && uuidRegex.test(establishmentId.toUpperCase())) {
+        byUUID = establishmentId;
+    } else if (Number.isInteger(establishmentId)) {
+      byID = parseInt(escape(establishmentId));
+    } else {
+      // unexpected establishment id
+      return res.status(400).send();
+    }
+
+    const thisEstablishment = new Establishment.Establishment(req.username);
+
+    try {
+        if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
+            return res.status(200).json(thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false));
+        } else {
+            // not found worker
+            return res.status(404).send('Not Found');
+        }
+
+    } catch (err) {
+        const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
+            thisEstablishment.id,
+            thisEstablishment.uid,
+            null,
+            err,
+            null,
+            `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
+
+        console.error('establishment::GET/:eID - failed', thisError.message);
+        return res.status(503).send(thisError.safe);
+    }
+});
 
 // gets all there is to know about an Establishment
 router.route('/:id').get(async (req, res) => {
@@ -124,5 +173,6 @@ const formatEstablishmentResponse = (establishment) => {
     updatedBy: establishment.updatedBy
   };
 }
+
 
 module.exports = router;
