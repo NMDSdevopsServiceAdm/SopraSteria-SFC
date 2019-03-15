@@ -5,3 +5,5 @@ jwt:
 db:
     pool: 5
     ssl: false
+log:
+    sequelize: false

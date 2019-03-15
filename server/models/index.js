@@ -19,6 +19,7 @@ config.dialect = appConfig.get('db.dialect');
 config.dialectOptions = {
   ssl: appConfig.get('db.ssl')
 };
+config.logging = appConfig.get('log.sequelize');
 
 // setup connection pool
 config.pool = {
