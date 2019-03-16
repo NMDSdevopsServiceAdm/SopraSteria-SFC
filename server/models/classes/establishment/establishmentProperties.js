@@ -8,7 +8,7 @@ class EstablishmentPropertyManager {
     constructor() {
         this._thisManager = new Manager.PropertyManager();
 
-        this._thisManager.registerProperty(employerTypeProperty);
+        //this._thisManager.registerProperty(employerTypeProperty);
     }
 
     get manager() {
