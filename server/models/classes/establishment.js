@@ -605,7 +605,7 @@ class Establishment {
                 mainService: ServiceFormatters.singleService(this._establishmentResults.mainService),
                 otherServices: ServiceFormatters.createServicesByCategoryJSON(this._establishmentResults.otherServices),
                 capacities: CapacityFormatters.capacitiesJSON(this._establishmentResults.capacity),
-                jobs: JobFormatters.jobsByTypeJSON(this._establishmentResults.jobs),
+                jobs: JobFormatters.jobsByTypeJSON(this._establishmentResults),
             };
 
             myDefaultJSON.created = this.created.toJSON();
@@ -623,7 +623,8 @@ class Establishment {
                 return {
                     ...myDefaultJSON,
                     ...myJSON
-                };
+            
+               };
             }
         } else {
             return {
