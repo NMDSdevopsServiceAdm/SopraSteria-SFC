@@ -72,7 +72,7 @@ class Establishment {
 
     _log(level, msg) {
         if (this._logLevel >= level) {
-            console.log(`TODO: (${level}) - User class: `, msg);
+            console.log(`TODO: (${level}) - Establishment class: `, msg);
         }
     }
 
@@ -174,7 +174,7 @@ class Establishment {
 
     // saves the Establishment to DB. Returns true if saved; false is not.
     // Throws "EstablishmentSaveException" on error
-    async save(savedBy, ttl=0) {
+    async save(savedBy, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -199,12 +199,19 @@ class Establishment {
                     mainServiceId: this._mainService.id,
                     nmdsId: this._nmdsId,
                     updatedBy: savedBy,
+                    shareData: false,
+                    shareWithCQC: false,
+                    shareWithLA: false,
                     attributes: ['id', 'created', 'updated'],
                 };
 
                 // need to create the Establishment record and the Establishment Audit event
                 //  in one transaction
                 await models.sequelize.transaction(async t => {
+                    // the saving of an Establishment can be initiated within
+                    //  an external transaction
+                    const thisTransaction = externalTransaction ? externalTransaction : t;
+
                     // now append the extendable properties.
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
@@ -217,7 +224,7 @@ class Establishment {
                     }
 
                     // now save the document
-                    let creation = await models.establishment.create(modifedCreationDocument, {transaction: t});
+                    let creation = await models.establishment.create(modifedCreationDocument, {transaction: thisTransaction});
 
                     const sanitisedResults = creation.get({plain: true});
 
@@ -237,7 +244,7 @@ class Establishment {
                                 establishmentFk: this._id
                             };
                         }));
-                    await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                     this._log(Establishment.LOG_INFO, `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`);
                 });
@@ -248,9 +255,19 @@ class Establishment {
                     if (err.parent.constraint && ( err.parent.constraint === 'Establishment_unique_registration_with_locationid' || err.parent.constraint === 'Establishment_unique_registration')) {
                         throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Duplicate Establishment', 'Duplicate Establishment');
                     }
-                } else {
-                    throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, null);
                 }
+
+                // and foreign key constaint to Location
+                if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
+                    throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Unknown Location', 'Unknown Location');
+                }
+
+                if (err.name && err.name === 'SequelizeValidationError' && err.errors[0].path === 'nmdsId') {
+                    throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Unknown NMDSID', 'Unknown NMDSID');
+                }
+
+                // gets here having not explicitly caught err
+                throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, null);
             }
         } else {
             // we are updating an existing Establishment
@@ -260,6 +277,10 @@ class Establishment {
                 // need to update the existing Establishment record and add an
                 //  updated audit event within a single transaction
                 await models.sequelize.transaction(async t => {
+                    // the saving of an Establishment can be initiated within
+                    //  an external transaction
+                    const thisTransaction = externalTransaction ? externalTransaction : t;
+
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy, {});
 
@@ -279,7 +300,7 @@ class Establishment {
                                     uid: this.uid
                                 },
                                 attributes: ['id', 'updated'],
-                                transaction: t,
+                                transaction: thisTransaction,
                             }
                         );
 
@@ -300,7 +321,7 @@ class Establishment {
                                 };
                             }));
                             // having updated the record, create the audit event
-                        await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: t});
+                        await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
                         const additionalModels = this._properties.additionalModels;
@@ -311,7 +332,8 @@ class Establishment {
                                 models[thisModelByName].destroy({
                                     where: {
                                         establishmentFk: this._id
-                                    }
+                                    },
+                                    transaction: thisTransaction,
                                   })
                             );
                         });
@@ -320,12 +342,15 @@ class Establishment {
                         additionalModelsByname.forEach(async thisModelByName => {
                             const thisModelData = additionalModels[thisModelByName];
                             createModelPromises.push(
-                                models[thisModelByName].bulkCreate(thisModelData.map(thisRecord => {
-                                    return {
-                                        ...thisRecord,
-                                        establishmentFk: this._id
-                                    };
-                                }))
+                                models[thisModelByName].bulkCreate(
+                                    thisModelData.map(thisRecord => {
+                                        return {
+                                            ...thisRecord,
+                                            establishmentFk: this._id
+                                        };
+                                    }),
+                                    { transaction: thisTransaction },
+                                )
                             );
                         });
                         await Promise.all(createModelPromises);
@@ -673,7 +698,7 @@ class Establishment {
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
             }
 
-            if (!(this._isRegulated)) {
+            if (this._isRegulated === null) {
                 allExistAndValid = false;
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing regulated flag');
             }
