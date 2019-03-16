@@ -13,6 +13,12 @@ const models = require('../index');
 
 // notifications
 
+// temp formatters
+const ServiceFormatters = require('../api/services');
+const CapacityFormatters = require('../api/capacity');
+const ShareFormatters = require('../api/shareData');
+const JobFormatters = require('../api/jobs');
+
 
 // exceptions
 const EstablishmentExceptions = require('./establishment/establishmentExceptions');
@@ -506,6 +512,9 @@ class Establishment {
                 };
                 this._nmdsId = fetchResults.nmdsId;
 
+                // TODO - remove this property once all the individual properties are done
+                this._establishmentResults = fetchResults;
+
                 if (fetchResults.auditEvents) {
                     this._auditEvents = fetchResults.auditEvents;
                 }
@@ -579,6 +588,7 @@ class Establishment {
             const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties);
 
             // add Establishment default properties
+            //  using the default formatters
             const myDefaultJSON = {
                 id: this.id,
                 uid:  this.uid,
@@ -589,6 +599,13 @@ class Establishment {
                 isRegulated: this.isRegulated,
                 nmdsId: this.nmdsId,
                 mainService: this.mainService,
+                employerType: this._establishmentResults.employerType,
+                numberOfStaff: this._establishmentResults.numberOfStaff,
+                share: ShareFormatters.shareDataJSON(this._establishmentResults, this._establishmentResults.localAuthorities),
+                mainService: ServiceFormatters.singleService(this._establishmentResults.mainService),
+                otherServices: ServiceFormatters.createServicesByCategoryJSON(this._establishmentResults.otherServices),
+                capacities: CapacityFormatters.capacitiesJSON(this._establishmentResults.capacity),
+                jobs: JobFormatters.jobsByTypeJSON(this._establishmentResults.jobs),
             };
 
             myDefaultJSON.created = this.created.toJSON();
