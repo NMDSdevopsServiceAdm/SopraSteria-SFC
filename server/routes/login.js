@@ -45,7 +45,7 @@ router.post('/',async function(req, res) {
 
         login.comparePassword(escape(req.body.password), async (err, isMatch) => {
           if (isMatch && !err) {
-            const token = generateJWT.loginJWT(12, login.user.establishmentId, req.body.username, login.user.UserRoleValue);
+            const token = generateJWT.loginJWT(12, login.user.establishment.id, login.user.establishment.uid, req.body.username, login.user.UserRoleValue);
             var date = new Date().getTime();
             date += (12 * 60 * 60 * 1000);          
    
