@@ -588,6 +588,7 @@ class Establishment {
                 locationRef: this.locationId,
                 isRegulated: this.isRegulated,
                 nmdsId: this.nmdsId,
+                mainService: this.mainService,
             };
 
             myDefaultJSON.created = this.created.toJSON();
