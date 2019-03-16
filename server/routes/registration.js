@@ -8,6 +8,13 @@ const slack = require('../utils/slack/slack-logger');
 
 const models = require('../models');
 
+// extended change properties
+const EstablishmentModel = require('../models/classes/establishment').Establishment;
+const EstablishmentSaveException = require('../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
+const UserModel = require('../models/classes/user').User;
+const UserJsonException = require('../models/classes/user/userExceptions').UserJsonException;
+const UserSaveException = require('../models/classes/user/userExceptions').UserSaveException;
+
 const generateJWT = require('../utils/security/generateJWT');
 const passwordCheck = require('../utils/security/passwordValidation').isPasswordValid;
 
@@ -214,6 +221,10 @@ const responseErrors = {
     errMessage: 'Duplicate CQC Establishment',
     db_constraint: 'Establishment_unique_registration_with_locationid'
   },
+  duplicateEstablishment: {
+    errCode: -190,
+    errMessage: 'Duplicate Establishment'
+  },
   duplicateUsername: {
     errCode: -200,
     errMessage: 'Duplicate Username',
@@ -236,6 +247,14 @@ const responseErrors = {
     errCode: -600,
     errMessage: 'Unknown NMDS Letter/CSSR Region'
   },
+  invalidEstablishment: {
+    errCode: -700,
+    errMessage: 'Establishment data is invalid'
+  },
+  invalidUser: {
+    errCode: -800,
+    errMessage: 'User data is invalid'
+  }
 };
 
 router.route('/')
@@ -401,114 +420,59 @@ router.route('/')
             Estblistmentdata.NmdsId = `${nmdsLetter}${nextNmdsIdSeqNumber}`;
           }
 
-          // now create establishment
+          // now create establishment - using the extended property encapsulation
           defaultError = responseErrors.establishment;
-          Estblistmentdata.eUID = uuid.v4();
-          const establishmentCreation = await models.establishment.create({
-            uid: Estblistmentdata.eUID,
-            name: Estblistmentdata.Name,
-            address: Estblistmentdata.Address,
-            locationId: Estblistmentdata.LocationID,
-            postcode: Estblistmentdata.PostCode,
-            mainServiceId: Estblistmentdata.MainServiceId,
-            isRegulated: Estblistmentdata.IsRegulated,
-            shareData: false,
-            shareWithCQC: false,
-            shareWithLA: false,
-            nmdsId: Estblistmentdata.NmdsId,
-            created: Userdata.DateCreated,
-            updated: Userdata.DateCreated,
-            updatedBy: Logindata.UserName
-          }, {transaction: t});
-          const sanitisedEstablishmentResults = establishmentCreation.get({plain: true});
-          Estblistmentdata.id = sanitisedEstablishmentResults.EstablishmentID;
-
-          // audit the creation of Establishment
-          await models.establishmentAudit.create(
-            {
-              establishmentFk: Estblistmentdata.id,
-              username: Logindata.UserName,
-              when: Userdata.DateCreated,
-              type: 'created'
-            },
-            {transaction: t}
+          const newEstablishment = new EstablishmentModel(Logindata.UserName);
+          newEstablishment.initialise(
+            Estblistmentdata.Name,
+            Estblistmentdata.Address,
+            Estblistmentdata.LocationID,
+            Estblistmentdata.PostCode,
+            Estblistmentdata.IsRegulated,
+            Estblistmentdata.MainServiceId,
+            Estblistmentdata.NmdsId
           );
+          await newEstablishment.load({
+          });    // no Establishment properties on registration
+          if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
+            await newEstablishment.save(Logindata.UserName, 0, t);
+            Estblistmentdata.id = newEstablishment.id;
+            Estblistmentdata.eUID = newEstablishment.uid;
+          } else {
+            // Establishment properties not valid
+            throw new RegistrationException(
+              'Inavlid establishment properties',
+              responseErrors.invalidEstablishment.errCode,
+              responseErrors.invalidEstablishment.errMessage
+            );
+          }
 
           // now create user
           defaultError = responseErrors.user;
-          const userRecord = {
-            establishmentId: Estblistmentdata.id,
-            uid: uuid.v4(),
-            archived: false,
-            UserRoleValue: 'Edit',     // the user who creates the Establishment is automatically given Edit role
-            UserRoleValueSavedAt: Userdata.DateCreated,
-            UserRoleValueChangedAt: Userdata.DateCreated,
-            UserRoleValueSavedBy: Logindata.UserName,
-            UserRoleValueChangedBy: Logindata.UserName,
-            FullNameValue: Userdata.FullName,
-            FullNameSavedAt: Userdata.DateCreated,
-            FullNameChangedAt: Userdata.DateCreated,
-            FullNameSavedBy: Logindata.UserName,
-            FullNameChangedBy: Logindata.UserName,
-            JobTitleValue: Userdata.JobTitle,
-            JobTitleSavedAt: Userdata.DateCreated,
-            JobTitleChangedAt: Userdata.DateCreated,
-            JobTitleSavedBy: Logindata.UserName,
-            JobTitleChangedBy: Logindata.UserName,
-            EmailValue: Userdata.Email,
-            EmailSavedAt: Userdata.DateCreated,
-            EmailChangedAt: Userdata.DateCreated,
-            EmailSavedBy: Logindata.UserName,
-            EmailChangedBy: Logindata.UserName,
-            PhoneValue: Userdata.Phone,
-            PhoneSavedAt: Userdata.DateCreated,
-            PhoneChangedAt: Userdata.DateCreated,
-            PhoneSavedBy: Logindata.UserName,
-            PhoneChangedBy: Logindata.UserName,
-            SecurityQuestionValue: Userdata.SecurityQuestion,
-            SecurityQuestionSavedAt: Userdata.DateCreated,
-            SecurityQuestionChangedAt: Userdata.DateCreated,
-            SecurityQuestionSavedBy: Logindata.UserName,
-            SecurityQuestionChangedBy: Logindata.UserName,
-            SecurityQuestionAnswerValue: Userdata.SecurityQuestionAnswer,
-            SecurityQuestionAnswerSavedAt: Userdata.DateCreated,
-            SecurityQuestionAnswerChangedAt: Userdata.DateCreated,
-            SecurityQuestionAnswerSavedBy: Logindata.UserName,
-            SecurityQuestionAnswerChangedBy: Logindata.UserName,
-            created: Userdata.DateCreated,
-            updated: Userdata.DateCreated,
-            updatedBy: Logindata.UserName,
-            isAdmin: false,
-          };
-          const userCreation = await models.user.create(userRecord, {transaction: t});
-
-          const sanitisedUserResults = userCreation.get({plain: true});
-          Userdata.registrationID = sanitisedUserResults.RegistrationID;
-
-          // audit the creation of User
-          await models.userAudit.create(
-            {
-              userFk: Userdata.registrationID,
-              username: Logindata.UserName,
-              when: Userdata.DateCreated,
-              type: 'created'
-            },
-            {transaction: t}
-          );
-
-          // now create login
-          defaultError = responseErrors.login;
-          const passwordHash = await bcrypt.hashSync(Logindata.Password, bcrypt.genSaltSync(10), null);
-          const loginCreation = await models.login.create({
-            registrationId: Userdata.registrationID,
+          const newUser = new UserModel(Estblistmentdata.id);
+          await newUser.load({
+            role: 'Edit',
+            fullname: Userdata.FullName,
+            jobTitle: Userdata.JobTitle,
+            email: Userdata.Email,
+            phone: Userdata.Phone,
+            securityQuestion: Userdata.SecurityQuestion,
+            securityQuestionAnswer: Userdata.SecurityQuestionAnswer,
             username: Logindata.UserName,
-            Hash: passwordHash,
-            isActive: true,
-            invalidAttempt: 0,
-          }, {transaction: t});
-          const sanitisedLoginResults = loginCreation.get({plain: true});
-          Logindata.id = sanitisedLoginResults.ID;
-          
+            password: Logindata.Password,
+          });
+          if (newUser.isValid) {
+            await newUser.save(Logindata.UserName, 0, t);
+            Userdata.registrationID = newUser.id;
+          } else {
+            // Establishment properties not valid
+            throw new RegistrationException(
+              'Inavlid user/login properties',
+              responseErrors.invalidUser.errCode,
+              responseErrors.invalidUser.errMessage
+            );
+          }
+
           // post via Slack, but remove sensitive data
           const slackMsg = req.body[0];
           delete slackMsg.user.password;
@@ -537,30 +501,22 @@ router.route('/')
 
         if (!defaultError) defaultError = responseErrors.default;
 
-        if (err.name && err.name === 'SequelizeUniqueConstraintError') {
-          // we can expect one of three unique constraint failures which will override the default error
-          // NOTE - this logic here is topsy turvy on the name of the index
-          if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration_with_locationid') {
-            defaultError = responseErrors.duplicateNonCQC;
-          } else if (err.parent.constraint && err.parent.constraint === 'Establishment_unique_registration') {
-            defaultError = responseErrors.duplicateCQC;
-          } else if (err.parent.constraint && err.parent.constraint === 'uc_Login_Username') {
+        if (err instanceof EstablishmentSaveException) {
+          if (err.message === 'Duplicate Establishment') {
+            defaultError = responseErrors.duplicateEstablishment;
+          } else if (err.message === 'Unknown Location') {
+            defaultError = responseErrors.unknownLocation;
+          } else if (err.message === 'Unknown NMDSID') {
+            defaultError = responseErrors.unknownNMDSLetter;
+          }
+        }
+
+        if (err instanceof UserSaveException) {
+          if (err.message === 'Duplicate Username') {
             defaultError = responseErrors.duplicateUsername;
           }
         }
-
-        // catch when the nmdsId is undefined
-        if (err.name && err.name === 'SequelizeValidationError' && err.errors[0].path === 'nmdsId') {
-          defaultError = responseErrors.unknownNMDSLetter;
-        }
-
-        // TODO: trap for location foreign key failure
-        if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
-          if (err.parent.constraint && err.parent.constraint === 'estloc_fk') {
-            defaultError = responseErrors.unknownLocation;
-          }
-        }
-        
+      
         throw new RegistrationException(
           err,
           defaultError.errCode,

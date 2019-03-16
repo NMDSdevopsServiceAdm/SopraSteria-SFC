@@ -85,6 +85,9 @@ class User {
     //
     // attributes
     //
+    get id() {
+        return this._id;
+    }
     get uid() {
         return this._uid;
     }
@@ -260,7 +263,7 @@ class User {
 
     // saves the User to DB. Returns true if saved; false is not.
     // Throws "UserSaveException" on error
-    async save(savedBy, ttl=0) {
+    async save(savedBy, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -287,6 +290,10 @@ class User {
                 // need to create the User record and the User Audit event
                 //  in one transaction
                 await models.sequelize.transaction(async t => {
+                    // the saving of an User can be initiated within
+                    //  an external transaction
+                    const thisTransaction = externalTransaction ? externalTransaction : t;
+
                     // now append the extendable properties.
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
@@ -299,7 +306,7 @@ class User {
                     }
 
                     // now save the document
-                    let creation = await models.user.create(modifedCreationDocument, {transaction: t});
+                    let creation = await models.user.create(modifedCreationDocument, {transaction: thisTransaction});
 
                     const sanitisedResults = creation.get({plain: true});
 
@@ -311,6 +318,7 @@ class User {
 
                     // create the associated Login record - if the username is known
                     if (this._username !== null) {
+                        console.log("WA DEBUG - hashing password: ", this._password)
                         const passwordHash = await bcrypt.hashSync(this._password, bcrypt.genSaltSync(10), null);
                         await models.login.create(
                             {
@@ -320,7 +328,7 @@ class User {
                                 isActive: true,
                                 invalidAttempt: 0,
                             },
-                            {transaction: t}
+                            {transaction: thisTransaction}
                         );
                         
                         // also need to complete on the originating add user tracking record
@@ -329,7 +337,7 @@ class User {
                                 completed: sanitisedResults.created,        // use the very same timestamp as that which the User record was created!
                             },
                             {
-                                transaction: t,
+                                transaction: thisTransaction,
                                 where: {
                                     uuid: this._trackingUUID,
                                 },
@@ -338,8 +346,8 @@ class User {
                             }
                         );
 
-                        // in addition to marking the tracking record as complete, need to delete the original
-                        //  User record used for the registration
+                        // if there was a tracking record, need also to delete (archive) the original User record used for the registration
+                        if (trackingResponse[1] && trackingResponse[1][0] && trackingResponse[1][0].dataValues)
                         await models.user.update(
                             {
                                 archived: true
@@ -348,7 +356,7 @@ class User {
                                 where: {
                                     id: trackingResponse[1][0].dataValues.UserFK
                                 },
-                                transaction: t
+                                transaction: thisTransaction
                             }
                         )
                     }
@@ -365,7 +373,7 @@ class User {
                                     userFk: this._id
                                 };
                             }));
-                        await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                        await models.userAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
                     }
 
                     // send invitation email if the username is not known
@@ -394,6 +402,10 @@ class User {
                 // need to update the existing User record and add an
                 //  updated audit event within a single transaction
                 await models.sequelize.transaction(async t => {
+                    // the saving of an User can be initiated within
+                    //  an external transaction
+                    const thisTransaction = externalTransaction ? externalTransaction : t;
+
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy, {});
 
@@ -412,7 +424,7 @@ class User {
                                                         uid: this.uid
                                                     },
                                                     attributes: ['id', 'updated'],
-                                                    transaction: t,
+                                                    transaction: thisTransaction,
                                                  }
                                                 );
 
@@ -443,7 +455,7 @@ class User {
                                     };
                                 }));
                                 // having updated the record, create the audit event
-                            await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                            await models.userAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
                         }
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
@@ -455,7 +467,8 @@ class User {
                                 models[thisModelByName].destroy({
                                     where: {
                                         userFk: this._id
-                                    }
+                                    },
+                                    transaction: thisTransaction,
                                   })
                             );
                         });
@@ -464,12 +477,15 @@ class User {
                         additionalModelsByname.forEach(async thisModelByName => {
                             const thisModelData = additionalModels[thisModelByName];
                             createModelPromises.push(
-                                models[thisModelByName].bulkCreate(thisModelData.map(thisRecord => {
-                                    return {
-                                        ...thisRecord,
-                                        userFk: this._id
-                                    };
-                                }))
+                                models[thisModelByName].bulkCreate(
+                                    thisModelData.map(thisRecord => {
+                                        return {
+                                            ...thisRecord,
+                                            userFk: this._id
+                                        };
+                                    }),
+                                    { transaction: thisTransaction },
+                                )
                             );
                         });
                         await Promise.all(createModelPromises);
