@@ -134,7 +134,7 @@ class Worker {
 
     // saves the Worker to DB. Returns true if saved; false is not.
     // Throws "WorkerSaveException" on error
-    async save(savedBy) {
+    async save(savedBy, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -163,6 +163,10 @@ class Worker {
                 // need to create the Worker record and the Worker Audit event
                 //  in one transaction
                 await models.sequelize.transaction(async t => {
+                    // the saving of an Worker can be initiated within
+                    //  an external transaction
+                    const thisTransaction = externalTransaction ? externalTransaction : t;
+
                     // now append the extendable properties.
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
@@ -170,7 +174,7 @@ class Worker {
                     const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
 
                     // now save the document
-                    let creation = await models.worker.create(modifedCreationDocument, {transaction: t});
+                    let creation = await models.worker.create(modifedCreationDocument, {transaction: thisTransaction});
 
                     const sanitisedResults = creation.get({plain: true});
 
@@ -190,7 +194,7 @@ class Worker {
                                 workerFk: this._id
                             };
                         }));
-                    await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                     this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 });
@@ -212,6 +216,10 @@ class Worker {
                 // need to update the existing Worker record and add an
                 //  updated audit event within a single transaction
                 await models.sequelize.transaction(async t => {
+                    // the saving of an Worker can be initiated within
+                    //  an external transaction
+                    const thisTransaction = externalTransaction ? externalTransaction : t;
+
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy, {});
 
@@ -230,7 +238,7 @@ class Worker {
                                                             uid: this.uid
                                                         },
                                                         attributes: ['id', 'updated'],
-                                                        transaction: t,
+                                                        transaction: thisTransaction,
                                                 });
 
                     if (updatedRecordCount === 1) {
@@ -250,7 +258,7 @@ class Worker {
                                 };
                             }));
                             // having updated the record, create the audit event
-                        await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+                        await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
                         const additionalModels = this._properties.additionalModels;
@@ -261,7 +269,8 @@ class Worker {
                                 models[thisModelByName].destroy({
                                     where: {
                                       workerFk: this._id
-                                    }
+                                    },
+                                    transaction: thisTransaction,
                                   })
                             );
                         });
@@ -270,12 +279,15 @@ class Worker {
                         additionalModelsByname.forEach(async thisModelByName => {
                             const thisModelData = additionalModels[thisModelByName];
                             createMmodelPromises.push(
-                                models[thisModelByName].bulkCreate(thisModelData.map(thisRecord => {
-                                    return {
-                                        ...thisRecord,
-                                        workerFk: this._id
-                                    };
-                                }))
+                                models[thisModelByName].bulkCreate(
+                                    thisModelData.map(thisRecord => {
+                                        return {
+                                            ...thisRecord,
+                                            workerFk: this._id
+                                        };
+                                    }),
+                                    { transaction: thisTransaction },
+                                )
                             );
                         });
                         await Promise.all(createMmodelPromises);
