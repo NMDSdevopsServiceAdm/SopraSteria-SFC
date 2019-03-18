@@ -36,6 +36,6 @@ export class DeleteWorkerDialogComponent implements OnInit {
   }
 
   close() {
-    this.dialog.close('homie');
+    this.dialog.close();
   }
 }

@@ -4,21 +4,31 @@
     <p>Once deleted you will not be able to access it again.</p>
     <h3>Why are you removing this staff record?</h3>
     <form novalidate (ngSubmit)="close()" [formGroup]="form">
-
       <div class="form-group mt-5">
         <div class="field-group mb-5">
-          <label>
+          <label class="col-12">
             Select a reason
             <select formControlName="reason" class="form-control">
-                <option [ngValue]="null">Select Reason</option>
-                <option *ngFor="let reason of reasons" [value]="reason.id">
-                  {{ reason.reason }}
-                </option>
+              <option [ngValue]="null">Select Reason</option>
+              <option *ngFor="let reason of reasons" [value]="reason.id">
+                {{ reason.reason }}
+              </option>
             </select>
+          </label>
+
+          <label class="col-12">
+            Provide details
+            <textarea maxlength="300" rows="4" class="form-control" id="details"></textarea>
           </label>
         </div>
       </div>
 
+      <div class="btn-container container">
+        <div class="row">
+          <button type="submit" class="btn btn-primary">Delete record</button>
+          <button type="button" class="btn btn-link btn-link-no-underline" (click)="close()">Cancel</button>
+        </div>
+      </div>
     </form>
   </div>
 </div>
