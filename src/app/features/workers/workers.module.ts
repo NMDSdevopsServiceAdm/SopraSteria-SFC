@@ -18,6 +18,7 @@ import {
 import { CreateStaffRecordComponent } from './create-staff-record/create-staff-record.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
+import { DeleteSuccessComponent } from './delete-success/delete-success.component';
 import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worker-dialog.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
@@ -80,6 +81,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WorkerSaveSuccessComponent,
     WorkerSummaryComponent,
     YearArrivedUkComponent,
+    DeleteSuccessComponent,
     DeleteWorkerDialogComponent,
   ],
   providers: [WorkerResolver, DialogService],

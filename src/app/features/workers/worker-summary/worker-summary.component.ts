@@ -108,10 +108,13 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
 
   deleteWorker(event) {
     event.preventDefault();
-    const dialog = this.dialogService.open(DeleteWorkerDialogComponent, {
-      worker: this.worker,
+    const dialog = this.dialogService.open(DeleteWorkerDialogComponent, this.worker);
+    dialog.afterClosed.pipe(take(1)).subscribe(nameOrId => {
+      if (nameOrId) {
+        this.workerService.setLastDeleted(nameOrId);
+        this.router.navigate(['/worker', 'delete-success']);
+      }
     });
-    dialog.afterClosed.pipe(take(1)).subscribe(res => console.log('yo', res));
   }
 
   async saveAndComplete() {

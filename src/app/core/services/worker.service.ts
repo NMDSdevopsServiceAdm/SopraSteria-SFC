@@ -21,6 +21,7 @@ export interface WorkerEditResponse {
 export class WorkerService {
   private _worker$ = new BehaviorSubject<Worker>(null);
   public worker$ = this._worker$.asObservable();
+  private lastDeleted$ = new BehaviorSubject<string>(null);
   public createStaffResponse = null;
 
   // All workers store
@@ -35,6 +36,18 @@ export class WorkerService {
 
   public get worker() {
     return this._worker$.value as Worker;
+  }
+
+  public get lastDeleted() {
+    return this.lastDeleted$.value as string;
+  }
+
+  setLastDeleted(name: string) {
+    this.lastDeleted$.next(name);
+  }
+
+  clearLastDeleted() {
+    this.lastDeleted$.next(null);
   }
 
   setState(worker) {
@@ -107,12 +120,12 @@ export class WorkerService {
   /*
    * DELETE /api/establishment/:establishmentId/worker/:workerId
    */
-  deleteWorker(workerId: string) {
+  deleteWorker(workerId: string, reason: any) {
     return this.http
-      .delete<any>(
-        `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
-        EstablishmentService.getOptions()
-      )
+      .request<any>('delete', `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`, {
+        body: reason,
+        ...EstablishmentService.getOptions(),
+      })
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError)
