@@ -318,7 +318,6 @@ class User {
 
                     // create the associated Login record - if the username is known
                     if (this._username !== null) {
-                        console.log("WA DEBUG - hashing password: ", this._password)
                         const passwordHash = await bcrypt.hashSync(this._password, bcrypt.genSaltSync(10), null);
                         await models.login.create(
                             {
