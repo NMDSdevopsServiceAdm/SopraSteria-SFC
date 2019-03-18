@@ -142,12 +142,8 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
 
 /* Additions */
 .cdk-overlay-pane {
-  @media (min-width: map-get($breakpoints, tablet)) {
-    width: 50%;
-  }
-  @media (min-width: map-get($breakpoints, phone)) {
-    width: 80%;
-  }
+  width: 90vw;
+  @include rem(max-width, 640px);
   background-color: $white;
   @include rem(padding, 40px);
 }
