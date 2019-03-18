@@ -12,20 +12,17 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
 
     // concrete implementations
     async restoreFromJson(document) {
-        console.log("WA DEBUG - serailising from JSON: ", document)
+        const givenStaff = isNaN(parseInt(document.numberOfStaff, 10)) ? null : parseInt(document.numberOfStaff, 10);
         if (document.numberOfStaff) {
-            const givenStaff = parseInt(document.numberOfStaff, 10);
             const MAX_STAFF=999;
             const MIN_STAFF=0;
-            if (givenStaff >= MIN_STAFF &&
+            if (givenStaff &&
+                givenStaff >= MIN_STAFF &&
                 givenStaff <= MAX_STAFF) {
                 this.property = givenStaff;
             } else {
                this.property = null;
             }
-
-            console.log("WA DEBUG: mnumber of staff property: ", givenStaff, MIN_STAFF, MAX_STAFF, this.property)
-
         }
     }
 

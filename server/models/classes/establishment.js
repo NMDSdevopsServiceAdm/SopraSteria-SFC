@@ -164,10 +164,11 @@ class Establishment {
 
     // returns true if Establishment is valid, otherwise false
     isValid() {
+        const thisEstablishmentIsValid = this._properties.isValid;
         if (this._properties.isValid === true) {
             return true;
         } else {
-            this._log(Establishment.LOG_ERROR, `Establishment invalid properties`);
+            this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisEstablishmentIsValid.toString()}`);
             return false;
         }
     }

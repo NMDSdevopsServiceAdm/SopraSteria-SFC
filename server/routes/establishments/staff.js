@@ -54,7 +54,6 @@ router.route('/').get(async (req, res) => {
 // updates the current employer type for the known establishment
 router.route('/:staffNumber').post(async (req, res) => {
   const establishmentId = req.establishmentId;
-  const givenStaffNumber = parseInt(req.params.staffNumber);
 
   // validating establishment id - must be a V4 UUID or it's an id
   const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -84,7 +83,7 @@ router.route('/:staffNumber').post(async (req, res) => {
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in numberOfStaff
       const isValidEstablishment = await thisEstablishment.load({
-        numberOfStaff: givenStaffNumber
+        numberOfStaff: req.params.staffNumber
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
