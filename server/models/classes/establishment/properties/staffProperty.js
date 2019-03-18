@@ -12,11 +12,11 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
 
     // concrete implementations
     async restoreFromJson(document) {
-        const givenStaff = isNaN(parseInt(document.numberOfStaff, 10)) ? null : parseInt(document.numberOfStaff, 10);
         if (document.numberOfStaff) {
+            const givenStaff = isNaN(parseInt(document.numberOfStaff, 10)) ? null : parseInt(document.numberOfStaff, 10);
             const MAX_STAFF=999;
             const MIN_STAFF=0;
-            if (givenStaff &&
+            if (givenStaff !== null &&
                 givenStaff >= MIN_STAFF &&
                 givenStaff <= MAX_STAFF) {
                 this.property = givenStaff;
@@ -36,6 +36,7 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
     }
 
     isEqual(currentValue, newValue) {
+        console.log("WA DEBUG staff isEqual: current/new: ", currentValue, newValue)
         // staff is a simple Number - but 0 is valid
         return currentValue !== null && newValue !== null && currentValue === newValue;
     }
