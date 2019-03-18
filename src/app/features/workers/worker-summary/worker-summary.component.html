@@ -6,12 +6,19 @@
   </div>
 
   <ng-container *ngIf="worker">
-    <h2>Staff record summary</h2>
-    <h1 class="h1">{{ worker.nameOrId }}</h1>
+    <div class="row">
+      <div class="col-md-8">
+        <h2>Staff record summary</h2>
+        <h1 class="h1">{{ worker.nameOrId }}</h1>
+      </div>
+      <div class="col-md-4 text-right">
+        <a href="#" (click)="deleteWorker($event)" class="delete"><img src="/assets/img/bin.svg" />Delete staff record</a>
+      </div>
+    </div>
+
     <p>Before saving this staff record, check the information you have provided is correct.</p>
 
     <h3>Basic record</h3>
-
     <dl class="govuk-summary-list govuk-summary-list--no-border basic-records">
 
         <div class="govuk-summary-list__row">
