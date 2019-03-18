@@ -46,11 +46,56 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"MainServiceId"'
     },
-    employerType: {
+    EmployerTypeValue: {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ['Private Sector', 'Voluntary / Charity', 'Other', 'Local Authority (generic/other)', 'Local Authority (adult services)'],
-      field: '"EmployerType"'
+      field: '"EmployerTypeValue"'
+    },
+    EmployerTypeSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EmployerTypeSavedAt"'
+    },
+    EmployerTypeChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EmployerTypeChangedAt"'
+    },
+    EmployerTypeSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EmployerTypeSavedBy"'
+    },
+    EmployerTypeChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EmployerTypeChangedBy"'
+    },
+    NumberOfStaffValue: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"NumberOfStaffValue"'
+    },
+    NumberOfStaffSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NumberOfStaffSavedAt"'
+    },
+    NumberOfStaffChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NumberOfStaffChangedAt"'
+    },
+    NumberOfStaffSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NumberOfStaffSavedBy"'
+    },
+    NumberOfStaffChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NumberOfStaffChangedBy"'
     },
     shareData: {
       type: DataTypes.BOOLEAN,
@@ -66,11 +111,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       field: '"ShareDataWithLA"'
-    },
-    numberOfStaff: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      field: '"NumberOfStaff"'
     },
     vacancies : {
       type: DataTypes.ENUM,
