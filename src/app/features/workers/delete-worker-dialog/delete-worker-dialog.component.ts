@@ -1,6 +1,12 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Worker } from '@core/model/worker.model';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MessageService } from '@core/services/message.service';
+import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-delete-worker-dialog',
@@ -19,23 +25,78 @@ export class DeleteWorkerDialogComponent implements OnInit {
     { id: 8, reason: 'Other' },
     { id: 9, reason: 'Not known' },
   ];
+  private totalStaff: number;
   private form: FormGroup;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    @Inject(DIALOG_DATA) public data: any,
+    @Inject(DIALOG_DATA) public worker: Worker,
     public dialog: Dialog<DeleteWorkerDialogComponent>,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private messageService: MessageService,
+    private establishmentService: EstablishmentService,
+    private workerService: WorkerService
   ) {
     this.form = this.formBuilder.group({
-      reason: null,
+      reason: [null, Validators.required],
+      details: [null, [Validators.maxLength(300)]],
     });
   }
 
   ngOnInit() {
-    console.log(this.data);
+    this.subscriptions.add(
+      this.establishmentService.getStaff().subscribe(totalStaff => {
+        this.totalStaff = totalStaff;
+      })
+    );
   }
 
   close() {
     this.dialog.close();
+  }
+
+  async submitHandler() {
+    try {
+      await this.saveHandler();
+      this.dialog.close(this.worker.nameOrId);
+    } catch (err) {
+      // keep typescript transpiler silent
+    }
+  }
+
+  saveHandler(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const { reason, details } = this.form.controls;
+      this.messageService.clearError();
+
+      if (this.form.valid) {
+        const deleteReason = {
+          reason: {
+            value: reason.value,
+            ...(details.value && {
+              other: details.value,
+            }),
+          },
+        };
+        this.subscriptions.add(
+          this.workerService.deleteWorker(this.worker.uid, deleteReason).subscribe(() => {
+            this.subscriptions.add(
+              this.establishmentService.postStaff(this.totalStaff - 1).subscribe(null, null, resolve)
+            );
+          }, reject)
+        );
+      } else {
+        if (reason.errors.required) {
+          this.messageService.show('error', 'Reason is required.');
+        } else if (details.errors.maxLength) {
+          this.messageService.show(
+            'error',
+            `Other Details can not be longer than ${details.errors.maxLength.requiredLength} characters`
+          );
+        }
+        reject();
+      }
+    });
   }
 }
