@@ -3,12 +3,14 @@ const Manager = require('../properties/manager');
 
 // individual properties
 const employerTypeProperty = require('./properties/employerTypeProperty').EmployerTypeProperty;
+const staffProperty = require('./properties/staffProperty').StaffProperty;
 
 class EstablishmentPropertyManager {
     constructor() {
         this._thisManager = new Manager.PropertyManager();
 
-        //this._thisManager.registerProperty(employerTypeProperty);
+        this._thisManager.registerProperty(employerTypeProperty);
+        this._thisManager.registerProperty(staffProperty);
     }
 
     get manager() {

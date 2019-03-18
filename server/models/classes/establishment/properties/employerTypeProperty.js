@@ -1,4 +1,4 @@
-// the email property is a value Rolenly
+// the employertype  property is a value (enum) property only
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 exports.EmployerTypeProperty = class EmployerTypeProperty extends ChangePropertyPrototype {
@@ -14,9 +14,12 @@ exports.EmployerTypeProperty = class EmployerTypeProperty extends ChangeProperty
     async restoreFromJson(document) {
         if (document.employerType) {
             const ALLOWED_EMPLOYER_TYPES=['Private Sector', 'Voluntary / Charity', 'Other', 'Local Authority (generic/other)', 'Local Authority (adult services)'];
+
+            console.log("WA DEBUG - serialising from JSON: ", document.employerType)
             if (ALLOWED_EMPLOYER_TYPES.includes(document.employerType)) {
                 this.property = document.employerType;
             } else {
+                console.log("WA DEBUG - invalid employer type")
                this.property = null;
             }
         }

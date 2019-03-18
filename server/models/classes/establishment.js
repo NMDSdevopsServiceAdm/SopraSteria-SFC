@@ -167,7 +167,7 @@ class Establishment {
         if (this._properties.isValid === true) {
             return true;
         } else {
-            this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisUserIsValid.toString()}`);
+            this._log(Establishment.LOG_ERROR, `Establishment invalid properties`);
             return false;
         }
     }
@@ -607,10 +607,14 @@ class Establishment {
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at User and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given User
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null) {
         if (!showHistoryTimeline) {
-            // JSON representation of extendable properties
-            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties);
+            if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
+                throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
+            }
+
+            // JSON representation of extendable properties - with optional filter
+            const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties, filteredPropertiesByName);
 
             // add Establishment default properties
             //  using the default formatters
@@ -618,20 +622,23 @@ class Establishment {
                 id: this.id,
                 uid:  this.uid,
                 name: this.name,
-                address: this.address,
-                postcode: this.postcode,
-                locationRef: this.locationId,
-                isRegulated: this.isRegulated,
-                nmdsId: this.nmdsId,
-                mainService: this.mainService,
-                employerType: this._establishmentResults.employerType,
-                numberOfStaff: this._establishmentResults.numberOfStaff,
-                share: ShareFormatters.shareDataJSON(this._establishmentResults, this._establishmentResults.localAuthorities),
-                mainService: ServiceFormatters.singleService(this._establishmentResults.mainService),
-                otherServices: ServiceFormatters.createServicesByCategoryJSON(this._establishmentResults.otherServices),
-                capacities: CapacityFormatters.capacitiesJSON(this._establishmentResults.capacity),
-                jobs: JobFormatters.jobsByTypeJSON(this._establishmentResults),
             };
+
+            if (fullDescription) {
+                myDefaultJSON.address = this.address;
+                myDefaultJSON.postcode = this.postcode;
+                myDefaultJSON.locationRef = this.locationId;
+                myDefaultJSON.isRegulated = this.isRegulated;
+                myDefaultJSON.nmdsId = this.nmdsId;
+                myDefaultJSON.mainService = this.mainService;
+                // myDefaultJSON.employerType = this._establishmentResults.employerType;
+                // myDefaultJSON.numberOfStaff = this._establishmentResults.numberOfStaff;
+                myDefaultJSON.share = ShareFormatters.shareDataJSON(this._establishmentResults, this._establishmentResults.localAuthorities);
+                myDefaultJSON.mainService = ServiceFormatters.singleService(this._establishmentResults.mainService);
+                myDefaultJSON.otherServices = ServiceFormatters.createServicesByCategoryJSON(this._establishmentResults.otherServices);
+                myDefaultJSON.capacities = CapacityFormatters.capacitiesJSON(this._establishmentResults.capacity);
+                myDefaultJSON.jobs = JobFormatters.jobsByTypeJSON(this._establishmentResults);
+            }
 
             myDefaultJSON.created = this.created.toJSON();
             myDefaultJSON.updated = this.updated.toJSON();
