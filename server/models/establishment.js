@@ -117,6 +117,26 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"OtherServicesChangedBy"'
     },
+    CapacityServicesSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CapacityServicesSavedAt"'
+    },
+    CapacityServicesChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CapacityServicesChangedAt"'
+    },
+    CapacityServicesSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CapacityServicesSavedBy"'
+    },
+    CapacityServicesChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CapacityServicesChangedBy"'
+    },
     shareData: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
