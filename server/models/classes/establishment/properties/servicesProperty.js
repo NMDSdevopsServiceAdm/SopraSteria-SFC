@@ -177,19 +177,11 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
             // other services "is main" has to be false
             let referenceService = null;
             if (thisService.id) {
-                referenceService = await models.services.findOne({
-                    where: {
-                        id: thisService.id
-                    },
-                    attributes: ['id', 'name', 'category'],
+                referenceService = this._allServices.find(thisAllService => {
+                    return thisAllService.id === thisService.id
                 });
             } else {
-                referenceService = await models.services.findOne({
-                    where: {
-                        name: thisService.name
-                    },
-                    attributes: ['id', 'name', 'category'],
-                });
+                referenceService = this._allServices.find(thisAllService => { return thisAllService.name === thisService.name });
             }
 
             if (referenceService && referenceService.id) {
