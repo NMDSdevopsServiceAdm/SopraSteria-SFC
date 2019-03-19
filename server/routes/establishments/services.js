@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
-const models = require('../../models');
-const ServiceFormatters = require('../../models/api/services');
 
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['OtherServices'];
