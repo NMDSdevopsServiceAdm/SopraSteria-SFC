@@ -519,8 +519,6 @@ class Establishment {
 
             const fetchResults = await models.establishment.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
-                console.log("WA DEBUG - found establishment with id: ", fetchResults.id, fetchResults.uid)
-
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
                 this._id = fetchResults.id;
