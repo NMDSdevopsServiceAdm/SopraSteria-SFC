@@ -332,7 +332,7 @@ class Establishment {
                             deleteModelPromises.push(
                                 models[thisModelByName].destroy({
                                     where: {
-                                        establishmentFk: this._id
+                                        establishmentId: this._id
                                     },
                                     transaction: thisTransaction,
                                   })
@@ -347,7 +347,7 @@ class Establishment {
                                     thisModelData.map(thisRecord => {
                                         return {
                                             ...thisRecord,
-                                            establishmentFk: this._id
+                                            establishmentId: this._id
                                         };
                                     }),
                                     { transaction: thisTransaction },
@@ -359,13 +359,13 @@ class Establishment {
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
 
                     } else {
-                        throw new UserExceptions.UserSaveException(null, this.uid, this.name, err, `Failed to update resulting establishment record with id: ${this._id}`);
+                        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update resulting establishment record with id: ${this._id}`);
                     }
 
                 });
                 
             } catch (err) {
-                throw new UserExceptions.UserSaveException(null, this.uid, this.name, err, `Failed to update establishment record with id: ${this._id}`);
+                throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update establishment record with id: ${this._id}`);
             }
 
         }
@@ -519,6 +519,8 @@ class Establishment {
 
             const fetchResults = await models.establishment.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
+                console.log("WA DEBUG - found establishment with id: ", fetchResults.id, fetchResults.uid)
+
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
                 this._id = fetchResults.id;
@@ -537,6 +539,29 @@ class Establishment {
                     name: fetchResults.mainService.name
                 };
                 this._nmdsId = fetchResults.nmdsId;
+
+                // other services output requires a list of ALL services available to
+                //  the Establishment
+                let allServicesResults = null;
+                if (fetchResults.isRegulated) {
+                    // other services for CQC regulated is ALL including non-CQC
+                    fetchResults.allMyServices = await models.services.findAll({
+                        order: [
+                            ['category', 'ASC'],
+                            ['name', 'ASC']
+                        ]
+                    });
+                } else {
+                    fetchResults.allMyServices = await models.services.findAll({
+                        where: {
+                            iscqcregistered: false
+                        },
+                        order: [
+                            ['category', 'ASC'],
+                            ['name', 'ASC']
+                        ]
+                    });  
+                }
 
                 // TODO - remove this property once all the individual properties are done
                 this._establishmentResults = fetchResults;
@@ -631,13 +656,13 @@ class Establishment {
                 myDefaultJSON.locationRef = this.locationId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
-                myDefaultJSON.mainService = this.mainService;
+                myDefaultJSON.mainService = ServiceFormatters.singleService(this.mainService);
                 // myDefaultJSON.employerType = this._establishmentResults.employerType;
                 // myDefaultJSON.numberOfStaff = this._establishmentResults.numberOfStaff;
-                myDefaultJSON.share = ShareFormatters.shareDataJSON(this._establishmentResults, this._establishmentResults.localAuthorities);
-                myDefaultJSON.mainService = ServiceFormatters.singleService(this._establishmentResults.mainService);
+                //myDefaultJSON.mainService = ServiceFormatters.singleService(this._establishmentResults.mainService);
                 myDefaultJSON.otherServices = ServiceFormatters.createServicesByCategoryJSON(this._establishmentResults.otherServices);
                 myDefaultJSON.capacities = CapacityFormatters.capacitiesJSON(this._establishmentResults.capacity);
+                myDefaultJSON.share = ShareFormatters.shareDataJSON(this._establishmentResults, this._establishmentResults.localAuthorities);
                 myDefaultJSON.jobs = JobFormatters.jobsByTypeJSON(this._establishmentResults);
             }
 
