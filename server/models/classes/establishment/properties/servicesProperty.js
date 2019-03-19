@@ -1,0 +1,218 @@
+// the Services property is a reflextion table that holds the set of 'Other Serices' referenced against the reference set of services
+const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
+
+// database models
+const models = require('../../../index');
+
+const ServiceFormatters = require('../../../api/services');
+
+exports.ServicesProperty = class ServicesPropertyProperty extends ChangePropertyPrototype {
+    constructor() {
+        super('OtherServices');
+
+        // other services needs reference to main service
+        this._mainService = null;
+    }
+
+    static clone() {
+        return new ServicesPropertyProperty();
+    }
+
+    // concrete implementations
+    async restoreFromJson(document) {
+        if (document.services) {
+            // can be an empty array
+            if (Array.isArray(document.services)) {
+                const validatedServices = await this._validateServices(document.services);
+
+                if (validatedServices) {
+                    this.property = validatedServices;
+
+                } else {
+                    this.property = null;
+                }
+
+            } else {
+                this.property = null;
+            }
+        }
+    }
+
+    // this method takes all services available to this given establishment and merges those services already registered
+    //  against this Establishment, whilst also removing the main service
+    mergeServices(allServices, theseServices, mainService) {
+        // its a simple case of working through each of "theseServices", and setting the "isMyService"
+        if (theseServices && Array.isArray(theseServices)) {
+            theseServices.forEach(thisService => {
+                // find and update the corresponding service in allServices
+                let foundService = allServices.find(refService => refService.id === thisService.id );
+                if (foundService) {
+                    foundService.isMyService = true;
+                }
+            });
+        }
+    
+        // now remove the main service
+        return allServices.filter(refService => refService.id !== mainService.id );
+    };
+
+    restorePropertyFromSequelize(document) {
+        // whilst serialising from DB other services, make a note of main service and all "other" services
+        //  - required in toJSON response
+        this._allServices = this.mergeServices(
+            document.allMyServices,
+            document.otherServices,
+            document.mainService,
+        );
+        this._mainService = document.mainService;
+
+        if (document.otherServices) {
+            return document.otherServices.map(thisService => {
+                return {
+                    id: thisService.id,
+                    name: thisService.name,
+                    category: thisService.category
+                };
+            });
+        }
+    }
+
+    savePropertyToSequelize() {
+        // when saving other jobs, there is no "Value" column to update - only reflexion records to delete/create
+        const servicesDocument = {
+        };
+
+        // note - only the serviceId is required and that is mapped from the property.services.id; establishmentId will be provided by Establishment class
+        if (this.property && Array.isArray(this.property)) {
+            servicesDocument.additionalModels = {
+                establishmentServices : this.property.map(thisService => {
+                    return {
+                        serviceId : thisService.id
+                    };
+                })
+            };
+        }
+
+        return servicesDocument;
+    }
+
+    isEqual(currentValue, newValue) {
+        // need to compare arrays
+        let arraysEqual = true;
+
+        if (currentValue && newValue && currentValue.length == newValue.length) {
+            // the preconditions are sets are equal in length; compare the array values themselves
+
+            // we haven't got large arrays here; so simply iterate around every
+            //  current value, and confirm it is in the the new data set.
+            //  Array.every will drop out on the first iteration to return false
+            arraysEqual = currentValue.every(thisService => {
+                return newValue.find(newService => newService.id === thisService.id);
+            });
+        } else {
+            // if the arrays are lengths are not equal, then we know they're not equal
+            arraysEqual = false;
+        }
+
+        return arraysEqual;
+    }
+
+    formatOtherServicesResponse(mainService, otherServices, allServices) {
+        return {
+          mainService: ServiceFormatters.singleService(mainService),
+          otherServices: ServiceFormatters.createServicesByCategoryJSON(otherServices, false, false, false),
+          allOtherServices: ServiceFormatters.createServicesByCategoryJSON(allServices, false, false, true),
+        };
+      }
+
+    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+        // NOTE - other services needs reformatting to present grouped by category
+        if (!withHistory) {
+            // simple form
+            return this.formatOtherServicesResponse(
+                this._mainService,
+                this.property,
+                this._allServices,
+            );
+        }
+        
+        return {
+            otherServices : {
+                currentValue: ServiceFormatters.createServicesByCategoryJSON(this.property, false, false, false),
+                ... this.changePropsToJSON(showPropertyHistoryOnly)
+            }
+        };
+    }
+
+    _valid(thisService) {
+        if (!thisService) return false;
+
+        // must exist a id or name
+        if (!(thisService.id || thisService.name)) return false;
+
+        // if id is given, it must be an integer
+        if (thisService.id && !(Number.isInteger(thisService.id))) return false;
+
+        // gets here, and it's valid
+        return true;
+    }
+
+    // returns false if service definitions are not valid, otherwise returns
+    //  a well formed set of job definitions using data as given in jobs reference lookup
+    async _validateServices(servicesDef) {
+        const setOfValidatedServices = [];
+        let setOfValidatedServicesInvalid = false;
+
+        // TODO - need to use the private set of All Services to iterate around, because they
+        //  have been adjusted based on whether the establishment is CQC registered or not
+        // now need to iterate around each service; but we need to bail out if any one of the given service definitions is not valid
+        for (let thisService of servicesDef) {
+            if (!this._valid(thisService)) {
+                // first check the given data structure
+                setOfValidatedServicesInvalid = true;
+                break;
+            }
+
+            // id overrides name, because id is indexed whereas name is not!
+            // other services "is main" has to be false
+            let referenceService = null;
+            if (thisService.id) {
+                referenceService = await models.services.findOne({
+                    where: {
+                        id: thisService.id
+                    },
+                    attributes: ['id', 'name', 'category'],
+                });
+            } else {
+                referenceService = await models.services.findOne({
+                    where: {
+                        name: thisService.name
+                    },
+                    attributes: ['id', 'name', 'category'],
+                });
+            }
+
+            if (referenceService && referenceService.id) {
+                // found a service match - prevent duplicates by checking if the reference service already exists
+                if (!setOfValidatedServices.find(thisService => thisService.id === referenceService.id)) {
+                    setOfValidatedServices.push({
+                        id: referenceService.id,
+                        name: referenceService.name,
+                        category: referenceService.category
+                    });    
+                }
+            } else {
+                setOfValidatedServicesInvalid = true;
+                break;
+            }
+
+        }
+
+        // if having processed each service correctly, return the set of now validated services
+        if (!setOfValidatedServicesInvalid) return setOfValidatedServices;
+
+        return false;
+
+    }
+
+};
