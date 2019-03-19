@@ -36,7 +36,6 @@ exports.StaffProperty = class StaffProperty extends ChangePropertyPrototype {
     }
 
     isEqual(currentValue, newValue) {
-        console.log("WA DEBUG staff isEqual: current/new: ", currentValue, newValue)
         // staff is a simple Number - but 0 is valid
         return currentValue !== null && newValue !== null && currentValue === newValue;
     }

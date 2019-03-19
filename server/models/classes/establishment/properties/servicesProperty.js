@@ -84,6 +84,12 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
 
         // note - only the serviceId is required and that is mapped from the property.services.id; establishmentId will be provided by Establishment class
         if (this.property && Array.isArray(this.property)) {
+            if (this.property.length == 0) {
+                servicesDocument.OtherServicesValue = 'No Other Services';
+            } else {
+                servicesDocument.OtherServicesValue = 'Other Services';
+            }
+
             servicesDocument.additionalModels = {
                 establishmentServices : this.property.map(thisService => {
                     return {
@@ -162,6 +168,9 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
     async _validateServices(servicesDef) {
         const setOfValidatedServices = [];
         let setOfValidatedServicesInvalid = false;
+
+        // need the set of all services defined and available
+        if (this._allServices === null || !Array.isArray(this._allServices)) return false;
 
         // TODO - need to use the private set of All Services to iterate around, because they
         //  have been adjusted based on whether the establishment is CQC registered or not
