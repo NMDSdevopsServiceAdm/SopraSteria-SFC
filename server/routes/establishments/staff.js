@@ -46,7 +46,7 @@ router.route('/').get(async (req, res) => {
       null,
       `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
 
-    console.error('establishment::GET/:eID - failed', thisError.message);
+    console.error('establishment::staff GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
 });
