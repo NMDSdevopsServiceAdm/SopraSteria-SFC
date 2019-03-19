@@ -660,7 +660,7 @@ class Establishment {
                 // myDefaultJSON.employerType = this._establishmentResults.employerType;
                 // myDefaultJSON.numberOfStaff = this._establishmentResults.numberOfStaff;
                 //myDefaultJSON.mainService = ServiceFormatters.singleService(this._establishmentResults.mainService);
-                myDefaultJSON.otherServices = ServiceFormatters.createServicesByCategoryJSON(this._establishmentResults.otherServices);
+                //myDefaultJSON.otherServices = ServiceFormatters.createServicesByCategoryJSON(this._establishmentResults.otherServices);
                 myDefaultJSON.capacities = CapacityFormatters.capacitiesJSON(this._establishmentResults.capacity);
                 myDefaultJSON.share = ShareFormatters.shareDataJSON(this._establishmentResults, this._establishmentResults.localAuthorities);
                 myDefaultJSON.jobs = JobFormatters.jobsByTypeJSON(this._establishmentResults);
