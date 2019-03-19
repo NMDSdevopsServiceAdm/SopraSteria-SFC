@@ -58,7 +58,15 @@ router.route('/:id').get(async (req, res) => {
 
     try {
         if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
-            return res.status(200).json(thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false));
+            // the property based framework for "other services" and "capacity services"
+            //  is returning "allOtherServices" and "allServiceCapacities"
+            //  we don't want those on the root GET establishment; only necessary for the
+            //  direct GET endpoints "establishment/:eid/service" and
+            //  establishment/:eid/service respectively
+            const jsonResponse = thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false)
+            delete jsonResponse.allOtherServices;
+            delete jsonResponse.allServiceCapacities;
+            return res.status(200).json(jsonResponse);
         } else {
             // not found worker
             return res.status(404).send('Not Found');
