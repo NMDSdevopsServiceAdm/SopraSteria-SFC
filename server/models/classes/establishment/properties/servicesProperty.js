@@ -1,9 +1,6 @@
 // the Services property is a reflextion table that holds the set of 'Other Serices' referenced against the reference set of services
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
-// database models
-const models = require('../../../index');
-
 const ServiceFormatters = require('../../../api/services');
 
 exports.ServicesProperty = class ServicesPropertyProperty extends ChangePropertyPrototype {
