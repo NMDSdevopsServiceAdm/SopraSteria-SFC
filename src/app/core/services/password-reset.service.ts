@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, empty, Observable } from 'rxjs';
 import { catchError, debounceTime, map, tap } from 'rxjs/operators';
 import { HttpErrorHandler } from './http-error-handler.service';
+import { EstablishmentService } from './establishment.service';
 
 export interface RequestPasswordResetResponse {
   usernameOrEmail: string;
@@ -19,6 +20,7 @@ export class PasswordResetService {
   constructor(
     private http: HttpClient,
     private httpErrorHandler: HttpErrorHandler,
+    private establishmentService: EstablishmentService
   ) { }
 
   requestPasswordReset(usernameOrEmail: string) {
@@ -61,6 +63,23 @@ export class PasswordResetService {
       .post<any>(
         '/api/user/resetPassword',
         newPassword,
+        { headers: requestHeaders, responseType: 'text' as 'json' }
+      )
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError),
+      );
+  }
+
+  changePassword(data) {
+
+    const token = localStorage.getItem('auth-token');
+    const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json', 'Authorization': token });
+
+    return this.http
+      .post<any>(
+        '/api/user/changePassword',
+        data,
         { headers: requestHeaders, responseType: 'text' as 'json' }
       )
       .pipe(

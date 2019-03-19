@@ -75,6 +75,12 @@ import { ForgotYourPasswordEditComponent } from './features/forgot-your-password
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
 import { ResetPasswordEditComponent } from './features/reset-password/edit/edit.component';
 import { ResetPasswordConfirmationComponent } from './features/reset-password/confirmation/confirmation.component';
+import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
+import { ChangePasswordComponent } from './features/change-password/change-password.component';
+import { ChangePasswordConfirmationComponent } from './features/change-password/confirmation/confirmation.component';
+import { ChangePasswordEditComponent } from './features/change-password/edit/edit.component';
+import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
+import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
 
 
 
@@ -125,6 +131,12 @@ import { ResetPasswordConfirmationComponent } from './features/reset-password/co
     ResetPasswordComponent,
     ResetPasswordEditComponent,
     ResetPasswordConfirmationComponent,
+    ChangeUserSummaryComponent,
+    ChangePasswordComponent,
+    ChangePasswordConfirmationComponent,
+    ChangePasswordEditComponent,
+    ChangeUserDetailsComponent,
+    ChangeUserSecurityComponent,
   ],
   imports: [
     BrowserModule,

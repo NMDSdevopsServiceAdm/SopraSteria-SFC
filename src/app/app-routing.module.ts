@@ -40,6 +40,10 @@ import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
 import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
+import { ChangePasswordComponent } from './features/change-password/change-password.component';
+import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
+import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
 
 const routes: Routes = [
   {
@@ -53,6 +57,26 @@ const routes: Routes = [
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
+  },
+  {
+    path: 'change-user-summary',
+    component: ChangeUserSummaryComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'change-user-details',
+    component: ChangeUserDetailsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'change-user-security',
+    component: ChangeUserSecurityComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'registered-question',
