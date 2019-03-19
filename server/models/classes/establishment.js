@@ -540,7 +540,6 @@ class Establishment {
 
                 // other services output requires a list of ALL services available to
                 //  the Establishment
-                let allServicesResults = null;
                 if (fetchResults.isRegulated) {
                     // other services for CQC regulated is ALL including non-CQC
                     fetchResults.allMyServices = await models.services.findAll({
@@ -559,6 +558,67 @@ class Establishment {
                             ['name', 'ASC']
                         ]
                     });  
+                }
+
+                // service capacities output requires a list of ALL service capacities available to
+                //  the Establishment
+                // fetch the main service id and all the associated 'other services' by id only
+                const allCapacitiesResults = await models.establishment.findOne({
+                    where: {
+                        id: this._id
+                    },
+                    attributes: ['id'],
+                    include: [
+                        {
+                            model: models.services,
+                            as: 'otherServices',
+                            attributes: ['id'],
+                        },
+                        {
+                        model: models.services,
+                        as: 'mainService',
+                        attributes: ['id']
+                        }
+                    ]
+                });
+        
+                const allAssociatedServiceIndices = [];
+                if (allCapacitiesResults && allCapacitiesResults.id) {
+                    // merge tha main and other service ids
+                    if (allCapacitiesResults.mainService.id) {
+                        allAssociatedServiceIndices.push(allCapacitiesResults.mainService.id);
+                    }
+                    // TODO: there is a much better way to derference (transpose) the id on an Array of objects
+                    //  viz. Map
+                    if (allCapacitiesResults.otherServices) {
+                        allCapacitiesResults.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+                    }
+                }
+        
+                // now fetch all the questions for the given set of combined services
+                if (allAssociatedServiceIndices.length > 0) {
+                    fetchResults.allServiceCapacityQuestions = await models.serviceCapacity.findAll({
+                        where: {
+                            serviceId: allAssociatedServiceIndices
+                        },
+                        attributes: ['id', 'seq', 'question'],
+                        order: [
+                            ['seq', 'ASC']
+                        ],
+                        include: [
+                            {
+                                model: models.services,
+                                as: 'service',
+                                attributes: ['id', 'category', 'name'],
+                                order: [
+                                    ['category', 'ASC'],
+                                    ['name', 'ASC']
+                                ]
+                            }
+                        ]
+                    });
+                } else {
+                    fetchResults.allServiceCapacityQuestions = null;
                 }
 
                 // TODO - remove this property once all the individual properties are done
@@ -659,7 +719,7 @@ class Establishment {
                 // myDefaultJSON.numberOfStaff = this._establishmentResults.numberOfStaff;
                 //myDefaultJSON.mainService = ServiceFormatters.singleService(this._establishmentResults.mainService);
                 //myDefaultJSON.otherServices = ServiceFormatters.createServicesByCategoryJSON(this._establishmentResults.otherServices);
-                myDefaultJSON.capacities = CapacityFormatters.capacitiesJSON(this._establishmentResults.capacity);
+                //myDefaultJSON.capacities = CapacityFormatters.capacitiesJSON(this._establishmentResults.capacity);
                 myDefaultJSON.share = ShareFormatters.shareDataJSON(this._establishmentResults, this._establishmentResults.localAuthorities);
                 myDefaultJSON.jobs = JobFormatters.jobsByTypeJSON(this._establishmentResults);
             }
