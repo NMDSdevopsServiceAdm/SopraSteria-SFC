@@ -7,8 +7,9 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
     constructor() {
         super('OtherServices');
 
-        // other services needs reference to main service
+        // other services needs reference to main service and All (Known for this Establishment) Services
         this._mainService = null;
+        this._allServices = null;
     }
 
     static clone() {
@@ -75,18 +76,12 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
     }
 
     savePropertyToSequelize() {
-        // when saving other jobs, there is no "Value" column to update - only reflexion records to delete/create
+        // when saving other services, there is no "Value" column to update - only reflexion records to delete/create
         const servicesDocument = {
         };
 
         // note - only the serviceId is required and that is mapped from the property.services.id; establishmentId will be provided by Establishment class
         if (this.property && Array.isArray(this.property)) {
-            if (this.property.length == 0) {
-                servicesDocument.OtherServicesValue = 'No Other Services';
-            } else {
-                servicesDocument.OtherServicesValue = 'Other Services';
-            }
-
             servicesDocument.additionalModels = {
                 establishmentServices : this.property.map(thisService => {
                     return {
@@ -129,7 +124,6 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
       }
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
-        // NOTE - other services needs reformatting to present grouped by category
         if (!withHistory) {
             // simple form
             return this.formatOtherServicesResponse(
@@ -161,7 +155,7 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
     }
 
     // returns false if service definitions are not valid, otherwise returns
-    //  a well formed set of job definitions using data as given in jobs reference lookup
+    //  a well formed set of service definitions using data as given in services reference lookup
     async _validateServices(servicesDef) {
         const setOfValidatedServices = [];
         let setOfValidatedServicesInvalid = false;
@@ -169,9 +163,6 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
         // need the set of all services defined and available
         if (this._allServices === null || !Array.isArray(this._allServices)) return false;
 
-        // TODO - need to use the private set of All Services to iterate around, because they
-        //  have been adjusted based on whether the establishment is CQC registered or not
-        // now need to iterate around each service; but we need to bail out if any one of the given service definitions is not valid
         for (let thisService of servicesDef) {
             if (!this._valid(thisService)) {
                 // first check the given data structure
@@ -180,14 +171,15 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
             }
 
             // id overrides name, because id is indexed whereas name is not!
-            // other services "is main" has to be false
             let referenceService = null;
             if (thisService.id) {
                 referenceService = this._allServices.find(thisAllService => {
-                    return thisAllService.id === thisService.id
+                    return thisAllService.id === thisService.id;
                 });
             } else {
-                referenceService = this._allServices.find(thisAllService => { return thisAllService.name === thisService.name });
+                referenceService = this._allServices.find(thisAllService => {
+                    return thisAllService.name === thisService.name;
+                });
             }
 
             if (referenceService && referenceService.id) {
