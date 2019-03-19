@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { AuthService } from '@core/services/auth-service';
-import { UserService } from '../../core/services/user.service';
+import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -24,7 +24,9 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
 
     this.establishment = this.authService.establishment.id;
 
-    this._userService.userDetails$.subscribe(userDetails => this.userDetails = userDetails);
+    this.subscriptions.add(
+      this._userService.userDetails$.subscribe(userDetails => this.userDetails = userDetails)
+    );
   }
 
   getresetPasswordSuccessData(responseData) {

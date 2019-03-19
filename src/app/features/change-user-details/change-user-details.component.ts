@@ -59,7 +59,9 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
       userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
     });
 
-    this._userService.userDetails$.subscribe(userDetails => this.userDetails = userDetails);
+    this.subscriptions.add(
+      this._userService.userDetails$.subscribe(userDetails => this.userDetails = userDetails)
+    );
 
     this.setUserDetails();
 

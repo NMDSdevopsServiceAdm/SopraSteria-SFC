@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, empty, Observable } from 'rxjs';
 import { catchError, debounceTime, map, tap } from 'rxjs/operators';
 import { HttpErrorHandler } from './http-error-handler.service';
-import { EstablishmentService } from './establishment.service';
 
 export interface RequestPasswordResetResponse {
   usernameOrEmail: string;
@@ -19,8 +18,7 @@ export class PasswordResetService {
 
   constructor(
     private http: HttpClient,
-    private httpErrorHandler: HttpErrorHandler,
-    private establishmentService: EstablishmentService
+    private httpErrorHandler: HttpErrorHandler
   ) { }
 
   requestPasswordReset(usernameOrEmail: string) {

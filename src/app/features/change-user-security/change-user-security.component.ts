@@ -45,7 +45,9 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
       securityAnswerInput: ['', [Validators.required, Validators.maxLength(255)]]
     });
 
-    this._userService.userDetails$.subscribe(userDetails => this.userDetails = userDetails);
+    this.subscriptions.add(
+      this._userService.userDetails$.subscribe(userDetails => this.userDetails = userDetails)
+    );
 
     this.setUserDetails();
 
