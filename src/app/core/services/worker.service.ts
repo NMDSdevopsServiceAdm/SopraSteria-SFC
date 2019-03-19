@@ -21,6 +21,7 @@ export interface WorkerEditResponse {
 export class WorkerService {
   private _worker$ = new BehaviorSubject<Worker>(null);
   public worker$ = this._worker$.asObservable();
+  private returnToSummary$ = new BehaviorSubject<boolean>(false);
   public createStaffResponse = null;
 
   // All workers store
@@ -37,8 +38,16 @@ export class WorkerService {
     return this._worker$.value as Worker;
   }
 
+  public get returnToSummary() {
+    return this.returnToSummary$.value as boolean;
+  }
+
   setState(worker) {
     this._worker$.next(worker);
+  }
+
+  setReturnToSummary(val) {
+    this.returnToSummary$.next(val);
   }
 
   /*
