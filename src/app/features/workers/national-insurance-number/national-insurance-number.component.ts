@@ -34,9 +34,14 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
-      this.backLink = this.worker.otherJobs.some(j => j.jobId === 27)
-        ? 'mental-health-professional'
-        : 'other-job-roles';
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink = this.worker.otherJobs.some(j => j.jobId === 27)
+          ? 'mental-health-professional'
+          : 'other-job-roles';
+      }
 
       if (this.worker.nationalInsuranceNumber) {
         this.form.patchValue({

@@ -15,6 +15,7 @@ import { take } from 'rxjs/operators';
 export class NationalityComponent implements OnInit, OnDestroy {
   public availableOtherNationalities: NationalityResponse[];
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -35,6 +36,12 @@ export class NationalityComponent implements OnInit, OnDestroy {
       nationalityKnown: null,
       nationalityName: [null, this.nationalityNameValidator],
     });
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'ethnicity';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;

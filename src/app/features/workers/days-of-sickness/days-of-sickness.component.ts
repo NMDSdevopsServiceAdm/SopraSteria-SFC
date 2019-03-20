@@ -15,6 +15,7 @@ import { isNull } from 'util';
 })
 export class DaysOfSicknessComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public backLink: string;
   public daysSicknessMin = 0;
   public daysSicknessMax = 366;
   private worker: Worker;
@@ -35,6 +36,12 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
       valueKnown: null,
       value: [null, [Validators.min(this.daysSicknessMin), Validators.max(this.daysSicknessMax), this.valueValidator]],
     });
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'adult-social-care-started';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;

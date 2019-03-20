@@ -87,6 +87,7 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.workerService.setReturnToSummary(false);
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
     });
@@ -100,6 +101,10 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     this.location.back();
+  }
+
+  setReturn() {
+    this.workerService.setReturnToSummary(true);
   }
 
   async saveAndComplete() {
