@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { catchError, debounceTime, map } from 'rxjs/operators';
@@ -9,6 +9,15 @@ import { HttpErrorHandler } from './http-error-handler.service';
 
 interface WorkersResponse {
   workers: Array<Worker>;
+}
+
+export interface Reason {
+  id: number;
+  reason: string;
+}
+
+interface LeaveReasonsResponse {
+  reasons: Array<Reason>;
 }
 
 export interface WorkerEditResponse {
@@ -83,6 +92,16 @@ export class WorkerService {
         map(w => w.workers),
         catchError(this.httpErrorHandler.handleHttpError)
       );
+  }
+
+  getLeaveReasons() {
+    const headers = new HttpHeaders({ 'Content-type': 'application/json' });
+
+    return this.http.get<LeaveReasonsResponse>('/api/worker/leaveReasons', { headers }).pipe(
+      debounceTime(500),
+      map(r => r.reasons),
+      catchError(this.httpErrorHandler.handleHttpError)
+    );
   }
 
   /*
