@@ -449,6 +449,7 @@ class Worker {
                 const updateDocument = {
                     archived: true,
                     reasonFk: this._reason.id,
+                    otherReason: escape(this._reason.other),
                     updated: updatedTimestamp,
                     updatedBy: deletedBy
                 };
@@ -723,11 +724,13 @@ class Worker {
             });
         }
 
+        const leaveReasonIdOfOther = 8;
         if (referenceReason && referenceReason.id) {
             // found a ethnicity match
             return {
                 id: referenceReason.id,
-                reason: referenceReason.reason
+                reason: referenceReason.reason,
+                other: reasonDef.id === leaveReasonIdOfOther ? reasonDef.other : null
             };
         } else {
             return false;

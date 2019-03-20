@@ -860,6 +860,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: 'LeaveReasonFK'
     },
+    otherReason: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: 'LeaveReasonOther'
+    },
   }, {
     tableName: '"Worker"',
     schema: 'cqc',
