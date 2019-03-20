@@ -140,10 +140,12 @@ export class WorkerService {
    * DELETE /api/establishment/:establishmentId/worker/:workerId
    */
   deleteWorker(workerId: string, reason: any) {
+    const headers = new HttpHeaders({ 'Content-type': 'application/json' });
+
     return this.http
       .request<any>('delete', `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`, {
         body: reason,
-        ...EstablishmentService.getOptions(),
+        headers,
       })
       .pipe(
         debounceTime(500),
