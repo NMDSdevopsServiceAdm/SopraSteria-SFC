@@ -73,7 +73,7 @@ export class DeleteWorkerDialogComponent implements OnInit {
       if (this.form.valid) {
         const deleteReason = {
           reason: {
-            value: reason.value,
+            id: parseInt(reason.value, 10),
             ...(details.value && {
               other: details.value,
             }),
