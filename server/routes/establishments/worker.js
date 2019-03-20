@@ -164,6 +164,10 @@ router.route('/:workerId').delete(async (req, res) => {
     const workerId = req.params.workerId;
     const establishmentId = req.establishmentId;
 
+    // when deleting a worker, an optional reason can be given
+    // that will be given in the body of the DELETE
+    const reason = req.body.reason;
+
     // validating worker id - must be a V4 UUID
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
     if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
@@ -175,9 +179,21 @@ router.route('/:workerId').delete(async (req, res) => {
         //  available to the given establishment. The best way of doing that
         //  is to restore from given UID
         if (await thisWorker.restore(workerId)) {
-            // now "delete" this Worker by archiving it
-            await thisWorker.archive(req.username);
-            return res.status(204).send();
+            // by loading after the restore, only those properties defined in the
+            //  PUT body will be updated (peristed)
+            const isValidWorker = await thisWorker.load({
+                reason
+            });
+
+            // this is an update to an existing Worker, so no mandatory properties!
+            if (isValidWorker) {
+                // now "delete" this Worker by archiving it
+                await thisWorker.archive(req.username);
+                return res.status(204).send();
+            } else {
+                return res.status(400).send('Unexpected Input.');
+            }
+
         } else {
             // not found worker
             return res.status(404).send('Not Found');
