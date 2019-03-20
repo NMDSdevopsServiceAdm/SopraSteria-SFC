@@ -10,7 +10,7 @@ import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
 import {
   ProblemWithTheServicePagesComponent,
 } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
@@ -51,11 +51,19 @@ import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
+import {
+  ForgotYourPasswordConfirmationComponent,
+} from './features/forgot-your-password/confirmation/confirmation.component';
+import { ForgotYourPasswordEditComponent } from './features/forgot-your-password/edit/edit.component';
+import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
 import { LeaversComponent } from './features/leavers/leavers.component';
 import { LoginComponent } from './features/login/login.component';
 import { LogoutComponent } from './features/logout/logout.component';
 import { RegisterComponent } from './features/register/register.component';
 import { RegistrationCompleteComponent } from './features/registration-complete/registration-complete.component';
+import { ResetPasswordConfirmationComponent } from './features/reset-password/confirmation/confirmation.component';
+import { ResetPasswordEditComponent } from './features/reset-password/edit/edit.component';
+import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
 import { SecurityQuestionComponent } from './features/security-question/security-question.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
@@ -69,14 +77,6 @@ import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
-import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
-import { ForgotYourPasswordConfirmationComponent } from './features/forgot-your-password/confirmation/confirmation.component';
-import { ForgotYourPasswordEditComponent } from './features/forgot-your-password/edit/edit.component';
-import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
-import { ResetPasswordEditComponent } from './features/reset-password/edit/edit.component';
-import { ResetPasswordConfirmationComponent } from './features/reset-password/confirmation/confirmation.component';
-
-
 
 @NgModule({
   declarations: [
@@ -113,7 +113,7 @@ import { ResetPasswordConfirmationComponent } from './features/reset-password/co
     FeedbackComponent,
     ContactUsComponent,
     LogoutComponent,
-    PageNotFoundPagesComponent,
+    PageNotFoundComponent,
     ProblemWithTheServicePagesComponent,
     ServiceUnavailablePagesComponent,
     TermsConditionsComponent,
