@@ -14,6 +14,7 @@ import { take } from 'rxjs/operators';
 })
 export class OtherJobRolesComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -31,6 +32,12 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       selectedJobRoles: this.formBuilder.array([]),
     });
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'main-job-start-date';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;

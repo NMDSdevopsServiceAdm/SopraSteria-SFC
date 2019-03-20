@@ -34,10 +34,15 @@ export class OtherQualificationsComponent implements OnInit, OnDestroy {
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
-      this.backLink =
-        this.worker.qualificationInSocialCare === 'Yes'
-          ? 'social-care-qualification-level'
-          : 'social-care-qualification';
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink =
+          this.worker.qualificationInSocialCare === 'Yes'
+            ? 'social-care-qualification-level'
+            : 'social-care-qualification';
+      }
 
       if (this.worker.otherQualification) {
         this.form.patchValue({

@@ -15,6 +15,7 @@ import { isNull } from 'util';
 })
 export class AverageWeeklyHoursComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -33,6 +34,12 @@ export class AverageWeeklyHoursComponent implements OnInit, OnDestroy {
       weeklyHoursAverageKnown: null,
       weeklyHoursAverage: [null, [Validators.min(0), Validators.max(65), this.hoursRequiredValidator]],
     });
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'contract-with-zero-hours';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;

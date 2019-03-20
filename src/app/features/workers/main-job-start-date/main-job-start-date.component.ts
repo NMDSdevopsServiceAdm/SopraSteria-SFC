@@ -39,7 +39,12 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
-      this.backLink = this.worker.mainJob.jobId === 27 ? 'mental-health-professional' : 'staff-details';
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink = this.worker.mainJob.jobId === 27 ? 'mental-health-professional' : 'staff-details';
+      }
 
       if (this.worker.mainJobStartDate) {
         const date = moment(this.worker.mainJobStartDate, DEFAULT_DATE_FORMAT);

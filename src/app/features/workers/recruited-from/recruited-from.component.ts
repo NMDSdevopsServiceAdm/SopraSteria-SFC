@@ -38,10 +38,15 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
-      this.backLink =
-        this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-          ? 'country-of-birth'
-          : 'year-arrived-uk';
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink =
+          this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
+            ? 'country-of-birth'
+            : 'year-arrived-uk';
+      }
 
       if (this.worker.recruitedFrom) {
         const { value, from } = this.worker.recruitedFrom;

@@ -16,6 +16,7 @@ import { take } from 'rxjs/operators';
 })
 export class DateOfBirthComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -36,6 +37,12 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       year: null,
     });
     this.form.setValidators(Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator]));
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'national-insurance-number';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
