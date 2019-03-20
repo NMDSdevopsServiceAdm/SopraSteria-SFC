@@ -55,7 +55,11 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
     this.changeUserDetailsForm = this.fb.group({
       userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]],
       userJobTitleInput: ['', [Validators.required, Validators.maxLength(120)]],
-      userEmailInput: ['', [Validators.required, Validators.email, Validators.maxLength(120)]],
+      userEmailInput: ['', [
+        Validators.required,
+        Validators.pattern('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$'),
+        Validators.maxLength(120)
+      ]],
       userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
     });
 

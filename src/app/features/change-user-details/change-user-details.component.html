@@ -1,11 +1,5 @@
 <div class="sub-page-container col-12">
 
-  <div id="back" class="back-link">
-    <a (click)="clickBack()">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
-
   <p class="heading-caption m-0 pb-4">User account</p>
   <h1 class="h1">Your details</h1>
 
@@ -67,7 +61,7 @@
             <span class="main-body-text mb-2" *ngIf="displayError && getUserEmailInput.hasError('maxlength')">
               Your email address must be no longer than 120 characters.
             </span>
-            <span class="main-body-text mb-2" *ngIf="displayError && getUserEmailInput.hasError('email')">
+            <span class="main-body-text mb-2" *ngIf="displayError && getUserEmailInput.hasError('pattern')">
               Please enter a valid email address.
             </span>
           </span>
