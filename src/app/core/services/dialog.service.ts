@@ -45,14 +45,11 @@ export class Dialog<T, R = any> {
   }
 
   private createInjector(data): PortalInjector {
-    // Instantiate new WeakMap for our custom injection tokens
     const injectionTokens = new WeakMap();
 
-    // Set custom injection tokens
     injectionTokens.set(Dialog, this);
     injectionTokens.set(DIALOG_DATA, data);
 
-    // Instantiate new PortalInjector
     return new PortalInjector(this.injector, injectionTokens);
   }
 }
