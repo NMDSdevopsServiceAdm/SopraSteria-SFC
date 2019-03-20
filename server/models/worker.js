@@ -838,13 +838,11 @@ module.exports = function(sequelize, DataTypes) {
     created: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
       field: 'created'
     },
     updated: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: DataTypes.NOW,
       field: 'updated'
     },
     updatedBy: {
@@ -855,9 +853,13 @@ module.exports = function(sequelize, DataTypes) {
     archived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false,
       field: 'Archived'
-    }
+    },
+    reasonFk: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: 'LeaveReasonFK'
+    },
   }, {
     tableName: '"Worker"',
     schema: 'cqc',
