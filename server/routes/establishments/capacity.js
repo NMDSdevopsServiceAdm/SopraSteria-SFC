@@ -87,7 +87,11 @@ router.route('/').post(async (req, res) => {
       if (isValidEstablishment) {
         await thisEstablishment.save(req.username);
 
-        return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
+        // the POST response is not to return allServiceCapacities
+        const jsonResponse = thisEstablishment.toJSON(false, false, false, true, false, filteredProperties);
+        delete jsonResponse.allServiceCapacities;
+
+        return res.status(200).json(jsonResponse);
       } else {
         return res.status(400).send('Unexpected Input.');
       }
