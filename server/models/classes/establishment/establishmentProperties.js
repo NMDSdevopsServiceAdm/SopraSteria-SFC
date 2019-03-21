@@ -4,8 +4,9 @@ const Manager = require('../properties/manager');
 // individual properties
 const employerTypeProperty = require('./properties/employerTypeProperty').EmployerTypeProperty;
 const staffProperty = require('./properties/staffProperty').StaffProperty;
-const otherServices = require("./properties/servicesProperty").ServicesProperty;
-const capacityServices = require("./properties/capacityProperties").CapacityProperty;
+const otherServicesProperty = require("./properties/servicesProperty").ServicesProperty;
+const capacityServicesProperty = require("./properties/capacityProperties").CapacityProperty;
+const shareProperty = require("./properties/shareWithProperty").ShareWithProperty;
 
 class EstablishmentPropertyManager {
     constructor() {
@@ -13,8 +14,9 @@ class EstablishmentPropertyManager {
 
         this._thisManager.registerProperty(employerTypeProperty);
         this._thisManager.registerProperty(staffProperty);
-        this._thisManager.registerProperty(otherServices);
-        this._thisManager.registerProperty(capacityServices);
+        this._thisManager.registerProperty(otherServicesProperty);
+        this._thisManager.registerProperty(capacityServicesProperty);
+        this._thisManager.registerProperty(shareProperty);
     }
 
     get manager() {

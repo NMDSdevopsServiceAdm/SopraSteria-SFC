@@ -2,10 +2,10 @@ const LaFormatters = require('./la');
 
 exports.shareDataJSON = (establishment, authorities) => {
   let jsonObject = {
-    enabled: establishment.shareData
+    enabled: establishment.ShareDataValue
   };
 
-  if (establishment.shareData) {
+  if (establishment.ShareDataValue) {
     jsonObject.with = [];
 
     if (establishment.shareWithCQC) jsonObject.with.push('CQC');
