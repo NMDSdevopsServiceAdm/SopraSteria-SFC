@@ -23,8 +23,6 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
             // can be an empty array
             if (Array.isArray(document.capacities)) {
                 const validatedCapacities = await this._validateCapacities(document.capacities);
-
-                console.log("WA DEBUG - validated capacities: ", validatedCapacities)
                 if (validatedCapacities) {
                     this.property = validatedCapacities;
 
@@ -196,9 +194,6 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
         if (this._allCapacities === null || !Array.isArray(this._allCapacities)) return false;
 
         for (let thisCapacity of capacityDef) {
-            console.log("WA DEBUG - validating: ", thisCapacity)
-
-
             if (!this._valid(thisCapacity)) {
                 // first check the given data structure
                 setOfValidatedCapacitiesInvalid = true;
@@ -220,8 +215,6 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
 
             if (referenceCapacity && referenceCapacity.id) {
                 // found a capacity match - prevent duplicates by checking if the reference capacity already exists
-//console.log("WA DEBUG: thisCapacity/referenceCapacity: ", thisCapacity, referenceCapacity)
-
                 if (!setOfValidatedCapacities.find(thisCapacity => thisCapacity.questionId === referenceCapacity.id)) {
                     setOfValidatedCapacities.push({
                         answer: thisCapacity.answer,

@@ -43,15 +43,15 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
         if (theseServices && Array.isArray(theseServices)) {
             theseServices.forEach(thisService => {
                 // find and update the corresponding service in allServices
-                let foundService = allServices.find(refService => refService.id === thisService.id );
+                let foundService = allServices.find(refService => refService.id === thisService.id);
                 if (foundService) {
                     foundService.isMyService = true;
                 }
             });
         }
-    
+
         // now remove the main service
-        return allServices.filter(refService => refService.id !== mainService.id );
+        return allServices.filter(refService => refService.id !== mainService.id);
     };
 
     restorePropertyFromSequelize(document) {
@@ -83,9 +83,9 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
         // note - only the serviceId is required and that is mapped from the property.services.id; establishmentId will be provided by Establishment class
         if (this.property && Array.isArray(this.property)) {
             servicesDocument.additionalModels = {
-                establishmentServices : this.property.map(thisService => {
+                establishmentServices: this.property.map(thisService => {
                     return {
-                        serviceId : thisService.id
+                        serviceId: thisService.id
                     };
                 })
             };
@@ -117,13 +117,13 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
 
     formatOtherServicesResponse(mainService, otherServices, allServices) {
         return {
-          mainService: ServiceFormatters.singleService(mainService),
-          otherServices: ServiceFormatters.createServicesByCategoryJSON(otherServices, false, false, false),
-          allOtherServices: ServiceFormatters.createServicesByCategoryJSON(allServices, false, false, true),
+            mainService: ServiceFormatters.singleService(mainService),
+            otherServices: ServiceFormatters.createServicesByCategoryJSON(otherServices, false, false, false),
+            allOtherServices: ServiceFormatters.createServicesByCategoryJSON(allServices, false, false, true),
         };
-      }
+    }
 
-    toJSON(withHistory=false, showPropertyHistoryOnly=true) {
+    toJSON(withHistory = false, showPropertyHistoryOnly = true) {
         if (!withHistory) {
             // simple form
             return this.formatOtherServicesResponse(
@@ -132,9 +132,9 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
                 this._allServices,
             );
         }
-        
+
         return {
-            otherServices : {
+            otherServices: {
                 currentValue: ServiceFormatters.createServicesByCategoryJSON(this.property, false, false, false),
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
@@ -189,7 +189,7 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
                         id: referenceService.id,
                         name: referenceService.name,
                         category: referenceService.category
-                    });    
+                    });
                 }
             } else {
                 setOfValidatedServicesInvalid = true;
