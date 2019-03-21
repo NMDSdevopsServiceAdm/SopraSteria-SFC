@@ -107,7 +107,8 @@ router.route('/').post(async (req, res) => {
             console.error("Worker POST: ", err.message);
             return res.status(503).send(err.safe);
         }
-        return res.status(503).send(err);
+        console.error("Worker POST: unexpected exception: ", err);
+        return res.status(503).send();
     }
 });
 
