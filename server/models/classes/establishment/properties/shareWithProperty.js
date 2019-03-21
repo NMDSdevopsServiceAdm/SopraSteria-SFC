@@ -7,6 +7,9 @@ const OPTION_CQC = 'CQC';
 exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyPrototype {
     constructor() {
         super('ShareData');
+
+        this._shareWithLA = null;
+        this._shareWithCQC = null;
     }
 
     static clone() {
@@ -44,7 +47,23 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
                             newProperty.with = document.share.with;
                             this.property = newProperty;
                         } else if (validOptions) {
+                            // so no given with options, but the share property
+                            //  is enabled. Check if we have cached the
+                            //  share options and then reform the
+                            //  with options (we're re-enabling share - toggle)
+                            const withOptions = [];
+                            if (this._shareWithCQC && this._shareWithCQC) {
+                                withOptions.push(OPTION_CQC);
+                            }
+                            if (this._shareWithLA && this._shareWithLA) {
+                                withOptions.push(OPTION_LOCAL_AUTHORITY);
+                            }
+                            
+                            if (withOptions.length > 0) {
+                                newProperty.with = withOptions;
+                            }
                             this.property = newProperty;
+
                         } else {
                             // all with options must be valid
                             this.property = null;
@@ -71,6 +90,11 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
                 };
 
         } else {
+            // even if sharing if not enabled, cache (private) the share with CQC
+            //  and share with LA options, in case when serialising from JSON
+            //  we're toggling back on sharing
+            this._shareWithLA = document.shareWithLA;
+            this._shareWithCQC = document.shareWithCQC;
             return {
                     enabled: false
                 };
