@@ -196,9 +196,6 @@ class Worker {
                 });
                 
             } catch (err) {
-                console.log("WA DEBUG - caught exception on creating worker: ", err)
-
-
                 // if the name/Id property is known, use it in the error message
                 const nameId = this._properties.get('NameOrId');
                 throw new WorkerExceptions.WorkerSaveException(null,
