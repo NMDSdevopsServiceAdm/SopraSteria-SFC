@@ -26,19 +26,25 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
                     };
                 } else {
                     // share is enabled - could be zero, one or both "with" options
-                    if (!document.share.with ||
+                    // could simply be a toggle of sharing on/off (so no options)
+                    if (document.share.with &&
                         !Array.isArray(document.share.with)) {
-                        // if enabled, "share.with" must be defined and it must be an Array, even if an empty array
+                        // if "share.with"  is given it must be an Array, even if an empty array
                         this.property = null;
                     } else {
-                        const validOptions = document.share.with.every(thisWithOption => {
+                        const validOptions = document.share.with ? document.share.with.every(thisWithOption => {
                             return EXPECTED_SHARE_OPTIONS.includes(thisWithOption);
-                        });
-                        if (validOptions) {
-                            this.property = {
-                                enabled: true,
-                                with: document.share.with
-                            };
+                        }) : true;
+
+                        const newProperty = {
+                            enabled: true
+                        };
+
+                        if (validOptions && document.share.with) {
+                            newProperty.with = document.share.with;
+                            this.property = newProperty;
+                        } else if (validOptions) {
+                            this.property = newProperty;
                         } else {
                             // all with options must be valid
                             this.property = null;
@@ -78,15 +84,17 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
         // only update the with options is share is enabled
         if (this.property.enabled) {
             // note - must reset the specific share option if it is not in the with set
-            if (this.property.with.includes(OPTION_CQC)) {
-                updateDocument.shareWithCQC = true;
-            } else {
-                updateDocument.shareWithCQC = false;
-            }
-            if (this.property.with.includes(OPTION_LOCAL_AUTHORITY)) {
-                updateDocument.shareWithLA = true;
-            } else {
-                updateDocument.shareWithLA = false;
+            if (this.property.with) {
+                if (this.property.with.includes(OPTION_CQC)) {
+                    updateDocument.shareWithCQC = true;
+                } else {
+                    updateDocument.shareWithCQC = false;
+                }
+                if (this.property.with.includes(OPTION_LOCAL_AUTHORITY)) {
+                    updateDocument.shareWithLA = true;
+                } else {
+                    updateDocument.shareWithLA = false;
+                }
             }
         }
 
@@ -98,32 +106,48 @@ exports.ShareWithProperty = class ShareWithProperty extends ChangePropertyProtot
         let shareWithOptionsEqual = true;
 
         if (currentValue && newValue && currentValue.enabled && newValue.enabled) {
-            // current and new are both enabled
-            if (currentValue.with.length != newValue.with.length) {
-                // not the same length, so not equal
-                shareWithOptionsEqual = false;
-            } else {
-                // check every value in current is in new
-                shareWithOptionsEqual = currentValue.with.every(thisCurrentWithOption => {
-                    return newValue.with.find(thisCurrentWithOption => thisCurrentWithOption === thisCurrentWithOption);
-                });
+            if (currentValue.with && newValue.with) {
+                // current and new are both enabled
+                if (currentValue.with.length != newValue.with.length) {
+                    // not the same length, so not equal
+                    shareWithOptionsEqual = false;
+                } else {
+                    // check every value in current is in new
+                    shareWithOptionsEqual = currentValue.with.every(thisCurrentWithOption => {
+                        return newValue.with.find(thisNewWithOption => thisNewWithOption === thisCurrentWithOption);
+                    });
+                }
             }
         }
 
         return currentValue !== null && newValue !== null && currentValue.enabled === newValue.enabled && shareWithOptionsEqual;
     }
 
+    jsonShareOption() {
+        const jsonResponse = {
+            enabled: this.property.enabled
+        };
+
+        if (this.property.with) {
+            jsonResponse.with = this.property.with;
+        } else {
+            jsonResponse.with = [];
+        }
+
+        return jsonResponse;
+    }
+
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
         if (!withHistory) {
             // simple form
             return {
-                share: this.property
+                share: this.jsonShareOption()
             };
         }
         
         return {
             share: {
-                currentValue: this.property,
+                currentValue: this.jsonShareOption(),
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };

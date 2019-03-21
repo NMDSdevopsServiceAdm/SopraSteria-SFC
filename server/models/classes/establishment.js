@@ -200,7 +200,7 @@ class Establishment {
                     mainServiceId: this._mainService.id,
                     nmdsId: this._nmdsId,
                     updatedBy: savedBy,
-                    shareData: false,
+                    ShareDataValue: false,
                     shareWithCQC: false,
                     shareWithLA: false,
                     attributes: ['id', 'created', 'updated'],
