@@ -1,14 +1,12 @@
-import { Injectable, isDevMode } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
 import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
-import { HttpErrorHandler } from './http-error-handler.service';
 import { LoginApiModel } from '../model/loginApi.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
+import { HttpErrorHandler } from './http-error-handler.service';
 
 // TODO do we still need it?
 const initialRegistration: LoginApiModel = {
@@ -25,7 +23,7 @@ interface LoggedInEstablishment {
   id: number;
   name: string;
   isRegulated: boolean;
-  nmdsId: string
+  nmdsId: string;
 }
 interface LoggedInSession {
   fullname: string;
