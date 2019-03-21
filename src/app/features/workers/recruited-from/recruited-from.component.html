@@ -29,7 +29,7 @@
         <div *ngIf="form.get('recruitmentKnown').value === 'Yes'" class="panel panel-border-narrow col-10 col-lg-6 ml-0 mt-5 mb-5 mt-md-0">
           <div class="form-field">
             <label class="form-label">Recruited from
-              <select formControlName="recruitedFromId" class="form-control">
+              <select formControlName="recruitedFromId" class="form-control" id="recruitedFromId">
                 <option [ngValue]="null">Select recruitment source</option>
                 <option *ngFor="let recruitment of availableRecruitments" [value]="recruitment.id">
                   {{recruitment.from}}

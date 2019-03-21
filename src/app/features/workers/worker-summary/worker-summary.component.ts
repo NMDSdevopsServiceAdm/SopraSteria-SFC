@@ -91,6 +91,7 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.workerService.setReturnToSummary(false);
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
     });
@@ -106,6 +107,10 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     this.location.back();
   }
 
+  setReturn() {
+    this.workerService.setReturnToSummary(true);
+  }
+  
   deleteWorker(event) {
     event.preventDefault();
     const dialog = this.dialogService.open(DeleteWorkerDialogComponent, this.worker);

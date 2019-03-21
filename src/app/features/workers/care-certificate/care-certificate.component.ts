@@ -14,6 +14,7 @@ import { take } from 'rxjs/operators';
 export class CareCertificateComponent implements OnInit, OnDestroy {
   public answersAvailable = ['Yes, completed', 'Yes, in progress or partially completed', 'No'];
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -30,6 +31,12 @@ export class CareCertificateComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       careCertificate: null,
     });
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'salary';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;

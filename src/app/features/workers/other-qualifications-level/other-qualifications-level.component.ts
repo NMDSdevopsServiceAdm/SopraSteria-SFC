@@ -16,6 +16,7 @@ import { take } from 'rxjs/operators';
 export class OtherQualificationsLevelComponent implements OnInit, OnDestroy {
   public qualifications: Qualification[];
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -33,6 +34,12 @@ export class OtherQualificationsLevelComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       qualification: [null, Validators.required],
     });
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'other-qualifications';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
