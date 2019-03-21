@@ -42,6 +42,9 @@ class Worker {
         // default logging level - errors only
         // TODO: INFO logging on Worker; change to LOG_ERROR only
         this._logLevel = Worker.LOG_INFO;
+
+        // local attributes
+        this._reason = null;
     }
 
     // returns true if valid establishment id
@@ -121,7 +124,7 @@ class Worker {
         // reason is an unmanaged property - validate explicitly
         const unmanagedPropertiesValid = (this._reason === null) || (this._reason !== null && this._reason.id > 0);
 
-        if (thisWorkerIsValid === true && unmanagedPropertiesValid) {
+        if (thisWorkerIsValid === true && unmanagedPropertiesValid ) {
             return true;
         } else {
             this._log(Worker.LOG_ERROR, `Worker invalid properties: ${thisWorkerIsValid.toString()}`);
@@ -146,10 +149,14 @@ class Worker {
         if (mustSave && this._isNew) {
             // create new Worker
             try {
+                const creationDate = new Date();
                 const creationDocument = {
                     establishmentFk: this._establishmentId,
                     uid: this.uid,
                     updatedBy: savedBy,
+                    archived: false,
+                    updated: creationDate,
+                    created: creationDate,
                     attributes: ['id', 'created', 'updated'],
                 };
 
