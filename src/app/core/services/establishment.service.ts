@@ -1,14 +1,12 @@
-import { Injectable, isDevMode } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject } from 'rxjs';
-import { map, debounceTime, catchError } from 'rxjs/operators';
+import { Injectable, isDevMode } from '@angular/core';
+import { catchError, debounceTime, map } from 'rxjs/operators';
 
-import { HttpErrorHandler } from './http-error-handler.service';
-
-import { ServicesModel } from '../model/services.model';
-import { PostServicesModel } from '../model/postServices.model';
-import { SharingOptionsModel } from '../model/sharingOptions.model';
 import { LocalAuthorityModel } from '../model/localAuthority.model';
+import { PostServicesModel } from '../model/postServices.model';
+import { ServicesModel } from '../model/services.model';
+import { SharingOptionsModel } from '../model/sharingOptions.model';
+import { HttpErrorHandler } from './http-error-handler.service';
 
 // local interface specifications for the request/response
 interface EstablishmentApiResponse {
