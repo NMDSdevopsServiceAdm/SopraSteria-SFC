@@ -113,15 +113,4 @@ router.route('/:staffNumber').post(async (req, res) => {
   }
 });
 
-
-const formatStaffResponse = (establishment) => {
-  // WARNING - do not be tempted to copy the database model as the API response; the API may chose to rename/contain
-  //           some attributes (viz. locationId below)
-  return {
-    id: establishment.id,
-    name: establishment.name,
-    numberOfStaff: establishment.numberOfStaff
-  };
-}
-
 module.exports = router;
