@@ -187,7 +187,8 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
         if (!(Number.isInteger(thisCapacity.answer))) return false;
 
         // answer must be between 0 and 999
-        if (thisCapacity.answer < 0 || thisCapacity.answer > 999) return false;
+        const MIN_ANSWER=0; const MAX_ANSWER=999;
+        if (thisCapacity.answer < MIN_ANSWER || thisCapacity.answer > MAX_ANSWER) return false;
 
         // gets here, and it's valid
         return true;
