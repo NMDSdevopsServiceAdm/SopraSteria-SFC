@@ -108,7 +108,6 @@ router.route('/').post(async (req, res) => {
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in share (options)
-      console.log("WA DEBUG POST share Data: ", req.body.share)
       const isValidEstablishment = await thisEstablishment.load({
         share: req.body.share
       });
