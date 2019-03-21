@@ -214,7 +214,6 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
             let referenceCapacity = null;
             if (thisCapacity.questionId) {
                 referenceCapacity = this._allCapacities.find(thisAllCapacity => {
-                    //console.log("WA DEBUG - reference capacity: ", thisAllCapacity)
                     return thisAllCapacity.id === thisCapacity.questionId;
                 });
             } else {
