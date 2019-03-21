@@ -7,6 +7,7 @@ import { RecruitmentResponse, RecruitmentService } from '@core/services/recruitm
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { isNull } from 'util';
 
 @Component({
   selector: 'app-recruited-from',
@@ -109,7 +110,7 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
           }, reject)
         );
       } else {
-        if (recruitedFromId.errors.recruitedFromIdValid) {
+        if (recruitedFromId.errors.required) {
           this.messageService.show('error', `'Recruitment from' has to be provided.`);
         }
 
@@ -120,10 +121,10 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
 
   recruitedFromIdValidator() {
     if (this.form) {
-      const { recruitmentKnown, recruitedFromId } = this.form.value;
+      const { recruitmentKnown, recruitedFromId } = this.form.controls;
 
-      if (recruitmentKnown === 'Yes') {
-        return recruitedFromId ? null : { recruitedFromIdValid: true };
+      if (recruitmentKnown.value === 'Yes' && isNull(recruitedFromId.value)) {
+        return { required: true };
       }
     }
 
