@@ -27,4 +27,9 @@
     border-color: $alert;
     background-color: $alert-background;
   }
+
+  &.success {
+    border-color: $sfc-btn-primary-green;
+    background-color: $primary-background;
+  }
 }
