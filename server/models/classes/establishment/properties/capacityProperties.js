@@ -180,6 +180,15 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
         // if id is given, it must be an integer
         if (thisCapacity.questionId && !(Number.isInteger(thisCapacity.questionId))) return false;
 
+        // must always have an answer
+        if (!(thisCapacity.answer)) return false;
+
+        // answer must be an integer
+        if (!(Number.isInteger(thisCapacity.answer))) return false;
+
+        // answer must be between 0 and 999
+        if (thisCapacity.answer < 0 || thisCapacity.answer > 999) return false;
+
         // gets here, and it's valid
         return true;
     }
