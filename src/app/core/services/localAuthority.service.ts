@@ -1,4 +1,3 @@
-// fetches and caches the set of Local Authorities (300+)
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -10,18 +9,16 @@ import { LocalAuthorityModel } from '../model/localAuthority.model';
   providedIn: 'root',
 })
 export class LocalAuthorityService {
-  constructor(private http: HttpClient) {}
-
   // initialise an empty set of authorities
   // TODO: cache this in local/session storage with an expiry (what is the expiry?)
   private _authorities: Observable<LocalAuthorityModel[]> = null;
-  private _url: string = '/api/localAuthority';
+
+  constructor(private http: HttpClient) {}
 
   getAuthorities() {
     if (!this._authorities) {
-      const options = { headers: { 'Content-type': 'application/json' } };
       return this.http
-        .get<LocalAuthorityModel[]>('/api/localAuthority', options)
+        .get<LocalAuthorityModel[]>('/api/localAuthority')
         .pipe(catchError(err => this.handleHttpError(err)));
     } else {
       return this._authorities;

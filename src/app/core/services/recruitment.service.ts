@@ -1,36 +1,20 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { catchError, debounceTime, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
-import { HttpErrorHandler } from './http-error-handler.service';
+export interface RecruitmentResponse {
+  id: number;
+  from: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class RecruitmentService {
-  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {}
+  constructor(private http: HttpClient) {}
 
-  // TODO remove when merged https://github.com/NMDSdevopsServiceAdm/SopraSteria-SFC/pull/181
-  private getOptions() {
-    let headers = new HttpHeaders();
-    headers = headers.append('Content-Type', 'application/json');
-    return { headers };
-  }
-
-  /*
-   * GET /api/recruitedFrom
-   */
   getRecruitedFrom(): Observable<RecruitmentResponse[]> {
-    return this.http.get<any>('/api/recruitedFrom', this.getOptions()).pipe(
-      debounceTime(500),
-      map(res => res.recruitedFrom),
-      catchError(this.httpErrorHandler.handleHttpError)
-    );
+    return this.http.get<any>('/api/recruitedFrom').pipe(map(res => res.recruitedFrom));
   }
-}
-
-export interface RecruitmentResponse {
-  id: number;
-  from: string;
 }

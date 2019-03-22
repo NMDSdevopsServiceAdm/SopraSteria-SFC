@@ -68,9 +68,7 @@ export class RegistrationService {
   constructor(private http: HttpClient, private router: Router) {}
 
   postRegistration(id: any) {
-    const $value = id.locationdata;
-    const options = { headers: { 'Content-type': 'application/json' } };
-    this.http.post<RegistrationModel>('/api/registration/', $value, options).subscribe(
+    this.http.post<RegistrationModel>('/api/registration/', id.locationdata).subscribe(
       data => console.log(data),
       error => console.log(error),
       () => {
@@ -80,44 +78,31 @@ export class RegistrationService {
   }
 
   getLocationByPostCode(id: string) {
-    const $value = id;
-
     return this.http
-      .get<RegistrationModel>('/api/locations/pc/' + $value)
+      .get<RegistrationModel>(`/api/locations/pc/${id}`)
       .pipe(catchError(err => this.handleHttpError(err)));
   }
 
   getLocationByLocationId(id: string) {
-    const $value = id;
-
     return this.http
-      .get<RegistrationModel>('/api/locations/lid/' + $value)
+      .get<RegistrationModel>(`/api/locations/lid/${id}`)
       .pipe(catchError(err => this.handleHttpError(err)));
   }
 
   getAddressByPostCode(id: string) {
-    const $value = id;
-
-    return this.http
-      .get<RegistrationModel>('/api/postcodes/' + $value)
-      .pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`).pipe(catchError(err => this.handleHttpError(err)));
   }
 
   getUpdatedAddressByPostCode(id: string) {
-    const $value = id;
-    return this.http
-      .get<RegistrationModel>('/api/postcodes/' + $value)
-      .pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`).pipe(catchError(err => this.handleHttpError(err)));
   }
 
   getMainServices(id: boolean) {
-    const $value = id;
-    return this.http.get('/api/services/byCategory?cqc=' + $value).pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get(`/api/services/byCategory?cqc=${id}`).pipe(catchError(err => this.handleHttpError(err)));
   }
 
   getUsernameDuplicate(id: string) {
-    const $value = id;
-    return this.http.get('/api/registration/username/' + $value).pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get(`/api/registration/username/${id}`).pipe(catchError(err => this.handleHttpError(err)));
   }
 
   routingCheck(data) {
