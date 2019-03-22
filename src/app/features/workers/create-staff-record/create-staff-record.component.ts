@@ -22,6 +22,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   public totalWorkers = 0;
   public form: FormGroup;
   public submitted = false;
+  private tempTotalStaff: number = null;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -56,7 +57,9 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.getStaff().subscribe(establishmentStaff => {
         if (establishmentStaff) {
-          this.form.controls.totalStaff.patchValue(establishmentStaff);
+          const totalStaff = establishmentStaff ? establishmentStaff : 0;
+          this.tempTotalStaff = totalStaff;
+          this.form.controls.totalStaff.patchValue(totalStaff);
           this.form.updateValueAndValidity();
         }
       })
@@ -178,10 +181,16 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   }
 
   updateTotalStaff() {
-    if (this.calculatedTotalStaff > this.form.controls.totalStaff.value) {
+    const totalStaff =
+      this.calculatedTotalStaff > this.form.controls.totalStaff.value
+        ? this.calculatedTotalStaff
+        : this.form.controls.totalStaff.value;
+
+    if (totalStaff !== this.tempTotalStaff) {
       this.subscriptions.add(
-        this.establishmentService.postStaff(this.calculatedTotalStaff).subscribe(data => {
+        this.establishmentService.postStaff(totalStaff).subscribe(data => {
           this.form.patchValue({ totalStaff: data.numberOfStaff });
+          this.tempTotalStaff = data.numberOfStaff;
           this.form.updateValueAndValidity();
         })
       );
