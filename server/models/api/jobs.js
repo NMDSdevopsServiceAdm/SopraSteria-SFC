@@ -34,20 +34,20 @@ exports.jobsByTypeJSON = (establishment) => {
   });
 
   // handle each of Vacancies, Starters and Leavers
-  if (establishment.vacancies && establishment.vacancies != 'With Jobs') {
-    jobTypeGroup['Vacancies'] = establishment.vacancies;
+  if (establishment.VacanciesValue && establishment.VacanciesValue != 'With Jobs') {
+    jobTypeGroup['Vacancies'] = establishment.VacanciesValue;
   } else if (typeof jobTypeGroup['Vacancies'] === 'undefined') {
     jobTypeGroup['Vacancies'] = [];
   }
 
-  if (establishment.starters && establishment.starters != 'With Jobs') {
-    jobTypeGroup['Starters'] = establishment.starters;
+  if (establishment.StartersValue && establishment.StartersValue != 'With Jobs') {
+    jobTypeGroup['Starters'] = establishment.StartersValue;
   } else if (typeof jobTypeGroup['Starters'] === 'undefined') {
     jobTypeGroup['Starters'] = [];
   }
   
-  if (establishment.leavers && establishment.leavers != 'With Jobs') {
-    jobTypeGroup['Leavers'] = establishment.leavers;
+  if (establishment.LeaversValue && establishment.LeaversValue != 'With Jobs') {
+    jobTypeGroup['Leavers'] = establishment.LeaversValue;
   } else if (typeof jobTypeGroup['Leavers'] === 'undefined') {
     jobTypeGroup['Leavers'] = [];
   }

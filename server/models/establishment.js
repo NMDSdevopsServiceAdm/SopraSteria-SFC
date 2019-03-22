@@ -192,23 +192,83 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"ShareWithLAChangedBy"'
     },
-    vacancies : {
+    VacanciesValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
       field: '"VacanciesValue"'
     },
-    starters : {
+    VacanciesSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"VacanciesSavedAt"'
+    },
+    VacanciesChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"VacanciesChangedAt"'
+    },
+    VacanciesSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"VacanciesSavedBy"'
+    },
+    VacanciesChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"VacanciesChangedBy"'
+    },
+    StartersValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
       field: '"StartersValue"'
     },
-    leavers : {
+    StartersSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"StartersSavedAt"'
+    },
+    StartersChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"StartersChangedAt"'
+    },
+    StartersSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"StartersSavedBy"'
+    },
+    StartersChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"StartersChangedBy"'
+    },
+    LeaversValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
       field: '"LeaversValue"'
+    },
+    LeaversSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LeaversSavedAt"'
+    },
+    LeaversChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LeaversChangedAt"'
+    },
+    LeaversSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LeaversSavedBy"'
+    },
+    LeaversChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LeaversChangedBy"'
     },
     nmdsId: {
       type: DataTypes.TEXT,

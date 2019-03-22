@@ -14,7 +14,7 @@ router.route('/').get(async (req, res) => {
       where: {
         id: establishmentId
       },
-      attributes: ['id', 'name', 'vacancies', 'starters', 'leavers'],
+      attributes: ['id', 'name', 'VacanciesValue', 'StartersValue', 'LeaversValue'],
       include: [
         {
           model: models.establishmentJobs,
@@ -91,7 +91,7 @@ router.route('/').post(async (req, res) => {
       where: {
         id: establishmentId
       },
-      attributes: ['id', 'name', 'vacancies', 'starters', 'leavers']
+      attributes: ['id', 'name', 'VacanciesValue', 'StartersValue', 'LeaversValue']
     });
 
     if (thisEstablishment && thisEstablishment.id && (establishmentId === thisEstablishment.id)) {
@@ -145,12 +145,12 @@ router.route('/').post(async (req, res) => {
 
             // update the Establishment vacancies declaration
             await establishmentRecord.update({
-              vacancies: 'With Jobs'
+              VacanciesValue: 'With Jobs'
             }, {transaction: t});
           } else {
             // no vacancies given, so simply update the Establishment vacancies declaration
             await establishmentRecord.update({
-              vacancies: givenJobs.vacancies
+              VacanciesValue: givenJobs.vacancies
             }, {transaction: t});
           }
         }
@@ -186,13 +186,13 @@ router.route('/').post(async (req, res) => {
 
             // update the Establishment starters declaration
             await establishmentRecord.update({
-              starters: 'With Jobs'
+              StartersValue: 'With Jobs'
             }, {transaction: t});
 
           } else {
             // no starters given, so simply update the Establishment starters declaration
             await establishmentRecord.update({
-              starters: givenJobs.starters
+              StartersValue: givenJobs.starters
             }, {transaction: t});
           }
 
@@ -229,13 +229,13 @@ router.route('/').post(async (req, res) => {
 
             // update the Establishment leavers declaration
             await establishmentRecord.update({
-              leavers: 'With Jobs'
+              LeaversValue: 'With Jobs'
             }, {transaction: t});
 
           } else {
             // no leavers given, so simply update the Establishment leavers declaration
             await establishmentRecord.update({
-              leavers: givenJobs.leavers
+              LeaversValue: givenJobs.leavers
             }, {transaction: t});
           }
         }
@@ -246,7 +246,7 @@ router.route('/').post(async (req, res) => {
         where: {
           id: establishmentId
         },
-        attributes: ['id', 'name', 'vacancies', 'starters', 'leavers'],
+        attributes: ['id', 'name', 'VacanciesValue', 'StartersValue', 'LeaversValue'],
         include: [{
           model: models.establishmentJobs,
           as: 'jobs',
