@@ -28,7 +28,7 @@ export class DeleteWorkerDialogComponent implements OnInit {
   ) {
     this.form = this.formBuilder.group({
       reason: [null, Validators.required],
-      details: [null, [Validators.maxLength(300)]],
+      details: [null, [Validators.maxLength(500)]],
     });
   }
 
