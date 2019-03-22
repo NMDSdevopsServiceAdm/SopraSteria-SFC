@@ -13,11 +13,6 @@
     [errors]="form.errors.removeRecords">
   </app-error-summary>
 
-  <app-error-summary
-    *ngIf="form.errors?.unsavedRecord && submitted"
-    [errors]="form.errors.unsavedRecord">
-  </app-error-summary>
-
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
     <h1 class="h1">Create your staff records</h1>
 
