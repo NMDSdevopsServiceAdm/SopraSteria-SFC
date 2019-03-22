@@ -116,7 +116,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
     if (uid) {
       this.subscriptions.add(
-        this.workerService.deleteWorker(staffRecord.controls.uid.value, { reason: { id: 1 } }).subscribe(() => {
+        this.workerService.deleteWorker(staffRecord.controls.uid.value).subscribe(() => {
           this.staffRecordsControl.controls.splice(index, 1);
           this.updateTotalStaff();
         })
