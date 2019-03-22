@@ -36,7 +36,7 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
     });
 
     if (this.workerService.returnToSummary) {
-      this.backLink = 'summary';
+      this.backLink = 'recruited-from';
     } else {
       this.backLink = 'start-screen';
     }
