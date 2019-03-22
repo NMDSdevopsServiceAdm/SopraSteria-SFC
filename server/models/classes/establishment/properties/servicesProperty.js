@@ -43,7 +43,7 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
         if (theseServices && Array.isArray(theseServices)) {
             theseServices.forEach(thisService => {
                 // find and update the corresponding service in allServices
-                let foundService = allServices.find(refService => refService.id === thisService.id);
+                let foundService = allServices ? allServices.find(refService => refService.id === thisService.id) : null;
                 if (foundService) {
                     foundService.isMyService = true;
                 }
@@ -51,7 +51,7 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
         }
 
         // now remove the main service
-        return allServices.filter(refService => refService.id !== mainService.id);
+        return allServices ? allServices.filter(refService => refService.id !== mainService.id) : [];
     };
 
     restorePropertyFromSequelize(document) {
