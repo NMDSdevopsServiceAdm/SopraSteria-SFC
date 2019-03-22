@@ -4,12 +4,12 @@
   </div>
 
   <app-error-summary
-    *ngIf="form.errors?.addMoreRecords"
+    *ngIf="form.errors?.addMoreRecords && submitted"
     [errors]="form.errors.addMoreRecords">
   </app-error-summary>
 
   <app-error-summary
-    *ngIf="form.errors?.removeRecords"
+    *ngIf="form.errors?.removeRecords && submitted"
     [errors]="form.errors.removeRecords">
   </app-error-summary>
 
@@ -44,7 +44,7 @@
     </div>
 
     <h3 class="h2 pb-2">Information about your staff</h3>
-    <div *ngIf="form.errors?.staffRecordsRequired" class="alert alert-danger">
+    <div *ngIf="form.controls.staffRecords.errors?.required && submitted" class="alert alert-danger">
         <p class="pt-4">At least 1 Staff record is required.</p>
       </div>
     <div formArrayName="staffRecords" class="staff-records">
@@ -107,7 +107,7 @@
             </div>
           </div>
 
-          <button type="button" class="btn btn-blue" (click)="validateRecord(i)">Continue</button>
+          <button type="button" class="btn btn-blue" (click)="saveStaffRecord(i)">Save this staff record</button>
         </div>
       </div>
     </div>

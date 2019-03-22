@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Job } from '@core/model/job.model';
@@ -9,6 +9,7 @@ import { JobService } from '@core/services/job.service';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { isNull } from 'util';
 
 @Component({
   selector: 'app-create-staff-record',
@@ -20,8 +21,8 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   public jobsAvailable: Job[] = [];
   public totalWorkers = 0;
   public form: FormGroup;
+  public submitted = false;
   private subscriptions: Subscription = new Subscription();
-  public i = 0;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -33,7 +34,6 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
     this.totalStaffValidator = this.totalStaffValidator.bind(this);
-    this.staffRecordsRequiredValidator = this.staffRecordsRequiredValidator.bind(this);
   }
 
   get displayAddMore() {
@@ -44,6 +44,12 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   get staffRecordsControl() {
     return <FormArray>this.form.controls.staffRecords;
+  }
+
+  get calculatedTotalStaff() {
+    return (
+      this.totalWorkers + this.staffRecordsControl.controls.filter(control => !isNull(control.get('uid').value)).length
+    );
   }
 
   ngOnInit() {
@@ -68,18 +74,9 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
     this.form = this.formBuilder.group({
       totalStaff: [0, [Validators.min(0), Validators.max(999), Validators.required]],
-      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
+      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()], this.staffRecordsRequiredValidator),
     });
-
-    this.form.setValidators([this.totalStaffValidator, this.staffRecordsRequiredValidator]);
-
-    this.form.controls.staffRecords.valueChanges.subscribe(val => {
-      const updateTotal = this.totalWorkers + val.length;
-      if (this.form.controls.totalStaff.value < updateTotal) {
-        this.form.controls.totalStaff.patchValue(updateTotal);
-        this.form.updateValueAndValidity();
-      }
-    });
+    this.form.setValidators([this.totalStaffValidator]);
   }
 
   ngOnDestroy() {
@@ -92,24 +89,14 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       nameOrId: [null, Validators.required],
       mainJob: [null, Validators.required],
       contract: [null, Validators.required],
+      uid: null,
       active: true,
     });
   }
 
-  addStaffRecord() {
+  openStaffRecord(index: number) {
     this.closeStaffRecords();
-
-    this.staffRecordsControl.push(this.createStaffRecordsItem());
-  }
-
-  deleteStaffRecord(i: number) {
-    this.staffRecordsControl.controls.splice(i, 1);
-  }
-
-  openStaffRecord(i: number) {
-    this.closeStaffRecords();
-
-    this.staffRecordsControl.controls[i].patchValue({ active: true });
+    this.staffRecordsControl.controls[index].patchValue({ active: true });
   }
 
   closeStaffRecords() {
@@ -118,114 +105,126 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     });
   }
 
-  totalStaffValidator() {
-    if (this.form) {
-      const { totalStaff } = this.form.value;
-      const calculatedTotalStaff =
-        this.totalWorkers + this.staffRecordsControl.controls.filter(control => control.valid).length;
+  addStaffRecord() {
+    this.closeStaffRecords();
+    this.staffRecordsControl.push(this.createStaffRecordsItem());
+  }
 
-      if (totalStaff > calculatedTotalStaff) {
-        return {
-          addMoreRecords: [
-            { text: `You said you have ${totalStaff} members of staff but you only have ${calculatedTotalStaff}.` },
-            {
-              text: `You need to complete ${totalStaff - calculatedTotalStaff} more records.`,
-              action: this.addStaffRecord,
-            },
-          ],
-        };
-      } else if (totalStaff < calculatedTotalStaff) {
-        return {
-          removeRecords: [
-            {
-              text: `You said you have ${totalStaff} members of staff but you have created more.`,
-            },
-            {
-              text: `You need to update your Number of Staff to ${calculatedTotalStaff} or delete some records.`,
-            },
-          ],
-        };
-      }
+  deleteStaffRecord(index: number) {
+    const staffRecord = <FormGroup>this.staffRecordsControl.controls[index];
+    const uid = staffRecord.controls.uid.value;
+
+    if (uid) {
+      this.subscriptions.add(
+        this.workerService.deleteWorker(staffRecord.controls.uid.value).subscribe(() => {
+          this.staffRecordsControl.controls.splice(index, 1);
+          this.updateTotalStaff();
+        })
+      );
+    } else {
+      this.staffRecordsControl.controls.splice(index, 1);
+    }
+  }
+
+  totalStaffValidator(form: AbstractControl) {
+    const totalStaff = form.get('totalStaff');
+
+    if (totalStaff.value > this.calculatedTotalStaff) {
+      return {
+        addMoreRecords: [
+          {
+            text: `You said you have ${totalStaff.value} members of staff but you only have ${
+              this.calculatedTotalStaff
+            }.`,
+          },
+          { text: `You need to complete ${totalStaff.value - this.calculatedTotalStaff} more records.` },
+        ],
+      };
+    } else if (totalStaff.value < this.calculatedTotalStaff) {
+      return {
+        removeRecords: [
+          { text: `You said you have ${totalStaff.value} members of staff but you have created more.` },
+          { text: `You need to update your Number of Staff to ${this.calculatedTotalStaff} or delete some records.` },
+        ],
+      };
     }
 
     return null;
   }
 
-  staffRecordsRequiredValidator() {
-    if (this.form) {
-      if (!this.staffRecordsControl.controls.filter(control => control.valid).length) {
-        return { staffRecordsRequired: true };
-      }
-
-      return null;
+  staffRecordsRequiredValidator(control: FormArray) {
+    if (!control.controls.some(c => !isNull(c.get('uid').value))) {
+      return { required: true };
     }
+
+    return null;
   }
 
-  validateRecord(index) {
-    const staffRecords = <FormArray>this.form.controls.staffRecords;
-    const staffRecord = <FormGroup>staffRecords.controls[index];
+  submitHandler() {
+    this.submitted = true;
 
-    if (staffRecord.valid) {
-      this.closeStaffRecords();
-    } else {
-      Object.keys(staffRecord.controls).forEach(key => {
-        staffRecord.get(key).markAsTouched();
-      });
-    }
-  }
-
-  async submitHandler() {
-    try {
-      await this.saveTotalStaff();
-
-      const promises = this.form.controls.staffRecords['controls'].map(control =>
-        this.saveHandler(control).catch(error => false)
-      );
-
-      const response = await Promise.all(promises).then(function(res) {
-        const complete = res.filter(value => !!value);
-        return { success: complete.length, failed: res.length - complete.length };
-      });
-
-      this.workerService.setCreateStaffResponse(response.success, response.failed);
-
+    if (this.form.valid) {
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
-    } catch (err) {
-      // keep typescript transpiler silent
+    } else {
+      const unsavedIndex = this.staffRecordsControl.controls.findIndex(control => {
+        return isNull(control.get('uid').value);
+      });
+
+      if (unsavedIndex >= 0) {
+        this.openStaffRecord(unsavedIndex);
+        this.saveStaffRecord(unsavedIndex);
+      }
     }
   }
 
-  saveTotalStaff(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const { totalStaff } = this.form.controls;
+  updateTotalStaff() {
+    if (this.calculatedTotalStaff > this.form.controls.totalStaff.value) {
+      this.subscriptions.add(
+        this.establishmentService.postStaff(this.calculatedTotalStaff).subscribe(data => {
+          this.form.patchValue({ totalStaff: data.numberOfStaff });
+          this.form.updateValueAndValidity();
+        })
+      );
+    }
+  }
 
-      if (this.form.valid) {
-        this.subscriptions.add(
-          this.establishmentService.postStaff(parseInt(totalStaff.value, 10)).subscribe(resolve, reject)
-        );
-      } else {
-        reject();
-      }
+  async saveStaffRecord(index: number) {
+    const staffRecord = <FormGroup>this.staffRecordsControl.controls[index];
+
+    Object.keys(staffRecord.controls).forEach(key => {
+      staffRecord.get(key).markAsTouched();
     });
+
+    try {
+      if (staffRecord.valid) {
+        await this.saveHandler(staffRecord);
+        this.closeStaffRecords();
+      }
+    } catch (err) {}
   }
 
   saveHandler(staffRecord): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
-      const { nameOrId, contract, mainJob } = staffRecord.controls;
+      const { nameOrId, contract, mainJob, uid } = staffRecord.controls;
 
-      if (staffRecord.valid) {
-        const worker = {} as Worker;
-        const job = this.jobsAvailable.find(j => j.id === parseInt(mainJob.value, 10));
+      const props = {
+        nameOrId: nameOrId.value,
+        contract: contract.value,
+        mainJob: {
+          jobId: parseInt(mainJob.value, 10),
+        },
+      };
 
-        worker.nameOrId = nameOrId.value;
-        worker.contract = contract.value;
-        worker.mainJob = {
-          jobId: job.id,
-          title: job.title,
-        };
-        this.subscriptions.add(this.workerService.createWorker(worker).subscribe(resolve, reject));
+      if (!isNull(uid.value)) {
+        this.subscriptions.add(this.workerService.updateWorker(uid.value, props).subscribe(resolve, reject));
       } else {
-        reject(false);
+        this.subscriptions.add(
+          this.workerService.createWorker(props as Worker).subscribe(data => {
+            staffRecord.patchValue({ uid: data.uid });
+            this.updateTotalStaff();
+            resolve();
+          }, reject)
+        );
       }
     });
   }

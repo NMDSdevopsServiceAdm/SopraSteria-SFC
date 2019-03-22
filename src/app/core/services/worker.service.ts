@@ -148,12 +148,14 @@ export class WorkerService {
   /*
    * DELETE /api/establishment/:establishmentId/worker/:workerId
    */
-  deleteWorker(workerId: string, reason: any) {
+  deleteWorker(workerId: string, reason?: any) {
     const headers = new HttpHeaders({ 'Content-type': 'application/json' });
 
     return this.http
       .request<any>('delete', `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`, {
-        body: reason,
+        ...(reason && {
+          body: reason,
+        }),
         headers,
       })
       .pipe(
