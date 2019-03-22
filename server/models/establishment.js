@@ -196,19 +196,19 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
-      field: '"Vacancies"'
+      field: '"VacanciesValue"'
     },
     starters : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
-      field: '"Starters"'
+      field: '"StartersValue"'
     },
     leavers : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
-      field: '"Leavers"'
+      field: '"LeaversValue"'
     },
     nmdsId: {
       type: DataTypes.TEXT,
