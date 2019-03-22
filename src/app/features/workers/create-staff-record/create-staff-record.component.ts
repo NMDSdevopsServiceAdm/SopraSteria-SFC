@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Job } from '@core/model/job.model';
@@ -21,7 +21,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   public jobsAvailable: Job[] = [];
   public totalWorkers = 0;
   public form: FormGroup;
-  public formSubmitted: false;
+  public submitted = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -33,8 +33,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     private router: Router
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
-    // this.totalStaffValidator = this.totalStaffValidator.bind(this);
-    // this.staffRecordsRequiredValidator = this.staffRecordsRequiredValidator.bind(this);
+    this.totalStaffValidator = this.totalStaffValidator.bind(this);
   }
 
   get displayAddMore() {
@@ -48,7 +47,9 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   }
 
   get calculatedTotalStaff() {
-    return this.totalWorkers + this.staffRecordsControl.length;
+    return (
+      this.totalWorkers + this.staffRecordsControl.controls.filter(control => !isNull(control.get('uid').value)).length
+    );
   }
 
   ngOnInit() {
@@ -73,18 +74,9 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
     this.form = this.formBuilder.group({
       totalStaff: [0, [Validators.min(0), Validators.max(999), Validators.required]],
-      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
+      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()], this.staffRecordsRequiredValidator),
     });
-
-    // this.form.setValidators([this.totalStaffValidator, this.staffRecordsRequiredValidator]);
-
-    // this.form.controls.staffRecords.valueChanges.subscribe(val => {
-    //   const updateTotal = this.totalWorkers + val.length;
-    //   if (this.form.controls.totalStaff.value < updateTotal) {
-    //     this.form.controls.totalStaff.patchValue(updateTotal);
-    //     this.form.updateValueAndValidity();
-    //   }
-    // });
+    this.form.setValidators([this.totalStaffValidator]);
   }
 
   ngOnDestroy() {
@@ -120,75 +112,79 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
 
   deleteStaffRecord(index: number) {
     const staffRecord = <FormGroup>this.staffRecordsControl.controls[index];
+    const uid = staffRecord.controls.uid.value;
 
-    this.subscriptions.add(
-      this.workerService.deleteWorker(staffRecord.controls.uid.value, null).subscribe(null, null, () => {
-        this.staffRecordsControl.controls.splice(index, 1);
-        this.decrementTotalStaff();
-      })
-    );
-  }
-
-  // totalStaffValidator() {
-  //   if (this.form) {
-  //     const { totalStaff } = this.form.value;
-  //     const calculatedTotalStaff =
-  //       this.totalWorkers + this.staffRecordsControl.controls.filter(control => control.valid).length;
-
-  //     if (totalStaff > calculatedTotalStaff) {
-  //       return {
-  //         addMoreRecords: [
-  //           { text: `You said you have ${totalStaff} members of staff but you only have ${calculatedTotalStaff}.` },
-  //           { text: `You need to complete ${totalStaff - calculatedTotalStaff} more records.` },
-  //         ],
-  //       };
-  //     } else if (totalStaff < calculatedTotalStaff) {
-  //       return {
-  //         removeRecords: [
-  //           { text: `You said you have ${totalStaff} members of staff but you have created more.` },
-  //           { text: `You need to update your Number of Staff to ${calculatedTotalStaff} or delete some records.` },
-  //         ],
-  //       };
-  //     }
-  //   }
-
-  //   return null;
-  // }
-
-  // staffRecordsRequiredValidator() {
-  //   if (this.form) {
-  //     if (!this.staffRecordsControl.controls.filter(control => control.valid).length) {
-  //       return { staffRecordsRequired: true };
-  //     }
-
-  //     return null;
-  //   }
-  // }
-
-  submitHandler() {
-    console.log(this.form.valid);
-    // this.workerService.setCreateStaffResponse(this.staffRecordsControl.length, 0);
-    // this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
-  }
-
-  updateTotalStaff(total: number) {
-    this.subscriptions.add(
-      this.establishmentService.postStaff(total).subscribe(data => {
-        this.form.patchValue({ totalStaff: data.numberOfStaff });
-        this.form.updateValueAndValidity();
-      })
-    );
-  }
-
-  incrementTotalStaff() {
-    if (this.calculatedTotalStaff > this.form.controls.totalStaff.value) {
-      this.updateTotalStaff(this.calculatedTotalStaff);
+    if (uid) {
+      this.subscriptions.add(
+        this.workerService.deleteWorker(staffRecord.controls.uid.value, { reason: { id: 1 } }).subscribe(() => {
+          this.staffRecordsControl.controls.splice(index, 1);
+          this.updateTotalStaff();
+        })
+      );
+    } else {
+      this.staffRecordsControl.controls.splice(index, 1);
     }
   }
 
-  decrementTotalStaff() {
-    if (this.calculatedTotalStaff < this.form.controls.totalStaff.value) {
-      this.updateTotalStaff(this.calculatedTotalStaff);
+  totalStaffValidator(form: AbstractControl) {
+    const totalStaff = form.get('totalStaff');
+
+    if (totalStaff.value > this.calculatedTotalStaff) {
+      return {
+        addMoreRecords: [
+          {
+            text: `You said you have ${totalStaff.value} members of staff but you only have ${
+              this.calculatedTotalStaff
+            }.`,
+          },
+          { text: `You need to complete ${totalStaff.value - this.calculatedTotalStaff} more records.` },
+        ],
+      };
+    } else if (totalStaff.value < this.calculatedTotalStaff) {
+      return {
+        removeRecords: [
+          { text: `You said you have ${totalStaff.value} members of staff but you have created more.` },
+          { text: `You need to update your Number of Staff to ${this.calculatedTotalStaff} or delete some records.` },
+        ],
+      };
+    }
+
+    return null;
+  }
+
+  staffRecordsRequiredValidator(control: FormArray) {
+    if (!control.controls.some(c => !isNull(c.get('uid').value))) {
+      return { required: true };
+    }
+
+    return null;
+  }
+
+  submitHandler() {
+    this.submitted = true;
+
+    if (this.form.valid) {
+      this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+    } else {
+      const unsavedIndex = this.staffRecordsControl.controls.findIndex(control => {
+        return isNull(control.get('uid').value);
+      });
+
+      if (unsavedIndex >= 0) {
+        this.openStaffRecord(unsavedIndex);
+        this.saveStaffRecord(unsavedIndex);
+      }
+    }
+  }
+
+  updateTotalStaff() {
+    if (this.calculatedTotalStaff > this.form.controls.totalStaff.value) {
+      this.subscriptions.add(
+        this.establishmentService.postStaff(this.calculatedTotalStaff).subscribe(data => {
+          this.form.patchValue({ totalStaff: data.numberOfStaff });
+          this.form.updateValueAndValidity();
+        })
+      );
     }
   }
 
@@ -225,7 +221,7 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
           this.workerService.createWorker(props as Worker).subscribe(data => {
             staffRecord.patchValue({ uid: data.uid });
-            this.incrementTotalStaff();
+            this.updateTotalStaff();
             resolve();
           }, reject)
         );

@@ -4,13 +4,18 @@
   </div>
 
   <app-error-summary
-    *ngIf="form.errors?.addMoreRecords"
+    *ngIf="form.errors?.addMoreRecords && submitted"
     [errors]="form.errors.addMoreRecords">
   </app-error-summary>
 
   <app-error-summary
-    *ngIf="form.errors?.removeRecords"
+    *ngIf="form.errors?.removeRecords && submitted"
     [errors]="form.errors.removeRecords">
+  </app-error-summary>
+
+  <app-error-summary
+    *ngIf="form.errors?.unsavedRecord && submitted"
+    [errors]="form.errors.unsavedRecord">
   </app-error-summary>
 
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
@@ -44,7 +49,7 @@
     </div>
 
     <h3 class="h2 pb-2">Information about your staff</h3>
-    <div *ngIf="form.errors?.staffRecordsRequired" class="alert alert-danger">
+    <div *ngIf="form.controls.staffRecords.errors?.required && submitted" class="alert alert-danger">
         <p class="pt-4">At least 1 Staff record is required.</p>
       </div>
     <div formArrayName="staffRecords" class="staff-records">
