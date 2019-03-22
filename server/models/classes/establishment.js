@@ -621,6 +621,53 @@ class Establishment {
                     fetchResults.allServiceCapacityQuestions = null;
                 }
 
+                // need to identify which, if any, of the shared authorities is attributed to the
+                //  primary Authority; that is the Local Authority associated with the physical area
+                //  of the given Establishment (using the postcode as the key)
+                let primaryAuthorityCssr = null;
+
+                // lookup primary authority by trying to resolve on specific postcode code
+                const cssrResults = await models.pcodedata.findOne({
+                    where: {
+                        postcode: fetchResults.postcode,
+                    },
+                    include: [
+                        {
+                            model: models.cssr,
+                            as: 'theAuthority',
+                            attributes: ['id', 'name', 'nmdsIdLetter']
+                        }
+                    ]
+                });
+                
+                if (cssrResults && cssrResults.postcode === fetchResults.postcode &&
+                    cssrResults.theAuthority && cssrResults.theAuthority.id &&
+                    Number.isInteger(cssrResults.theAuthority.id)) {
+                    
+                    fetchResults.primaryAuthorityCssr = {
+                        id: cssrResults.theAuthority.id,
+                        name: cssrResults.theAuthority.name
+                    };
+
+                } else {
+                    //  using just the first half of the postcode
+                    const [firstHalfOfPostcode] = results.postcode.split(' '); 
+                    
+                    // must escape the string to prevent SQL injection
+                    const fuzzyCssrIdMatch = await models.sequelize.query(
+                        `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
+                        {
+                            type: models.sequelize.QueryTypes.SELECT
+                        }
+                    );
+                    if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
+                        fetchResults.primaryAuthorityCssr = {
+                            id: fuzzyCssrIdMatch[0].CssrID,
+                            name: fuzzyCssrIdMatch[0].CssR
+                        }
+                    }
+                }
+ 
                 // TODO - remove this property once all the individual properties are done
                 this._establishmentResults = fetchResults;
 

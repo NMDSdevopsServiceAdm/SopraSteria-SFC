@@ -172,6 +172,26 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"ShareDataWithLA"'
     },
+    ShareWithLASavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ShareWithLASavedAt"'
+    },
+    ShareWithLAChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ShareWithLAChangedAt"'
+    },
+    ShareWithLASavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ShareWithLASavedBy"'
+    },
+    ShareWithLAChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ShareWithLAChangedBy"'
+    },
     vacancies : {
       type: DataTypes.ENUM,
       allowNull: true,
