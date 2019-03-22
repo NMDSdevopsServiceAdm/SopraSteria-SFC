@@ -118,7 +118,7 @@ exports.ShareWithLAProperty = class ShareWithLAProperty extends ChangePropertyPr
         }
 
         return {
-            otherServices: {
+            localAuthorities: {
                 currentValue: LaFormatters.listOfLAsJSON(this.property,
                     this._primaryAuthority && this._primaryAuthority.id ? this._primaryAuthority.id : null),
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
