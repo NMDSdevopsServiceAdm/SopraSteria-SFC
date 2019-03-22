@@ -3,7 +3,6 @@ const router = express.Router({mergeParams: true});
 const models = require('../../models');
 const ShareFormatters = require('../../models/api/shareData');
 
-// all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['ShareData'];
 
