@@ -9,6 +9,8 @@ const capacityServicesProperty = require("./properties/capacityProperties").Capa
 const shareProperty = require("./properties/shareWithProperty").ShareWithProperty;
 const shareWithLAProperty = require("./properties/shareWithLAProperty").ShareWithLAProperty;
 const vacanciesProperty = require("./properties/vacanciesProperty").VacanciesProperty;
+const startersProperty = require("./properties/startersProperty").StartersProperty;
+const leaversProperty = require("./properties/leaversProperty").LeaversProperty;
 
 class EstablishmentPropertyManager {
     constructor() {
@@ -21,6 +23,8 @@ class EstablishmentPropertyManager {
         this._thisManager.registerProperty(shareProperty);
         this._thisManager.registerProperty(shareWithLAProperty);
         this._thisManager.registerProperty(vacanciesProperty);
+        this._thisManager.registerProperty(startersProperty);
+        this._thisManager.registerProperty(leaversProperty);
     }
 
     get manager() {

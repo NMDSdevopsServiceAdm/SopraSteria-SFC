@@ -1,24 +1,24 @@
-// the Vacanies property is an enum and reflextion table that holds the set of 'Vacancies' referenced against the reference set of jobs
+// the Leavers property is an enum and reflextion table that holds the set of 'Leavers' referenced against the reference set of jobs
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const JobHelpers = require('./jobHelper');
 
-exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyPrototype {
+exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype {
     constructor() {
-        super('Vacancies');
+        super('Leavers');
     }
 
     static clone() {
-        return new VacanciesProperty();
+        return new LeaversProperty();
     }
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.jobs && document.jobs.vacancies) {
+        if (document.jobs && document.jobs.leavers) {
             const jobDeclaration = ["None", "Don't know"];
             // can be an empty array
-            if (Array.isArray(document.jobs.vacancies)) {
-                const validatedJobs = await JobHelpers.validateJobs(document.jobs.vacancies);
+            if (Array.isArray(document.jobs.leavers)) {
+                const validatedJobs = await JobHelpers.validateJobs(document.jobs.leavers);
 
                 if (validatedJobs) {
                     this.property = validatedJobs;
@@ -26,8 +26,8 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
                 } else {
                     this.property = null;
                 }
-            } else if (jobDeclaration.includes(document.jobs.vacancies)) {
-                this.property = document.jobs.vacancies;
+            } else if (jobDeclaration.includes(document.jobs.leavers)) {
+                this.property = document.jobs.leavers;
             } else {
                 // but it must at least be an array, or one of the known enums
                 this.property = null;
@@ -36,11 +36,10 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
     }
 
     restorePropertyFromSequelize(document) {
-        if (document.VacanciesValue && document.VacanciesValue === 'With Jobs' && document.jobs) {
-            //console.log("WA DEBUG - all establishment jobs: ", document.jobs)
-            // we're only interested in Vacancy jobs
+        if (document.LeaversValue && document.LeaversValue === 'With Jobs' && document.jobs) {
+            // we're only interested in Leaver jobs
             const restoredProperty = document.jobs
-                .filter(thisJob => thisJob.type === 'Vacancies')
+                .filter(thisJob => thisJob.type === 'Leavers')
                 .map(thisJob => {
                     return {
                         id:    thisJob.id,
@@ -50,36 +49,36 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
                     };
                 });
             return restoredProperty;
-        } else if (document.VacanciesValue) {
-            return document.VacanciesValue;
+        } else if (document.LeaversValue) {
+            return document.LeaversValue;
         }
     }
 
     savePropertyToSequelize() {
-        // when saving Vacancies, there is the "Value" column to update, in addition to the additional Vacancies reflexion records
-        const vacanciesDocument = {
-            VacanciesValue: Array.isArray(this.property) ? 'With Jobs' : this.property
+        // when saving Leavers, there is the "Value" column to update, in addition to the additional Leavers reflexion records
+        const leaversDocument = {
+            LeaversValue: Array.isArray(this.property) ? 'With Jobs' : this.property
         };
 
         // note - only the jobId and total are required
         if (this.property && Array.isArray(this.property)) {
-            vacanciesDocument.additionalModels = {
-                establishmentVacancies: this.property.map(thisJob => {
+            leaversDocument.additionalModels = {
+                establishmentLeavers: this.property.map(thisJob => {
                     return {
                         jobId: thisJob.jobId,
-                        type: 'Vacancies',
+                        type: 'Leavers',
                         total: thisJob.total,
                     };
                 })
             };
         } else {
             // ensure all existing vacancies are deleted
-            vacanciesDocument.additionalModels = {
-                establishmentVacancies: []
+            leaversDocument.additionalModels = {
+                establishmentLeavers: []
             };
         }
 
-        return vacanciesDocument;
+        return leaversDocument;
     }
 
     isEqual(currentValue, newValue) {
@@ -112,18 +111,15 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
         if (!withHistory) {
             // simple form
             return {
-                jobs: JobHelpers.formatJSON(this.property, 'Vacancies', 'TotalVacencies')
+                leaverjobs: JobHelpers.formatJSON(this.property, 'Leavers', 'TotalLeavers')
             };
         }
 
         return {
-            jobs: {
-                currentValue: JobHelpers.formatJSON(this.property, 'Vacancies', 'TotalVacencies'),
+            leaverjobs: {
+                currentValue: JobHelpers.formatJSON(this.property, 'Leavers', 'TotalLeavers'),
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };
     }
-
-    
-
 };

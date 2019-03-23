@@ -40,7 +40,6 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
-
   // this prevent sequelize from injecting it's own primary key!
   EstablishmentStarters.removeAttribute('id');
 
