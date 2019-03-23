@@ -79,25 +79,25 @@ exports.validateJobs = async (jobDefs) => {
 }
 
 exports.formatJSON = (jobs, propName, propTotalName) => {
-  let jobTotal=0;
-  const jsonResponse = {
-  };
+    let jobTotal=0;
+    const jsonResponse = {
+    };
 
-  if (Array.isArray(jobs)) {
-      jsonResponse[propName] = jobs.map(thisJob => {
-          jobTotal += thisJob.total;
-          return {
-              // id: thisJob.id,      // the primary key of the job record does not need to be exposed
-              jobId: thisJob.jobId,
-              title: thisJob.title,
-              total: thisJob.total
-          };
-     });
-     jsonResponse[propTotalName] = jobTotal;
-  } else {
-      jsonResponse[propName] = jobs;
-      jsonResponse[propTotalName] = 0;
-  }
-  
-  return jsonResponse;
+    if (Array.isArray(jobs)) {
+            jsonResponse[propName] = jobs.map(thisJob => {
+                jobTotal += thisJob.total;
+                return {
+                    // id: thisJob.id,      // the primary key of the job record does not need to be exposed
+                    jobId: thisJob.jobId,
+                    title: thisJob.title,
+                    total: thisJob.total
+                };
+            });
+            jsonResponse[propTotalName] = jobTotal;
+    } else {
+            jsonResponse[propName] = jobs;
+            jsonResponse[propTotalName] = 0;
+    }
+    
+    return jsonResponse;
 }

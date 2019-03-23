@@ -108,16 +108,19 @@ exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype 
     }
 
     toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+        const jsonPresentation = JobHelpers.formatJSON(this.property, 'Leavers', 'TotalLeavers');
+
         if (!withHistory) {
-            // simple form
+            // simple form - includes 
             return {
-                leaverjobs: JobHelpers.formatJSON(this.property, 'Leavers', 'TotalLeavers')
+                Leavers: jsonPresentation.Leavers,
+                TotalLeavers: jsonPresentation.TotalLeavers
             };
         }
 
         return {
-            leaverjobs: {
-                currentValue: JobHelpers.formatJSON(this.property, 'Leavers', 'TotalLeavers'),
+            Leavers: {
+                currentValue: jsonPresentation.Leavers,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };

@@ -108,16 +108,19 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
     }
 
     toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+        const jsonPresentation = JobHelpers.formatJSON(this.property, 'Starters', 'TotalStarters');
+
         if (!withHistory) {
-            // simple form
+            // simple form - includes 
             return {
-                starterjobs: JobHelpers.formatJSON(this.property, 'Starters', 'TotalStarters')
+                Starters: jsonPresentation.Starters,
+                TotalStarters: jsonPresentation.TotalStarters
             };
         }
 
         return {
-            starterjobs: {
-                currentValue: JobHelpers.formatJSON(this.property, 'Starters', 'TotalStarters'),
+            Starters: {
+                currentValue: jsonPresentation.Starters,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };

@@ -109,21 +109,21 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
     }
 
     toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+        const jsonPresentation = JobHelpers.formatJSON(this.property, 'Vacancies', 'TotalVacencies');
+
         if (!withHistory) {
-            // simple form
+            // simple form - includes 
             return {
-                jobs: JobHelpers.formatJSON(this.property, 'Vacancies', 'TotalVacencies')
+                Vacancies: jsonPresentation.Vacancies,
+                TotalVacencies: jsonPresentation.TotalVacencies
             };
         }
 
         return {
-            jobs: {
-                currentValue: JobHelpers.formatJSON(this.property, 'Vacancies', 'TotalVacencies'),
+            Vacancies: {
+                currentValue: jsonPresentation.Vacancies,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };
     }
-
-    
-
 };
