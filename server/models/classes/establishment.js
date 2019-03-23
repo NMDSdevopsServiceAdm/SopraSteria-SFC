@@ -668,9 +668,6 @@ class Establishment {
                     }
                 }
  
-                // TODO - remove this property once all the individual properties are done
-                this._establishmentResults = fetchResults;
-
                 if (fetchResults.auditEvents) {
                     this._auditEvents = fetchResults.auditEvents;
                 }
@@ -762,13 +759,6 @@ class Establishment {
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
                 myDefaultJSON.mainService = ServiceFormatters.singleService(this.mainService);
-                // myDefaultJSON.employerType = this._establishmentResults.employerType;
-                // myDefaultJSON.numberOfStaff = this._establishmentResults.numberOfStaff;
-                //myDefaultJSON.mainService = ServiceFormatters.singleService(this._establishmentResults.mainService);
-                //myDefaultJSON.otherServices = ServiceFormatters.createServicesByCategoryJSON(this._establishmentResults.otherServices);
-                //myDefaultJSON.capacities = CapacityFormatters.capacitiesJSON(this._establishmentResults.capacity);
-                //myDefaultJSON.share = ShareFormatters.shareDataJSON(this._establishmentResults, this._establishmentResults.localAuthorities);
-                // myDefaultJSON.jobs = JobFormatters.jobsByTypeJSON(this._establishmentResults);
             }
 
             myDefaultJSON.created = this.created.toJSON();
