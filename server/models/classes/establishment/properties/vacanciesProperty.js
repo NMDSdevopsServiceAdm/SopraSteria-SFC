@@ -17,7 +17,7 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.jobs.vacancies) {
+        if (document.jobs && document.jobs.vacancies) {
             const jobDeclaration = ["None", "Don't know"];
             // can be an empty array
             if (Array.isArray(document.jobs.vacancies)) {
@@ -120,7 +120,7 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
             jsonResponse.Vacancies = jobs.map(thisJob => {
                 jobTotal += thisJob.total;
                 return {
-                    id: thisJob.id,
+                    // id: thisJob.id,      // the primary key of the job record does not need to be exposed
                     jobId: thisJob.jobId,
                     title: thisJob.title,
                     total: thisJob.total
