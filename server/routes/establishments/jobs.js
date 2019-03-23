@@ -32,12 +32,20 @@ router.route('/').get(async (req, res) => {
     if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
       // show only brief info on Establishment
       const jsonResponse = thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, filteredProperties);
-      return res.status(200).json({
-        ...JobFormatters.combineAllJobsJSON(jsonResponse.Vacancies, jsonResponse.Starters, jsonResponse.Leavers),
-        TotalVacencies: jsonResponse.TotalVacencies,
-        TotalStarters: jsonResponse.TotalStarters,
-        TotalLeavers: jsonResponse.TotalLeavers,
-      });
+      const resultJSON = {
+        ...jsonResponse,
+        ...JobFormatters.combineAllJobsJSON(jsonResponse),
+      };
+
+      // amalgamated vacancies, starters and leavers, therefore remove them from parent scope
+      delete resultJSON.Vacancies;
+      delete resultJSON.Starters;
+      delete resultJSON.Leavers;
+      delete resultJSON.TotalVacencies;
+      delete resultJSON.TotalStarters;
+      delete resultJSON.TotalLeavers;
+
+      return res.status(200).json(resultJSON);
     } else {
       // not found worker
       return res.status(404).send('Not Found');
@@ -97,12 +105,22 @@ router.route('/').post(async (req, res) => {
         await thisEstablishment.save(req.username);
         
         const jsonResponse = thisEstablishment.toJSON(false, false, false, true, false, filteredProperties);
-        return res.status(200).json({
-          ...JobFormatters.combineAllJobsJSON(jsonResponse.Vacancies, jsonResponse.Starters, jsonResponse.Leavers),
-          TotalVacencies: jsonResponse.TotalVacencies,
-          TotalStarters: jsonResponse.TotalStarters,
-          TotalLeavers: jsonResponse.TotalLeavers,
-        });
+        const resultJSON = {
+          ...jsonResponse,
+          ...JobFormatters.combineAllJobsJSON(jsonResponse),
+        };
+  
+        // amalgamated vacancies, starters and leavers, therefore remove them from parent scope
+        delete resultJSON.Vacancies;
+        delete resultJSON.Starters;
+        delete resultJSON.Leavers;
+        delete resultJSON.TotalVacencies;
+        delete resultJSON.TotalStarters;
+        delete resultJSON.TotalLeavers;
+
+        // total starters, leavers and vacancies are always
+  
+        return res.status(200).json(resultJSON);
       } else {
         return res.status(400).send('Unexpected Input.');
       }

@@ -1,9 +1,12 @@
-exports.combineAllJobsJSON = (vacancies, starters, leavers) => {
+exports.combineAllJobsJSON = (establishment) => {
   return {
     jobs: {
-      Vacancies: vacancies,
-      Starters: starters,
-      Leavers: leavers,
+      Vacancies: establishment.Vacancies,
+      Starters: establishment.Starters,
+      Leavers: establishment.Leavers,
+      TotalVacencies: establishment.TotalVacencies,
+      TotalStarters: establishment.TotalStarters,
+      TotalLeavers: establishment.TotalLeavers,
     }
   }
 };
