@@ -30,7 +30,7 @@ exports.validateJobs = async (jobDefs) => {
 
   // need a set of LAs (CSSRs) to validate against
   const allJobs =  await models.job.findAll({
-      attributes: ['id']
+      attributes: ['id', 'title']
   });
   if (!allJobs) {
       console.error('validateJobs - unable to retrieve all known jobs');
@@ -51,7 +51,7 @@ exports.validateJobs = async (jobDefs) => {
               return thisKnownjob.id === thisJob.jobId;
           });
       } else {
-          referenceJob = allLAs.find(thisKnownjob => {
+          referenceJob = allJobs.find(thisKnownjob => {
               return thisKnownjob.title === thisJob.title;
           });
       }
