@@ -2,13 +2,6 @@
 
 module.exports = function(sequelize, DataTypes) {
   const EstablishmentVacancies = sequelize.define('establishmentVacancies', {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true,
-      field: '"EstablishmentJobID"'
-    },
     jobId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -45,6 +38,9 @@ module.exports = function(sequelize, DataTypes) {
       as: 'reference'
     });
   };
+
+  // this prevent sequelize from injecting it's own primary key!
+  EstablishmentVacancies.removeAttribute('id');
 
   return EstablishmentVacancies;
 };

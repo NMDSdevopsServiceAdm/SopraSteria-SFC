@@ -4,6 +4,8 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 // database models
 const models = require('../../../index');
 
+const JobFormatters = require('../../../api/jobs');
+
 exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyPrototype {
     constructor() {
         super('Vacancies');
@@ -15,11 +17,11 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.vacancies) {
+        if (document.jobs.vacancies) {
             const jobDeclaration = ["None", "Don't know"];
             // can be an empty array
-            if (Array.isArray(document.vacancies)) {
-                const validatedJobs = await this._validateJobs(document.vacancies);
+            if (Array.isArray(document.jobs.vacancies)) {
+                const validatedJobs = await this._validateJobs(document.jobs.vacancies);
 
                 if (validatedJobs) {
                     this.property = validatedJobs;
@@ -27,8 +29,8 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
                 } else {
                     this.property = null;
                 }
-            } else if (jobDeclaration.includes(document.vacancies)) {
-                this.property = document.vacancies;
+            } else if (jobDeclaration.includes(document.jobs.vacancies)) {
+                this.property = document.jobs.vacancies;
             } else {
                 // but it must at least be an array, or one of the known enums
                 this.property = null;
@@ -37,52 +39,69 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
     }
 
     restorePropertyFromSequelize(document) {
-
-        if (document.jobs) {
+        if (document.VacanciesValue && document.VacanciesValue === 'With Jobs' && document.jobs) {
+            //console.log("WA DEBUG - all establishment jobs: ", document.jobs)
             // we're only interested in Vacancy jobs
-            const restoredProperty = document.localAuthorities.map(thisAuthority => {
-                return {
-                    id: thisAuthority.id,
-                    cssrId: thisAuthority.cssrId,
-                    name: thisAuthority.cssr
-                };
-            });
+            const restoredProperty = document.jobs
+                .filter(thisJob => thisJob.type === 'Vacancies')
+                .map(thisJob => {
+                    return {
+                        id:    thisJob.id,
+                        jobId: thisJob.reference.id,
+                        title: thisJob.reference.title,
+                        total: thisJob.total,
+                    };
+                });
             return restoredProperty;
+        } else if (document.VacanciesValue) {
+            return document.VacanciesValue;
         }
     }
 
     savePropertyToSequelize() {
-        // when saving local authorities, there is no "Value" column to update - only reflexion records to delete/create
-        const LAsDocument = {
+        // when saving Vacancies, there is the "Value" column to update, in addition to the additional Vacancies reflexion records
+        const vacanciesDocument = {
+            VacanciesValue: Array.isArray(this.property) ? 'With Jobs' : this.property
         };
 
-        // note - only the CSSR id (custodian code) and CSSR name (name) is required
+        // note - only the jobId and total are required
         if (this.property && Array.isArray(this.property)) {
-            LAsDocument.additionalModels = {
-                establishmentLocalAuthority: this.property.map(thisAuthority => {
+            vacanciesDocument.additionalModels = {
+                establishmentVacancies: this.property.map(thisJob => {
                     return {
-                        cssrId: thisAuthority.cssrId,
-                        cssr: thisAuthority.name
+                        jobId: thisJob.jobId,
+                        type: 'Vacancies',
+                        total: thisJob.total,
                     };
                 })
             };
+        } else {
+            // ensure all existing vacancies are deleted
+            vacanciesDocument.additionalModels = {
+                establishmentVacancies: []
+            };
         }
 
-        return LAsDocument;
+        return vacanciesDocument;
     }
 
     isEqual(currentValue, newValue) {
         // need to compare arrays
         let arraysEqual = true;
 
-        if (currentValue && newValue && currentValue.length == newValue.length) {
+        if (currentValue && newValue &&
+            Array.isArray(currentValue) && Array.isArray(newValue) &&
+            currentValue.length == newValue.length) {
             // the preconditions are sets are equal in length; compare the array values themselves
 
             // we haven't got large arrays here; so simply iterate around every
             //  current value, and confirm it is in the the new data set.
             //  Array.every will drop out on the first iteration to return false
-            arraysEqual = currentValue.every(thisAuthority => {
-                return newValue.find(thatAuthority => thatAuthority.custodianCode === thisAuthority.custodianCode);
+            arraysEqual = currentValue.every(thisJob => {
+                return newValue.find(thatJob =>
+                    thatJob.jobId === thisJob.jobId &&
+                    thatJob.total === thisJob.total
+                );
             });
         } else {
             // if the arrays are lengths are not equal, then we know they're not equal
@@ -92,105 +111,119 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
         return arraysEqual;
     }
 
-    formatLAResponse(localAuthorities, primaryAuthority=null) {
-        const response = {
-          localAuthorities: LaFormatters.listOfLAsJSON(localAuthorities,
-                                                       primaryAuthority && primaryAuthority.id ? primaryAuthority.id : null)
+    formatJSON(jobs) {
+        let jobTotal=0;
+        const jsonResponse = {
+            
         };
-      
-        if (primaryAuthority) {
-          response.primaryAuthority = {
-            custodianCode: parseInt(primaryAuthority.id),
-            name: primaryAuthority.name
-          }
+        if (Array.isArray(jobs)) {
+            jsonResponse.Vacancies = jobs.map(thisJob => {
+                jobTotal += thisJob.total;
+                return {
+                    id: thisJob.id,
+                    jobId: thisJob.jobId,
+                    title: thisJob.title,
+                    total: thisJob.total
+                };
+           });
+           jsonResponse.TotalVacencies = jobTotal;
+        } else {
+            jsonResponse.Vacancies = jobs;
+            jsonResponse.TotalVacencies = 0;
         }
-      
-        return response;
+        
+        return jsonResponse;
     }
 
     toJSON(withHistory = false, showPropertyHistoryOnly = true) {
         if (!withHistory) {
             // simple form
-            return this.formatLAResponse(this.property, this._primaryAutority);
+            return {
+                jobs: this.formatJSON(this.property)
+            };
         }
 
         return {
             localAuthorities: {
-                currentValue: LaFormatters.listOfLAsJSON(this.property,
-                    this._primaryAuthority && this._primaryAuthority.id ? this._primaryAuthority.id : null),
+                currentValue: this.formatJSON(this.property),
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
         };
     }
 
-    _valid(thisLA) {
-        if (!thisLA) return false;
+    _valid(thisJob) {
+        if (!thisJob) return false;
 
-        // must exist a custodian or name
-        if (!(thisLA.custodianCode || thisLA.name)) return false;
+        // must exist a jobId or title (job title)
+        if (!(thisJob.jobId || thisJob.title)) return false;
 
-        // if custodian code is given, it must be an integer
-        if (thisLA.custodianCode && !(Number.isInteger(thisLA.custodianCode))) return false;
+        // if job idis given, it must be an integer
+        if (thisJob.jobId && !(Number.isInteger(thisJob.jobId))) return false;
+
+        // must also exist a total and it must be an integer
+        if (!(Number.isInteger(thisJob.total))) return false;
+
+        // total must be between 0 and 999
+        const MIN_JOB_TOTAL=0; const MAX_JOB_TOTAL=999;
+        if (thisJob.total < MIN_JOB_TOTAL ||
+            thisJob.total > MAX_JOB_TOTAL) return false;
 
         // gets here, and it's valid
         return true;
     }
 
-    // returns false if service definitions are not valid, otherwise returns
-    //  a well formed set of service definitions using data as given in services reference lookup
-    async _validateLAs(laDefs) {
-        const setOfValidatedLAs = [];
-        let setOfValidatedLAsInvalid = false;
+    // returns false if job definitions are not valid, otherwise returns
+    //  a well formed set of job definitions using data as given in jobs reference lookup
+    async _validateJobs(jobDefs) {
+        const setOfValidatedJobs = [];
+        let setOfValidatedJobsInvalid = false;
 
         // need a set of LAs (CSSRs) to validate against
-        const allLAs =  await models.cssr.findAll({
-            attributes: ['id', 'name'],
-            group: ['id', 'name'],
-            order: [
-              ['name', 'ASC']
-            ]
+        const allJobs =  await models.job.findAll({
+            attributes: ['id']
         });
-        if (!allLAs) {
-            console.error('shareWithLAProperty::_validateLAs - unable to retrieve all known local authorities');
+        if (!allJobs) {
+            console.error('vacanciesProperty::_validateJobs - unable to retrieve all known jobs');
             return false;
         }
 
-        for (let thisLA of laDefs) {
-            if (!this._valid(thisLA)) {
+        for (let thisJob of jobDefs) {
+            if (!this._valid(thisJob)) {
                 // first check the given data structure
-                setOfValidatedLAsInvalid = true;
+                setOfValidatedJobsInvalid = true;
                 break;
             }
 
-            // custodian code overrides name, because custodian code is indexed whereas name is not!
-            let referenceLA = null;
-            if (thisLA.custodianCode) {
-                referenceLA = allLAs.find(thisla => {
-                    return thisla.id === thisLA.custodianCode;
+            // jobId overrides title, because jobId is indexed whereas title is not!
+            let referenceJob = null;
+            if (thisJob.jobId) {
+                referenceJob = allJobs.find(thisKnownjob => {
+                    return thisKnownjob.id === thisJob.jobId;
                 });
             } else {
-                referenceLA = allLAs.find(thisla => {
-                    return thisla.name === thisLA.name;
+                referenceJob = allLAs.find(thisKnownjob => {
+                    return thisKnownjob.title === thisJob.title;
                 });
             }
 
-            if (referenceLA && referenceLA.id) {
-                // found a service match - prevent duplicates by checking if the reference service already exists
-                if (!setOfValidatedLAs.find(thisLA => thisLA.custodianCode === referenceLA.id)) {
-                    setOfValidatedLAs.push({
-                        cssrId: referenceLA.id,
-                        name: referenceLA.name
+            if (referenceJob && referenceJob.id) {
+                // found a job  match - prevent duplicates by checking if the reference job already exists
+                if (!setOfValidatedJobs.find(thisExistingJob => thisExistingJob.jobId === referenceJob.id)) {
+                    setOfValidatedJobs.push({
+                        jobId: referenceJob.id,
+                        title: referenceJob.title,
+                        total: thisJob.total
                     });
                 }
             } else {
-                setOfValidatedLAsInvalid = true;
+                setOfValidatedJobsInvalid = true;
                 break;
             }
 
         }
 
         // if having processed each service correctly, return the set of now validated services
-        if (!setOfValidatedLAsInvalid) return setOfValidatedLAs;
+        if (!setOfValidatedJobsInvalid) return setOfValidatedJobs;
 
         return false;
     }
