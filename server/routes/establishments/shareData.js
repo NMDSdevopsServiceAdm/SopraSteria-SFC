@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
-const models = require('../../models');
-const ShareFormatters = require('../../models/api/shareData');
 
 const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['ShareData'];

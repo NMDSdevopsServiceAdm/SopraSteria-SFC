@@ -15,10 +15,6 @@ const models = require('../index');
 
 // temp formatters
 const ServiceFormatters = require('../api/services');
-const CapacityFormatters = require('../api/capacity');
-const ShareFormatters = require('../api/shareData');
-const JobFormatters = require('../api/jobs');
-
 
 // exceptions
 const EstablishmentExceptions = require('./establishment/establishmentExceptions');
