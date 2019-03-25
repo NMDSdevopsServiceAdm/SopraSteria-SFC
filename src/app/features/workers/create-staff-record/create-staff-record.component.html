@@ -3,16 +3,6 @@
     <a routerLink="/worker/start-screen"> <span class="arrow"></span>Back </a>
   </div>
 
-  <app-error-summary
-    *ngIf="form.errors?.addMoreRecords && submitted"
-    [errors]="form.errors.addMoreRecords">
-  </app-error-summary>
-
-  <app-error-summary
-    *ngIf="form.errors?.removeRecords && submitted"
-    [errors]="form.errors.removeRecords">
-  </app-error-summary>
-
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
     <h1 class="h1">Create your staff records</h1>
 
@@ -50,7 +40,7 @@
     <div formArrayName="staffRecords" class="staff-records">
       <div class="row staff-record fs-19" *ngFor="let staffRecord of form.get('staffRecords').controls; let i = index" [formGroupName]="i">
         <div class="tb-cell col-2 pt-4 pb-4 pr-2">
-          <strong>Staff record {{ i + 1 }}</strong>
+          <strong>Staff record {{ i + 1 + totalWorkers }}</strong>
         </div>
         <div class="tb-cell col-4 pt-4 pb-4 pr-2">
           {{ staffRecord.get('nameOrId').value }}

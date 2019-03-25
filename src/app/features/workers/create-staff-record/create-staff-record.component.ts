@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Job } from '@core/model/job.model';
@@ -31,10 +31,10 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     private jobService: JobService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private router: Router
+    private router: Router,
+    private elementRef: ElementRef
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
-    this.totalStaffValidator = this.totalStaffValidator.bind(this);
   }
 
   get displayAddMore() {
@@ -79,7 +79,6 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       totalStaff: [0, [Validators.min(0), Validators.max(999), Validators.required]],
       staffRecords: this.formBuilder.array([this.createStaffRecordsItem()], this.staffRecordsRequiredValidator),
     });
-    this.form.setValidators([this.totalStaffValidator]);
   }
 
   ngOnDestroy() {
@@ -100,6 +99,9 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   openStaffRecord(index: number) {
     this.closeStaffRecords();
     this.staffRecordsControl.controls[index].patchValue({ active: true });
+    setTimeout(() => {
+      this.elementRef.nativeElement.querySelector(`.staff-record:nth-of-type(${index + 1})`).scrollIntoView(true);
+    });
   }
 
   closeStaffRecords() {
@@ -129,32 +131,6 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     }
   }
 
-  totalStaffValidator(form: AbstractControl) {
-    const totalStaff = form.get('totalStaff');
-
-    if (totalStaff.value > this.calculatedTotalStaff) {
-      return {
-        addMoreRecords: [
-          {
-            text: `You said you have ${totalStaff.value} members of staff but you only have ${
-              this.calculatedTotalStaff
-            }.`,
-          },
-          { text: `You need to complete ${totalStaff.value - this.calculatedTotalStaff} more records.` },
-        ],
-      };
-    } else if (totalStaff.value < this.calculatedTotalStaff) {
-      return {
-        removeRecords: [
-          { text: `You said you have ${totalStaff.value} members of staff but you have created more.` },
-          { text: `You need to update your Number of Staff to ${this.calculatedTotalStaff} or delete some records.` },
-        ],
-      };
-    }
-
-    return null;
-  }
-
   staffRecordsRequiredValidator(control: FormArray) {
     if (!control.controls.some(c => !isNull(c.get('uid').value))) {
       return { required: true };
@@ -167,6 +143,8 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     this.submitted = true;
 
     if (this.form.valid) {
+      this.updateTotalStaff();
+      this.workerService.setCreateStaffResponse(this.staffRecordsControl.length);
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
     } else {
       const unsavedIndex = this.staffRecordsControl.controls.findIndex(control => {
@@ -176,6 +154,8 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       if (unsavedIndex >= 0) {
         this.openStaffRecord(unsavedIndex);
         this.saveStaffRecord(unsavedIndex);
+      } else {
+        this.elementRef.nativeElement.querySelector('form').scrollIntoView(true);
       }
     }
   }
