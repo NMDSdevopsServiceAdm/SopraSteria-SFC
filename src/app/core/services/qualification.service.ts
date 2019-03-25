@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpErrorHandler } from './http-error-handler.service';
 import { HttpClient } from '@angular/common/http';
-import { debounceTime, map, catchError } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
+import { catchError, debounceTime, map } from 'rxjs/operators';
+
+import { HttpErrorHandler } from './http-error-handler.service';
 
 @Injectable({
   providedIn: 'root',

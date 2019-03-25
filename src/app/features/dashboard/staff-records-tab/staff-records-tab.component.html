@@ -9,28 +9,29 @@
   </div>
 </div>
 <div class="row">
-  <div *ngIf="createStaffResponse?.success" class="col-12">
+  <div *ngIf="createStaffResponse" class="col-12">
     <app-status title="&#10003; Success.">
-      {{ createStaffResponse.success | i18nPlural: {
+      {{ createStaffResponse | i18nPlural: {
           '=1': '# staff record has been saved.',
           'other': '# staff records have been saved.'
         }
       }}
     </app-status>
   </div>
-
-  <div *ngIf="createStaffResponse?.failed" class="col-12">
-    <app-status title="&#10007; Failed." status="fail">
-      {{ createStaffResponse.failed | i18nPlural: {
-          '=1': '# staff record has not been saved.',
-          'other': '# staff records have not been saved.'
-        }
-      }}
-    </app-status>
-  </div>
   <div *ngIf="incomplete" class="col-12">
     <p><strong>What you need to do next.</strong></p>
-    <p>Provide more information for {{ incomplete }} staff records.</p>
+
+    <app-inset-text *ngIf="totalStaff > workers?.length" color="todo">
+      You said you have {{ totalStaff }} members of staff.<br />
+      You need to update your Number of Staff or complete {{ totalStaff - workers.length }} more staff records.
+    </app-inset-text>
+
+    <app-inset-text *ngIf="totalStaff < workers?.length" color="todo">
+      You have created more staff records than you have members of staff ({{ totalStaff }}).<br />
+      You need to update your Number of Staff to {{ workers.length }} or delete some records.
+    </app-inset-text>
+
+    <p *ngIf="totalStaff === workers?.length">Provide more information for {{ incomplete }} staff records.</p>
   </div>
 </div>
 <div class="row">
@@ -41,7 +42,7 @@
           <th class="govuk-table__header" scope="col">Staff name</th>
           <th class="govuk-table__header" scope="col">Job role</th>
           <th class="govuk-table__header" scope="col">Last updated</th>
-          <th class="govuk-table__header" scope="col">Status</th>
+          <th *ngIf="totalStaff === workers?.length" class="govuk-table__header" scope="col">Status</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -52,7 +53,7 @@
           </td>
           <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
           <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
-          <td class="govuk-table__cell"><a *ngIf="!worker.completed" [routerLink]="['/worker', worker.uid, worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date']" class="icon-link icon-flag">Provide more information</a></td>
+          <td *ngIf="totalStaff === workers?.length" class="govuk-table__cell"><a *ngIf="!worker.completed" [routerLink]="['/worker', worker.uid, worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date']" class="icon-link icon-flag">Provide more information</a></td>
         </tr>
       </tbody>
     </table>

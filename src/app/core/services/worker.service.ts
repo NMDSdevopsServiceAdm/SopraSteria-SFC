@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { catchError, debounceTime, map } from 'rxjs/operators';
@@ -11,6 +11,15 @@ interface WorkersResponse {
   workers: Array<Worker>;
 }
 
+export interface Reason {
+  id: number;
+  reason: string;
+}
+
+interface LeaveReasonsResponse {
+  reasons: Array<Reason>;
+}
+
 export interface WorkerEditResponse {
   uid: string;
 }
@@ -21,6 +30,7 @@ export interface WorkerEditResponse {
 export class WorkerService {
   private _worker$ = new BehaviorSubject<Worker>(null);
   public worker$ = this._worker$.asObservable();
+  private lastDeleted$ = new BehaviorSubject<string>(null);
   private returnToSummary$ = new BehaviorSubject<boolean>(false);
   public createStaffResponse = null;
 
@@ -38,8 +48,20 @@ export class WorkerService {
     return this._worker$.value as Worker;
   }
 
+  public get lastDeleted() {
+    return this.lastDeleted$.value as string;
+  }
+
   public get returnToSummary() {
     return this.returnToSummary$.value as boolean;
+  }
+
+  setLastDeleted(name: string) {
+    this.lastDeleted$.next(name);
+  }
+
+  clearLastDeleted() {
+    this.lastDeleted$.next(null);
   }
 
   setState(worker) {
@@ -81,6 +103,16 @@ export class WorkerService {
       );
   }
 
+  getLeaveReasons() {
+    const headers = new HttpHeaders({ 'Content-type': 'application/json' });
+
+    return this.http.get<LeaveReasonsResponse>('/api/worker/leaveReasons', { headers }).pipe(
+      debounceTime(500),
+      map(r => r.reasons),
+      catchError(this.httpErrorHandler.handleHttpError)
+    );
+  }
+
   /*
    * POST /api/establishment/:establishmentId/worker
    */
@@ -116,23 +148,24 @@ export class WorkerService {
   /*
    * DELETE /api/establishment/:establishmentId/worker/:workerId
    */
-  deleteWorker(workerId: string) {
+  deleteWorker(workerId: string, reason?: any) {
+    const headers = new HttpHeaders({ 'Content-type': 'application/json' });
+
     return this.http
-      .delete<any>(
-        `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
-        EstablishmentService.getOptions()
-      )
+      .request<any>('delete', `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`, {
+        ...(reason && {
+          body: reason,
+        }),
+        headers,
+      })
       .pipe(
         debounceTime(500),
         catchError(this.httpErrorHandler.handleHttpError)
       );
   }
 
-  setCreateStaffResponse(success: number, failed: number) {
-    this.createStaffResponse = {
-      success,
-      failed,
-    };
+  setCreateStaffResponse(success: number) {
+    this.createStaffResponse = success;
   }
 
   getCreateStaffResponse() {
