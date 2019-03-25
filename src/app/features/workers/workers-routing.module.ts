@@ -14,6 +14,7 @@ import {
 import { CreateStaffRecordComponent } from './create-staff-record/create-staff-record.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
+import { DeleteSuccessComponent } from './delete-success/delete-success.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
@@ -51,6 +52,10 @@ const routes: Routes = [
   {
     path: 'save-success',
     component: WorkerSaveSuccessComponent,
+  },
+  {
+    path: 'delete-success',
+    component: DeleteSuccessComponent,
   },
   {
     path: ':id',

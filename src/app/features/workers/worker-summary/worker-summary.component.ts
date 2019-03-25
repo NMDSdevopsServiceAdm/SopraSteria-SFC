@@ -4,10 +4,13 @@ import { Router } from '@angular/router';
 import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
+import { DialogService } from '@core/services/dialog.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+
+import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 
 @Component({
   selector: 'app-worker-summary',
@@ -23,7 +26,8 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     private location: Location,
     private router: Router,
     private decimalPipe: DecimalPipe,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private dialogService: DialogService
   ) {}
 
   get displaySocialCareQualifications() {
@@ -87,6 +91,7 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.workerService.setReturnToSummary(false);
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
     });
@@ -100,6 +105,21 @@ export class WorkerSummaryComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     this.location.back();
+  }
+
+  setReturn() {
+    this.workerService.setReturnToSummary(true);
+  }
+  
+  deleteWorker(event) {
+    event.preventDefault();
+    const dialog = this.dialogService.open(DeleteWorkerDialogComponent, this.worker);
+    dialog.afterClosed.pipe(take(1)).subscribe(nameOrId => {
+      if (nameOrId) {
+        this.workerService.setLastDeleted(nameOrId);
+        this.router.navigate(['/worker', 'delete-success']);
+      }
+    });
   }
 
   async saveAndComplete() {

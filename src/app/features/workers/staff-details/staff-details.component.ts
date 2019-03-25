@@ -18,6 +18,7 @@ export class StaffDetailsComponent implements OnInit, OnDestroy {
   public contractsAvailable: Array<string> = [];
   public form: FormGroup;
   public jobsAvailable: Job[] = [];
+  public backLink: string[] = null;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -40,6 +41,12 @@ export class StaffDetailsComponent implements OnInit, OnDestroy {
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = [this.worker.uid, 'summary'];
+      } else {
+        this.backLink = ['start-screen'];
+      }
 
       this.form.patchValue({
         nameOrId: this.worker.nameOrId,

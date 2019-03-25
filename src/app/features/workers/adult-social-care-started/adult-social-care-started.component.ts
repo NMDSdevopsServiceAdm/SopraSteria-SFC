@@ -15,6 +15,7 @@ import { take } from 'rxjs/operators';
 })
 export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public backLink: string;
   private subscriptions: Subscription = new Subscription();
   private worker: Worker;
 
@@ -33,6 +34,12 @@ export class AdultSocialCareStartedComponent implements OnInit, OnDestroy {
       valueKnown: null,
       year: [null, this.yearValidator],
     });
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'recruited-from';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;

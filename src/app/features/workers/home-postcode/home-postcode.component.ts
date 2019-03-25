@@ -14,6 +14,7 @@ import { take } from 'rxjs/operators';
 })
 export class HomePostcodeComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -30,6 +31,12 @@ export class HomePostcodeComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       postcode: [null, this.postcodeValidator],
     });
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'date-of-birth';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;

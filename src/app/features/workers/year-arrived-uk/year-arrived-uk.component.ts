@@ -14,6 +14,7 @@ import { take } from 'rxjs/operators';
 })
 export class YearArrivedUkComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -32,6 +33,12 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
       yearKnown: null,
       year: [null, this.yearValidator],
     });
+
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'country-of-birth';
+    }
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;

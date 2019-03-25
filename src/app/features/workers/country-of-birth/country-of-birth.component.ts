@@ -39,8 +39,15 @@ export class CountryOfBirthComponent implements OnInit, OnDestroy {
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
-      this.backLink =
-        this.worker.nationality && this.worker.nationality.value === 'British' ? 'nationality' : 'british-citizenship';
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink =
+          this.worker.nationality && this.worker.nationality.value === 'British'
+            ? 'nationality'
+            : 'british-citizenship';
+      }
 
       if (this.worker.countryOfBirth) {
         const { value, other } = this.worker.countryOfBirth;

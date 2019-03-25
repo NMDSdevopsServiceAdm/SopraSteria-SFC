@@ -34,7 +34,12 @@ export class MentalHealthProfessionalComponent implements OnInit, OnDestroy {
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
-      this.backLink = this.isOtherJobsSocialWorker() ? 'other-job-roles' : 'staff-details';
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink = this.isOtherJobsSocialWorker() ? 'other-job-roles' : 'staff-details';
+      }
 
       if (this.worker.mainJob.jobId !== 27 && !this.isOtherJobsSocialWorker()) {
         this.router.navigate(['/worker', this.worker.uid, 'staff-details'], { replaceUrl: true });

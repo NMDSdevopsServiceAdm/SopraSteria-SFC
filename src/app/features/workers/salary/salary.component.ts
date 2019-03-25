@@ -40,11 +40,16 @@ export class SalaryComponent implements OnInit, OnDestroy {
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
-      this.backLink =
-        this.worker.zeroHoursContract === 'Yes' ||
-        [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-          ? 'average-weekly-hours'
-          : 'weekly-contracted-hours';
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink =
+          this.worker.zeroHoursContract === 'Yes' ||
+          [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
+            ? 'average-weekly-hours'
+            : 'weekly-contracted-hours';
+      }
 
       if (this.worker.annualHourlyPay) {
         this.form.patchValue({

@@ -3,16 +3,6 @@
     <a routerLink="/worker/start-screen"> <span class="arrow"></span>Back </a>
   </div>
 
-  <app-error-summary
-    *ngIf="form.errors?.addMoreRecords"
-    [errors]="form.errors.addMoreRecords">
-  </app-error-summary>
-
-  <app-error-summary
-    *ngIf="form.errors?.removeRecords"
-    [errors]="form.errors.removeRecords">
-  </app-error-summary>
-
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
     <h1 class="h1">Create your staff records</h1>
 
@@ -26,6 +16,10 @@
           <div *ngIf="form.controls.totalStaff.errors?.required" class="alert alert-danger">
             <p class="pt-4">Total number of staff is required.</p>
           </div>
+          <ng-container *ngIf="tempTotalStaff !== null">
+            <p *ngIf="tempTotalStaff === 0" class="mt-4">This is the total number of staff at your workplace.</p>
+            <p *ngIf="tempTotalStaff > 0" class="mt-4">This includes all the staff you have already told us you have.</p>
+          </ng-container>
           <span class="example">This includes permanent, temporary, pool/bank or agency staff</span>
           <input
             type="number"
@@ -44,13 +38,13 @@
     </div>
 
     <h3 class="h2 pb-2">Information about your staff</h3>
-    <div *ngIf="form.errors?.staffRecordsRequired" class="alert alert-danger">
+    <div *ngIf="form.controls.staffRecords.errors?.required && submitted" class="alert alert-danger">
         <p class="pt-4">At least 1 Staff record is required.</p>
       </div>
     <div formArrayName="staffRecords" class="staff-records">
       <div class="row staff-record fs-19" *ngFor="let staffRecord of form.get('staffRecords').controls; let i = index" [formGroupName]="i">
         <div class="tb-cell col-2 pt-4 pb-4 pr-2">
-          <strong>Staff record {{ i + 1 }}</strong>
+          <strong>Staff record {{ i + 1 + totalWorkers }}</strong>
         </div>
         <div class="tb-cell col-4 pt-4 pb-4 pr-2">
           {{ staffRecord.get('nameOrId').value }}
@@ -107,7 +101,7 @@
             </div>
           </div>
 
-          <button type="button" class="btn btn-blue" (click)="validateRecord(i)">Continue</button>
+          <button type="button" class="btn btn-blue" (click)="saveStaffRecord(i)">Save this staff record</button>
         </div>
       </div>
     </div>
