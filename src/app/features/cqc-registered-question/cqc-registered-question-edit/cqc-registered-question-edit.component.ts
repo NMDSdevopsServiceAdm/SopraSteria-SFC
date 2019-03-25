@@ -243,7 +243,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
             //data = data.locationdata;
             this._registrationService.updateState(data);
-            this._registrationService.routingCheck(data);
+            this.router.navigate(['/select-workplace']);
           }
         },
         (err: RegistrationTrackerError) => {
@@ -260,9 +260,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
           if (data.success === 1) {
             this.updateSectionNumbers(data);
 
-            //data = data.locationdata;
             this._registrationService.updateState(data);
-            this._registrationService.routingCheck(data);
+            this.router.navigate(['/select-workplace']);
           }
         },
         (err: RegistrationTrackerError) => {
@@ -280,9 +279,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
             this.updateSectionNumbers(data);
             this.setRegulatedCheckFalse(data);
 
-            //data = data.postcodedata;
             this._registrationService.updateState(data);
-            //this.routingCheck(data);
           }
         },
         (err: RegistrationTrackerError) => {

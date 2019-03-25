@@ -171,10 +171,7 @@ export class SecurityQuestionComponent implements OnInit {
 
     this._registrationService.updateState(this.registration);
 
-    //this._registrationService.routingCheck(this.registration);
     this.router.navigate(['/confirm-account-details']);
-
-    //routerLink="/confirm-account-details"
   }
 
   updateSectionNumbers(data) {

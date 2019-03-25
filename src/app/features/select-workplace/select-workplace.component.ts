@@ -130,7 +130,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
             this.updateSectionNumbers(data);
 
             this._registrationService.updateState(data);
-            //this._registrationService.routingCheck(data);
+
             this.router.navigate(['/select-main-service']);
           }
         },
@@ -138,7 +138,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
 
           console.log(err);
           this.cqcPostcodeApiError = err.friendlyMessage;
-          //this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
         () => {
           console.log('Get location by postcode complete');
@@ -185,10 +184,10 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
           if (data.success === 1) {
             this.updateSectionNumbers(data);
             this.setRegulatedCheckFalse(data);
-            //data = data.postcodedata;
+
             this._registrationService.updateState(data);
-            //this.routingCheck(data);
-            this.router.navigate(["/select-workplace-address"])
+
+            this.router.navigate(['/select-workplace-address']);
           }
         }
       )

@@ -325,7 +325,7 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     this.updateSectionNumbers(this.registration);
 
     this._registrationService.updateState(this.registration);
-    //this._registrationService.routingCheck(this.registration);
+
     this.router.navigate(['/select-main-service']);
 
   }

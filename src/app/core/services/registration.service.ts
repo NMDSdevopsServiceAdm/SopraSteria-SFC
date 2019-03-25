@@ -120,10 +120,6 @@ export class RegistrationService {
     return this.http.get('/api/registration/username/' + $value).pipe(catchError(err => this.handleHttpError(err)));
   }
 
-  routingCheck(data) {
-    this.router.navigate(['/select-workplace']);
-  }
-
   updateState(data) {
     this._registration$.next(data);
   }
