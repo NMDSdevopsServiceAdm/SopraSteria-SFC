@@ -18,20 +18,6 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
 
   constructor(private establishmentService: EstablishmentService, private workerService: WorkerService) {}
 
-  get addMore() {
-    return `
-      You said you have ${this.totalStaff} members of staff.<br />
-      You need to update your Number of Staff or complete ${this.totalStaff - this.workers.length} more staff records.
-    `;
-  }
-
-  get removeRecords() {
-    return `
-      You have created more staff records than you have members of staff (${this.totalStaff}).<br />
-      You need to update your Number of Staff to ${this.workers.length} or delete some records.
-    `;
-  }
-
   ngOnInit() {
     this.subscriptions.add(
       this.workerService.getAllWorkers().subscribe(data => {
