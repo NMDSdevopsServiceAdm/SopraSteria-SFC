@@ -164,11 +164,8 @@ export class WorkerService {
       );
   }
 
-  setCreateStaffResponse(success: number, failed: number) {
-    this.createStaffResponse = {
-      success,
-      failed,
-    };
+  setCreateStaffResponse(success: number) {
+    this.createStaffResponse = success;
   }
 
   getCreateStaffResponse() {
