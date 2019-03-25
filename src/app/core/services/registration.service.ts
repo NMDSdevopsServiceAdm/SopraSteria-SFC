@@ -121,18 +121,20 @@ export class RegistrationService {
   }
 
   routingCheck(data) {
-    if (data.locationdata.length > 1) {
+    debugger;
+    //if (data.locationdata.length > 1) {
       this.router.navigate(['/select-workplace']);
-    } else {
-      // if ((data.locationdata[0].mainService === '') || (data.locationdata[0].mainService === null)) {
-      this.router.navigate(['/select-main-service']);
-      // } else {
-      //   this.router.navigate(['/confirm-workplace-details']);
-      // }
-    }
+    // } else {
+    //   // if ((data.locationdata[0].mainService === '') || (data.locationdata[0].mainService === null)) {
+    //   this.router.navigate(['/select-main-service']);
+    //   // } else {
+    //   //   this.router.navigate(['/confirm-workplace-details']);
+    //   // }
+    // }
   }
 
   updateState(data) {
+    debugger;
     this._registration$.next(data);
   }
 
