@@ -95,21 +95,20 @@ export class WorkerService {
     );
   }
 
-  deleteWorker(workerId: string, reason: any) {
+  deleteWorker(workerId: string, reason?: any) {
     return this.http.request<any>(
       'delete',
       `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
       {
-        body: reason,
+        ...(reason && {
+          body: reason,
+        }),
       }
     );
   }
 
-  setCreateStaffResponse(success: number, failed: number) {
-    this.createStaffResponse = {
-      success,
-      failed,
-    };
+  setCreateStaffResponse(success: number) {
+    this.createStaffResponse = success;
   }
 
   getCreateStaffResponse() {

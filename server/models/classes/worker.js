@@ -447,6 +447,7 @@ class Worker {
     // Can throw "WorkerDeleteException"
     async archive(deletedBy) {
         try {
+            
             const updatedTimestamp = new Date();
 
             // need to update the existing Worker record and add an
@@ -455,11 +456,17 @@ class Worker {
                 // now append the extendable properties
                 const updateDocument = {
                     archived: true,
-                    reasonFk: this._reason.id,
-                    otherReason: escape(this._reason.other),
                     updated: updatedTimestamp,
                     updatedBy: deletedBy
                 };
+
+                if (this._reason) {
+                    updateDocument.reasonFk = this._reason.id;
+
+                    if (this._reason.other) {
+                        updateDocument.otherReason = escape(this._reason.other);
+                    }
+                }
 
                 // now save the document
                 let [updatedRecordCount, updatedRows] =
@@ -714,6 +721,10 @@ class Worker {
         if (!(reasonDef.id || reasonDef.reason)) return false;
         if (reasonDef.id && !(Number.isInteger(reasonDef.id))) return false;
 
+        // reason "other" qualifier is optional, but if given, it must be less than 500 characters
+        const MAX_LENGTH_ON_OTHER_REASON=500;
+        if (reasonDef.other && reasonDef.other.length > MAX_LENGTH_ON_OTHER_REASON) return false;
+
         let referenceReason = null;
         if (reasonDef.id) {
             referenceReason = await models.workerLeaveReasons.findOne({
@@ -737,7 +748,7 @@ class Worker {
             return {
                 id: referenceReason.id,
                 reason: referenceReason.reason,
-                other: reasonDef.id === leaveReasonIdOfOther ? reasonDef.other : null
+                other: reasonDef.id === leaveReasonIdOfOther && reasonDef.other ? reasonDef.other : null
             };
         } else {
             return false;

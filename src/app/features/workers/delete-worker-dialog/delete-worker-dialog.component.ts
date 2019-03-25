@@ -27,8 +27,8 @@ export class DeleteWorkerDialogComponent implements OnInit {
     private workerService: WorkerService
   ) {
     this.form = this.formBuilder.group({
-      reason: [null, Validators.required],
-      details: [null, [Validators.maxLength(300)]],
+      reason: null,
+      details: [null, [Validators.maxLength(500)]],
     });
   }
 
@@ -65,14 +65,16 @@ export class DeleteWorkerDialogComponent implements OnInit {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        const deleteReason = {
-          reason: {
-            id: parseInt(reason.value, 10),
-            ...(details.value && {
-              other: details.value,
-            }),
-          },
-        };
+        const deleteReason = reason.value
+          ? {
+              reason: {
+                id: parseInt(reason.value, 10),
+                ...(details.value && {
+                  other: details.value,
+                }),
+              },
+            }
+          : null;
 
         this.subscriptions.add(
           this.workerService.deleteWorker(this.worker.uid, deleteReason).subscribe(() => {
@@ -82,9 +84,7 @@ export class DeleteWorkerDialogComponent implements OnInit {
           }, reject)
         );
       } else {
-        if (reason.errors.required) {
-          this.messageService.show('error', 'Reason is required.');
-        } else if (details.errors.maxLength) {
+        if (details.errors.maxLength) {
           this.messageService.show(
             'error',
             `Other Details can not be longer than ${details.errors.maxLength.requiredLength} characters`
