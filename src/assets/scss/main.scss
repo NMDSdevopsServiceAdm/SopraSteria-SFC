@@ -1,5 +1,6 @@
 @import '~govuk-frontend/settings/all';
 
+$govuk-global-styles: true;
 $govuk-font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande',
 sans-serif;
 
@@ -13,6 +14,7 @@ body {
 @import 'partials/lists';
 
 // Custom Components
+@import 'components/tag';
 @import 'components/doh-logo';
 @import 'components/footer';
 @import 'components/header';
