@@ -55,8 +55,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
 
     this.resetPostcodeApi();
     this.setSectionNumbers();
-
-    debugger;
   }
 
   resetPostcodeApi() {
@@ -70,11 +68,10 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
         })
       );
     }
-    debugger;
   }
 
   clickBack() {
-    debugger;
+
     if (this.registration.userRoute) {
       const routeArray = this.registration.userRoute.route;
       this.currentSection = this.registration.userRoute.currentPage;
@@ -97,7 +94,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   setSectionNumbers() {
-    debugger;
     this.currentSection = this.registration.userRoute.currentPage;
     this.backLink = this.registration.userRoute.route[this.currentSection - 1];
     this.secondItem = 1;
@@ -152,7 +148,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   updateSectionNumbers(data?) {
-    debugger;
     if (this.registration.userRoute) {
       data['userRoute'] = this.registration.userRoute;
       data.userRoute['currentPage'] = this.currentSection;
@@ -160,7 +155,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
       data.userRoute['route'].push('/select-workplace');
     }
     else {
-      debugger;
 
       data['userRoute'] = {
         currentPage: this.currentSection,

@@ -313,16 +313,7 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
 
   // Routing check
   routingCheck(data) {
-    //if (data.length > 1) {
-      debugger;
-      this.router.navigate(['/select-workplace']);
-    // } else {
-    //   if (data[0].mainService === '') {
-    //     this.router.navigate(['/select-main-service']);
-    //   } else {
-    //     this.router.navigate(['/confirm-workplace-details']);
-    //   }
-    // }
+    this.router.navigate(['/select-workplace']);
   }
 
   setSectionNumbers() {
