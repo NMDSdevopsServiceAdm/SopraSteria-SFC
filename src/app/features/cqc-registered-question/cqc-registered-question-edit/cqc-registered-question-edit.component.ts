@@ -40,13 +40,11 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   private cqcRegPostcodeMessages = {
     maxlength: 'Your postcode must be no longer than 8 characters.',
     bothHaveContent: 'Both have content.',
-    //required: 'TS - Please enter a postcode or Location ID.'
   };
 
   private cqcRegLocationIdMessages = {
     maxlength: 'Your Location ID must be no longer than 50 characters.',
     bothHaveContent: 'Both have content.',
-    //required: 'TS - Please enter a postcode or Location ID.'
   };
 
   private nonCqcRegPostcodeMessages = {
@@ -127,12 +125,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     this.cqcRegisteredLocationId.valueChanges.pipe(debounceTime(1000)).subscribe(value => {
       if (value.length > 0) {
         if (this.cqcRegisteredGroup.errors) {
-          //this.setCqcRegPostcodeMessage(this.cqcRegisteredGroup);
           this.setCqcRegisteredLocationIdMessage(this.cqcRegisteredGroup);
         }
         if (this.cqcRegisteredLocationId.errors) {
-          //this.isSubmitted = false;
-          //this.submittedCqcRegLocationId = false;
           this.setCqcRegisteredLocationIdMessage(this.cqcRegisteredLocationId);
         }
       } else {
@@ -207,7 +202,6 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       const cqcRegisteredPostcode = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.cqcRegisteredPostcode');
       const locationId = this.cqcRegisteredQuestionForm.get('cqcRegisteredGroup.locationId');
       // Clear value of not cqc registered postcode if previously entered
-      //this.notRegisteredPostcode.value = '';
 
       if (cqcRegisteredPostcode.value.length > 0 || locationId.value.length > 0) {
         if (this.cqcRegisteredQuestionForm.invalid || this.cqcRegisteredGroup.errors) {
@@ -218,8 +212,6 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
       }
     } else {
       // Clear value of cqc registered postcode and location Id if previously entered
-      //this.cqcRegisteredPostcode.value = '';
-      //this.cqcRegisteredLocationId.value = '';
 
       if (this.cqcRegisteredQuestionForm.invalid) {
         return;
@@ -241,7 +233,6 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
           if (data.success === 1) {
             this.updateSectionNumbers(data);
 
-            //data = data.locationdata;
             this._registrationService.updateState(data);
             this.router.navigate(['/select-workplace']);
           }

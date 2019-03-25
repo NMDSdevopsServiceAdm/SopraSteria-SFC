@@ -61,7 +61,6 @@ export class SecurityQuestionComponent implements OnInit {
       securityAnswerInput: ['', [Validators.required, Validators.maxLength(255)]]
     });
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
-    console.log(this.registration);
 
     // security question watcher
     this.getSecurityQuestionInput.valueChanges.pipe(
@@ -179,12 +178,6 @@ export class SecurityQuestionComponent implements OnInit {
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
     data.userRoute['route'].push('/security-question');
-
-    // data.userRoute.currentPage = this.currentSection;
-    // data.userRoute.route.push('/select-workplace');
-
-    console.log(data);
-    console.log(this.registration);
   }
 
   clickBack() {
