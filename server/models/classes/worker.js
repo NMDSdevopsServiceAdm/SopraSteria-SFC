@@ -721,6 +721,10 @@ class Worker {
         if (!(reasonDef.id || reasonDef.reason)) return false;
         if (reasonDef.id && !(Number.isInteger(reasonDef.id))) return false;
 
+        // reason "other" qualifier is optional, but if given, it must be less than 500 characters
+        const MAX_LENGTH_ON_OTHER_REASON=500;
+        if (reasonDef.other && reasonDef.other.length > MAX_LENGTH_ON_OTHER_REASON) return false;
+
         let referenceReason = null;
         if (reasonDef.id) {
             referenceReason = await models.workerLeaveReasons.findOne({
