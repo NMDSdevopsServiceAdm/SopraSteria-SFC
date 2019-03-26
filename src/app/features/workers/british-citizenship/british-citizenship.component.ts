@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-british-citizenship',
@@ -13,12 +14,12 @@ import { Subscription } from 'rxjs';
 export class BritishCitizenshipComponent implements OnInit, OnDestroy {
   public answersAvailable = ['Yes', 'No', `Don't know`];
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService
@@ -27,21 +28,29 @@ export class BritishCitizenshipComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
-    if (this.worker.nationality && this.worker.nationality.value === 'British') {
-      this.router.navigate(['/worker', this.worker.uid, 'nationality'], { replaceUrl: true });
-    }
-
     this.form = this.formBuilder.group({
       citizenship: null,
     });
 
-    if (this.worker.britishCitizenship) {
-      this.form.patchValue({
-        citizenship: this.worker.britishCitizenship,
-      });
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'nationality';
     }
+
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.worker.nationality && this.worker.nationality.value === 'British') {
+        this.router.navigate(['/worker', this.worker.uid, 'nationality'], { replaceUrl: true });
+      }
+
+      if (this.worker.britishCitizenship) {
+        this.form.patchValue({
+          citizenship: this.worker.britishCitizenship,
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -64,8 +73,16 @@ export class BritishCitizenshipComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        this.worker.britishCitizenship = citizenship;
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        const props = {
+          britishCitizenship: citizenship,
+        };
+
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         this.messageService.show('error', 'Please fill the required fields.');
         reject();

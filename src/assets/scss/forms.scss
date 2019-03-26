@@ -192,7 +192,8 @@ form,
 
 label {
   select,
-  input {
+  input,
+  textarea {
     margin-top: 10px;
   }
 }
@@ -372,4 +373,8 @@ label {
       flex: 1;
     }
   }
+}
+
+select.form-control:not([size]):not([multiple]) {
+  height: 38px;
 }

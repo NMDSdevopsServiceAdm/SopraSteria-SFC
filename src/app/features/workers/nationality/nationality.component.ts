@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { NationalityResponse, NationalityService } from '@core/services/nationality.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-nationality',
@@ -14,6 +15,7 @@ import { Subscription } from 'rxjs';
 export class NationalityComponent implements OnInit, OnDestroy {
   public availableOtherNationalities: NationalityResponse[];
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -22,7 +24,6 @@ export class NationalityComponent implements OnInit, OnDestroy {
     private nationalityService: NationalityService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
@@ -31,24 +32,39 @@ export class NationalityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
     this.form = this.formBuilder.group({
       nationalityKnown: null,
       nationalityName: [null, this.nationalityNameValidator],
     });
 
-    if (this.worker.nationality) {
-      const { value, other } = this.worker.nationality;
-
-      this.form.patchValue({
-        nationalityKnown: value,
-        nationalityName: other ? other.nationality : null,
-      });
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'ethnicity';
     }
+
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.worker.nationality) {
+        const { value, other } = this.worker.nationality;
+
+        this.form.patchValue({
+          nationalityKnown: value,
+          nationalityName: other ? other.nationality : null,
+        });
+      }
+    });
 
     this.subscriptions.add(
       this.nationalityService.getNationalities().subscribe(res => (this.availableOtherNationalities = res))
+    );
+
+    this.subscriptions.add(
+      this.form.controls.nationalityKnown.valueChanges.subscribe(() => {
+        this.form.controls.nationalityName.reset();
+        this.form.controls.nationalityName.updateValueAndValidity();
+      })
     );
   }
 
@@ -61,7 +77,9 @@ export class NationalityComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
-      if (this.worker.nationality && this.worker.nationality.value === 'British') {
+      const { nationalityKnown } = this.form.value;
+
+      if (nationalityKnown === 'British') {
         this.router.navigate(['/worker', this.worker.uid, 'country-of-birth']);
       } else {
         this.router.navigate(['/worker', this.worker.uid, 'british-citizenship']);
@@ -77,31 +95,33 @@ export class NationalityComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        if (nationalityKnown.value) {
-          this.worker.nationality = { value: nationalityKnown.value };
+        const props = {
+          ...(nationalityKnown.value && {
+            nationality: {
+              value: nationalityKnown.value,
+              ...(nationalityName.value && {
+                other: {
+                  nationality: nationalityName.value,
+                },
+              }),
+            },
+          }),
+        };
 
-          if (nationalityName.value) {
-            this.worker.nationality.other = {
-              nationality: `${nationalityName.value.charAt(0).toUpperCase()}${nationalityName.value.slice(1)}`,
-            };
-          }
-        }
-
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
-        if (nationalityName.errors) {
-          if (Object.keys(nationalityName.errors).includes('validNationality')) {
-            this.messageService.show('error', 'Invalid nationality.');
-          }
+        if (nationalityName.errors.validNationality) {
+          this.messageService.show('error', 'Invalid nationality.');
         }
 
         reject();
       }
     });
-  }
-
-  nationalityKnownChangeHandler() {
-    this.form.controls.nationalityName.reset();
   }
 
   nationalityNameValidator() {

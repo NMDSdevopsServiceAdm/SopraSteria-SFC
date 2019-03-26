@@ -20,7 +20,7 @@
         <div class="row">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" formControlName="recruitmentKnown" class="form-control" value="Yes" for="recruitmentKnown_yes">
+              <input type="radio" formControlName="recruitmentKnown" class="form-control" value="Yes" id="recruitmentKnown_yes">
               <label for="recruitmentKnown_yes">Yes</label>
             </div>
           </div>
@@ -29,7 +29,7 @@
         <div *ngIf="form.get('recruitmentKnown').value === 'Yes'" class="panel panel-border-narrow col-10 col-lg-6 ml-0 mt-5 mb-5 mt-md-0">
           <div class="form-field">
             <label class="form-label">Recruited from
-              <select formControlName="recruitedFromId" class="form-control">
+              <select formControlName="recruitedFromId" class="form-control" id="recruitedFromId">
                 <option [ngValue]="null">Select recruitment source</option>
                 <option *ngFor="let recruitment of availableRecruitments" [value]="recruitment.id">
                   {{recruitment.from}}
@@ -42,7 +42,7 @@
         <div class="row mt-5 mt-md-0">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" formControlName="recruitmentKnown" class="form-control" value="No" id="recruitmentKnown_no" (change)="recruitmentKnownChangeHandler()">
+              <input type="radio" formControlName="recruitmentKnown" class="form-control" value="No" id="recruitmentKnown_no">
               <label for="recruitmentKnown_no">No</label>
             </div>
           </div>

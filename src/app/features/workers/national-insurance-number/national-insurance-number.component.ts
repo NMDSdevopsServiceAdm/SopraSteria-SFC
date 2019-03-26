@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { NIN_PATTERN } from '@core/constants/constants';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-national-insurance-number',
@@ -21,26 +22,33 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private formBuilder: FormBuilder,
     private messageService: MessageService,
-    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
-    this.backLink = this.worker.otherJobs.some(j => j.jobId === 27) ? 'mental-health' : 'other-job-roles';
-
     this.form = this.formBuilder.group({
       nin: [null, this.ninValidator],
     });
 
-    if (this.worker.nationalInsuranceNumber) {
-      this.form.patchValue({
-        nin: this.worker.nationalInsuranceNumber,
-      });
-    }
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink = this.worker.otherJobs.some(j => j.jobId === 27)
+          ? 'mental-health-professional'
+          : 'other-job-roles';
+      }
+
+      if (this.worker.nationalInsuranceNumber) {
+        this.form.patchValue({
+          nin: this.worker.nationalInsuranceNumber,
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -59,12 +67,20 @@ export class NationalInsuranceNumberComponent implements OnInit, OnDestroy {
 
   saveHandler(): Promise<WorkerEditResponse> {
     return new Promise((resolve, reject) => {
-      this.messageService.clearError();
       const { nin } = this.form.controls;
+      this.messageService.clearError();
 
       if (this.form.valid) {
-        this.worker.nationalInsuranceNumber = nin.value ? nin.value.toUpperCase() : null;
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        const props = {
+          nationalInsuranceNumber: nin.value ? nin.value.toUpperCase() : null,
+        };
+
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         if (nin.errors.validNin) {
           this.messageService.show('error', 'Invalid National Insurance Number format.');

@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Qualification } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-social-care-qualification-level',
@@ -15,6 +16,7 @@ import { Subscription } from 'rxjs';
 export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy {
   public qualifications: Qualification[];
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -22,7 +24,6 @@ export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy 
     private workerService: WorkerService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private qualificationService: QualificationService
   ) {
@@ -30,27 +31,35 @@ export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
+    this.form = this.formBuilder.group({
+      qualification: [null, Validators.required],
+    });
 
-    if (this.worker.qualificationInSocialCare !== 'Yes') {
-      this.router.navigate(['/worker', this.worker.uid, 'social-care-qualification'], { replaceUrl: true });
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'social-care-qualification';
     }
+
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.worker.qualificationInSocialCare !== 'Yes') {
+        this.router.navigate(['/worker', this.worker.uid, 'social-care-qualification'], { replaceUrl: true });
+      }
+
+      if (this.worker.socialCareQualification) {
+        this.form.patchValue({
+          qualification: this.worker.socialCareQualification.qualificationId,
+        });
+      }
+    });
 
     this.subscriptions.add(
       this.qualificationService.getQualifications().subscribe(qualifications => {
         this.qualifications = qualifications;
       })
     );
-
-    this.form = this.formBuilder.group({
-      qualification: [null, Validators.required],
-    });
-
-    if (this.worker.socialCareQualification) {
-      this.form.patchValue({
-        qualification: this.worker.socialCareQualification.qualificationId,
-      });
-    }
   }
 
   ngOnDestroy() {
@@ -74,15 +83,18 @@ export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy 
       this.messageService.clearError();
 
       if (this.form.valid) {
-        const worker = this.worker || ({} as Worker);
-        const selectedQualification = this.qualifications.filter(q => q.id === parseInt(qualification.value, 10)).pop();
-
-        worker.socialCareQualification = {
-          qualificationId: selectedQualification.id,
-          title: selectedQualification.level,
+        const props = {
+          socialCareQualification: {
+            qualificationId: parseInt(qualification.value, 10),
+          },
         };
 
-        this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         if (qualification.errors.required) {
           this.messageService.show('error', 'Please fill required fields.');

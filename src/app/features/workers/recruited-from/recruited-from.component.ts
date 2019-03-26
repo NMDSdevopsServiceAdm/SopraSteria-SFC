@@ -1,11 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { RecruitmentResponse, RecruitmentService } from '@core/services/recruitment.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
+import { isNull } from 'util';
 
 @Component({
   selector: 'app-recruited-from',
@@ -20,7 +22,6 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
 
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private recruitmentService: RecruitmentService,
@@ -28,32 +29,44 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
   ) {
     this.saveHandler = this.saveHandler.bind(this);
     this.recruitedFromIdValidator = this.recruitedFromIdValidator.bind(this);
-    this.recruitmentKnownChangeHandler = this.recruitmentKnownChangeHandler.bind(this);
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
-    this.backLink =
-      this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-        ? 'country-of-birth'
-        : 'year-arrived-uk';
-
     this.form = this.formBuilder.group({
       recruitmentKnown: null,
       recruitedFromId: [null, this.recruitedFromIdValidator],
     });
 
-    if (this.worker.recruitedFrom) {
-      const { value, from } = this.worker.recruitedFrom;
-      this.form.patchValue({
-        recruitmentKnown: value,
-        recruitedFromId: from ? from.recruitedFromId : null,
-      });
-    }
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink =
+          this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
+            ? 'country-of-birth'
+            : 'year-arrived-uk';
+      }
+
+      if (this.worker.recruitedFrom) {
+        const { value, from } = this.worker.recruitedFrom;
+        this.form.patchValue({
+          recruitmentKnown: value,
+          recruitedFromId: from ? from.recruitedFromId : null,
+        });
+      }
+    });
 
     this.subscriptions.add(
       this.recruitmentService.getRecruitedFrom().subscribe(res => (this.availableRecruitments = res))
+    );
+
+    this.subscriptions.add(
+      this.form.controls.recruitmentKnown.valueChanges.subscribe(val => {
+        this.form.controls.recruitedFromId.reset();
+        this.form.controls.recruitedFromId.updateValueAndValidity();
+      })
     );
   }
 
@@ -76,26 +89,28 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
       const { recruitedFromId, recruitmentKnown } = this.form.controls;
       this.messageService.clearError();
 
-      const recruitedObj = this.availableRecruitments.find(
-        recruitment => recruitment.id === parseInt(recruitedFromId.value, 10)
-      );
-
       if (this.form.valid) {
-        if (recruitmentKnown.value) {
-          this.worker.recruitedFrom = {
-            value: recruitmentKnown.value,
-            ...(recruitedObj && {
-              from: {
-                recruitedFromId: recruitedObj.id,
-                from: recruitedObj.from,
-              },
-            }),
-          };
-        }
+        const props = {
+          ...(recruitmentKnown.value && {
+            recruitedFrom: {
+              value: recruitmentKnown.value,
+              ...(recruitedFromId.value && {
+                from: {
+                  recruitedFromId: parseInt(recruitedFromId.value, 10),
+                },
+              }),
+            },
+          }),
+        };
 
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
-        if (recruitedFromId.errors && Object.keys(recruitedFromId.errors).includes('recruitedFromIdValid')) {
+        if (recruitedFromId.errors.required) {
           this.messageService.show('error', `'Recruitment from' has to be provided.`);
         }
 
@@ -104,17 +119,12 @@ export class RecruitedFromComponent implements OnInit, OnDestroy {
     });
   }
 
-  recruitmentKnownChangeHandler() {
-    this.form.controls.recruitedFromId.reset();
-  }
-
   recruitedFromIdValidator() {
     if (this.form) {
-      const { recruitmentKnown } = this.form.value;
-      const recruitedFromId = this.form.controls.recruitedFromId.value;
+      const { recruitmentKnown, recruitedFromId } = this.form.controls;
 
-      if (recruitmentKnown === 'Yes') {
-        return recruitedFromId ? null : { recruitedFromIdValid: true };
+      if (recruitmentKnown.value === 'Yes' && isNull(recruitedFromId.value)) {
+        return { required: true };
       }
     }
 

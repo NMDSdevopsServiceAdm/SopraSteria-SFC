@@ -9,3 +9,4 @@ notify:
     replyTo: '44e98371-2e44-4c6b-ad76-235136be0f8a'
     templates:
         resetPassword: 'fd430f0d-6609-400a-b171-cf124453ec1c'
+        addUser: 'f20e9cbe-920d-4b1f-b05d-bac1ca8d5b54'

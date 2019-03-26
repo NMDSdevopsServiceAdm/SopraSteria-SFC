@@ -1,6 +1,6 @@
 <div class="main-page-container col-12">
   <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid, 'contract-with-zero-hours']">
+    <a [routerLink]="['/worker', worker.uid, backLink]">
       <span class="arrow"></span>Back
     </a>
   </div>
@@ -20,7 +20,7 @@
         <div class="row">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" formControlName="weeklyHoursAverageKnown" class="form-control" value="Yes" for="weeklyHoursAverageKnown_yes">
+              <input type="radio" formControlName="weeklyHoursAverageKnown" class="form-control" value="Yes" id="weeklyHoursAverageKnown_yes">
               <label for="weeklyHoursAverageKnown_yes">Yes</label>
             </div>
           </div>
@@ -37,7 +37,7 @@
         <div class="row mt-5 mt-md-0">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" formControlName="weeklyHoursAverageKnown" class="form-control" value="No" id="weeklyHoursAverageKnown_no" (change)="weeklyHoursAverageKnownChangeHandler()">
+              <input type="radio" formControlName="weeklyHoursAverageKnown" class="form-control" value="No" id="weeklyHoursAverageKnown_no">
               <label for="weeklyHoursAverageKnown_no">No</label>
             </div>
           </div>

@@ -37,7 +37,7 @@ router.route('/:staffNumber').post(async (req, res) => {
 
   // must provide staff number and must be integer and must be less than 999
   const maxNumberOfStaff=999;
-  if (!givenStaffNumber ||
+  if (givenStaffNumber === null ||
       givenStaffNumber < 0 ||
       givenStaffNumber > maxNumberOfStaff) {
     console.error('establishment::staff POST - unexpected number of staff: ', givenStaffNumber);

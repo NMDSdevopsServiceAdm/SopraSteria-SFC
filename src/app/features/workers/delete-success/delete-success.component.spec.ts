@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PageNotFoundPagesComponent } from './page-not-found-pages.component';
+import { DeleteSuccessComponent } from './delete-success.component';
 
-describe('PageNotFoundPagesComponent', () => {
-  let component: PageNotFoundPagesComponent;
-  let fixture: ComponentFixture<PageNotFoundPagesComponent>;
+describe('DeleteSuccessComponent', () => {
+  let component: DeleteSuccessComponent;
+  let fixture: ComponentFixture<DeleteSuccessComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PageNotFoundPagesComponent ]
+      declarations: [ DeleteSuccessComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PageNotFoundPagesComponent);
+    fixture = TestBed.createComponent(DeleteSuccessComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -11,6 +11,9 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
+// notifications
+const sendAddUserEmail = require('../../utils/email/notify-email').sendAddUser;
+
 const UserExceptions = require('./user/userExceptions');
 
 // User properties
@@ -18,8 +21,11 @@ const UserProperties = require('./user/userProperties').UserPropertyManager;
 const JSON_DOCUMENT_TYPE = require('./user/userProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUMENT;
 
+const bcrypt = require('bcrypt-nodejs');
+const passwordValidator = require('../../utils/security/passwordValidation').isPasswordValid;
+
 class User {
-    constructor(establishmentId) {
+    constructor(establishmentId, trackingUUID=null) {
         this._establishmentId = establishmentId;           // NOTE - a User has a direct link to an Establishment; this is likely to change with parent/sub
         this._id = null;
         this._uid = null;
@@ -28,6 +34,10 @@ class User {
         this._updated = null;
         this._updatedBy = null;
         this._auditEvents = null;
+
+        // localised attributes - optional on load
+        this._username = null;
+        this._password = null;
 
         // abstracted properties
         const thisUserManager = new UserProperties();
@@ -39,6 +49,8 @@ class User {
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
         this._logLevel = User.LOG_INFO;
+
+        this._trackingUUID = trackingUUID;
     }
 
     // returns true if valid establishment id
@@ -113,6 +125,10 @@ class User {
         return this._updatedBy;
     }
 
+    get trackingId() {
+        return this._trackingUUID;
+    }
+
     // used by save to initialise a new User; returns true if having initialised this user
     _initialise() {
         if (this._uid === null) {
@@ -139,6 +155,14 @@ class User {
     async load(document) {
         try {
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+
+            // for user, the username and password are additional (non property based) optional attributes
+            if (document.username) {
+                this._username = escape(document.username);
+            }
+            if (document.password) {
+                this._password = escape(document.password);
+            }
         } catch (err) {
             this._log(User.LOG_ERROR, `User::load - failed: ${err}`);
             throw new UserExceptions.UserJsonException(
@@ -149,10 +173,42 @@ class User {
         return this.isValid();
     }
 
+    // validates username; returns true if username is not defined
+    get isUsernameValid() {
+        // must be 50 or less characters
+        if (this._username !== null) {
+            if (this._username.length <= 50) {
+                return true;
+            } else {
+                this._log(User.LOG_WARN, 'username is defined but invalid');
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    // validates password; returns true if password is not defined
+    get isPasswordValid() {
+        // must meet password complexity
+        if (this._password !== null) {
+            if (passwordValidator(this._password)) {
+                return true;
+            } else {
+                this._log(User.LOG_WARN, 'password is defined but invalid');
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
     // returns true if User is valid, otherwise false
     isValid() {
+        // must also validate username and password - IF they are defined
         // the property manager returns a list of all properties that are invalid; or true
-        const thisUserIsValid = this._properties.isValid;
+        const thisUserIsValid = this._properties.isValid === true && this.isUsernameValid && this.isPasswordValid;
+
         if (thisUserIsValid === true) {
             return true;
         } else {
@@ -161,9 +217,50 @@ class User {
         }
     }
 
+    // track new user helper - can only be done within a transaction
+    async trackNewUser(savedBy, transaction, ttl) {
+        // intentionally now exception handling - to ensure exception passes back up to calling function
+        const fullnameProperty = this._properties.get('FullName').property
+        const emailProperty = this._properties.get('Email').property;
+
+        // generate a new tracking UUID
+        this._trackingUUID = uuid.v4();
+
+        // now before creating a new tracking record, need to close down
+        //  any open tracking records for this user
+        await models.addUserTracking.update(
+            {
+                completed: new Date(),
+            },
+            {
+                transaction,
+                where : {
+                    userFk: this._id
+                },
+            }
+        );
+
+        // now add a tracking record
+        const now = new Date();
+        const expiresIn = new Date(now.getTime() + ttl);
+        await models.addUserTracking.create(
+            {
+                userFk: this._id,
+                created: now.toISOString(),
+                expires: expiresIn.toISOString(),
+                uuid: this._trackingUUID,
+                by: savedBy
+            },
+            {transaction}
+        );
+
+        // now send the email
+        await sendAddUserEmail(emailProperty, fullnameProperty, this._trackingUUID);
+    }
+
     // saves the User to DB. Returns true if saved; false is not.
     // Throws "UserSaveException" on error
-    async save(savedBy) {
+    async save(savedBy, ttl=0) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -182,6 +279,8 @@ class User {
                     establishmentId: this._establishmentId,
                     uid: this.uid,
                     updatedBy: savedBy,
+                    isAdmin: false,
+                    archived: false,
                     attributes: ['id', 'created', 'updated'],
                 };
 
@@ -196,7 +295,7 @@ class User {
 
                     // check all mandatory parameters have been provided
                     if (!this.hasMandatoryProperties) {
-                        throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, 'Missing Mandatory properties', null);
+                        throw 'Missing Mandatory properties';
                     }
 
                     // now save the document
@@ -204,29 +303,88 @@ class User {
 
                     const sanitisedResults = creation.get({plain: true});
 
-                    this._id = sanitisedResults.ID;
+                    this._id = sanitisedResults.RegistrationID;
                     this._created = sanitisedResults.created;
                     this._updated = sanitisedResults.updated;
                     this._updatedBy = savedBy;
                     this._isNew = false;
 
-                    // having the usser we can now create the audit record; injecting the userFk
-                    const allAuditEvents = [{
-                        userFk: this._id,
-                        username: savedBy,
-                        type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
-                            return {
-                                ...thisEvent,
-                                userFk: this._id
-                            };
-                        }));
-                    await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    // create the associated Login record - if the username is known
+                    if (this._username !== null) {
+                        const passwordHash = await bcrypt.hashSync(this._password, bcrypt.genSaltSync(10), null);
+                        await models.login.create(
+                            {
+                                registrationId: this._id,
+                                username: this._username,
+                                Hash: passwordHash,
+                                isActive: true,
+                                invalidAttempt: 0,
+                            },
+                            {transaction: t}
+                        );
+                        
+                        // also need to complete on the originating add user tracking record
+                        const trackingResponse = await models.addUserTracking.update(
+                            {
+                                completed: sanitisedResults.created,        // use the very same timestamp as that which the User record was created!
+                            },
+                            {
+                                transaction: t,
+                                where: {
+                                    uuid: this._trackingUUID,
+                                },
+                                returning: true,
+                                plain: false
+                            }
+                        );
 
+                        // in addition to marking the tracking record as complete, need to delete the original
+                        //  User record used for the registration
+                        await models.user.update(
+                            {
+                                archived: true
+                            },
+                            {
+                                where: {
+                                    id: trackingResponse[1][0].dataValues.UserFK
+                                },
+                                transaction: t
+                            }
+                        )
+                    }
+
+                    // only create the audit records for the new user the username is known
+                    if (this._username !== null) {
+                        // having the user we can now create the audit record; injecting the userFk
+                        const allAuditEvents = [{
+                            userFk: this._id,
+                            username: savedBy,
+                            type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
+                                return {
+                                    ...thisEvent,
+                                    userFk: this._id
+                                };
+                            }));
+                        await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    }
+
+                    // send invitation email if the username is not known
+                    if (this._username === null) {
+                        // need to send an email having added an "Add User" tracking record
+                        await this.trackNewUser(savedBy, t, ttl);
+                    }
                     this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
                 });
                 
             } catch (err) {
-                throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, null);
+                // need to handle duplicate username
+                if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+                    if (err.parent.constraint && err.parent.constraint === 'uc_Login_Username') {
+                        throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, 'Duplicate Username', 'Duplicate Username');
+                    }
+                } else {
+                    throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, null);
+                }
             }
         } else {
             // we are updating an existing User
@@ -265,17 +423,28 @@ class User {
                         this._updatedBy = savedBy;
                         this._id = updatedRecord.RegistrationID;
 
-                        const allAuditEvents = [{
-                            userFk: this._id,
-                            username: savedBy,
-                            type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
-                                return {
-                                    ...thisEvent,
-                                    userFk: this._id
-                                };
-                            }));
-                            // having updated the record, create the audit event
-                        await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                        // if we're updating a part added user (registered only not completed - username is not known)
+                        //  then we need to complete on any outstanding add user tracking for that user
+                        //  and create another one, which includes sending an email with that tracking request.
+                        if (this._username === null) {
+                            // need to send an email having added an "Add User" tracking record
+                            await this.trackNewUser(savedBy, t, ttl);
+                        }
+
+                        // only create the audit records for the new user the username is known
+                        if (this._username !== null) {
+                            const allAuditEvents = [{
+                                userFk: this._id,
+                                username: savedBy,
+                                type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
+                                    return {
+                                        ...thisEvent,
+                                        userFk: this._id
+                                    };
+                                }));
+                                // having updated the record, create the audit event
+                            await models.userAudit.bulkCreate(allAuditEvents, {transaction: t});
+                        }
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
                         const additionalModels = this._properties.additionalModels;
@@ -347,6 +516,7 @@ class User {
                 fetchQuery = {
                     where: {
                         establishmentId: this._establishmentId,
+                        archived: false,
                     },
                     include: [
                         {
@@ -363,7 +533,8 @@ class User {
                 fetchQuery = {
                     where: {
                         establishmentId: this._establishmentId,
-                        uid: uid
+                        uid: uid,
+                        archived: false,
                     },
                     include: [
                         {
@@ -400,7 +571,7 @@ class User {
                 this._isNew = false;
                 this._id = fetchResults.id;
                 this._uid = fetchResults.uid;
-                this._username = fetchResults.login.username;
+                this._username = fetchResults.login && fetchResults.login.username ? fetchResults.login.username : null;
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
@@ -438,15 +609,16 @@ class User {
         const allUsers = [];
         const fetchResults = await models.user.findAll({
             where: {
-                establishmentId: establishmentId
+                establishmentId: establishmentId,
+                archived: false
             },
             include: [
                 {
                     model: models.login,
-                    attributes: ['username']
+                    attributes: ['username', 'lastLogin']
                   }
             ],
-            attributes: ['uid', 'FullNameValue', 'EmailValue', 'created', 'updated', 'updatedBy'],
+            attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy'],
             order: [
                 ['updated', 'DESC']
             ]           
@@ -458,6 +630,8 @@ class User {
                     uid: thisUser.uid,
                     fullname: thisUser.FullNameValue,
                     email: thisUser.EmailValue,
+                    role: thisUser.UserRoleValue,
+                    lastLoggedIn: thisUser.login && thisUser.login.username ? thisUser.login.lastLogin : null,
                     username: thisUser.login && thisUser.login.username ? thisUser.login.username : null,
                     created:  thisUser.created.toJSON(),
                     updated: thisUser.updated.toJSON(),
@@ -582,7 +756,7 @@ class User {
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
         try {
-            const fullnameProperty = this._properties.get('Fullname');
+            const fullnameProperty = this._properties.get('FullName');
             if (!(fullnameProperty && fullnameProperty.isInitialised && fullnameProperty.valid)) {
                 allExistAndValid = false;
                 this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid fullname');
@@ -605,7 +779,13 @@ class User {
                 allExistAndValid = false;
                 this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid phone');
             }
-    
+
+            const roleProperty = this._properties.get('UserRole');
+            if (!(roleProperty && roleProperty.isInitialised && roleProperty.valid)) {
+                allExistAndValid = false;
+                this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid role');
+            }
+
         } catch (err) {
             console.error(err)
         }
@@ -613,6 +793,45 @@ class User {
         return allExistAndValid;
     }
 
+    // returns true if all default properties required to createa new User exist and are valid
+    get hasDefaultNewUserProperties() {
+        let allExistAndValid = true;    // assume all exist until proven otherwise
+        try {
+            // must at least have the mandatory properties
+            if (!this.hasMandatoryProperties) {
+                allExistAndValid = false;
+            }
+
+            const questionProperty = this._properties.get('SecurityQuestion');
+            if (!(questionProperty && questionProperty.isInitialised && questionProperty.valid)) {
+                allExistAndValid = false;
+                this._log(User.LOG_ERROR, 'User::hasDefaultNewUserProperties - missing or invalid Security Question');
+            }
+
+            const answerProperty = this._properties.get('SecurityQuestionAnswer');
+            if (!(answerProperty && answerProperty.isInitialised && answerProperty.valid)) {
+                allExistAndValid = false;
+                this._log(User.LOG_ERROR, 'User::hasDefaultNewUserProperties - missing or invalid Security Question Answer');
+            }
+
+            // username must exist
+            if (!(this._username !== null && this.isUsernameValid)) {
+                allExistAndValid = false;
+                this._log(User.LOG_ERROR, 'User::hasDefaultNewUserProperties - missing or invalid Username');
+            }
+    
+            // password must exist
+            if (!(this._password !== null && this.isPasswordValid)) {
+                allExistAndValid = false;
+                this._log(User.LOG_ERROR, 'User::hasDefaultNewUserProperties - missing or invalid Password');
+            }
+
+        } catch (err) {
+            console.error(err)
+        }
+
+        return allExistAndValid;
+    }
 
 };
 

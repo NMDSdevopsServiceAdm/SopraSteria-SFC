@@ -14,13 +14,14 @@ import {
 import { CreateStaffRecordComponent } from './create-staff-record/create-staff-record.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
+import { DeleteSuccessComponent } from './delete-success/delete-success.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
-import { MentalHealthComponent } from './mental-health/mental-health.component';
+import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -53,6 +54,10 @@ const routes: Routes = [
     component: WorkerSaveSuccessComponent,
   },
   {
+    path: 'delete-success',
+    component: DeleteSuccessComponent,
+  },
+  {
     path: ':id',
     component: EditWorkerComponent,
     resolve: { worker: WorkerResolver },
@@ -62,8 +67,8 @@ const routes: Routes = [
         component: StaffDetailsComponent,
       },
       {
-        path: 'mental-health',
-        component: MentalHealthComponent,
+        path: 'mental-health-professional',
+        component: MentalHealthProfessionalComponent,
       },
       {
         path: 'main-job-start-date',

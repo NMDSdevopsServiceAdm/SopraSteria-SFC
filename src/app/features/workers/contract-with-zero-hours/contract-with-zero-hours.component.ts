@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-contract-with-zero-hours',
@@ -22,28 +23,33 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private messageService: MessageService,
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router
   ) {
     this.saveHandler = this.saveHandler.bind(this);
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
-    this.backLink = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
-      ? 'days-of-sickness'
-      : 'adult-social-care-started';
-
     this.form = this.formBuilder.group({
       zeroHoursContract: null,
     });
 
-    if (this.worker.zeroHoursContract) {
-      this.form.patchValue({
-        zeroHoursContract: this.worker.zeroHoursContract,
-      });
-    }
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.workerService.returnToSummary) {
+        this.backLink = 'summary';
+      } else {
+        this.backLink = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
+          ? 'days-of-sickness'
+          : 'adult-social-care-started';
+      }
+
+      if (this.worker.zeroHoursContract) {
+        this.form.patchValue({
+          zeroHoursContract: this.worker.zeroHoursContract,
+        });
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -55,8 +61,9 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
     try {
       await this.saveHandler();
 
+      const { zeroHoursContract } = this.form.value;
       if (
-        this.worker.zeroHoursContract === 'Yes' ||
+        zeroHoursContract === 'Yes' ||
         [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
       ) {
         this.router.navigate(['/worker', this.worker.uid, 'average-weekly-hours']);
@@ -74,10 +81,16 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        const worker = this.worker || ({} as Worker);
-        worker.zeroHoursContract = zeroHoursContract.value;
+        const props = {
+          zeroHoursContract: zeroHoursContract.value,
+        };
 
-        this.subscriptions.add(this.workerService.setWorker(worker).subscribe(resolve, reject));
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         this.messageService.show('error', 'Please fill the required fields.');
 

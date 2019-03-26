@@ -1,39 +1,24 @@
-import { Injectable } from "@angular/core"
-import { HttpClient } from "@angular/common/http"
-import { catchError, debounceTime, map } from "rxjs/operators"
-
-import { HttpErrorHandler } from "./http-error-handler.service"
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 import { FeedbackModel } from '../model/feedback.model';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class FeedbackService {
-  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {}
+  constructor(private http: HttpClient) {}
 
-  // returns browser's native 'window' object
-  get _window() : any {
+  // TODO: Move this to a Shared WindowRef Service
+  get _window(): any {
     return window;
   }
 
-  get window() : any {
+  get window(): any {
     return this._window;
   }
 
-  /*
-   * POST /api/feedback
-   */
   post(feedback: FeedbackModel) {
-    const options = {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }
-
-    return this.http.post<any>("/api/feedback", feedback, options)
-      .pipe(
-        debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError))
+    return this.http.post<any>('/api/feedback', feedback);
   }
 }

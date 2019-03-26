@@ -1,6 +1,8 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DialogService } from '@core/services/dialog.service';
 import { SharedModule } from '@shared/shared.module';
 
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
@@ -16,13 +18,15 @@ import {
 import { CreateStaffRecordComponent } from './create-staff-record/create-staff-record.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
+import { DeleteSuccessComponent } from './delete-success/delete-success.component';
+import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worker-dialog.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
-import { MentalHealthComponent } from './mental-health/mental-health.component';
+import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
@@ -43,7 +47,7 @@ import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule, OverlayModule],
   declarations: [
     AdultSocialCareStartedComponent,
     ApprenticeshipTrainingComponent,
@@ -62,7 +66,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     GenderComponent,
     HomePostcodeComponent,
     MainJobStartDateComponent,
-    MentalHealthComponent,
+    MentalHealthProfessionalComponent,
     NationalInsuranceNumberComponent,
     NationalityComponent,
     OtherJobRolesComponent,
@@ -77,7 +81,10 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WorkerSaveSuccessComponent,
     WorkerSummaryComponent,
     YearArrivedUkComponent,
+    DeleteSuccessComponent,
+    DeleteWorkerDialogComponent,
   ],
-  providers: [WorkerResolver],
+  providers: [WorkerResolver, DialogService],
+  entryComponents: [DeleteWorkerDialogComponent],
 })
 export class WorkersModule {}

@@ -1,6 +1,6 @@
 <div class="main-page-container col-12">
   <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid, 'country-of-birth']">
+    <a [routerLink]="['/worker', worker.uid, backLink]">
       <span class="arrow"></span>Back
     </a>
   </div>
@@ -20,7 +20,7 @@
         <div class="row">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" formControlName="yearKnown" class="form-control" value="Yes" for="yearKnown_yes">
+              <input type="radio" formControlName="yearKnown" class="form-control" value="Yes" id="yearKnown_yes">
               <label for="yearKnown_yes">Yes</label>
             </div>
           </div>
@@ -37,7 +37,7 @@
         <div class="row mt-5 mt-md-0">
           <div class="col-12">
             <div class="multiple-choice">
-              <input type="radio" formControlName="yearKnown" class="form-control" value="No" id="yearKnown_no" (change)="yearKnownChangeHandler()">
+              <input type="radio" formControlName="yearKnown" class="form-control" value="No" id="yearKnown_no">
               <label for="yearKnown_no">No</label>
             </div>
           </div>

@@ -1,11 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-year-arrived-uk',
@@ -13,35 +14,50 @@ import { Subscription } from 'rxjs';
 })
 export class YearArrivedUkComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public backLink: string;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService,
     private messageService: MessageService
   ) {
     this.saveHandler = this.saveHandler.bind(this);
-    this.yearKnownChangeHandler = this.yearKnownChangeHandler.bind(this);
     this.yearValidator = this.yearValidator.bind(this);
   }
 
   ngOnInit() {
-    this.worker = this.route.parent.snapshot.data.worker;
-
     this.form = this.formBuilder.group({
       yearKnown: null,
       year: [null, this.yearValidator],
     });
 
-    if (this.worker.yearArrived) {
-      this.form.patchValue({
-        yearKnown: this.worker.yearArrived.value,
-        year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
-      });
+    if (this.workerService.returnToSummary) {
+      this.backLink = 'summary';
+    } else {
+      this.backLink = 'country-of-birth';
     }
+
+    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.worker = worker;
+
+      if (this.worker.yearArrived) {
+        this.form.patchValue({
+          yearKnown: this.worker.yearArrived.value,
+          year: this.worker.yearArrived.year ? this.worker.yearArrived.year : null,
+        });
+      }
+    });
+
+    this.subscriptions.add(
+      this.form.controls.yearKnown.valueChanges.subscribe(() => {
+        this.messageService.clearAll();
+        this.form.controls.year.reset();
+        this.form.controls.year.updateValueAndValidity();
+      })
+    );
   }
 
   ngOnDestroy() {
@@ -64,14 +80,21 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
       this.messageService.clearError();
 
       if (this.form.valid) {
-        if (yearKnown.value) {
-          this.worker.yearArrived = {
-            value: yearKnown.value,
-            year: year.value,
-          };
-        }
+        const props = {
+          ...(yearKnown.value && {
+            yearArrived: {
+              value: yearKnown.value,
+              year: year.value,
+            },
+          }),
+        };
 
-        this.subscriptions.add(this.workerService.setWorker(this.worker).subscribe(resolve, reject));
+        this.subscriptions.add(
+          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+            this.workerService.setState({ ...this.worker, ...data });
+            resolve();
+          }, reject)
+        );
       } else {
         if (year.errors.required) {
           this.messageService.show('error', 'Year is required.');
@@ -88,10 +111,8 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
     });
   }
 
-  yearKnownChangeHandler() {
-    this.form.controls.year.reset();
-  }
-
+  // TODO: https://trello.com/c/sYDV6vTN
+  // Cross Validation
   yearValidator() {
     if (this.form) {
       const { yearKnown, year } = this.form.value;
