@@ -9,6 +9,7 @@ const Establishment = require('../../models/classes/establishment');
 
 const EmployerType = require('./employerType');
 const Services = require('./services');
+const ServiceUsers = require('./serviceUsers');
 const Capacity = require('./capacity');
 const ShareData = require('./shareData');
 const Staff = require('./staff');
@@ -20,6 +21,7 @@ const Worker = require('./worker');
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
 router.use('/:id/employerType', EmployerType);
 router.use('/:id/services', Services);
+router.use('/:id/serviceUsers', ServiceUsers);
 router.use('/:id/capacity', Capacity);
 router.use('/:id/share', ShareData);
 router.use('/:id/staff', Staff);

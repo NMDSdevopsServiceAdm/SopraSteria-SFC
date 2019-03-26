@@ -37,6 +37,7 @@ var qualification = require('./server/routes/qualifications');
 var recruitedFrom = require('./server/routes/recruitedFrom');
 var user = require('./server/routes/accounts/user');
 var workerLeaveReasons = require('./server/routes/workerReason');
+var serviceUsers = require('./server/routes/serviceUsers');
 
 var errors = require('./server/routes/errors');
 
@@ -139,6 +140,7 @@ app.use('/api/recruitedFrom', [refCacheMiddleware.refcache, recruitedFrom]);
 app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
 app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveReasons]);
+app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
