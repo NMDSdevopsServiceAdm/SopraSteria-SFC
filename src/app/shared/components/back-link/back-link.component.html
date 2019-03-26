@@ -1,0 +1,7 @@
+
+<ng-template [ngIf]="routerLink" [ngIfElse]="browserBack">
+  <a [routerLink]="routerLink" [fragment]="fragment" class="govuk-back-link">Back</a>
+</ng-template>
+<ng-template #browserBack>
+    <a href="#" (click)="back($event)" class="govuk-back-link">Back</a>
+</ng-template>
