@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { HttpInterceptor } from '@core/services/http-interceptor';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
 import { MomentModule } from 'ngx-moment';
@@ -151,6 +152,11 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     HttpErrorHandler,
     FeedbackService,
     EstablishmentService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptor,
+      multi: true,
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
