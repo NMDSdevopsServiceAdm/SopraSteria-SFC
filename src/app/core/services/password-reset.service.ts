@@ -30,6 +30,23 @@ export class PasswordResetService {
     return this.http.post<any>('/api/user/resetPassword', newPassword, { headers, responseType: 'text' as 'json' });
   }
 
+  changePassword(data) {
+
+    const token = localStorage.getItem('auth-token');
+    const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json', 'Authorization': token });
+
+    return this.http
+      .post<any>(
+        '/api/user/changePassword',
+        data,
+        { headers: requestHeaders, responseType: 'text' as 'json' }
+      )
+      .pipe(
+        debounceTime(500),
+        catchError(this.httpErrorHandler.handleHttpError),
+      );
+  }
+
   updateState(data) {
     this._resetPasswordUUID$.next(data);
   }

@@ -146,4 +146,12 @@ export class AuthService {
       this.router.navigate(['/login']);
     }
   }
+
+  logoutWithoutRouting() {
+    if (localStorage.getItem('auth-token')) {
+      localStorage.clear();
+      this._session = null;
+      this.token = null;
+    }
+  }
 }
