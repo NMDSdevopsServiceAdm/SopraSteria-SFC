@@ -1,43 +1,32 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RequestPasswordResetResponse } from '@core/services/password-reset.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-fp-edit',
   templateUrl: './edit.component.html',
 })
 export class ForgotYourPasswordEditComponent implements OnInit {
-  public forgotPasswordForm: FormGroup;
-  public forgottenPasswordMessage: boolean;
+  public form: FormGroup;
+  public submitted = false;
 
   @Output() formDataOutput = new EventEmitter<RequestPasswordResetResponse>();
 
-  constructor(
-    private fb: FormBuilder,
-  ) { }
+  constructor(private formBuilder: FormBuilder) {}
 
   ngOnInit() {
-
-    this.forgotPasswordForm = this.fb.group({
+    this.form = this.formBuilder.group({
       usernameOrEmail: ['', [Validators.required, Validators.maxLength(120)]],
     });
-
-    this.forgottenPasswordMessage = false;
   }
 
   onSubmit() {
+    const { usernameOrEmail } = this.form.controls;
 
-    const usernameOrEmail = this.forgotPasswordForm.value;
+    this.submitted = true;
 
-    if (this.forgotPasswordForm.invalid) {
-
-      this.forgottenPasswordMessage = true;
-    }
-    else {
-      this.formDataOutput.emit(usernameOrEmail);
+    if (this.form.valid) {
+      this.formDataOutput.emit(usernameOrEmail.value);
     }
   }
-
 }
