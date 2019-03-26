@@ -26,6 +26,7 @@ $govuk-header-nav-item-border-color: #2e3133;
     @include govuk-focusable-fill;
 
     text-decoration: none;
+    font-weight: 400;
 
     &:link,
     &:visited {
@@ -49,6 +50,7 @@ $govuk-header-nav-item-border-color: #2e3133;
 
   .govuk-header__strapline {
     display: inline-block;
+    text-decoration: none;
     background: $govuk-brand-colour;
     @include govuk-font($size: 19, $weight: bold);
     color: govuk-colour('white');
