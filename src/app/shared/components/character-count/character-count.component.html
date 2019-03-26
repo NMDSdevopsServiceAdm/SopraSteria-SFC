@@ -1,21 +1,25 @@
-<span class="govuk-hint govuk-character-count__message" aria-live="polite">
+<span class="govuk-character-count__message govuk-hint" [ngClass]="{'govuk-hint': remaining >= 0, 'govuk-error-message': remaining < 0}" aria-live="polite">
   <noscript>
-    You can enter up to {{ max }} characters
+    You can enter up to {{ max }} {{ words ? 'words' : 'characters' }}
   </noscript>
-  <ng-container *ngIf="remaining >= 0">
-    {{ remaining | i18nPlural :
-      {
-        '=1': 'You have # character remaining',
-        other: 'You have # characters remaining'
-      }
-    }}
-  </ng-container>
-  <ng-container *ngIf="remaining < 0">
-    {{ remaining | absoluteNumber | i18nPlural :
-      {
-        '=1': 'You have # character too many',
-        other: 'You have # characters too many'
-      }
-    }}
+  <ng-container>
+    You have {{ remaining | absoluteNumber }}
+    <ng-container *ngIf="words">
+      {{ remaining | absoluteNumber | i18nPlural :
+        {
+          '=1': 'word',
+          other: 'words'
+        }
+      }}
+    </ng-container>
+    <ng-container *ngIf="!words">
+        {{ remaining | absoluteNumber | i18nPlural :
+          {
+            '=1': 'character',
+            other: 'characters'
+          }
+        }}
+      </ng-container>
+     {{ remaining >= 0 ? 'remaining' : 'too many' }}
   </ng-container>
 </span>
