@@ -197,11 +197,14 @@ router.route('/').post(async (req, res) => {
       if (allServiceCapacityQuestions) {
         // within a transaction first delete all existing 'capacities', before creating new ones
         await models.sequelize.transaction(async t => {
-          let deleteAllExisting = await models.establishmentCapacity.destroy({
-            where: {
-              establishmentId
-            }
-          });
+          let deleteAllExisting = await models.establishmentCapacity.destroy(
+            {
+              where: {
+                establishmentId
+              }
+            },
+            {transaction: t}
+          );
 
           // create new capacity associationss
           let newCapacityPromises = [];
@@ -218,7 +221,7 @@ router.route('/').post(async (req, res) => {
                   establishmentId,
                   serviceCapacityId: thisNewCapability.questionId,
                   answer: thisNewCapability.answer
-                }));
+                }, {transaction: t}));
               }
             }
           })

@@ -12,7 +12,8 @@ router.route('/')
     let results = await models.services.findAll({
       where: {
         isMain: true
-      }
+      },
+      order: [ [ 'id', 'ASC' ]]
   });
 
     let servicesData = createServicesJSON(results);

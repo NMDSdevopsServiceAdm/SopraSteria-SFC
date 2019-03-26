@@ -1,0 +1,8 @@
+<div [formGroup]="formGroup">
+  <input type="text" [formControlName]="formControlName" placeholder="{{placeholder}}" class="form-control" />
+  <ul class="pl-0 pr-0 col-12" (click)="suggestClickHandler($event)">
+    <li *ngFor="let item of dataProvider()">
+      <span>{{item}}</span>
+    </li>
+  </ul>
+</div>

@@ -1,18 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-
-import { Router, ActivatedRoute } from '@angular/router';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RegistrationModel } from '@core/model/registration.model';
+import { RegistrationTrackerError } from '@core/model/registrationTrackerError.model';
+import { RegistrationService } from '@core/services/registration.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { debounceTime } from 'rxjs/operators';
-
-import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model';
-import { RegistrationTrackerError } from '../../core/model/registrationTrackerError.model';
-import { CustomValidators } from './../../shared/custom-form-validators';
 
 @Component({
   selector: 'app-create-username',
   templateUrl: './create-username.component.html',
-  styleUrls: ['./create-username.component.scss']
+  styleUrls: ['./create-username.component.scss'],
 })
 export class CreateUsernameComponent implements OnInit {
   createUserNamePasswordForm: FormGroup;
@@ -40,19 +38,19 @@ export class CreateUsernameComponent implements OnInit {
 
   private usernameMessages = {
     maxlength: 'Your username must be no longer than 50 characters.',
-    required: 'Please enter your username.'
+    required: 'Please enter your username.',
   };
 
   private passwordMessages = {
     minlength: 'Your password must be a minimum of 8 characters.',
     maxlength: 'Your password must be no longer than 50 characters.',
     required: 'Please enter your password.',
-    pattern: 'Invalid password'
+    pattern: 'Invalid password',
   };
 
   private confirmPasswordMessages = {
     required: 'Please confirm your password.',
-    notMatched: 'Confirm Password does not match.'
+    notMatched: 'Confirm Password does not match.',
   };
 
   constructor(
@@ -60,7 +58,7 @@ export class CreateUsernameComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private fb: FormBuilder
-  ) { }
+  ) {}
 
   // Get password group
   get getPasswordGroup() {
@@ -85,58 +83,50 @@ export class CreateUsernameComponent implements OnInit {
   ngOnInit() {
     this.createUserNamePasswordForm = this.fb.group({
       createUsernameInput: ['', [Validators.required, Validators.maxLength(50)]],
-      passwordGroup: this.fb.group({
-        createPasswordInput: ['', [Validators.required, Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,50}')]],
-        confirmPasswordInput: ['', [Validators.required]]
-      }, { validator: CustomValidators.matchInputValues })
+      passwordGroup: this.fb.group(
+        {
+          createPasswordInput: [
+            '',
+            [Validators.required, Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,50}')],
+          ],
+          confirmPasswordInput: ['', [Validators.required]],
+        },
+        { validator: CustomValidators.matchInputValues }
+      ),
     });
 
-    this._registrationService.registration$.subscribe(registration => this.registration = registration);
+    this._registrationService.registration$.subscribe(registration => (this.registration = registration));
 
     // Create username watcher
-    this.getCreateUsernameInput.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => {
-        this.checkUsernameDuplicate(value);
+    this.getCreateUsernameInput.valueChanges.pipe(debounceTime(1000)).subscribe(value => {
+      this.checkUsernameDuplicate(value);
 
-        this.setCreateUsernameMessage(this.getCreateUsernameInput);
-      }
-    );
+      this.setCreateUsernameMessage(this.getCreateUsernameInput);
+    });
 
     // Create password watcher
-    this.getPasswordInput.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => this.setPasswordMessage(this.getPasswordInput)
-    );
+    this.getPasswordInput.valueChanges
+      .pipe(debounceTime(1000))
+      .subscribe(value => this.setPasswordMessage(this.getPasswordInput));
 
     // Confirm password watcher
-    this.getConfirmPasswordInput.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => {
-
-        if (value.length > 0) {
-          this.isSubmitted = false;
-          this.submittedConfirmPassword = false;
-          if (this.getPasswordGroup.errors) {
-            this.setConfirmPasswordMessage(this.getPasswordGroup);
-          }
-          else if (this.getConfirmPasswordInput.errors) {
-            this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
-          }
-          else if ((!this.getPasswordGroup.errors) && (!this.getConfirmPasswordInput.errors)) {
-            this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
-          }
-        }
-        else {
-          this.isSubmitted = false;
-          this.submittedConfirmPassword = false;
+    this.getConfirmPasswordInput.valueChanges.pipe(debounceTime(1000)).subscribe(value => {
+      if (value.length > 0) {
+        this.isSubmitted = false;
+        this.submittedConfirmPassword = false;
+        if (this.getPasswordGroup.errors) {
+          this.setConfirmPasswordMessage(this.getPasswordGroup);
+        } else if (this.getConfirmPasswordInput.errors) {
+          this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
+        } else if (!this.getPasswordGroup.errors && !this.getConfirmPasswordInput.errors) {
           this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
         }
+      } else {
+        this.isSubmitted = false;
+        this.submittedConfirmPassword = false;
+        this.setConfirmPasswordMessage(this.getConfirmPasswordInput);
       }
-    );
+    });
 
     this.changeDetails();
 
@@ -145,18 +135,13 @@ export class CreateUsernameComponent implements OnInit {
   }
 
   checkUsernameDuplicate(value) {
-
-    this._registrationService.getUsernameDuplicate(value)
-    .subscribe(
+    this._registrationService.getUsernameDuplicate(value).subscribe(
       (data: RegistrationModel) => {
         if (data['status'] === '1') {
-
           this.usernameApiError = data.message;
 
           this.setCreateUsernameMessage(this.getCreateUsernameInput);
-
-        }
-        else {
+        } else {
           this.usernameApiError = null;
         }
       },
@@ -179,14 +164,11 @@ export class CreateUsernameComponent implements OnInit {
     this.currentSection = this.currentSection + 1;
 
     if (this.backLink === '/user-details') {
-
       if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
         this.lastSection = 8;
-      }
-      else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
+      } else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
         this.lastSection = 9;
-      }
-      else {
+      } else {
         this.lastSection = 7;
       }
     }
@@ -196,39 +178,37 @@ export class CreateUsernameComponent implements OnInit {
     this.usernameMessage = '';
 
     if (c.errors) {
-      this.usernameMessage = Object.keys(c.errors).map(
-        key => this.usernameMessage += this.usernameMessages[key]).join(' ');
+      this.usernameMessage = Object.keys(c.errors)
+        .map(key => (this.usernameMessage += this.usernameMessages[key]))
+        .join(' ');
     }
-
   }
 
   setPasswordMessage(c: AbstractControl): void {
     this.passwordMessage = '';
 
     if (c.errors) {
-      this.passwordMessage = Object.keys(c.errors).map(
-        key => this.passwordMessage += this.passwordMessages[key]).join(' ');
+      this.passwordMessage = Object.keys(c.errors)
+        .map(key => (this.passwordMessage += this.passwordMessages[key]))
+        .join(' ');
     }
-
   }
 
   setConfirmPasswordMessage(c: AbstractControl): void {
     this.confirmPasswordMessage = '';
 
     if (c.errors) {
-      this.confirmPasswordMessage = Object.keys(c.errors).map(
-        key => this.confirmPasswordMessage += this.confirmPasswordMessages[key]).join(' ');
-    }
-    else {
+      this.confirmPasswordMessage = Object.keys(c.errors)
+        .map(key => (this.confirmPasswordMessage += this.confirmPasswordMessages[key]))
+        .join(' ');
+    } else {
       if (this.submittedConfirmPassword && !this.getConfirmPasswordInput.errors) {
         this.save();
       }
     }
-
   }
 
   changeDetails(): void {
-
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       const createUsernameValue = this.registration.locationdata[0].user.username;
       const createPasswordValue = this.registration.locationdata[0].user.password;
@@ -237,15 +217,13 @@ export class CreateUsernameComponent implements OnInit {
         createUsernameInput: createUsernameValue,
         passwordGroup: {
           createPasswordInput: createPasswordValue,
-          confirmPasswordInput: createPasswordValue
-        }
+          confirmPasswordInput: createPasswordValue,
+        },
       });
     }
-
   }
 
   onSubmit() {
-
     this.isSubmitted = true;
     this.submittedUsername = true;
     this.submittedPassword = true;
@@ -253,16 +231,13 @@ export class CreateUsernameComponent implements OnInit {
 
     // stop here if form is invalid
     if (this.createUserNamePasswordForm.invalid || this.usernameApiError) {
-
       return;
-    }
-    else {
+    } else {
       this.save();
     }
   }
 
   save() {
-
     const createUsernameValue = this.createUserNamePasswordForm.get('createUsernameInput').value;
     const createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
 
@@ -295,8 +270,7 @@ export class CreateUsernameComponent implements OnInit {
 
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
       this.router.navigate(['/confirm-account-details']);
-    }
-    else {
+    } else {
       this.router.navigate(['/security-question']);
     }
   }

@@ -9,10 +9,15 @@ module.exports = function(sequelize, DataTypes) {
       autoIncrement: true,
       field: '"EstablishmentLocalAuthorityID"'
     },
-    authorityId: {
+    cssrId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: '"LocalCustodianCode"'
+      field: '"CssrID"'
+    },
+    cssr: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: '"CssR"'
     },
     establishmentId: {
       type: DataTypes.INTEGER,
@@ -25,14 +30,6 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
-
-  EstablishmentLocalAuthority.associate = (models) => {
-    EstablishmentLocalAuthority.belongsTo(models.localAuthority, {
-      foreignKey: 'authorityId',
-      targetKey: 'custodianCode',
-      as: 'reference'
-    });
-  };
 
   return EstablishmentLocalAuthority;
 };

@@ -23,17 +23,7 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"Username"'
     },
-    securityQuestion: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      field: '"SecurityQuestion"'
-    },
-    securityAnswer: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      field: '"SecurityQuestionAnswer"'
-    },
-    isActive: {
+   isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       field: '"Active"'
@@ -52,8 +42,18 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false,
       field: "Hash"
+    },
+    passwdLastChanged: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      allowNull: false,
+      field: '"PasswdLastChanged'
+    },
+    lastLogin: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LastLoggedIn"'
     }
-
   }, {
     tableName: '"Login"',
     schema: 'cqc',

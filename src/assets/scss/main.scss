@@ -71,7 +71,7 @@ p {
 
   .main-page-container {
 
-    @include rem(padding, 3rem 0 60px);
+    @include rem(padding, 30px 0 120px);
   }
 
   .sub-page-container {
@@ -131,35 +131,7 @@ p {
   @include rem(margin, 20px 0 0 0);
 }
 
-.is-invalid {
-  border-left: 10px solid $error-red;
 
-  .invalid-feedback {
-    display: block;
-    color: $error-red;
-    font-weight: 700;
-    margin: 0;
-
-    span {
-      display: block;
-    }
-  }
-
-  input,
-  select,
-  textarea {
-
-    &.ng-dirty.ng-invalid {
-      border-color: $error-red;
-    }
-  }
-  /*input {
-
-      &.input {
-        border-color: $error-red;
-      }
-    }*/
-}
 
 .border-line-bottom {
   border-bottom: 1px solid $headerline-border-grey;
@@ -171,4 +143,26 @@ p {
   text-align: center;
 
   @include rem(padding, 40px 0);
+}
+
+.icon-link {
+  white-space: nowrap;
+  line-height: 24px;
+  text-decoration: none;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: text-bottom;
+
+    width: 24px;
+    height: 24px;
+  }
+
+  &.icon-flag {
+    &:before {
+    background-image: url('/assets/img/flag-orange.svg');
+    }
+  }
 }

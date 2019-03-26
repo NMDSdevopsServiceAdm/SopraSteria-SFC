@@ -1,12 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   const location = sequelize.define('location', {
-    cqcid: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true
-    },
     locationname: {
       type: DataTypes.TEXT,
       allowNull: true
@@ -57,5 +51,6 @@ module.exports = (sequelize, DataTypes) => {
   location.associate = function(models) {
     // associations can be defined here
   };
+  location.removeAttribute('id');
   return location;
 };

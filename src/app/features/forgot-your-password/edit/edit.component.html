@@ -1,0 +1,33 @@
+<h1 class="h1">Forgot your password?</h1>
+
+<p class="main-body-text col-7 p-0 mb-5">Enter your username or email address and we will send you a link to
+  reset your password.</p>
+
+<form novalidate
+  (ngSubmit)="onSubmit()"
+  [formGroup]="forgotPasswordForm">
+
+  <div class="field-group mb-5"
+    [ngClass]="{'is-invalid': forgottenPasswordMessage }">
+
+    <label for="usernameOrEmail" class="d-block m-0">Username or email address</label>
+
+    <span class="invalid-feedback">
+      <span class="main-body-text mb-2" *ngIf="forgottenPasswordMessage">
+        Please enter your username or email address.
+      </span>
+    </span>
+
+    <input type="text"
+            placeholder=""
+            id="usernameOrEmail"
+            formControlName="usernameOrEmail"
+            class="form-control col-12 col-lg-6" />
+  </div>
+
+  <div class="btn-container">
+    <button class="btn btn-primary" type="submit">Send reset link</button>
+  </div>
+
+  <a routerLink="/login" class="text-link d-block mt-5" title="Sign in">Back to sign in</a>
+</form>

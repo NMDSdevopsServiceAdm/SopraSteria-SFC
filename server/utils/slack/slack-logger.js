@@ -1,10 +1,10 @@
 // Slack is a great tool for comms. But not just between people. Applications can interact with Slack too.
 // Slack application integration allows not just for messaging, but well formatted messaging
-const util = require('util');
+const config = require('../../config/config');
 const axios = require('axios');
 
 // to #asc-wds-dev - 
-const slackWebHookUrl = process.env.SLACK_URL ? process.env.SLACK_URL : null;
+const slackWebHookUrl = config.get('slack.url');
 
 // log to slack; if given level is less than equal to environment Slack log level
 const SLACK_TRACE = 5;
@@ -33,9 +33,8 @@ const postToSlack = async (slackMsg) => {
 // check current Slack log level and only then, post to slack
 const logToSlack = async (level, slackMsg) => {
     // default to logging errors only; 0 disables logging
-    const ENV_LOG_LEVEL = process.env.SLACK_LEVEL || SLACK_DISABLED;
-
-    if (slackWebHookUrl === null) return;
+    const ENV_LOG_LEVEL = config.get('slack.level');
+    if (slackWebHookUrl === 'unknown') return;
 
     if (level <= ENV_LOG_LEVEL) {
         await postToSlack(slackMsg);

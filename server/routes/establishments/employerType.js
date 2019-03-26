@@ -31,7 +31,7 @@ router.route('/').get(async (req, res) => {
 });
 
 // updates the current employer type for the known establishment
-const EXPECTED_EMPLOYER_TYPES = ['Private Sector', 'Voluntary / Charity', 'Other'];
+const EXPECTED_EMPLOYER_TYPES = ['Private Sector', 'Voluntary / Charity', 'Other', 'Local Authority (generic/other)', 'Local Authority (adult services)'];
 router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const givenEmployerType = req.body.employerType;

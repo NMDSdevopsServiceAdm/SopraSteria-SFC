@@ -1,0 +1,7 @@
+slack:
+    level: 0    # disables Slack notifications
+jwt:
+    iss: 'localhost'
+db:
+    pool: 5
+    ssl: false

@@ -1,0 +1,12 @@
+@import '../../../../assets/scss/mixins.scss';
+
+h4 {
+  font-weight: 700;
+  @include rem(font-size, 20px);
+  @include rem(margin-bottom, 20px);
+}
+
+p {
+  @include rem(font-size, 16px);
+  @include rem(margin-bottom, 50px);
+}

@@ -1,13 +1,43 @@
 // Form
 form,
 .form {
-  padding-left: 15px;
 
   &.ng-invalid {
     &.ng-touched,
     &.ng-dirty {
-      border-left: 5px solid $error-red;
+      // border-left: 5px solid $error-red;
+      // padding-left: 15px;
     }
+  }
+
+  .is-invalid {
+    border-left: 5px solid $error-red;
+
+    .invalid-feedback {
+      display: block;
+      color: $error-red;
+      font-weight: 700;
+      margin: 0;
+
+      span {
+        display: block;
+      }
+    }
+
+    input,
+    select,
+    textarea {
+
+      &.ng-dirty.ng-invalid {
+        border-color: $error-red;
+      }
+    }
+    /*input {
+
+        &.input {
+          border-color: $error-red;
+        }
+      }*/
   }
 
   select {
@@ -23,8 +53,32 @@ form,
     }
   }
 
+  .error {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    margin-bottom: 15px;
+    padding: 0;
+    color: $error-red;
+    background-color: map-get($color, white);
+    border: 0;
+
+    ~ .error {
+      margin-top: 1.5rem;
+    }
+  }
+
   .invalid-feedback {
     color: $error-red;
+  }
+
+  .form-group {
+    margin-top: 3rem;
+    margin-bottom: 5rem;
+  }
+
+  .field-group {
+    margin-bottom: 3rem !important;
   }
 
   .form-group,
@@ -78,7 +132,14 @@ form,
 
     label, .label {
       padding: 0 0 10px 0;
-      margin: 0;
+      margin: 0 0 2rem 0;
+      letter-spacing: 1px;
+
+      span.example {
+        display: block;
+        margin: 2rem 0;
+        color: map-get($color, grey);
+      }
 
       @include rem(font-size, 19px);
       @include rem(line-height, 20px);
@@ -93,7 +154,7 @@ form,
 
   .field-group {
     &.is-invalid {
-      @include rem(padding, 0 0 0 30px);
+      @include rem(padding, 0 0 0 15px);
       @include rem(margin, 0 0 20px 0);
     }
   }
@@ -106,13 +167,12 @@ form,
   clear: left;
   position: relative;
   padding: 8px 0 0 45px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   height: 34px;
 }
 
 @media (min-width: 641px) {
   .multiple-choice {
-    float: left;
   }
 }
 
@@ -128,6 +188,14 @@ form,
   zoom: 1;
   filter: alpha(opacity=0);
   opacity: 0;
+}
+
+label {
+  select,
+  input,
+  textarea {
+    margin-top: 10px;
+  }
 }
 
 .multiple-choice label {
@@ -147,7 +215,7 @@ form,
 .multiple-choice [type=radio] + label::before {
   content: "";
   border: 2px solid;
-  background: transparent;
+  background: white;
   width: 34px;
   height: 34px;
   position: absolute;
@@ -279,4 +347,34 @@ form,
   height: 40px;
   display: inline-block;
   vertical-align: middle;
+}
+
+.form-control__currency {
+  display: flex;
+  &::before {
+    content: '£';
+    display: inline-block;
+    border: 2px solid $black;
+    border-right: 0;
+    background: $white;
+    border-radius: 0;
+    outline: none;
+    color: $black;
+    padding: .375rem 1rem;
+    height: 38px;
+    font-weight: 400;
+    line-height: 1.7;
+    margin-top: 10px;
+    vertical-align: top;
+
+    @include rem(font-size, 16px);
+    & .form-control {
+      width: auto;
+      flex: 1;
+    }
+  }
+}
+
+select.form-control:not([size]):not([multiple]) {
+  height: 38px;
 }

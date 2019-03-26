@@ -1,72 +1,79 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
+import { BrowserModule } from '@angular/platform-browser';
+import { RouterModule } from '@angular/router';
+import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
+import { SharedModule } from '@shared/shared.module';
+import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
-import { RouterModule } from '@angular/router';
-
 import { AppComponent } from './app.component';
-import { LoginComponent } from './features/login/login.component';
-import { RegisterComponent } from './features/register/register.component';
-import { HeaderComponent } from './core/header/header.component';
+import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import {
+  ProblemWithTheServicePagesComponent,
+} from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
 import { FooterComponent } from './core/footer/footer.component';
-
-import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
-import { CqcRegisteredQuestionEditComponent } from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
-
-import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
-import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
-import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
-import { UserDetailsComponent } from './features/user-details/user-details.component';
-import { CreateUsernameComponent } from './features/create-username/create-username.component';
-import { SecurityQuestionComponent } from './features/security-question/security-question.component';
+import { HeaderComponent } from './core/header/header.component';
+import { AuthGuard } from './core/services/auth-guard.service';
+import { AuthInterceptor } from './core/services/auth-interceptor';
+import { CountryService } from './core/services/country.service';
+import { EstablishmentService } from './core/services/establishment.service';
+import { EthnicityService } from './core/services/ethnicity.service';
+import { FeedbackService } from './core/services/feedback.service';
+import { HttpErrorHandler } from './core/services/http-error-handler.service';
+import { JobService } from './core/services/job.service';
+import { LocalAuthorityService } from './core/services/localAuthority.service';
+import { LocationService } from './core/services/location.service';
+import { MessageService } from './core/services/message.service';
+import { NationalityService } from './core/services/nationality.service';
+import { QualificationService } from './core/services/qualification.service';
+import { RecruitmentService } from './core/services/recruitment.service';
+import { RegistrationService } from './core/services/registration.service';
+import { WorkerService } from './core/services/worker.service';
 import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
-import { RegistrationCompleteComponent } from './features/registration-complete/registration-complete.component';
-import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
-import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
-import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
-import { VacanciesComponent } from './features/vacancies/vacancies.component';
-import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component';
-import { StartersComponent } from './features/starters/starters.component';
-import { ConfirmStartersComponent } from './features/confirm-starters/confirm-starters.component';
-import { LeaversComponent } from './features/leavers/leavers.component';
 import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leavers.component';
-import { StaffComponent } from './features/staff/staff.component';
+import { ConfirmStartersComponent } from './features/confirm-starters/confirm-starters.component';
+import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component';
+import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
+import { ContactUsComponent } from './features/contactUs/contactUs.component';
+import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
+import {
+  CqcRegisteredQuestionEditComponent,
+} from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
+import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
+import { CreateUsernameComponent } from './features/create-username/create-username.component';
+import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
+import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
+import { FeedbackComponent } from './features/feedback/feedback.component';
+import {
+  ForgotYourPasswordConfirmationComponent,
+} from './features/forgot-your-password/confirmation/confirmation.component';
+import { ForgotYourPasswordEditComponent } from './features/forgot-your-password/edit/edit.component';
+import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
+import { LeaversComponent } from './features/leavers/leavers.component';
+import { LoginComponent } from './features/login/login.component';
+import { LogoutComponent } from './features/logout/logout.component';
+import { RegisterComponent } from './features/register/register.component';
+import { RegistrationCompleteComponent } from './features/registration-complete/registration-complete.component';
+import { ResetPasswordConfirmationComponent } from './features/reset-password/confirmation/confirmation.component';
+import { ResetPasswordEditComponent } from './features/reset-password/edit/edit.component';
+import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { SecurityQuestionComponent } from './features/security-question/security-question.component';
+import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
+import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
+import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
+import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
 import { ServicesCapacityComponent } from './features/services-capacity/services-capacity.component';
-import { SharingComponent } from './features/sharing/sharing.component';
-import { MessagesComponent } from './core/messages/messages.component';
 import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
 import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
-import { FeedbackComponent } from './features/feedback/feedback.component';
-import { ContactUsComponent } from './features/contactUs/contactUs.component';
-
-import { Number } from './shared/number.directive';
-import { NumberIntOnly } from './shared/number-int-only.directive';
-import { NumberMax } from './shared/number-max.directive';
-import { NumberPositiveOnly } from './shared/number-positive-only.directive';
-import { NoPaste } from './shared/no-paste.directive';
-import { LocationService } from './core/services/location.service';
-import { RegistrationService } from './core/services/registration.service';
-import { HomepageComponent } from './features/homepage/homepage.component';
-import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
-import { SelectOtherServicesListComponent } from './features/select-other-services/select-other-services-list/select-other-services-list.component';
+import { SharingComponent } from './features/sharing/sharing.component';
+import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
-import { LogoutComponent } from './features/logout/logout.component';
-
-import { JobService } from './core/services/job.service';
-import { HttpErrorHandler } from './core/services/http-error-handler.service';
-import { MessageService } from './core/services/message.service';
-import { FeedbackService } from './core/services/feedback.service';
-import { EstablishmentService } from './core/services/establishment.service';
-import { LocalAuthorityService } from './core/services/localAuthority.service';
-import { AuthGuard } from './core/services/auth-guard.service';
-
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './core/services/auth-interceptor';
-
-import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
+import { UserDetailsComponent } from './features/user-details/user-details.component';
+import { VacanciesComponent } from './features/vacancies/vacancies.component';
 
 @NgModule({
   declarations: [
@@ -88,30 +95,32 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     EnterWorkplaceAddressComponent,
     SelectMainServiceComponent,
     ContinueCreatingAccountComponent,
-    HomepageComponent,
     SelectOtherServicesComponent,
-    SelectOtherServicesListComponent,
     TypeOfEmployerComponent,
-    Number,
-    NumberIntOnly,
-    NumberMax,
-    NumberPositiveOnly,
     VacanciesComponent,
     ConfirmVacanciesComponent,
     StartersComponent,
-    MessagesComponent,
     ConfirmStartersComponent,
     LeaversComponent,
     ConfirmLeaversComponent,
-    StaffComponent,
     ServicesCapacityComponent,
     SharingComponent,
     ShareLocalAuthorityComponent,
     ShareOptionsComponent,
     FeedbackComponent,
     ContactUsComponent,
-    TermsConditionsComponent,
     LogoutComponent,
+    PageNotFoundPagesComponent,
+    ProblemWithTheServicePagesComponent,
+    TermsConditionsComponent,
+    DashboardComponent,
+    StaffRecordsTabComponent,
+    ForgotYourPasswordComponent,
+    ForgotYourPasswordConfirmationComponent,
+    ForgotYourPasswordEditComponent,
+    ResetPasswordComponent,
+    ResetPasswordEditComponent,
+    ResetPasswordConfirmationComponent,
   ],
   imports: [
     BrowserModule,
@@ -123,18 +132,21 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
       {
         path: '',
         redirectTo: '/login',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
       {
         path: 'login',
-        component: LoginComponent
-      }
-    ])
+        component: LoginComponent,
+      },
+    ]),
+    SharedModule,
+    MomentModule,
   ],
   providers: [
     LocationService,
     RegistrationService,
     JobService,
+    QualificationService,
     MessageService,
     HttpErrorHandler,
     FeedbackService,
@@ -142,11 +154,16 @@ import { TermsConditionsComponent } from './shared/terms-conditions/terms-condit
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
+      multi: true,
     },
     LocalAuthorityService,
-    AuthGuard
+    AuthGuard,
+    WorkerService,
+    EthnicityService,
+    RecruitmentService,
+    NationalityService,
+    CountryService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

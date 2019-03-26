@@ -1,23 +1,22 @@
-import { Injectable } from "@angular/core"
-import { HttpClient } from "@angular/common/http"
-import { catchError, debounceTime, map } from "rxjs/operators"
-
-import { HttpErrorHandler } from "./http-error-handler.service"
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { catchError, debounceTime } from 'rxjs/operators';
 
 import { FeedbackModel } from '../model/feedback.model';
+import { HttpErrorHandler } from './http-error-handler.service';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root',
 })
 export class FeedbackService {
   constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler) {}
 
   // returns browser's native 'window' object
-  get _window() : any {
+  get _window(): any {
     return window;
   }
 
-  get window() : any {
+  get window(): any {
     return this._window;
   }
 
@@ -27,13 +26,13 @@ export class FeedbackService {
   post(feedback: FeedbackModel) {
     const options = {
       headers: {
-        "Content-Type": "application/json"
-      }
-    }
+        'Content-Type': 'application/json',
+      },
+    };
 
-    return this.http.post<any>("/api/feedback", feedback, options)
-      .pipe(
-        debounceTime(500),
-        catchError(this.httpErrorHandler.handleHttpError))
+    return this.http.post<any>('/api/feedback', feedback, options).pipe(
+      debounceTime(500),
+      catchError(this.httpErrorHandler.handleHttpError)
+    );
   }
 }

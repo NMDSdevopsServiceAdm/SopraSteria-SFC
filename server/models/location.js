@@ -46,7 +46,7 @@ module.exports = function(sequelize, DataTypes) {
     }
   }, {
     tableName: 'location',
-    schema: 'cqc',
+    schema: 'cqcref',
     createdAt: false,
     updatedAt: false
   });

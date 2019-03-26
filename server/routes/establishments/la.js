@@ -21,15 +21,7 @@ router.route('/').get(async (req, res) => {
         {
           model: models.establishmentLocalAuthority,
           as: 'localAuthorities',
-          attributes: ['id'],
-          include: [{
-            model: models.localAuthority,
-            as: 'reference',
-            attributes: ['custodianCode', 'name'],
-            order: [
-              ['name', 'ASC']
-            ]
-          }]
+          attributes: ['id', 'cssrId', 'cssr'],
         }
       ]
     });
@@ -37,32 +29,54 @@ router.route('/').get(async (req, res) => {
     // need to identify which, if any, of the shared authorities is attributed to the
     //  primary Authority; that is the Local Authority associated with the physical area
     //  of the given Establishment (using the postcode as the key)
-    const primaryAuthority = await models.pcodedata.findOne({
-      where: {
-        postcode: results.postcode
-      },
-      attributes: ['postcode', 'local_custodian_code'],
-      include: {
-        model: models.localAuthority,
-        as: 'theAuthority',
-        attributes: ['name']
+    let primaryAuthorityCssr = null;
+
+    if (results && results.postcode) {
+      // lookup primary authority by trying to resolve on specific postcode code
+      const cssrResults = await models.pcodedata.findOne({
+        where: {
+          postcode: results.postcode,
+        },
+        include: [{
+          model: models.cssr,
+          as: 'theAuthority',
+          attributes: ['id', 'name', 'nmdsIdLetter']
+        }]
+      });
+      
+      if (cssrResults && cssrResults.postcode === results.postcode &&
+          cssrResults.theAuthority && cssrResults.theAuthority.id &&
+          Number.isInteger(cssrResults.theAuthority.id)) {
+        
+        primaryAuthorityCssr = {
+          id: cssrResults.theAuthority.id,
+          name: cssrResults.theAuthority.name
+        };
+
+      } else {
+        //  using just the first half of the postcode
+        const [firstHalfOfPostcode] = results.postcode.split(' '); 
+        
+        // must escape the string to prevent SQL injection
+        const fuzzyCssrIdMatch = await models.sequelize.query(
+          `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
+          {
+            type: models.sequelize.QueryTypes.SELECT
+          }
+        );
+        if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
+          primaryAuthorityCssr = {
+            id: fuzzyCssrIdMatch[0].CssrID,
+            name: fuzzyCssrIdMatch[0].CssR
+          }
+        }
       }
-    });
-    //const primaryAuthorityCustodianCode = primaryAuthority.local_custodian_code;
-
-    if (results && results.id && (establishmentId === results.id) && primaryAuthority.theAuthority && primaryAuthority.theAuthority) {
-      res.status(200);
-      return res.json(formatLAResponse(results, primaryAuthority));
-    } else {
-      // Note - which pcodedata being external reference data and with a user being
-      //        able to enter address details not found in pcoddata, it will not be
-      //        uncommon as initially thought to not resolve on primary authority
-
-      // Rather than erroring, primary authority will be null
-      res.status(200);
-      return res.json(formatLAResponse(results, null));
     }
 
+    if (results && results.id && (establishmentId === results.id)) {
+      res.status(200);
+      return res.json(formatLAResponse(results, primaryAuthorityCssr));
+    }
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::jobs GET - failed', err);
@@ -90,33 +104,45 @@ router.route('/').post(async (req, res) => {
     });
 
     if (results && results.id && (establishmentId === results.id)) {
-      // when processing the local authorities, we need to ensure they are one of the known local authorities
-      const allLAResult = await models.localAuthority.findAll({
-        attributes: ['custodianCode']
+      // when processing the local authorities, we need to ensure they are one of the known local authorities (CSSRs)
+      const allLAResult =  await models.cssr.findAll({
+        attributes: ['id', 'name'],
+        group: ['id', 'name'],
+        order: [
+          ['name', 'ASC']
+        ]
       });
       if (!allLAResult) {
         console.error('establishment::la POST - unable to retrieve all known local authorities');
         return res.status(503).send('Unable to retrieve all Local Authorities');
       }
       const allLAs = [];
-      allLAResult.forEach(thisRes => allLAs.push(thisRes.custodianCode));
+      allLAResult.forEach(thisRes => allLAs.push(thisRes.id));
 
       await models.sequelize.transaction(async t => {
-        await models.establishmentLocalAuthority.destroy({
-          where: {
-            establishmentId
-          }
-        });
+        await models.establishmentLocalAuthority.destroy(
+          {
+            where: {
+              establishmentId
+            }
+          },
+          {transaction: t}
+        );
 
-        // now iterate through the given set of LAs0
+        // now iterate through the given set of LAs
         const laRecords = [];
         givenLocalAuthorities.forEach(thisLA => {
           if (isValidLAEntry(thisLA, allLAs)) {
+            const associatedCssr = allLAResult.find(thisCssr => {
+              return thisCssr.id == thisLA.custodianCode
+            });
+
             laRecords.push(
               models.establishmentLocalAuthority.create({
-                authorityId: thisLA.custodianCode,
+                cssrId: thisLA.custodianCode,
+                cssr: associatedCssr.name,
                 establishmentId
-              })
+              }, {transaction: t})
             );
           }
         });
@@ -133,15 +159,7 @@ router.route('/').post(async (req, res) => {
           {
             model: models.establishmentLocalAuthority,
             as: 'localAuthorities',
-            attributes: ['id'],
-            include: [{
-              model: models.localAuthority,
-              as: 'reference',
-              attributes: ['custodianCode', 'name'],
-              order: [
-                ['name', 'ASC']
-              ]
-            }]
+            attributes: ['id', 'cssrId', 'cssr'],
           }
         ]
       });
@@ -161,7 +179,7 @@ router.route('/').post(async (req, res) => {
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('establishment::la POST - failed', err);
-    return res.status(503).send(`Unable to update Establishment with local authorities: ${req.params.id}/${givenEmployerType}`);
+    return res.status(503).send(`Unable to update Establishment with local authorities: ${req.params.id}`);
   }
 });
 
@@ -192,16 +210,14 @@ const formatLAResponse = (establishment, primaryAuthority=null) => {
     id: establishment.id,
     name: establishment.name,
     localAuthorities: LaFormatters.listOfLAsJSON(establishment.localAuthorities,
-                                                 primaryAuthority ? primaryAuthority.local_custodian_code : null)
+                                                 primaryAuthority && primaryAuthority.id ? primaryAuthority.id : null)
   };
 
   if (primaryAuthority) {
     response.primaryAuthority = {
-      custodianCode: parseInt(primaryAuthority.local_custodian_code),
-      name: primaryAuthority.theAuthority.name
+      custodianCode: parseInt(primaryAuthority.id),
+      name: primaryAuthority.name
     }
-  } else {
-    response.primaryAuthority = {};
   }
 
   return response;
