@@ -13,18 +13,6 @@ export class FeedbackComponent implements OnInit, OnDestroy {
   private _pendingFeedback = true;
   private form: FormGroup;
   private subscriptions: Subscription = new Subscription();
-  private _countdownValidation = {
-    doingWhat: {
-      max: 500,
-      current: 0,
-      remaining: 500,
-    },
-    tellUs: {
-      max: 500,
-      current: 0,
-      remaining: 500,
-    },
-  };
 
   constructor(
     private feedbackService: FeedbackService,
@@ -45,23 +33,6 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  private validateCountdown(control: string): void {
-    this._countdownValidation[control].current = this.form.get(control).value.toString().length;
-    this._countdownValidation[control].remaining =
-      this._countdownValidation[control].max - this._countdownValidation[control].current;
-  }
-
-  private countdown(control: string): number {
-    return this._countdownValidation[control].remaining;
-  }
-
-  private countdownWhenDoing(): number {
-    return this.countdown('doingWhat');
-  }
-  private countdownTellUs(): number {
-    return this.countdown('tellUs');
-  }
-
   get pendingFeedback(): boolean {
     return this._pendingFeedback;
   }
@@ -78,7 +49,7 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     if (this.form.valid) {
       if (this.pendingFeedback) {
         const { doingWhat, tellUs, fullname, email } = this.form.controls;
-        // not yet submitted feedback, so post feedback
+
         const request: FeedbackModel = {
           doingWhat: doingWhat.value,
           tellUs: tellUs.value,

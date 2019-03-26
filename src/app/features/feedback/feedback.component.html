@@ -15,12 +15,17 @@
               id="more-detail"
               name="more-detail"
               rows="6"
+              formControlName="doingWhat"
             ></textarea>
           </div>
-          <span class="govuk-hint govuk-character-count__message" aria-live="polite">
-            You can enter up to 500 characters
-          </span>
+          <app-character-count max="500" [control]="form.get('doingWhat')"></app-character-count>
         </div>
+        <!-- <span *ngIf="form.get('doingWhat').errors?.required" class="main-body-text">
+            Please give reason.
+          </span>
+          <span *ngIf="form.get('doingWhat').errors?.maxlength" class="main-body-text">
+            Must be no longer than {{ _countdownValidation['doingWhat'].max }} characters.
+          </span> -->
 
         <div class="govuk-character-count">
           <div class="govuk-form-group">
@@ -32,11 +37,10 @@
               id="tell-us-about"
               name="tell-us-about"
               rows="6"
+              formControlName="tellUs"
             ></textarea>
           </div>
-          <span class="govuk-hint govuk-character-count__message" aria-live="polite">
-            You can enter up to 500 characters
-          </span>
+          <app-character-count max="500" [control]="form.get('tellUs')"></app-character-count>
         </div>
 
         <h3 class="govuk-heading-m">If you would like us to respond to your feedback, enter your details below.</h3>
@@ -54,6 +58,7 @@
             name="full-name"
             type="text"
             aria-describedby="full-name-hint"
+            formControlName="fullname"
           />
         </div>
 
@@ -72,6 +77,7 @@
             aria-describedby="email-hint"
             autocomplete="email"
             spellcheck="false"
+            formControlName="email"
           />
         </div>
 
@@ -82,38 +88,7 @@
 
       <!-- <div class="form-group mb-5">
         <div class="row form">
-          <p class="col-12 page-title">What were you trying to do?</p>
-          <div class="col-12">
-            <div
-              class="col-12"
-              [ngClass]="{
-                'is-invalid':
-                  (form.get('doingWhat').touched || form.get('doingWhat').dirty) &&
-                  !form.get('doingWhat').valid
-              }"
-            >
-              <textarea
-                id="doingWhat"
-                formControlName="doingWhat"
-                class="col-9"
-                [maxlength]="_countdownValidation['doingWhat'].max"
-                (input)="validateCountdown('doingWhat')"
-              >
-              </textarea>
-              <div class="col-12">
-                <span class="col-6" id="whenDoingCharCount">{{ countdownWhenDoing() }}</span> characters remaining
-                <span class="col-6 invalid-feedback">
-                  <span *ngIf="form.get('doingWhat').errors?.required" class="main-body-text">
-                    Please give reason.
-                  </span>
-                  <span *ngIf="form.get('doingWhat').errors?.maxlength" class="main-body-text">
-                    Must be no longer than {{ _countdownValidation['doingWhat'].max }} characters.
-                  </span>
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+
 
         <div class="row form">
           <p class="col-12 page-title">What would you like to tell us about?</p>
