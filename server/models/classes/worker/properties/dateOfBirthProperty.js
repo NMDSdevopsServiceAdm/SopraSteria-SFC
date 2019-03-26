@@ -54,7 +54,6 @@ exports.WorkerDateOfBirthProperty = class WorkerDateOfBirthProperty extends Chan
 
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true) {
-        console.log("WA DEBUG: date of birth property toJSON: ", this.property)
         if (!withHistory) {
             // simple form
 

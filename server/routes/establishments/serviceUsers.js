@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['OtherServices'];
+const filteredProperties = ['ServiceUsers'];
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -23,7 +23,7 @@ router.route('/').get(async (req, res) => {
     return res.status(400).send();
   }
 
-  const thisEstablishment = new Establishment.Establishment(req.username);
+  /* const thisEstablishment = new Establishment.Establishment(req.username);
 
   try {
     if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
@@ -46,7 +46,8 @@ router.route('/').get(async (req, res) => {
 
     console.error('establishment::services GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
-  }
+  } */
+  return res.status(200).send({});
 });
 
 // updates the current set of other services for the known establishment
@@ -65,9 +66,8 @@ router.route('/').post(async (req, res) => {
     return res.status(400).send();
   }
   
-  const thisEstablishment = new Establishment.Establishment(req.username);
 
-
+  /* const thisEstablishment = new Establishment.Establishment(req.username);
   try {
     // before updating an Establishment, we need to be sure the Establishment is
     //  available to the given user. The best way of doing that
@@ -112,7 +112,8 @@ router.route('/').post(async (req, res) => {
     } else {
       console.error("Unexpected exception: ", err);
     }
-  }
+  } */
+  return res.status(200).send({});
 });
 
 module.exports = router;
