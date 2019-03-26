@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
+import { CharacterCountComponent } from './components/character-count/character-count.component';
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { DetailsComponent } from './components/details/details.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
@@ -28,6 +29,7 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   declarations: [
     AutoSuggestComponent,
+    CharacterCountComponent,
     DatePickerComponent,
     DetailsComponent,
     ErrorSummaryComponent,
@@ -50,6 +52,7 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
   ],
   exports: [
     AutoSuggestComponent,
+    CharacterCountComponent,
     DatePickerComponent,
     DetailsComponent,
     ErrorSummaryComponent,
