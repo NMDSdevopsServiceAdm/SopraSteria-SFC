@@ -1,6 +1,5 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-
     <ng-template [ngIf]="pendingFeedback" [ngIfElse]="feedbackSubmitted">
       <h1 class="govuk-heading-xl">Feedback</h1>
 
@@ -40,7 +39,7 @@
               formControlName="tellUs"
             ></textarea>
           </div>
-          <app-character-count max="500" [control]="form.get('tellUs')"></app-character-count>
+          <app-character-count max="10" [words]="true" [control]="form.get('tellUs')"></app-character-count>
         </div>
 
         <h3 class="govuk-heading-m">If you would like us to respond to your feedback, enter your details below.</h3>
