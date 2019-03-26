@@ -22,6 +22,7 @@ import { NumberIntOnly } from './directives/number-int-only.directive';
 import { NumberMax } from './directives/number-max.directive';
 import { NumberPositiveOnly } from './directives/number-positive-only.directive';
 import { Number } from './directives/number.directive';
+import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
@@ -40,6 +41,7 @@ import { Number } from './directives/number.directive';
     TabComponent,
     TabsComponent,
     WorkplaceSummaryComponent,
+    AbsoluteNumberPipe,
     NumberDigitsMax,
     NumberIntOnly,
     NumberMax,
