@@ -1,60 +1,57 @@
-<div>
-  <h1 class="govuk-heading-xl">Sign in</h1>
+<h1 class="govuk-heading-xl">Sign in</h1>
 
-  <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
-    <app-error-summary
-      *ngIf="form.errors?.serverError"
-      [errors]="[{ text: 'Authentication failed.' }]">
-    </app-error-summary>
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <app-error-summary *ngIf="form.errors?.serverError" [errors]="[{ text: 'Authentication failed.' }]">
+  </app-error-summary>
 
-    <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('username').errors && submitted }">
-      <label class="govuk-label" for="username">
-        Username
-      </label>
-      <span
-        id="username-issued-error"
-        class="govuk-error-message"
-        *ngIf="form.get('username').errors?.required && submitted"
-      >
-        <span class="govuk-visually-hidden">Error:</span> Please enter your Username.
-      </span>
-      <input
-        class="govuk-input govuk-!-width-one-third"
-        [ngClass]="{ 'govuk-input--error': form.get('username').errors && form.submitted }"
-        id="username"
-        name="username"
-        type="text"
-        formControlName="username"
-      />
-    </div>
+  <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('username').errors && submitted }">
+    <label class="govuk-label" for="username">
+      Username
+    </label>
+    <span
+      id="username-issued-error"
+      class="govuk-error-message"
+      *ngIf="form.get('username').errors?.required && submitted"
+    >
+      <span class="govuk-visually-hidden">Error:</span> Please enter your Username.
+    </span>
+    <input
+      class="govuk-input govuk-!-width-one-third"
+      [ngClass]="{ 'govuk-input--error': form.get('username').errors && submitted }"
+      id="username"
+      name="username"
+      type="text"
+      formControlName="username"
+    />
+  </div>
 
-    <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('password').errors && submitted }">
-      <label class="govuk-label" for="password">
-        Password
-      </label>
-      <span
-        id="password-issued-error"
-        class="govuk-error-message"
-        *ngIf="form.get('password').errors?.required && submitted"
-      >
-        <span class="govuk-visually-hidden">Error:</span> Please enter your Password.
-      </span>
-      <input
-        class="govuk-input govuk-!-width-one-third"
-        id="password"
-        name="password"
-        type="password"
-        formControlName="password"
-      />
-    </div>
+  <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('password').errors && submitted }">
+    <label class="govuk-label" for="password">
+      Password
+    </label>
+    <span
+      id="password-issued-error"
+      class="govuk-error-message"
+      *ngIf="form.get('password').errors?.required && submitted"
+    >
+      <span class="govuk-visually-hidden">Error:</span> Please enter your Password.
+    </span>
+    <input
+      class="govuk-input govuk-!-width-one-third"
+      [ngClass]="{ 'govuk-input--error': form.get('password').errors && submitted }"
+      id="password"
+      name="password"
+      type="password"
+      formControlName="password"
+    />
+  </div>
 
-    <button type="submit" class="govuk-button">
-      Sign In
-    </button>
-  </form>
+  <button type="submit" class="govuk-button">
+    Sign In
+  </button>
+</form>
 
-  <ul class="govuk-list">
-    <li><a routerLink="">Forgot your password?</a></li>
-    <li><a routerLink="/registered-question">Create an account</a></li>
-  </ul>
-</div>
+<ul class="govuk-list">
+  <li><a routerLink="/forgot-your-password">Forgot your password?</a></li>
+  <li><a routerLink="/registered-question">Create an account</a></li>
+</ul>
