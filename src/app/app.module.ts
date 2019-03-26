@@ -10,7 +10,7 @@ import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
 import {
   ProblemWithTheServicePagesComponent,
 } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
@@ -110,7 +110,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     FeedbackComponent,
     ContactUsComponent,
     LogoutComponent,
-    PageNotFoundPagesComponent,
+    PageNotFoundComponent,
     ProblemWithTheServicePagesComponent,
     TermsConditionsComponent,
     DashboardComponent,

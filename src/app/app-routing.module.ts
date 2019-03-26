@@ -29,7 +29,7 @@ import { TypeOfEmployerComponent } from '@features/type-of-employer/type-of-empl
 import { UserDetailsComponent } from '@features/user-details/user-details.component';
 import { VacanciesComponent } from '@features/vacancies/vacancies.component';
 
-import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
 import {
   ProblemWithTheServicePagesComponent,
 } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
@@ -188,10 +188,6 @@ const routes: Routes = [
     component: TermsConditionsComponent,
   },
   {
-    path: 'page-not-found',
-    component: PageNotFoundPagesComponent,
-  },
-  {
     path: 'problem-with-the-service',
     component: ProblemWithTheServicePagesComponent,
   },
@@ -213,7 +209,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/dashboard',
+    component: PageNotFoundComponent,
   },
 ];
 
