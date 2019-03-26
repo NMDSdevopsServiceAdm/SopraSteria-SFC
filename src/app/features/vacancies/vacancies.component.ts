@@ -144,6 +144,7 @@ export class VacanciesComponent implements OnInit, OnDestroy {
       this.establishmentService.getVacancies().subscribe(vacancies => {
         if (vacancies === 'None') {
           // Even if "None" option on restore, want a single job role shown
+          // to force another deployment
           vacancyControl.push(this.createVacancyControlItem())
           
           this.vacanciesForm.patchValue({noVacanciesReason: 'no-staff'}, { emitEvent: true })

@@ -43,7 +43,7 @@ module.exports = function(sequelize, DataTypes) {
     employerType: {
       type: DataTypes.ENUM,
       allowNull: true,
-      values: ['Private Sector', 'Voluntary / Charity', 'Other'],
+      values: ['Private Sector', 'Voluntary / Charity', 'Other', 'Local Authority (generic/other)', 'Local Authority (adult services)'],
       field: '"EmployerType"'
     },
     shareData: {
@@ -83,7 +83,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
       field: '"Leavers"'
-    }
+    },
+    nmdsId: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: '"NmdsID"'
+    },
   }, {
     tableName: '"Establishment"',
     schema: 'cqc',

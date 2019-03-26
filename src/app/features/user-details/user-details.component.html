@@ -20,7 +20,7 @@
           <label class="form-label" for="userFullname">Your full name</label>
 
           <span class="invalid-feedback">
-            <span class="main-body-text mb-2"*ngIf="!submittedfullname">{{ fullnameMessage }}</span>
+            <span class="main-body-text mb-2" *ngIf="!submittedfullname">{{ fullnameMessage }}</span>
             <span class="main-body-text mb-2" *ngIf="submittedfullname && getUserFullnameInput.hasError('required')">
               Please enter your fullname.
             </span>

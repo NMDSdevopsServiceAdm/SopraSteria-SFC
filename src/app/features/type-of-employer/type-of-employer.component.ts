@@ -21,6 +21,8 @@ export class TypeOfEmployerComponent implements OnInit, OnDestroy {
   employerName: string
 
   options = [
+    'Local Authority (adult services)',
+    'Local Authority (generic/other)',
     "Private Sector",
     "Voluntary / Charity",
     "Other"

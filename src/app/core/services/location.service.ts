@@ -1,13 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { RegistrationService } from './registration.service';
-import { RegistrationModel } from '../model/registration.model';
-
 //import { HttpClient } from '@angular/common/http';
-
 
 @Injectable()
 export class LocationService {
@@ -16,10 +12,8 @@ export class LocationService {
   constructor(private http: HttpClient) {}
 
   getAllLocations(): Observable<Location[]> {
-    console.log("getAllLocations from local server");
-    return this.http.get<Location[]>('/api/locations').pipe(
-      map(res => res)
-    );
+    console.log('getAllLocations from local server');
+    return this.http.get<Location[]>('/api/locations').pipe(map(res => res));
   }
 
   getLocationByid(id: string): Observable<Location> {
@@ -67,12 +61,8 @@ export class LocationService {
   //  (err: any) => console.log(err),
   //  () => console.log('All done getting locations')
   //);
-  
 
   //checkData(data) {
   //  console.log(data);
   //}
-
 }
-
-

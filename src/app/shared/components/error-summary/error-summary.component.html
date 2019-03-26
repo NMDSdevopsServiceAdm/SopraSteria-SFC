@@ -1,0 +1,26 @@
+<div
+  class="govuk-error-summary"
+  aria-labelledby="error-summary-title"
+  role="alert"
+  tabindex="-1"
+  data-module="error-summary"
+>
+  <h2 class="govuk-error-summary__title" id="error-summary-title">
+    There is a problem
+  </h2>
+  <div class="govuk-error-summary__body">
+    <ul class="govuk-list govuk-error-summary__list">
+      <li *ngFor="let error of errors">
+        <ng-container *ngIf="error.fragment">
+          <a [routerLink]="" [fragment]="error.fragment">{{ error.text }}</a>
+        </ng-container>
+        <ng-container *ngIf="error.action">
+          <a (click)="error.action">{{ error.text }}</a>
+        </ng-container>
+        <ng-container *ngIf="!error.fragment && !error.action">
+          {{ error.text }}
+        </ng-container>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -1,59 +1,55 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { ConfirmAccountDetailsComponent } from '@features/confirm-account-details/confirm-account-details.component';
+import { ConfirmLeaversComponent } from '@features/confirm-leavers/confirm-leavers.component';
+import { ConfirmStartersComponent } from '@features/confirm-starters/confirm-starters.component';
+import { ConfirmVacanciesComponent } from '@features/confirm-vacancies/confirm-vacancies.component';
+import { ConfirmWorkplaceDetailsComponent } from '@features/confirm-workplace-details/confirm-workplace-details.component';
+import { ContactUsComponent } from '@features/contactUs/contactUs.component';
+import { ContinueCreatingAccountComponent } from '@features/continue-creating-account/continue-creating-account.component';
+import { CqcRegisteredQuestionComponent } from '@features/cqc-registered-question/cqc-registered-question.component';
+import { CreateUsernameComponent } from '@features/create-username/create-username.component';
+import { DashboardComponent } from '@features/dashboard/dashboard.component';
+import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-address/enter-workplace-address.component';
+import { FeedbackComponent } from '@features/feedback/feedback.component';
+import { LeaversComponent } from '@features/leavers/leavers.component';
+import { LoginComponent } from '@features/login/login.component';
+import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
+import { SecurityQuestionComponent } from '@features/security-question/security-question.component';
+import { SelectMainServiceComponent } from '@features/select-main-service/select-main-service.component';
+import { SelectOtherServicesComponent } from '@features/select-other-services/select-other-services.component';
+import { SelectWorkplaceAddressComponent } from '@features/select-workplace-address/select-workplace-address.component';
+import { SelectWorkplaceComponent } from '@features/select-workplace/select-workplace.component';
+import { ServicesCapacityComponent } from '@features/services-capacity/services-capacity.component';
+import { ShareLocalAuthorityComponent } from '@features/shareLocalAuthorities/shareLocalAuthority.component';
+import { ShareOptionsComponent } from '@features/shareOptions/shareOptions.component';
+import { StartersComponent } from '@features/starters/starters.component';
+import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
+import { TypeOfEmployerComponent } from '@features/type-of-employer/type-of-employer.component';
+import { UserDetailsComponent } from '@features/user-details/user-details.component';
+import { VacanciesComponent } from '@features/vacancies/vacancies.component';
 
-import { AuthGuard } from './core/services/auth-guard.service';
+import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import {
+  ProblemWithTheServicePagesComponent,
+} from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
-
-import { LoginComponent } from './features/login/login.component';
-// import { RegisterComponent } from './features/register/register.component';
-import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
-import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
-import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
-import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
-import { UserDetailsComponent } from './features/user-details/user-details.component';
-import { CreateUsernameComponent } from './features/create-username/create-username.component';
-import { SecurityQuestionComponent } from './features/security-question/security-question.component';
-import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
-import { RegistrationCompleteComponent } from './features/registration-complete/registration-complete.component';
-import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
-import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
-import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
-import { HomepageComponent } from './features/homepage/homepage.component';
-import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
-import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
-import { VacanciesComponent } from './features/vacancies/vacancies.component';
-import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component';
-import { StartersComponent } from './features/starters/starters.component';
-import { ConfirmStartersComponent } from './features/confirm-starters/confirm-starters.component';
-import { LeaversComponent } from './features/leavers/leavers.component';
-import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leavers.component';
-import { StaffComponent } from './features/staff/staff.component';
-import { ServicesCapacityComponent } from './features/services-capacity/services-capacity.component';
-import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
-import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
-import { FeedbackComponent } from './features/feedback/feedback.component';
-import { ContactUsComponent } from './features/contactUs/contactUs.component';
-import { LogoutComponent } from './features/logout/logout.component';
-// import { CreateStaffRecordComponent } from './features/workers/create-staff-record/create-staff-record.component';
-// import { MentalHealthComponent } from './features/workers/mental-health/mental-health.component';
-// import { MainJobStartDateComponent } from './features/workers/main-job-start-date/main-job-start-date.component';
-// import { NationalInsuranceNumberComponent } from './features/workers/national-insurance-number/national-insurance-number.component';
-// import { OtherJobRolesComponent } from './features/workers/other-job-roles/other-job-roles.component';
-// import { DateOfBirthComponent } from './features/workers/date-of-birth/date-of-birth.component';
-// import { HomePostcodeComponent } from './features/workers/home-postcode/home-postcode.component';
-// import { GenderComponent } from './features/workers/gender/gender.component';
-// import { DisabilityComponent } from './features/workers/disability/disability.component';
-// import { EthnicityComponent } from './features/workers/ethnicity/ethnicity.component';
-import { TermsConditionsComponent } from './shared/terms-conditions/terms-conditions.component';
+import { AuthGuard } from './core/services/auth-guard.service';
+import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
+import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
 
 const routes: Routes = [
   {
-    path: "login",
-    component: LoginComponent
+    path: 'login',
+    component: LoginComponent,
   },
   {
-    path: 'sign-out',
-    component: LogoutComponent
+    path: 'forgot-your-password',
+    component: ForgotYourPasswordComponent,
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
   },
   {
     path: 'registered-question',
@@ -111,172 +107,118 @@ const routes: Routes = [
   },
   {
     path: 'continue-creating-account',
-    component: ContinueCreatingAccountComponent
-  },
-  {
-    path: 'welcome',
-    component: HomepageComponent,
-    canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    component: ContinueCreatingAccountComponent,
   },
   {
     path: 'select-other-services',
     component: SelectOtherServicesComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'type-of-employer',
     component: TypeOfEmployerComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'vacancies',
     component: VacanciesComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'confirm-vacancies',
     component: ConfirmVacanciesComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'starters',
     component: StartersComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'confirm-starters',
     component: ConfirmStartersComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'leavers',
     component: LeaversComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'confirm-leavers',
     component: ConfirmLeaversComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'staff',
-    component: StaffComponent,
-    canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'capacity-of-services',
     component: ServicesCapacityComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'share-local-authority',
     component: ShareLocalAuthorityComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'share-options',
     component: ShareOptionsComponent,
     canLoad: [AuthGuard],
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
   },
   {
     path: 'feedback',
-    component: FeedbackComponent
+    component: FeedbackComponent,
   },
   {
     path: 'contact-us',
-    component: ContactUsComponent
+    component: ContactUsComponent,
   },
   {
     path: 'terms-and-conditions',
-    component: TermsConditionsComponent
+    component: TermsConditionsComponent,
   },
-  // {
-  //   path: 'worker',
-  //   canActivateChild: [AuthGuard],
-  //   children: [
-  //     {
-  //       path: 'edit-staff-record/:id',
-  //       component: CreateStaffRecordComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'create-staff-record',
-  //       component: CreateStaffRecordComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'mental-health/:id',
-  //       component: MentalHealthComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'main-job-start-date/:id',
-  //       component: MainJobStartDateComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'other-job-roles/:id',
-  //       component: OtherJobRolesComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'national-insurance-number/:id',
-  //       component: NationalInsuranceNumberComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'date-of-birth/:id',
-  //       component: DateOfBirthComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'home-postcode/:id',
-  //       component: HomePostcodeComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'gender/:id',
-  //       component: GenderComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'disability/:id',
-  //       component: DisabilityComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //     {
-  //       path: 'ethnicity/:id',
-  //       component: EthnicityComponent,
-  //       canLoad: [AuthGuard]
-  //     },
-  //   ]
-  // },
+  {
+    path: 'page-not-found',
+    component: PageNotFoundPagesComponent,
+  },
+  {
+    path: 'problem-with-the-service',
+    component: ProblemWithTheServicePagesComponent,
+  },
+  {
+    path: 'worker',
+    loadChildren: '@features/workers/workers.module#WorkersModule',
+    canLoad: [AuthGuard],
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
+  },
   {
     path: '',
-    redirectTo: '/welcome',
-    pathMatch: 'full'
+    redirectTo: '/dashboard',
+    pathMatch: 'full',
   },
   {
     path: '**',
-    redirectTo: '/welcome'
+    redirectTo: '/dashboard',
   },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

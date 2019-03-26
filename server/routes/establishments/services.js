@@ -121,11 +121,14 @@ router.route('/').post(async (req, res) => {
       if (allServicesResults) {
         // within a transaction first delete all existing 'other services', before creating new ones
         await models.sequelize.transaction(async t => {
-          let deleteAllExisting = await models.establishmentServices.destroy({
-            where: {
-              establishmentId
-            }
-          });
+          let deleteAllExisting = await models.establishmentServices.destroy(
+            {
+              where: {
+                establishmentId
+              }
+            },
+            {transaction: t}
+          );
 
           // create new service associations
           let newServicesPromises = [];
@@ -138,7 +141,7 @@ router.route('/').post(async (req, res) => {
                 newServicesPromises.push(models.establishmentServices.create({
                   establishmentId,
                   serviceId: thisNewService.id
-                }));  
+                }, {transaction: t}));  
               }
             }
           })
