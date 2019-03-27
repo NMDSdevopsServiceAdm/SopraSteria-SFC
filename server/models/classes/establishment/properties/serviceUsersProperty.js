@@ -87,7 +87,6 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
     }
 
     formatServiceUsersResponse(allServices) {
-        console.log("WA DEBUG - formatting to JSON: ", allServices)
         return this.property.map(thisService => {
             return {
                 id: thisService.id,
