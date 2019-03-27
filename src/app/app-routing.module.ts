@@ -35,12 +35,12 @@ import {
 } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
-import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
-import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
-import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ChangePasswordComponent } from './features/change-password/change-password.component';
 import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
+import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
+import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
+import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
 
 const routes: Routes = [
   {
@@ -136,67 +136,56 @@ const routes: Routes = [
   {
     path: 'select-other-services',
     component: SelectOtherServicesComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'type-of-employer',
     component: TypeOfEmployerComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'vacancies',
     component: VacanciesComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'confirm-vacancies',
     component: ConfirmVacanciesComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'starters',
     component: StartersComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'confirm-starters',
     component: ConfirmStartersComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'leavers',
     component: LeaversComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'confirm-leavers',
     component: ConfirmLeaversComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'capacity-of-services',
     component: ServicesCapacityComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'share-local-authority',
     component: ShareLocalAuthorityComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'share-options',
     component: ShareOptionsComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
@@ -218,12 +207,11 @@ const routes: Routes = [
   {
     path: 'worker',
     loadChildren: '@features/workers/workers.module#WorkersModule',
-    canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
   },
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
