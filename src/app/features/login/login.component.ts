@@ -1,13 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
-
-import { LoginApiModel } from '../../core/model/loginApi.model';
-import { AuthService } from '../../core/services/auth-service';
-import { EstablishmentService } from '../../core/services/establishment.service';
-import { MessageService } from '../../core/services/message.service';
-
-//import { LoginUser } from './login-user';
+import { NavigationExtras, Router } from '@angular/router';
+import { LoginApiModel } from '@core/model/loginApi.model';
+import { AuthService } from '@core/services/auth-service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MessageService } from '@core/services/message.service';
 
 @Component({
   selector: 'app-login',
@@ -31,11 +28,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   passwordMessage: string;
 
   constructor(
-    private _loginService: AuthService,
+    private authService: AuthService,
     private establishmentService: EstablishmentService,
     private messageService: MessageService,
     private router: Router,
-    private route: ActivatedRoute,
     private fb: FormBuilder
   ) {}
 
@@ -63,7 +59,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.subscriptions.push(this._loginService.auth$.subscribe(login => (this.login = login)));
+    this.subscriptions.push(this.authService.auth$.subscribe(login => (this.login = login)));
   }
 
   onSubmit() {
@@ -84,31 +80,31 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.messageService.clearError();
 
     this.subscriptions.push(
-      this._loginService.postLogin(this.login).subscribe(
+      this.authService.postLogin(this.login).subscribe(
         response => {
-          this._loginService.updateState(response.body);
+          this.authService.updateState(response.body);
 
           // // update the establishment service state with the given establishment oid
           this.establishmentService.establishmentId = response.body.establishment.id;
 
           const token = response.headers.get('authorization');
-          this._loginService.authorise(token);
+          this.authService.authorise(token);
         },
         err => {
           const message = err.error.message || 'Invalid username or password.';
           this.messageService.show('error', message);
         },
         () => {
-          const redirectUrl = this._loginService.redirectUrl;
+          const redirect = this.authService.redirect;
 
-          if (redirectUrl) {
+          if (redirect) {
             const navExtras: NavigationExtras = {
-              queryParamsHandling: 'preserve',
-              preserveFragment: true,
+              queryParams: redirect.queryParams,
+              fragment: redirect.fragment,
             };
 
-            this._loginService.redirectUrl = null;
-            this.router.navigate([redirectUrl], navExtras);
+            this.authService.redirect = null;
+            this.router.navigate([redirect.url.toString()], navExtras);
           } else {
             this.router.navigate(['/dashboard']);
           }
