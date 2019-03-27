@@ -2,85 +2,115 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 const models = require('../../models');
 
-// parent route defines the "id" parameter
+// all user functionality is encapsulated
+const Establishment = require('../../models/classes/establishment');
+const filteredProperties = ['NumberOfStaff'];
 
 // gets current staff for the known establishment
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
-  try {
-    let results = await models.establishment.findOne({
-      where: {
-        id: establishmentId
-      },
-      attributes: ['id', 'name', 'numberOfStaff']
-    });
+  const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+  const showHistoryTime = req.query.history === 'timeline' ? true : false;
+  const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
-    if (results && results.id && (establishmentId === results.id)) {
-      res.status(200);
-      return res.json(formatStaffResponse(results));
+  // validating establishment id - must be a V4 UUID or it's an id
+  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+  let byUUID = null, byID = null;
+  if (typeof establishmentId === 'string' && uuidRegex.test(establishmentId.toUpperCase())) {
+    byUUID = establishmentId;
+  } else if (Number.isInteger(establishmentId)) {
+    byID = parseInt(escape(establishmentId));
+  } else {
+    // unexpected establishment id
+    return res.status(400).send();
+  }
+
+  const thisEstablishment = new Establishment.Establishment(req.username);
+
+  try {
+    if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
+      // show only brief info on Establishment
+      return res.status(200).json(thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, filteredProperties));
     } else {
-      return res.status(404).send('Not found');
+      // not found worker
+      return res.status(404).send('Not Found');
     }
 
   } catch (err) {
-    // TODO - improve logging/error reporting
-    console.error('establishment::staff GET - failed', err);
-    return res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
+    const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
+      thisEstablishment.id,
+      thisEstablishment.uid,
+      null,
+      err,
+      null,
+      `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
+
+    console.error('establishment::staff GET/:eID - failed', thisError.message);
+    return res.status(503).send(thisError.safe);
   }
 });
 
 // updates the current employer type for the known establishment
 router.route('/:staffNumber').post(async (req, res) => {
   const establishmentId = req.establishmentId;
-  const givenStaffNumber = parseInt(req.params.staffNumber);
 
-  // must provide staff number and must be integer and must be less than 999
-  const maxNumberOfStaff=999;
-  if (!givenStaffNumber ||
-      givenStaffNumber < 0 ||
-      givenStaffNumber > maxNumberOfStaff) {
-    console.error('establishment::staff POST - unexpected number of staff: ', givenStaffNumber);
-    return res.status(400).send(`Unexpected  number of staff: ${givenStaffNumber}`);
+  // validating establishment id - must be a V4 UUID or it's an id
+  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+  let byUUID = null, byID = null;
+  if (typeof establishmentId === 'string' && uuidRegex.test(establishmentId.toUpperCase())) {
+      byUUID = establishmentId;
+  } else if (Number.isInteger(establishmentId)) {
+    byID = parseInt(escape(establishmentId));
+  } else {
+    // unexpected establishment id
+    return res.status(400).send();
   }
+  
+  const thisEstablishment = new Establishment.Establishment(req.username);
+
 
   try {
-    let results = await models.establishment.findOne({
-      where: {
-        id: establishmentId
-      },
-      attributes: ['id', 'name', 'numberOfStaff']
-    });
+    // before updating an Establishment, we need to be sure the Establishment is
+    //  available to the given user. The best way of doing that
+    //  is to restore from given UID
+    // by loading the Establishment before updating it, we have all the facts about
+    //  an Establishment (if needing to make inter-property decisions)
+    if (await thisEstablishment.restore(byID, byUUID)) {
+      // TODO: JSON validation
 
-    if (results && results.id && (establishmentId === results.id)) {
-      // we have found the establishment, update the number of staff
-      await results.update({
-        numberOfStaff: givenStaffNumber
+      // by loading after the restore, only those properties defined in the
+      //  POST body will be updated (peristed)
+      // With this endpoint we're only interested in numberOfStaff
+      const isValidEstablishment = await thisEstablishment.load({
+        numberOfStaff: req.params.staffNumber
       });
-      
-      res.status(200);
-      return res.json(formatStaffResponse(results));
-    } else {
-      console.error('establishment::staff POST - Not found establishment having id: ${establishmentId}', err);
-      return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
-    }
 
+      // this is an update to an existing Establishment, so no mandatory properties!
+      if (isValidEstablishment) {
+        await thisEstablishment.save(req.username);
+
+        return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
+      } else {
+        return res.status(400).send('Unexpected Input.');
+      }
+        
+    } else {
+      // not found worker
+      return res.status(404).send('Not Found');
+    }
   } catch (err) {
-    // TODO - improve logging/error reporting
-    console.error('establishment::staff POST - failed', err);
-    return res.status(503).send(`Unable to update Establishment with staff number: ${req.params.id}/${givenEmployerType}`);
+    
+    if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
+      console.error("Establishment::staff POST: ", err.message);
+      return res.status(400).send(err.safe);
+    } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
+      console.error("Establishment::staff POST: ", err.message);
+      return res.status(503).send(err.safe);
+    } else {
+      console.error("Unexpected exception: ", err);
+    }
   }
 });
-
-
-const formatStaffResponse = (establishment) => {
-  // WARNING - do not be tempted to copy the database model as the API response; the API may chose to rename/contain
-  //           some attributes (viz. locationId below)
-  return {
-    id: establishment.id,
-    name: establishment.name,
-    numberOfStaff: establishment.numberOfStaff
-  };
-}
 
 module.exports = router;

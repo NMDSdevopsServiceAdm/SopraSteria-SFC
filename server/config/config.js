@@ -20,6 +20,11 @@ const config = convict({
       doc: 'Not yet used, but will be the default log level',
       format: String,
       default: 'NONE'
+    },
+    sequelize: {
+      doc: 'Whether to log sequelize SQL statements',
+      format: 'Boolean',
+      default: false
     }
   },
   listen: {

@@ -78,7 +78,7 @@
             <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.hasError('maxlength')">
               Your email address must be no longer than 120 characters.
             </span>
-            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.hasError('email')">
+            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.hasError('pattern')">
               Please enter a valid email address.
             </span>
           </span>

@@ -23,6 +23,12 @@ h5, .h5 {
   @include rem(font-size, 23px);
 }
 
+.heading-caption {
+  color: $light-grey-text;
+
+  @include rem(font-size, 27px);
+}
+
 .main-text {
 
   @include rem(font-size, 16px);

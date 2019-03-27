@@ -1,331 +1,117 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
-const models = require('../../models');
-const CapacityFormatters = require('../../models/api/capacity');
-const ServiceFormatters = require('../../models/api/services');
 
-// parent route defines the "id" parameter
+const Establishment = require('../../models/classes/establishment');
+const filteredProperties = ['CapacityServices'];
 
-// TODO - refactor this API; much of the gets in [GET] endpoint are used in the [POST]
-
-// gets current set of capcities for the known establishment
-// takes optional query paramter "all" - values 'true' or 'false' (default), which is set, returns 'allCapacities'
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
-  const includeAllCapacities = req.query.all && req.query.all === 'true' ? true : false;
+  
+  const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
+  const showHistoryTime = req.query.history === 'timeline' ? true : false;
+  const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
+
+  // validating establishment id - must be a V4 UUID or it's an id
+  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+  let byUUID = null, byID = null;
+  if (typeof establishmentId === 'string' && uuidRegex.test(establishmentId.toUpperCase())) {
+    byUUID = establishmentId;
+  } else if (Number.isInteger(establishmentId)) {
+    byID = parseInt(escape(establishmentId));
+  } else {
+    // unexpected establishment id
+    return res.status(400).send();
+  }
+
+  const thisEstablishment = new Establishment.Establishment(req.username);
 
   try {
-    let results = await models.establishment.findOne({
-      where: {
-        id: establishmentId
-      },
-      attributes: ['id', 'name', 'isRegulated', 'mainServiceId'],
-      include: [{
-        model: models.services,
-        as: 'mainService',
-        attributes: ['id', 'name']
-      },{
-        model: models.establishmentCapacity,
-        as: 'capacity',
-        attributes: ['id', 'answer'],
-        include: [{
-          model: models.serviceCapacity,
-          as: 'reference',
-          attributes: ['id', 'question']
-        }]
-      }]
-    });
+    if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
+      // show only brief info on Establishment
 
-    let allServiceCapacityQuestions = null;
-    if (results && results.id && (establishmentId === results.id)) {
-      if (includeAllCapacities) {
-        // fetch the main service id and all the associated 'other services' by id only
-        const allCapacitiesResults = await models.establishment.findOne({
-          where: {
-            id: establishmentId
-          },
-          attributes: ['id'],
-          include: [{
-            model: models.services,
-            as: 'otherServices',
-            attributes: ['id'],
-          },{
-            model: models.services,
-            as: 'mainService',
-            attributes: ['id']
-          }]
-        });
-
-        const allAssociatedServiceIndices = [];
-        if (allCapacitiesResults && allCapacitiesResults.id) {
-          // merge tha main and other service ids
-          if (allCapacitiesResults.mainService.id) {
-            allAssociatedServiceIndices.push(allCapacitiesResults.mainService.id);
-          }
-          // TODO: there is a much better way to derference (transpose) the id on an Array of objects
-          //  viz. Map
-          if (allCapacitiesResults.otherServices) {
-            allCapacitiesResults.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
-          }
-        }
-
-        // now fetch all the questions for the given set of combined services
-        if (allAssociatedServiceIndices.length > 0) {
-          allServiceCapacityQuestions = await models.serviceCapacity.findAll({
-            where: {
-              serviceId: allAssociatedServiceIndices
-            },
-            attributes: ['id', 'seq', 'question'],
-            order: [
-              ['seq', 'ASC']
-            ],
-            include: [{
-              model: models.services,
-              as: 'service',
-              attributes: ['id', 'category', 'name'],
-              order: [
-                ['category', 'ASC'],
-                ['name', 'ASC']
-              ]
-            }]
-          });
-
-        }
-      }
-
-      res.status(200);
-      return res.json(formatCapacityResponse(results, allServiceCapacityQuestions));
+      return res.status(200).json(thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, filteredProperties));
     } else {
-      return res.status(404).send('Not found');
+      // not found worker
+      return res.status(404).send('Not Found');
     }
 
   } catch (err) {
-    // TODO - improve logging/error reporting
-    console.error('establishment::capacity GET - failed', err);
-    return res.status(503).send(`Unable to retrive Establishment: ${req.params.id}`);
+    const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
+      thisEstablishment.id,
+      thisEstablishment.uid,
+      null,
+      err,
+      null,
+      `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
+
+    console.error('establishment::capacity GET/:eID - failed', thisError.message);
+    return res.status(503).send(thisError.safe);
   }
 });
 
-// updates the current set of other services for the known establishment
+// updates the current set of capacity services for the known establishment
 router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
-  const newCapacities = req.body.capacities;
 
-   // validate input
-  if (!newCapacities || !Array.isArray(newCapacities)) {
-    console.error('establishment::capacity POST - unexpected input: ', newCapacities);
-    return res.status(400).send('Expected (new) capabilities as JSON');
+  // validating establishment id - must be a V4 UUID or it's an id
+  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+  let byUUID = null, byID = null;
+  if (typeof establishmentId === 'string' && uuidRegex.test(establishmentId.toUpperCase())) {
+      byUUID = establishmentId;
+  } else if (Number.isInteger(establishmentId)) {
+    byID = parseInt(escape(establishmentId));
+  } else {
+    // unexpected establishment id
+    return res.status(400).send();
   }
+  
+  const thisEstablishment = new Establishment.Establishment(req.username);
 
   try {
-    let results = await models.establishment.findOne({
-      where: {
-        id: establishmentId
-      },
-      attributes: ['id', 'name', 'isRegulated', 'mainServiceId'],
-      include: [{
-        model: models.services,
-        as: 'mainService',
-        attributes: ['id', 'name']
-      },{
-        model: models.establishmentCapacity,
-        as: 'capacity',
-        attributes: ['id', 'answer'],
-        include: [{
-          model: models.serviceCapacity,
-          as: 'reference',
-          attributes: ['id', 'question']
-        }]
-      }]
-    });
+    // before updating an Establishment, we need to be sure the Establishment is
+    //  available to the given user. The best way of doing that
+    //  is to restore from given UID
+    // by loading the Establishment before updating it, we have all the facts about
+    //  an Establishment (if needing to make inter-property decisions)
+    if (await thisEstablishment.restore(byID, byUUID)) {
+      // TODO: JSON validation
 
-    let allServiceCapacityQuestions = null;
-    if (results && results.id && (establishmentId === results.id)) {
-      // fetch the main service id and all the associated 'other services' by id only
-      const allCapacitiesResults = await models.establishment.findOne({
-        where: {
-          id: establishmentId
-        },
-        attributes: ['id'],
-        include: [{
-          model: models.services,
-          as: 'otherServices',
-          attributes: ['id'],
-        },{
-          model: models.services,
-          as: 'mainService',
-          attributes: ['id']
-        }]
+      // by loading after the restore, only those properties defined in the
+      //  POST body will be updated (peristed)
+      // With this endpoint we're only interested in capacities
+      const isValidEstablishment = await thisEstablishment.load({
+        capacities: req.body.capacities
       });
 
-      const allAssociatedServiceIndices = [];
-      if (allCapacitiesResults && allCapacitiesResults.id) {
-        // merge tha main and other service ids
-        if (allCapacitiesResults.mainService.id) {
-          allAssociatedServiceIndices.push(allCapacitiesResults.mainService.id);
-        }
-        // TODO: there is a much better way to derference (transpose) the id on an Array of objects
-        //  viz. Map
-        if (allCapacitiesResults.otherServices) {
-          allCapacitiesResults.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
-        }
-      }
+      // this is an update to an existing Establishment, so no mandatory properties!
+      if (isValidEstablishment) {
+        await thisEstablishment.save(req.username);
 
-      // now fetch all the questions for the given set of combined services
-      if (allAssociatedServiceIndices.length > 0) {
-        allServiceCapacityQuestions = await models.serviceCapacity.findAll({
-          where: {
-            serviceId: allAssociatedServiceIndices
-          },
-          attributes: ['id', 'seq', 'question'],
-          order: [
-            ['seq', 'ASC']
-          ],
-          include: [{
-            model: models.services,
-            as: 'service',
-            attributes: ['id', 'category', 'name'],
-            order: [
-              ['category', 'ASC'],
-              ['name', 'ASC']
-            ]
-          }]
-        });
+        // the POST response is not to return allServiceCapacities
+        const jsonResponse = thisEstablishment.toJSON(false, false, false, true, false, filteredProperties);
+        delete jsonResponse.allServiceCapacities;
 
-      }
-
-      if (allServiceCapacityQuestions) {
-        // within a transaction first delete all existing 'capacities', before creating new ones
-        await models.sequelize.transaction(async t => {
-          let deleteAllExisting = await models.establishmentCapacity.destroy(
-            {
-              where: {
-                establishmentId
-              }
-            },
-            {transaction: t}
-          );
-
-          // create new capacity associationss
-          let newCapacityPromises = [];
-          newCapacities.forEach(thisNewCapability => {
-            if (thisNewCapability && thisNewCapability.questionId &&
-                parseInt(thisNewCapability.questionId) === thisNewCapability.questionId &&
-                thisNewCapability.answer && parseInt(thisNewCapability.answer) === thisNewCapability.answer) {
-              // ensure this suggested capability (question) is allowed for this given Establishment
-              const isValidService = allServiceCapacityQuestions.find(
-                refServiceCapacity => refServiceCapacity.id === thisNewCapability.questionId);
-
-              if (isValidService) {
-                newCapacityPromises.push(models.establishmentCapacity.create({
-                  establishmentId,
-                  serviceCapacityId: thisNewCapability.questionId,
-                  answer: thisNewCapability.answer
-                }, {transaction: t}));
-              }
-            }
-          })
-          await Promise.all(newCapacityPromises);
-        });
-
-        // now refresh the Establishment and return the updated set of other services
-        let results = await models.establishment.findOne({
-          where: {
-            id: establishmentId
-          },
-          attributes: ['id', 'name', 'isRegulated', 'mainServiceId'],
-          include: [{
-            model: models.services,
-            as: 'mainService',
-            attributes: ['id', 'name']
-          },{
-            model: models.establishmentCapacity,
-            as: 'capacity',
-            attributes: ['id', 'answer'],
-            include: [{
-              model: models.serviceCapacity,
-              as: 'reference',
-              attributes: ['id', 'question']
-            }]
-          }]
-        });
-    
-        res.status(200);
-        return res.json(formatCapacityResponse(results));
-
+        return res.status(200).json(jsonResponse);
       } else {
-        console.error('establishment::capacity POST - failed to retrieve all associated service capacities');
-        return res.status(503).send(`Unable to update Establishment: ${establishmentId}`);
+        return res.status(400).send('Unexpected Input.');
       }
-      
+        
     } else {
-      console.error('establishment::capacity POST - Not found establishment having id: ${establishmentId}');
-      return res.status(404).send(`Not found establishment having id: ${establishmentId}`);
+      // not found worker
+      return res.status(404).send('Not Found');
     }
-
   } catch (err) {
-    // TODO - improve logging/error reporting
-    console.error('establishment::capacity POST - failed', err);
-    return res.status(503).send(`Unable to update Establishment with employer type: ${req.params.id}/${givenEmployerType}`);
+    
+    if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
+      console.error("Establishment::services POST: ", err.message);
+      return res.status(400).send(err.safe);
+    } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
+      console.error("Establishment::services POST: ", err.message);
+      return res.status(503).send(err.safe);
+    } else {
+      console.error("Unexpected exception: ", err);
+    }
   }
 });
-
-
-const formatCapacityResponse = (establishment, serviceCapacities) => {
-  // WARNING - do not be tempted to copy the database model as the API response; the API may chose to rename/contain
-  //           some attributes
-
-  // and reformat the service category/name for main service only
-
-  return {
-    id: establishment.id,
-    name: establishment.name,
-    mainService: ServiceFormatters.singleService(establishment.mainService),
-    capacities: CapacityFormatters.capacitiesJSON(establishment.capacity),
-    allServiceCapacities: CapacityFormatters.serviceCapacitiesByCategoryJSON(
-      mergeQuestionsWithAnswers(
-        reorderAndReformatMainServiceQuestion(serviceCapacities, establishment.mainServiceId),
-          establishment.capacity)
-    )
-  };
-}
-
-const mergeQuestionsWithAnswers = (questions, answers) => {
-  if (answers && Array.isArray(answers) && questions && Array.isArray(questions)) {
-    answers.forEach(thisAnswer => {
-      const foundQuestion = questions.find(thisQuestion => thisQuestion.id == thisAnswer.reference.id);
-      if (foundQuestion) {
-        foundQuestion.answer = thisAnswer.answer;
-      }
-    });
-  }
-
-  return questions;
-}
-
-const reorderAndReformatMainServiceQuestion = (questions, mainServiceId) => {
-  let reorderedQuestions = [];
-  if (questions && Array.isArray(questions)) {
-    // first find any questions associated with the main service ID (if any)
-    if (mainServiceId) {
-      const mainServiceQuestions = questions.filter(thisQuestion => thisQuestion.service.id === mainServiceId);
-      
-      if (mainServiceQuestions) {
-        // there exists within the set of questions, one or more relating to the main service
-        mainServiceQuestions.forEach(thisMainServiceQuestion => {
-          thisMainServiceQuestion.service.category = 'Main Service';
-          reorderedQuestions.push(thisMainServiceQuestion);
-        });
-      }
-
-      const nonMainServiceQuestions = questions.filter(thisQuestion => thisQuestion.service.id !== mainServiceId);
-      if (nonMainServiceQuestions) {
-        reorderedQuestions = reorderedQuestions.concat(nonMainServiceQuestions);
-      }
-    }
-  }
-
-  return reorderedQuestions;
-}
 
 module.exports = router;

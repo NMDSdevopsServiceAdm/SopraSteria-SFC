@@ -4,13 +4,14 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { HttpInterceptor } from '@core/services/http-interceptor';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
 import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
 import {
   ProblemWithTheServicePagesComponent,
 } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
@@ -74,6 +75,12 @@ import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
+import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
+import { ChangePasswordComponent } from './features/change-password/change-password.component';
+import { ChangePasswordConfirmationComponent } from './features/change-password/confirmation/confirmation.component';
+import { ChangePasswordEditComponent } from './features/change-password/edit/edit.component';
+import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
+import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
 
 @NgModule({
   declarations: [
@@ -110,7 +117,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     FeedbackComponent,
     ContactUsComponent,
     LogoutComponent,
-    PageNotFoundPagesComponent,
+    PageNotFoundComponent,
     ProblemWithTheServicePagesComponent,
     TermsConditionsComponent,
     DashboardComponent,
@@ -121,6 +128,12 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     ResetPasswordComponent,
     ResetPasswordEditComponent,
     ResetPasswordConfirmationComponent,
+    ChangeUserSummaryComponent,
+    ChangePasswordComponent,
+    ChangePasswordConfirmationComponent,
+    ChangePasswordEditComponent,
+    ChangeUserDetailsComponent,
+    ChangeUserSecurityComponent,
   ],
   imports: [
     BrowserModule,
@@ -151,6 +164,11 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     HttpErrorHandler,
     FeedbackService,
     EstablishmentService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptor,
+      multi: true,
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

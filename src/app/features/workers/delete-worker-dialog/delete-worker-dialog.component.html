@@ -1,36 +1,32 @@
-<div class="row">
-  <div class="col-12">
-    <h1 class="pb-5">You are about to delete this staff record.</h1>
-    <p>Once deleted you will not be able to access it again.</p>
-    <h3 class="fs-24 mt-5 text-weight-bold">Why are you removing this staff record?</h3>
-    <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
-      <app-messages></app-messages>
+<h1 class="pb-5">You are about to delete this staff record.</h1>
+<p>Once deleted you will not be able to access it again.</p>
+<h3 class="fs-24 mt-5 text-weight-bold">Why are you removing this staff record?</h3>
+<form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
+  <app-messages></app-messages>
 
-      <div class="form-group mt-5">
-        <div class="field-group mb-5">
-          <label class="col-12">
-            Select a reason
-            <select formControlName="reason" class="form-control">
-              <option [ngValue]="null">Select Reason</option>
-              <option *ngFor="let reason of reasons" [value]="reason.id">
-                {{ reason.reason }}
-              </option>
-            </select>
-          </label>
+  <div class="form-group mt-5">
+    <div class="field-group mb-5">
+      <label class="col-12">
+        Select a reason
+        <select formControlName="reason" class="form-control">
+          <option [ngValue]="null">Select Reason</option>
+          <option *ngFor="let reason of reasons" [value]="reason.id">
+            {{ reason.reason }}
+          </option>
+        </select>
+      </label>
 
-          <label class="col-12" *ngIf="form.controls.reason.value == 8">
-            Provide details
-            <textarea formControlName="details" maxlength="300" rows="4" class="form-control" name="details"></textarea>
-          </label>
-        </div>
-      </div>
-
-      <div class="btn-container container">
-        <div class="row">
-          <button type="submit" class="btn btn-primary">Delete record</button>
-          <button type="button" class="btn btn-link btn-link-no-underline" (click)="close()">Cancel</button>
-        </div>
-      </div>
-    </form>
+      <label class="col-12" *ngIf="form.controls.reason.value == 8">
+        Provide details
+        <textarea formControlName="details" maxlength="500" rows="4" class="form-control" name="details"></textarea>
+      </label>
+    </div>
   </div>
-</div>
+
+  <div class="btn-container container">
+    <div class="row">
+      <button type="submit" class="btn btn-primary">Delete record</button>
+      <button type="button" class="btn btn-link btn-link-no-underline" (click)="close()">Cancel</button>
+    </div>
+  </div>
+</form>

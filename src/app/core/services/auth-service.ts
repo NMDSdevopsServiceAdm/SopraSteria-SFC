@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -6,7 +6,6 @@ import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
 import { LoginApiModel } from '../model/loginApi.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
-import { HttpErrorHandler } from './http-error-handler.service';
 
 // TODO do we still need it?
 const initialRegistration: LoginApiModel = {
@@ -49,7 +48,7 @@ export class AuthService {
   // Observable login stream
   public auth$: Observable<LoginApiModel> = this._auth$.asObservable();
 
-  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   public get isLoggedIn(): boolean {
     return !!this.token;
@@ -119,8 +118,7 @@ export class AuthService {
 
   postLogin(id: any) {
     const $value = id;
-    const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
-    return this.http.post<any>('/api/login/', $value, { headers: requestHeaders, observe: 'response' });
+    return this.http.post<any>('/api/login/', $value, { observe: 'response' });
   }
 
   private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
@@ -146,6 +144,14 @@ export class AuthService {
       this._session = null;
       this.token = null;
       this.router.navigate(['/login']);
+    }
+  }
+
+  logoutWithoutRouting() {
+    if (localStorage.getItem('auth-token')) {
+      localStorage.clear();
+      this._session = null;
+      this.token = null;
     }
   }
 }

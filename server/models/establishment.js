@@ -9,6 +9,12 @@ module.exports = function(sequelize, DataTypes) {
       autoIncrement: true,
       field: '"EstablishmentID"'
     },
+    uid: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: true,
+      field: '"EstablishmentUID"'
+    },
     name: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -40,16 +46,121 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"MainServiceId"'
     },
-    employerType: {
+    EmployerTypeValue: {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ['Private Sector', 'Voluntary / Charity', 'Other', 'Local Authority (generic/other)', 'Local Authority (adult services)'],
-      field: '"EmployerType"'
+      field: '"EmployerTypeValue"'
     },
-    shareData: {
+    EmployerTypeSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EmployerTypeSavedAt"'
+    },
+    EmployerTypeChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"EmployerTypeChangedAt"'
+    },
+    EmployerTypeSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EmployerTypeSavedBy"'
+    },
+    EmployerTypeChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"EmployerTypeChangedBy"'
+    },
+    NumberOfStaffValue: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"NumberOfStaffValue"'
+    },
+    NumberOfStaffSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NumberOfStaffSavedAt"'
+    },
+    NumberOfStaffChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NumberOfStaffChangedAt"'
+    },
+    NumberOfStaffSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NumberOfStaffSavedBy"'
+    },
+    NumberOfStaffChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NumberOfStaffChangedBy"'
+    },
+    OtherServicesSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"OtherServicesSavedAt"'
+    },
+    OtherServicesChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"OtherServicesChangedAt"'
+    },
+    OtherServicesSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"OtherServicesSavedBy"'
+    },
+    OtherServicesChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"OtherServicesChangedBy"'
+    },
+    CapacityServicesSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CapacityServicesSavedAt"'
+    },
+    CapacityServicesChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"CapacityServicesChangedAt"'
+    },
+    CapacityServicesSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CapacityServicesSavedBy"'
+    },
+    CapacityServicesChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"CapacityServicesChangedBy"'
+    },
+    ShareDataValue: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      field: '"ShareData"'
+      field: '"ShareDataValue"'
+    },
+    ShareDataSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ShareDataSavedAt"'
+    },
+    ShareDataChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ShareDataChangedAt"'
+    },
+    ShareDataSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ShareDataSavedBy"'
+    },
+    ShareDataChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ShareDataChangedBy"'
     },
     shareWithCQC: {
       type: DataTypes.BOOLEAN,
@@ -61,33 +172,125 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"ShareDataWithLA"'
     },
-    numberOfStaff: {
-      type: DataTypes.INTEGER,
+    ShareWithLASavedAt : {
+      type: DataTypes.DATE,
       allowNull: true,
-      field: '"NumberOfStaff"'
+      field: '"ShareWithLASavedAt"'
     },
-    vacancies : {
+    ShareWithLAChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ShareWithLAChangedAt"'
+    },
+    ShareWithLASavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ShareWithLASavedBy"'
+    },
+    ShareWithLAChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ShareWithLAChangedBy"'
+    },
+    VacanciesValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
-      field: '"Vacancies"'
+      field: '"VacanciesValue"'
     },
-    starters : {
+    VacanciesSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"VacanciesSavedAt"'
+    },
+    VacanciesChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"VacanciesChangedAt"'
+    },
+    VacanciesSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"VacanciesSavedBy"'
+    },
+    VacanciesChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"VacanciesChangedBy"'
+    },
+    StartersValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
-      field: '"Starters"'
+      field: '"StartersValue"'
     },
-    leavers : {
+    StartersSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"StartersSavedAt"'
+    },
+    StartersChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"StartersChangedAt"'
+    },
+    StartersSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"StartersSavedBy"'
+    },
+    StartersChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"StartersChangedBy"'
+    },
+    LeaversValue : {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ["None","Don't know", "With Jobs"],
-      field: '"Leavers"'
+      field: '"LeaversValue"'
+    },
+    LeaversSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LeaversSavedAt"'
+    },
+    LeaversChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LeaversChangedAt"'
+    },
+    LeaversSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LeaversSavedBy"'
+    },
+    LeaversChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LeaversChangedBy"'
     },
     nmdsId: {
       type: DataTypes.TEXT,
       allowNull: false,
       field: '"NmdsID"'
+    },
+    created: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'created'
+    },
+    updated: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+      field: 'updated'
+    },
+    updatedBy: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: 'updatedby'
     },
   }, {
     tableName: '"Establishment"',
@@ -97,6 +300,11 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Establishment.associate = (models) => {
+    Establishment.hasMany(models.user, {
+      foreignKey: 'establishmentId',
+      sourceKey: 'id',
+      as: 'users'
+    });
     Establishment.belongsTo(models.services, {
       foreignKey: 'mainServiceId',
       targetKey: 'id',
@@ -122,6 +330,11 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'establishmentId',
       sourceKey: 'id',
       as: 'localAuthorities'
+    });
+    Establishment.hasMany(models.establishmentAudit, {
+      foreignKey: 'establishmentFk',
+      sourceKey: 'id',
+      as: 'auditEvents'
     });
   };
 
