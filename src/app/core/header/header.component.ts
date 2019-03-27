@@ -1,8 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Component } from '@angular/core';
 
 import { AuthService } from '../services/auth-service';
 
@@ -10,39 +6,17 @@ import { AuthService } from '../services/auth-service';
   selector: 'app-header',
   templateUrl: './header.component.html',
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent {
   public fullname: string;
-  public updateWorkplace: boolean;
-  public updateStaffRecords: boolean;
-  private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private authService: AuthService,
-    private establishmentService: EstablishmentService,
-    private workerService: WorkerService
-  ) {}
-
-  ngOnInit() {
-    this.subscriptions.add(
-      this.workerService
-        .getAllWorkers()
-        .pipe(take(1))
-        .subscribe(workers => {
-          this.updateStaffRecords = workers.length > 0;
-        })
-    );
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
+  constructor(private authService: AuthService) {}
 
   isLoggedIn() {
     return this.authService.isLoggedIn;
   }
 
   hasFullname() {
-    return (this.fullname = this.authService.fullname.split(' ')[0]);
+    return this.authService.fullname ? this.authService.fullname.split(' ')[0] : null;
   }
 
   signOut(event) {
