@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+
 import { AuthService } from '../services/auth-service';
 
 @Component({
@@ -15,7 +16,7 @@ export class HeaderComponent {
   }
 
   hasFullname() {
-    return this.fullname = this.authService.fullname;
+    return (this.fullname = this.authService.fullname.split(' ')[0]);
   }
 
   signOut(event) {
