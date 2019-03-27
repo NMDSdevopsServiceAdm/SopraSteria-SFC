@@ -1,6 +1,16 @@
 <div class="row">
   <div class="col-md-8">
     <h3 class="fs-24 mb-4 text-weight-bold">Home</h3>
+    <p *ngIf="updateWorkplace || updateStaffRecords">What you need to do first.</p>
+    <app-inset-text *ngIf="updateWorkplace" color="todo">
+      You need to provide information on your workplace.<br />
+      <a routerLink="/type-of-employer">Add workplace information</a>
+    </app-inset-text>
+
+    <app-inset-text *ngIf="updateStaffRecords" color="todo">
+      You need to provide information on all your staff.<br />
+      <a routerLink="/worker/start-screen">Add staff records</a>
+    </app-inset-text>
   </div>
   <div class="col-md-4">
     <h3 class="fs-24 mb-4 text-weight-bold"><a class="fs-24 link-nounderline" routerLink="/notifications">Notifications</a></h3>
