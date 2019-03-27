@@ -23,7 +23,7 @@ router.route('/').get(async (req, res) => {
     return res.status(400).send();
   }
 
-  /* const thisEstablishment = new Establishment.Establishment(req.username);
+  const thisEstablishment = new Establishment.Establishment(req.username);
 
   try {
     if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
@@ -46,8 +46,7 @@ router.route('/').get(async (req, res) => {
 
     console.error('establishment::services GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
-  } */
-  return res.status(200).send({});
+  }
 });
 
 // updates the current set of other services for the known establishment
@@ -66,8 +65,7 @@ router.route('/').post(async (req, res) => {
     return res.status(400).send();
   }
   
-
-  /* const thisEstablishment = new Establishment.Establishment(req.username);
+  const thisEstablishment = new Establishment.Establishment(req.username);
   try {
     // before updating an Establishment, we need to be sure the Establishment is
     //  available to the given user. The best way of doing that
@@ -79,9 +77,9 @@ router.route('/').post(async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
-      // With this endpoint we're only interested in services
+      // With this endpoint we're only interested in service users
       const isValidEstablishment = await thisEstablishment.load({
-        services: req.body.services
+        serviceUsers: req.body.serviceUsers
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
@@ -112,8 +110,7 @@ router.route('/').post(async (req, res) => {
     } else {
       console.error("Unexpected exception: ", err);
     }
-  } */
-  return res.status(200).send({});
+  }
 });
 
 module.exports = router;
