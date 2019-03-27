@@ -9,7 +9,7 @@ import { UserService } from '@core/services/user.service';
 })
 export class DashboardComponent implements OnInit {
   public establishment: any;
-  public lastSignedIn = null;
+  public lastLogin = null;
   public dateFormat = DEFAULT_DATE_DISPLAY_FORMAT;
 
   constructor(private authService: AuthService, private userService: UserService) {}
@@ -20,6 +20,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.establishment = this.authService.establishment;
-    this.lastSignedIn = this.authService.lastSignedIn;
+    this.lastLogin = this.authService.lastLogin;
   }
 }

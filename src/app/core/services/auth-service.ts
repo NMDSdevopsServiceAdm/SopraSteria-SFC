@@ -27,7 +27,7 @@ interface LoggedInEstablishment {
 interface LoggedInSession {
   fullname: string;
   isFirstLogin: boolean;
-  expiryDate: string;
+  lastLogin: string;
   establishment: LoggedInEstablishment;
   mainService: LoggedInMainService;
 }
@@ -83,8 +83,8 @@ export class AuthService {
       return false;
     }
   }
-  public get lastSignedIn() {
-    return this._session ? this._session.expiryDate : null;
+  public get lastLogin() {
+    return this._session ? this._session.lastLogin : null;
   }
 
   public resetFirstLogin(): boolean {
