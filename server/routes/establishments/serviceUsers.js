@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['ServiceUsers'];
+const filteredProperties = ['Name', 'ServiceUsers'];
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -44,7 +44,7 @@ router.route('/').get(async (req, res) => {
       null,
       `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
 
-    console.error('establishment::services GET/:eID - failed', thisError.message);
+    console.error('establishment::serviceUsers GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
 });
@@ -102,10 +102,10 @@ router.route('/').post(async (req, res) => {
   } catch (err) {
     
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error("Establishment::services POST: ", err.message);
+      console.error("Establishment::serviceUsers POST: ", err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error("Establishment::services POST: ", err.message);
+      console.error("Establishment::serviceUsers POST: ", err.message);
       return res.status(503).send(err.safe);
     } else {
       console.error("Unexpected exception: ", err);

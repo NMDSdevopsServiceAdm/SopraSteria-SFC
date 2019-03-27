@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['ShareData'];
+const filteredProperties = ['Name', 'ShareData'];
 
 // gets current 'share data' options for the known establishment
 router.route('/').get(async (req, res) => {

@@ -4,7 +4,7 @@ const models = require('../../models');
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['NumberOfStaff'];
+const filteredProperties = ['Name', 'NumberOfStaff'];
 
 // gets current staff for the known establishment
 router.route('/').get(async (req, res) => {
