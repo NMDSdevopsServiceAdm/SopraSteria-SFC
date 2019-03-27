@@ -12,11 +12,15 @@ const vacanciesProperty = require("./properties/vacanciesProperty").VacanciesPro
 const startersProperty = require("./properties/startersProperty").StartersProperty;
 const leaversProperty = require("./properties/leaversProperty").LeaversProperty;
 const serviceUsersProperty = require("./properties/serviceUsersProperty").ServiceUsersProperty;
+const nameProperty = require("./properties/nameProperty").NameProperty;
+const mainServiceProperty = require("./properties/mainServiceProperty").MainServiceProperty;
 
 class EstablishmentPropertyManager {
     constructor() {
         this._thisManager = new Manager.PropertyManager();
 
+        this._thisManager.registerProperty(nameProperty);
+        this._thisManager.registerProperty(mainServiceProperty);
         this._thisManager.registerProperty(employerTypeProperty);
         this._thisManager.registerProperty(staffProperty);
         this._thisManager.registerProperty(otherServicesProperty);
