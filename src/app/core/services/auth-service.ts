@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Params, Router, UrlSegment } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
@@ -43,7 +43,7 @@ export class AuthService {
   private _session: LoggedInSession = null;
   private _token: string = null;
 
-  redirectUrl: string = null;
+  public redirect: { url: UrlSegment[]; fragment?: string; queryParams?: Params };
 
   // Observable login stream
   public auth$: Observable<LoginApiModel> = this._auth$.asObservable();
