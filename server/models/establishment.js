@@ -15,12 +15,6 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"EstablishmentUID"'
     },
-    name: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-      unique: true,
-      field: '"Name"'
-    },
     address: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -41,10 +35,56 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"IsRegulated"'
     },
-    mainServiceId: {
+    NameValue: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,
+      field: '"NameValue"'
+    },
+    NameSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NameSavedAt"'
+    },
+    NameChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NameChangedAt"'
+    },
+    NameSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NameSavedBy"'
+    },
+    NameChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NameChangedBy"'
+    },
+    MainServiceFKValue: {
       type: DataTypes.INTEGER,
       allowNull: true,
-      field: '"MainServiceId"'
+      field: '"MainServiceFKValue"'
+    },
+    MainServiceFKSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"MainServiceFKSavedAt"'
+    },
+    MainServiceFKChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"MainServiceFKChangedAt"'
+    },
+    MainServiceFKSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"MainServiceFKSavedBy"'
+    },
+    MainServiceFKChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"MainServiceFKChangedBy"'
     },
     EmployerTypeValue: {
       type: DataTypes.ENUM,
@@ -116,6 +156,26 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"OtherServicesChangedBy"'
+    },
+    ServiceUsersSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ServiceUsersSavedAt"'
+    },
+    ServiceUsersChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"ServiceUsersChangedAt"'
+    },
+    ServiceUsersSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ServiceUsersSavedBy"'
+    },
+    ServiceUsersChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ServiceUsersChangedBy"'
     },
     CapacityServicesSavedAt : {
       type: DataTypes.DATE,
@@ -306,7 +366,7 @@ module.exports = function(sequelize, DataTypes) {
       as: 'users'
     });
     Establishment.belongsTo(models.services, {
-      foreignKey: 'mainServiceId',
+      foreignKey: 'MainServiceFKValue',
       targetKey: 'id',
       as: 'mainService'
     });
@@ -315,6 +375,12 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'establishmentId',
       targetKey: 'id',
       as: 'otherServices'
+    });
+    Establishment.belongsToMany(models.serviceUsers, {
+      through: 'establishmentServiceUsers',
+      foreignKey: 'establishmentId',
+      targetKey: 'id',
+      as: 'serviceUsers'
     });
     Establishment.hasMany(models.establishmentCapacity, {
       foreignKey: 'establishmentId',

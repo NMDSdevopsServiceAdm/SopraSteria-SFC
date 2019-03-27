@@ -25,7 +25,7 @@ router.post('/',async function(req, res) {
           attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId', "UserRoleValue"],
           include: [{
             model: models.establishment,
-            attributes: ['id', 'uid', 'name', 'isRegulated', 'nmdsId'],
+            attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId'],
             include: [{
               model: models.services,
               as: 'mainService',
@@ -153,7 +153,7 @@ const formatSuccessulLoginResponse = (fullname, firstLoginDate, role, establishm
     establishment: {
       id: establishment.id,
       uid: establishment.uid,
-      name: establishment.name,
+      name: establishment.NameValue,
       isRegulated: establishment.isRegulated,
       nmdsId: establishment.nmdsId
     },

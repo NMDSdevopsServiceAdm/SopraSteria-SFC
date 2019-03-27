@@ -188,12 +188,12 @@ class Establishment {
             try {
                 const creationDocument = {
                     uid: this.uid,
-                    name: this._name,
+                    NameValue: this._name,
                     address: this._address,
                     postcode: this._postcode,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
-                    mainServiceId: this._mainService.id,
+                    MainServiceFKValue: this._mainService.id,
                     nmdsId: this._nmdsId,
                     updatedBy: savedBy,
                     ShareDataValue: false,
@@ -456,6 +456,13 @@ class Establishment {
                     ['name', 'ASC']
                   ]
                 },{
+                  model: models.serviceUsers,
+                  as: 'serviceUsers',
+                  attributes: ['id', 'service', 'group', 'seq'],
+                  order: [
+                    ['seq', 'ASC']
+                  ]
+                },{
                   model: models.services,
                   as: 'mainService',
                   attributes: ['id', 'name']
@@ -523,7 +530,7 @@ class Establishment {
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
 
-                this._name = fetchResults.name;
+                this._name = fetchResults.NameValue;
                 this._address = fetchResults.address;
                 this._locationId = fetchResults.locationId;
                 this._postcode = fetchResults.postcode;
