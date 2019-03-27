@@ -71,7 +71,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   clickBack() {
-
     if (this.registration.userRoute) {
       const routeArray = this.registration.userRoute.route;
       this.currentSection = this.registration.userRoute.currentPage;
@@ -146,7 +145,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
     );
   }
 
-  updateSectionNumbers(data?) {
+  updateSectionNumbers(data) {
     if (this.registration.userRoute) {
       data['userRoute'] = this.registration.userRoute;
       data.userRoute['currentPage'] = this.currentSection;
@@ -157,11 +156,11 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
 
       data['userRoute'] = {
         currentPage: this.currentSection,
-        route: []
+        route: [
+          '/registered-question',
+          '/select-workplace'
+        ]
       };
-
-      data.userRoute['route'].push('/registered-question');
-      data.userRoute['route'].push('/select-workplace');
 
       this._registrationService.updateState(data);
 
