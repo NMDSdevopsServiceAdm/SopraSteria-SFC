@@ -27,6 +27,7 @@ interface LoggedInEstablishment {
 interface LoggedInSession {
   fullname: string;
   isFirstLogin: boolean;
+  lastLogin: string;
   establishment: LoggedInEstablishment;
   mainService: LoggedInMainService;
 }
@@ -81,6 +82,9 @@ export class AuthService {
     } else {
       return false;
     }
+  }
+  public get lastLogin() {
+    return this._session ? this._session.lastLogin : null;
   }
 
   public resetFirstLogin(): boolean {

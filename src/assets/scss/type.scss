@@ -88,10 +88,12 @@ strong {
   @include rem(line-height, 48px);
 }
 
-.fs-36 {
-
+%fs-36 {
   @include rem(font-size, 36px);
   @include rem(line-height, 36px);
+}
+.fs-36 {
+  @extend %fs-36;
 }
 
 .fs-27 {
