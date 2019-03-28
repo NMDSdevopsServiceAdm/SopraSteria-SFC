@@ -134,9 +134,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
           }
         },
         (err: RegistrationTrackerError) => {
-
-          console.log(err);
-          this.cqcPostcodeApiError = err.friendlyMessage;
+          this.cqcPostcodeApiError = err.message;
         },
         () => {
           console.log('Get location by postcode complete');
@@ -194,6 +192,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.messageService.clearAll()
+    this.messageService.clearAll();
   }
 }

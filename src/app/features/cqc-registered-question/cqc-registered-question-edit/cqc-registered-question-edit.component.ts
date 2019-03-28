@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegistrationModel } from '@core/model/registration.model';
-import { RegistrationTrackerError } from '@core/model/registrationTrackerError.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { debounceTime } from 'rxjs/operators';
 import { CqcRegisteredQuestionEnteredLocation } from './cqc-regsitered-check';
+import { MessageService } from '@core/services/message.service';
 
 @Component({
   selector: 'app-cqc-registered-question-edit',
   templateUrl: './cqc-registered-question-edit.component.html',
   styleUrls: ['./cqc-registered-question-edit.component.scss'],
 })
-export class CqcRegisteredQuestionEditComponent implements OnInit {
+export class CqcRegisteredQuestionEditComponent implements OnInit, OnDestroy {
   cqcRegisteredQuestionForm: FormGroup;
   registration: RegistrationModel;
   CqcRegisteredQuestionEnteredLocation = new CqcRegisteredQuestionEnteredLocation();
@@ -56,7 +56,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     private _registrationService: RegistrationService,
     private router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private messageService: MessageService
   ) {}
 
   // Get registered question
@@ -237,8 +238,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
             this.router.navigate(['/select-workplace']);
           }
         },
-        (err: RegistrationTrackerError) => {
-          this.cqcPostcodeApiError = err.friendlyMessage;
+        (err: any) => {
+          this.cqcPostcodeApiError = err;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
         () => {
@@ -255,8 +256,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
             this.router.navigate(['/select-workplace']);
           }
         },
-        (err: RegistrationTrackerError) => {
-          this.cqclocationApiError = err.friendlyMessage;
+        (err: any) => {
+          this.cqclocationApiError = err;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
         () => {
@@ -273,8 +274,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
             this._registrationService.updateState(data);
           }
         },
-        (err: RegistrationTrackerError) => {
-          this.nonCqcPostcodeApiError = err.friendlyMessage;
+        (err: any) => {
+
+          this.nonCqcPostcodeApiError = err;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
         () => {
@@ -288,15 +290,28 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   // Check if user is CQC Registered or not and display appropriate fields
   // If not CQC registered is selected set postcodes validation
   registeredQuestionChanged(value: string): void {
+
     this.registeredQuestionSelectedValue = value;
     const notRegisteredPostcode = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode');
 
     if (this.registeredQuestionSelectedValue === 'false') {
+      this.resetFormInputsOnChange('nonCqcReg');
       notRegisteredPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
     } else if (this.registeredQuestionSelectedValue === 'true') {
+      this.resetFormInputsOnChange('cqcReg');
       notRegisteredPostcode.setValidators(Validators.maxLength(8));
     }
     notRegisteredPostcode.updateValueAndValidity();
+  }
+
+  resetFormInputsOnChange(isReg) {
+    if (isReg  === 'cqcReg') {
+      this.cqcRegisteredPostcode.setValue('');
+      this.cqcRegisteredLocationId.setValue('');
+    }
+    else {
+      this.notRegisteredPostcode.setValue('');
+    }
   }
 
   // Routing check
@@ -330,5 +345,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
     // clear default location data
     reg.locationdata = [{}];
     reg.locationdata[0]['isRegulated'] = false;
+  }
+
+  ngOnDestroy() {
+    this.messageService.clearAll();
   }
 }
