@@ -16,7 +16,7 @@ export class HeaderComponent {
   }
 
   hasFullname() {
-    return this.authService.fullname ? this.authService.fullname.split(' ')[0] : null;
+    return (this.fullname = this.authService.fullname ? this.authService.fullname.split(' ')[0] : null);
   }
 
   signOut(event) {
