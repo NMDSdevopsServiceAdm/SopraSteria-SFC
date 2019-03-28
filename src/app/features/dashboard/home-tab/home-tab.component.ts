@@ -23,8 +23,6 @@ export class HomeTabComponent implements OnInit {
         .pipe(take(1))
         .subscribe(workers => {
           this.updateStaffRecords = !(workers.length > 0);
-          console.log(this.updateStaffRecords);
-          console.log(workers.length);
         })
     );
 
