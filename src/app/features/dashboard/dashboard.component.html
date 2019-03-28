@@ -21,7 +21,7 @@
       <p>Workplace ID: {{ establishment?.nmdsId }}</p>
     </div>
     <div class="col-md-6">
-      <p class="text-right" *ngIf="lastLogin">Last signed in {{ lastLogin | date : 'd MMMM y' }}</p>
+      <p class="text-right" *ngIf="lastLoggedIn">Last signed in {{ lastLoggedIn | date : 'd MMMM y' }}</p>
     </div>
   </div>
 
