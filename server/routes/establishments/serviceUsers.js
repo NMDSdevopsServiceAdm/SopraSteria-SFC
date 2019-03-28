@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['ServiceUsers'];
+const filteredProperties = ['Name', 'ServiceUsers'];
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
@@ -23,7 +23,7 @@ router.route('/').get(async (req, res) => {
     return res.status(400).send();
   }
 
-  /* const thisEstablishment = new Establishment.Establishment(req.username);
+  const thisEstablishment = new Establishment.Establishment(req.username);
 
   try {
     if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
@@ -44,10 +44,9 @@ router.route('/').get(async (req, res) => {
       null,
       `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
 
-    console.error('establishment::services GET/:eID - failed', thisError.message);
+    console.error('establishment::serviceUsers GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
-  } */
-  return res.status(200).send({});
+  }
 });
 
 // updates the current set of other services for the known establishment
@@ -66,8 +65,7 @@ router.route('/').post(async (req, res) => {
     return res.status(400).send();
   }
   
-
-  /* const thisEstablishment = new Establishment.Establishment(req.username);
+  const thisEstablishment = new Establishment.Establishment(req.username);
   try {
     // before updating an Establishment, we need to be sure the Establishment is
     //  available to the given user. The best way of doing that
@@ -79,9 +77,9 @@ router.route('/').post(async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
-      // With this endpoint we're only interested in services
+      // With this endpoint we're only interested in service users
       const isValidEstablishment = await thisEstablishment.load({
-        services: req.body.services
+        serviceUsers: req.body.serviceUsers
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
@@ -104,16 +102,15 @@ router.route('/').post(async (req, res) => {
   } catch (err) {
     
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error("Establishment::services POST: ", err.message);
+      console.error("Establishment::serviceUsers POST: ", err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error("Establishment::services POST: ", err.message);
+      console.error("Establishment::serviceUsers POST: ", err.message);
       return res.status(503).send(err.safe);
     } else {
       console.error("Unexpected exception: ", err);
     }
-  } */
-  return res.status(200).send({});
+  }
 });
 
 module.exports = router;

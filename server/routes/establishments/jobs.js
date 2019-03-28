@@ -4,7 +4,7 @@ const router = express.Router({mergeParams: true});
 const JobFormatters = require('../../models/api/jobs');
 
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['Vacancies', 'Starters', 'Leavers'];
+const filteredProperties = ['Name', 'Vacancies', 'Starters', 'Leavers'];
 
 // gets current job quotas for the known establishment
 router.route('/').get(async (req, res) => {

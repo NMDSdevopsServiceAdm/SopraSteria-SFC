@@ -7,6 +7,8 @@ const Authorization = require('../../utils/security/isAuthenticated');
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
 
+const Name = require('./name');
+const MainService = require('./mainService');
 const EmployerType = require('./employerType');
 const Services = require('./services');
 const ServiceUsers = require('./serviceUsers');
@@ -19,6 +21,8 @@ const Worker = require('./worker');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
+router.use('/:id/name', Name);
+router.use('/:id/mainService', MainService);
 router.use('/:id/employerType', EmployerType);
 router.use('/:id/services', Services);
 router.use('/:id/serviceUsers', ServiceUsers);

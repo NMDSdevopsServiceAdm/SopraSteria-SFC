@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
 
+// all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['Name', 'ShareData'];
+const filteredProperties = ['Name'];
 
-// gets current 'share data' options for the known establishment
+// gets current employer type for the known establishment
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
 
@@ -29,6 +30,7 @@ router.route('/').get(async (req, res) => {
   try {
     if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
       // show only brief info on Establishment
+
       return res.status(200).json(thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, filteredProperties));
     } else {
       // not found worker
@@ -44,12 +46,12 @@ router.route('/').get(async (req, res) => {
       null,
       `Failed to retrieve Establishment with id/uid: ${establishmentId}`);
 
-    console.error('establishment::share GET/:eID - failed', thisError.message);
+    console.error('establishment::name GET/:eID - failed', thisError.message);
     return res.status(503).send(thisError.safe);
   }
 });
 
-// updates the current share options for the known establishment
+// updates the current employer type for the known establishment
 router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
 
@@ -79,9 +81,9 @@ router.route('/').post(async (req, res) => {
 
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
-      // With this endpoint we're only interested in share (options)
+      // With this endpoint we're only interested in name
       const isValidEstablishment = await thisEstablishment.load({
-        share: req.body.share
+        name: req.body.name
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
@@ -100,10 +102,10 @@ router.route('/').post(async (req, res) => {
   } catch (err) {
     
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error("Establishment::share POST: ", err.message);
+      console.error("Establishment::name POST: ", err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error("Establishment::share POST: ", err.message);
+      console.error("Establishment::name POST: ", err.message);
       return res.status(503).send(err.safe);
     } else {
       console.error("Unexpected exception: ", err);

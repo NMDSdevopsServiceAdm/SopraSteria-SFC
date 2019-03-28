@@ -4,7 +4,7 @@ const models = require('../../models');
 const LaFormatters = require('../../models/api/la');
 
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['ShareWithLA'];
+const filteredProperties = ['Name', 'ShareWithLA'];
 
 // gets current set of Local Authorities to share with for the known establishment
 router.route('/').get(async (req, res) => {

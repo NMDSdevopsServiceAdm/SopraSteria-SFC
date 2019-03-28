@@ -424,15 +424,17 @@ router.route('/')
           defaultError = responseErrors.establishment;
           const newEstablishment = new EstablishmentModel(Logindata.UserName);
           newEstablishment.initialise(
-            Estblistmentdata.Name,
             Estblistmentdata.Address,
             Estblistmentdata.LocationID,
             Estblistmentdata.PostCode,
             Estblistmentdata.IsRegulated,
-            Estblistmentdata.MainServiceId,
             Estblistmentdata.NmdsId
           );
           await newEstablishment.load({
+            name: Estblistmentdata.Name,
+            mainService: {
+              id: Estblistmentdata.MainServiceId
+            }
           });    // no Establishment properties on registration
           if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
             await newEstablishment.save(Logindata.UserName, 0, t);

@@ -85,7 +85,7 @@ class Establishment {
         return this._username;
     }
     get name() {
-        return this._name;
+        return this._properties.get('Name') ? this._properties.get('Name').property : null;
     };
     get address() {
         return this._address;
@@ -100,7 +100,7 @@ class Establishment {
         return this._isRegulated;
     };
     get mainService() {
-        return this._mainService;
+        return this._properties.get('MainServiceFK') ? this._properties.get('MainServiceFK').property : null;
     };
     get nmdsId() {
         return this._nmdsId;
@@ -129,15 +129,11 @@ class Establishment {
     }
 
     // external method to initialise the mandatory non-extendable properties
-    initialise(name, address, locationId, postcode, isRegulated, mainServiceId, nmdsId) {
-        this._name = name;
+    initialise(address, locationId, postcode, isRegulated, nmdsId) {
         this._address = address;
         this._postcode = postcode;
         this._isRegulated = isRegulated;
         this._locationId = locationId;
-        this._mainService = {
-            id: mainServiceId
-        };
         this._nmdsId = nmdsId;
     }
 
@@ -188,12 +184,12 @@ class Establishment {
             try {
                 const creationDocument = {
                     uid: this.uid,
-                    name: this._name,
+                    NameValue: this.name,
                     address: this._address,
                     postcode: this._postcode,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
-                    mainServiceId: this._mainService.id,
+                    MainServiceFKValue: this.mainService.id,
                     nmdsId: this._nmdsId,
                     updatedBy: savedBy,
                     ShareDataValue: false,
@@ -456,6 +452,13 @@ class Establishment {
                     ['name', 'ASC']
                   ]
                 },{
+                  model: models.serviceUsers,
+                  as: 'serviceUsers',
+                  attributes: ['id', 'service', 'group', 'seq'],
+                  order: [
+                    ['seq', 'ASC']
+                  ]
+                },{
                   model: models.services,
                   as: 'mainService',
                   attributes: ['id', 'name']
@@ -523,7 +526,7 @@ class Establishment {
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
 
-                this._name = fetchResults.name;
+                this._name = fetchResults.NameValue;
                 this._address = fetchResults.address;
                 this._locationId = fetchResults.locationId;
                 this._postcode = fetchResults.postcode;
@@ -754,7 +757,7 @@ class Establishment {
                 myDefaultJSON.locationRef = this.locationId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
-                myDefaultJSON.mainService = ServiceFormatters.singleService(this.mainService);
+                //myDefaultJSON.mainService = ServiceFormatters.singleService(this.mainService);
             }
 
             myDefaultJSON.created = this.created.toJSON();
@@ -795,21 +798,20 @@ class Establishment {
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
         try {
-            // const fullnameProperty = this._properties.get('FullName');
-            // if (!(fullnameProperty && fullnameProperty.isInitialised && fullnameProperty.valid)) {
-            //     allExistAndValid = false;
-            //     this._log(Establishment.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid fullname');
-            // }
-    
             const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
             if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
                 allExistAndValid = false;
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
             }
 
-            if (!(this._name)) {
+            if (!(this.name)) {
                 allExistAndValid = false;
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
+            }
+
+            if (!(this.mainService)) {
+                allExistAndValid = false;
+                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid main service');
             }
 
             if (!(this._address)) {

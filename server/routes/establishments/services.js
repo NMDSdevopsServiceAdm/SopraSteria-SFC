@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 const Establishment = require('../../models/classes/establishment');
-const filteredProperties = ['OtherServices'];
+const filteredProperties = ['Name', 'OtherServices'];
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
