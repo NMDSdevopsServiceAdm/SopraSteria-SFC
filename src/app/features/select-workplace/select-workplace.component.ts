@@ -5,7 +5,6 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { MessageService } from '../../core/services/message.service';
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
 import { RegistrationTrackerError } from './../../core/model/registrationTrackerError.model';
@@ -35,7 +34,11 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder, private messageService: MessageService) { }
+  constructor(
+    private _registrationService: RegistrationService,
+    private router: Router,
+    private fb: FormBuilder
+  ) { }
 
   ngOnInit() {
     this.selectWorkplaceForm = this.fb.group({
@@ -134,9 +137,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
           }
         },
         (err: RegistrationTrackerError) => {
-
-          console.log(err);
-          this.cqcPostcodeApiError = err.friendlyMessage;
+          this.cqcPostcodeApiError = err.message;
         },
         () => {
           console.log('Get location by postcode complete');
@@ -194,6 +195,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.messageService.clearAll()
+    this.subscriptions.unsubscribe();
   }
 }

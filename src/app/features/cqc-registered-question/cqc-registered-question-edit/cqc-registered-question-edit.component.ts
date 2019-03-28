@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RegistrationModel } from '@core/model/registration.model';
-import { RegistrationTrackerError } from '@core/model/registrationTrackerError.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { debounceTime } from 'rxjs/operators';
@@ -237,8 +236,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
             this.router.navigate(['/select-workplace']);
           }
         },
-        (err: RegistrationTrackerError) => {
-          this.cqcPostcodeApiError = err.friendlyMessage;
+        (err: any) => {
+          this.cqcPostcodeApiError = err;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
         () => {
@@ -255,8 +254,8 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
             this.router.navigate(['/select-workplace']);
           }
         },
-        (err: RegistrationTrackerError) => {
-          this.cqclocationApiError = err.friendlyMessage;
+        (err: any) => {
+          this.cqclocationApiError = err;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
         () => {
@@ -273,8 +272,9 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
             this._registrationService.updateState(data);
           }
         },
-        (err: RegistrationTrackerError) => {
-          this.nonCqcPostcodeApiError = err.friendlyMessage;
+        (err: any) => {
+
+          this.nonCqcPostcodeApiError = err;
           this.setCqcRegPostcodeMessage(this.cqcRegisteredPostcode);
         },
         () => {
@@ -288,15 +288,28 @@ export class CqcRegisteredQuestionEditComponent implements OnInit {
   // Check if user is CQC Registered or not and display appropriate fields
   // If not CQC registered is selected set postcodes validation
   registeredQuestionChanged(value: string): void {
+
     this.registeredQuestionSelectedValue = value;
     const notRegisteredPostcode = this.cqcRegisteredQuestionForm.get('notRegisteredPostcode');
 
     if (this.registeredQuestionSelectedValue === 'false') {
+      this.resetFormInputsOnChange('nonCqcReg');
       notRegisteredPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
     } else if (this.registeredQuestionSelectedValue === 'true') {
+      this.resetFormInputsOnChange('cqcReg');
       notRegisteredPostcode.setValidators(Validators.maxLength(8));
     }
     notRegisteredPostcode.updateValueAndValidity();
+  }
+
+  resetFormInputsOnChange(isReg) {
+    if (isReg  === 'cqcReg') {
+      this.cqcRegisteredPostcode.setValue('');
+      this.cqcRegisteredLocationId.setValue('');
+    }
+    else {
+      this.notRegisteredPostcode.setValue('');
+    }
   }
 
   // Routing check
