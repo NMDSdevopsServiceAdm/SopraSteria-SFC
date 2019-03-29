@@ -42,7 +42,7 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
         this._allCapacities = document.allServiceCapacityQuestions;
         this._mainService = document.mainService;
 
-        if (document.capacity) {
+        if (document.CapacityServicesSavedAt && document.capacity) {
             return document.capacity.map(thisCapacity => {
                 return {
                     answer: thisCapacity.answer,
@@ -144,7 +144,7 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
     formatCapacityResponse(mainService, capacities, allCapacities) {
         return {
             mainService: ServiceFormatters.singleService(mainService),
-            capacities: CapacityFormatters.capacitiesJSON(capacities),
+            capacities: capacities ? CapacityFormatters.capacitiesJSON(capacities) : undefined,
             allServiceCapacities: CapacityFormatters.serviceCapacitiesByCategoryJSON(
                 this.mergeQuestionsWithAnswers(
                     this.reorderAndReformatMainServiceQuestion(allCapacities, mainService.id),

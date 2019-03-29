@@ -64,7 +64,7 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
         );
         this._mainService = document.mainService;
 
-        if (document.otherServices) {
+        if (document.OtherServicesSavedAt && document.otherServices) {
             return document.otherServices.map(thisService => {
                 return {
                     id: thisService.id,
@@ -118,7 +118,7 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
     formatOtherServicesResponse(mainService, otherServices, allServices) {
         return {
             mainService: ServiceFormatters.singleService(mainService),
-            otherServices: ServiceFormatters.createServicesByCategoryJSON(otherServices, false, false, false),
+            otherServices: otherServices ? ServiceFormatters.createServicesByCategoryJSON(otherServices, false, false, false) : undefined,
             allOtherServices: ServiceFormatters.createServicesByCategoryJSON(allServices, false, false, true),
         };
     }
