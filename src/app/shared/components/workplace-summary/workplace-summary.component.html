@@ -192,9 +192,14 @@
         -
       </ng-template>
       <ng-template #vacancies>
-        <ul>
-          <li *ngFor="let vacancy of workplace.Vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
-        </ul>
+        <ng-container *ngIf="workplace.Vacancies.constructor === Array">
+          <ul>
+            <li *ngFor="let vacancy of workplace.Vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
+          </ul>
+        </ng-container>
+        <ng-container *ngIf="workplace.Vacancies.constructor !== Array">
+          {{ workplace.Vacancies }}
+        </ng-container>
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -220,9 +225,14 @@
         -
       </ng-template>
       <ng-template #starters>
+          <ng-container *ngIf="workplace.Starters.constructor === Array">
         <ul>
           <li *ngFor="let starter of workplace.Starters">{{ starter.total }} {{ starter.title }}</li>
         </ul>
+        </ng-container>
+        <ng-container *ngIf="workplace.Starters.constructor !== Array">
+          {{ workplace.Starters }}
+        </ng-container>
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -248,9 +258,14 @@
         -
       </ng-template>
       <ng-template #leavers>
+          <ng-container *ngIf="workplace.Leavers.constructor === Array">
         <ul>
           <li *ngFor="let leaver of workplace.Leavers">{{ leaver.total }} {{ leaver.title }}</li>
         </ul>
+        </ng-container>
+        <ng-container *ngIf="workplace.Starters.constructor !== Array">
+          {{ workplace.Leavers }}
+        </ng-container>
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
