@@ -102,18 +102,7 @@
       </ng-template>
       <ng-template #capacities>
         <ul>
-          <li *ngFor="let capacities of workplace.capacities">
-            <ng-container [ngSwitch]="capacities.questionId">
-              <ng-container *ngSwitchCase="5">{{
-                capacities.answer
-                  | i18nPlural
-                    : {
-                        '=1': '# bed',
-                        other: '# beds'
-                      }
-              }}</ng-container>
-            </ng-container>
-          </li>
+          <li *ngFor="let capacity of capacityMessages">{{ capacity }}</li>
         </ul>
       </ng-template>
     </dd>
@@ -164,7 +153,7 @@
       Data sharing
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-template [ngIf]="!workplace.share?.enabled" [ngIfElse]="sharing">
+      <ng-template [ngIf]="!workplace.share?.enabled && workplace.share?.with?.length === 0" [ngIfElse]="sharing">
         -
       </ng-template>
       <ng-template #sharing>
@@ -172,9 +161,11 @@
           <ng-container *ngIf="workplace.share.with.includes('CQC')">
             <li>Care Quality Commission (CQC)</li>
           </ng-container>
-          <li *ngFor="let localAuthorities of workplace.localAuthorities">
-            {{ localAuthorities.name }} local authority
-          </li>
+          <ng-container *ngIf="workplace.share.with.includes('Local Authority')">
+            <li *ngFor="let localAuthorities of workplace.localAuthorities">
+              {{ localAuthorities.name }} local authority
+            </li>
+          </ng-container>
         </ul>
       </ng-template>
     </dd>
