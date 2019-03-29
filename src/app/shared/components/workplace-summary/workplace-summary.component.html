@@ -80,11 +80,11 @@
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/select-other-services']">
-        <ng-container *ngIf="!workplace.otherServices.length">
+        <ng-container *ngIf="!workplace.otherServices?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="workplace.otherServices.length">
+        <ng-container *ngIf="workplace.otherServices?.length">
           Change
         </ng-container>
         <span class="govuk-visually-hidden"> other services</span>
