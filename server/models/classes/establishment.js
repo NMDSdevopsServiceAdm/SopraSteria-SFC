@@ -650,7 +650,7 @@ class Establishment {
 
                 } else {
                     //  using just the first half of the postcode
-                    const [firstHalfOfPostcode] = results.postcode.split(' '); 
+                    const [firstHalfOfPostcode] = fetchResults.postcode.split(' '); 
                     
                     // must escape the string to prevent SQL injection
                     const fuzzyCssrIdMatch = await models.sequelize.query(
