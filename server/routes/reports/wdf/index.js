@@ -5,6 +5,7 @@ const router = express.Router();
 // security
 const Authorization = require('../../../utils/security/isAuthenticated');
 const isLocal = require('../../../utils/security/isLocalTest').isLocal;
+const WdfUtils = require('../../../utils/wdfEligibilityDate');
 
 // all user functionality is encapsulated
 const Establishment = require('../../../models/classes/establishment');
@@ -19,21 +20,14 @@ router.route('/establishment/:id').get(async (req, res) => {
     if(req.query.effectiveFrom) {
         effectiveFrom = new Date(req.query.effectiveFrom);
         
-        // NOTE - effectiveFrom must include milliseconds and trailing Z - e.g. ?effectiveFrom=2018-04-01T00:00:00.000Z
+        // NOTE - effectiveFrom must include milliseconds and trailing Z - e.g. ?effectiveFrom=2019-03-01T12:30:00.000Z
 
         if (effectiveFrom.toISOString() !== req.query.effectiveFrom) {
             console.error('report/wdf/establishment/:eID - effectiveFrom parameter incorrect');
             return res.status(400).send();
         }
     } else {
-        // calculate the effective from date
-        const today = new Date();
-        const yearStartMonth = 3;           // April (months start at 0)
-        if (today.getMonth() < 3) {
-            effectiveFrom = new Date(Date.UTC(today.getFullYear()-1, 3, 1));
-        } else {
-            effectiveFrom = new Date(Date.UTC(today.getFullYear(), 3, 1));
-        }
+        effectiveFrom = WdfUtils.wdfEligibilityDate();
     }
 
     // validating establishment id - must be a V4 UUID or it's an id

@@ -841,6 +841,57 @@ class Establishment {
 
         return allExistAndValid;
     }
+
+    // returns true if this establishment is WDF eligible as referenced from the
+    //  given effective date; otherwise returns false
+    async isWdfEligible(effectiveFrom) {
+        // TODO - mocked data
+        return Math.random() >= 0.5;
+    }
+
+    _isPropertyWdfBasicEligible(refEpoch, property) {
+        return property &&
+               property.valid &&
+               property.savedAt &&
+               property.savedAt.getTime() > refEpoch;
+    }
+
+    // returns the WDF eligibility of each WDF relevant property as referenced from
+    //  the given effect date
+    async wdf(effectiveFrom) {
+        const myWdf = {};
+        const effectiveFromEpoch = effectiveFrom.getTime();
+
+        // employer type
+        myWdf['employerType'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType'));
+
+        // main service & Other Service & Service Capacities & Service Users
+        myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK'));
+        myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices'));
+        myWdf['capacities'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CapacityServices'));
+        myWdf['serviceUsers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers'));
+
+        // vacancies, starters and leavers
+        myWdf['vacancies'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies'));
+        myWdf['starters'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters'));
+        myWdf['leavers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers'));
+
+        // TODO - mock data
+        const numStaff = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) ? this._properties.get('NumberOfStaff').property : 0;
+        myWdf['staff'] = numStaff === 0 ? false : Math.random() >= 0.5;                // TODO - cross-check numStaff against #workers (regardless of whether completed or not)
+        myWdf['weightedStaff'] = Math.random() >= 0.5;                                 // TODO - true if >= 90% of #workers completed
+        
+        return myWdf;
+    }
+
+    // returns the WDF eligibilty as JSON object
+    async wdfToJson(effectiveFrom) {
+        return {
+            effectiveFrom: effectiveFrom.toISOString(),
+            isEligible: await this.isWdfEligible(effectiveFrom),
+            ... await this.wdf(effectiveFrom)
+        };
+    }    
 };
 
 module.exports.Establishment = Establishment;
