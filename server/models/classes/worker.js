@@ -530,45 +530,79 @@ class Worker {
     };
 
     // returns a set of Workers based on given filter criteria (all if no filters defined) - restricted to the given Establishment
-    static async fetch(establishmentId, filters=null) {
+    static async fetch(establishmentId, effectiveFrom, filters=null) {
         const allWorkers = [];
-        const fetchResults = await models.worker.findAll({
-            where: {
-                establishmentFk: establishmentId,
-                archived: false
-            },
-            include: [
-                {
-                    model: models.job,
-                    as: 'mainJob',
-                    attributes: ['id', 'title']
-                  }
-            ],
-            attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", "created", "updated", "updatedBy"],
-            order: [
-                ['updated', 'DESC']
-            ]           
-        });
+        try {
 
-        if (fetchResults) {
-            fetchResults.forEach(thisWorker => {
-                allWorkers.push({
-                    uid: thisWorker.uid,
-                    nameOrId: thisWorker.NameOrIdValue,
-                    contract: thisWorker.ContractValue,
-                    mainJob: {
-                        jobId: thisWorker.mainJob.id,
-                        title: thisWorker.mainJob.title
-                    },
-                    completed: thisWorker.CompletedValue,
-                    created:  thisWorker.created.toJSON(),
-                    updated: thisWorker.updated.toJSON(),
-                    updatedBy: thisWorker.updatedBy
-                })
+            const fetchResults = await models.worker.findAll({
+                where: {
+                    establishmentFk: establishmentId,
+                    archived: false
+                },
+                include: [
+                    {
+                        model: models.job,
+                        as: 'mainJob',
+                        attributes: ['id', 'title']
+                      }
+                ],
+                attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", "created", "updated", "updatedBy"],
+                order: [
+                    ['updated', 'DESC']
+                ]           
             });
-        }
+    
+            // TODO: promise map (concurrent fetch on each Worker record)
+            if (fetchResults) {
+                const workerPromise = [];
 
-        return allWorkers;
+                fetchResults.forEach(thisWorker => {
+                    const newWorker = new Worker(establishmentId);
+                    newWorker.restore(thisWorker.uid)
+                        .then(status => {
+                            console.log("WA DEBUG - restored worker with uid: ", thisWorker.uid, status);
+                            newWorker.wdf(effectiveFrom)
+                                .then(wdfEligibility => {
+                                    const wdfIsEligible = Object.values(wdfEligibility).every(thisProp => thisProp === true);
+                                    console.log("WA DEBUG - WDF eligibility for worker with uid: ", thisWorker.uid, wdfIsEligible);
+                                    allWorkers.push({
+                                        uid: thisWorker.uid,
+                                        nameOrId: thisWorker.NameOrIdValue,
+                                        contract: thisWorker.ContractValue,
+                                        mainJob: {
+                                            jobId: thisWorker.mainJob.id,
+                                            title: thisWorker.mainJob.title
+                                        },
+                                        completed: thisWorker.CompletedValue,
+                                        created:  thisWorker.created.toJSON(),
+                                        updated: thisWorker.updated.toJSON(),
+                                        updatedBy: thisWorker.updatedBy,
+                                        effectiveFrom: effectiveFrom.toISOString(),
+                                        wdfEligible: wdfIsEligible
+                                    });
+
+                                    console.log("WA DEBUG - allWorkers length: ", allWorkers.length)
+                                })
+                                .catch(err => {
+                                    console.error("Worker::fetch - unexpected exception WDF report in Worker: ", err);
+                                    throw err;
+                                });
+                        })
+                        .catch(err => {
+                            console.error("Worker::fetch - unexpected exception restore Worker: ", err);
+                            throw err;
+                        });
+                });
+
+                await Promise.all(workerPromise);
+
+                console.log("WA DEBUG - returning allWorkers: ", allWorkers.length)
+                return allWorkers;
+            }
+        } catch (err) {
+            console.error("Worker::fetch - unexpected exception: ", error);
+            throw err;
+        }
     };
 
     // helper returns a set 'json ready' objects for representing a Worker's overall
@@ -777,16 +811,18 @@ class Worker {
         return Object.values(allPropsEligible).every(thisprop => this.prop === true);
     }
 
-    _isPropertyWdfBasicEligible(refEpoch, property) {
+    _isPropertyWdfBasicEligible(refEpoch, property, record) {
+        // no record given, so test eligibility of this Worker
         return property &&
-               property.property !== null &&
-               property.valid &&
-               property.savedAt &&
-               property.savedAt.getTime() > refEpoch;
+                property.property !== null &&
+                property.valid &&
+                property.savedAt &&
+                property.savedAt.getTime() > refEpoch;
     }
 
     // returns the WDF eligibility of each WDF relevant property as referenced from
     //  the given effect date
+    // if "record" is given, then the WDF eligibility is calculated from the raw Worker record data
     async wdf(effectiveFrom) {
         const myWdf = {};
         const effectiveFromEpoch = effectiveFrom.getTime();
