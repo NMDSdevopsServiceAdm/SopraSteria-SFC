@@ -2,7 +2,9 @@
 const express = require('express');
 const router = express.Router();
 
+// security
 const Authorization = require('../../../utils/security/isAuthenticated');
+const isLocal = require('../../../utils/security/isLocalTest').isLocal;
 
 // all user functionality is encapsulated
 const Establishment = require('../../../models/classes/establishment');
@@ -57,7 +59,8 @@ router.route('/establishment/:id').get(async (req, res) => {
                 isEligible: Math.random() >= 0.5,
                 workplace: Math.random() >= 0.5,
                 staff: Math.random() >= 0.5,
-            }
+            },
+            customEffectiveFrom: isLocal(req) ? true : undefined
         });
 
     } catch (err) {
