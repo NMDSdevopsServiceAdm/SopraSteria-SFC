@@ -29,8 +29,24 @@ router.use('/', validateEstablishment);
 // gets all workers
 router.route('/').get(async (req, res) => {
     const establishmentId = req.establishmentId;
+
+    let effectiveFrom = null;    
+    if(isLocal(req) && req.query.effectiveFrom) {
+        // can only override the WDF effective date in local dev/test environments
+        effectiveFrom = new Date(req.query.effectiveFrom);
+        
+        // NOTE - effectiveFrom must include milliseconds and trailing Z - e.g. ?effectiveFrom=2019-03-01T12:30:00.000Z
+
+        if (effectiveFrom.toISOString() !== req.query.effectiveFrom) {
+            console.error('report/wdf/establishment/:eID - effectiveFrom parameter incorrect');
+            return res.status(400).send();
+        }
+    } else {
+        effectiveFrom = WdfUtils.wdfEligibilityDate();
+    }
+
     try {
-        const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+        const allTheseWorkers = await Workers.Worker.fetch(establishmentId, effectiveFrom);
         return res.status(200).json({
             workers: allTheseWorkers
         });

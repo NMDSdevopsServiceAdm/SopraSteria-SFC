@@ -552,51 +552,43 @@ class Worker {
                 ]           
             });
     
-            // TODO: promise map (concurrent fetch on each Worker record)
             if (fetchResults) {
                 const workerPromise = [];
 
                 fetchResults.forEach(thisWorker => {
-                    const newWorker = new Worker(establishmentId);
-                    newWorker.restore(thisWorker.uid)
-                        .then(status => {
-                            console.log("WA DEBUG - restored worker with uid: ", thisWorker.uid, status);
-                            newWorker.wdf(effectiveFrom)
-                                .then(wdfEligibility => {
-                                    const wdfIsEligible = Object.values(wdfEligibility).every(thisProp => thisProp === true);
-                                    console.log("WA DEBUG - WDF eligibility for worker with uid: ", thisWorker.uid, wdfIsEligible);
-                                    allWorkers.push({
-                                        uid: thisWorker.uid,
-                                        nameOrId: thisWorker.NameOrIdValue,
-                                        contract: thisWorker.ContractValue,
-                                        mainJob: {
-                                            jobId: thisWorker.mainJob.id,
-                                            title: thisWorker.mainJob.title
-                                        },
-                                        completed: thisWorker.CompletedValue,
-                                        created:  thisWorker.created.toJSON(),
-                                        updated: thisWorker.updated.toJSON(),
-                                        updatedBy: thisWorker.updatedBy,
-                                        effectiveFrom: effectiveFrom.toISOString(),
-                                        wdfEligible: wdfIsEligible
-                                    });
-
-                                    console.log("WA DEBUG - allWorkers length: ", allWorkers.length)
-                                })
-                                .catch(err => {
-                                    console.error("Worker::fetch - unexpected exception WDF report in Worker: ", err);
-                                    throw err;
+                    workerPromise.push(
+                        new Promise( async (resolve, reject) => {
+                            const newWorker = new Worker(establishmentId);
+                            try {
+                                await newWorker.restore(thisWorker.uid);
+    
+                                const wdfEligibility = await newWorker.wdf(effectiveFrom);
+                                const wdfIsEligible = Object.values(wdfEligibility).every(thisProp => thisProp === true);
+    
+                                allWorkers.push({
+                                    uid: thisWorker.uid,
+                                    nameOrId: thisWorker.NameOrIdValue,
+                                    contract: thisWorker.ContractValue,
+                                    mainJob: {
+                                        jobId: thisWorker.mainJob.id,
+                                        title: thisWorker.mainJob.title
+                                    },
+                                    completed: thisWorker.CompletedValue,
+                                    created:  thisWorker.created.toJSON(),
+                                    updated: thisWorker.updated.toJSON(),
+                                    updatedBy: thisWorker.updatedBy,
+                                    effectiveFrom: effectiveFrom.toISOString(),
+                                    wdfEligible: wdfIsEligible
                                 });
+
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
                         })
-                        .catch(err => {
-                            console.error("Worker::fetch - unexpected exception restore Worker: ", err);
-                            throw err;
-                        });
+                    );
                 });
-
                 await Promise.all(workerPromise);
-
-                console.log("WA DEBUG - returning allWorkers: ", allWorkers.length)
                 return allWorkers;
             }
         } catch (err) {
@@ -811,7 +803,7 @@ class Worker {
         return Object.values(allPropsEligible).every(thisprop => this.prop === true);
     }
 
-    _isPropertyWdfBasicEligible(refEpoch, property, record) {
+    _isPropertyWdfBasicEligible(refEpoch, property) {
         // no record given, so test eligibility of this Worker
         return property &&
                 property.property !== null &&
