@@ -15,9 +15,10 @@ const Establishment = require('../../../models/classes/establishment');
 router.use('/establishment/:id', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id').get(async (req, res) => {
     const establishmentId = req.establishmentId;
-    let effectiveFrom = null;
-    
-    if(req.query.effectiveFrom) {
+
+    let effectiveFrom = null;    
+    if(isLocal(req) && req.query.effectiveFrom) {
+        // can only override the WDF effective date in local dev/test environments
         effectiveFrom = new Date(req.query.effectiveFrom);
         
         // NOTE - effectiveFrom must include milliseconds and trailing Z - e.g. ?effectiveFrom=2019-03-01T12:30:00.000Z

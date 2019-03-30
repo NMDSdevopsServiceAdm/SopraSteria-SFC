@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 
 const Authorization = require('../../utils/security/isAuthenticated');
+const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const WdfUtils = require('../../utils/wdfEligibilityDate');
 
 // all user functionality is encapsulated
@@ -57,7 +58,8 @@ router.route('/:id').get(async (req, res) => {
     }
 
     let effectiveFrom = null;    
-    if(req.query.effectiveFrom) {
+    if(isLocal(req) && req.query.effectiveFrom) {
+        // can only override the WDF effective date in local dev/test environments
         effectiveFrom = new Date(req.query.effectiveFrom);
         
         // NOTE - effectiveFrom must include milliseconds and trailing Z - e.g. ?effectiveFrom=2019-03-01T12:30:00.000Z
