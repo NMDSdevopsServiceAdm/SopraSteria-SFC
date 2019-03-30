@@ -767,6 +767,70 @@ class Worker {
         }
     }
 
+    // returns true if this worker is WDF eligible as referenced from the
+    //  given effective date; otherwise returns false
+    async isWdfEligible(effectiveFrom) {
+        const allPropsEligible = await this.wdf(effectiveFrom);
+
+        // NOTE - the worker does not have to be completed before it can be eligible for WDF
+
+        return Object.values(allPropsEligible).every(thisprop => this.prop === true);
+    }
+
+    _isPropertyWdfBasicEligible(refEpoch, property) {
+        return property &&
+               property.property !== null &&
+               property.valid &&
+               property.savedAt &&
+               property.savedAt.getTime() > refEpoch;
+    }
+
+    // returns the WDF eligibility of each WDF relevant property as referenced from
+    //  the given effect date
+    async wdf(effectiveFrom) {
+        const myWdf = {};
+        const effectiveFromEpoch = effectiveFrom.getTime();
+
+        // gender/date of birth/nationality
+        myWdf['gender'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Gender'));
+        myWdf['dateOfBirth'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DateOfBirth'));
+        myWdf['nationality'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Nationality'));
+
+        // main job, other job, main job start date, source of recruitment, employment status (contract)
+        myWdf['mainJob'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJob'));
+        myWdf['otherJobs'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherJobs'));
+        myWdf['mainJobStartDate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJobStartDate'));
+        myWdf['recruitedFrom'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('RecruitedFrom'));
+        myWdf['contract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Contract'));
+
+        // contracted/average weekly hours, zero hours
+        myWdf['weeklyHoursContracted'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursContracted'));
+        myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage'));
+        myWdf['zeroHoursContract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ZeroHoursContract'));
+
+        // sickness and salary
+        myWdf['daysSick'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick'));
+        myWdf['annualHourlyPay'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('AnnualHourlyPay'));
+
+        // qualifications and care certificate
+        myWdf['careCertificate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CareCertificate'));
+        myWdf['qualificationInSocialCare'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('QualificationInSocialCare'));
+        myWdf['socialCareQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('SocialCareQualification'));
+        myWdf['otherQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherQualifications'));
+        myWdf['highestQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('HighestQualification'));
+        
+        return myWdf;
+    }
+
+    // returns the WDF eligibilty as JSON object
+    async wdfToJson(effectiveFrom) {
+        return {
+            effectiveFrom: effectiveFrom.toISOString(),
+            isEligible: await this.isWdfEligible(effectiveFrom),
+            ... await this.wdf(effectiveFrom)
+        };
+    }
+
 };
 
 module.exports.Worker = Worker;

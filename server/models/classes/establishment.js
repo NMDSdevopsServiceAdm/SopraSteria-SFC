@@ -851,6 +851,7 @@ class Establishment {
 
     _isPropertyWdfBasicEligible(refEpoch, property) {
         return property &&
+               property.property !== null &&
                property.valid &&
                property.savedAt &&
                property.savedAt.getTime() > refEpoch;
@@ -891,7 +892,7 @@ class Establishment {
             isEligible: await this.isWdfEligible(effectiveFrom),
             ... await this.wdf(effectiveFrom)
         };
-    }    
+    }
 };
 
 module.exports.Establishment = Establishment;
