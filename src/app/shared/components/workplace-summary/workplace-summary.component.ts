@@ -54,7 +54,7 @@ export class WorkplaceSummaryComponent {
     };
     this.pluralMap['Number of people using the service on the completion date'] = {
       '=1': '# person using the service',
-      other: '# peopls using the service',
+      other: '# people using the service',
     };
   }
 }
