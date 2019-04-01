@@ -1,10 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MessageService } from '@core/services/message.service';
 import { Subscription } from 'rxjs';
-
-import { EstablishmentService } from '../../core/services/establishment.service';
-import { MessageService } from '../../core/services/message.service';
 
 @Component({
   selector: 'app-services-capacity',
