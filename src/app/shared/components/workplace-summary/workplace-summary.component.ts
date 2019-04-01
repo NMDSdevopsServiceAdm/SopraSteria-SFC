@@ -1,5 +1,6 @@
 import { I18nPluralPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { isArray } from 'util';
 
 @Component({
   selector: 'app-workplace-summary',
@@ -56,5 +57,9 @@ export class WorkplaceSummaryComponent {
       '=1': '# person using the service',
       other: '# people using the service',
     };
+  }
+
+  isArray(variable) {
+    return isArray(variable);
   }
 }
