@@ -10,6 +10,9 @@ const Workers = require('../../models/classes/worker');
 
 // parent route defines the "id" parameter
 
+// child routes
+const TrainingRoutes = require('./training');
+
 // middleware to validate the establishment on all worker endpoints
 const validateEstablishment = async (req, res, next) => {
     const establishmentId = req.establishmentId;
@@ -22,6 +25,7 @@ const validateEstablishment = async (req, res, next) => {
 };
 
 router.use('/', validateEstablishment);
+router.use('/:workerId/training', TrainingRoutes);
 
 // gets all workers
 router.route('/').get(async (req, res) => {
