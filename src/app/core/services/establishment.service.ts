@@ -60,6 +60,10 @@ export class EstablishmentService {
     return this._establishmentId;
   }
 
+  getEstablishment(id: number) {
+    return this.http.get<any>(`/api/establishment/${id}`);
+  }
+
   getCapacity(all = false) {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/capacity?all=${all}`);
   }

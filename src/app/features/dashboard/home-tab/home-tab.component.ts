@@ -22,7 +22,7 @@ export class HomeTabComponent implements OnInit {
         .getAllWorkers()
         .pipe(take(1))
         .subscribe(workers => {
-          this.updateStaffRecords = !(workers.length < 0);
+          this.updateStaffRecords = !(workers.length > 0);
         })
     );
 

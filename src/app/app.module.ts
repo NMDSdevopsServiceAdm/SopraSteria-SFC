@@ -54,6 +54,7 @@ import { CreateUsernameComponent } from './features/create-username/create-usern
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { HomeTabComponent } from './features/dashboard/home-tab/home-tab.component';
 import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
+import { WorkplaceTabComponent } from './features/dashboard/workplace-tab/workplace-tab.component';
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
 import {
@@ -136,6 +137,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     ChangeUserDetailsComponent,
     ChangeUserSecurityComponent,
     HomeTabComponent,
+    WorkplaceTabComponent,
   ],
   imports: [
     BrowserModule,

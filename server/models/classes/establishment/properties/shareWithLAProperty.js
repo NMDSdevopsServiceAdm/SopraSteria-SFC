@@ -42,7 +42,7 @@ exports.ShareWithLAProperty = class ShareWithLAProperty extends ChangePropertyPr
         // whilst serialising from DB other services, make a note of the primary authority, required in the JSON response
         this._primaryAutority = document.primaryAuthorityCssr;
 
-        if (document.localAuthorities) {
+        if (document.ShareWithLASavedAt && document.localAuthorities) {
             const restoredProperty = document.localAuthorities.map(thisAuthority => {
                 return {
                     id: thisAuthority.id,
@@ -97,8 +97,9 @@ exports.ShareWithLAProperty = class ShareWithLAProperty extends ChangePropertyPr
 
     formatLAResponse(localAuthorities, primaryAuthority=null) {
         const response = {
-          localAuthorities: LaFormatters.listOfLAsJSON(localAuthorities,
+          localAuthorities: localAuthorities ? LaFormatters.listOfLAsJSON(localAuthorities,
                                                        primaryAuthority && primaryAuthority.id ? primaryAuthority.id : null)
+                                             : undefined
         };
       
         if (primaryAuthority) {
