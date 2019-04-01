@@ -2,11 +2,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
-import { catchError } from 'rxjs/operators';
 
 import { RegistrationModel } from '../model/registration.model';
-import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
 const initialRegistration: RegistrationModel = {
   // Example initial dummy data
@@ -78,42 +75,31 @@ export class RegistrationService {
   }
 
   getLocationByPostCode(id: string) {
-    return this.http
-      .get<RegistrationModel>(`/api/locations/pc/${id}`)
-      .pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/locations/pc/${id}`);
   }
 
   getLocationByLocationId(id: string) {
-    return this.http
-      .get<RegistrationModel>(`/api/locations/lid/${id}`)
-      .pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/locations/lid/${id}`);
   }
 
   getAddressByPostCode(id: string) {
-    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`).pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`);
   }
 
   getUpdatedAddressByPostCode(id: string) {
-    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`).pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`);
   }
 
   getMainServices(id: boolean) {
-    return this.http.get(`/api/services/byCategory?cqc=${id}`).pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get(`/api/services/byCategory?cqc=${id}`);
   }
 
   getUsernameDuplicate(id: string) {
-    return this.http.get(`/api/registration/username/${id}`).pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get(`/api/registration/username/${id}`);
   }
 
   updateState(data) {
     this._registration$.next(data);
   }
 
-  private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
-    const dataError = new RegistrationTrackerError();
-    dataError.message = error.message;
-    dataError.success = error.error.success;
-    dataError.friendlyMessage = error.error.message;
-    return ErrorObservable.create(dataError);
-  }
 }
