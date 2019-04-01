@@ -38,6 +38,7 @@ var recruitedFrom = require('./server/routes/recruitedFrom');
 var user = require('./server/routes/accounts/user');
 var workerLeaveReasons = require('./server/routes/workerReason');
 var serviceUsers = require('./server/routes/serviceUsers');
+var workingTrainingCategories = require('./server/routes/workerTrainingCategories');
 
 var errors = require('./server/routes/errors');
 
@@ -141,6 +142,7 @@ app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
 app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveReasons]);
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
+app.use('/api/trainingCategories', [refCacheMiddleware.refcache, workingTrainingCategories]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
