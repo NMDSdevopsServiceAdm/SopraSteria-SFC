@@ -5,6 +5,9 @@
 const express = require('express');
 const router = express.Router({mergeParams: true});
 
+const isLocal = require('../../utils/security/isLocalTest').isLocal;
+const WdfUtils = require('../../utils/wdfEligibilityDate');
+
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
 
@@ -26,8 +29,24 @@ router.use('/', validateEstablishment);
 // gets all workers
 router.route('/').get(async (req, res) => {
     const establishmentId = req.establishmentId;
+
+    let effectiveFrom = null;    
+    if(isLocal(req) && req.query.effectiveFrom) {
+        // can only override the WDF effective date in local dev/test environments
+        effectiveFrom = new Date(req.query.effectiveFrom);
+        
+        // NOTE - effectiveFrom must include milliseconds and trailing Z - e.g. ?effectiveFrom=2019-03-01T12:30:00.000Z
+
+        if (effectiveFrom.toISOString() !== req.query.effectiveFrom) {
+            console.error('report/wdf/establishment/:eID - effectiveFrom parameter incorrect');
+            return res.status(400).send();
+        }
+    } else {
+        effectiveFrom = WdfUtils.wdfEligibilityDate();
+    }
+
     try {
-        const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+        const allTheseWorkers = await Workers.Worker.fetch(establishmentId, effectiveFrom);
         return res.status(200).json({
             workers: allTheseWorkers
         });
@@ -50,11 +69,30 @@ router.route('/:workerId').get(async (req, res) => {
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
     if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
 
+    let effectiveFrom = null;    
+    if(isLocal(req) && req.query.effectiveFrom) {
+        // can only override the WDF effective date in local dev/test environments
+        effectiveFrom = new Date(req.query.effectiveFrom);
+        
+        // NOTE - effectiveFrom must include milliseconds and trailing Z - e.g. ?effectiveFrom=2019-03-01T12:30:00.000Z
+
+        if (effectiveFrom.toISOString() !== req.query.effectiveFrom) {
+            console.error('report/wdf/establishment/:eID - effectiveFrom parameter incorrect');
+            return res.status(400).send();
+        }
+    } else {
+        effectiveFrom = WdfUtils.wdfEligibilityDate();
+    }
+
+
     const thisWorker = new Workers.Worker(establishmentId);
 
     try {
         if (await thisWorker.restore(workerId, showHistory)) {
-            return res.status(200).json(thisWorker.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false));
+            const jsonResponse = thisWorker.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false);
+            if (!showHistory) jsonResponse.wdf = await thisWorker.wdfToJson(effectiveFrom);
+
+            return res.status(200).json(jsonResponse);
         } else {
             // not found worker
             return res.status(404).send('Not Found');
