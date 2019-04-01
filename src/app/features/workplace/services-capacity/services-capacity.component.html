@@ -1,0 +1,43 @@
+<div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a [routerLink]="['/workplace', 'select-other-services']">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <form novalidate
+    (ngSubmit)="submitHandler()"
+    [formGroup]="form">
+
+    <header>
+      <h1 class="h1">Capacity of your services</h1>
+      <p class="page-description">You've told us about the services your workplace provides. We need to know what the capacity of these services is.</p>
+    </header>
+
+    <div class="form-group mb-5">
+      <div class="col-12 p-0">
+        <div>
+          <div *ngFor="let capacity of capacitiesAvailable" class="row">
+            <div class="col-12">
+              <h2>{{capacity.service}}</h2>
+            </div>
+
+            <div *ngFor="let question of capacity.questions; let idx = index" class="col-12"  >
+              <label>{{question.question}}
+                <input type="number" [formControlName]="question.questionId"
+                  class="form-control" appNumberMax="999999999" appNumberPositiveOnly
+                  appNumberIntOnly min="0" step="1" [appNumberMax]="idx === 1 ? form.get(capacity.questions[0].questionId.toString()).value : null"
+                  [ngClass]="{'is-invalid': (form.get(question.questionId.toString()).touched || form.get(question.questionId.toString()).dirty) && !form.get(question.questionId.toString()).valid }" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-container">
+      <button type="submit" class="btn btn-primary">Save and continue</button>
+    </div>
+  </form>
+  <app-messages></app-messages>
+</div>

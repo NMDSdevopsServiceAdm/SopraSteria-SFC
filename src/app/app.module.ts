@@ -40,9 +40,6 @@ import { ChangeUserDetailsComponent } from './features/change-user-details/chang
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
 import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
-import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leavers.component';
-import { ConfirmStartersComponent } from './features/confirm-starters/confirm-starters.component';
-import { ConfirmVacanciesComponent } from './features/confirm-vacancies/confirm-vacancies.component';
 import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
 import { ContactUsComponent } from './features/contactUs/contactUs.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
@@ -62,7 +59,6 @@ import {
 } from './features/forgot-your-password/confirmation/confirmation.component';
 import { ForgotYourPasswordEditComponent } from './features/forgot-your-password/edit/edit.component';
 import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
-import { LeaversComponent } from './features/leavers/leavers.component';
 import { LoginComponent } from './features/login/login.component';
 import { LogoutComponent } from './features/logout/logout.component';
 import { RegisterComponent } from './features/register/register.component';
@@ -72,18 +68,10 @@ import { ResetPasswordEditComponent } from './features/reset-password/edit/edit.
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
 import { SecurityQuestionComponent } from './features/security-question/security-question.component';
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
-import { SelectOtherServicesComponent } from './features/select-other-services/select-other-services.component';
 import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
-import { ServicesCapacityComponent } from './features/services-capacity/services-capacity.component';
-import { ShareLocalAuthorityComponent } from './features/shareLocalAuthorities/shareLocalAuthority.component';
-import { ShareOptionsComponent } from './features/shareOptions/shareOptions.component';
-import { SharingComponent } from './features/sharing/sharing.component';
-import { StartersComponent } from './features/starters/starters.component';
-import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
-import { UserDetailsComponent } from './features/user-details/user-details.component';
-import { VacanciesComponent } from './features/vacancies/vacancies.component';
 import { ServiceUsersComponent } from './features/service-users/service-users.component';
+import { UserDetailsComponent } from './features/user-details/user-details.component';
 
 @NgModule({
   declarations: [
@@ -105,18 +93,6 @@ import { ServiceUsersComponent } from './features/service-users/service-users.co
     EnterWorkplaceAddressComponent,
     SelectMainServiceComponent,
     ContinueCreatingAccountComponent,
-    SelectOtherServicesComponent,
-    TypeOfEmployerComponent,
-    VacanciesComponent,
-    ConfirmVacanciesComponent,
-    StartersComponent,
-    ConfirmStartersComponent,
-    LeaversComponent,
-    ConfirmLeaversComponent,
-    ServicesCapacityComponent,
-    SharingComponent,
-    ShareLocalAuthorityComponent,
-    ShareOptionsComponent,
     FeedbackComponent,
     ContactUsComponent,
     LogoutComponent,
