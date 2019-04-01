@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MessageService } from '@core/services/message.service';
@@ -32,10 +32,10 @@ export class ServicesCapacityComponent implements OnInit, OnDestroy {
         data.allServiceCapacities.forEach(service => {
           service.questions.forEach(question => {
             let answer = data.capacities ? data.capacities.find(cc => question.questionId === cc.questionId) : null;
-            answer = answer ? answer.answer : '';
-            this.form.registerControl(
+            answer = answer ? parseInt(answer.answer, 10) : null;
+            this.form.addControl(
               question.questionId.toString(),
-              this.fb.control(parseFloat(answer), [Validators.required])
+              new FormControl(answer, [Validators.required, Validators.min(10)])
             );
           });
         });
