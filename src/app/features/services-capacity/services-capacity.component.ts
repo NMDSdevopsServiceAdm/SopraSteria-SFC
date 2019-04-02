@@ -57,9 +57,6 @@ export class ServicesCapacityComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.establishmentService.postCapacity(props).subscribe(() => this.router.navigate(['/share-options']))
       );
-    } else {
-      this.messageService.clearError();
-      this.messageService.show('error', 'Please fill the required fields.');
     }
   }
 }
