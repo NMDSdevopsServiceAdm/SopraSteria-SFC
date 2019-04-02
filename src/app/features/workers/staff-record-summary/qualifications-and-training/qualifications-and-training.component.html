@@ -1,0 +1,133 @@
+<h3>Qualifications and training</h3>
+
+<dl class="govuk-summary-list">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Care Certificate
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.careCertificate || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'care-certificate']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.careCertificate">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.careCertificate">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> care certificate</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Social Care qualification
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.qualificationInSocialCare || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'social-care-qualification']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.qualificationInSocialCare">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.qualificationInSocialCare">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> relevant social care qualification</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displaySocialCareQualifications">
+    <dt class="govuk-summary-list__key">
+      Level of Social Care qualification
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.socialCareQualification?.title || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a
+        class="govuk-link"
+        [routerLink]="['/worker', worker.uid, 'social-care-qualification-level']"
+        (click)="setReturn()"
+      >
+        <ng-container *ngIf="!worker.socialCareQualification">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.socialCareQualification">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> social care qualification level</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Other qualifications
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.otherQualification || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-qualifications']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.otherQualification">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.otherQualification">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> other qualifications</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayOtherQualifications">
+    <dt class="govuk-summary-list__key">
+      Level of other qualification
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.highestQualification?.title || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-qualifications-level']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.highestQualification">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.highestQualification">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> other qualification level</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Apprenticeship training
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.apprenticeshipTraining || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'apprenticeship-training']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.apprenticeshipTraining">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.apprenticeshipTraining">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> apprenticeship training</span>
+      </a>
+    </dd>
+  </div>
+</dl>
