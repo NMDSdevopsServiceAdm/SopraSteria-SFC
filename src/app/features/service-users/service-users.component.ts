@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class ServiceUsersComponent implements OnInit, OnDestroy {
   public serviceUsersForm: FormGroup;
-  private isInvalid = false;
+  public isInvalid: boolean;
   public serviceUsersData = [];
   public checkboxesSelected;
   private subscriptions: Subscription = new Subscription();
@@ -35,6 +35,7 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
     });
 
     this.getAllServices();
+    this.getCheckedUsers();
   }
 
   getAllServices() {
@@ -42,16 +43,30 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
       this._eSService.getAllServiceUsers()
         .subscribe(
           (data: any) => {
-            debugger;
             this.serviceUsersData = data;
+          },
+          (err) => {
+            console.log(err);
+          },
+          () => {
+          }
+        )
+    );
+  }
 
-            this.checkboxesSelected = [];
-            // otherServices is a grouped (by category) set of services - denormalise
-            // data.serviceUsers.forEach(thisServiceCategory => {
-            //   thisServiceCategory.forEach(thisServiceUser => {
-            //     this.checkboxesSelected.push(thisServiceUser.id);
-            //   });
-            // });
+  getCheckedUsers() {
+    this.checkboxesSelected = [];
+
+    this.subscriptions.add(
+      this._eSService.getServiceUsersChecked()
+        .subscribe(
+          (data: any) => {
+
+            if (data.serviceUsers) {
+              data.serviceUsers.forEach(thisServiceUser => {
+                this.checkboxesSelected.push(thisServiceUser.id);
+              });
+            }
           },
           (err) => {
             console.log(err);
@@ -63,7 +78,6 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
   }
 
   toggleCheckbox($event: any) {
-    const eventId = $event.id;
     const serviceUserId = $event.value;
 
     if ($event.checked) {
@@ -82,8 +96,8 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
   }
 
   async onSubmit() {
-    const otherServicesSelected = {
-      services: this.checkboxesSelected.map(thisValue => {
+    const serviceUsersSelected = {
+      serviceUsers: this.checkboxesSelected.map(thisValue => {
           return {
             id: parseInt(thisValue)
           }
@@ -91,28 +105,20 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
     }
 
     // always save back to backend API, even if there are (now) no other services
-    // this.subscriptions.add(
-    //   this._eSService.postOtherServices(otherServicesSelected)
-    //     .subscribe(
-    //       (data: any) => {
-    //         this.subscriptions.add(
-    //           this._eSService.getCapacity(true).subscribe(c => {
-    //             if (c.allServiceCapacities.length) {
-    //               this.router.navigate(['/capacity-of-services'])
-    //             } else {
-    //               this.router.navigate(['/share-options'])
-    //             }
-    //           })
-    //         )
-    //       },
-    //       (err) => {
-    //         console.log(err);
-    //       },
-    //       () => {
-    //         // Removing any navigation as
-    //       }
-    //     )
-    // );
+    this.subscriptions.add(
+      this._eSService.postServiceUsers(serviceUsersSelected)
+        .subscribe(
+          (data: any) => {
+            this.router.navigate(['/share-options']);
+          },
+          (err) => {
+            console.log(err);
+          },
+          () => {
+            // Removing any navigation as
+          }
+        )
+    );
   }
 
   ngOnDestroy() {

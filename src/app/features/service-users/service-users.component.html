@@ -11,7 +11,7 @@
   <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">Select all that apply.</p>
 
   <form novalidate
-    (ngSubmit)="save()"
+    (ngSubmit)="onSubmit()"
     [formGroup]="serviceUsersForm">
 
     <div class="form-group">
@@ -27,7 +27,7 @@
         <div class="mt-5" *ngFor="let item of serviceUsersData; let i = index">
           <label class="main-body-text-bold mb-4 p-0 d-block" *ngIf="item">{{ item.group }}</label>
 
-          <div *ngFor="let data of item.serviceUsers">
+          <div *ngFor="let data of item.services">
             <div class="row mb-4">
               <div class="col-12">
 

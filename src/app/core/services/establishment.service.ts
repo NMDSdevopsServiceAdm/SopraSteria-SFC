@@ -159,4 +159,12 @@ export class EstablishmentService {
   getAllServiceUsers() {
     return this.http.get<any>('/api/serviceUsers');
   }
+
+  getServiceUsersChecked() {
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/serviceUsers`);
+  }
+
+  postServiceUsers(data) {
+    return this.http.post<any>(`/api/establishment/${this.establishmentId}/serviceUsers`, data);
+  }
 }
