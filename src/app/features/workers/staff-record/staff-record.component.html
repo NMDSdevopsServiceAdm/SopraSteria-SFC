@@ -1,0 +1,27 @@
+<div class="sub-page-container col-12">
+  <div id="back" class="back-link">
+    <a href="#" (click)="goBack($event)"> <span class="arrow"></span>Back </a>
+  </div>
+
+  <ng-container *ngIf="worker">
+    <div class="row">
+      <div class="col-md-8">
+        <h2>Staff record summary</h2>
+        <h1 class="h1">{{ worker.nameOrId }}</h1>
+      </div>
+      <div class="col-md-4 text-right">
+        <a href="#" (click)="deleteWorker($event)" class="delete">
+          <img src="/assets/img/bin.svg" />Delete staff record
+        </a>
+      </div>
+    </div>
+    <app-tabs>
+      <app-tab title="Staff Record">
+        <h3>Staff Record</h3>
+      </app-tab>
+      <app-tab title="Qualifications and training">
+        <h3>Qualifications and training</h3>
+      </app-tab>
+    </app-tabs>
+  </ng-container>
+</div>

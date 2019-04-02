@@ -39,6 +39,7 @@ import {
 } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
+import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkerSummaryComponent } from './worker-summary/worker-summary.component';
@@ -77,6 +78,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     SocialCareQualificationLevelComponent,
     SocialCareQualificationComponent,
     StaffDetailsComponent,
+    StaffRecordComponent,
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
     WorkerSummaryComponent,
