@@ -151,4 +151,8 @@ export class EstablishmentService {
   postOtherServices(obj: PostServicesModel) {
     return this.http.post<PostServicesModel>(`/api/establishment/${this.establishmentId}/services`, obj);
   }
+
+  getAllServiceUsers() {
+    return this.http.get<any>('/api/serviceUsers');
+  }
 }

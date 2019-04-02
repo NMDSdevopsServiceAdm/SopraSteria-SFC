@@ -1,0 +1,58 @@
+<div class="sub-page-container col-12">
+
+  <div id="back" class="back-link">
+    <a routerLink="/capacity-of-services">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <h1 class="h1">Who are your service users?</h1>
+
+  <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">Select all that apply.</p>
+
+  <form novalidate
+    (ngSubmit)="save()"
+    [formGroup]="serviceUsersForm">
+
+    <div class="form-group">
+
+      <div class="field-group pb-4" [ngClass]="{'is-invalid': isInvalid }">
+
+        <span class="invalid-feedback">
+          <span class="main-body-text mb-2" *ngIf="isInvalid">
+            Please select a service user.
+          </span>
+        </span>
+
+        <div class="mt-5" *ngFor="let item of serviceUsersData; let i = index">
+          <label class="main-body-text-bold mb-4 p-0 d-block" *ngIf="item">{{ item.group }}</label>
+
+          <div *ngFor="let data of item.serviceUsers">
+            <div class="row mb-4">
+              <div class="col-12">
+
+                  <label class="check main-body-text p-0" for="{{ data.id }}">
+                    <input type="checkbox" id="{{ data.id }}" formControlName="serviceUserSelected"
+                    [checked]="checkboxesSelected.includes(data.id)" value="{{ data.id }}" (change)="toggleCheckbox($event.target)" />
+                    <span class="checkmark"></span>
+
+                    <span class="check-label main-body-text mt-0">{{ data.service }}</span>
+                  </label>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="btn-container">
+      <button class="btn btn-primary" type="submit">Continue</button>
+    </div>
+
+  </form>
+
+
+</div>
