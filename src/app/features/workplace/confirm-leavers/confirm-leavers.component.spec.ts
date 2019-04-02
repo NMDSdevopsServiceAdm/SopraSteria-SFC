@@ -8,9 +8,8 @@ describe('ConfirmLeaversComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConfirmLeaversComponent ]
-    })
-    .compileComponents();
+      declarations: [ConfirmLeaversComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

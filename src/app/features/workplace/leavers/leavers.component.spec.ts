@@ -8,9 +8,8 @@ describe('LeaversComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LeaversComponent ]
-    })
-    .compileComponents();
+      declarations: [LeaversComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

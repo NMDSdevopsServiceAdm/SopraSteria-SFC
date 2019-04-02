@@ -8,9 +8,8 @@ describe('ServicesCapacityComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ServicesCapacityComponent ]
-    })
-    .compileComponents();
+      declarations: [ServicesCapacityComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
