@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 
 const Authorization = require('../../utils/security/isAuthenticated');
+const isLocal = require('../../utils/security/isLocalTest').isLocal;
+const WdfUtils = require('../../utils/wdfEligibilityDate');
 
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
@@ -55,6 +57,21 @@ router.route('/:id').get(async (req, res) => {
       return res.status(400).send();
     }
 
+    let effectiveFrom = null;    
+    if(isLocal(req) && req.query.effectiveFrom) {
+        // can only override the WDF effective date in local dev/test environments
+        effectiveFrom = new Date(req.query.effectiveFrom);
+        
+        // NOTE - effectiveFrom must include milliseconds and trailing Z - e.g. ?effectiveFrom=2019-03-01T12:30:00.000Z
+
+        if (effectiveFrom.toISOString() !== req.query.effectiveFrom) {
+            console.error('report/wdf/establishment/:eID - effectiveFrom parameter incorrect');
+            return res.status(400).send();
+        }
+    } else {
+        effectiveFrom = WdfUtils.wdfEligibilityDate();
+    }
+
     const thisEstablishment = new Establishment.Establishment(req.username);
 
     try {
@@ -67,6 +84,10 @@ router.route('/:id').get(async (req, res) => {
             const jsonResponse = thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false)
             delete jsonResponse.allOtherServices;
             delete jsonResponse.allServiceCapacities;
+
+            if (!showHistory) jsonResponse.wdf = await thisEstablishment.wdfToJson(effectiveFrom);
+
+            // need also to return the WDF eligibility
             return res.status(200).json(jsonResponse);
         } else {
             // not found worker

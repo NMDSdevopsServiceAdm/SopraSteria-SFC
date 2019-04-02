@@ -21,7 +21,7 @@
       <p>Workplace ID: {{ establishment?.nmdsId }}</p>
     </div>
     <div class="col-md-6">
-      <p class="text-right" *ngIf="lastLogin">Last signed in {{ lastLogin | date : 'd MMMM y' }}</p>
+      <p class="text-right" *ngIf="lastLoggedIn">Last signed in {{ lastLoggedIn | date : 'd MMMM y' }}</p>
     </div>
   </div>
 
@@ -32,9 +32,7 @@
       </app-tab>
 
       <app-tab title="Workplace">
-        <div class="btn-container">
-          <a routerLink="/type-of-employer" role="button" class="btn btn-primary">Edit Establishment Information</a>
-        </div>
+        <app-workplace-tab></app-workplace-tab>
       </app-tab>
 
       <app-tab title="Staff records">

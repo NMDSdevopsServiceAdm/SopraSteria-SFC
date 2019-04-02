@@ -39,6 +39,9 @@ var user = require('./server/routes/accounts/user');
 var workerLeaveReasons = require('./server/routes/workerReason');
 var serviceUsers = require('./server/routes/serviceUsers');
 
+// reports
+var ReportsRoute = require('./server/routes/reports/index');
+
 var errors = require('./server/routes/errors');
 
 // test only routes - helpers to setup and execute automated tests
@@ -152,7 +155,7 @@ app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
-
+app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 
 
 app.get('*', function(req, res) {

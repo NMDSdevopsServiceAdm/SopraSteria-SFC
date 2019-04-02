@@ -11,9 +11,7 @@ router.route('/').get(async function (req, res) {
         ]
       });
 
-    res.send({
-      serviceUsers: serviceUsersByGroupJSON(results)
-    });
+    res.send(serviceUsersByGroupJSON(results));
   } catch (err) {
     console.error(err);
     return res.status(503).send();
@@ -48,9 +46,13 @@ function serviceUsersByGroupJSON(givenServices){
   }
 
   // now iterate over the map (group by job type) and construct the target Javascript object
-  const serviceUserGroups = {};
+  const serviceUserGroups = [];
   serviceUsersGroupsMap.forEach((key,value) => {
     serviceUserGroups[value] = key;
+    serviceUserGroups.push({
+      group: value,
+      services: key
+    });
   });
 
   return serviceUserGroups;

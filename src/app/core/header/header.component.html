@@ -9,10 +9,10 @@
       <div class="auth-controls">
         <ul *ngIf="!isLoggedIn()" class="d-flex flex-row">
           <li>
-            <a routerLink="/registered-question" title="Create an account">Create an account</a>
+            <a routerLink="/registered-question">Create an account</a>
           </li>
           <li>
-            <a routerLink="/login" title="Sign in">Sign in</a>
+            <a routerLink="/login">Sign in</a>
           </li>
         </ul>
         <ul *ngIf="isLoggedIn()" class="d-flex flex-row justify-content-end">
@@ -23,7 +23,7 @@
             <a routerLink="/change-user-summary">Account</a>
           </li>
           <li>
-            <a href="#" (click)="signOut($event)" title="Logout">Logout</a>
+            <a href="#" (click)="signOut($event)">Log out</a>
           </li>
         </ul>
       </div>
@@ -34,7 +34,7 @@
     <div class="container">
       <div class="m-0 d-inline-block beta-txt">Beta</div>
       <div class="m-0 d-inline-block ml-3" *ngIf="router && router.url == '/feedback' ? false : true">
-        <span>This is a new service - your <a routerLink="/feedback" title="Leave feedback" target="_blank">feedback</a> will help us to improve it.</span>
+        <span>This is a new service - your <a routerLink="/feedback" target="_blank">feedback</a> will help us to improve it.</span>
       </div>
     </div>
   </div>

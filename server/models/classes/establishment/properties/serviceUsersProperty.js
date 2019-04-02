@@ -33,7 +33,7 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
     }
 
     restorePropertyFromSequelize(document) {
-        if (document.serviceUsers) {
+        if (document.ServiceUsersSavedAt !== null && document.serviceUsers) {
             const restoredRecords = document.serviceUsers.map(thisService => {
                 return {
                     id: thisService.id,
@@ -97,6 +97,8 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
     }
 
     toJSON(withHistory = false, showPropertyHistoryOnly = true) {
+        if (!this.property) return null;
+
         if (!withHistory) {
             // simple form
             return {
