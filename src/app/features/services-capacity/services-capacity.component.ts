@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MessageService } from '@core/services/message.service';
@@ -33,10 +33,7 @@ export class ServicesCapacityComponent implements OnInit, OnDestroy {
           service.questions.forEach(question => {
             let answer = data.capacities ? data.capacities.find(cc => question.questionId === cc.questionId) : null;
             answer = answer ? parseInt(answer.answer, 10) : null;
-            this.form.addControl(
-              question.questionId.toString(),
-              new FormControl(answer, [Validators.required, Validators.min(10)])
-            );
+            this.form.addControl(question.questionId.toString(), new FormControl(answer));
           });
         });
       })
@@ -50,18 +47,16 @@ export class ServicesCapacityComponent implements OnInit, OnDestroy {
 
   submitHandler(): void {
     if (this.form.valid) {
-      this.subscriptions.add(
-        this.establishmentService
-          .postCapacity(this.formToApi())
-          .subscribe(() => this.router.navigate(['/share-options']))
-      );
-    } else {
-      this.messageService.clearError();
-      this.messageService.show('error', 'Please fill the required fields.');
-    }
-  }
+      const props = Object.entries(this.form.value).reduce((res, [key, value]) => {
+        if (value) {
+          res.push({ questionId: parseFloat(key), answer: value });
+        }
+        return res;
+      }, []);
 
-  private formToApi() {
-    return Object.entries(this.form.value).map(([key, value]) => ({ questionId: parseFloat(key), answer: value }));
+      this.subscriptions.add(
+        this.establishmentService.postCapacity(props).subscribe(() => this.router.navigate(['/share-options']))
+      );
+    }
   }
 }
