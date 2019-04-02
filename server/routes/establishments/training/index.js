@@ -32,8 +32,6 @@ router.route('/:trainingUid').get(async (req, res) => {
     const trainingUid = req.params.trainingUid;
     const workerUid = req.params.workerId;
 
-    console.log("WA DEBUG - training get one: ", establishmentId, workerUid, trainingUid)
-
     const thisTrainingRecord = new Training(establishmentId, workerUid);
 
     try {
@@ -84,8 +82,6 @@ router.route('/:trainingUid').put(async (req, res) => {
     const trainingUid = req.params.trainingUid;
     const workerUid = req.params.workerId;
 
-    console.log("WA DEBUG - training update one: ", workerUid, trainingUid)
-
     const thisTrainingRecord = new Training(establishmentId, workerUid);
     
     try {
@@ -103,7 +99,7 @@ router.route('/:trainingUid').put(async (req, res) => {
             if (isValidRecord) {
                 await thisTrainingRecord.save(req.username);
 
-                return res.status(200).json(thisTrainingRecordthisUser.toJSON());
+                return res.status(200).json(thisTrainingRecord.toJSON());
             } else {
                 return res.status(400).send('Unexpected Input.');
             }
@@ -125,8 +121,6 @@ router.route('/:trainingUid').delete(async (req, res) => {
     const establishmentId = req.establishmentId;
     const trainingUid = req.params.trainingUid;
     const workerUid = req.params.workerId;
-
-    console.log("WA DEBUG - training delete one: ", workerUid, trainingUid)
 
     const thisTrainingRecord = new Training(establishmentId, workerUid);
     

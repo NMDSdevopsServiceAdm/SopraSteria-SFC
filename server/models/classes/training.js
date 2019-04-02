@@ -111,6 +111,7 @@ class Training {
         return this._expires;
     };
     get notes() {
+        if (this._notes === null) return null;
         return unescape(this._notes);
     };
     set category(category) {
@@ -129,7 +130,6 @@ class Training {
         this._expires = expires;
     };
     set notes(notes) {
-        if (this._notes === null) return null;
         this._notes = escape(notes);
     };
 
@@ -396,8 +396,9 @@ class Training {
                         categoryFk: this._category.id,
                         title: this._title,
                         accredited: this._accredited,
-                        complete: this._completed,
-                        expires: this._expires,    
+                        completed: this._completed,
+                        expires: this._expires,
+                        notes: this._notes,
                         updated: updatedTimestamp,
                         updatedBy: savedBy
                     };
