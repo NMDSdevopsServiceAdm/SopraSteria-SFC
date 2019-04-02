@@ -130,7 +130,12 @@ class Training {
         this._expires = expires;
     };
     set notes(notes) {
-        this._notes = escape(notes);
+        if (notes !== null) {
+            // do not escape null!
+            this._notes = escape(notes);
+        } else {
+            this._notes = null;
+        }
     };
 
     // used by save to initialise a new Trainign Record; returns true if having initialised this Training Record
@@ -247,7 +252,6 @@ class Training {
 
         // expires
         if (document.expires) {
-            // validate expires - must be a valid date
             const expectedDate = moment.utc(document.expires);
             if (!expectedDate.isValid()) {
                 this._log(Training.LOG_ERROR, 'expires failed validation: incorrect date');
@@ -260,6 +264,9 @@ class Training {
             }
 
             validatedTrainingRecord.expires = expectedDate;
+        } else {
+            // expires is not present
+            validatedTrainingRecord.expires = null;
         }
 
         // notes
@@ -272,6 +279,9 @@ class Training {
             }
 
             validatedTrainingRecord.notes = document.notes;
+        } else {
+            // notes not present
+            validatedTrainingRecord.notes = null;
         }
 
         return validatedTrainingRecord;
@@ -282,6 +292,8 @@ class Training {
     async load(document) {
         try {
             const validatedTrainingRecord = await this.validateTrainingRecord(document);
+
+            console.log("WA DEBUG - validatedTrainingRecord: ", validatedTrainingRecord);
 
             if (validatedTrainingRecord !== false) {
                 this.category = validatedTrainingRecord.trainingCategory;

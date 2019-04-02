@@ -134,12 +134,18 @@ class Qualification {
     };
     set other(other) {
         if (other != null) {
+            // do not escape null
             this._other = other;
+        } else {
+            this._other = null;
         }
     };
     set notes(notes) {
         if (notes !== null) {
+            // do not escape null
             this._notes = escape(notes);
+        } else {
+            this._notes = null;
         }
     };
 
@@ -229,7 +235,7 @@ class Qualification {
         }
 
         // other - allow for empty string
-        if (document.other !== null && document.other.length >= 0) {
+        if (document.other) {
             // validate other - it's free text
             const MAX_LENGTH = 100;
             if (!(document.other.length <= MAX_LENGTH)) {
@@ -238,6 +244,9 @@ class Qualification {
             }
 
             validatedQualificationRecord.other = document.other;
+        } else {
+            // other property not present - resetting
+            validatedQualificationRecord.other = null;
         }
 
         // year
@@ -257,7 +266,7 @@ class Qualification {
         }
 
         // notes - allow for notes of empty string
-        if (document.notes !== null && document.notes.length >= 0) {
+        if (document.notes) {
             // validate title
             const MAX_LENGTH=500;
             if (document.notes.length > MAX_LENGTH) {
@@ -266,6 +275,9 @@ class Qualification {
             }
 
             validatedQualificationRecord.notes = document.notes;
+        } else {
+            // notes not present - resetting
+            validatedQualificationRecord.notes = null;
         }
 
         return validatedQualificationRecord;
