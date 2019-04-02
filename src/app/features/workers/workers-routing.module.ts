@@ -6,6 +6,7 @@ import { ApprenticeshipTrainingComponent } from './apprenticeship-training/appre
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
+import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import {
@@ -173,6 +174,10 @@ const routes: Routes = [
       {
         path: 'other-qualifications-level',
         component: OtherQualificationsLevelComponent,
+      },
+      {
+        path: 'summary',
+        component: CheckStaffRecordComponent,
       },
     ],
   },
