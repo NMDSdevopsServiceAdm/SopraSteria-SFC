@@ -216,7 +216,7 @@ class Training {
             const ALLOWED_TRUE_VALUES = ["true", "yes"];
             const ALLOWED_FALSE_VALUES = ["false", "no"];
             if (typeof document.accredited !== 'boolean' &&
-                !(ALLOWED_TRUE_VALUES.includes(document.accredited) || ALLOWED_FALSE_VALUES.includes(document.accredited))) {
+                !(ALLOWED_TRUE_VALUES.includes(document.accredited.toLowerCase()) || ALLOWED_FALSE_VALUES.includes(document.accredited.toLowerCase()))) {
                 this._log(Training.LOG_ERROR, 'accredited failed validation: wrong type');
                 return false;
             }
@@ -224,8 +224,8 @@ class Training {
             if (typeof document.accredited === 'boolean') validatedTrainingRecord.accredited = document.accredited;
 
             if (typeof document.accredited !== 'boolean') {
-                if (ALLOWED_TRUE_VALUES.includes(document.accredited)) validatedTrainingRecord.accredited = true;
-                if (ALLOWED_FALSE_VALUES.includes(document.accredited)) validatedTrainingRecord.accredited = false;
+                if (ALLOWED_TRUE_VALUES.includes(document.accredited.toLowerCase())) validatedTrainingRecord.accredited = true;
+                if (ALLOWED_FALSE_VALUES.includes(document.accredited.toLowerCase())) validatedTrainingRecord.accredited = false;
             }
         }
 
@@ -608,8 +608,10 @@ class Training {
                     uid: thisRecord.uid,
                     category: thisRecord.category.category,
                     title: unescape(thisRecord.title),
+                    accredited: thisRecord.accredited,
                     completed: new Date(thisRecord.completed),
                     expires: thisRecord.expires !== null ? new Date(thisRecord.expires) : undefined,
+                    notes: thisRecord.notes !== null ? unescape(thisRecord.notes) : undefined,
                     created:  thisRecord.created.toISOString(),
                     updated: thisRecord.updated.toISOString(),
                     updatedBy: thisRecord.updatedBy,
@@ -639,6 +641,7 @@ class Training {
         // add worker default properties
         const myDefaultJSON = {
             uid:  this.uid,
+            workerUid: this._workerUid,
             created: this.created.toJSON(),
             updated: this.updated.toJSON(),
             updatedBy: this.updatedBy,
