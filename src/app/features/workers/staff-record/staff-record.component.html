@@ -1,12 +1,12 @@
 <div class="sub-page-container col-12">
   <div id="back" class="back-link">
-    <a href="#" (click)="goBack($event)"> <span class="arrow"></span>Back </a>
+    <a [routerLink]="['/dashboard']" fragment="staff-records"> <span class="arrow"></span>Back </a>
   </div>
 
   <ng-container *ngIf="worker">
     <div class="row">
       <div class="col-md-8">
-        <h2>Staff record summary</h2>
+        <h2 class="heading-caption text-weight-normal">Staff record</h2>
         <h1 class="h1">{{ worker.nameOrId }}</h1>
       </div>
       <div class="col-md-4 text-right">
@@ -17,10 +17,12 @@
     </div>
     <app-tabs>
       <app-tab title="Staff Record">
-        <h3>Staff Record</h3>
+        <app-basic-record [worker]="worker"></app-basic-record>
+        <app-personal-details [worker]="worker"></app-personal-details>
+        <app-employment [worker]="worker"></app-employment>
       </app-tab>
       <app-tab title="Qualifications and training">
-        <h3>Qualifications and training</h3>
+        <app-qualifications-and-training [worker]="worker"></app-qualifications-and-training>
       </app-tab>
     </app-tabs>
   </ng-container>

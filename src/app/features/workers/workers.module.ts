@@ -39,13 +39,17 @@ import {
 } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
+import { StaffRecordSummaryComponent } from './staff-record-summary/staff-record-summary.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
-import { WorkerSummaryComponent } from './worker-summary/worker-summary.component';
 import { WorkerResolver } from './worker.resolver';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { BasicRecordComponent } from './staff-record-summary/basic-record/basic-record.component';
+import { PersonalDetailsComponent } from './staff-record-summary/personal-details/personal-details.component';
+import { EmploymentComponent } from './staff-record-summary/employment/employment.component';
+import { QualificationsAndTrainingComponent } from './staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule, OverlayModule],
@@ -81,10 +85,14 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     StaffRecordComponent,
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
-    WorkerSummaryComponent,
+    StaffRecordSummaryComponent,
     YearArrivedUkComponent,
     DeleteSuccessComponent,
     DeleteWorkerDialogComponent,
+    BasicRecordComponent,
+    PersonalDetailsComponent,
+    EmploymentComponent,
+    QualificationsAndTrainingComponent,
   ],
   providers: [WorkerResolver, DialogService],
   entryComponents: [DeleteWorkerDialogComponent],

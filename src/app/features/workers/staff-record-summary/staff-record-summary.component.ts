@@ -6,7 +6,6 @@ import { WorkerService } from '@core/services/worker.service';
 @Component({
   selector: 'app-staff-record-summary',
   templateUrl: './staff-record-summary.component.html',
-  styleUrls: ['./staff-record-summary.component.scss'],
 })
 export class StaffRecordSummaryComponent {
   @Input() worker: Worker;

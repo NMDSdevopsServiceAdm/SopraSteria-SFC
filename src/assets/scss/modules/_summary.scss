@@ -120,3 +120,8 @@
 .govuk-visually-hidden {
   display: none;
 }
+
+.govuk-summary-list--wrap-border {
+  border: 1px solid map-get($color, grey);
+  border-width: 1px 0;
+}
