@@ -24,8 +24,33 @@ const validateEstablishment = async (req, res, next) => {
     }
 };
 
+// this middleware validates a worker against known establishment ID
+const validateWorker = async (req, res, next) => {
+    const workerId = req.params.workerId;
+    const establishmentId = req.establishmentId;
+
+    // validating worker id - must be a V4 UUID
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
+
+    const thisWorker = new Workers.Worker(establishmentId);
+
+    try {
+        if (await thisWorker.restore(workerId, false)) {
+            next();
+        } else {
+            // not found worker
+            return res.status(404).send('Not Found');
+        }
+
+    } catch (err) {
+        console.error('worker::validateWorker - failed', err);
+        return res.status(503).send();
+    }
+};
+
 router.use('/', validateEstablishment);
-router.use('/:workerId/training', TrainingRoutes);
+router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 
 // gets all workers
 router.route('/').get(async (req, res) => {

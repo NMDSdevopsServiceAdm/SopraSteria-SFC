@@ -129,6 +129,7 @@ class Training {
         this._expires = expires;
     };
     set notes(notes) {
+        if (this._notes === null) return null;
         this._notes = escape(notes);
     };
 
@@ -158,7 +159,7 @@ class Training {
         });
 
         if (!trainingCategories || !Array.isArray(trainingCategories)) {
-            this.log(Training.LOG_ERROR, 'Failed to get all training categories');
+            this._log(Training.LOG_ERROR, 'Failed to get all training categories');
             return false;
         }
 
@@ -166,13 +167,13 @@ class Training {
         const validatedTrainingRecord = {};
         if (document.trainingCategory) {
             // validate category
-            if (!(document.trainingCategory.id && document.trainingCategory.category)) {
-                this.log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
+            if (!(document.trainingCategory.id || document.trainingCategory.category)) {
+                this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
                 return false;
             }
 
             if (document.trainingCategory.id && !Number.isInteger(document.trainingCategory.id)) {
-                this.log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id must be an integer');
+                this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id must be an integer');
                 return false;
             }
 
@@ -180,10 +181,12 @@ class Training {
             if (document.trainingCategory.id) {
                 foundCategory = trainingCategories.find(thisCategory => thisCategory.id === document.trainingCategory.id);
             } else {
-                foundCategory = trainingCategories.find(thisCategory => thisCategory.category === document.trainingCategory.category);
+                foundCategory = trainingCategories.find(thisCategory => {
+                    return thisCategory.category === document.trainingCategory.category
+                });
             }
             if (foundCategory === null) {
-                this.log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
+                this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
                 return false;
             } else {
                 validatedTrainingRecord.trainingCategory = {
@@ -200,7 +203,7 @@ class Training {
             const MIN_LENGTH=3;
             if (document.title.length < MIN_LENGTH ||
                 document.title.length > MAX_LENGTH) {
-                this.log(Training.LOG_ERROR, 'title failed validation: MIN/MAX length');
+                this._log(Training.LOG_ERROR, 'title failed validation: MIN/MAX length');
                 return false;
             }
 
@@ -214,7 +217,7 @@ class Training {
             const ALLOWED_FALSE_VALUES = ["false", "no"];
             if (typeof document.accredited !== 'boolean' &&
                 !(ALLOWED_TRUE_VALUES.includes(document.accredited) || ALLOWED_FALSE_VALUES.includes(document.accredited))) {
-                this.log(Training.LOG_ERROR, 'accredited failed validation: wrong type');
+                this._log(Training.LOG_ERROR, 'accredited failed validation: wrong type');
                 return false;
             }
 
@@ -231,11 +234,11 @@ class Training {
             // validate completed - must be a valid date
             const expectedDate = moment.utc(document.completed);
             if (!expectedDate.isValid()) {
-                this.log(Training.LOG_ERROR, 'completed failed validation: incorrect date');
+                this._log(Training.LOG_ERROR, 'completed failed validation: incorrect date');
                 return false;
             }
             if (!expectedDate.isBefore(moment(), 'day')) {
-                this.log(Training.LOG_ERROR, 'completed failed validation: must be before today');
+                this._log(Training.LOG_ERROR, 'completed failed validation: must be before today');
                 return false;
             }
 
@@ -247,12 +250,12 @@ class Training {
             // validate expires - must be a valid date
             const expectedDate = moment.utc(document.expires);
             if (!expectedDate.isValid()) {
-                this.log(Training.LOG_ERROR, 'expires failed validation: incorrect date');
+                this._log(Training.LOG_ERROR, 'expires failed validation: incorrect date');
                 return false;
             }
 
             if (!expectedDate.isAfter(validatedTrainingRecord.completed, 'day')) {
-                this.log(Training.LOG_ERROR, 'expires failed validation: must expire after completed');
+                this._log(Training.LOG_ERROR, 'expires failed validation: must expire after completed');
                 return false;
             }
 
@@ -264,7 +267,7 @@ class Training {
             // validate title
             const MAX_LENGTH=500;
             if (document.notes.length > MAX_LENGTH) {
-                this.log(Training.LOG_ERROR, 'notes failed validation: MAX length');
+                this._log(Training.LOG_ERROR, 'notes failed validation: MAX length');
                 return false;
             }
 
@@ -344,6 +347,7 @@ class Training {
                         accredited: this._accredited,
                         completed: this._completed,
                         expires: this._expires,
+                        notes: this._notes,
                         attributes: ['uid', 'created', 'updated'],
                     };
 
@@ -443,14 +447,19 @@ class Training {
     async restore(uid) {
 
         if (!this.uuidV4Regex.test(uid)) {
-            this.log(Training.LOG_ERROR, 'Failed to restore Training record with invalid UID');
+            this._log(Training.LOG_ERROR, 'Failed to restore Training record with invalid UID');
+            throw new Error('Failed to restore');
+        }
+
+        if (!this._establishmentId ||
+            !this._workerUid) {
+            this._log(Training.LOG_ERROR, 'Failed to restore Training record with unknown worker id and establishment id');
             throw new Error('Failed to restore');
         }
 
         try {
             // by including the worker id in the fetch, we are sure to only fetch those
-            //  Training records associated to the given Worker
-            
+            //  Training records associated to the given Worker   
             const fetchQuery = {
                 where: {
                     uid: uid,
@@ -458,10 +467,15 @@ class Training {
                 include: [
                     {
                         model: models.worker,
+                        as: 'worker',
                         attributes: ['id', 'uid'],
                         where: {
                             uid: this._workerUid
                         }
+                    },
+                    {
+                        model: models.workerTrainingCategories,
+                        as: 'category',
                     }
                 ]
             };
@@ -479,8 +493,8 @@ class Training {
                 };
                 this._title = fetchResults.title;
                 this._accredited = fetchResults.accredited;
-                this._completed = fetchResults.completed;
-                this._expires = fetchResults.expires;
+                this._completed = new Date(fetchResults.completed);
+                this._expires = fetchResults.expires !== null ? new Date(fetchResults.expires) : null;
                 this._notes = fetchResults.notes;
 
                 this._created = fetchResults.created;
@@ -502,23 +516,23 @@ class Training {
 
     // deletes this Trainingrecord from DB
     // Can throw "Error"
-    async delete(uid) {
-        if (!this.uuidV4Regex.test(uid)) {
-            this.log(Training.LOG_ERROR, 'Failed to delete Training record with invalid UID');
+    async delete() {
+        if (this._workerUid === null ||
+            this._establishmentId === null) {
+            this._log(Training.LOG_ERROR, 'Cannot delete a training record having unknown establishment uid, worker uid or training uid');
             throw new Error('Failed to delete');
         }
 
         try {
-            // by including the worker id in the fetch, we are sure to only delete those
-            //  Training records associated to the given Worker
-            
+            // by getting here, we known the training record belongs to the Worker, because it's been validated by restoring the training record first
             const fetchQuery = {
                 where: {
-                    uid: uid,
+                    uid: this._uid,
                 },
                 include: [
                     {
                         model: models.worker,
+                        as: 'worker',
                         attributes: ['id', 'uid'],
                         where: {
                             uid: this._workerUid
@@ -527,12 +541,14 @@ class Training {
                 ]
             };
 
-            const fetchResults = await models.workerTraining.destroy(fetchQuery);
-            if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
-                // update self - don't use setters because they modify the change state
+            const deleteResults = await models.workerTraining.destroy(fetchQuery);  // returns the number of records deleted
+            if (deleteResults === 1) {
+                // reset self - don't use setters because they modify the change state
                 this._isNew = false;
                 this._id = null;
                 this._uid = null;
+                this._workerUid = null;
+                this._establishmentId = null;
 
                 this._category = null;
                 this._title = null;
@@ -559,7 +575,7 @@ class Training {
     };
 
     // returns a set of Workers' Training Records based on given filter criteria (all if no filters defined) - restricted to the given Worker
-    static async fetch(workerId, filters=null) {
+    static async fetch(establishmentId, workerId, filters=null) {
         if (filters) throw new Error("Filters not implemented");
 
         const allTrainingRecords = [];
@@ -570,9 +586,7 @@ class Training {
                     as: 'worker',
                     attributes: ['id', 'uid'],
                     where: {
-                        where: {
-                            uid: this.workerId
-                        }
+                        uid: workerId
                     }
                 },
                 {
@@ -582,7 +596,7 @@ class Training {
                 }
             ],
             order: [
-                ['completed', 'DESC'],
+                //['completed', 'DESC'],
                 ['updated', 'DESC']
             ]           
         });
@@ -591,8 +605,10 @@ class Training {
             fetchResults.forEach(thisRecord => {
                 allTrainingRecords.push({
                     uid: thisRecord.uid,
-                    title: thisRecord.title,
-                    coimpleted: thisRecord.completed.toISOString(),
+                    category: thisRecord.category.category,
+                    title: unescape(thisRecord.title),
+                    completed: new Date(thisRecord.completed),
+                    expires: thisRecord.expires !== null ? new Date(thisRecord.expires) : undefined,
                     created:  thisRecord.created.toISOString(),
                     updated: thisRecord.updated.toISOString(),
                     updatedBy: thisRecord.updatedBy,
@@ -600,7 +616,21 @@ class Training {
             });
         }
 
-        return allTrainingRecords;
+        let lastUpdated = null;
+        if (fetchResults && fetchResults.length === 1) {
+            lastUpdated = fetchResults[0];
+        } else if (fetchResults && fetchResults.length > 1) {
+            lastUpdated = fetchResults.reduce((a, b) => { return a.updated > b.updated ? a : b; });;
+        }
+        
+        const response = {
+            workerUid: workerId,
+            count: allTrainingRecords.length,
+            lastUpdated: lastUpdated ? lastUpdated.updated.toISOString() : undefined,
+            training: allTrainingRecords,
+        };
+
+        return response;
     };
 
     // returns a Javascript object which can be used to present as JSON
@@ -615,8 +645,8 @@ class Training {
             title: this.title,
             accredited: this.accredited,
             completed: this.completed,
-            expires: this.expires,
-            notes: this.notes,
+            expires: this._expires !== null ? this.expires : undefined,
+            notes: this._notes !== null ? this.notes : undefined
         };
 
         return myDefaultJSON;

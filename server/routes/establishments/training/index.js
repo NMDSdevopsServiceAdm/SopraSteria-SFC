@@ -5,6 +5,10 @@ const router = express.Router({mergeParams: true});
 // all user functionality is encapsulated
 const Training = require('../../../models/classes/training').Training;
 
+// NOTE - the Worker route uses middleware to validate the given worker id against the known establishment
+//        prior to all training endpoints, thus ensuring we this necessary rigidity on Establishment/Worker relationship
+//        for training records.
+
 // returns a list of all training records for the given worker UID
 // Inherits the security middleware declared in the Worker route for training.
 // Inheirts the "workerUid" parameter declared in the Worker route for training.
@@ -13,13 +17,9 @@ router.route('/').get(async (req, res) => {
     const establishmentId = req.establishmentId;
     const workerUid = req.params.workerId;
 
-    console.log("WA DEBUG - training get all: ", workerUid)
-
     try {
         const allTrainingRecords = await Training.fetch(establishmentId, workerUid);
-        return res.status(200).json({
-            training: allTrainingRecords
-        });
+        return res.status(200).json(allTrainingRecords);
     } catch (err) {
         console.error('Training::root - failed', err);
         return res.status(503).send(`Failed to get Training Records for Worker having uid: ${workerUid}`);
@@ -30,11 +30,11 @@ router.route('/').get(async (req, res) => {
 router.route('/:trainingUid').get(async (req, res) => {
     const establishmentId = req.establishmentId;
     const trainingUid = req.params.trainingUid;
-    const workerUid = req.params.workerUid;
+    const workerUid = req.params.workerId;
 
-    console.log("WA DEBUG - training get one: ", workerUid, trainingUid)
+    console.log("WA DEBUG - training get one: ", establishmentId, workerUid, trainingUid)
 
-    const thisTrainingRecord = new Training(workerUid);
+    const thisTrainingRecord = new Training(establishmentId, workerUid);
 
     try {
         if (await thisTrainingRecord.restore(trainingUid)) {
@@ -123,8 +123,8 @@ router.route('/:trainingUid').put(async (req, res) => {
 // deletes requested training record using the training uid
 router.route('/:trainingUid').delete(async (req, res) => {
     const establishmentId = req.establishmentId;
-    const trainingUid = req.params.trainingId;
-    const workerUid = req.params.workerUid;
+    const trainingUid = req.params.trainingUid;
+    const workerUid = req.params.workerId;
 
     console.log("WA DEBUG - training delete one: ", workerUid, trainingUid)
 
@@ -137,9 +137,14 @@ router.route('/:trainingUid').delete(async (req, res) => {
         if (await thisTrainingRecord.restore(trainingUid)) {
             // TODO: JSON validation
 
-            // by de;leting after the restore we can be sure this training record belongs to the given worker
-            await thisTrainingRecord.delete();
-            return res.status(204).json();
+            // by deleting after the restore we can be sure this training record belongs to the given worker
+            const deleteSuccess = await thisTrainingRecord.delete();
+
+            if (deleteSuccess) {
+                return res.status(204).json();
+            } else {
+                return res.status(404).json('Not Found');
+            }
             
         } else {
             // not found worker
