@@ -26,6 +26,35 @@ router.route('/').get(async (req, res) => {
     }
 });
 
+// returns the set of qualifications that are available to the given worker; this all qualifications except those
+//  already consumed by this worker
+router.route('/available').get(async (req, res) => {
+    // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+    const establishmentId = req.establishmentId;
+    const workerUid = req.params.workerId;
+    const byType = req.query.type;
+
+    const thisQualificationRecord = new Qualification(establishmentId, workerUid);
+
+    try {
+        const remainingQualifications = await thisQualificationRecord.myAvailableQualifications(byType);
+        if (remainingQualifications !== false) {
+            return res.status(200).json({
+                workerId: workerUid,
+                type: byType,
+                count: remainingQualifications.length,
+                qualifications: remainingQualifications
+            });
+        } else {
+            return res.status(400).send();
+        }
+
+    } catch (err) {
+        console.error('Qualification::root - failed', err);
+        return res.status(503).send(`Failed to get available Qualification (Types) for Worker having uid: ${workerUid}`);
+    }
+});
+
 // gets requested qualification record using the qualification uid
 router.route('/:qualificationUid').get(async (req, res) => {
     const establishmentId = req.establishmentId;

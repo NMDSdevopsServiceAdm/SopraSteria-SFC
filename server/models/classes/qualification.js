@@ -684,6 +684,59 @@ class Qualification {
 
         return allExistAndValid;
     }
+
+    // returns a list of all the available qualifications (types) nminus those already "in use"
+    async myAvailableQualifications(byType) {
+        if (!QUALIFICATION_TYPE.includes(byType)) return false;
+
+        const currentSetOfWorkerQualsResults = await models.workerQualifications.findAll({
+            attributes: ['qualificationFk'],
+            include: [
+                {
+                    model: models.worker,
+                    as: 'worker',
+                    attributes: ['id', 'uid'],
+                    where: {
+                        uid: this._workerUid
+                    }
+                }
+            ]
+        });
+
+        const currentSetOfWorkerQuals = [];
+        
+        if (currentSetOfWorkerQualsResults && Array.isArray(currentSetOfWorkerQualsResults)) {
+            currentSetOfWorkerQualsResults.forEach(thisQual => {
+                currentSetOfWorkerQuals.push(thisQual.qualificationFk);
+            });
+        }
+
+        // filter qualifications list by the given type
+        const qualifications = await models.workerAvailableQualifications.findAll({
+            attributes: ['id', 'seq', 'group', 'title', 'level', 'code', 'from', 'until'],
+            where: {
+                group: byType,
+                id: {
+                    [models.Sequelize.Op.notIn] : currentSetOfWorkerQuals
+                }
+            },
+            order: [
+                ["seq", "ASC"]
+            ]
+        });
+
+        if (qualifications && Array.isArray(qualifications)) {
+            return qualifications.map(thisQual => {
+                return {
+                    title: thisQual.title,
+                    level: thisQual.level,
+                    code: thisQual.code,
+                    from: thisQual.from !== null ? thisQual.from : undefined,
+                    until: thisQual.until !== null? thisQual.until : undefined,
+                };
+            });
+        }
+    }
 };
 
 module.exports.Qualification = Qualification;
