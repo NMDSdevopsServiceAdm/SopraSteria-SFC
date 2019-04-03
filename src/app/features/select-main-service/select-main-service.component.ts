@@ -87,7 +87,6 @@ export class SelectMainServiceComponent implements OnInit {
     this._registrationService.getMainServices(this.regulatedCheck)
       .subscribe(
         value => {
-          debugger;
           this.allCategoriesArray = value;
         }
       );
