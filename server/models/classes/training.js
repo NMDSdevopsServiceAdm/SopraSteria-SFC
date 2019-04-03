@@ -293,8 +293,6 @@ class Training {
         try {
             const validatedTrainingRecord = await this.validateTrainingRecord(document);
 
-            console.log("WA DEBUG - validatedTrainingRecord: ", validatedTrainingRecord);
-
             if (validatedTrainingRecord !== false) {
                 this.category = validatedTrainingRecord.trainingCategory;
                 this.title = validatedTrainingRecord.title;
