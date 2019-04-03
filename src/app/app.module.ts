@@ -4,13 +4,14 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
+import { HttpInterceptor } from '@core/services/http-interceptor';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
 import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
 import {
   ProblemWithTheServicePagesComponent,
 } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
@@ -32,6 +33,12 @@ import { QualificationService } from './core/services/qualification.service';
 import { RecruitmentService } from './core/services/recruitment.service';
 import { RegistrationService } from './core/services/registration.service';
 import { WorkerService } from './core/services/worker.service';
+import { ChangePasswordComponent } from './features/change-password/change-password.component';
+import { ChangePasswordConfirmationComponent } from './features/change-password/confirmation/confirmation.component';
+import { ChangePasswordEditComponent } from './features/change-password/edit/edit.component';
+import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
+import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
+import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
 import { ConfirmLeaversComponent } from './features/confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './features/confirm-starters/confirm-starters.component';
@@ -45,7 +52,9 @@ import {
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
 import { CreateUsernameComponent } from './features/create-username/create-username.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
+import { HomeTabComponent } from './features/dashboard/home-tab/home-tab.component';
 import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
+import { WorkplaceTabComponent } from './features/dashboard/workplace-tab/workplace-tab.component';
 import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
 import {
@@ -110,7 +119,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     FeedbackComponent,
     ContactUsComponent,
     LogoutComponent,
-    PageNotFoundPagesComponent,
+    PageNotFoundComponent,
     ProblemWithTheServicePagesComponent,
     TermsConditionsComponent,
     DashboardComponent,
@@ -121,6 +130,14 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     ResetPasswordComponent,
     ResetPasswordEditComponent,
     ResetPasswordConfirmationComponent,
+    ChangeUserSummaryComponent,
+    ChangePasswordComponent,
+    ChangePasswordConfirmationComponent,
+    ChangePasswordEditComponent,
+    ChangeUserDetailsComponent,
+    ChangeUserSecurityComponent,
+    HomeTabComponent,
+    WorkplaceTabComponent,
   ],
   imports: [
     BrowserModule,
@@ -151,6 +168,11 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     HttpErrorHandler,
     FeedbackService,
     EstablishmentService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpInterceptor,
+      multi: true,
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

@@ -29,12 +29,16 @@ import { TypeOfEmployerComponent } from '@features/type-of-employer/type-of-empl
 import { UserDetailsComponent } from '@features/user-details/user-details.component';
 import { VacanciesComponent } from '@features/vacancies/vacancies.component';
 
-import { PageNotFoundPagesComponent } from './core/error/page-not-found-pages/page-not-found-pages.component';
+import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
 import {
   ProblemWithTheServicePagesComponent,
 } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
+import { ChangePasswordComponent } from './features/change-password/change-password.component';
+import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
+import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
+import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
 
@@ -50,6 +54,26 @@ const routes: Routes = [
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
+  },
+  {
+    path: 'change-user-summary',
+    component: ChangeUserSummaryComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'change-password',
+    component: ChangePasswordComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'change-user-details',
+    component: ChangeUserDetailsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'change-user-security',
+    component: ChangeUserSecurityComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: 'registered-question',
@@ -112,67 +136,56 @@ const routes: Routes = [
   {
     path: 'select-other-services',
     component: SelectOtherServicesComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'type-of-employer',
     component: TypeOfEmployerComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'vacancies',
     component: VacanciesComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'confirm-vacancies',
     component: ConfirmVacanciesComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'starters',
     component: StartersComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'confirm-starters',
     component: ConfirmStartersComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'leavers',
     component: LeaversComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'confirm-leavers',
     component: ConfirmLeaversComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'capacity-of-services',
     component: ServicesCapacityComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'share-local-authority',
     component: ShareLocalAuthorityComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
     path: 'share-options',
     component: ShareOptionsComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
@@ -188,22 +201,17 @@ const routes: Routes = [
     component: TermsConditionsComponent,
   },
   {
-    path: 'page-not-found',
-    component: PageNotFoundPagesComponent,
-  },
-  {
     path: 'problem-with-the-service',
     component: ProblemWithTheServicePagesComponent,
   },
   {
     path: 'worker',
     loadChildren: '@features/workers/workers.module#WorkersModule',
-    canLoad: [AuthGuard],
+    canActivate: [AuthGuard],
   },
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
   },
   {
@@ -213,7 +221,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/dashboard',
+    component: PageNotFoundComponent,
   },
 ];
 

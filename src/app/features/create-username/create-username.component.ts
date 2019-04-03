@@ -146,7 +146,6 @@ export class CreateUsernameComponent implements OnInit {
         }
       },
       (err: RegistrationTrackerError) => {
-        console.log(err);
         this.usernameApiError = err.message;
         this.setCreateUsernameMessage(this.getCreateUsernameInput);
       },

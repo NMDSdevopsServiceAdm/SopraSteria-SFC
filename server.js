@@ -37,6 +37,10 @@ var qualification = require('./server/routes/qualifications');
 var recruitedFrom = require('./server/routes/recruitedFrom');
 var user = require('./server/routes/accounts/user');
 var workerLeaveReasons = require('./server/routes/workerReason');
+var serviceUsers = require('./server/routes/serviceUsers');
+
+// reports
+var ReportsRoute = require('./server/routes/reports/index');
 
 var errors = require('./server/routes/errors');
 
@@ -139,6 +143,7 @@ app.use('/api/recruitedFrom', [refCacheMiddleware.refcache, recruitedFrom]);
 app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
 app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveReasons]);
+app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
@@ -150,7 +155,7 @@ app.use('/api/establishment', [cacheMiddleware.nocache,establishments]);
 app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
-
+app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 
 
 app.get('*', function(req, res) {

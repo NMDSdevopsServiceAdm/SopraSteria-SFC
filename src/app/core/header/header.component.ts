@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+
 import { AuthService } from '../services/auth-service';
 
 @Component({
@@ -6,10 +7,16 @@ import { AuthService } from '../services/auth-service';
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
+  public fullname: string;
+
   constructor(private authService: AuthService) {}
 
   isLoggedIn() {
     return this.authService.isLoggedIn;
+  }
+
+  hasFullname() {
+    return (this.fullname = this.authService.fullname ? this.authService.fullname.split(' ')[0] : null);
   }
 
   signOut(event) {

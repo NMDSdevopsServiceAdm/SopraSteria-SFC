@@ -18,7 +18,7 @@ ul {
       display: inline-block;
       text-decoration: underline;
 
-      @include rem(font-size, 20px);
+      @include rem(font-size, 19px);
       @include rem(padding, 6px 0);
     }
   }
@@ -143,6 +143,10 @@ p {
   text-align: center;
 
   @include rem(padding, 40px 0);
+}
+
+.link-nounderline {
+  text-decoration: none;
 }
 
 .icon-link {
