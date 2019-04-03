@@ -7,42 +7,42 @@
 
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
     <header>
-      <h1 class="h1 col-12 col-lg-8">Add Training</h1>
+      <h1 class="h1 col-12 col-lg-8">Add training details</h1>
     </header>
 
     <div class="form-group">
       <div class="field-group mb-5">
-        <label class="col-12 col-md-11 col-lg-8">
-          Training name
-          <!-- <div *ngIf="staffRecord.controls.nameOrId.errors && staffRecord.controls.nameOrId.touched" class="alert alert-danger">
-            <p>Enter a full name or ID number</p>
-          </div> -->
-          <input type="text" formControlName="name" class="form-control col-12" />
-        </label>
-      </div>
-
-      <div class="field-group mb-5">
-        <label class="col-12 col-md-11 col-lg-8">
+        <label for="category">
           Training category
-          <!-- <div *ngIf="staffRecord.controls.nameOrId.errors && staffRecord.controls.nameOrId.touched" class="alert alert-danger">
-            <p>Enter a full name or ID number</p>
-          </div> -->
-          <select formControlName="category" class="form-control">
-            <option [ngValue]="null">Select training category</option>
-            <option *ngFor="let category of categories" [value]="category.id">
-              {{ category.title }}
-            </option>
-          </select>
         </label>
+        <div *ngIf="submitted && form.get('category').hasError('required')" class="alert alert-danger">
+          <p>Select a training category</p>
+        </div>
+        <select formControlName="category" class="form-control">
+          <option [ngValue]="null">Select a training category</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.title }}
+          </option>
+        </select>
       </div>
 
       <div class="field-group mb-5">
-        <label class="d-block">
-          Is this training accredited?
-          <!-- <div *ngIf="staffRecord.controls.contract.errors && staffRecord.controls.contract.touched" class="alert alert-danger">
-            <p>Select a contract type</p>
-          </div> -->
+        <label for="name">
+          Training name
         </label>
+        <div *ngIf="submitted && form.get('name').hasError('required')" class="alert alert-danger">
+          <p>Enter a training name</p>
+        </div>
+        <input type="text" formControlName="name" class="form-control col-12" />
+      </div>
+
+      <div class="field-group mb-5">
+        <label for="accredited" class="d-block">
+          Is this training accredited?
+        </label>
+        <div *ngIf="submitted && form.get('accredited').hasError('required')" class="alert alert-danger">
+          <p>Select if training is accredited</p>
+        </div>
         <div class="multiple-choice">
           <input type="radio" formControlName="accredited" class="form-control" value="Yes" id="accredited-yes" />
           <label for="accredited-yes">Yes</label>
@@ -57,6 +57,18 @@
         <label class="d-block">
           Date completed
         </label>
+        <div *ngIf="submitted && form.get('completed').hasError('required')" class="alert alert-danger">
+          <p>Enter the date when the training was completed</p>
+        </div>
+        <div *ngIf="submitted && form.get('completed').hasError('dateValid')" class="alert alert-danger">
+          <p>Date completed is not a valid date</p>
+        </div>
+        <div *ngIf="submitted && form.get('completed').hasError('pastDate')" class="alert alert-danger">
+          <p>Date completed can not be a date in the future</p>
+        </div>
+        <div *ngIf="submitted && form.get('completed').hasError('minDate')" class="alert alert-danger">
+          <p>Date completed can not be more that 100 years in the past</p>
+        </div>
         <p class="page-input-info">For example, 31 3 1980</p>
         <app-date-picker [formGroup]="form.get('completed')"></app-date-picker>
       </div>
@@ -65,6 +77,18 @@
         <label class="d-block">
           Expiry date
         </label>
+        <div *ngIf="submitted && form.get('expiry').hasError('dateValid')" class="alert alert-danger">
+          <p>Expiry date is not a valid date</p>
+        </div>
+        <div *ngIf="submitted && form.get('expiry').hasError('pastDate')" class="alert alert-danger">
+          <p>Expiry date can not be a date in the future</p>
+        </div>
+        <div *ngIf="submitted && form.get('expiry').hasError('minDate')" class="alert alert-danger">
+          <p>Expiry date can not be more that 100 years in the past</p>
+        </div>
+        <div *ngIf="submitted && form.hasError('expiryBeforeCompleted')" class="alert alert-danger">
+          <p>Expiry date must be after date completed</p>
+        </div>
         <p class="page-input-info">For example, 31 3 1980</p>
         <app-date-picker [formGroup]="form.get('expiry')"></app-date-picker>
       </div>
@@ -73,7 +97,16 @@
         <label for="notes" class="d-block">
           Add notes
         </label>
-        <textarea maxlength="1200" rows="5" class="textarea main-body-text col-12" formControlName="notes" id="notes"></textarea>
+        <div *ngIf="submitted && form.get('notes').hasError('maxlength')" class="alert alert-danger">
+          <p>Notes must be no longer than {{ form.get('notes').getError('maxlength').requiredLength }} characters.</p>
+        </div>
+        <textarea
+          maxlength="1200"
+          rows="5"
+          class="textarea main-body-text col-12"
+          formControlName="notes"
+          id="notes"
+        ></textarea>
       </div>
     </div>
 
