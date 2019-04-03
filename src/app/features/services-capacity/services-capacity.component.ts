@@ -54,7 +54,6 @@ export class ServicesCapacityComponent implements OnInit, OnDestroy {
         return res;
       }, []);
       this.subscriptions.add(
-        //this.establishmentService.postCapacity(props).subscribe(() => this.router.navigate(['/share-options']))
         this.establishmentService.postCapacity(props).subscribe(() => this.router.navigate(['/service-users']))
       );
     }
