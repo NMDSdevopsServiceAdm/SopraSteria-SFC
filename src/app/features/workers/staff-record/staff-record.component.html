@@ -23,6 +23,8 @@
       </app-tab>
       <app-tab title="Qualifications and training">
         <app-qualifications-and-training [worker]="worker"></app-qualifications-and-training>
+        <a [routerLink]="['/worker', worker.uid, 'add-qualification']" role="button" draggable="false" class="govuk-button govuk-button--secondary">Add a qualification</a> <a [routerLink]="['/worker', worker.uid, 'add-training']" role="button" draggable="false" class="govuk-button govuk-button--secondary">Add training</a>
+        <p>Adding additional qualifications or training is optional.</p>
       </app-tab>
     </app-tabs>
   </ng-container>

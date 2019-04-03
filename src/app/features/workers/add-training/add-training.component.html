@@ -1,0 +1,93 @@
+<div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a [routerLink]="['/worker', worker.uid]" fragment="qualifications-and-training">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
+    <header>
+      <h1 class="h1 col-12 col-lg-8">Add Training</h1>
+    </header>
+
+    <div class="form-group">
+      <div class="field-group mb-5">
+        <label class="col-12 col-md-11 col-lg-8">
+          Training name
+          <!-- <div *ngIf="staffRecord.controls.nameOrId.errors && staffRecord.controls.nameOrId.touched" class="alert alert-danger">
+            <p>Enter a full name or ID number</p>
+          </div> -->
+          <input type="text" formControlName="name" class="form-control col-12" />
+        </label>
+      </div>
+
+      <div class="field-group mb-5">
+        <label class="col-12 col-md-11 col-lg-8">
+          Training category
+          <!-- <div *ngIf="staffRecord.controls.nameOrId.errors && staffRecord.controls.nameOrId.touched" class="alert alert-danger">
+            <p>Enter a full name or ID number</p>
+          </div> -->
+          <select formControlName="category" class="form-control">
+            <option [ngValue]="null">Select training category</option>
+            <option *ngFor="let category of categories" [value]="category.id">
+              {{ category.title }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <div class="field-group mb-5">
+        <label class="d-block">
+          Is this training accredited?
+          <!-- <div *ngIf="staffRecord.controls.contract.errors && staffRecord.controls.contract.touched" class="alert alert-danger">
+            <p>Select a contract type</p>
+          </div> -->
+        </label>
+        <div class="multiple-choice">
+          <input type="radio" formControlName="accredited" class="form-control" value="Yes" id="accredited-yes" />
+          <label for="accredited-yes">Yes</label>
+        </div>
+        <div class="multiple-choice mb-5">
+          <input type="radio" formControlName="accredited" class="form-control" value="No" id="accredited-no" />
+          <label for="accredited-no">No</label>
+        </div>
+      </div>
+
+      <div class="field-group mb-5">
+        <label class="d-block">
+          Date completed
+        </label>
+        <p class="page-input-info">For example, 31 3 1980</p>
+        <app-date-picker [formGroup]="form.get('completed')"></app-date-picker>
+      </div>
+
+      <div class="field-group mb-5">
+        <label class="d-block">
+          Expiry date
+        </label>
+        <p class="page-input-info">For example, 31 3 1980</p>
+        <app-date-picker [formGroup]="form.get('expiry')"></app-date-picker>
+      </div>
+
+      <div class="field-group mb-5">
+        <label for="notes" class="d-block">
+          Add notes
+        </label>
+        <textarea maxlength="1200" rows="5" class="textarea main-body-text col-12" formControlName="notes" id="notes"></textarea>
+      </div>
+    </div>
+
+    <div class="btn-container container">
+      <div class="row">
+        <button type="submit" class="btn btn-primary col-12 col-sm-4 col-lg-3">Add training</button>
+        <a
+          [routerLink]="['/worker', worker.uid]"
+          fragment="qualifications-and-training"
+          class="btn btn-link btn-link-no-underline col-md-3"
+        >
+          Cancel
+        </a>
+      </div>
+    </div>
+  </form>
+</div>

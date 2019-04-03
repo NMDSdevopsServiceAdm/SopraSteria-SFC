@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AddTrainingComponent } from './add-training/add-training.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
@@ -178,6 +179,10 @@ const routes: Routes = [
       {
         path: 'summary',
         component: CheckStaffRecordComponent,
+      },
+      {
+        path: 'add-training',
+        component: AddTrainingComponent,
       },
     ],
   },
