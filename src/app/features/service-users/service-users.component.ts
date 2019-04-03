@@ -43,11 +43,6 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
         .subscribe(
           (data: any) => {
             this.serviceUsersData = data;
-          },
-          (err) => {
-            console.log(err);
-          },
-          () => {
           }
         )
     );
@@ -66,11 +61,6 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
                 this.checkboxesSelected.push(thisServiceUser.id);
               });
             }
-          },
-          (err) => {
-            console.log(err);
-          },
-          () => {
           }
         )
     );
