@@ -21,8 +21,7 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute,
-    private _eSService: EstablishmentService
+    private establishmentService: EstablishmentService
   ) { }
 
   get getServiceChecked() {
@@ -40,7 +39,7 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
 
   getAllServices() {
     this.subscriptions.add(
-      this._eSService.getAllServiceUsers()
+      this.establishmentService.getAllServiceUsers()
         .subscribe(
           (data: any) => {
             this.serviceUsersData = data;
@@ -58,7 +57,7 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
     this.checkboxesSelected = [];
 
     this.subscriptions.add(
-      this._eSService.getServiceUsersChecked()
+      this.establishmentService.getServiceUsersChecked()
         .subscribe(
           (data: any) => {
 
@@ -84,11 +83,11 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
       // add the serviceId to the known set of selected checkbox; but opnly if it
       //  doesn't already exist
       if (!this.checkboxesSelected.includes(serviceUserId)) {
-        this.checkboxesSelected.push(parseInt(serviceUserId));
+        this.checkboxesSelected.push(parseInt(serviceUserId, 10));
       }
     } else {
       // remove the given service id
-      const foundServiceIdIndex = this.checkboxesSelected.indexOf(parseInt(serviceUserId));
+      const foundServiceIdIndex = this.checkboxesSelected.indexOf(parseInt(serviceUserId, 10));
       if (foundServiceIdIndex !== -1) {
         this.checkboxesSelected.splice(foundServiceIdIndex, 1);
       }
@@ -99,24 +98,16 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
     const serviceUsersSelected = {
       serviceUsers: this.checkboxesSelected.map(thisValue => {
           return {
-            id: parseInt(thisValue)
+            id: parseInt(thisValue, 10)
           }
         })
     }
 
     // always save back to backend API, even if there are (now) no other services
     this.subscriptions.add(
-      this._eSService.postServiceUsers(serviceUsersSelected)
+      this.establishmentService.postServiceUsers(serviceUsersSelected)
         .subscribe(
-          (data: any) => {
-            this.router.navigate(['/share-options']);
-          },
-          (err) => {
-            console.log(err);
-          },
-          () => {
-            // Removing any navigation as
-          }
+          (data: any) => this.router.navigate(['/share-options'])
         )
     );
   }
