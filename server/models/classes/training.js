@@ -99,6 +99,7 @@ class Training {
         return this._category;
     };
     get title() {
+        if (this._title === null) return null;
         return unescape(this._title);
     };
     get accredited() {
@@ -118,7 +119,11 @@ class Training {
         this._category = category;
     };
     set title(title) {
-        this._title = escape(title);
+        if (title !== null) {
+            this._title = escape(title);
+        } else {
+            this._title = null;
+        }
     };
     set accredited(accredited) {
         this._accredited = accredited;
@@ -213,10 +218,12 @@ class Training {
             }
 
             validatedTrainingRecord.title = document.title;
+        } else {
+            validatedTrainingRecord.title = null;
         }
 
         // accredited - boolean value (or string equivalent of true/false)!
-        if (document.accredited !== null) {
+        if (document.accredited) {
             // validate accredited - JSON only allows true/false
             const ALLOWED_TRUE_VALUES = ["true", "yes"];
             const ALLOWED_FALSE_VALUES = ["false", "no"];
@@ -232,6 +239,8 @@ class Training {
                 if (ALLOWED_TRUE_VALUES.includes(document.accredited.toLowerCase())) validatedTrainingRecord.accredited = true;
                 if (ALLOWED_FALSE_VALUES.includes(document.accredited.toLowerCase())) validatedTrainingRecord.accredited = false;
             }
+        } else {
+            validatedTrainingRecord.accredited = null;
         }
 
         // completed
@@ -248,6 +257,8 @@ class Training {
             }
 
             validatedTrainingRecord.completed = expectedDate;
+        } else {
+            validatedTrainingRecord.completed = null;
         }
 
         // expires
@@ -258,7 +269,8 @@ class Training {
                 return false;
             }
 
-            if (!expectedDate.isAfter(validatedTrainingRecord.completed, 'day')) {
+            // validation against completed is only relevant if completed has been given
+            if (validatedTrainingRecord.completed && !expectedDate.isAfter(validatedTrainingRecord.completed, 'day')) {
                 this._log(Training.LOG_ERROR, 'expires failed validation: must expire after completed');
                 return false;
             }
@@ -297,7 +309,7 @@ class Training {
                 this.category = validatedTrainingRecord.trainingCategory;
                 this.title = validatedTrainingRecord.title;
                 this.accredited = validatedTrainingRecord.accredited;
-                this.completed = validatedTrainingRecord.completed.toDate();
+                this.completed = validatedTrainingRecord.completed ? validatedTrainingRecord.completed.toDate() : null;
                 this.expires = validatedTrainingRecord.expires ? validatedTrainingRecord.expires.toDate() : null;
                 this.notes = validatedTrainingRecord.notes;
             } else {
@@ -504,7 +516,7 @@ class Training {
                 };
                 this._title = fetchResults.title;
                 this._accredited = fetchResults.accredited;
-                this._completed = new Date(fetchResults.completed);
+                this._completed = fetchResults.completed ? new Date(fetchResults.completed) : null;
                 this._expires = fetchResults.expires !== null ? new Date(fetchResults.expires) : null;
                 this._notes = fetchResults.notes;
 
@@ -617,9 +629,9 @@ class Training {
                 allTrainingRecords.push({
                     uid: thisRecord.uid,
                     category: thisRecord.category.category,
-                    title: unescape(thisRecord.title),
-                    accredited: thisRecord.accredited,
-                    completed: new Date(thisRecord.completed),
+                    title: thisRecord.title ? unescape(thisRecord.title) : undefined,
+                    accredited: thisRecord.accredited ? thisRecord.accredited : undefined,
+                    completed: thisRecord.completed ? new Date(thisRecord.completed) : undefined,
                     expires: thisRecord.expires !== null ? new Date(thisRecord.expires) : undefined,
                     notes: thisRecord.notes !== null ? unescape(thisRecord.notes) : undefined,
                     created:  thisRecord.created.toISOString(),
@@ -656,9 +668,9 @@ class Training {
             updated: this.updated.toJSON(),
             updatedBy: this.updatedBy,
             trainingCategory: this.category,
-            title: this.title,
-            accredited: this.accredited,
-            completed: this.completed,
+            title: this.title ? this.title : undefined,
+            accredited: this.accredited ? this.accredited : undefined,
+            completed: this.completed ? this.completed : undefined,
             expires: this._expires !== null ? this.expires : undefined,
             notes: this._notes !== null ? this.notes : undefined
         };
@@ -673,13 +685,7 @@ class Training {
         let allExistAndValid = true;    // assume all exist until proven otherwise
         
         // category must exist
-        // title must exist
-        // completed must exist
-        // accredited must exist
-        if (this.category === null ||
-            this.name === null ||
-            this.accredited === null ||
-            this.completed == null) allExistAndValid = true
+        if (this.category === null) allExistAndValid = true
 
         return allExistAndValid;
     }

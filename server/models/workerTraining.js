@@ -27,17 +27,17 @@ module.exports = function(sequelize, DataTypes) {
     },
     title: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       field: '"Title"'
     },
     accredited: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
+      allowNull: true,
       field: '"Accredited"'
     },
     completed: {
       type: DataTypes.DATE,
-      allowNull: false,
+      allowNull: true,
       field: '"Completed"'
     },
     expires: {
