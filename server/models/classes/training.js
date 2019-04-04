@@ -628,7 +628,10 @@ class Training {
             fetchResults.forEach(thisRecord => {
                 allTrainingRecords.push({
                     uid: thisRecord.uid,
-                    category: thisRecord.category.category,
+                    trainingCategory: {
+                        id: thisRecord.category.id,
+                        category: thisRecord.category.category
+                    },
                     title: thisRecord.title ? unescape(thisRecord.title) : undefined,
                     accredited: thisRecord.accredited ? thisRecord.accredited : undefined,
                     completed: thisRecord.completed ? new Date(thisRecord.completed) : undefined,
