@@ -48,10 +48,9 @@ import { PersonalDetailsComponent } from './staff-record-summary/personal-detail
 import {
   QualificationsAndTrainingComponent,
 } from './staff-record-summary/qualifications-and-training/qualifications-and-training.component';
-import { QualificationsComponent } from './staff-record-summary/qualifications/qualifications.component';
 import { StaffRecordSummaryComponent } from './staff-record-summary/staff-record-summary.component';
-import { TrainingComponent } from './staff-record-summary/training/training.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
+import { TrainingComponent } from './staff-record/training/training.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkerResolver } from './worker.resolver';
@@ -61,6 +60,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule, OverlayModule],
   declarations: [
+    AddTrainingComponent,
     AdultSocialCareStartedComponent,
     ApprenticeshipTrainingComponent,
     AverageWeeklyHoursComponent,
@@ -103,8 +103,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
     YearArrivedUkComponent,
-    QualificationsComponent,
-    AddTrainingComponent,
   ],
   providers: [WorkerResolver, DialogService],
   entryComponents: [DeleteTrainingDialogComponent, DeleteWorkerDialogComponent],
