@@ -227,7 +227,7 @@ class Qualification {
         // notes - allow for notes of empty string
         if (document.notes) {
             // validate title
-            const MAX_LENGTH=500;
+            const MAX_LENGTH=1000;
             if (document.notes.length > MAX_LENGTH) {
                 this._log(Qualification.LOG_ERROR, 'notes failed validation: MAX length');
                 return false;

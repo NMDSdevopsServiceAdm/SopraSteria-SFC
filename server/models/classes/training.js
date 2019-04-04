@@ -284,7 +284,7 @@ class Training {
         // notes
         if (document.notes) {
             // validate title
-            const MAX_LENGTH=500;
+            const MAX_LENGTH=1000;
             if (document.notes.length > MAX_LENGTH) {
                 this._log(Training.LOG_ERROR, 'notes failed validation: MAX length');
                 return false;
