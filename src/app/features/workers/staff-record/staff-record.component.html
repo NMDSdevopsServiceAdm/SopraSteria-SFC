@@ -4,6 +4,11 @@
   </div>
 
   <ng-container *ngIf="worker">
+    <ng-container *ngIf="traingRecordCreated">
+      <app-inset-text color="success" class="fs-19">
+        Training has been added <a href="#" (click)="closeTrainingAlert($event)" class="close-link">Close</a>
+      </app-inset-text>
+    </ng-container>
     <div class="row">
       <div class="col-md-8">
         <h2 class="heading-caption text-weight-normal">Staff record</h2>
@@ -23,7 +28,20 @@
       </app-tab>
       <app-tab title="Qualifications and training">
         <app-qualifications-and-training [worker]="worker"></app-qualifications-and-training>
-        <a [routerLink]="['/worker', worker.uid, 'add-qualification']" role="button" draggable="false" class="govuk-button govuk-button--secondary">Add a qualification</a> <a [routerLink]="['/worker', worker.uid, 'add-training']" role="button" draggable="false" class="govuk-button govuk-button--secondary">Add training</a>
+        <a
+          [routerLink]="['/worker', worker.uid, 'add-qualification']"
+          role="button"
+          draggable="false"
+          class="govuk-button govuk-button--secondary"
+          >Add a qualification</a
+        >
+        <a
+          [routerLink]="['/worker', worker.uid, 'add-training']"
+          role="button"
+          draggable="false"
+          class="govuk-button govuk-button--secondary"
+          >Add training</a
+        >
         <p>Adding additional qualifications or training is optional.</p>
       </app-tab>
     </app-tabs>

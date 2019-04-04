@@ -21,7 +21,7 @@
         <select formControlName="category" class="form-control">
           <option [ngValue]="null">Select a training category</option>
           <option *ngFor="let category of categories" [value]="category.id">
-            {{ category.title }}
+            {{ category.category }}
           </option>
         </select>
       </div>
@@ -69,6 +69,9 @@
         <div *ngIf="submitted && form.get('completed').hasError('minDate')" class="alert alert-danger">
           <p>Date completed can not be more that 100 years in the past</p>
         </div>
+        <div *ngIf="submitted && form.hasError('completedRequired')" class="alert alert-danger">
+          <p>Date completed is required if expiry date is entered</p>
+        </div>
         <p class="page-input-info">For example, 31 3 1980</p>
         <app-date-picker [formGroup]="form.get('completed')"></app-date-picker>
       </div>
@@ -103,7 +106,7 @@
         <textarea
           maxlength="1200"
           rows="5"
-          class="textarea main-body-text col-12"
+          class="textarea main-body-text"
           formControlName="notes"
           id="notes"
         ></textarea>
@@ -112,7 +115,7 @@
 
     <div class="btn-container container">
       <div class="row">
-        <button type="submit" class="btn btn-primary col-12 col-sm-4 col-lg-3">Add training</button>
+        <button type="submit" class="btn btn-primary">Add training</button>
         <a
           [routerLink]="['/worker', worker.uid]"
           fragment="qualifications-and-training"

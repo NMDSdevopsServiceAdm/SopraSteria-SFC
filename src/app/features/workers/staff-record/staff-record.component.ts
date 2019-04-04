@@ -14,6 +14,7 @@ import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-work
   styleUrls: ['./staff-record.component.scss'],
 })
 export class StaffRecordComponent implements OnInit, OnDestroy {
+  public traingRecordCreated = false;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -25,9 +26,14 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         this.worker = worker;
       })
     );
+
+    this.traingRecordCreated = this.workerService.getTrainingRecordCreated();
   }
 
   ngOnDestroy() {
+    if (this.traingRecordCreated) {
+      this.workerService.resetTrainingRecordCreated();
+    }
     this.subscriptions.unsubscribe();
   }
 
@@ -40,5 +46,11 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         this.router.navigate(['/worker', 'delete-success']);
       }
     });
+  }
+
+  closeTrainingAlert(event) {
+    event.preventDefault();
+    this.workerService.resetTrainingRecordCreated();
+    this.traingRecordCreated = false;
   }
 }
