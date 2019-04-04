@@ -46,6 +46,11 @@ router.route('/establishment/:id').get(async (req, res) => {
     const thisEstablishment = new Establishment.Establishment(req.username);
 
     try {
+       // TODO - mock data
+    //    const numStaff = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) ? this._properties.get('NumberOfStaff').property : 0;
+    //    myWdf['staff'] = numStaff === 0 ? false : Math.random() >= 0.5;                // TODO - cross-check numStaff against #workers (regardless of whether completed or not)
+    //    myWdf['weightedStaff'] = Math.random() >= 0.5;                                 // TODO - true if >= 90% of #workers completed
+
         return res.status(200).send({
             establishmentUid: establishmentId,
             timestamp: new Date().toISOString(),

@@ -864,23 +864,21 @@ class Establishment {
         const effectiveFromEpoch = effectiveFrom.getTime();
 
         // employer type
-        myWdf['employerType'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType'));
+        myWdf['employerType'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('EmployerType')) ? 'Yes' : 'No';
 
         // main service & Other Service & Service Capacities & Service Users
-        myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK'));
-        myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices'));
-        myWdf['capacities'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CapacityServices'));
-        myWdf['serviceUsers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers'));
+        myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
+        myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
+
+        // capacities eligibility is only relevant 
+
+        myWdf['capacities'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CapacityServices')) ? 'Yes' : 'No';
+        myWdf['serviceUsers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ServiceUsers')) ? 'Yes' : 'No';
 
         // vacancies, starters and leavers
-        myWdf['vacancies'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies'));
-        myWdf['starters'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters'));
-        myWdf['leavers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers'));
-
-        // TODO - mock data
-        const numStaff = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) ? this._properties.get('NumberOfStaff').property : 0;
-        myWdf['staff'] = numStaff === 0 ? false : Math.random() >= 0.5;                // TODO - cross-check numStaff against #workers (regardless of whether completed or not)
-        myWdf['weightedStaff'] = Math.random() >= 0.5;                                 // TODO - true if >= 90% of #workers completed
+        myWdf['vacancies'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No';
+        myWdf['starters'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No';
+        myWdf['leavers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No';
         
         return myWdf;
     }
