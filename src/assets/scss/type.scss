@@ -76,6 +76,18 @@ a.link-body-text {
   font-weight: 300;
 }
 
+.text-align {
+  &-left {
+    text-align: left;
+  }
+  &-center {
+    text-align: center;
+  }
+  &-right {
+    text-align: right;
+  }
+}
+
 strong {
   font-weight: bold;
 }

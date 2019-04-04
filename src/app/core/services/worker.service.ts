@@ -34,6 +34,7 @@ export class WorkerService {
   private returnToSummary$ = new BehaviorSubject<boolean>(false);
   public createStaffResponse = null;
   public trainingRecordCreated = null;
+  public trainingRecordDeleted$ = new BehaviorSubject<boolean>(false);
 
   // All workers store
   private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
@@ -114,6 +115,22 @@ export class WorkerService {
       `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`,
       record
     );
+  }
+
+  deleteTrainingRecord(workerId: string, trainingId: string) {
+    return this.http.delete(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingId}`
+    );
+  }
+
+  getTrainingRecords(workerId: string) {
+    return this.http.get<any>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`
+    );
+  }
+
+  setTrainingRecordDeleted(bool) {
+    this.trainingRecordDeleted$.next(bool);
   }
 
   getTrainingRecordCreated() {

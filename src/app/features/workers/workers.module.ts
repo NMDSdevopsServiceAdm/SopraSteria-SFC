@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DialogService } from '@core/services/dialog.service';
 import { SharedModule } from '@shared/shared.module';
 
+import { AddTrainingComponent } from './add-training/add-training.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
@@ -20,6 +21,7 @@ import { CreateStaffRecordComponent } from './create-staff-record/create-staff-r
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteSuccessComponent } from './delete-success/delete-success.component';
+import { DeleteTrainingDialogComponent } from './delete-training-dialog/delete-training-dialog.component';
 import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worker-dialog.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
@@ -46,15 +48,15 @@ import { PersonalDetailsComponent } from './staff-record-summary/personal-detail
 import {
   QualificationsAndTrainingComponent,
 } from './staff-record-summary/qualifications-and-training/qualifications-and-training.component';
+import { QualificationsComponent } from './staff-record-summary/qualifications/qualifications.component';
 import { StaffRecordSummaryComponent } from './staff-record-summary/staff-record-summary.component';
+import { TrainingComponent } from './staff-record-summary/training/training.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkerResolver } from './worker.resolver';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { QualificationsComponent } from './staff-record-summary/qualifications/qualifications.component';
-import { AddTrainingComponent } from './add-training/add-training.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule, OverlayModule],
@@ -73,6 +75,7 @@ import { AddTrainingComponent } from './add-training/add-training.component';
     DateOfBirthComponent,
     DaysOfSicknessComponent,
     DeleteSuccessComponent,
+    DeleteTrainingDialogComponent,
     DeleteWorkerDialogComponent,
     DisabilityComponent,
     EditWorkerComponent,
@@ -96,6 +99,7 @@ import { AddTrainingComponent } from './add-training/add-training.component';
     StaffDetailsComponent,
     StaffRecordComponent,
     StaffRecordSummaryComponent,
+    TrainingComponent,
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
     YearArrivedUkComponent,
@@ -103,6 +107,6 @@ import { AddTrainingComponent } from './add-training/add-training.component';
     AddTrainingComponent,
   ],
   providers: [WorkerResolver, DialogService],
-  entryComponents: [DeleteWorkerDialogComponent],
+  entryComponents: [DeleteTrainingDialogComponent, DeleteWorkerDialogComponent],
 })
 export class WorkersModule {}

@@ -13,8 +13,27 @@ export interface TrainingRecordRequest {
     id: number;
   };
   title: string;
-  accredited: boolean;
-  completed: string;
-  expires: string;
-  notes: string;
+  accredited?: boolean;
+  completed?: string;
+  expires?: string;
+  notes?: string;
+}
+
+export interface TrainingResponse {
+  count: number;
+  lastUpdated?: string;
+  training: TrainingRecord[];
+}
+
+export interface TrainingRecord {
+  accredited?: boolean;
+  category: string;
+  completed?: string;
+  created: string;
+  expires?: string;
+  notes?: string;
+  title: string;
+  uid: string;
+  updated: string;
+  updatedBy: string;
 }

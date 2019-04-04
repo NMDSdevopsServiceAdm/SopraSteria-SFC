@@ -72,7 +72,7 @@ export class AddTrainingComponent implements OnInit {
 
     if (this.form.valid) {
       try {
-        this.saveHandler();
+        await this.saveHandler();
         this.workerService.setTrainingRecordCreated();
         this.router.navigate(['/worker', this.worker.uid], {
           fragment: 'qualifications-and-training',

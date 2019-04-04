@@ -10,7 +10,7 @@ import { WorkerService } from '@core/services/worker.service';
 export class StaffRecordSummaryComponent {
   @Input() worker: Worker;
 
-  constructor(private location: Location, private workerService: WorkerService) {}
+  constructor(private location: Location, public workerService: WorkerService) {}
 
   goBack(event) {
     event.preventDefault();
