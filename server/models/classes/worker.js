@@ -820,32 +820,32 @@ class Worker {
         const effectiveFromEpoch = effectiveFrom.getTime();
 
         // gender/date of birth/nationality
-        myWdf['gender'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Gender'));
-        myWdf['dateOfBirth'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DateOfBirth'));
-        myWdf['nationality'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Nationality'));
+        myWdf['gender'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Gender')) ? 'Yes' : 'No';
+        myWdf['dateOfBirth'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DateOfBirth')) ? 'Yes' : 'No';
+        myWdf['nationality'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Nationality')) ? 'Yes' : 'No';
 
         // main job, other job, main job start date, source of recruitment, employment status (contract)
-        myWdf['mainJob'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJob'));
-        myWdf['otherJobs'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherJobs'));
-        myWdf['mainJobStartDate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJobStartDate'));
-        myWdf['recruitedFrom'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('RecruitedFrom'));
-        myWdf['contract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Contract'));
+        myWdf['mainJob'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJob')) ? 'Yes' : 'No';
+        myWdf['otherJobs'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherJobs')) ? 'Yes' : 'No';
+        myWdf['mainJobStartDate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJobStartDate')) ? 'Yes' : 'No';
+        myWdf['recruitedFrom'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('RecruitedFrom')) ? 'Yes' : 'No';
+        myWdf['contract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Contract')) ? 'Yes' : 'No';
 
         // contracted/average weekly hours, zero hours
-        myWdf['weeklyHoursContracted'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursContracted'));
-        myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage'));
-        myWdf['zeroHoursContract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ZeroHoursContract'));
+        myWdf['weeklyHoursContracted'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursContracted')) ? 'Yes' : 'No';
+        myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+        myWdf['zeroHoursContract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ZeroHoursContract')) ? 'Yes' : 'No';
 
         // sickness and salary
-        myWdf['daysSick'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick'));
-        myWdf['annualHourlyPay'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('AnnualHourlyPay'));
+        myWdf['daysSick'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick')) ? 'Yes' : 'No';
+        myWdf['annualHourlyPay'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('AnnualHourlyPay')) ? 'Yes' : 'No';
 
         // qualifications and care certificate
-        myWdf['careCertificate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CareCertificate'));
-        myWdf['qualificationInSocialCare'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('QualificationInSocialCare'));
-        myWdf['socialCareQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('SocialCareQualification'));
-        myWdf['otherQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherQualifications'));
-        myWdf['highestQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('HighestQualification'));
+        myWdf['careCertificate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CareCertificate')) ? 'Yes' : 'No';
+        myWdf['qualificationInSocialCare'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('QualificationInSocialCare')) ? 'Yes' : 'No';
+        myWdf['socialCareQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('SocialCareQualification')) ? 'Yes' : 'No';
+        myWdf['otherQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherQualifications')) ? 'Yes' : 'No';
+        myWdf['highestQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('HighestQualification')) ? 'Yes' : 'No';
         
         return myWdf;
     }
