@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { TrainingRecordRequest } from '@core/model/training.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -32,6 +33,7 @@ export class WorkerService {
   private lastDeleted$ = new BehaviorSubject<string>(null);
   private returnToSummary$ = new BehaviorSubject<boolean>(false);
   public createStaffResponse = null;
+  public trainingRecordCreated = null;
 
   // All workers store
   private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
@@ -105,6 +107,25 @@ export class WorkerService {
         }),
       }
     );
+  }
+
+  createTrainingRecord(workerId: string, record: TrainingRecordRequest) {
+    return this.http.post<TrainingRecordRequest>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`,
+      record
+    );
+  }
+
+  getTrainingRecordCreated() {
+    return this.trainingRecordCreated;
+  }
+
+  setTrainingRecordCreated() {
+    this.trainingRecordCreated = true;
+  }
+
+  resetTrainingRecordCreated() {
+    this.trainingRecordCreated = null;
   }
 
   setCreateStaffResponse(success: number) {
