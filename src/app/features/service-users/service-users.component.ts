@@ -102,6 +102,19 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
     );
   }
 
+  goBack(event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.establishmentService.getCapacity(true).subscribe(res => {
+        if (res.allServiceCapacities.length) {
+          this.router.navigate(['/capacity-of-services']);
+        } else {
+          this.router.navigate(['/select-other-services']);
+        }
+      })
+    );
+  }
+
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }

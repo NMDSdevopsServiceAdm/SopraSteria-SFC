@@ -107,19 +107,6 @@ export class ShareOptionsComponent implements OnInit, OnDestroy {
     }
   }
 
-  goBack(event) {
-    event.preventDefault();
-    this.subscriptions.push(
-      this.establishmentService.getCapacity(true).subscribe(c => {
-        if (c.allServiceCapacities.length) {
-          this.router.navigate(['/capacity-of-services']);
-        } else {
-          this.router.navigate(['/select-other-services']);
-        }
-      })
-    );
-  }
-
   ngOnInit() {
     // create form controls, including an empty array for the list of authorities
     this.shareOptionsForm = this.fb.group({
