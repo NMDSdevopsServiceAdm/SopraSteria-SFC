@@ -25,21 +25,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"QualificationsFK"'
     },
-    type: {
-      type: DataTypes.ENUM,
-      allowNull: false,
-      values: ['NVQ', 'Any other qualification', 'Certificate', 'Degree', 'Assessor and mentoring', 'Award',  'Diploma', 'Apprenticeship'],
-      field: '"Type"'
-    },
     year : {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      field: '"Year"'
-    },
-    other : {
-      type: DataTypes.TEXT,
       allowNull: true,
-      field: '"Other"'
+      field: '"Year"'
     },
     notes: {
       type: DataTypes.TEXT,

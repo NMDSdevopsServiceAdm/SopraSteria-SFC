@@ -4,6 +4,7 @@ const router = express.Router({mergeParams: true});
 
 // all user functionality is encapsulated
 const Qualification = require('../../../models/classes/qualification').Qualification;
+const QualificationDuplicateException = require('../../../models/classes/qualification').QualificationDuplicateException;
 
 // NOTE - the Worker route uses middleware to validate the given worker id against the known establishment
 //        prior to all qualification endpoints, thus ensuring we this necessary rigidity on Establishment/Worker relationship
@@ -101,10 +102,12 @@ router.route('/').post(async (req, res) => {
 
     } catch (err) {
         console.error(err);
+
         // catch duplicate exception
-        if (err.message.endsWith('duplicate')) {
+        if (err instanceof QualificationDuplicateException) {
             return res.status(400).send();
         }
+
         return res.status(503).send();
     }
 });
@@ -145,6 +148,12 @@ router.route('/:qualificationUid').put(async (req, res) => {
 
     } catch (err) {
         console.error(err);
+
+        // catch duplicate exception
+        if (err instanceof QualificationDuplicateException) {
+            return res.status(400).send();
+        }
+        
         return res.status(503).send();
     }
 });

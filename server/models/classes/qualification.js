@@ -26,6 +26,15 @@ const QUALIFICATION_TYPE = [
     'Apprenticeship'
 ];
 
+class QualificationDuplicateException {
+    // TODO: parse the sequelize error on create failure
+    constructor() {  };
+
+    get message()  {
+        return 'Duplicate';
+    };
+};
+
 class Qualification {
     constructor(establishmentId, workerUid) {
         this._establishmentId = establishmentId;
@@ -38,9 +47,7 @@ class Qualification {
 
         // localised attributes - optional on load
         this._qualification = null;
-        this._type = null;
         this._year = null;
-        this._other = null;
         this._notes = null;
 
         // lifecycle properties
@@ -109,15 +116,8 @@ class Qualification {
     get qualification() {
         return this._qualification;
     };
-    get type() {
-        return this._type;
-    };
     get year() {
         return this._year;
-    };
-    get other() {
-        if (this._other === null) return null;
-        return unescape(this._other);
     };
     get notes() {
         if (this._notes === null) return null;
@@ -126,19 +126,8 @@ class Qualification {
     set qualification(qualification) {
         this._qualification = qualification;
     };
-    set type(type) {
-        this._type = type;
-    };
     set year(year) {
         this._year = year;
-    };
-    set other(other) {
-        if (other != null) {
-            // do not escape null
-            this._other = other;
-        } else {
-            this._other = null;
-        }
     };
     set notes(notes) {
         if (notes !== null) {
@@ -181,17 +170,6 @@ class Qualification {
         }
         
         const validatedQualificationRecord = {};
-        // type
-        if (document.type) {
-            // validate type - enumeration
-            if (!QUALIFICATION_TYPE.includes(document.type)) {
-                this._log(Qualification.LOG_ERROR, 'type failed validation: unexpected (enum) value');
-                return false;
-            }
-
-            validatedQualificationRecord.type = document.type;
-        }
-
         // qualification category
         if (document.qualification) {
             // validate category
@@ -211,10 +189,6 @@ class Qualification {
             let foundQualification = null;
             if (document.qualification.id) {
                 foundQualification = qualifications.find(thisQualification => thisQualification.id === document.qualification.id);
-            } else {
-                foundQualification = qualifications.find(thisQualification => {
-                    return thisQualification.title === document.qualification.title && thisQualification.level === document.qualification.level;
-                });
             }
             if (!foundQualification) {
                 this._log(Qualification.LOG_ERROR, 'qualification failed validation: qualification.id or qualification.title and qualification.level must exist');
@@ -228,25 +202,8 @@ class Qualification {
                 };
             }
 
-            // TODO - need to check the current set of qualifications for any duplicates!
-            // TODO - enforce the from/until dates on qualification?
-            // TODO - need to do some validation between type and qualifications - filter on type!
+            // TODO - enforce the from/until dates on qualification (year is currently optional, so not validating)!
             // NOTE - no complex validation on pathway, such as, having completed other qualifications first
-        }
-
-        // other - allow for empty string
-        if (document.other) {
-            // validate other - it's free text
-            const MAX_LENGTH = 100;
-            if (!(document.other.length <= MAX_LENGTH)) {
-                this._log(Qualification.LOG_ERROR, `other failed validation: must be less than ${MAX_LENGTH} characters`);
-                return false;
-            }
-
-            validatedQualificationRecord.other = document.other;
-        } else {
-            // other property not present - resetting
-            validatedQualificationRecord.other = null;
         }
 
         // year
@@ -263,6 +220,8 @@ class Qualification {
             }
 
             validatedQualificationRecord.year = document.year;
+        } else {
+            validatedQualificationRecord.year = null;
         }
 
         // notes - allow for notes of empty string
@@ -290,10 +249,8 @@ class Qualification {
             const validatedQualificationRecord = await this.validateQualificationRecord(document);
 
             if (validatedQualificationRecord !== false) {
-                this.type = validatedQualificationRecord.type;
                 this.qualification = validatedQualificationRecord.qualification;
                 this.year = validatedQualificationRecord.year;
-                this.other = validatedQualificationRecord.other;
                 this.notes = validatedQualificationRecord.notes;
             } else {
                 this._log(Qualification.LOG_ERROR, `Qualification::load - failed`);
@@ -348,10 +305,8 @@ class Qualification {
                         created: now,
                         updated: now,
                         updatedBy: savedBy,
-                        type: this._type,
                         qualificationFk: this._qualification.id,
                         year: this._year,
-                        other: this._other,
                         notes: this._notes,
                         attributes: ['uid', 'created', 'updated'],
                     };
@@ -386,7 +341,7 @@ class Qualification {
                 // catch duplicate error
                 if (err.name && err.name === 'SequelizeUniqueConstraintError') {
                     if (err.parent.constraint && err.parent.constraint === 'Workers_WorkerQualifications_unq') {
-                        throw new Error('Failed to save new Qualification record - duplicate');
+                        throw new QualificationDuplicateException();
                     }
                 }
 
@@ -405,10 +360,8 @@ class Qualification {
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
                     const updateDocument = {
-                        type: this._type,
                         qualificationFk: this._qualification.id,
                         year: this._year,
-                        other: this._other,
                         notes: this._notes,
                         updated: updatedTimestamp,
                         updatedBy: savedBy
@@ -444,6 +397,13 @@ class Qualification {
                 });
                 
             } catch (err) {
+                // catch duplicate error
+                if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+                    if (err.parent.constraint && err.parent.constraint === 'Workers_WorkerQualifications_unq') {
+                        throw new QualificationDuplicateException();
+                    }
+                }
+
                 this._log(Qualification.LOG_ERROR, `Failed to update Qualification record with id (${this._id})`);
                 throw new Error('Failed to update Qualification record');
             }
@@ -505,9 +465,7 @@ class Qualification {
                     title: fetchResults.qualification.title,
                     level: fetchResults.qualification.level,
                 };
-                this._type = fetchResults.type;
                 this._year = fetchResults.year;
-                this._other = fetchResults.other !== null && fetchResults.other.length === 0 ? null : fetchResults.other;
                 this._notes = fetchResults.notes !== null && fetchResults.notes.length === 0 ? null : fetchResults.notes;
                 
                 this._created = fetchResults.created;
@@ -564,8 +522,6 @@ class Qualification {
                 this._establishmentId = null;
 
                 this._qualification = null;
-                this._type = null;
-                this._other = null;
                 this._year = null;
                 this._notes = null;
 
@@ -617,14 +573,13 @@ class Qualification {
             fetchResults.forEach(thisRecord => {
                 allQualificationRecords.push({
                     uid: thisRecord.uid,
-                    type: thisRecord.type,
                     qualification: {
+                        id: thisRecord.qualification.id,
                         group: thisRecord.qualification.group,
                         title: thisRecord.qualification.title,
                         level: thisRecord.qualification.level,
                     },
-                    other: thisRecord.other !== null && thisRecord.other.length > 0 ? unescape(thisRecord.other) : undefined,
-                    year: thisRecord.year,
+                    year: thisRecord.year != null ? thisRecord.year : undefined,
                     notes: thisRecord.notes !== null && thisRecord.notes.length > 0 ? unescape(thisRecord.notes) : undefined,
                     created:  thisRecord.created.toISOString(),
                     updated: thisRecord.updated.toISOString(),
@@ -660,9 +615,7 @@ class Qualification {
             updated: this.updated.toJSON(),
             updatedBy: this.updatedBy,
             qualification: this.qualification,
-            type: this.type,
-            other: this.other ? this.other : undefined,
-            year: this.year,
+            year: this.year !== null ? this.year : undefined,
             notes: this._notes !== null ? this.notes : undefined
         };
 
@@ -676,11 +629,7 @@ class Qualification {
         let allExistAndValid = true;    // assume all exist until proven otherwise
         
         // qualification must exist
-        // type must exist
-        // year must exist
-        if (this.qualification === null ||
-            this.year === null ||
-            this.type === null) allExistAndValid = true
+        if (this.qualification === null) allExistAndValid = true
 
         return allExistAndValid;
     }
@@ -728,6 +677,7 @@ class Qualification {
         if (qualifications && Array.isArray(qualifications)) {
             return qualifications.map(thisQual => {
                 return {
+                    id: thisQual.id,
                     title: thisQual.title,
                     level: thisQual.level,
                     code: thisQual.code,
@@ -740,3 +690,4 @@ class Qualification {
 };
 
 module.exports.Qualification = Qualification;
+module.exports.QualificationDuplicateException = QualificationDuplicateException;
