@@ -82,29 +82,35 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
     }
 
     isEqual(currentValue, newValue) {
-        // need to compare arrays
-        let arraysEqual = true;
-
         if (currentValue && newValue &&
-            Array.isArray(currentValue) && Array.isArray(newValue) &&
-            currentValue.length == newValue.length) {
-            // the preconditions are sets are equal in length; compare the array values themselves
+            Array.isArray(currentValue) && Array.isArray(newValue)) {
+            // need to compare arrays
+            let arraysEqual = true;
 
-            // we haven't got large arrays here; so simply iterate around every
-            //  current value, and confirm it is in the the new data set.
-            //  Array.every will drop out on the first iteration to return false
-            arraysEqual = currentValue.every(thisJob => {
-                return newValue.find(thatJob =>
-                    thatJob.jobId === thisJob.jobId &&
-                    thatJob.total === thisJob.total
-                );
-            });
+            if (currentValue.length == newValue.length) {
+                // the preconditions are sets are equal in length; compare the array values themselves
+
+                // we haven't got large arrays here; so simply iterate around every
+                //  current value, and confirm it is in the the new data set.
+                //  Array.every will drop out on the first iteration to return false
+                arraysEqual = currentValue.every(thisJob => {
+                    return newValue.find(thatJob => {
+                        return  thatJob.jobId === thisJob.jobId && thatJob.total === thisJob.total;
+                    });
+                });
+            } else {
+                // if the arrays are lengths are not equal, then we know they're not equal
+                arraysEqual = false;
+            }
+
+            return arraysEqual;
+
+        } else if (currentValue && newValue && currentValue === newValue) {
+            // else not arrays - just a value comparison
+            return true;
         } else {
-            // if the arrays are lengths are not equal, then we know they're not equal
-            arraysEqual = false;
+            return false;
         }
-
-        return arraysEqual;
     }
 
     toJSON(withHistory = false, showPropertyHistoryOnly = true) {
