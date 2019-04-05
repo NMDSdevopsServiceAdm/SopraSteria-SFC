@@ -14,6 +14,7 @@ import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-addres
 import { FeedbackComponent } from '@features/feedback/feedback.component';
 import { LeaversComponent } from '@features/leavers/leavers.component';
 import { LoginComponent } from '@features/login/login.component';
+import { LogoutComponent } from '@features/logout/logout.component';
 import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
 import { SecurityQuestionComponent } from '@features/security-question/security-question.component';
 import { SelectMainServiceComponent } from '@features/select-main-service/select-main-service.component';
@@ -42,6 +43,10 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+  },
+  {
+    path: 'logged-out',
+    component: LogoutComponent,
   },
   {
     path: 'forgot-your-password',

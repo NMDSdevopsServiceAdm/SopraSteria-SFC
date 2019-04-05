@@ -123,6 +123,10 @@ export class AuthService {
     return this.http.post<any>('/api/login/', $value, { headers: requestHeaders, observe: 'response' });
   }
 
+  refreshToken() {
+    return this.http.get<any>(`/api/login/refresh`);
+  }
+
   private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
     const dataError = new RegistrationTrackerError();
     dataError.message = error.message;
@@ -146,6 +150,14 @@ export class AuthService {
       this._session = null;
       this.token = null;
       this.router.navigate(['/login']);
+    }
+  }
+
+  logoutWithoutRouting() {
+    if (localStorage.getItem('auth-token')) {
+      localStorage.clear();
+      this._session = null;
+      this.token = null;
     }
   }
 }
