@@ -130,12 +130,12 @@
       </ng-template>
       <ng-template #serviceUsers>
         <ul>
-          <li *ngFor="let users of workplace.serviceUsers"></li>
+          <li *ngFor="let users of workplace.serviceUsers">{{ users.service }}</li>
         </ul>
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <!-- <a class="govuk-link" [routerLink]="['/establishment', workplace.id]">
+      <a class="govuk-link" [routerLink]="['/service-users']">
         <ng-container *ngIf="!workplace.serviceUsers?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -144,7 +144,7 @@
           Change
         </ng-container>
         <span class="govuk-visually-hidden"> service users</span>
-      </a> -->
+      </a>
     </dd>
   </div>
 

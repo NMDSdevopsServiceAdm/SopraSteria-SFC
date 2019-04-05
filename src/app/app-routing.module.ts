@@ -14,6 +14,7 @@ import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-addres
 import { FeedbackComponent } from '@features/feedback/feedback.component';
 import { LeaversComponent } from '@features/leavers/leavers.component';
 import { LoginComponent } from '@features/login/login.component';
+import { LogoutComponent } from '@features/logout/logout.component';
 import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
 import { SecurityQuestionComponent } from '@features/security-question/security-question.component';
 import { SelectMainServiceComponent } from '@features/select-main-service/select-main-service.component';
@@ -41,11 +42,16 @@ import { ChangeUserSecurityComponent } from './features/change-user-security/cha
 import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { ServiceUsersComponent } from './features/service-users/service-users.component';
 
 const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+  },
+  {
+    path: 'logged-out',
+    component: LogoutComponent,
   },
   {
     path: 'forgot-your-password',
@@ -176,6 +182,11 @@ const routes: Routes = [
   {
     path: 'capacity-of-services',
     component: ServicesCapacityComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'service-users',
+    component: ServiceUsersComponent,
     canActivate: [AuthGuard],
   },
   {

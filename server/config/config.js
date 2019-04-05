@@ -135,6 +135,19 @@ const config = convict({
         format: '*',
         env: 'Token_Secret'
       },
+      ttl: {
+        default : {
+          doc: 'The (default) Time To Live (in minutes) for token (timeout)',
+          format: 'int',
+          default: 5
+        },
+        login: {
+          doc: 'The Time To Live (in minutes) for login token',
+          format: 'int',
+          default: 5,
+          env: 'LOGIN_JWT_TTL'
+        }
+      },
       aud: {
         login: {
           doc: 'The logged in JWT audience',
