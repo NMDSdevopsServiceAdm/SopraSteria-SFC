@@ -31,7 +31,8 @@ module.exports = function(sequelize, DataTypes) {
       field: '"Title"'
     },
     accredited: {
-      type: DataTypes.BOOLEAN,
+      type: DataTypes.ENUM,
+      values: ['Yes', 'No', 'Don\'t know'],
       allowNull: true,
       field: '"Accredited"'
     },

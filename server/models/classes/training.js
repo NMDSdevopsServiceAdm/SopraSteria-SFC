@@ -225,20 +225,14 @@ class Training {
         // accredited - boolean value (or string equivalent of true/false)!
         if (document.accredited) {
             // validate accredited - JSON only allows true/false
-            const ALLOWED_TRUE_VALUES = ["true", "yes"];
-            const ALLOWED_FALSE_VALUES = ["false", "no"];
-            if (typeof document.accredited !== 'boolean' &&
-                !(ALLOWED_TRUE_VALUES.includes(document.accredited.toLowerCase()) || ALLOWED_FALSE_VALUES.includes(document.accredited.toLowerCase()))) {
+            const ALLOWED_VALUES = ['Yes', 'No', 'Don\'t know'];
+            if (!(ALLOWED_VALUES.includes(document.accredited))) {
                 this._log(Training.LOG_ERROR, 'accredited failed validation: wrong type');
                 return false;
             }
 
-            if (typeof document.accredited === 'boolean') validatedTrainingRecord.accredited = document.accredited;
+            validatedTrainingRecord.accredited = document.accredited;
 
-            if (typeof document.accredited !== 'boolean') {
-                if (ALLOWED_TRUE_VALUES.includes(document.accredited.toLowerCase())) validatedTrainingRecord.accredited = true;
-                if (ALLOWED_FALSE_VALUES.includes(document.accredited.toLowerCase())) validatedTrainingRecord.accredited = false;
-            }
         } else {
             validatedTrainingRecord.accredited = null;
         }
