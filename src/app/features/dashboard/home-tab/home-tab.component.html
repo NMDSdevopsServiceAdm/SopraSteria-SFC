@@ -4,7 +4,7 @@
     <p *ngIf="updateWorkplace || updateStaffRecords">What you need to do first.</p>
     <app-inset-text *ngIf="updateWorkplace" color="todo">
       You need to provide information on your workplace.<br />
-      <a routerLink="/type-of-employer">Add workplace information</a>
+      <a [routerLink]="['/workplace', 'type-of-employer']">Add workplace information</a>
     </app-inset-text>
 
     <app-inset-text *ngIf="updateStaffRecords" color="todo">
