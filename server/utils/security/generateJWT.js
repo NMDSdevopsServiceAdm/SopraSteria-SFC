@@ -4,16 +4,35 @@ const Authorization = require('./isAuthenticated');
 const Token_Secret = Authorization.getTokenSecret();
 
 // this generates the login JWT
-exports.loginJWT = (ttlHours, establishmentId, username, role) => {
+exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, username, role) => {
   var claims = {
     EstblishmentId: establishmentId,
+    EstablishmentUID: establishmentUid,
     role,
     sub: username,
     aud: config.get('jwt.aud.login'),
     iss: config.get('jwt.iss')
-  }
+  };
 
-  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlHours}h`});   
+  console.log("WA DEBUG: Login ttl in: ", ttlMinutes)
+
+  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});   
+};
+
+// this re-generates the login JWT
+exports.regenerateLoginToken = (ttlMinutes, req) => {
+
+  console.log("WA DEBUG - establishment: ", req.establishment)
+  var claims = {
+    EstblishmentId: req.establishment.id,
+    EstablishmentUID: req.establishment.uid ? req.establishment.uid : null,
+    role: req.role,
+    sub: req.username,
+    aud: config.get('jwt.aud.login'),
+    iss: config.get('jwt.iss')
+  };
+
+  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});   
 };
 
 // this generates the password reset JWT

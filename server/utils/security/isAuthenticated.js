@@ -20,6 +20,10 @@ exports.isAuthorised = (req, res , next) => {
       } else {
         req.username= claim.sub;
         req.role = claim.role;
+        req.establishment = {
+          id: claim.EstblishmentId,
+          uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null
+        };
         next();
       }
     });    
@@ -46,18 +50,35 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
         // must provide the establishment ID and it must be a number
         if (!claim.EstblishmentId || isNaN(parseInt(claim.EstblishmentId))) {
           console.error('hasAuthorisedEstablishment - missing establishment id parameter');
-          return res.status(400).send(`Unknown Establishment ID: ${req.params.id}`);
+          return res.status(400).send(`Unknown Establishment ID`);
         }
-        if (claim.EstblishmentId !== parseInt(req.params.id)) {
-          console.error(`hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId})`);
-          return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+        const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
+        if (!claim.EstablishmentUID || !uuidV4Regex.test(claim.EstablishmentUID)) {
+          console.error('hasAuthorisedEstablishment - missing establishment uid parameter');
+          return res.status(400).send(`Unknown Establishment UID`);
         }
 
-        req.establishmentId =   claim.EstblishmentId ;        
+        // the given parameter could be a UUID or integer
+        if (uuidV4Regex.test(req.params.id)) {
+          // establishment id in params is a UUID - tests against UID in claim
+          if (claim.EstablishmentUID !== req.params.id) {
+            console.error(`hasAuthorisedEstablishment - given and known establishment uid do not match: given (${req.params.id})/known (${claim.EstablishmentUID})`);
+            return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+          }
+
+          req.establishmentId=   claim.EstablishmentUID;
+        } else {
+          if (claim.EstblishmentId !== parseInt(req.params.id)) {
+            console.error(`hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId})`);
+            return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+          }
+
+          req.establishmentId =   claim.EstblishmentId;
+        }
+
         req.username= claim.sub;
         req.role = claim.role;
         next();
-        
       }     
     });
  
