@@ -1,17 +1,14 @@
 import { Component } from '@angular/core';
-import { Router } from "@angular/router"
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-logout',
-  templateUrl: './logout.component.html'
+  templateUrl: './logout.component.html',
 })
 export class LogoutComponent {
-
-  constructor(
-    private router: Router
-  ) { }
+  constructor(private router: Router) {}
 
   login() {
-    this.router.navigate(["/login"])
+    this.router.navigate(['/login']);
   }
 }
