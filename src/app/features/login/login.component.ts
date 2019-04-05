@@ -92,7 +92,7 @@ export class LoginComponent implements OnInit, OnDestroy {
           const token = response.headers.get('authorization');
           this.authService.authorise(token);
 
-          this.idleService.init(2, 10);
+          this.idleService.init(60, 600);
           this.idleService.start();
 
           this.idleService.ping$.subscribe(() => console.log('REFRESH BEARER TOKEN'));
