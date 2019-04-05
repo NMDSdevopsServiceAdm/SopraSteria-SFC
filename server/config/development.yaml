@@ -2,4 +2,6 @@ slack:
     level : 3     # enables Slack notifications
 jwt:
     iss: 'sfcdev.cloudapps.digital'
+    ttl:
+        login: 5
 # no notify definition - not used in development

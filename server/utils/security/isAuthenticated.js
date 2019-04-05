@@ -20,6 +20,10 @@ exports.isAuthorised = (req, res , next) => {
       } else {
         req.username= claim.sub;
         req.role = claim.role;
+        req.establishment = {
+          id: claim.EstblishmentId,
+          uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null
+        };
         next();
       }
     });    
