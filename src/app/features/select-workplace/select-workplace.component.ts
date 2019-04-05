@@ -56,7 +56,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
       this._registrationService.registration$.subscribe(registration => this.registration = registration)
     );
 
-    debugger;
     this.setSectionNumbers();
     this.resetPostcodeApi();
 
