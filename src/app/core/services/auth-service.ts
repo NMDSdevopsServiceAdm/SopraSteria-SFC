@@ -126,7 +126,7 @@ export class AuthService {
   }
 
   refreshToken() {
-    return this.http.get<any>(`/api/login/refresh`);
+    return this.http.get<any>(`/api/login/refresh`, { observe: 'response' });
   }
 
   private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
