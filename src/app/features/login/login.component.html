@@ -1,9 +1,13 @@
+<!-- TODO cater for form.errors?.serverError"-->
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [errorDetails]="[{ label: 'Authentication failed.', message: 'Authentication failed.' }]"
+  [form]="form">
+</app-error-summary>
+
 <h1 class="govuk-heading-xl">Sign in</h1>
 
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
-  <app-error-summary *ngIf="form.errors?.serverError" [errors]="[{ text: 'Authentication failed.' }]">
-  </app-error-summary>
-
   <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('username').errors && submitted }">
     <label class="govuk-label" for="username">
       Username

@@ -1,13 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-
 import { PasswordResetService } from '@core/services/password-reset.service';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 
-export interface SuccessReset {
-  text: string;
-}
 @Component({
   selector: 'app-rp-edit',
   templateUrl: './edit.component.html',
@@ -18,12 +15,14 @@ export class ResetPasswordEditComponent implements OnInit {
   @Input() headerToken: string;
   public name: string;
   public displayError: boolean;
+  public errorDetails: Array<ErrorDetails>;
 
   @Output() resetPasswordOutput = new EventEmitter();
 
   constructor(
     private fb: FormBuilder,
     private _passwordResetService: PasswordResetService,
+    private errorSummaryService: ErrorSummaryService,
   ) { }
 
   // Get password group
@@ -60,21 +59,48 @@ export class ResetPasswordEditComponent implements OnInit {
     }
 
     this.displayError = false;
+    this.setupErrorDetails();
+  }
 
+  public setupErrorDetails(): void {
+    this.errorDetails = [
+      {
+        formControlName: 'createPasswordInput',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your Password.',
+          },
+          {
+            name: 'pattern',
+            message: 'Invalid Password.',
+          }
+        ]
+      },
+      {
+        formControlName: 'confirmPasswordInput',
+        type: [
+          {
+            name: 'required',
+            message: 'Please confirm your Password.',
+          }
+        ]
+      }
+    ];
   }
 
   onSubmit() {
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
     if (this.resetPasswordForm.invalid) {
       this.displayError = true;
-    }
-    else {
+    } else {
       const newPassword = this.getPasswordInput.value;
       this._passwordResetService.resetPassword(newPassword, this.headerToken)
       .subscribe(res => {
         this.resetPasswordOutput.emit(res);
       });
     }
-
   }
 
 }

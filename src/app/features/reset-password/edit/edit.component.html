@@ -1,5 +1,11 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
+    <app-error-summary
+      *ngIf="displayError && resetPasswordForm.invalid"
+      [errorDetails]="errorDetails"
+      [form]="resetPasswordForm">
+    </app-error-summary>
+
     <h1 class="govuk-heading-xl">Reset password</h1>
     <p class="govuk-!-margin-bottom-6">Enter a new password for account {{ name }}</p>
 
