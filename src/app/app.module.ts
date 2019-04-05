@@ -158,7 +158,6 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     ]),
     SharedModule,
     MomentModule,
-    UserIdleModule.forRoot({ idle: 0, timeout: 15, ping: 5 }),
   ],
   providers: [
     LocationService,
