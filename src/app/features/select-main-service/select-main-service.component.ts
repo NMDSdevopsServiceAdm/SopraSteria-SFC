@@ -57,6 +57,7 @@ export class SelectMainServiceComponent implements OnInit {
   }
 
   clickBack() {
+    debugger;
     const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
     this.currentSection = this.currentSection - 1;

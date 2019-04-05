@@ -56,26 +56,31 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
       this._registrationService.registration$.subscribe(registration => this.registration = registration)
     );
 
-    this.resetPostcodeApi();
+    debugger;
     this.setSectionNumbers();
+    this.resetPostcodeApi();
+
   }
 
   resetPostcodeApi() {
     const count = this.registration.locationdata.length;
     const postcode = this.registration.locationdata[0].postalCode;
+    const routeArray = this.registration.userRoute['route'];
 
     if (count === 1) {
-      this.subscriptions.add(
-        this._registrationService.getLocationByPostCode(postcode).subscribe(res => {
-          this._registrationService.updateState(res);
-        })
-      );
+      if (routeArray.length >= 2) {
+        this.subscriptions.add(
+          this._registrationService.getLocationByPostCode(postcode).subscribe(res => {
+            this._registrationService.updateState(res);
+          })
+        );
+      }
     }
   }
 
   clickBack() {
     if (this.registration.userRoute) {
-      const routeArray = this.registration.userRoute.route;
+
       this.currentSection = this.registration.userRoute.currentPage;
       this.currentSection = this.currentSection - 1;
       this.registration.userRoute.route.splice(-1);
