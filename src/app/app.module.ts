@@ -83,6 +83,7 @@ import { StartersComponent } from './features/starters/starters.component';
 import { TypeOfEmployerComponent } from './features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 import { VacanciesComponent } from './features/vacancies/vacancies.component';
+import { ServiceUsersComponent } from './features/service-users/service-users.component';
 
 @NgModule({
   declarations: [
@@ -137,6 +138,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     ChangeUserDetailsComponent,
     ChangeUserSecurityComponent,
     HomeTabComponent,
+    ServiceUsersComponent,
     WorkplaceTabComponent,
   ],
   imports: [

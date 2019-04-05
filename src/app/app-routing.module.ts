@@ -42,6 +42,7 @@ import { ChangeUserSecurityComponent } from './features/change-user-security/cha
 import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { ServiceUsersComponent } from './features/service-users/service-users.component';
 
 const routes: Routes = [
   {
@@ -181,6 +182,11 @@ const routes: Routes = [
   {
     path: 'capacity-of-services',
     component: ServicesCapacityComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'service-users',
+    component: ServiceUsersComponent,
     canActivate: [AuthGuard],
   },
   {
