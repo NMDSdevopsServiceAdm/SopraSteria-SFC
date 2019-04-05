@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
+import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
 
 import { MessageService } from './message.service';
@@ -8,11 +9,15 @@ import { MessageService } from './message.service';
   providedIn: 'root',
 })
 export class HttpErrorHandler {
-  constructor(private messageService: MessageService) {
+  constructor(private router: Router, private messageService: MessageService) {
     this.handleHttpError = this.handleHttpError.bind(this);
   }
 
   handleHttpError(error: HttpErrorResponse) {
+    if (error.status === 403) {
+      this.router.navigate(['/logged-out']);
+      return;
+    }
     const message =
       error.error instanceof ErrorEvent ? error.error.message : 'Server error. Please try again later, sorry.';
 

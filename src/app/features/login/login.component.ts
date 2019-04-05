@@ -1,13 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { IdleService } from '@core/services/idle.service';
 
 import { LoginApiModel } from '../../core/model/loginApi.model';
 import { AuthService } from '../../core/services/auth-service';
 import { EstablishmentService } from '../../core/services/establishment.service';
 import { MessageService } from '../../core/services/message.service';
 
-//import { LoginUser } from './login-user';
+const PING_INTERVAL = 240;
+const TIMEOUT_INTERVAL = 1800;
 
 @Component({
   selector: 'app-login',
@@ -31,6 +33,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   passwordMessage: string;
 
   constructor(
+    private idleService: IdleService,
     private _loginService: AuthService,
     private establishmentService: EstablishmentService,
     private messageService: MessageService,
@@ -93,6 +96,20 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           const token = response.headers.get('authorization');
           this._loginService.authorise(token);
+
+          this.idleService.init(PING_INTERVAL, TIMEOUT_INTERVAL);
+          this.idleService.start();
+
+          this.idleService.ping$.subscribe(() => {
+            this._loginService.refreshToken().subscribe(res => {
+              this._loginService.authorise(res.headers.get('authorization'));
+            });
+          });
+
+          this.idleService.onTimeout().subscribe(() => {
+            this._loginService.logoutWithoutRouting();
+            this.router.navigate(['/logged-out']);
+          });
         },
         err => {
           const message = err.error.message || 'Invalid username or password.';
