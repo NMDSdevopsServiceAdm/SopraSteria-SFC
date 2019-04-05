@@ -89,7 +89,7 @@ export class SelectOtherServicesComponent implements OnInit, OnDestroy {
             if (c.allServiceCapacities.length) {
               this.router.navigate(['/workplace', 'capacity-of-services']);
             } else {
-              this.router.navigate(['/service-users']);
+              this.router.navigate(['/workplace', 'service-users']);
             }
           })
         );

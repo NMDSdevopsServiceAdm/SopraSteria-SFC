@@ -70,7 +70,6 @@ import { SecurityQuestionComponent } from './features/security-question/security
 import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
-import { ServiceUsersComponent } from './features/service-users/service-users.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
 
 @NgModule({
@@ -114,7 +113,6 @@ import { UserDetailsComponent } from './features/user-details/user-details.compo
     ChangeUserDetailsComponent,
     ChangeUserSecurityComponent,
     HomeTabComponent,
-    ServiceUsersComponent,
     WorkplaceTabComponent,
   ],
   imports: [

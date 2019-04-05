@@ -1,15 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-service-users',
   templateUrl: './service-users.component.html',
-  styleUrls: ['./service-users.component.scss']
+  styleUrls: ['./service-users.component.scss'],
 })
 export class ServiceUsersComponent implements OnInit, OnDestroy {
   public serviceUsersForm: FormGroup;
@@ -18,11 +16,7 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
   public checkboxesSelected;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private establishmentService: EstablishmentService
-  ) { }
+  constructor(private fb: FormBuilder, private router: Router, private establishmentService: EstablishmentService) {}
 
   get getServiceChecked() {
     return this.serviceUsersForm.get('serviceUserSelected');
@@ -39,12 +33,9 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
 
   getAllServices() {
     this.subscriptions.add(
-      this.establishmentService.getAllServiceUsers()
-        .subscribe(
-          (data: any) => {
-            this.serviceUsersData = data;
-          }
-        )
+      this.establishmentService.getAllServiceUsers().subscribe((data: any) => {
+        this.serviceUsersData = data;
+      })
     );
   }
 
@@ -52,17 +43,13 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
     this.checkboxesSelected = [];
 
     this.subscriptions.add(
-      this.establishmentService.getServiceUsersChecked()
-        .subscribe(
-          (data: any) => {
-
-            if (data.serviceUsers) {
-              data.serviceUsers.forEach(thisServiceUser => {
-                this.checkboxesSelected.push(thisServiceUser.id);
-              });
-            }
-          }
-        )
+      this.establishmentService.getServiceUsersChecked().subscribe((data: any) => {
+        if (data.serviceUsers) {
+          data.serviceUsers.forEach(thisServiceUser => {
+            this.checkboxesSelected.push(thisServiceUser.id);
+          });
+        }
+      })
     );
   }
 
@@ -87,18 +74,17 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
   async onSubmit() {
     const serviceUsersSelected = {
       serviceUsers: this.checkboxesSelected.map(thisValue => {
-          return {
-            id: parseInt(thisValue, 10)
-          }
-        })
-    }
+        return {
+          id: parseInt(thisValue, 10),
+        };
+      }),
+    };
 
     // always save back to backend API, even if there are (now) no other services
     this.subscriptions.add(
-      this.establishmentService.postServiceUsers(serviceUsersSelected)
-        .subscribe(
-          (data: any) => this.router.navigate(['/share-options'])
-        )
+      this.establishmentService
+        .postServiceUsers(serviceUsersSelected)
+        .subscribe((data: any) => this.router.navigate(['/workplace', 'share-options']))
     );
   }
 
@@ -107,9 +93,9 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.getCapacity(true).subscribe(res => {
         if (res.allServiceCapacities.length) {
-          this.router.navigate(['/capacity-of-services']);
+          this.router.navigate(['/workplace', 'capacity-of-services']);
         } else {
-          this.router.navigate(['/select-other-services']);
+          this.router.navigate(['/workplace', 'select-other-services']);
         }
       })
     );
@@ -118,5 +104,4 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
-
 }

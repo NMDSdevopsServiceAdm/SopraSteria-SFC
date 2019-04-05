@@ -6,6 +6,7 @@ import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.co
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { SelectOtherServicesComponent } from './select-other-services/select-other-services.component';
+import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { ShareLocalAuthorityComponent } from './share-local-authorities/share-local-authority.component';
 import { ShareOptionsComponent } from './share-options/share-options.component';
@@ -35,7 +36,8 @@ const routes: Routes = [
         component: ServicesCapacityComponent,
       },
       {
-        path: 'users-of-services',
+        path: 'service-users',
+        component: ServiceUsersComponent,
       },
       {
         path: 'share-options',
