@@ -5,7 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DialogService } from '@core/services/dialog.service';
 import { SharedModule } from '@shared/shared.module';
 
-import { AddTrainingComponent } from './add-training/add-training.component';
+import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
@@ -60,7 +60,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule, OverlayModule],
   declarations: [
-    AddTrainingComponent,
+    AddEditTrainingComponent,
     AdultSocialCareStartedComponent,
     ApprenticeshipTrainingComponent,
     AverageWeeklyHoursComponent,

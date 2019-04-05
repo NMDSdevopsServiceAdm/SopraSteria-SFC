@@ -7,7 +7,7 @@
 
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
     <header>
-      <h1 class="h1 col-12 col-lg-8">Add training details</h1>
+      <h1 class="h1 col-12 col-lg-8">{{ trainingRecordId ? 'Edit training details' : 'Add training details' }}</h1>
     </header>
 
     <div class="form-group">
@@ -27,13 +27,13 @@
       </div>
 
       <div class="field-group mb-5">
-        <label for="name">
+        <label for="title">
           Training name
         </label>
-        <div *ngIf="submitted && form.get('name').hasError('required')" class="alert alert-danger">
+        <div *ngIf="submitted && form.get('title').hasError('required')" class="alert alert-danger">
           <p>Enter a training name</p>
         </div>
-        <input type="text" formControlName="name" class="form-control col-12" />
+        <input type="text" formControlName="title" class="form-control col-12" />
       </div>
 
       <div class="field-group mb-5">
@@ -51,6 +51,10 @@
           <input type="radio" formControlName="accredited" class="form-control" value="No" id="accredited-no" />
           <label for="accredited-no">No</label>
         </div>
+        <div class="multiple-choice mb-5">
+            <input type="radio" formControlName="accredited" class="form-control" value="Don't know" id="accredited-dont-know" />
+            <label for="accredited-dont-know">Don't Know</label>
+          </div>
       </div>
 
       <div class="field-group mb-5">
@@ -80,20 +84,20 @@
         <label class="d-block">
           Expiry date
         </label>
-        <div *ngIf="submitted && form.get('expiry').hasError('dateValid')" class="alert alert-danger">
+        <div *ngIf="submitted && form.get('expires').hasError('dateValid')" class="alert alert-danger">
           <p>Expiry date is not a valid date</p>
         </div>
-        <div *ngIf="submitted && form.get('expiry').hasError('pastDate')" class="alert alert-danger">
+        <div *ngIf="submitted && form.get('expires').hasError('pastDate')" class="alert alert-danger">
           <p>Expiry date can not be a date in the future</p>
         </div>
-        <div *ngIf="submitted && form.get('expiry').hasError('minDate')" class="alert alert-danger">
+        <div *ngIf="submitted && form.get('expires').hasError('minDate')" class="alert alert-danger">
           <p>Expiry date can not be more that 100 years in the past</p>
         </div>
-        <div *ngIf="submitted && form.hasError('expiryBeforeCompleted')" class="alert alert-danger">
+        <div *ngIf="submitted && form.hasError('expiresBeforeCompleted')" class="alert alert-danger">
           <p>Expiry date must be after date completed</p>
         </div>
         <p class="page-input-info">For example, 31 3 1980</p>
-        <app-date-picker [formGroup]="form.get('expiry')"></app-date-picker>
+        <app-date-picker [formGroup]="form.get('expires')"></app-date-picker>
       </div>
 
       <div class="field-group mb-5">
@@ -115,7 +119,7 @@
 
     <div class="btn-container container">
       <div class="row">
-        <button type="submit" class="btn btn-primary">Add training</button>
+        <button type="submit" class="btn btn-primary">{{ trainingRecordId ? 'Update training' : 'Add training' }}</button>
         <a
           [routerLink]="['/worker', worker.uid]"
           fragment="qualifications-and-training"

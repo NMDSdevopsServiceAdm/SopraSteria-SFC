@@ -27,7 +27,10 @@ export interface TrainingResponse {
 
 export interface TrainingRecord {
   accredited?: boolean;
-  category: string;
+  trainingCategory: {
+    id: number;
+    category: string;
+  };
   completed?: string;
   created: string;
   expires?: string;

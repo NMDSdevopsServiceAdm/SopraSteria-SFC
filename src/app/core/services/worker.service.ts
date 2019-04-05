@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TrainingRecordRequest } from '@core/model/training.model';
+import { TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -117,15 +117,28 @@ export class WorkerService {
     );
   }
 
-  deleteTrainingRecord(workerId: string, trainingId: string) {
+  updateTrainingRecord(workerId: string, trainingRecordId: string, record: TrainingRecordRequest) {
+    return this.http.put<TrainingRecordRequest>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`,
+      record
+    );
+  }
+
+  deleteTrainingRecord(workerId: string, trainingRecordId: string) {
     return this.http.delete(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingId}`
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`
     );
   }
 
   getTrainingRecords(workerId: string) {
-    return this.http.get<any>(
+    return this.http.get<TrainingResponse>(
       `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`
+    );
+  }
+
+  getTrainingRecord(workerId: string, trainingRecordId: string) {
+    return this.http.get<any>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`
     );
   }
 
