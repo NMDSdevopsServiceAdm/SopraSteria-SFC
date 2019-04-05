@@ -101,7 +101,9 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.idleService.start();
 
           this.idleService.ping$.subscribe(() => {
-            this._loginService.refreshToken().subscribe();
+            this._loginService.refreshToken().subscribe(res => {
+              this._loginService.authorise(response.headers.get('authorization'));
+            });
           });
 
           this.idleService.onTimeout().subscribe(() => {
