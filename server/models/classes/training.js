@@ -284,7 +284,7 @@ class Training {
         // notes
         if (document.notes) {
             // validate title
-            const MAX_LENGTH=500;
+            const MAX_LENGTH=1000;
             if (document.notes.length > MAX_LENGTH) {
                 this._log(Training.LOG_ERROR, 'notes failed validation: MAX length');
                 return false;
@@ -628,7 +628,10 @@ class Training {
             fetchResults.forEach(thisRecord => {
                 allTrainingRecords.push({
                     uid: thisRecord.uid,
-                    category: thisRecord.category.category,
+                    trainingCategory: {
+                        id: thisRecord.category.id,
+                        category: thisRecord.category.category
+                    },
                     title: thisRecord.title ? unescape(thisRecord.title) : undefined,
                     accredited: thisRecord.accredited ? thisRecord.accredited : undefined,
                     completed: thisRecord.completed ? new Date(thisRecord.completed) : undefined,
