@@ -7,6 +7,9 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { MessageService } from '@core/services/message.service';
 
+const PING_INTERVAL = 240;
+const TIMEOUT_INTERVAL = 1800;
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -92,10 +95,13 @@ export class LoginComponent implements OnInit, OnDestroy {
           const token = response.headers.get('authorization');
           this.authService.authorise(token);
 
-          this.idleService.init(60, 600);
+          this.idleService.init(PING_INTERVAL, TIMEOUT_INTERVAL);
           this.idleService.start();
 
-          this.idleService.ping$.subscribe(() => console.log('REFRESH BEARER TOKEN'));
+          this.idleService.ping$.subscribe(() => {
+            this.authService.refreshToken().subscribe();
+          });
+
           this.idleService.onTimeout().subscribe(() => {
             this.authService.logoutWithoutRouting();
             this.router.navigate(['/logged-out']);
