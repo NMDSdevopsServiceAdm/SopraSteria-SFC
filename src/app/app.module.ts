@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { HttpInterceptor } from '@core/services/http-interceptor';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
+import { UserIdleModule } from 'angular-user-idle';
 import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -158,6 +159,7 @@ import { VacanciesComponent } from './features/vacancies/vacancies.component';
     ]),
     SharedModule,
     MomentModule,
+    UserIdleModule.forRoot({ idle: 0, timeout: 15, ping: 5 }),
   ],
   providers: [
     LocationService,

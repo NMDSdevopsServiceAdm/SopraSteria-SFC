@@ -4,6 +4,7 @@ import { NavigationExtras, Router } from '@angular/router';
 import { LoginApiModel } from '@core/model/loginApi.model';
 import { AuthService } from '@core/services/auth-service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { IdleService } from '@core/services/idle.service';
 import { MessageService } from '@core/services/message.service';
 
 @Component({
@@ -28,6 +29,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   passwordMessage: string;
 
   constructor(
+    private idleService: IdleService,
     private authService: AuthService,
     private establishmentService: EstablishmentService,
     private messageService: MessageService,
@@ -89,6 +91,15 @@ export class LoginComponent implements OnInit, OnDestroy {
 
           const token = response.headers.get('authorization');
           this.authService.authorise(token);
+
+          this.idleService.init(2, 10);
+          this.idleService.start();
+
+          this.idleService.ping$.subscribe(() => console.log('REFRESH BEARER TOKEN'));
+          this.idleService.onTimeout().subscribe(() => {
+            this.authService.logoutWithoutRouting();
+            this.router.navigate(['/logged-out']);
+          });
         },
         err => {
           const message = err.error.message || 'Invalid username or password.';

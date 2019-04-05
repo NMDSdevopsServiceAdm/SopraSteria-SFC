@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { IdleService } from '@core/services/idle.service';
 
 import { AuthService } from '../services/auth-service';
 
@@ -9,7 +10,7 @@ import { AuthService } from '../services/auth-service';
 export class HeaderComponent {
   public fullname: string;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private idleService: IdleService) {}
 
   isLoggedIn() {
     return this.authService.isLoggedIn;
@@ -21,6 +22,7 @@ export class HeaderComponent {
 
   signOut(event) {
     event.preventDefault();
+    this.idleService.clear();
     this.authService.logout();
   }
 }
