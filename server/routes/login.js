@@ -1,13 +1,15 @@
  var express = require('express');
  const models = require('../models/index');
- const jwt = require('jsonwebtoken');
  const passport = require('passport');
  var router = express.Router();
  require('../utils/security/passport')(passport);
 const Login = require('../models').login;
 
 const generateJWT = require('../utils/security/generateJWT');
+const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
 const uuid = require('uuid');
+
+const config = require('..//config/config');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
@@ -45,9 +47,11 @@ router.post('/',async function(req, res) {
 
         login.comparePassword(escape(req.body.password), async (err, isMatch) => {
           if (isMatch && !err) {
-            const token = generateJWT.loginJWT(12, login.user.establishment.id, login.user.establishment.uid, req.body.username, login.user.UserRoleValue);
+            const loginTokenTTL = config.get('jwt.ttl.login');
+
+            const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, req.body.username, login.user.UserRoleValue);
             var date = new Date().getTime();
-            date += (12 * 60 * 60 * 1000);          
+            date += (loginTokenTTL * 60  * 1000);
    
             const response = formatSuccessulLoginResponse(
               login.user.FullNameValue,
@@ -82,6 +86,7 @@ router.post('/',async function(req, res) {
               await models.userAudit.create(auditEvent, {transaction: t});
             });
 
+            // TODO: ultimately remove "Bearer" from the response; this should be added by client
             return res.set({'Authorization': 'Bearer ' + token}).status(200).json(response);
 
           } else {
@@ -166,4 +171,24 @@ const formatSuccessulLoginResponse = (fullname, firstLoginDate, lastLoggedDate, 
     expiryDate: expiryDate
   };
 };
+
+// renews a given bearer token; this token must exist and must be valid
+//  it must be a Logged In "Bearer" token
+router.use('/refresh', isAuthorised);
+router.get('/refresh', async function(req, res) {
+  // this assumes no re-authentication; this assumes no checking of origin; this assumes no validation against last logged in or timeout against last login
+
+  // gets here the given token is still valid
+  const loginTokenTTL = config.get('jwt.ttl.login');
+  const token = generateJWT.regenerateLoginToken(loginTokenTTL, req);
+  var expiryDate = new Date().getTime();
+  expiryDate += (loginTokenTTL * 60  * 1000);    // TTL is in minutes
+
+  // TODO: ultimately remove "Bearer" from the response; this should be added by client
+  return res.set({'Authorization': 'Bearer ' + token}).status(200).json({
+    expiryDate: new Date(expiryDate).toISOString()
+  });
+  
+});
+
 module.exports = router;
