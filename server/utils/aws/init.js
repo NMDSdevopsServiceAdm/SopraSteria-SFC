@@ -9,7 +9,9 @@ const config = require('../../config/config');
 
 let theAWS = null;
 if (AWS_KEY && AWS_SECRET && config.get('aws.enabled')) {
-  AWS.config.update(config.get('aws.region'));
+  AWS.config.update({
+    region: config.get('aws.region')
+  });
   theAWS = AWS;
 }
 

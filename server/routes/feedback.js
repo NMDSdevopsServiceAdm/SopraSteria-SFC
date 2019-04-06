@@ -36,7 +36,6 @@ router.route('/').post(async (req, res) => {
     slack.info("Feedback", JSON.stringify(feedbackMsg, null, 2));
     SNS.feedbackTopic(feedbackMsg);
 
-
     if (results) {
       return res.status(201).send();
     } else {
