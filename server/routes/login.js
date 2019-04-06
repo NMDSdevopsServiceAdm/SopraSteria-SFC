@@ -145,7 +145,7 @@ router.post('/',async function(req, res) {
       })
       .catch((error) => {
         console.error(error);
-        return res.status(400).send(error);
+        return res.status(503).send();
       });
 });
 
