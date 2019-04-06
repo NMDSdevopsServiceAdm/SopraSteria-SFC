@@ -200,10 +200,8 @@ class Worker {
                         }));
                     await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
-                    // TODO - anonymised JSON 
-                    DataPump.workerPump(DataPump.PUMP_ACTION_CREATE, {
-                        worker: this.toJSON()
-                    });
+                    // async - but no wait; don't want to delay the response
+                    this.pump();
 
                     this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 });
@@ -301,10 +299,8 @@ class Worker {
                         });
                         await Promise.all(createMmodelPromises);
 
-                        // TODO - anonymised JSON 
-                        DataPump.workerPump(DataPump.PUMP_ACTION_UPDATE, {
-                            worker: this.toJSON()
-                        });
+                        // async - but no wait; don't want to delay the response
+                        this.pump();
 
                         this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
 
@@ -520,11 +516,7 @@ class Worker {
                         // having updated the record, create the audit event
                     await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
 
-                    DataPump.workerPump(DataPump.PUMP_ACTION_DELETE, {
-                        worker: {
-                            uid: this._uid
-                        }
-                    });
+                    DataPump.workerPump(DataPump.PUMP_ACTION_DELETE, { uid: this._uid});
 
                     this._log(Worker.LOG_INFO, `Archived Worker with uid (${this._uid}) and id (${this._id})`);
 
@@ -665,7 +657,8 @@ class Worker {
 
             // add worker default properties
             const myDefaultJSON = {
-                uid:  this.uid
+                uid:  this.uid,
+                establishmentId: this._establishmentId,
             };
 
             myDefaultJSON.created = this.created.toJSON();
@@ -879,6 +872,31 @@ class Worker {
         };
     }
 
+    async pump() {
+        // need to anonimise data for a Worker - removing senisitive information viz. name, NI Number, DoB and Postcode.
+        // ideally this is done by each individual property, but a quick anonimisation can be done here
+        const anonWorker = this.toJSON();
+        if (anonWorker.nameOrId) {
+            delete anonWorker.nameOrId;
+        }
+        if (anonWorker.nationalInsuranceNumber) {
+            anonWorker.nationalInsuranceNumber = 'yes';
+        }
+        if (anonWorker.dateOfBirth) {
+            anonWorker.dateOfBirth = anonWorker.dateOfBirth.slice(0,4);     // just the year
+        }
+        if (anonWorker.postcode) {
+            anonWorker.postcode = anonWorker.postcode.split(' ')[0];     // just the first half
+        }
+
+        if (this._created === this._updated) {
+            // new Worker
+            DataPump.workerPump(DataPump.PUMP_ACTION_CREATE, );
+        } else {
+            // existing Worker
+            DataPump.workerPump(DataPump.PUMP_ACTION_UPDATE, this.toJSON());
+        }
+    }
 };
 
 module.exports.Worker = Worker;

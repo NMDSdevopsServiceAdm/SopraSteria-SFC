@@ -12,6 +12,7 @@ log:
 aws:
     enabled: true
     kinesis:
-            enabled: true
+        enabled: true
+        workers: wokers.dev
     sns:
         enabled: true

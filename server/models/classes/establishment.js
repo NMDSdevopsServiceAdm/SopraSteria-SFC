@@ -240,10 +240,8 @@ class Establishment {
                         }));
                     await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
-                    // TODO - anonymised JSON 
-                    DataPump.establishmentPump(DataPump.PUMP_ACTION_CREATE, {
-                        establishment: this.toJSON()
-                    });
+                    // async - but no await; don't want to delay the response
+                    this.pump()
 
                     this._log(Establishment.LOG_INFO, `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`);
                 });
@@ -354,10 +352,8 @@ class Establishment {
                         });
                         await Promise.all(createModelPromises);
 
-                        // TODO - anonymised JSON 
-                        DataPump.establishmentPump(DataPump.PUMP_ACTION_UPDATE, {
-                            establishment: this.toJSON()
-                        });
+                        // async - but no await; don't want to delay the response
+                        this.pump()
 
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
 
@@ -701,11 +697,7 @@ class Establishment {
     // deletes this Establishment from DB
     // Can throw "EstablishmentDeleteException"
     async delete() {
-        DataPump.establishmentPump(DataPump.PUMP_ACTION_DELETE, {
-            establishment: {
-                uid: this._uid
-            }
-        });
+        DataPump.establishmentPump(DataPump.PUMP_ACTION_DELETE, { uid: this._uid });
         throw new EstablishmentExceptions.EstablishmentDeleteException(null, null, null, 'Not implemented', 'Not implemented');
     };
 
@@ -909,6 +901,18 @@ class Establishment {
             ... await this.wdf(effectiveFrom)
         };
     }
+
+
+    async pump() {
+        if (this._created === this._updated) {
+            // new Establishment
+            DataPump.establishmentPump(DataPump.PUMP_ACTION_CREATE, this.toJSON());
+        } else {
+            // existing Establishment
+            DataPump.establishmentPump(DataPump.PUMP_ACTION_UPDATE, this.toJSON());
+        }
+    }
+
 };
 
 module.exports.Establishment = Establishment;

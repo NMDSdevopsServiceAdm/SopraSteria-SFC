@@ -201,17 +201,17 @@ const config = convict({
       establishments: {
         doc: 'The stream name for establishments',
         format: String,
-        default: 'establishments-dev'
+        default: 'establishments.dev'
       },
       workers: {
         doc: 'The stream name for workers',
         format: String,
-        default: 'workers-dev'
+        default: 'workers.dev'
       },
       users: {
         doc: 'The stream name for users',
         format: String,
-        default: 'users-dev'
+        default: 'users.dev'
       },
     },
     sns: {

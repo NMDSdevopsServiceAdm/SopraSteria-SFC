@@ -10,7 +10,7 @@ exports.PUMP_ACTION_CREATE = PUMP_ACTION_CREATE;
 exports.PUMP_ACTION_UPDATE = PUMP_ACTION_UPDATE;
 exports.PUMP_ACTION_DELETE = PUMP_ACTION_DELETE;
 
-const KINESIS = AWS && config.get('aws.kinesis.enabled') ? new AWS.Kinesis() : null;
+const KINESIS = AWS && config.get('aws.kinesis.enabled') ? new AWS.Kinesis({region: config.get('aws.region')}) : null;
 
 const actionToString = (action) => {
   let actionname = null;
@@ -30,7 +30,24 @@ const actionToString = (action) => {
 
 exports.establishmentPump = async (action, establishment) => {
   if (KINESIS) {
-    console.log(`WA DEBUG - pumping establishment to AWS Kinesis (${actionToString(action)}): `, establishment.establishment.uid);
+    const params = {
+      Records: [],
+      StreamName: config.get('aws.kinesis.establishments')
+    };
+
+    // use the Establishment's own unique key (UID) as the partioning key
+    // TODO: use Establishment UID (once it's known by Workers)
+    params.Records.push({
+      Data: JSON.stringify(establishment),
+      PartitionKey: establishment.id.toString()
+    });
+
+    try {
+      await KINESIS.putRecords(params).promise();
+    } catch (err) {
+      console.error('establishmentPump failed: ', err);
+    }
+
   } else {
     console.log('WA DEBUG - Kinesis is not enabled');
   }
@@ -38,7 +55,24 @@ exports.establishmentPump = async (action, establishment) => {
 
 exports.workerPump = async (action, worker) => {
   if (KINESIS) {
-    console.log(`WA DEBUG - pumping worker to AWS Kinesis (${actionToString(action)}): `, worker.worker.uid);
+    const params = {
+      Records: [],
+      StreamName: config.get('aws.kinesis.workers')
+    };
+
+    // use the Workers's establishment id as the partioning key, that way, all records associated
+    //  with the same Establishment enter the same shard
+    params.Records.push({
+      Data: JSON.stringify(worker),
+      PartitionKey: worker.establishmentId.toString()
+    });
+
+    try {
+      await KINESIS.putRecords(params).promise();
+    } catch (err) {
+      console.error('workerPump failed: ', err);
+    }
+
   } else {
     console.log('WA DEBUG - Kinesis is not enabled');
   }
