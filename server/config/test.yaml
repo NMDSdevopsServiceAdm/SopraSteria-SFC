@@ -9,3 +9,13 @@ notify:
     templates:
         resetPassword: 'f2c43610-9ec9-4271-b9b1-dd55569b191c'
         addUser: 'e581eea2-4206-4c90-8594-4357960e3e74'
+aws:
+    kinesis:
+        enabled: false
+        establishments: 'establishments-staging'
+        workers: 'workers-staging'
+        users: 'users-staging'
+    sns:
+        enabled: false
+        registrations: 'registrations-staging'
+        feedback: 'feedback-staging'

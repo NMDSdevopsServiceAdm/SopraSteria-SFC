@@ -3,6 +3,7 @@ const router = express.Router({mergeParams: true});
 const models = require('../models');
 
 const slack = require('../utils/slack/slack-logger');
+const SNS = require('../utils/aws/notification/sns');
 
 // note - intentionally no get for feedback
 
@@ -33,6 +34,7 @@ router.route('/').post(async (req, res) => {
 
     // send feedback via slack
     slack.info("Feedback", JSON.stringify(feedbackMsg, null, 2));
+    SNS.feedbackTopic(feedbackMsg);
 
 
     if (results) {

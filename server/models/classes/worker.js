@@ -12,6 +12,10 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
+// notifications
+const DataPump = require('../../utils/aws/streams/kinesis');
+
+// exceptions
 const WorkerExceptions = require('./worker/workerExceptions');
 
 // Worker properties
@@ -196,6 +200,11 @@ class Worker {
                         }));
                     await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
+                    // TODO - anonymised JSON 
+                    DataPump.workerPump(DataPump.PUMP_ACTION_CREATE, {
+                        worker: this.toJSON()
+                    });
+
                     this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 });
                 
@@ -291,6 +300,11 @@ class Worker {
                             );
                         });
                         await Promise.all(createMmodelPromises);
+
+                        // TODO - anonymised JSON 
+                        DataPump.workerPump(DataPump.PUMP_ACTION_UPDATE, {
+                            worker: this.toJSON()
+                        });
 
                         this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
 
@@ -505,6 +519,12 @@ class Worker {
                         type: 'deleted'}];
                         // having updated the record, create the audit event
                     await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+
+                    DataPump.workerPump(DataPump.PUMP_ACTION_DELETE, {
+                        worker: {
+                            uid: this._uid
+                        }
+                    });
 
                     this._log(Worker.LOG_INFO, `Archived Worker with uid (${this._uid}) and id (${this._id})`);
 

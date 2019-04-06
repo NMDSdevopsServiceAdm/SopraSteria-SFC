@@ -4,9 +4,12 @@ const concatenateAddress = require('../utils/concatenateAddress').concatenateAdd
 const uuid = require('uuid');
 const isLocal = require('../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
-const slack = require('../utils/slack/slack-logger');
 
 const models = require('../models');
+
+// notifications
+const slack = require('../utils/slack/slack-logger');
+const SNS = require('../utils/aws/notification/sns');
 
 // extended change properties
 const EstablishmentModel = require('../models/classes/establishment').Establishment;
@@ -482,6 +485,7 @@ router.route('/')
           delete slackMsg.user.securityAnswer;
           slackMsg.NmdsId = Estblistmentdata.NmdsId;
           slack.info("Registration", JSON.stringify(slackMsg, null, 2));
+          SNS.registrationTopic(slackMsg);
 
           // gets here on success
           res.status(200);

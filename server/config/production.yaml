@@ -10,3 +10,14 @@ notify:
     templates:
         resetPassword: 'fd430f0d-6609-400a-b171-cf124453ec1c'
         addUser: 'f20e9cbe-920d-4b1f-b05d-bac1ca8d5b54'
+        aws:
+aws:
+    kinesis:
+        enabled: false
+        establishments: 'establishments-prod'
+        workers: 'workers-prod'
+        users: 'users-prod'
+    sns:
+        enabled: false
+        registrations: 'registrations-staging'
+        feedback: 'feedback-staging'

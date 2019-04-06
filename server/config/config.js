@@ -181,6 +181,56 @@ const config = convict({
           env: 'SLACK_LEVEL',
           default: 0
       }
+  },
+  aws: {
+    enabled: {
+      doc: 'Enables/Disables use of AWS services',
+      format: 'Boolean',
+      default: false,
+    },
+    region: {
+      format: String,
+      default: 'eu-west-1'
+    },
+    kinesis: {
+      enabled: {
+        doc: 'Enables/Disables use of AWS Kinesis service',
+        format: 'Boolean',
+        default: false,
+      },
+      establishments: {
+        doc: 'The stream name for establishments',
+        format: String,
+        default: 'establishments-dev'
+      },
+      workers: {
+        doc: 'The stream name for workers',
+        format: String,
+        default: 'workers-dev'
+      },
+      users: {
+        doc: 'The stream name for users',
+        format: String,
+        default: 'users-dev'
+      },
+    },
+    sns: {
+      enabled: {
+        doc: 'Enables/Disables use of AWS SNS service',
+        format: 'Boolean',
+        default: false,
+      },
+      registrations: {
+        doc: 'The topic name for registrations',
+        format: String,
+        default: 'registrations-dev'
+      },
+      feedback: {
+        doc: 'The topic name for feedback',
+        format: String,
+        default: 'feedback-dev'
+      },
+    }
   }
 });
 

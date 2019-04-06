@@ -9,3 +9,9 @@ db:
     ssl: false
 log:
     sequelize: false
+aws:
+    enabled: true
+    kinesis:
+            enabled: true
+    sns:
+        enabled: true
