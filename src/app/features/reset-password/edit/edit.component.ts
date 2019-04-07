@@ -93,6 +93,7 @@ export class ResetPasswordEditComponent implements OnInit {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.resetPasswordForm.invalid) {
+      this.errorSummaryService.scrollToErrorSummary();
       this.displayError = true;
     } else {
       const newPassword = this.getPasswordInput.value;
