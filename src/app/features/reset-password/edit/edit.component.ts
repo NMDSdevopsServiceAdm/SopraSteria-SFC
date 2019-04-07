@@ -83,6 +83,10 @@ export class ResetPasswordEditComponent implements OnInit {
           {
             name: 'required',
             message: 'Please confirm your Password.',
+          },
+          {
+            name: 'notMatched',
+            message: 'Confirm Password does not match.',
           }
         ]
       }
