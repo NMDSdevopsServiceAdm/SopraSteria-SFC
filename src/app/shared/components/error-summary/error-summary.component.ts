@@ -1,26 +1,33 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { FormControl, FormGroup } from '@angular/forms';
 import { filter } from 'lodash';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { takeWhile } from 'rxjs/operators';
 
 @Component({
   selector: 'app-error-summary',
   templateUrl: './error-summary.component.html',
   styleUrls: ['./error-summary.component.scss'],
 })
-export class ErrorSummaryComponent implements OnInit {
+export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public form: FormGroup;
   @Input() public errorDetails: Array<ErrorDetails>;
   public errors: Array<ErrorSummary>;
+  private componentAlive = true;
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
   ) {}
 
   ngOnInit(): void {
-    this.errorSummaryService.syncFormErrorsEvent.subscribe(() => this.getFormErrors());
-    this.form.valueChanges.subscribe(() => this.getFormErrors());
+    this.errorSummaryService.syncFormErrorsEvent
+      .pipe(takeWhile(() => this.componentAlive))
+      .subscribe(() => this.getFormErrors());
+
+    this.form.valueChanges
+      .pipe(takeWhile(() => this.componentAlive))
+      .subscribe(() => this.getFormErrors());
   }
 
   private getFormErrors(): void {
@@ -64,6 +71,13 @@ export class ErrorSummaryComponent implements OnInit {
   public getErrorMessage(formControlName: string, errorType: string): string {
     const getFormControl: Object = filter(this.errorDetails, [ 'formControlName', formControlName ])[0];
     return filter(getFormControl['type'], [ 'name', errorType ])[0].message;
+  }
+
+  /**
+   * Unsubscribe hook to ensure no memory leaks
+   */
+  ngOnDestroy(): void {
+    this.componentAlive = false;
   }
 
 }
