@@ -1,21 +1,23 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { PasswordResetService } from '@core/services/password-reset.service';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { takeWhile } from 'rxjs/internal/operators/takeWhile';
 
 @Component({
   selector: 'app-rp-edit',
   templateUrl: './edit.component.html',
 })
-export class ResetPasswordEditComponent implements OnInit {
+export class ResetPasswordEditComponent implements OnInit, OnDestroy {
   public resetPasswordForm: FormGroup;
   @Input() validatePasswordResetResponse;
   @Input() headerToken: string;
   public name: string;
   public displayError: boolean;
   public errorDetails: Array<ErrorDetails>;
+  private componentAlive = true;
 
   @Output() resetPasswordOutput = new EventEmitter();
 
@@ -101,11 +103,20 @@ export class ResetPasswordEditComponent implements OnInit {
       this.displayError = true;
     } else {
       const newPassword = this.getPasswordInput.value;
+
       this._passwordResetService.resetPassword(newPassword, this.headerToken)
-      .subscribe(res => {
-        this.resetPasswordOutput.emit(res);
-      });
+        .pipe(takeWhile(() => this.componentAlive))
+        .subscribe(res => {
+          this.resetPasswordOutput.emit(res);
+        });
     }
+  }
+
+  /**
+   * Unsubscribe hook to ensure no memory leaks
+   */
+  ngOnDestroy(): void {
+    this.componentAlive = false;
   }
 
 }
