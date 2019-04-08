@@ -67,7 +67,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
   public setupErrorDetails(): void {
     this.errorDetails = [
       {
-        formControlName: 'createPasswordInput',
+        item: 'createPasswordInput',
         type: [
           {
             name: 'required',
@@ -80,12 +80,17 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
         ]
       },
       {
-        formControlName: 'confirmPasswordInput',
+        item: 'confirmPasswordInput',
         type: [
           {
             name: 'required',
             message: 'Please confirm your Password.',
-          },
+          }
+        ]
+      },
+      {
+        item: 'passwordGroup',
+        type: [
           {
             name: 'notMatched',
             message: 'Confirm Password does not match.',

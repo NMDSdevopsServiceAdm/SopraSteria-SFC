@@ -42,8 +42,10 @@
           </label>
           <span *ngIf="displayError" id="confirmPasswordInput-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
-            <span *ngIf="getConfirmPasswordInput.hasError('required')">{{ errorDetails[1].type[0].message }}</span>
-            <span *ngIf="getPasswordGroup.hasError('notMatched')">{{ errorDetails[1].type[1].message }}</span>
+            <span *ngIf="getConfirmPasswordInput.hasError('required') || getPasswordGroup.hasError('notMatched')"
+              id="passwordGroup-error">
+              {{ errorDetails[1].type[0].message }}
+            </span>
           </span>
           <input
             class="govuk-input"

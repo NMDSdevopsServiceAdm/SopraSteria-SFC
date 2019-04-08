@@ -1,10 +1,10 @@
 export interface ErrorSummary {
-  formControlName: string;
+  item: string;
   errors: Array<string>;
 }
 
 export interface ErrorDetails {
-  formControlName: string;
+  item: string;
   type: Array<ErrorDefinition>;
 }
 

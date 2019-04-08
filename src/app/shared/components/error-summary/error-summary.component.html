@@ -14,9 +14,9 @@
         <a
           *ngFor="let error of i.errors"
           routerLink="."
-          fragment="{{ i.formControlName }}-error"
+          fragment="{{ i.item }}-error"
           queryParamsHandling="merge">
-          {{ getErrorMessage(i.formControlName, error) }}
+          {{ getErrorMessage(i.item, error) }}
         </a>
       </li>
     </ul>

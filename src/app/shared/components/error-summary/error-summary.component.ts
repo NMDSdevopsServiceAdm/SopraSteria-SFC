@@ -38,38 +38,42 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
       const isFormGroup: boolean = this.form.get(key) instanceof FormGroup;
 
       if (isFormControl) {
-        this.collectFormControlError(this.form.get(key), key);
+        this.collectError(this.form.get(key), key);
       } else if (isFormGroup) {
+        // collect form group errors
+        this.collectError(this.form.get(key), key);
+
+        // collect form control errors
         const formGroupControls: any = this.form.get(key)['controls'];
-        Object.keys(formGroupControls).forEach(i => this.collectFormControlError(formGroupControls[i], i));
+        Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], i));
       }
     });
   }
 
   /**
-   * Pass in formControl and its name
+   * Pass in formControl or formGroup and its name
    * And if there are errors
    * Add them to errors object in order to show in ui
-   * @param formControl
-   * @param formControlName
+   * @param item
+   * @param name
    */
-  private collectFormControlError(formControl, formControlName: string): void {
-    if (formControl.errors) {
+  private collectError(item: FormControl | FormGroup, name: string): void {
+    if (item.errors) {
       this.errors.push({
-        formControlName: formControlName,
-        errors: [...Object.keys(formControl.errors)]
+        item: name,
+        errors: [...Object.keys(item.errors)]
       });
     }
   }
 
   /**
-   * Pass in formControlName and errorType
+   * Pass in formGroup or formControl name and errorType
    * And return error message
-   * @param formControlName
+   * @param item
    * @param errorType
    */
-  public getErrorMessage(formControlName: string, errorType: string): string {
-    const getFormControl: Object = filter(this.errorDetails, [ 'formControlName', formControlName ])[0];
+  public getErrorMessage(item: string, errorType: string): string {
+    const getFormControl: Object = filter(this.errorDetails, [ 'item', item ])[0];
     return filter(getFormControl['type'], [ 'name', errorType ])[0].message;
   }
 
