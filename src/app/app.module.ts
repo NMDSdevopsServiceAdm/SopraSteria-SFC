@@ -4,7 +4,6 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import {
   ProblemWithTheServiceComponent,
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
@@ -73,6 +72,7 @@ import { SelectMainServiceComponent } from './features/select-main-service/selec
 import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
