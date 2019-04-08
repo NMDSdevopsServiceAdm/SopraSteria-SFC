@@ -796,11 +796,16 @@ class Worker {
     // returns true if this worker is WDF eligible as referenced from the
     //  given effective date; otherwise returns false
     async isWdfEligible(effectiveFrom) {
-        const allPropsEligible = await this.wdf(effectiveFrom);
+        const wdfByProperty = await this.wdf(effectiveFrom);
 
         // NOTE - the worker does not have to be completed before it can be eligible for WDF
 
-        return Object.values(allPropsEligible).every(thisprop => this.prop === true);
+        return {
+            isEligible: Object.values(wdfByProperty).every(thisProperty => {
+                return !(thisProperty === 'No');
+            }),
+            ... wdfByProperty
+        };
     }
 
     _isPropertyWdfBasicEligible(refEpoch, property) {
@@ -831,21 +836,63 @@ class Worker {
         myWdf['recruitedFrom'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('RecruitedFrom')) ? 'Yes' : 'No';
         myWdf['contract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Contract')) ? 'Yes' : 'No';
 
-        // contracted/average weekly hours, zero hours
-        myWdf['weeklyHoursContracted'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursContracted')) ? 'Yes' : 'No';
-        myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+        // zero hours contract, contracted/average weekly hours (dependent on zero hours selected and on employment status/contract), 
+        
+        const CONTRACT_TYPE = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'];
         myWdf['zeroHoursContract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ZeroHoursContract')) ? 'Yes' : 'No';
+        if (this._properties.get('ZeroHoursContract').property === null) {
+            // we have insufficient information to calculate whether the average/contracted weekly hours is WDF eligibnle
+            myWdf['weeklyHoursContracted'] = 'Not relevant';
+            myWdf['weeklyHoursAverage'] = 'Not relevant';
+        } else {
+            if (this._properties.get('ZeroHoursContract').property === 'No') {
+                if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
+                    myWdf['weeklyHoursContracted'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursContracted')) ? 'Yes' : 'No';
+                } else {
+                    myWdf['weeklyHoursContracted'] = 'Not relevant';
+                }
+
+                if (['Pool/Bank', 'Agency', 'Other'].includes(this._properties.get('Contract').property)) {
+                    myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+                } else {
+                    myWdf['weeklyHoursAverage'] = 'Not relevant';
+                }
+            } else if (this._properties.get('ZeroHoursContract').property === 'Yes') {
+                // regardless of contract, all workers on zero hours contract, have an average set of weekly hours
+                myWdf['weeklyHoursContracted'] = 'Not relevant';
+                myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+            } else {
+                // if zero hours contract is neither Yes or No, the average/contracted hour egligibility is not relevant
+                myWdf['weeklyHoursContracted'] = 'Not relevant';
+                myWdf['weeklyHoursAverage'] = 'Not relevant';
+            }
+        }
 
         // sickness and salary
-        myWdf['daysSick'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick')) ? 'Yes' : 'No';
         myWdf['annualHourlyPay'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('AnnualHourlyPay')) ? 'Yes' : 'No';
+        // Note - contract is a mandatory property - it will always have value
+        if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
+            myWdf['daysSick'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick')) ? 'Yes' : 'No';
+        } else {
+            myWdf['daysSick'] = 'Not relevant';
+        }
 
         // qualifications and care certificate
         myWdf['careCertificate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CareCertificate')) ? 'Yes' : 'No';
-        myWdf['qualificationInSocialCare'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('QualificationInSocialCare')) ? 'Yes' : 'No';
-        myWdf['socialCareQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('SocialCareQualification')) ? 'Yes' : 'No';
+        myWdf['qualificationInSocialCare'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('QualificationInSocialCare')) ? 'Yes' : 'No';7
+        if (this._properties.get('QualificationInSocialCare').property === null || this._properties.get('QualificationInSocialCare').property === 'No') {
+            // if not having defined 'having a qualification in social care' or 'have said no'
+            myWdf['socialCareQualification'] = 'Not relevant';
+        } else {
+            myWdf['socialCareQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('SocialCareQualification')) ? 'Yes' : 'No';
+        }
         myWdf['otherQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherQualifications')) ? 'Yes' : 'No';
-        myWdf['highestQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('HighestQualification')) ? 'Yes' : 'No';
+        if (this._properties.get('OtherQualifications').property === null || this._properties.get('OtherQualifications').property === 'No') {
+            // if not having defined 'having another qualification' or 'have said no'
+            myWdf['highestQualification'] = 'Not relevant';
+        } else {
+            myWdf['highestQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('HighestQualification')) ? 'Yes' : 'No';
+        }
         
         return myWdf;
     }
@@ -854,8 +901,7 @@ class Worker {
     async wdfToJson(effectiveFrom) {
         return {
             effectiveFrom: effectiveFrom.toISOString(),
-            isEligible: await this.isWdfEligible(effectiveFrom),
-            ... await this.wdf(effectiveFrom)
+            ... await this.isWdfEligible(effectiveFrom)
         };
     }
 
