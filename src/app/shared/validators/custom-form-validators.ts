@@ -33,7 +33,7 @@ export class CustomValidators extends Validators {
     return { bothHaveContent: true };
   }
 
-  static matchInputValues(c: AbstractControl): { [key: string]: boolean } | null {
+  static matchInputValues(c: AbstractControl): void | null {
     const passwordControl = c.get('createPasswordInput');
     const confirmPasswordControl = c.get('confirmPasswordInput');
 
@@ -42,7 +42,7 @@ export class CustomValidators extends Validators {
     }
 
     if (passwordControl.value !== confirmPasswordControl.value) {
-      return { notMatched: true };
+      return confirmPasswordControl.setErrors({ notMatched: true });
     }
   }
 }

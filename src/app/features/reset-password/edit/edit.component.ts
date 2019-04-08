@@ -85,12 +85,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
           {
             name: 'required',
             message: 'Please confirm your password.',
-          }
-        ]
-      },
-      {
-        item: 'passwordGroup',
-        type: [
+          },
           {
             name: 'notMatched',
             message: 'Confirm password does not match.',

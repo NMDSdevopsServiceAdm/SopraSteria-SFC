@@ -12,11 +12,10 @@
     <ul class="govuk-list govuk-error-summary__list">
       <li *ngFor="let i of errors">
         <a
-          *ngFor="let error of i.errors"
           routerLink="."
           fragment="{{ i.item }}-error"
           queryParamsHandling="merge">
-          {{ getErrorMessage(i.item, error) }}
+          {{ getErrorMessage(i.item, i.errors[0]) }}
         </a>
       </li>
     </ul>

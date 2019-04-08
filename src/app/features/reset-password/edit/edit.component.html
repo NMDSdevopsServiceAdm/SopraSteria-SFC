@@ -36,13 +36,13 @@
         </div>
 
         <div class="govuk-form-group govuk-!-margin-bottom-8"
-          [class.govuk-form-group--error]="displayError && (getConfirmPasswordInput.errors || getPasswordGroup.errors)">
+          [class.govuk-form-group--error]="displayError && getConfirmPasswordInput.errors">
           <label class="govuk-label" for="confirmPasswordInput">
             Confirm password
           </label>
           <span *ngIf="displayError" id="confirmPasswordInput-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
-            <span *ngIf="getConfirmPasswordInput.hasError('required') || getPasswordGroup.hasError('notMatched')"
+            <span *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
               id="passwordGroup-error">
               {{ errorDetails[1].type[0].message }}
             </span>
@@ -52,7 +52,7 @@
             formControlName="confirmPasswordInput"
             id="confirmPasswordInput"
             name="confirmPasswordInput"
-            [class.govuk-input--error]="displayError && (getConfirmPasswordInput.errors || getPasswordGroup.errors)"
+            [class.govuk-input--error]="displayError && getConfirmPasswordInput.errors"
             placeholder=""
             type="password"
           />

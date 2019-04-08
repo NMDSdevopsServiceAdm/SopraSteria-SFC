@@ -40,10 +40,6 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
       if (isFormControl) {
         this.collectError(this.form.get(key), key);
       } else if (isFormGroup) {
-        // collect form group errors
-        this.collectError(this.form.get(key), key);
-
-        // collect form control errors
         const formGroupControls: any = this.form.get(key)['controls'];
         Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], i));
       }
