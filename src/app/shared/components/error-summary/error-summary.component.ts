@@ -3,7 +3,7 @@ import { ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { filter } from 'lodash';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { takeWhile } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-error-summary',
@@ -14,20 +14,20 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public form: FormGroup;
   @Input() public errorDetails: Array<ErrorDetails>;
   public errors: Array<ErrorSummary>;
-  private componentAlive = true;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
   ) {}
 
   ngOnInit(): void {
-    this.errorSummaryService.syncFormErrorsEvent
-      .pipe(takeWhile(() => this.componentAlive))
-      .subscribe(() => this.getFormErrors());
+    this.subscriptions.add(
+      this.errorSummaryService.syncFormErrorsEvent.subscribe(() => this.getFormErrors())
+    );
 
-    this.form.valueChanges
-      .pipe(takeWhile(() => this.componentAlive))
-      .subscribe(() => this.getFormErrors());
+    this.subscriptions.add(
+      this.form.valueChanges.subscribe(() => this.getFormErrors())
+    );
   }
 
   private getFormErrors(): void {
@@ -77,7 +77,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
    * Unsubscribe hook to ensure no memory leaks
    */
   ngOnDestroy(): void {
-    this.componentAlive = false;
+    this.subscriptions.unsubscribe();
   }
 
 }

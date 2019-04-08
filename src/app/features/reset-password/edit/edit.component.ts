@@ -27,11 +27,6 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
   ) { }
 
-  // Get password group
-  get getPasswordGroup() {
-    return this.resetPasswordForm.get('passwordGroup');
-  }
-
   // Get create password
   get getPasswordInput() {
     return this.resetPasswordForm.get('passwordGroup.createPasswordInput');
