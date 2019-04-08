@@ -49,7 +49,7 @@ router.post('/',async function(req, res) {
          if (isMatch && !err) {
            const loginTokenTTL = 5;
 
-           const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, req.body.username, login.user.UserRoleValue);
+           const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, req.body.username, login.user.UserRoleValue);
            var date = new Date().getTime();
            date += (loginTokenTTL * 60  * 1000);
   
