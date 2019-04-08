@@ -9,7 +9,7 @@ const generateJWT = require('../utils/security/generateJWT');
 const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
 const uuid = require('uuid');
 
-const config = require('..//config/config');
+const config = require('../config/config');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
@@ -47,7 +47,7 @@ router.post('/',async function(req, res) {
 
        login.comparePassword(escape(req.body.password), async (err, isMatch) => {
          if (isMatch && !err) {
-           const loginTokenTTL = config.get('jwt.ttl.login');
+           const loginTokenTTL = 5;
 
            const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, req.body.username, login.user.UserRoleValue);
            var date = new Date().getTime();
@@ -176,7 +176,7 @@ router.get('/refresh', async function(req, res) {
  // this assumes no re-authentication; this assumes no checking of origin; this assumes no validation against last logged in or timeout against last login
 
  // gets here the given token is still valid
- const loginTokenTTL = config.get('jwt.ttl.login');
+ const loginTokenTTL = 5;
  const token = generateJWT.regenerateLoginToken(loginTokenTTL, req);
  var expiryDate = new Date().getTime();
  expiryDate += (loginTokenTTL * 60  * 1000);    // TTL is in minutes
