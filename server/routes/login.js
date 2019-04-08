@@ -15,28 +15,28 @@ const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
 router.post('/',async function(req, res) {
   Login
-     .findOne({
-       where: {
-         username: req.body.username,
-         isActive:true
-       }
-       ,
-       attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin'],
-       include: [ {
-         model: models.user,
-         attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId', "UserRoleValue"],
-         include: [{
-           model: models.establishment,
-           attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId'],
-           include: [{
-             model: models.services,
-             as: 'mainService',
-             attributes: ['id', 'name']
-           }]
-         }]
-       }]
-     
-     })
+      .findOne({
+        where: {
+          username: req.body.username,
+          isActive:true
+        }
+        ,
+        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash'],
+        include: [ {
+          model: models.user,
+          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId', "UserRoleValue"],
+          include: [{
+            model: models.establishment,
+            attributes: ['id', 'name', 'isRegulated', 'nmdsId'],
+            include: [{
+              model: models.services,
+              as: 'mainService',
+              attributes: ['id', 'name']
+            }]
+          }]
+        }]
+      
+      })
      .then((login) => {
        if (!login) {
          console.error(`Failed to find user account associated with: ${req.body.username} - `, login);
@@ -56,7 +56,6 @@ router.post('/',async function(req, res) {
            const response = formatSuccessulLoginResponse(
              login.user.FullNameValue,
              login.firstLogin,
-             login.lastLogin,
              login.user.UserRoleValue,
              login.user.establishment,
              login.user.establishment.mainService,
@@ -150,26 +149,24 @@ router.post('/',async function(req, res) {
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, firstLoginDate, lastLoggedDate, role, establishment, mainService, expiryDate) => {
- // note - the mainService can be null
- return {
-   fullname,
-   isFirstLogin: firstLoginDate ? false : true,
-   lastLoggedIn: lastLoggedDate ? lastLoggedDate.toISOString() : null,
-   role,
-   establishment: {
-     id: establishment.id,
-     uid: establishment.uid,
-     name: establishment.NameValue,
-     isRegulated: establishment.isRegulated,
-     nmdsId: establishment.nmdsId
-   },
-   mainService: {
-     id: mainService ? mainService.id : null,
-     name: mainService ? mainService.name : null
-   },
-   expiryDate: expiryDate
- };
+const formatSuccessulLoginResponse = (fullname, firstLoginDate, role, establishment, mainService, expiryDate) => {
+  // note - the mainService can be null
+  return {
+    fullname,
+    isFirstLogin: firstLoginDate ? false : true,
+    role,
+    establishment: {
+      id: establishment.id,
+      name: establishment.name,
+      isRegulated: establishment.isRegulated,
+      nmdsId: establishment.nmdsId
+    },
+    mainService: {
+      id: mainService ? mainService.id : null,
+      name: mainService ? mainService.name : null
+    },
+    expiryDate: expiryDate
+  };
 };
 
 // renews a given bearer token; this token must exist and must be valid
