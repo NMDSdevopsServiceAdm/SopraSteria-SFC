@@ -34,6 +34,7 @@ export class WorkerService {
   private returnToSummary$ = new BehaviorSubject<boolean>(false);
   public createStaffResponse = null;
   public trainingRecordCreated = null;
+  public trainingRecordEdited = null;
   public trainingRecordDeleted$ = new BehaviorSubject<boolean>(false);
 
   // All workers store
@@ -156,6 +157,18 @@ export class WorkerService {
 
   resetTrainingRecordCreated() {
     this.trainingRecordCreated = null;
+  }
+
+  getTrainingRecordEdited() {
+    return this.trainingRecordEdited;
+  }
+
+  setTrainingRecordEdited() {
+    this.trainingRecordEdited = true;
+  }
+
+  resetTrainingRecordEdited() {
+    this.trainingRecordEdited = null;
   }
 
   setCreateStaffResponse(success: number) {

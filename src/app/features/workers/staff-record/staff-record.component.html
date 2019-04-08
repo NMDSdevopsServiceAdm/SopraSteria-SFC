@@ -9,6 +9,11 @@
         Training has been added <a href="#" (click)="closeTrainingCreatedAlert($event)" class="close-link">Close</a>
       </app-inset-text>
     </ng-container>
+    <ng-container *ngIf="traingRecordEdited">
+        <app-inset-text color="success" class="fs-19">
+          Training has been saved <a href="#" (click)="closeTrainingEditedAlert($event)" class="close-link">Close</a>
+        </app-inset-text>
+      </ng-container>
     <ng-container *ngIf="traingRecordDeleted">
       <app-inset-text color="success" class="fs-19">
         Training has been deleted <a href="#" (click)="closeTrainingDeletedAlert($event)" class="close-link">Close</a>

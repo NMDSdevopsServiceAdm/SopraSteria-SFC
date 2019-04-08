@@ -106,7 +106,11 @@ export class AddEditTrainingComponent implements OnInit {
     if (this.form.valid) {
       try {
         await this.saveHandler();
-        this.workerService.setTrainingRecordCreated();
+        if (this.trainingRecordId) {
+          this.workerService.setTrainingRecordEdited();
+        } else {
+          this.workerService.setTrainingRecordCreated();
+        }
         this.router.navigate(['/worker', this.worker.uid], {
           fragment: 'qualifications-and-training',
         });

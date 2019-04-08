@@ -14,8 +14,9 @@ import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-work
   styleUrls: ['./staff-record.component.scss'],
 })
 export class StaffRecordComponent implements OnInit, OnDestroy {
-  public traingRecordCreated = false;
-  public traingRecordDeleted = false;
+  public trainingRecordCreated = false;
+  public trainingRecordEdited = false;
+  public trainingRecordDeleted = false;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -28,21 +29,21 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.traingRecordCreated = this.workerService.getTrainingRecordCreated();
+    this.trainingRecordCreated = this.workerService.getTrainingRecordCreated();
+    this.trainingRecordEdited = this.workerService.getTrainingRecordEdited();
     this.subscriptions.add(
       this.workerService.trainingRecordDeleted$.subscribe(bool => {
         if (bool) {
           window.scrollTo(0, 0);
         }
-        this.traingRecordDeleted = bool;
+        this.trainingRecordDeleted = bool;
       })
     );
   }
 
   ngOnDestroy() {
-    if (this.traingRecordCreated) {
-      this.workerService.resetTrainingRecordCreated();
-    }
+    this.workerService.resetTrainingRecordCreated();
+    this.workerService.resetTrainingRecordEdited();
     this.workerService.setTrainingRecordDeleted(false);
     this.subscriptions.unsubscribe();
   }
@@ -61,7 +62,13 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   closeTrainingCreatedAlert(event) {
     event.preventDefault();
     this.workerService.resetTrainingRecordCreated();
-    this.traingRecordCreated = false;
+    this.trainingRecordCreated = false;
+  }
+
+  closeTrainingEditedAlert(event) {
+    event.preventDefault();
+    this.workerService.resetTrainingRecordEdited();
+    this.trainingRecordEdited = false;
   }
 
   closeTrainingDeletedAlert(event) {
