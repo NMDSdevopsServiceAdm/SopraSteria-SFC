@@ -20,7 +20,6 @@ import { SelectWorkplaceComponent } from '@features/select-workplace/select-work
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { UserDetailsComponent } from '@features/user-details/user-details.component';
 
-import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
@@ -29,6 +28,7 @@ import { ChangePasswordComponent } from './features/change-password/change-passw
 import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
 import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 
 const routes: Routes = [
   {
