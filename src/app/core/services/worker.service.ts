@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -32,6 +33,9 @@ export class WorkerService {
   private lastDeleted$ = new BehaviorSubject<string>(null);
   private returnToSummary$ = new BehaviorSubject<boolean>(false);
   public createStaffResponse = null;
+  public trainingRecordCreated = null;
+  public trainingRecordEdited = null;
+  public trainingRecordDeleted$ = new BehaviorSubject<boolean>(false);
 
   // All workers store
   private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
@@ -105,6 +109,66 @@ export class WorkerService {
         }),
       }
     );
+  }
+
+  createTrainingRecord(workerId: string, record: TrainingRecordRequest) {
+    return this.http.post<TrainingRecordRequest>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`,
+      record
+    );
+  }
+
+  updateTrainingRecord(workerId: string, trainingRecordId: string, record: TrainingRecordRequest) {
+    return this.http.put<TrainingRecordRequest>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`,
+      record
+    );
+  }
+
+  deleteTrainingRecord(workerId: string, trainingRecordId: string) {
+    return this.http.delete(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`
+    );
+  }
+
+  getTrainingRecords(workerId: string) {
+    return this.http.get<TrainingResponse>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`
+    );
+  }
+
+  getTrainingRecord(workerId: string, trainingRecordId: string) {
+    return this.http.get<any>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`
+    );
+  }
+
+  setTrainingRecordDeleted(bool) {
+    this.trainingRecordDeleted$.next(bool);
+  }
+
+  getTrainingRecordCreated() {
+    return this.trainingRecordCreated;
+  }
+
+  setTrainingRecordCreated() {
+    this.trainingRecordCreated = true;
+  }
+
+  resetTrainingRecordCreated() {
+    this.trainingRecordCreated = null;
+  }
+
+  getTrainingRecordEdited() {
+    return this.trainingRecordEdited;
+  }
+
+  setTrainingRecordEdited() {
+    this.trainingRecordEdited = true;
+  }
+
+  resetTrainingRecordEdited() {
+    this.trainingRecordEdited = null;
   }
 
   setCreateStaffResponse(success: number) {

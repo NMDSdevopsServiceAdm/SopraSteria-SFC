@@ -1,0 +1,60 @@
+<div class="sub-page-container col-12">
+  <div id="back" class="back-link">
+    <a [routerLink]="['/dashboard']" fragment="staff-records"> <span class="arrow"></span>Back </a>
+  </div>
+
+  <ng-container *ngIf="worker">
+    <ng-container *ngIf="traingRecordCreated">
+      <app-inset-text color="success" class="fs-19">
+        Training has been added <a href="#" (click)="closeTrainingCreatedAlert($event)" class="close-link">Close</a>
+      </app-inset-text>
+    </ng-container>
+    <ng-container *ngIf="traingRecordEdited">
+        <app-inset-text color="success" class="fs-19">
+          Training has been saved <a href="#" (click)="closeTrainingEditedAlert($event)" class="close-link">Close</a>
+        </app-inset-text>
+      </ng-container>
+    <ng-container *ngIf="traingRecordDeleted">
+      <app-inset-text color="success" class="fs-19">
+        Training has been deleted <a href="#" (click)="closeTrainingDeletedAlert($event)" class="close-link">Close</a>
+      </app-inset-text>
+    </ng-container>
+    <div class="row">
+      <div class="col-md-8">
+        <h2 class="heading-caption text-weight-normal">Staff record</h2>
+        <h1 class="h1">{{ worker.nameOrId }}</h1>
+      </div>
+      <div class="col-md-4 text-right">
+        <a href="#" (click)="deleteWorker($event)" class="delete">
+          <img src="/assets/img/bin.svg" />Delete staff record
+        </a>
+      </div>
+    </div>
+    <app-tabs>
+      <app-tab title="Staff Record">
+        <app-basic-record [worker]="worker"></app-basic-record>
+        <app-personal-details [worker]="worker"></app-personal-details>
+        <app-employment [worker]="worker"></app-employment>
+      </app-tab>
+      <app-tab title="Qualifications and training">
+        <app-qualifications-and-training [worker]="worker"></app-qualifications-and-training>
+        <a
+          [routerLink]="['/worker', worker.uid, 'add-qualification']"
+          role="button"
+          draggable="false"
+          class="govuk-button govuk-button--secondary"
+          >Add a qualification</a
+        >
+        <a
+          [routerLink]="['/worker', worker.uid, 'add-training']"
+          role="button"
+          draggable="false"
+          class="govuk-button govuk-button--secondary"
+          >Add training</a
+        >
+        <p>Adding additional qualifications or training is optional.</p>
+        <app-training [worker]="worker"></app-training>
+      </app-tab>
+    </app-tabs>
+  </ng-container>
+</div>
