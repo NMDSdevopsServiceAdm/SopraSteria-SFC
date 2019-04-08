@@ -33,7 +33,10 @@
         <div *ngIf="submitted && form.get('title').hasError('required')" class="alert alert-danger">
           <p>Enter a training name</p>
         </div>
-        <input type="text" formControlName="title" class="form-control col-12" />
+        <div *ngIf="submitted && form.get('tile').hasError('maxlength')" class="alert alert-danger">
+          <p>Training name must be no longer than {{ form.get('title').getError('maxlength').requiredLength }} characters.</p>
+        </div>
+        <input type="text" formControlName="title" class="form-control col-12" maxlength="120" />
       </div>
 
       <div class="field-group mb-5">
@@ -52,9 +55,15 @@
           <label for="accredited-no">No</label>
         </div>
         <div class="multiple-choice mb-5">
-            <input type="radio" formControlName="accredited" class="form-control" value="Don't know" id="accredited-dont-know" />
-            <label for="accredited-dont-know">Don't Know</label>
-          </div>
+          <input
+            type="radio"
+            formControlName="accredited"
+            class="form-control"
+            value="Don't know"
+            id="accredited-dont-know"
+          />
+          <label for="accredited-dont-know">Don't Know</label>
+        </div>
       </div>
 
       <div class="field-group mb-5">
@@ -119,7 +128,9 @@
 
     <div class="btn-container container">
       <div class="row">
-        <button type="submit" class="btn btn-primary">{{ trainingRecordId ? 'Update training' : 'Add training' }}</button>
+        <button type="submit" class="btn btn-primary">
+          {{ trainingRecordId ? 'Update training' : 'Add training' }}
+        </button>
         <a
           [routerLink]="['/worker', worker.uid]"
           fragment="qualifications-and-training"

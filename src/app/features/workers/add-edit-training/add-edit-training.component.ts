@@ -35,7 +35,7 @@ export class AddEditTrainingComponent implements OnInit {
     this.trainingRecordId = this.route.snapshot.params.trainingRecordid;
 
     this.form = this.formBuilder.group({
-      title: [null, Validators.required],
+      title: [null, [Validators.required, Validators.maxLength(120)]],
       category: [null, Validators.required],
       accredited: null,
       completed: this.formBuilder.group({
