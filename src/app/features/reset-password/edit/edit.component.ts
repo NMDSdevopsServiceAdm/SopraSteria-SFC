@@ -4,7 +4,7 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { PasswordResetService } from '@core/services/password-reset.service';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { takeWhile } from 'rxjs/internal/operators/takeWhile';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-rp-edit',
@@ -15,9 +15,9 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
   @Input() validatePasswordResetResponse;
   @Input() headerToken: string;
   public name: string;
-  public displayError: boolean;
+  public submitted: boolean;
   public errorDetails: Array<ErrorDetails>;
-  private componentAlive = true;
+  private subscriptions: Subscription = new Subscription();
 
   @Output() resetPasswordOutput = new EventEmitter();
 
@@ -60,7 +60,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
       this.name = this.validatePasswordResetResponse.body.username;
     }
 
-    this.displayError = false;
+    this.submitted = false;
     this.setupErrorDetails();
   }
 
@@ -100,15 +100,16 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
 
     if (this.resetPasswordForm.invalid) {
       this.errorSummaryService.scrollToErrorSummary();
-      this.displayError = true;
+      this.submitted = true;
     } else {
       const newPassword = this.getPasswordInput.value;
 
-      this._passwordResetService.resetPassword(newPassword, this.headerToken)
-        .pipe(takeWhile(() => this.componentAlive))
-        .subscribe(res => {
-          this.resetPasswordOutput.emit(res);
-        });
+      this.subscriptions.add(
+        this._passwordResetService.resetPassword(newPassword, this.headerToken)
+          .subscribe(res => {
+            this.resetPasswordOutput.emit(res);
+          })
+      );
     }
   }
 
@@ -116,7 +117,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
    * Unsubscribe hook to ensure no memory leaks
    */
   ngOnDestroy(): void {
-    this.componentAlive = false;
+    this.subscriptions.unsubscribe();
   }
 
 }

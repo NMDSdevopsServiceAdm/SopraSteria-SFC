@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
     <app-error-summary
-      *ngIf="displayError && resetPasswordForm.invalid"
+      *ngIf="submitted && resetPasswordForm.invalid"
       [errorDetails]="errorDetails"
       [form]="resetPasswordForm">
     </app-error-summary>
@@ -11,14 +11,14 @@
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="resetPasswordForm">
       <div formGroupName="passwordGroup">
-        <div class="govuk-form-group" [class.govuk-form-group--error]="displayError && getPasswordInput.errors">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPasswordInput.errors">
           <label class="govuk-label" for="createPasswordInput">
             Password
           </label>
           <span id="createPasswordInput-hint" class="govuk-hint">
             This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
           </span>
-          <span *ngIf="displayError" id="createPasswordInput-error" class="govuk-error-message">
+          <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             <span *ngIf="getPasswordInput.hasError('required')">{{ errorDetails[0].type[0].message }}</span>
             <span *ngIf="getPasswordInput.hasError('pattern')">{{ errorDetails[0].type[1].message }}</span>
@@ -29,18 +29,18 @@
             formControlName="createPasswordInput"
             id="createPasswordInput"
             name="createPasswordInput"
-            [ngClass]="{ 'govuk-input--error': displayError && getPasswordInput.errors }"
+            [ngClass]="{ 'govuk-input--error': submitted && getPasswordInput.errors }"
             placeholder=""
             type="password"
           />
         </div>
 
         <div class="govuk-form-group govuk-!-margin-bottom-8"
-          [class.govuk-form-group--error]="displayError && getConfirmPasswordInput.errors">
+          [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors">
           <label class="govuk-label" for="confirmPasswordInput">
             Confirm password
           </label>
-          <span *ngIf="displayError" id="confirmPasswordInput-error" class="govuk-error-message">
+          <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
             <span *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
               id="passwordGroup-error">
@@ -52,7 +52,7 @@
             formControlName="confirmPasswordInput"
             id="confirmPasswordInput"
             name="confirmPasswordInput"
-            [class.govuk-input--error]="displayError && getConfirmPasswordInput.errors"
+            [class.govuk-input--error]="submitted && getConfirmPasswordInput.errors"
             placeholder=""
             type="password"
           />

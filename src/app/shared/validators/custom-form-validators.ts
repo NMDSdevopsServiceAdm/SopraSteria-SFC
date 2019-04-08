@@ -33,7 +33,7 @@ export class CustomValidators extends Validators {
     return { bothHaveContent: true };
   }
 
-  static matchInputValues(c: AbstractControl): void | null {
+  static matchInputValues(c: AbstractControl): null | void {
     const passwordControl = c.get('createPasswordInput');
     const confirmPasswordControl = c.get('confirmPasswordInput');
 
