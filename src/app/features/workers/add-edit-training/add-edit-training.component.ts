@@ -48,7 +48,7 @@ export class AddEditTrainingComponent implements OnInit {
         month: null,
         year: null,
       }),
-      notes: [null, Validators.maxLength(500)],
+      notes: [null, Validators.maxLength(1000)],
     });
     this.form.controls.completed.setValidators([
       DateValidator.dateValid(),
