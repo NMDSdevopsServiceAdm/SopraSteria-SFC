@@ -115,6 +115,10 @@ class Establishment {
         return this._updatedBy;
     }
 
+    get numberOfStaff() {
+        return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
+    }
+
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
     _initialise() {
         if (this._uid === null) {
