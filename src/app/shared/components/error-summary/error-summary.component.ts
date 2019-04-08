@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
-import { FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { filter } from 'lodash';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { takeWhile } from 'rxjs/operators';
@@ -57,7 +57,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
    * @param item
    * @param name
    */
-  private collectError(item: FormControl | FormGroup, name: string): void {
+  private collectError(item: AbstractControl, name: string): void {
     if (item.errors) {
       this.errors.push({
         item: name,

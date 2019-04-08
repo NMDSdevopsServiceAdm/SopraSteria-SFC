@@ -71,11 +71,11 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Please enter your Password.',
+            message: 'Please enter your password.',
           },
           {
             name: 'pattern',
-            message: 'Invalid Password.',
+            message: 'Invalid password.',
           }
         ]
       },
@@ -84,7 +84,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Please confirm your Password.',
+            message: 'Please confirm your password.',
           }
         ]
       },
@@ -93,7 +93,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'notMatched',
-            message: 'Confirm Password does not match.',
+            message: 'Confirm password does not match.',
           }
         ]
       }
