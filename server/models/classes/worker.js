@@ -562,8 +562,7 @@ class Worker {
                             try {
                                 await newWorker.restore(thisWorker.uid);
     
-                                const wdfEligibility = await newWorker.wdf(effectiveFrom);
-                                const wdfIsEligible = Object.values(wdfEligibility).every(thisProp => thisProp === true);
+                                const wdfEligibility = await newWorker.isWdfEligible(effectiveFrom);
     
                                 allWorkers.push({
                                     uid: thisWorker.uid,
@@ -578,7 +577,7 @@ class Worker {
                                     updated: thisWorker.updated.toJSON(),
                                     updatedBy: thisWorker.updatedBy,
                                     effectiveFrom: effectiveFrom.toISOString(),
-                                    wdfEligible: wdfIsEligible
+                                    wdfEligible: wdfEligibility.isEligible
                                 });
 
                                 resolve();
