@@ -27,7 +27,7 @@ router.post('/',async function(req, res) {
          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId', "UserRoleValue"],
          include: [{
            model: models.establishment,
-           attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId'],
+           attributes: ['id', 'NameValue', 'isRegulated', 'nmdsId'],
            include: [{
              model: models.services,
              as: 'mainService',
