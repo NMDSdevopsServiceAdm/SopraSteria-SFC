@@ -562,8 +562,7 @@ class Worker {
                             try {
                                 await newWorker.restore(thisWorker.uid);
     
-                                const wdfEligibility = await newWorker.wdf(effectiveFrom);
-                                const wdfIsEligible = Object.values(wdfEligibility).every(thisProp => thisProp === true);
+                                const wdfEligibility = await newWorker.isWdfEligible(effectiveFrom);
     
                                 allWorkers.push({
                                     uid: thisWorker.uid,
@@ -578,7 +577,7 @@ class Worker {
                                     updated: thisWorker.updated.toJSON(),
                                     updatedBy: thisWorker.updatedBy,
                                     effectiveFrom: effectiveFrom.toISOString(),
-                                    wdfEligible: wdfIsEligible
+                                    wdfEligible: wdfEligibility.isEligible
                                 });
 
                                 resolve();
@@ -796,11 +795,16 @@ class Worker {
     // returns true if this worker is WDF eligible as referenced from the
     //  given effective date; otherwise returns false
     async isWdfEligible(effectiveFrom) {
-        const allPropsEligible = await this.wdf(effectiveFrom);
+        const wdfByProperty = await this.wdf(effectiveFrom);
 
         // NOTE - the worker does not have to be completed before it can be eligible for WDF
 
-        return Object.values(allPropsEligible).every(thisprop => this.prop === true);
+        return {
+            isEligible: Object.values(wdfByProperty).every(thisProperty => {
+                return !(thisProperty === 'No');
+            }),
+            ... wdfByProperty
+        };
     }
 
     _isPropertyWdfBasicEligible(refEpoch, property) {
@@ -820,32 +824,74 @@ class Worker {
         const effectiveFromEpoch = effectiveFrom.getTime();
 
         // gender/date of birth/nationality
-        myWdf['gender'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Gender'));
-        myWdf['dateOfBirth'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DateOfBirth'));
-        myWdf['nationality'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Nationality'));
+        myWdf['gender'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Gender')) ? 'Yes' : 'No';
+        myWdf['dateOfBirth'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DateOfBirth')) ? 'Yes' : 'No';
+        myWdf['nationality'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Nationality')) ? 'Yes' : 'No';
 
         // main job, other job, main job start date, source of recruitment, employment status (contract)
-        myWdf['mainJob'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJob'));
-        myWdf['otherJobs'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherJobs'));
-        myWdf['mainJobStartDate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJobStartDate'));
-        myWdf['recruitedFrom'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('RecruitedFrom'));
-        myWdf['contract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Contract'));
+        myWdf['mainJob'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJob')) ? 'Yes' : 'No';
+        myWdf['otherJobs'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherJobs')) ? 'Yes' : 'No';
+        myWdf['mainJobStartDate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJobStartDate')) ? 'Yes' : 'No';
+        myWdf['recruitedFrom'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('RecruitedFrom')) ? 'Yes' : 'No';
+        myWdf['contract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Contract')) ? 'Yes' : 'No';
 
-        // contracted/average weekly hours, zero hours
-        myWdf['weeklyHoursContracted'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursContracted'));
-        myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage'));
-        myWdf['zeroHoursContract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ZeroHoursContract'));
+        // zero hours contract, contracted/average weekly hours (dependent on zero hours selected and on employment status/contract), 
+        
+        const CONTRACT_TYPE = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'];
+        myWdf['zeroHoursContract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ZeroHoursContract')) ? 'Yes' : 'No';
+        if (this._properties.get('ZeroHoursContract').property === null) {
+            // we have insufficient information to calculate whether the average/contracted weekly hours is WDF eligibnle
+            myWdf['weeklyHoursContracted'] = 'Not relevant';
+            myWdf['weeklyHoursAverage'] = 'Not relevant';
+        } else {
+            if (this._properties.get('ZeroHoursContract').property === 'No') {
+                if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
+                    myWdf['weeklyHoursContracted'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursContracted')) ? 'Yes' : 'No';
+                } else {
+                    myWdf['weeklyHoursContracted'] = 'Not relevant';
+                }
+
+                if (['Pool/Bank', 'Agency', 'Other'].includes(this._properties.get('Contract').property)) {
+                    myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+                } else {
+                    myWdf['weeklyHoursAverage'] = 'Not relevant';
+                }
+            } else if (this._properties.get('ZeroHoursContract').property === 'Yes') {
+                // regardless of contract, all workers on zero hours contract, have an average set of weekly hours
+                myWdf['weeklyHoursContracted'] = 'Not relevant';
+                myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+            } else {
+                // if zero hours contract is neither Yes or No, the average/contracted hour egligibility is not relevant
+                myWdf['weeklyHoursContracted'] = 'Not relevant';
+                myWdf['weeklyHoursAverage'] = 'Not relevant';
+            }
+        }
 
         // sickness and salary
-        myWdf['daysSick'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick'));
-        myWdf['annualHourlyPay'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('AnnualHourlyPay'));
+        myWdf['annualHourlyPay'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('AnnualHourlyPay')) ? 'Yes' : 'No';
+        // Note - contract is a mandatory property - it will always have value
+        if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
+            myWdf['daysSick'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick')) ? 'Yes' : 'No';
+        } else {
+            myWdf['daysSick'] = 'Not relevant';
+        }
 
         // qualifications and care certificate
-        myWdf['careCertificate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CareCertificate'));
-        myWdf['qualificationInSocialCare'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('QualificationInSocialCare'));
-        myWdf['socialCareQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('SocialCareQualification'));
-        myWdf['otherQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherQualifications'));
-        myWdf['highestQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('HighestQualification'));
+        myWdf['careCertificate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CareCertificate')) ? 'Yes' : 'No';
+        myWdf['qualificationInSocialCare'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('QualificationInSocialCare')) ? 'Yes' : 'No';7
+        if (this._properties.get('QualificationInSocialCare').property === null || this._properties.get('QualificationInSocialCare').property === 'No') {
+            // if not having defined 'having a qualification in social care' or 'have said no'
+            myWdf['socialCareQualification'] = 'Not relevant';
+        } else {
+            myWdf['socialCareQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('SocialCareQualification')) ? 'Yes' : 'No';
+        }
+        myWdf['otherQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherQualifications')) ? 'Yes' : 'No';
+        if (this._properties.get('OtherQualifications').property === null || this._properties.get('OtherQualifications').property === 'No') {
+            // if not having defined 'having another qualification' or 'have said no'
+            myWdf['highestQualification'] = 'Not relevant';
+        } else {
+            myWdf['highestQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('HighestQualification')) ? 'Yes' : 'No';
+        }
         
         return myWdf;
     }
@@ -854,8 +900,7 @@ class Worker {
     async wdfToJson(effectiveFrom) {
         return {
             effectiveFrom: effectiveFrom.toISOString(),
-            isEligible: await this.isWdfEligible(effectiveFrom),
-            ... await this.wdf(effectiveFrom)
+            ... await this.isWdfEligible(effectiveFrom)
         };
     }
 
