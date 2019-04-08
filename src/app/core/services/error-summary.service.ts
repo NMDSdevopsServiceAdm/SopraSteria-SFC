@@ -15,14 +15,26 @@ export class ErrorSummaryService {
   ) {}
 
   public scrollToErrorSummary(): void {
-    this.router.navigate([this.getRouteWithoutQueryParams()], {
+    this.router.navigate([this.getRouteName()], {
       fragment: 'error-summary-title',
       queryParamsHandling: 'merge'
     });
   }
 
-  private getRouteWithoutQueryParams(): string {
-    return this.router.url.split('?')[0];
+  /**
+   * Return route only only
+   * Without query params and/or fragments
+   */
+  private getRouteName(): string {
+    let url: string = this.router.url;
+
+    if (url.includes('?')) {
+      url = url.split('?')[0];
+    } else if (url.includes('#')) {
+      url = url.split('#')[0];
+    }
+
+    return url;
   }
 
   /**
