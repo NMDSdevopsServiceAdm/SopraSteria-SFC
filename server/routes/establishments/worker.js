@@ -78,6 +78,8 @@ router.route('/:workerId').get(async (req, res) => {
 router.route('/').post(async (req, res) => {
     const establishmentId = req.establishmentId;
     const newWorker = new Workers.Worker(establishmentId);
+
+    console.log("WA DEBUG - req.username: ", req.username)
     
     try {
         // TODO: JSON validation

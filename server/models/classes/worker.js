@@ -149,6 +149,8 @@ class Worker {
         if (mustSave && this._isNew) {
             // create new Worker
             try {
+                console.log("WA DEBUG - inside Worker::save - savedBy is: ", savedBy)
+
                 const creationDate = new Date();
                 const creationDocument = {
                     establishmentFk: this._establishmentId,
