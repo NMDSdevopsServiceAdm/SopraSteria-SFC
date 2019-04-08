@@ -42,7 +42,7 @@
           Training accredited
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ trainingRecord.accredited ? 'Yes' : trainingRecord.accredited === false ? 'No' : '-' }}
+          {{ trainingRecord.accredited ? trainingRecord.accredited : '-' }}
         </dd>
         <dd class="govuk-summary-list__actions"></dd>
       </div>
