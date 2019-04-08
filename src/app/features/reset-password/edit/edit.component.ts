@@ -109,6 +109,16 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getErrorMessage(item, errorType, this.errorDetails);
+  }
+
+  /**
    * Unsubscribe hook to ensure no memory leaks
    */
   ngOnDestroy(): void {

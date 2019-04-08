@@ -20,8 +20,12 @@
           </span>
           <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
-            <span *ngIf="getPasswordInput.hasError('required')">{{ errorDetails[0].type[0].message }}</span>
-            <span *ngIf="getPasswordInput.hasError('pattern')">{{ errorDetails[0].type[1].message }}</span>
+            <span *ngIf="getPasswordInput.hasError('required')">
+              {{ getErrorMessage('createPasswordInput', 'required') }}
+            </span>
+            <span *ngIf="getPasswordInput.hasError('pattern')">
+              {{ getErrorMessage('createPasswordInput', 'pattern') }}
+            </span>
           </span>
           <input
             aria-describedby="createPasswordInput-hint"
@@ -44,7 +48,7 @@
             <span class="govuk-visually-hidden">Error:</span>
             <span *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
               id="passwordGroup-error">
-              {{ errorDetails[1].type[0].message }}
+              {{ getErrorMessage('confirmPasswordInput', 'required') }}
             </span>
           </span>
           <input

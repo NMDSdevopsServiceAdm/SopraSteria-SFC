@@ -1,7 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
-import { filter } from 'lodash';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
@@ -64,13 +63,12 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
 
   /**
    * Pass in formGroup or formControl name and errorType
-   * And return error message
+   * Then return error message
    * @param item
    * @param errorType
    */
   public getErrorMessage(item: string, errorType: string): string {
-    const getFormControl: Object = filter(this.errorDetails, [ 'item', item ])[0];
-    return filter(getFormControl['type'], [ 'name', errorType ])[0].message;
+    return this.errorSummaryService.getErrorMessage(item, errorType, this.errorDetails);
   }
 
   /**
