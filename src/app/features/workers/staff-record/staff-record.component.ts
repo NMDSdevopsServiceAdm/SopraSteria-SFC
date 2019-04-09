@@ -17,6 +17,9 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public trainingRecordCreated = false;
   public trainingRecordEdited = false;
   public trainingRecordDeleted = false;
+  public qualificationCreated = false;
+  public qualificationEdited = false;
+  public qualificationDeleted = false;
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
@@ -39,12 +42,26 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         this.trainingRecordDeleted = bool;
       })
     );
+
+    this.qualificationCreated = this.workerService.getQualificationCreated();
+    this.qualificationEdited = this.workerService.getQualificationEdited();
+    this.subscriptions.add(
+      this.workerService.qualificationDeleted$.subscribe(bool => {
+        if (bool) {
+          window.scrollTo(0, 0);
+        }
+        this.qualificationDeleted = bool;
+      })
+    );
   }
 
   ngOnDestroy() {
     this.workerService.resetTrainingRecordCreated();
     this.workerService.resetTrainingRecordEdited();
     this.workerService.setTrainingRecordDeleted(false);
+    this.workerService.resetQualificationCreated();
+    this.workerService.resetQualificationEdited();
+    this.workerService.setQualificationDeleted(false);
     this.subscriptions.unsubscribe();
   }
 
@@ -74,5 +91,22 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   closeTrainingDeletedAlert(event) {
     event.preventDefault();
     this.workerService.setTrainingRecordDeleted(false);
+  }
+
+  closeQualificationCreatedAlert(event) {
+    event.preventDefault();
+    this.workerService.resetQualificationCreated();
+    this.qualificationCreated = false;
+  }
+
+  closeQualificationEditedAlert(event) {
+    event.preventDefault();
+    this.workerService.resetQualificationEdited();
+    this.qualificationEdited = false;
+  }
+
+  closeQualificationDeletedAlert(event) {
+    event.preventDefault();
+    this.workerService.setQualificationDeleted(false);
   }
 }

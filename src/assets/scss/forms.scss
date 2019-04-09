@@ -91,6 +91,10 @@ form,
     .panel-border-narrow {
 
       @include rem(margin, 20px 0 0 20px);
+
+      &.no-pad {
+        margin-left: 0;
+      }
     }
 
     input,

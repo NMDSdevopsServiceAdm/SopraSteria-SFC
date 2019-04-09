@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
@@ -181,11 +182,19 @@ const routes: Routes = [
         component: CheckStaffRecordComponent,
       },
       {
+        path: 'add-qualification',
+        component: AddEditQualificationComponent,
+      },
+      {
+        path: 'qualification/:qualificationId',
+        component: AddEditQualificationComponent,
+      },
+      {
         path: 'add-training',
         component: AddEditTrainingComponent,
       },
       {
-        path: 'training/:trainingRecordid',
+        path: 'training/:trainingRecordId',
         component: AddEditTrainingComponent,
       },
     ],
