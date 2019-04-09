@@ -53,10 +53,10 @@ export class ErrorSummaryService {
   /**
    * Pass in error code and serverErrorsMap
    * Then return error message
-   * @param name
+   * @param errorCode
    * @param errorDefinitions
    */
-  public getServerErrorMessage(name: number, serverErrorsMap: Array<ErrorDefinition>): string {
-    return filter(serverErrorsMap, [ 'name', name ])[0].message;
+  public getServerErrorMessage(errorCode: number, serverErrorsMap: Array<ErrorDefinition>): string {
+    return filter(serverErrorsMap, [ 'name', name ])[0].message || `Server Error. code ${errorCode}`;
   }
 }
