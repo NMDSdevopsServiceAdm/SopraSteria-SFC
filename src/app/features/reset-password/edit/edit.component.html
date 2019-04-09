@@ -8,7 +8,7 @@
 <h1 class="govuk-heading-xl">Reset password</h1>
 <p class="govuk-!-margin-bottom-6">Enter a new password for account {{ name }}</p>
 
-<form novalidate (ngSubmit)="onSubmit()" [formGroup]="resetPasswordForm">
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="resetPasswordForm" id="server-error">
   <div formGroupName="passwordGroup">
     <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPasswordInput.errors">
       <label class="govuk-label" for="createPasswordInput">

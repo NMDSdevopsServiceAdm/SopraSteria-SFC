@@ -23,7 +23,7 @@
         </span>
         <input
           class="govuk-input"
-          [ngClass]="{ 'govuk-input--error': form.get('username').errors && submitted || form.hasError('serverError') }"
+          [ngClass]="{ 'govuk-input--error': form.get('username').errors && submitted }"
           id="username"
           name="username"
           type="text"
@@ -44,7 +44,7 @@
         </span>
         <input
           class="govuk-input"
-          [ngClass]="{ 'govuk-input--error': form.get('password').errors && submitted || form.hasError('serverError') }"
+          [ngClass]="{ 'govuk-input--error': form.get('password').errors && submitted }"
           id="password"
           name="password"
           type="password"
