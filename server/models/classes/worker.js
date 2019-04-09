@@ -809,11 +809,35 @@ class Worker {
 
     _isPropertyWdfBasicEligible(refEpoch, property) {
         // no record given, so test eligibility of this Worker
+        const PER_PROPERTY_ELIGIBLE=0;
+        const RECORD_LEVEL_ELIGIBLE=1;
+        const COMPLETED_PROPERTY_ELIGIBLE=2;
+        const ELIGIBILITY_REFERENCE = PER_PROPERTY_ELIGIBLE;
+
+        let referenceTime = null;
+
+        switch (ELIGIBILITY_REFERENCE) {
+            case PER_PROPERTY_ELIGIBLE:
+              referenceTime = property.savedAt.getTime();
+              break;
+            case RECORD_LEVEL_ELIGIBLE:
+              referenceTime = this._updated.getTime();
+              break;
+            case COMPLETED_PROPERTY_ELIGIBLE:
+              const completedProperty = this._properties.get('Completed');
+              console.log("WA DEBUG - completed property value: ", completedProperty.savedAt)
+              referenceTime = completedProperty && completedProperty.savedAt
+                                    ? completedProperty.savedAt.getTime()
+                                    : null;
+              break;
+        }
+
         return property &&
                 property.property !== null &&
                 property.valid &&
                 property.savedAt &&
-                property.savedAt.getTime() > refEpoch;
+                referenceTime !== null &&
+                referenceTime > refEpoch;
     }
 
     // returns the WDF eligibility of each WDF relevant property as referenced from
