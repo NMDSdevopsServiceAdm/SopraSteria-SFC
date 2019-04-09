@@ -10,16 +10,13 @@
   </h2>
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list">
-      <li *ngFor="let error of errors">
-        <ng-container *ngIf="error.fragment">
-          <a [routerLink]="" [fragment]="error.fragment">{{ error.text }}</a>
-        </ng-container>
-        <ng-container *ngIf="error.action">
-          <a (click)="error.action">{{ error.text }}</a>
-        </ng-container>
-        <ng-container *ngIf="!error.fragment && !error.action">
-          {{ error.text }}
-        </ng-container>
+      <li *ngFor="let i of errors">
+        <a
+          routerLink="."
+          fragment="{{ i.item }}-error"
+          queryParamsHandling="merge">
+          {{ getErrorMessage(i.item, i.errors[0]) }}
+        </a>
       </li>
     </ul>
   </div>
