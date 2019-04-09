@@ -101,7 +101,7 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this._userService.updateUserDetails(this.username, data).subscribe(res => {
         this.submitted = true;
-        this.router.navigate(['/change-user-summary']);
+        this.router.navigate(['/your-account']);
       })
     );
   }
@@ -109,8 +109,7 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
   onSubmit() {
     if (this.changeUserDetailsForm.invalid) {
       this.displayError = true;
-    }
-    else {
+    } else {
       const data = {
         fullname: this.changeUserDetailsForm.value.userFullnameInput,
         jobTitle: this.changeUserDetailsForm.value.userJobTitleInput,

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UserService } from '../../core/services/user.service';
 import { Subscription } from 'rxjs';
@@ -79,7 +79,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this._userService.updateUserDetails(this.username, data).subscribe(res => {
         this.submitted = true;
-        this.router.navigate(['/change-user-summary']);
+        this.router.navigate(['/your-account']);
       })
     );
   }
@@ -87,8 +87,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
   onSubmit() {
     if (this.changeUserSecurityForm.invalid) {
       this.displayError = true;
-    }
-    else {
+    } else {
       const data = {
         securityQuestion: this.changeUserSecurityForm.value.securityQuestionInput,
         securityQuestionAnswer: this.changeUserSecurityForm.value.securityAnswerInput

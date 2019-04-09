@@ -5,10 +5,10 @@ import { AuthService } from '@core/services/auth-service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-change-user-summary',
-  templateUrl: './change-user-summary.component.html'
+  selector: 'app-your-account-summary',
+  templateUrl: './your-account.component.html'
 })
-export class ChangeUserSummaryComponent implements OnInit, OnDestroy {
+export class YourAccountComponent implements OnInit, OnDestroy {
   public username: string;
   public user = '';
   public establishment: any;
@@ -38,6 +38,7 @@ export class ChangeUserSummaryComponent implements OnInit, OnDestroy {
   getUserSummary() {
     this.subscriptions.add(
       this._userService.getUserDetails(this.username).subscribe(data => {
+        console.log('data', data);
         this.user = data;
 
         this._userService.updateState(data);

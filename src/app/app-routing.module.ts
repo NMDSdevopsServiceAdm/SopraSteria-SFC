@@ -23,7 +23,7 @@ import { UserDetailsComponent } from '@features/user-details/user-details.compon
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
-import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
+import { YourAccountComponent } from './features/your-account/your-account.component';
 import { ChangePasswordComponent } from './features/change-password/change-password.component';
 import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
@@ -48,8 +48,8 @@ const routes: Routes = [
     component: ResetPasswordComponent,
   },
   {
-    path: 'change-user-summary',
-    component: ChangeUserSummaryComponent,
+    path: 'your-account',
+    component: YourAccountComponent,
     canActivate: [AuthGuard],
   },
   {
