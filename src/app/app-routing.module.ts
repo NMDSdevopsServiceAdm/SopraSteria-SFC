@@ -1,5 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { ConfirmAccountDetailsComponent } from '@features/confirm-account-details/confirm-account-details.component';
 import { ConfirmWorkplaceDetailsComponent } from '@features/confirm-workplace-details/confirm-workplace-details.component';
 import { ContactUsComponent } from '@features/contact-us/contact-us.component';
@@ -22,13 +26,11 @@ import { UserDetailsComponent } from '@features/user-details/user-details.compon
 
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
-import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
-import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ChangePasswordComponent } from './features/change-password/change-password.component';
 import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
-import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
-import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
+import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
 
 const routes: Routes = [
   {
@@ -168,7 +170,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { anchorScrolling: 'enabled' })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

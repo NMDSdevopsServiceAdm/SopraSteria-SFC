@@ -1,3 +1,9 @@
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [errorDetails]="errorDetails"
+  [form]="form">
+</app-error-summary>
+
 <h1 class="govuk-heading-xl">Forgot your password?</h1>
 <p>Enter your username or email address and we will send you a link to reset your password.</p>
 
@@ -14,7 +20,7 @@
       class="govuk-error-message"
       *ngIf="form.get('usernameOrEmail').errors?.required && submitted"
     >
-      <span class="govuk-visually-hidden">Error:</span> Please enter your username or email address.
+      <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('usernameOrEmail', 'required') }}
     </span>
     <input
       class="govuk-input govuk-!-width-full"

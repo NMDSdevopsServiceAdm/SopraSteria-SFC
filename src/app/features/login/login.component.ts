@@ -5,8 +5,9 @@ import { LoginApiModel } from '@core/model/loginApi.model';
 import { AuthService } from '@core/services/auth-service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
-import { MessageService } from '@core/services/message.service';
 import { Subscription } from 'rxjs';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 const PING_INTERVAL = 240;
 const TIMEOUT_INTERVAL = 1800;
@@ -20,17 +21,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   login: LoginApiModel;
   public submitted = false;
   private subscriptions: Subscription = new Subscription();
-
-  // Set up Validation messages
-  usernameMessage: string;
-  passwordMessage: string;
+  public errorDetails: Array<ErrorDetails>;
 
   constructor(
     private idleService: IdleService,
     private authService: AuthService,
     private establishmentService: EstablishmentService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private errorSummaryService: ErrorSummaryService,
   ) {}
 
   ngOnInit() {
@@ -40,18 +39,55 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.add(this.authService.auth$.subscribe(login => (this.login = login)));
+    this.setupErrorDetails();
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 
+  public setupErrorDetails(): void {
+    this.errorDetails = [
+      {
+        item: 'username',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your username.',
+          }
+        ]
+      },
+      {
+        item: 'password',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your password.',
+          }
+        ]
+      }
+    ];
+  }
+
   onSubmit() {
     this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
       this.save();
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getErrorMessage(item, errorType, this.errorDetails);
   }
 
   save() {

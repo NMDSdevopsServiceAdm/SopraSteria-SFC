@@ -47,6 +47,7 @@
     "jade": "^1.11.0",
     "js-yaml": "^3.12.2",
     "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
     "ngx-moment": "^3.3.0",
