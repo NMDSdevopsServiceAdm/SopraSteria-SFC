@@ -134,7 +134,7 @@ import { PageNotFoundComponent } from '@core/components/error/page-not-found/pag
         path: 'login',
         component: LoginComponent,
       },
-    ]),
+    ], { anchorScrolling: 'enabled' }),
     SharedModule,
     MomentModule,
   ],
