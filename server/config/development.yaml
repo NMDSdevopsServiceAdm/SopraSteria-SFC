@@ -3,5 +3,5 @@ slack:
 jwt:
     iss: 'sfcdev.cloudapps.digital'
     ttl:
-        login: 5
+        login: 30
 # no notify definition - not used in development
