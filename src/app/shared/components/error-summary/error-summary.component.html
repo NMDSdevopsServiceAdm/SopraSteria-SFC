@@ -18,6 +18,14 @@
           {{ getErrorMessage(i.item, i.errors[0]) }}
         </a>
       </li>
+      <li *ngIf="serverError">
+        <a
+          routerLink="."
+          fragment="server-error"
+          queryParamsHandling="merge">
+          {{ serverError }}
+        </a>
+      </li>
     </ul>
   </div>
 </div>

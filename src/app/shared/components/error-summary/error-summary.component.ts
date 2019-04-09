@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public form: FormGroup;
   @Input() public errorDetails: Array<ErrorDetails>;
+  @Input() public serverError?: string;
   public errors: Array<ErrorSummary>;
   private subscriptions: Subscription = new Subscription();
 

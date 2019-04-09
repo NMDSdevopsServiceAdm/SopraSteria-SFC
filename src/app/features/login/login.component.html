@@ -3,12 +3,13 @@
     <app-error-summary
       *ngIf="submitted && form.invalid"
       [errorDetails]="errorDetails"
+      [serverError]="serverError"
       [form]="form">
     </app-error-summary>
 
     <h1 class="govuk-heading-xl">Sign in</h1>
 
-    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('username').errors && submitted }">
         <label class="govuk-label" for="username">
           Username
@@ -22,7 +23,7 @@
         </span>
         <input
           class="govuk-input"
-          [ngClass]="{ 'govuk-input--error': form.get('username').errors && submitted }"
+          [ngClass]="{ 'govuk-input--error': form.get('username').errors && submitted || form.hasError('serverError') }"
           id="username"
           name="username"
           type="text"
@@ -43,7 +44,7 @@
         </span>
         <input
           class="govuk-input"
-          [ngClass]="{ 'govuk-input--error': form.get('password').errors && submitted }"
+          [ngClass]="{ 'govuk-input--error': form.get('password').errors && submitted || form.hasError('serverError') }"
           id="password"
           name="password"
           type="password"
