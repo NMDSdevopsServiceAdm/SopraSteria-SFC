@@ -33,7 +33,7 @@
         <div *ngIf="submitted && form.get('title').hasError('required')" class="alert alert-danger">
           <p>Enter a training name</p>
         </div>
-        <div *ngIf="submitted && form.get('tile').hasError('maxlength')" class="alert alert-danger">
+        <div *ngIf="submitted && form.get('title').hasError('maxlength')" class="alert alert-danger">
           <p>Training name must be no longer than {{ form.get('title').getError('maxlength').requiredLength }} characters.</p>
         </div>
         <input type="text" formControlName="title" class="form-control col-12" maxlength="120" />

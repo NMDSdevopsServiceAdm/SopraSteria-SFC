@@ -5,7 +5,6 @@ import { DialogService } from '@core/services/dialog.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DeleteTrainingDialogComponent } from '@features/workers/delete-training-dialog/delete-training-dialog.component';
 import * as moment from 'moment';
-import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -16,7 +15,6 @@ export class TrainingComponent implements OnInit {
   @Input() worker: Worker;
   public lastUpdated: moment.Moment;
   public trainingRecords: TrainingRecord[] = [];
-  private subscriptions: Subscription = new Subscription();
 
   constructor(private workerService: WorkerService, private dialogService: DialogService) {}
 
@@ -41,14 +39,12 @@ export class TrainingComponent implements OnInit {
   }
 
   fetchAllRecords() {
-    this.subscriptions.add(
-      this.workerService
-        .getTrainingRecords(this.worker.uid)
-        .pipe(take(1))
-        .subscribe(training => {
-          this.lastUpdated = moment(training.lastUpdated);
-          this.trainingRecords = training.training;
-        })
-    );
+    this.workerService
+      .getTrainingRecords(this.worker.uid)
+      .pipe(take(1))
+      .subscribe(training => {
+        this.lastUpdated = moment(training.lastUpdated);
+        this.trainingRecords = training.training;
+      });
   }
 }
