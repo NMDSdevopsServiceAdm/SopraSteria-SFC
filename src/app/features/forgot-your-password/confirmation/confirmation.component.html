@@ -1,7 +1,9 @@
 <h1 class="govuk-heading-xl">Reset link sent</h1>
 <p>An email has been sent to the address provided containing a reset password link.</p>
 
-<a *ngIf="this.resetPasswordLink" href="{{ this.resetPasswordLink }}">{{ this.resetPasswordLink }}</a>
+<div *ngIf="resetPasswordLink" class="govuk-!-margin-bottom-6">
+  <a href="{{ resetPasswordLink }}">{{ resetPasswordLink }}</a>
+</div>
 
 <a routerLink="/login" role="button" draggable="false" class="govuk-button">
   Return to sign in

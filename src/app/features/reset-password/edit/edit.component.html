@@ -1,74 +1,70 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half">
-    <app-error-summary
-      *ngIf="submitted && resetPasswordForm.invalid"
-      [errorDetails]="errorDetails"
-      [form]="resetPasswordForm">
-    </app-error-summary>
+<app-error-summary
+  *ngIf="submitted && resetPasswordForm.invalid"
+  [errorDetails]="errorDetails"
+  [form]="resetPasswordForm">
+</app-error-summary>
 
-    <h1 class="govuk-heading-xl">Reset password</h1>
-    <p class="govuk-!-margin-bottom-6">Enter a new password for account {{ name }}</p>
+<h1 class="govuk-heading-xl">Reset password</h1>
+<p class="govuk-!-margin-bottom-6">Enter a new password for account {{ name }}</p>
 
-    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="resetPasswordForm">
-      <div formGroupName="passwordGroup">
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPasswordInput.errors">
-          <label class="govuk-label" for="createPasswordInput">
-            Password
-          </label>
-          <span id="createPasswordInput-hint" class="govuk-hint">
-            This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
-          </span>
-          <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            <span *ngIf="getPasswordInput.hasError('required')">
-              {{ getErrorMessage('createPasswordInput', 'required') }}
-            </span>
-            <span *ngIf="getPasswordInput.hasError('pattern')">
-              {{ getErrorMessage('createPasswordInput', 'pattern') }}
-            </span>
-          </span>
-          <input
-            aria-describedby="createPasswordInput-hint"
-            class="govuk-input"
-            formControlName="createPasswordInput"
-            id="createPasswordInput"
-            name="createPasswordInput"
-            [ngClass]="{ 'govuk-input--error': submitted && getPasswordInput.errors }"
-            placeholder=""
-            type="password"
-          />
-        </div>
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="resetPasswordForm">
+  <div formGroupName="passwordGroup">
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPasswordInput.errors">
+      <label class="govuk-label" for="createPasswordInput">
+        Password
+      </label>
+      <span id="createPasswordInput-hint" class="govuk-hint">
+        This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
+      </span>
+      <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        <span *ngIf="getPasswordInput.hasError('required')">
+          {{ getErrorMessage('createPasswordInput', 'required') }}
+        </span>
+        <span *ngIf="getPasswordInput.hasError('pattern')">
+          {{ getErrorMessage('createPasswordInput', 'pattern') }}
+        </span>
+      </span>
+      <input
+        aria-describedby="createPasswordInput-hint"
+        class="govuk-input"
+        formControlName="createPasswordInput"
+        id="createPasswordInput"
+        name="createPasswordInput"
+        [ngClass]="{ 'govuk-input--error': submitted && getPasswordInput.errors }"
+        placeholder=""
+        type="password"
+      />
+    </div>
 
-        <div class="govuk-form-group govuk-!-margin-bottom-8"
-          [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors">
-          <label class="govuk-label" for="confirmPasswordInput">
-            Confirm password
-          </label>
-          <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            <span *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
-              id="passwordGroup-error">
-              {{ getErrorMessage('confirmPasswordInput', 'required') }}
-            </span>
-          </span>
-          <input
-            class="govuk-input"
-            formControlName="confirmPasswordInput"
-            id="confirmPasswordInput"
-            name="confirmPasswordInput"
-            [class.govuk-input--error]="submitted && getConfirmPasswordInput.errors"
-            placeholder=""
-            type="password"
-          />
-        </div>
-      </div>
-
-      <button type="submit" class="govuk-button">
-        Save new password
-      </button>
-    </form>
+    <div class="govuk-form-group govuk-!-margin-bottom-8"
+      [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors">
+      <label class="govuk-label" for="confirmPasswordInput">
+        Confirm password
+      </label>
+      <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        <span *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
+          id="passwordGroup-error">
+          {{ getErrorMessage('confirmPasswordInput', 'required') }}
+        </span>
+      </span>
+      <input
+        class="govuk-input"
+        formControlName="confirmPasswordInput"
+        id="confirmPasswordInput"
+        name="confirmPasswordInput"
+        [class.govuk-input--error]="submitted && getConfirmPasswordInput.errors"
+        placeholder=""
+        type="password"
+      />
+    </div>
   </div>
-</div>
+
+  <button type="submit" class="govuk-button">
+    Save new password
+  </button>
+</form>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
