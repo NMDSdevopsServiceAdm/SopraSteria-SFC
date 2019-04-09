@@ -2,9 +2,10 @@ import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angu
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { PasswordResetService } from '@core/services/password-reset.service';
-import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-rp-edit',
@@ -16,8 +17,10 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
   @Input() headerToken: string;
   public name: string;
   public submitted: boolean;
-  public errorDetails: Array<ErrorDetails>;
+  public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverError: string;
 
   @Output() resetPasswordOutput = new EventEmitter();
 
@@ -56,11 +59,12 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
     }
 
     this.submitted = false;
-    this.setupErrorDetails();
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
   }
 
-  public setupErrorDetails(): void {
-    this.errorDetails = [
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
       {
         item: 'createPasswordInput',
         type: [
@@ -90,6 +94,15 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
     ];
   }
 
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 503,
+        message: 'Database error.'
+      }
+    ];
+  }
+
   onSubmit() {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -103,6 +116,9 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
         this._passwordResetService.resetPassword(newPassword, this.headerToken)
           .subscribe(res => {
             this.resetPasswordOutput.emit(res);
+          },
+          (error: HttpErrorResponse) => {
+            this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           })
       );
     }
@@ -115,7 +131,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
    * @param errorType
    */
   public getErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.errorDetails);
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   /**

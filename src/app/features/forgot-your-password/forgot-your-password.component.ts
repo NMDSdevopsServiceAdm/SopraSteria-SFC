@@ -37,7 +37,7 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
   }
 
   getChildFormData(formData) {
-    if(formData) {
+    if (formData) {
       this.usernameOrEmail = formData;
 
       this.subscriptions.add(

@@ -1,7 +1,8 @@
 <app-error-summary
   *ngIf="submitted && resetPasswordForm.invalid"
-  [formErrorsMap]="errorDetails"
-  [form]="resetPasswordForm">
+  [formErrorsMap]="formErrorsMap"
+  [form]="resetPasswordForm"
+  [serverError]="serverError">
 </app-error-summary>
 
 <h1 class="govuk-heading-xl">Reset password</h1>
