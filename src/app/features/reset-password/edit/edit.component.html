@@ -1,6 +1,6 @@
 <app-error-summary
   *ngIf="submitted && resetPasswordForm.invalid"
-  [errorDetails]="errorDetails"
+  [formErrorsMap]="errorDetails"
   [form]="resetPasswordForm">
 </app-error-summary>
 

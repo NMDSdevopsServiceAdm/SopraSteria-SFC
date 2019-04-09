@@ -115,7 +115,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
    * @param errorType
    */
   public getErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getErrorMessage(item, errorType, this.errorDetails);
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.errorDetails);
   }
 
   /**

@@ -1,7 +1,7 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RequestPasswordResetResponse } from '@core/services/password-reset.service';
-import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
@@ -11,8 +11,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 export class ForgotYourPasswordEditComponent implements OnInit {
   public form: FormGroup;
   public submitted = false;
-  public errorDetails: Array<ErrorDetails>;
-
+  public formErrorsMap: Array<ErrorDetails>;
+  @Input() public serverError: string;
   @Output() formDataOutput = new EventEmitter<RequestPasswordResetResponse>();
 
   constructor(
@@ -25,11 +25,11 @@ export class ForgotYourPasswordEditComponent implements OnInit {
       usernameOrEmail: ['', [Validators.required, Validators.maxLength(120)]],
     });
 
-    this.setupErrorDetails();
+    this.setupFormErrorsMap();
   }
 
-  public setupErrorDetails(): void {
-    this.errorDetails = [
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
       {
         item: 'usernameOrEmail',
         type: [
@@ -49,7 +49,7 @@ export class ForgotYourPasswordEditComponent implements OnInit {
    * @param errorType
    */
   public getErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getErrorMessage(item, errorType, this.errorDetails);
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   onSubmit() {

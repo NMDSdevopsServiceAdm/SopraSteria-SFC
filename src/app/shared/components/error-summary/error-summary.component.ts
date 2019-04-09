@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public form: FormGroup;
-  @Input() public errorDetails: Array<ErrorDetails>;
+  @Input() public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError?: string;
   public errors: Array<ErrorSummary>;
   private subscriptions: Subscription = new Subscription();
@@ -69,7 +69,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
    * @param errorType
    */
   public getErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getErrorMessage(item, errorType, this.errorDetails);
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   /**

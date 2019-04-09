@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-one-half">
     <app-error-summary
       *ngIf="submitted && form.invalid"
-      [errorDetails]="errorDetails"
+      [formErrorsMap]="formErrorsMap"
       [serverError]="serverError"
       [form]="form">
     </app-error-summary>

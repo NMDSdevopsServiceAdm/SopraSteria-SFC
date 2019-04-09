@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   login: LoginApiModel;
   public submitted = false;
   private subscriptions: Subscription = new Subscription();
-  public errorDetails: Array<ErrorDetails>;
+  public formErrorsMap: Array<ErrorDetails>;
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
 
@@ -42,16 +42,16 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.add(this.authService.auth$.subscribe(login => (this.login = login)));
-    this.setupErrorDetails();
-    this.setupServerErrors();
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 
-  public setupErrorDetails(): void {
-    this.errorDetails = [
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
       {
         item: 'username',
         type: [
@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     ];
   }
 
-  public setupServerErrors(): void {
+  public setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
         name: 401,
@@ -104,7 +104,7 @@ export class LoginComponent implements OnInit, OnDestroy {
    * @param errorType
    */
   public getErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getErrorMessage(item, errorType, this.errorDetails);
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   save() {

@@ -39,14 +39,14 @@ export class ErrorSummaryService {
 
   /**
    * Pass in formGroup or formControl name,
-   * errorType and errorDetails
+   * errorType and formErrorsMap
    * Then return error message
    * @param item
    * @param errorType
    * @param errorDetails
    */
-  public getErrorMessage(item: string, errorType: string, errorDetails: Array<ErrorDetails>): string {
-    const getFormControl: Object = filter(errorDetails, [ 'item', item ])[0];
+  public getFormErrorMessage(item: string, errorType: string, formErrorsMap: Array<ErrorDetails>): string {
+    const getFormControl: Object = filter(formErrorsMap, [ 'item', item ])[0];
     return filter(getFormControl['type'], [ 'name', errorType ])[0].message;
   }
 
