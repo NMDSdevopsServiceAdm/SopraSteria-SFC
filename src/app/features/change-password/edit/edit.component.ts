@@ -29,7 +29,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private userService: UserService,
     private passwordResetService: PasswordResetService,
-    private errorSummaryService: ErrorSummaryService,
+    private errorSummaryService: ErrorSummaryService
   ) {}
 
   // Get old password
