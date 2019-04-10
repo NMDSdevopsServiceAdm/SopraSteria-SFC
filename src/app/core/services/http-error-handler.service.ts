@@ -27,6 +27,6 @@ export class HttpErrorHandler {
     }
 
     this.messageService.show('error', message);
-    return throwError(message);
+    return throwError(error);
   }
 }

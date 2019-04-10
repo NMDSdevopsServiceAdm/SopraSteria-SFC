@@ -6,8 +6,9 @@ import { AuthService } from '@core/services/auth-service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { Subscription } from 'rxjs';
-import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const PING_INTERVAL = 240;
 const TIMEOUT_INTERVAL = 1800;
@@ -21,7 +22,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   login: LoginApiModel;
   public submitted = false;
   private subscriptions: Subscription = new Subscription();
-  public errorDetails: Array<ErrorDetails>;
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverError: string;
 
   constructor(
     private idleService: IdleService,
@@ -29,7 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private router: Router,
     private formBuilder: FormBuilder,
-    private errorSummaryService: ErrorSummaryService,
+    private errorSummaryService: ErrorSummaryService
   ) {}
 
   ngOnInit() {
@@ -39,23 +42,24 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.add(this.authService.auth$.subscribe(login => (this.login = login)));
-    this.setupErrorDetails();
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 
-  public setupErrorDetails(): void {
-    this.errorDetails = [
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
       {
         item: 'username',
         type: [
           {
             name: 'required',
             message: 'Please enter your username.',
-          }
-        ]
+          },
+        ],
       },
       {
         item: 'password',
@@ -63,9 +67,22 @@ export class LoginComponent implements OnInit, OnDestroy {
           {
             name: 'required',
             message: 'Please enter your password.',
-          }
-        ]
-      }
+          },
+        ],
+      },
+    ];
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 401,
+        message: 'User unauthorised - username or password is incorrect.',
+      },
+      {
+        name: 503,
+        message: 'Unable to authenticate user.',
+      },
     ];
   }
 
@@ -87,7 +104,7 @@ export class LoginComponent implements OnInit, OnDestroy {
    * @param errorType
    */
   public getErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getErrorMessage(item, errorType, this.errorDetails);
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   save() {
@@ -120,8 +137,9 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate(['/logged-out']);
           });
         },
-        error => {
+        (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         },
         () => {
           const redirect = this.authService.redirect;

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import { filter } from 'lodash';
-import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 
 @Injectable({
   providedIn: 'root',
@@ -10,14 +10,12 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 export class ErrorSummaryService {
   public syncFormErrorsEvent: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
-  constructor(
-    private router: Router,
-  ) {}
+  constructor(private router: Router) {}
 
   public scrollToErrorSummary(): void {
     this.router.navigate([this.getRouteName()], {
       fragment: 'error-summary-title',
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -39,14 +37,24 @@ export class ErrorSummaryService {
 
   /**
    * Pass in formGroup or formControl name,
-   * errorType and errorDetails
+   * errorType and formErrorsMap
    * Then return error message
    * @param item
    * @param errorType
    * @param errorDetails
    */
-  public getErrorMessage(item: string, errorType: string, errorDetails: Array<ErrorDetails>): string {
-    const getFormControl: Object = filter(errorDetails, [ 'item', item ])[0];
-    return filter(getFormControl['type'], [ 'name', errorType ])[0].message;
+  public getFormErrorMessage(item: string, errorType: string, formErrorsMap: Array<ErrorDetails>): string {
+    const getFormControl: Object = filter(formErrorsMap, ['item', item])[0];
+    return filter(getFormControl['type'], ['name', errorType])[0].message;
+  }
+
+  /**
+   * Pass in error code and serverErrorsMap
+   * Then return error message
+   * @param errorCode
+   * @param errorDefinitions
+   */
+  public getServerErrorMessage(errorCode: number, serverErrorsMap: Array<ErrorDefinition>): string {
+    return filter(serverErrorsMap, ['name', errorCode])[0].message || `Server Error. code ${errorCode}`;
   }
 }
