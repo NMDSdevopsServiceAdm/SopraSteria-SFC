@@ -95,6 +95,10 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy {
         item: 'confirmPasswordInput',
         type: [
           {
+            name: 'required',
+            message: 'Please enter and confirm your new password.',
+          },
+          {
             name: 'notMatched',
             message: 'Confirm password does not match.',
           },
@@ -134,7 +138,10 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy {
   }
 
   public onSubmit(): void {
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
     if (this.form.invalid) {
+      this.errorSummaryService.scrollToErrorSummary();
       this.submitted = true;
     } else {
       const data = {
