@@ -40,7 +40,7 @@ import { ChangePasswordConfirmationComponent } from './features/change-password/
 import { ChangePasswordEditComponent } from './features/change-password/edit/edit.component';
 import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
-import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
+import { YourAccountComponent } from './features/your-account/your-account.component';
 import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
 import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
 import { ContactUsComponent } from './features/contact-us/contact-us.component';
@@ -110,7 +110,7 @@ import { PageNotFoundComponent } from '@core/components/error/page-not-found/pag
     ResetPasswordComponent,
     ResetPasswordEditComponent,
     ResetPasswordConfirmationComponent,
-    ChangeUserSummaryComponent,
+    YourAccountComponent,
     ChangePasswordComponent,
     ChangePasswordConfirmationComponent,
     ChangePasswordEditComponent,

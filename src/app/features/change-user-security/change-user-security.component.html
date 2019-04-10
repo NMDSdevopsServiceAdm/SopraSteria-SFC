@@ -1,18 +1,15 @@
 <div class="sub-page-container col-12">
-
   <p class="heading-caption m-0 pb-4">User account</p>
   <h1 class="h1">Security question</h1>
 
-  <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">You will need this if you forget your username or if you speak to Skills for Care about your account.</p>
+  <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">
+    You will need this if you forget your username or if you speak to Skills for Care about your account.
+  </p>
 
-  <form (ngSubmit)="onSubmit()"
-        [formGroup]="changeUserSecurityForm">
-
+  <form (ngSubmit)="onSubmit()" [formGroup]="changeUserSecurityForm">
     <div class="form-group mb-5">
       <div class="col-12 col-md-6 p-0">
-
-        <div class="field-group"
-             [ngClass]="{'is-invalid': displayError && getSecurityQuestionInput.errors }">
+        <div class="field-group" [ngClass]="{ 'is-invalid': displayError && getSecurityQuestionInput.errors }">
           <label class="form-label" for="securityQuestion">Enter a security question</label>
 
           <span class="invalid-feedback">
@@ -25,13 +22,16 @@
           </span>
 
           <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="securityQuestion" class="form-control col-12" formControlName="securityQuestionInput" />
-
+            <input
+              placeholder=""
+              type="text"
+              id="securityQuestion"
+              class="form-control col-12"
+              formControlName="securityQuestionInput"
+            />
           </div>
         </div>
-        <div class="field-group mt-5"
-             [ngClass]="{'is-invalid': displayError && getSecurityAnswerInput.errors }">
+        <div class="field-group mt-5" [ngClass]="{ 'is-invalid': displayError && getSecurityAnswerInput.errors }">
           <label class="form-label" for="securityAnswer">Enter the answer to the security question</label>
 
           <span class="invalid-feedback">
@@ -44,20 +44,20 @@
           </span>
 
           <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="securityAnswer" class="form-control col-12" formControlName="securityAnswerInput" />
-
+            <input
+              placeholder=""
+              type="text"
+              id="securityAnswer"
+              class="form-control col-12"
+              formControlName="securityAnswerInput"
+            />
           </div>
         </div>
       </div>
-
     </div>
 
     <div class="btn-container">
       <button class="btn btn-primary" type="submit">Save and return</button>
     </div>
-
   </form>
-
-
 </div>
