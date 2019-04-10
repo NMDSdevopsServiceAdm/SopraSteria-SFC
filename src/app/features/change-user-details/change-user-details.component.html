@@ -1,16 +1,11 @@
 <div class="sub-page-container col-12">
-
   <p class="heading-caption m-0 pb-4">User account</p>
   <h1 class="h1">Your details</h1>
 
   <form novalidate (ngSubmit)="onSubmit()" [formGroup]="changeUserDetailsForm">
-
     <div class="form-group mb-5">
       <div class="col-12 col-md-6 p-0">
-
-        <div class="field-group"
-          [ngClass]="{'is-invalid': displayError && getUserFullnameInput.errors }">
-
+        <div class="field-group" [ngClass]="{ 'is-invalid': displayError && getUserFullnameInput.errors }">
           <label class="form-label" for="userFullname">Your full name</label>
 
           <span class="invalid-feedback">
@@ -23,15 +18,16 @@
           </span>
 
           <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="userFullname" class="form-control col-12" formControlName="userFullnameInput" />
-
+            <input
+              placeholder=""
+              type="text"
+              id="userFullname"
+              class="form-control col-12"
+              formControlName="userFullnameInput"
+            />
           </div>
-
         </div>
-        <div class="field-group mt-5"
-          [ngClass]="{'is-invalid': displayError && getUserJobTitle.errors }">
-
+        <div class="field-group mt-5" [ngClass]="{ 'is-invalid': displayError && getUserJobTitle.errors }">
           <label class="form-label" for="userJobTitle">Your job title</label>
 
           <span class="invalid-feedback">
@@ -44,14 +40,16 @@
           </span>
 
           <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="userJobTitle" class="form-control col-12" formControlName="userJobTitleInput" />
-
+            <input
+              placeholder=""
+              type="text"
+              id="userJobTitle"
+              class="form-control col-12"
+              formControlName="userJobTitleInput"
+            />
           </div>
         </div>
-        <div class="field-group mt-5"
-          [ngClass]="{'is-invalid': displayError && getUserEmailInput.errors }">
-
+        <div class="field-group mt-5" [ngClass]="{ 'is-invalid': displayError && getUserEmailInput.errors }">
           <label class="form-label" for="userEmail">Your email address</label>
 
           <span class="invalid-feedback">
@@ -67,14 +65,16 @@
           </span>
 
           <div class="form-control-feedback">
-
-            <input placeholder="" type="email" id="userEmail" class="form-control col-12" formControlName="userEmailInput" />
-
+            <input
+              placeholder=""
+              type="email"
+              id="userEmail"
+              class="form-control col-12"
+              formControlName="userEmailInput"
+            />
           </div>
         </div>
-        <div class="field-group mt-5"
-          [ngClass]="{'is-invalid': displayError && getUserPhoneInput.errors }">
-
+        <div class="field-group mt-5" [ngClass]="{ 'is-invalid': displayError && getUserPhoneInput.errors }">
           <label class="form-label" for="userPhone">Contact phone number</label>
 
           <span class="invalid-feedback">
@@ -87,20 +87,20 @@
           </span>
 
           <div class="form-control-feedback">
-
-            <input placeholder="" type="tel" id="userPhone" class="form-control col-12" formControlName="userPhoneInput" />
-
+            <input
+              placeholder=""
+              type="tel"
+              id="userPhone"
+              class="form-control col-12"
+              formControlName="userPhoneInput"
+            />
           </div>
         </div>
       </div>
-
     </div>
 
     <div class="btn-container">
       <button class="btn btn-primary" type="submit">Save and return</button>
     </div>
-
   </form>
-
-
 </div>
