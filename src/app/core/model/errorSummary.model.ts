@@ -9,6 +9,6 @@ export interface ErrorDetails {
 }
 
 export interface ErrorDefinition {
-  name: string;
+  name: string | number;
   message: string;
 }

@@ -1,13 +1,15 @@
 <app-error-summary
   *ngIf="submitted && form.invalid"
-  [errorDetails]="errorDetails"
-  [form]="form">
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+>
 </app-error-summary>
 
 <h1 class="govuk-heading-xl">Forgot your password?</h1>
 <p>Enter your username or email address and we will send you a link to reset your password.</p>
 
-<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
   <div
     class="govuk-form-group"
     [ngClass]="{ 'govuk-form-group--error': form.get('usernameOrEmail').errors && submitted }"

@@ -2,13 +2,15 @@
   <div class="govuk-grid-column-one-half">
     <app-error-summary
       *ngIf="submitted && form.invalid"
-      [errorDetails]="errorDetails"
-      [form]="form">
+      [formErrorsMap]="formErrorsMap"
+      [serverError]="serverError"
+      [form]="form"
+    >
     </app-error-summary>
 
     <h1 class="govuk-heading-xl">Sign in</h1>
 
-    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('username').errors && submitted }">
         <label class="govuk-label" for="username">
           Username

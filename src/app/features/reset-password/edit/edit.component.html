@@ -1,13 +1,15 @@
 <app-error-summary
   *ngIf="submitted && resetPasswordForm.invalid"
-  [errorDetails]="errorDetails"
-  [form]="resetPasswordForm">
+  [formErrorsMap]="formErrorsMap"
+  [form]="resetPasswordForm"
+  [serverError]="serverError"
+>
 </app-error-summary>
 
 <h1 class="govuk-heading-xl">Reset password</h1>
 <p class="govuk-!-margin-bottom-6">Enter a new password for account {{ name }}</p>
 
-<form novalidate (ngSubmit)="onSubmit()" [formGroup]="resetPasswordForm">
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="resetPasswordForm" id="server-error">
   <div formGroupName="passwordGroup">
     <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPasswordInput.errors">
       <label class="govuk-label" for="createPasswordInput">
@@ -37,15 +39,19 @@
       />
     </div>
 
-    <div class="govuk-form-group govuk-!-margin-bottom-8"
-      [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors">
+    <div
+      class="govuk-form-group govuk-!-margin-bottom-8"
+      [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors"
+    >
       <label class="govuk-label" for="confirmPasswordInput">
         Confirm password
       </label>
       <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span>
-        <span *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
-          id="passwordGroup-error">
+        <span
+          *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
+          id="passwordGroup-error"
+        >
           {{ getErrorMessage('confirmPasswordInput', 'required') }}
         </span>
       </span>
