@@ -29,8 +29,8 @@ import { AuthGuard } from './core/services/auth-guard.service';
 import { ChangePasswordComponent } from './features/change-password/change-password.component';
 import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
-import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { YourAccountComponent } from './features/your-account/your-account.component';
 
 const routes: Routes = [
   {
@@ -50,8 +50,8 @@ const routes: Routes = [
     component: ResetPasswordComponent,
   },
   {
-    path: 'change-user-summary',
-    component: ChangeUserSummaryComponent,
+    path: 'your-account',
+    component: YourAccountComponent,
     canActivate: [AuthGuard],
   },
   {

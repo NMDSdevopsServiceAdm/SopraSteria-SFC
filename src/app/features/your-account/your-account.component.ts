@@ -1,27 +1,23 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '@core/services/auth-service';
 import { Subscription } from 'rxjs';
+import { UserAccount } from '@core/model/userAccount.model';
 
 @Component({
-  selector: 'app-change-user-summary',
-  templateUrl: './change-user-summary.component.html'
+  selector: 'app-your-account-summary',
+  templateUrl: './your-account.component.html',
 })
-export class ChangeUserSummaryComponent implements OnInit, OnDestroy {
+export class YourAccountComponent implements OnInit, OnDestroy {
   public username: string;
-  public user = '';
+  public user: UserAccount;
   public establishment: any;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private _userService: UserService,
-    private authService: AuthService
-  ) { }
+  constructor(private _userService: UserService, private authService: AuthService) {}
 
   ngOnInit() {
     this.establishment = this.authService.establishment.id;
-
     this.getUsername();
   }
 
@@ -29,7 +25,6 @@ export class ChangeUserSummaryComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this._userService.getUsernameFromEstbId().subscribe(data => {
         this.username = data.users[0].username;
-
         this.getUserSummary();
       })
     );
@@ -37,11 +32,9 @@ export class ChangeUserSummaryComponent implements OnInit, OnDestroy {
 
   getUserSummary() {
     this.subscriptions.add(
-      this._userService.getUserDetails(this.username).subscribe(data => {
+      this._userService.getUserDetails(this.username).subscribe((data: UserAccount) => {
         this.user = data;
-
         this._userService.updateState(data);
-
       })
     );
   }
@@ -49,5 +42,4 @@ export class ChangeUserSummaryComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
-
 }

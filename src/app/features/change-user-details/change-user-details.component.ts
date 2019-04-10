@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-change-user-details',
-  templateUrl: './change-user-details.component.html'
+  templateUrl: './change-user-details.component.html',
 })
 export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
   public changeUserDetailsForm: FormGroup;
@@ -25,11 +25,7 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private _userService: UserService
-  ) { }
+  constructor(private fb: FormBuilder, private router: Router, private _userService: UserService) {}
 
   // Get fullname
   get getUserFullnameInput() {
@@ -55,17 +51,18 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
     this.changeUserDetailsForm = this.fb.group({
       userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]],
       userJobTitleInput: ['', [Validators.required, Validators.maxLength(120)]],
-      userEmailInput: ['', [
-        Validators.required,
-        Validators.pattern('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$'),
-        Validators.maxLength(120)
-      ]],
+      userEmailInput: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,4}$'),
+          Validators.maxLength(120),
+        ],
+      ],
       userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
     });
 
-    this.subscriptions.add(
-      this._userService.userDetails$.subscribe(userDetails => this.userDetails = userDetails)
-    );
+    this.subscriptions.add(this._userService.userDetails$.subscribe(userDetails => (this.userDetails = userDetails)));
 
     this.setUserDetails();
 
@@ -79,7 +76,6 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
 
   setUserDetails() {
     if (this.userDetails) {
-
       this.username = this.userDetails['username'];
       this.uid = this.userDetails['uid'];
 
@@ -89,10 +85,10 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
       this.phone = this.userDetails['phone'];
 
       this.changeUserDetailsForm.setValue({
-        'userFullnameInput': this.fullname,
-        'userJobTitleInput': this.jobTitle,
-        'userEmailInput': this.email,
-        'userPhoneInput': this.phone
+        userFullnameInput: this.fullname,
+        userJobTitleInput: this.jobTitle,
+        userEmailInput: this.email,
+        userPhoneInput: this.phone,
       });
     }
   }
@@ -101,7 +97,7 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this._userService.updateUserDetails(this.username, data).subscribe(res => {
         this.submitted = true;
-        this.router.navigate(['/change-user-summary']);
+        this.router.navigate(['/your-account']);
       })
     );
   }
@@ -109,16 +105,14 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
   onSubmit() {
     if (this.changeUserDetailsForm.invalid) {
       this.displayError = true;
-    }
-    else {
+    } else {
       const data = {
         fullname: this.changeUserDetailsForm.value.userFullnameInput,
         jobTitle: this.changeUserDetailsForm.value.userJobTitleInput,
         email: this.changeUserDetailsForm.value.userEmailInput,
-        phone: this.changeUserDetailsForm.value.userPhoneInput
+        phone: this.changeUserDetailsForm.value.userPhoneInput,
       };
       this.changeUserDetails(data);
     }
   }
-
 }
