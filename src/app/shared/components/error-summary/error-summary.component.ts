@@ -7,7 +7,6 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-error-summary',
   templateUrl: './error-summary.component.html',
-  styleUrls: ['./error-summary.component.scss'],
 })
 export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public form: FormGroup;
@@ -16,18 +15,12 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   public errors: Array<ErrorSummary>;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private errorSummaryService: ErrorSummaryService,
-  ) {}
+  constructor(private errorSummaryService: ErrorSummaryService) {}
 
   ngOnInit(): void {
-    this.subscriptions.add(
-      this.errorSummaryService.syncFormErrorsEvent.subscribe(() => this.getFormErrors())
-    );
+    this.subscriptions.add(this.errorSummaryService.syncFormErrorsEvent.subscribe(() => this.getFormErrors()));
 
-    this.subscriptions.add(
-      this.form.valueChanges.subscribe(() => this.getFormErrors())
-    );
+    this.subscriptions.add(this.form.valueChanges.subscribe(() => this.getFormErrors()));
   }
 
   private getFormErrors(): void {
@@ -57,7 +50,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
     if (item.errors) {
       this.errors.push({
         item: name,
-        errors: [...Object.keys(item.errors)]
+        errors: [...Object.keys(item.errors)],
       });
     }
   }
@@ -78,5 +71,4 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
 }

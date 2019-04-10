@@ -10,14 +10,12 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 export class ErrorSummaryService {
   public syncFormErrorsEvent: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(null);
 
-  constructor(
-    private router: Router,
-  ) {}
+  constructor(private router: Router) {}
 
   public scrollToErrorSummary(): void {
     this.router.navigate([this.getRouteName()], {
       fragment: 'error-summary-title',
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -46,8 +44,8 @@ export class ErrorSummaryService {
    * @param errorDetails
    */
   public getFormErrorMessage(item: string, errorType: string, formErrorsMap: Array<ErrorDetails>): string {
-    const getFormControl: Object = filter(formErrorsMap, [ 'item', item ])[0];
-    return filter(getFormControl['type'], [ 'name', errorType ])[0].message;
+    const getFormControl: Object = filter(formErrorsMap, ['item', item])[0];
+    return filter(getFormControl['type'], ['name', errorType])[0].message;
   }
 
   /**
@@ -57,6 +55,6 @@ export class ErrorSummaryService {
    * @param errorDefinitions
    */
   public getServerErrorMessage(errorCode: number, serverErrorsMap: Array<ErrorDefinition>): string {
-    return filter(serverErrorsMap, [ 'name', errorCode ])[0].message || `Server Error. code ${errorCode}`;
+    return filter(serverErrorsMap, ['name', errorCode])[0].message || `Server Error. code ${errorCode}`;
   }
 }

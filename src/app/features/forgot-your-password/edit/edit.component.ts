@@ -15,10 +15,7 @@ export class ForgotYourPasswordEditComponent implements OnInit {
   @Input() public serverError: string;
   @Output() formDataOutput = new EventEmitter<RequestPasswordResetResponse>();
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private errorSummaryService: ErrorSummaryService
-  ) {}
+  constructor(private formBuilder: FormBuilder, private errorSummaryService: ErrorSummaryService) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
@@ -36,9 +33,9 @@ export class ForgotYourPasswordEditComponent implements OnInit {
           {
             name: 'required',
             message: 'Please enter your username or email address.',
-          }
-        ]
-      }
+          },
+        ],
+      },
     ];
   }
 

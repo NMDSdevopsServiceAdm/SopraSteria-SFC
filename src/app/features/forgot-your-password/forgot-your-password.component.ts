@@ -20,10 +20,7 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
 
-  constructor(
-    private _passwordResetService: PasswordResetService,
-    private errorSummaryService: ErrorSummaryService
-  ) { }
+  constructor(private _passwordResetService: PasswordResetService, private errorSummaryService: ErrorSummaryService) {}
 
   ngOnInit() {
     this.submitted = false;
@@ -41,13 +38,14 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
       this.usernameOrEmail = formData;
 
       this.subscriptions.add(
-        this._passwordResetService.requestPasswordReset(this.usernameOrEmail)
-          .subscribe(data => {
+        this._passwordResetService.requestPasswordReset(this.usernameOrEmail).subscribe(
+          data => {
             this.displayConfirmation(data);
           },
           (error: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          })
+          }
+        )
       );
     }
   }
@@ -56,8 +54,8 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 503,
-        message: 'Database error.'
-      }
+        message: 'Database error.',
+      },
     ];
   }
 
@@ -69,5 +67,4 @@ export class ForgotYourPasswordComponent implements OnInit, OnDestroy {
     const resetPasswordUuid = data.uuid;
     this.resetPasswordLink = '/reset-password/?reset=' + resetPasswordUuid;
   }
-
 }

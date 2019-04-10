@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private router: Router,
     private formBuilder: FormBuilder,
-    private errorSummaryService: ErrorSummaryService,
+    private errorSummaryService: ErrorSummaryService
   ) {}
 
   ngOnInit() {
@@ -58,8 +58,8 @@ export class LoginComponent implements OnInit, OnDestroy {
           {
             name: 'required',
             message: 'Please enter your username.',
-          }
-        ]
+          },
+        ],
       },
       {
         item: 'password',
@@ -67,9 +67,9 @@ export class LoginComponent implements OnInit, OnDestroy {
           {
             name: 'required',
             message: 'Please enter your password.',
-          }
-        ]
-      }
+          },
+        ],
+      },
     ];
   }
 
@@ -77,12 +77,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 401,
-        message: 'User unauthorised - username or password is incorrect.'
+        message: 'User unauthorised - username or password is incorrect.',
       },
       {
         name: 503,
-        message: 'Unable to authenticate user.'
-      }
+        message: 'Unable to authenticate user.',
+      },
     ];
   }
 

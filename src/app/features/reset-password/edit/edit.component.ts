@@ -27,8 +27,8 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private _passwordResetService: PasswordResetService,
-    private errorSummaryService: ErrorSummaryService,
-  ) { }
+    private errorSummaryService: ErrorSummaryService
+  ) {}
 
   // Get create password
   get getPasswordInput() {
@@ -51,7 +51,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
           confirmPasswordInput: ['', [Validators.required]],
         },
         { validator: CustomValidators.matchInputValues }
-      )
+      ),
     });
 
     if (this.validatePasswordResetResponse && this.validatePasswordResetResponse.body) {
@@ -75,8 +75,8 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
           {
             name: 'pattern',
             message: 'Invalid password.',
-          }
-        ]
+          },
+        ],
       },
       {
         item: 'confirmPasswordInput',
@@ -88,9 +88,9 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
           {
             name: 'notMatched',
             message: 'Confirm password does not match.',
-          }
-        ]
-      }
+          },
+        ],
+      },
     ];
   }
 
@@ -98,8 +98,8 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 503,
-        message: 'Database error.'
-      }
+        message: 'Database error.',
+      },
     ];
   }
 
@@ -113,13 +113,14 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
       const newPassword = this.getPasswordInput.value;
 
       this.subscriptions.add(
-        this._passwordResetService.resetPassword(newPassword, this.headerToken)
-          .subscribe(res => {
+        this._passwordResetService.resetPassword(newPassword, this.headerToken).subscribe(
+          res => {
             this.resetPasswordOutput.emit(res);
           },
           (error: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          })
+          }
+        )
       );
     }
   }
@@ -140,5 +141,4 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
 }
