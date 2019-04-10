@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { EstablishmentService } from './establishment.service';
+import { UserAccount } from '@core/model/userAccount.model';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +24,7 @@ export class UserService {
   /*
    * GET /api/user/establishment/:establishmentId/:username
    */
-  getUserDetails(username) {
+  getUserDetails(username): Observable<UserAccount> {
     return this.http.get<any>(`/api/user/establishment/${this.establishmentService.establishmentId}/${username}`);
   }
 

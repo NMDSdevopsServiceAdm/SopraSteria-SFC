@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { UserService } from '../../core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-change-user-security',
-  templateUrl: './change-user-security.component.html'
+  templateUrl: './change-user-security.component.html',
 })
 export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
   public changeUserSecurityForm: FormGroup;
@@ -23,11 +23,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private _userService: UserService
-  ) { }
+  constructor(private fb: FormBuilder, private router: Router, private _userService: UserService) {}
 
   // Get Security Question
   get getSecurityQuestionInput() {
@@ -42,12 +38,10 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.changeUserSecurityForm = this.fb.group({
       securityQuestionInput: ['', [Validators.required, Validators.maxLength(255)]],
-      securityAnswerInput: ['', [Validators.required, Validators.maxLength(255)]]
+      securityAnswerInput: ['', [Validators.required, Validators.maxLength(255)]],
     });
 
-    this.subscriptions.add(
-      this._userService.userDetails$.subscribe(userDetails => this.userDetails = userDetails)
-    );
+    this.subscriptions.add(this._userService.userDetails$.subscribe(userDetails => (this.userDetails = userDetails)));
 
     this.setUserDetails();
 
@@ -61,7 +55,6 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
 
   setUserDetails() {
     if (this.userDetails) {
-
       this.username = this.userDetails['username'];
       this.uid = this.userDetails['uid'];
 
@@ -69,8 +62,8 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
       this.securityAnswer = this.userDetails['securityQuestionAnswer'];
 
       this.changeUserSecurityForm.setValue({
-        'securityQuestionInput': this.securityQuestion,
-        'securityAnswerInput': this.securityAnswer
+        securityQuestionInput: this.securityQuestion,
+        securityAnswerInput: this.securityAnswer,
       });
     }
   }
@@ -79,7 +72,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this._userService.updateUserDetails(this.username, data).subscribe(res => {
         this.submitted = true;
-        this.router.navigate(['/change-user-summary']);
+        this.router.navigate(['/your-account']);
       })
     );
   }
@@ -87,14 +80,12 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
   onSubmit() {
     if (this.changeUserSecurityForm.invalid) {
       this.displayError = true;
-    }
-    else {
+    } else {
       const data = {
         securityQuestion: this.changeUserSecurityForm.value.securityQuestionInput,
-        securityQuestionAnswer: this.changeUserSecurityForm.value.securityAnswerInput
+        securityQuestionAnswer: this.changeUserSecurityForm.value.securityAnswerInput,
       };
       this.changeUserDetails(data);
     }
   }
-
 }
