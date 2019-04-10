@@ -6,47 +6,47 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { PasswordResetService } from '@core/services/password-reset.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
+import { UserDetails } from '@core/model/userDetails.model';
 
 @Component({
   selector: 'app-edit',
   templateUrl: './edit.component.html',
 })
 export class ChangePasswordEditComponent implements OnInit {
-  public changePasswordForm: FormGroup;
+  public form: FormGroup;
   public displayError: boolean;
   private subscriptions: Subscription = new Subscription();
-  @Input() userDetails: {};
-
-  @Output() resetPasswordOutput = new EventEmitter();
+  @Input() userDetails: UserDetails;
+  @Output() resetPasswordEvent = new EventEmitter();
 
   constructor(
     private fb: FormBuilder,
-    private _userService: UserService,
-    private _passwordResetService: PasswordResetService
+    private userService: UserService,
+    private passwordResetService: PasswordResetService
   ) {}
 
   // Get old password
   get getOldPasswordInput() {
-    return this.changePasswordForm.get('oldPasswordInput');
+    return this.form.get('oldPasswordInput');
   }
 
   // Get password group
   get getPasswordGroup() {
-    return this.changePasswordForm.get('passwordGroup');
+    return this.form.get('passwordGroup');
   }
 
   // Get create password
   get getCreateUsernameInput() {
-    return this.changePasswordForm.get('passwordGroup.createPasswordInput');
+    return this.form.get('passwordGroup.createPasswordInput');
   }
 
   // Get confirm password
   get getConfirmPasswordInput() {
-    return this.changePasswordForm.get('passwordGroup.confirmPasswordInput');
+    return this.form.get('passwordGroup.confirmPasswordInput');
   }
 
   ngOnInit() {
-    this.changePasswordForm = this.fb.group({
+    this.form = this.fb.group({
       oldPasswordInput: ['', Validators.required],
       passwordGroup: this.fb.group(
         {
@@ -63,21 +63,19 @@ export class ChangePasswordEditComponent implements OnInit {
     this.displayError = false;
   }
 
-  resetPassword(data) {
+  private resetPassword(data: Object): void {
     this.subscriptions.add(
-      this._passwordResetService.changePassword(data).subscribe(res => {
-        this.resetPasswordOutput.emit(res);
-      })
+      this.passwordResetService.changePassword(data).subscribe(() => this.resetPasswordEvent.emit())
     );
   }
 
   onSubmit() {
-    if (this.changePasswordForm.invalid) {
+    if (this.form.invalid) {
       this.displayError = true;
     } else {
       const data = {
-        currentPassword: this.changePasswordForm.value.oldPasswordInput,
-        newPassword: this.changePasswordForm.value.passwordGroup.createPasswordInput,
+        currentPassword: this.form.value.oldPasswordInput,
+        newPassword: this.form.value.passwordGroup.createPasswordInput,
       };
 
       this.resetPassword(data);

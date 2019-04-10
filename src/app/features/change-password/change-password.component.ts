@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '@core/services/auth-service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
+import { UserDetails } from '@core/model/userDetails.model';
 
 @Component({
   selector: 'app-change-password',
@@ -10,21 +11,22 @@ import { Subscription } from 'rxjs';
 })
 export class ChangePasswordComponent implements OnInit, OnDestroy {
   public submitted: boolean;
-  public userDetails: {};
+  public userDetails: UserDetails;
   public establishment: any;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private authService: AuthService, private _userService: UserService) {}
+  constructor(private authService: AuthService, private userService: UserService) {}
 
   ngOnInit() {
     this.submitted = false;
-
     this.establishment = this.authService.establishment.id;
 
-    this.subscriptions.add(this._userService.userDetails$.subscribe(userDetails => (this.userDetails = userDetails)));
+    this.subscriptions.add(
+      this.userService.userDetails$.subscribe((userDetails: UserDetails) => this.userDetails = userDetails)
+    );
   }
 
-  getresetPasswordSuccessData(responseData) {
+  public onResetPasswordSuccess(): void {
     this.submitted = true;
   }
 
