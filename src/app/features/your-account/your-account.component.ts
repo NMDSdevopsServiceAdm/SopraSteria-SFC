@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '@core/services/auth-service';
 import { Subscription } from 'rxjs';
+import { UserAccount } from '@core/model/userAccount.model';
 
 @Component({
   selector: 'app-your-account-summary',
@@ -10,7 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class YourAccountComponent implements OnInit, OnDestroy {
   public username: string;
-  public user = '';
+  public user: UserAccount;
   public establishment: any;
   private subscriptions: Subscription = new Subscription();
 
@@ -21,7 +22,6 @@ export class YourAccountComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.establishment = this.authService.establishment.id;
-
     this.getUsername();
   }
 
@@ -29,7 +29,6 @@ export class YourAccountComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this._userService.getUsernameFromEstbId().subscribe(data => {
         this.username = data.users[0].username;
-
         this.getUserSummary();
       })
     );
@@ -37,13 +36,11 @@ export class YourAccountComponent implements OnInit, OnDestroy {
 
   getUserSummary() {
     this.subscriptions.add(
-      this._userService.getUserDetails(this.username).subscribe(data => {
-        console.log('data', data);
-        this.user = data;
-
-        this._userService.updateState(data);
-
-      })
+      this._userService.getUserDetails(this.username)
+        .subscribe((data: UserAccount) => {
+          this.user = data;
+          this._userService.updateState(data);
+        })
     );
   }
 
