@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-edit',
-  templateUrl: './edit.component.html'
+  templateUrl: './edit.component.html',
 })
 export class ChangePasswordEditComponent implements OnInit {
   public changePasswordForm: FormGroup;
@@ -22,8 +22,8 @@ export class ChangePasswordEditComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private _userService: UserService,
-    private _passwordResetService: PasswordResetService,
-  ) { }
+    private _passwordResetService: PasswordResetService
+  ) {}
 
   // Get old password
   get getOldPasswordInput() {
@@ -57,7 +57,7 @@ export class ChangePasswordEditComponent implements OnInit {
           confirmPasswordInput: ['', [Validators.required]],
         },
         { validator: CustomValidators.matchInputValues }
-      )
+      ),
     });
 
     this.displayError = false;
@@ -74,16 +74,13 @@ export class ChangePasswordEditComponent implements OnInit {
   onSubmit() {
     if (this.changePasswordForm.invalid) {
       this.displayError = true;
-    }
-    else {
+    } else {
       const data = {
         currentPassword: this.changePasswordForm.value.oldPasswordInput,
-        newPassword: this.changePasswordForm.value.passwordGroup.createPasswordInput
+        newPassword: this.changePasswordForm.value.passwordGroup.createPasswordInput,
       };
 
       this.resetPassword(data);
     }
-
   }
-
 }
