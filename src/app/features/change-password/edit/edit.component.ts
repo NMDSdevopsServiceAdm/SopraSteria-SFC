@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CustomValidators } from '@shared/validators/custom-form-validators';
@@ -7,22 +7,29 @@ import { PasswordResetService } from '@core/services/password-reset.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-edit',
   templateUrl: './edit.component.html',
 })
-export class ChangePasswordEditComponent implements OnInit {
+export class ChangePasswordEditComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  public displayError: boolean;
+  public submitted: boolean;
   private subscriptions: Subscription = new Subscription();
-  @Input() userDetails: UserDetails;
-  @Output() resetPasswordEvent = new EventEmitter();
+  @Input() public userDetails: UserDetails;
+  @Output() public resetPasswordEvent = new EventEmitter();
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverError: string;
 
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private passwordResetService: PasswordResetService
+    private passwordResetService: PasswordResetService,
+    private errorSummaryService: ErrorSummaryService,
   ) {}
 
   // Get old password
@@ -30,13 +37,8 @@ export class ChangePasswordEditComponent implements OnInit {
     return this.form.get('oldPasswordInput');
   }
 
-  // Get password group
-  get getPasswordGroup() {
-    return this.form.get('passwordGroup');
-  }
-
   // Get create password
-  get getCreateUsernameInput() {
+  get getCreatePasswordInput() {
     return this.form.get('passwordGroup.createPasswordInput');
   }
 
@@ -60,18 +62,80 @@ export class ChangePasswordEditComponent implements OnInit {
       ),
     });
 
-    this.displayError = false;
+    this.submitted = false;
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
+  }
+
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'oldPasswordInput',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your old password.',
+          },
+        ],
+      },
+      {
+        item: 'createPasswordInput',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your new password.',
+          },
+          {
+            name: 'pattern',
+            message: 'Invalid password.',
+          },
+        ],
+      },
+      {
+        item: 'confirmPasswordInput',
+        type: [
+          {
+            name: 'notMatched',
+            message: 'Confirm password does not match.',
+          },
+        ],
+      },
+    ];
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 503,
+        message: 'Database error.',
+      },
+    ];
+  }
+
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   private resetPassword(data: Object): void {
     this.subscriptions.add(
-      this.passwordResetService.changePassword(data).subscribe(() => this.resetPasswordEvent.emit())
+      this.passwordResetService.changePassword(data).subscribe(
+        () => this.resetPasswordEvent.emit(),
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        }
+      )
     );
   }
 
-  onSubmit() {
+  public onSubmit(): void {
     if (this.form.invalid) {
-      this.displayError = true;
+      this.submitted = true;
     } else {
       const data = {
         currentPassword: this.form.value.oldPasswordInput,
@@ -80,5 +144,12 @@ export class ChangePasswordEditComponent implements OnInit {
 
       this.resetPassword(data);
     }
+  }
+
+  /**
+   * Unsubscribe hook to ensure no memory leaks
+   */
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
