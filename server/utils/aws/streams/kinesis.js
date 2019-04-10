@@ -28,7 +28,7 @@ const actionToString = (action) => {
   return actionname;
 };
 
-exports.establishmentPump = async (action, establishment) => {
+exports.establishmentPump = async (thisAction, thisEstablishment) => {
   if (KINESIS) {
     const params = {
       Records: [],
@@ -38,7 +38,10 @@ exports.establishmentPump = async (action, establishment) => {
     // use the Establishment's own unique key (UID) as the partioning key
     // TODO: use Establishment UID (once it's known by Workers)
     params.Records.push({
-      Data: JSON.stringify(establishment),
+      Data: JSON.stringify({
+        action: actionToString(thisAction),
+        establishment: thisEstablishment,
+      }),
       PartitionKey: establishment.id.toString()
     });
 
@@ -53,7 +56,7 @@ exports.establishmentPump = async (action, establishment) => {
   }
 };
 
-exports.workerPump = async (action, worker) => {
+exports.workerPump = async (action, thisWorker) => {
   if (KINESIS) {
     const params = {
       Records: [],
@@ -63,7 +66,10 @@ exports.workerPump = async (action, worker) => {
     // use the Workers's establishment id as the partioning key, that way, all records associated
     //  with the same Establishment enter the same shard
     params.Records.push({
-      Data: JSON.stringify(worker),
+      Data: JSON.stringify({
+        action: actionToString(thisAction),
+        worker: thisWorker,
+      }),
       PartitionKey: worker.establishmentId.toString()
     });
 
