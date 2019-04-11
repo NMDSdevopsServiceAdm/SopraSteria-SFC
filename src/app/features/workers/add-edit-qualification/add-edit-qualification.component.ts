@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QualificationRequest, QualificationResponse, QualificationType } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
@@ -18,7 +18,7 @@ export class AddEditQualificationComponent implements OnInit {
   public qualificationId: string;
   public record: QualificationResponse;
   public worker: Worker;
-  public yearValidators: Validators[];
+  public yearValidators: ValidatorFn[];
   private subscriptions: Subscription = new Subscription();
 
   constructor(
