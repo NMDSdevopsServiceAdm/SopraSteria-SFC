@@ -20,11 +20,11 @@
       <label for="year">
         Year achieved
       </label>
-      <div *ngIf="group.get('year').hasError('max')" class="alert alert-danger">
-        <p>Year achieved can not be a date in the future</p>
-      </div>
       <div *ngIf="group.get('year').hasError('min')" class="alert alert-danger">
-        <p>Year achieved can not be more that 100 years in the past</p>
+        <p>Year achieved can not be before {{ group.get('year').getError('min').min }}</p>
+      </div>
+      <div *ngIf="group.get('year').hasError('max')" class="alert alert-danger">
+        <p>Year achieved can not be after {{ group.get('year').getError('max').max }}</p>
       </div>
       <input type="number" formControlName="year" class="form-control col-3" maxlength="4" />
     </div>

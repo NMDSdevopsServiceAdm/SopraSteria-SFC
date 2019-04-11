@@ -18,6 +18,7 @@ export class AddEditQualificationComponent implements OnInit {
   public qualificationId: string;
   public record: QualificationResponse;
   public worker: Worker;
+  public yearValidators: Validators[];
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -25,7 +26,16 @@ export class AddEditQualificationComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private workerService: WorkerService
-  ) {}
+  ) {
+    this.yearValidators = [
+      Validators.max(moment().year()),
+      Validators.min(
+        moment()
+          .subtract(100, 'years')
+          .year()
+      ),
+    ];
+  }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
@@ -74,17 +84,7 @@ export class AddEditQualificationComponent implements OnInit {
   createQualificationGroup(): FormGroup {
     return this.formBuilder.group({
       qualification: [null],
-      year: [
-        null,
-        [
-          Validators.max(moment().year()),
-          Validators.min(
-            moment()
-              .subtract(100, 'years')
-              .year()
-          ),
-        ],
-      ],
+      year: [null, this.yearValidators],
       notes: [null, Validators.maxLength(500)],
     });
   }

@@ -53,6 +53,7 @@ export interface Qualification {
   id: number;
   code?: number;
   from?: string;
+  until?: string;
   level?: string;
   title?: string;
   group?: string;

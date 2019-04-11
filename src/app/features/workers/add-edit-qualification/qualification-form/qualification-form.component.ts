@@ -1,8 +1,9 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, Validators } from '@angular/forms';
 import { Qualification, QualificationType } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
+import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,6 +15,7 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
   @Input() group: FormGroup;
   @Input() type: { key: string; value: string };
   @Input() qualification: any;
+  @Input() yearValidators;
   public qualifications: Qualification[];
   private subscriptions: Subscription = new Subscription();
 
@@ -27,6 +29,31 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
           this.qualifications = qualifications;
         })
     );
+
+    this.group.get('qualification').valueChanges.subscribe(value => {
+      const year = this.group.get('year');
+      const extraValidators = [];
+      const qualification = this.qualifications.find(qualification => (qualification.id = value));
+
+      console.log(qualification);
+
+      year.clearValidators();
+
+      if (qualification.from) {
+        const from = moment(qualification.from);
+        extraValidators.push(Validators.min(from.year()));
+      }
+
+      if (qualification.until) {
+        const until = moment(qualification.until);
+        extraValidators.push(Validators.max(until.year()));
+      }
+
+      console.log(extraValidators);
+
+      year.setValidators(this.yearValidators.concat(extraValidators));
+      year.updateValueAndValidity();
+    });
   }
 
   ngOnDestroy() {
