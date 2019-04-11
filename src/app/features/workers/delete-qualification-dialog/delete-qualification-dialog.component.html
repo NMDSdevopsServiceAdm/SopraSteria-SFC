@@ -25,12 +25,12 @@
       {{ data.record.qualification.title }}
     </dd>
   </div>
-  <div class="govuk-summary-list__row">
+  <div *ngIf="data.record.qualification?.level" class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       Qualification level
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ data.record.qualification.level }}
+      {{ data.record.qualification?.level }}
     </dd>
   </div>
 </dl>
