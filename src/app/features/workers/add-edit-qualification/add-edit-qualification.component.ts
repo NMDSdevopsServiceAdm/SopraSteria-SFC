@@ -13,7 +13,6 @@ import { Subscription } from 'rxjs';
 })
 export class AddEditQualificationComponent implements OnInit {
   public form: FormGroup;
-  public submitted = false;
   public qualificationTypes: QualificationType[] = [];
   public qualifications: any;
   public qualificationId: string;
@@ -29,28 +28,17 @@ export class AddEditQualificationComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.worker = this.workerService.worker;
-    this.qualificationId = this.route.snapshot.params.qualificationId;
-    Object.keys(QualificationType).forEach(key => {
-      this.qualificationTypes[key] = QualificationType[key];
-    });
-
     this.form = this.formBuilder.group({
       type: [null, Validators.required],
-      qualification: [null, Validators.required],
-      year: [
-        null,
-        [
-          Validators.max(moment().year()),
-          Validators.min(
-            moment()
-              .subtract(100, 'years')
-              .year()
-          ),
-        ],
-      ],
-      notes: [null, Validators.maxLength(500)],
       submitted: false,
+    });
+
+    this.worker = this.workerService.worker;
+    this.qualificationId = this.route.snapshot.params.qualificationId;
+
+    Object.keys(QualificationType).forEach(key => {
+      this.qualificationTypes[key] = QualificationType[key];
+      this.form.addControl(key, this.createQualificationGroup());
     });
 
     this.subscriptions.add(
@@ -65,12 +53,40 @@ export class AddEditQualificationComponent implements OnInit {
       this.subscriptions.add(
         this.workerService.getQualification(this.worker.uid, this.qualificationId).subscribe(record => {
           this.record = record;
+          const typeKey = Object.keys(this.qualificationTypes).find(
+            key => this.qualificationTypes[key] === this.record.qualification.group
+          );
+
           this.form.patchValue({
             type: record.qualification.group,
+          });
+
+          this.form.get(typeKey).patchValue({
+            qualification: this.record.qualification.id,
+            year: this.record.year,
+            notes: this.record.notes,
           });
         })
       );
     }
+  }
+
+  createQualificationGroup(): FormGroup {
+    return this.formBuilder.group({
+      qualification: [null],
+      year: [
+        null,
+        [
+          Validators.max(moment().year()),
+          Validators.min(
+            moment()
+              .subtract(100, 'years')
+              .year()
+          ),
+        ],
+      ],
+      notes: [null, Validators.maxLength(500)],
+    });
   }
 
   async submitHandler() {
@@ -93,7 +109,10 @@ export class AddEditQualificationComponent implements OnInit {
 
   saveHandler(): Promise<any> {
     return new Promise((resolve, reject) => {
-      const { type, qualification, year, notes } = this.form.controls;
+      const { type } = this.form.controls;
+      const typeKey = Object.keys(this.qualificationTypes).find(key => this.qualificationTypes[key] === type.value);
+      const group = this.form.get(typeKey) as FormGroup;
+      const { qualification, year, notes } = group.controls;
 
       const record: QualificationRequest = {
         type: type.value,
@@ -117,31 +136,4 @@ export class AddEditQualificationComponent implements OnInit {
       }
     });
   }
-  //     const completedDate = this.dateGroupToMoment(completed as FormGroup);
-  //     const expiresDate = this.dateGroupToMoment(expires as FormGroup);
-
-  //     const record: TrainingRecordRequest = {
-  //       trainingCategory: {
-  //         id: parseInt(category.value, 10),
-  //       },
-  //       title: title.value,
-  //       accredited: accredited.value,
-  //       completed: completedDate ? completedDate.toISOString() : null,
-  //       expires: expiresDate ? expiresDate.toISOString() : null,
-  //       notes: notes.value,
-  //     };
-
-  //     if (this.trainingRecordId) {
-  //       this.subscriptions.add(
-  //         this.workerService
-  //           .updateTrainingRecord(this.worker.uid, this.trainingRecordId, record)
-  //           .subscribe(resolve, reject)
-  //       );
-  //     } else {
-  //       this.subscriptions.add(
-  //         this.workerService.createTrainingRecord(this.worker.uid, record).subscribe(resolve, reject)
-  //       );
-  //     }
-  //   });
-  // }
 }

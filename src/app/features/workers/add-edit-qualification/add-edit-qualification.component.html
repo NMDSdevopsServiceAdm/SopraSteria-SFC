@@ -13,7 +13,7 @@
 
   <p>Select the type of qualification</p>
 
-  <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
+  <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form" *ngIf="!qualificationId || qualificationId && record">
     <div class="form-group">
       <div class="field-group mb-5">
         <ng-container *ngFor="let item of (qualificationTypes | keyvalue)">
@@ -28,10 +28,11 @@
             <label for="type-{{ item.key }}">{{ item.value }}</label>
           </div>
           <app-qualification-form
-            *ngIf="form.get('type').value === item.value"
-            [parentForm]="form"
+            [hidden]="form.get('type').value !== item.value"
+            [group]="form.get(item.key)"
             [worker]="worker"
-            [qualificationId]="qualificationId"
+            [type]="item"
+            [qualification]="record?.qualification?.group === item.value ? record.qualification : null"
           ></app-qualification-form>
         </ng-container>
       </div>

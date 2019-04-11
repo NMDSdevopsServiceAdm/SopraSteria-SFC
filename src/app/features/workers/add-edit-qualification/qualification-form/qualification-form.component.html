@@ -1,12 +1,15 @@
 <div class="panel panel-border-narrow no-pad col-10 col-lg-6">
-  <div class="form-group" [formGroup]="parentForm">
+  <div class="form-group" [formGroup]="group">
     <div class="field-group">
-      <label for="name">{{ parentForm.get('type').value }} name</label>
-      <div *ngIf="parentForm.get('submitted').value && parentForm.get('qualification').hasError('required')" class="alert alert-danger">
-          <p>Select a qualification</p>
-        </div>
+      <label for="name">{{ type.value }} name</label>
+      <div *ngIf="group.get('qualification').hasError('required')" class="alert alert-danger">
+        <p>Select a qualification</p>
+      </div>
       <select formControlName="qualification" class="form-control">
-        <option [ngValue]="null" *ngIf="!qualificationId">Select</option>
+        <option [ngValue]="null">Select</option>
+        <option *ngIf="qualification" [value]="qualification.id"
+          >{{ qualification.title }} {{ qualification?.level }}</option
+        >
         <option *ngFor="let qualification of qualifications" [value]="qualification.id">
           {{ qualification.title }} {{ qualification?.level }}
         </option>
@@ -17,10 +20,10 @@
       <label for="year">
         Year achieved
       </label>
-      <div *ngIf="parentForm.get('submitted').value && parentForm.get('year').hasError('max')" class="alert alert-danger">
+      <div *ngIf="group.get('year').hasError('max')" class="alert alert-danger">
         <p>Year achieved can not be a date in the future</p>
       </div>
-      <div *ngIf="parentForm.get('submitted').value && parentForm.get('year').hasError('min')" class="alert alert-danger">
+      <div *ngIf="group.get('year').hasError('min')" class="alert alert-danger">
         <p>Year achieved can not be more that 100 years in the past</p>
       </div>
       <input type="number" formControlName="year" class="form-control col-3" maxlength="4" />
@@ -30,10 +33,10 @@
       <label for="notes" class="d-block">
         Notes
       </label>
-      <div *ngIf="parentForm.get('submitted').value && parentForm.get('notes').hasError('maxlength')" class="alert alert-danger">
-          <p>Notes must be no longer than {{ parentForm.get('notes').getError('maxlength').requiredLength }} characters.</p>
-        </div>
-      <textarea maxlength="500" rows="5" class="textarea main-body-text" formControlName="notes" id="notes"></textarea>
+      <div *ngIf="group.get('notes').hasError('maxlength')" class="alert alert-danger">
+        <p>Notes must be no longer than {{ group.get('notes').getError('maxlength').requiredLength }} characters.</p>
+      </div>
+      <textarea maxlength="500" rows="5" class="textarea main-body-text col-12" formControlName="notes" id="notes"></textarea>
     </div>
   </div>
 </div>

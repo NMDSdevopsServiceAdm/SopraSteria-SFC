@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { Qualification } from '@core/model/qualification.model';
+import { Qualification, QualificationType } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -11,25 +11,18 @@ import { Subscription } from 'rxjs';
 })
 export class QualificationFormComponent implements OnInit, OnDestroy {
   @Input() worker: Worker;
-  @Input() parentForm: FormGroup;
-  @Input() qualificationId: string;
+  @Input() group: FormGroup;
+  @Input() type: { key: string; value: string };
+  @Input() qualification: any;
   public qualifications: Qualification[];
   private subscriptions: Subscription = new Subscription();
 
   constructor(private workerService: WorkerService) {}
 
   ngOnInit(): void {
-    this.parentForm.patchValue({
-      qualification: null,
-      year: null,
-      notes: null,
-      submitted: false,
-    });
-    this.parentForm.get('qualification').markAsUntouched();
-
     this.subscriptions.add(
       this.workerService
-        .getAvailableQualifcations(this.worker.uid, this.parentForm.get('type').value)
+        .getAvailableQualifcations(this.worker.uid, this.type.value as QualificationType)
         .subscribe(qualifications => {
           this.qualifications = qualifications;
         })
