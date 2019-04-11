@@ -61,7 +61,7 @@
           [routerLink]="['/worker', worker.uid, 'add-qualification']"
           role="button"
           draggable="false"
-          class="govuk-button govuk-button--secondary"
+          class="govuk-button govuk-button--secondary mr-5"
           >Add a qualification</a
         >
         <a
@@ -71,7 +71,7 @@
           class="govuk-button govuk-button--secondary"
           >Add training</a
         >
-        <p>Adding additional qualifications or training is optional.</p>
+        <p class="mb-5"><img src="/assets/img/icon-information.svg" /> Adding additional qualifications or training is optional.</p>
         <app-qualifications [worker]="worker"></app-qualifications>
         <app-training [worker]="worker"></app-training>
       </app-tab>
