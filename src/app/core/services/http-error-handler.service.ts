@@ -18,7 +18,7 @@ export class HttpErrorHandler {
     if (error.status === 403) {
       this.authService.logoutWithoutRouting();
       this.router.navigate(['/logged-out']);
-      return;
+      return throwError('403');
     }
     const message = error.error ? error.error.message : 'Server error. Please try again later, sorry.';
 

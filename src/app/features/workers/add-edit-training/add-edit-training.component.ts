@@ -32,7 +32,7 @@ export class AddEditTrainingComponent implements OnInit {
 
   ngOnInit() {
     this.worker = this.workerService.worker;
-    this.trainingRecordId = this.route.snapshot.params.trainingRecordid;
+    this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
 
     this.form = this.formBuilder.group({
       title: [null, [Validators.required, Validators.maxLength(120)]],

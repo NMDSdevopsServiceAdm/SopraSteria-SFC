@@ -1,0 +1,71 @@
+<ng-container *ngIf="qualifications?.length">
+  <div class="row">
+    <div class="col-lg-6">
+      <h3 class="fs-24 mb-4 text-weight-bold">Qualifications</h3>
+    </div>
+    <div class="col-lg-6 text-align-right">
+      <p>Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
+    </div>
+  </div>
+
+  <dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--top-border">
+    <ng-container *ngFor="let qualification of qualifications">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Qualification type
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ qualification.qualification.group }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link mr-5" href="#" (click)="deleteQualification(qualification, $event)"
+            >Delete<span class="govuk-visually-hidden"> {{ qualification.title }} qualification</span></a
+          >
+          <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'qualification', qualification.uid]"
+            >Change<span class="govuk-visually-hidden"> {{ qualification.title }} qualification</span></a
+          >
+        </dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Qualification name
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ qualification.qualification.title }}
+        </dd>
+        <dd class="govuk-summary-list__actions"></dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Qualification level
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ qualification?.qualification?.level ? qualification.qualification.level : '-' }}
+        </dd>
+        <dd class="govuk-summary-list__actions"></dd>
+      </div>
+
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Year achieved
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ qualification?.year ? qualification.year : '-' }}
+        </dd>
+        <dd class="govuk-summary-list__actions"></dd>
+      </div>
+
+      <div class="govuk-summary-list__row govuk-summary-list--bottom-border">
+        <dt class="govuk-summary-list__key">
+          Qualification notes
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ qualification?.notes ? qualification.notes : '-' }}
+        </dd>
+        <dd class="govuk-summary-list__actions"></dd>
+      </div>
+    </ng-container>
+  </dl>
+</ng-container>

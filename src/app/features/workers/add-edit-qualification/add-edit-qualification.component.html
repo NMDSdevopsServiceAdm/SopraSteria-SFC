@@ -1,0 +1,56 @@
+<div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a [routerLink]="['/worker', worker.uid]" fragment="qualifications-and-training">
+      <span class="arrow"></span>Back
+    </a>
+  </div>
+
+  <header>
+    <h1 class="h1 col-12 col-lg-8">
+      {{ qualificationId ? 'Edit qualification details' : 'Add qualification details' }}
+    </h1>
+  </header>
+
+  <p>Select the type of qualification</p>
+
+  <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form" *ngIf="!qualificationId || qualificationId && record">
+    <div class="form-group">
+      <div class="field-group mb-5">
+        <ng-container *ngFor="let item of (qualificationTypes | keyvalue)">
+          <div class="multiple-choice">
+            <input
+              type="radio"
+              formControlName="type"
+              class="form-control"
+              [value]="item.value"
+              id="type-{{ item.key }}"
+            />
+            <label for="type-{{ item.key }}">{{ item.value }}</label>
+          </div>
+          <app-qualification-form
+            [hidden]="form.get('type').value !== item.value"
+            [group]="form.get(item.key)"
+            [worker]="worker"
+            [type]="item"
+            [qualification]="record?.qualification?.group === item.value ? record.qualification : null"
+          ></app-qualification-form>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="btn-container container">
+      <div class="row">
+        <button type="submit" class="btn btn-primary">
+          {{ qualificationId ? 'Update qualification' : 'Add qualification' }}
+        </button>
+        <a
+          [routerLink]="['/worker', worker.uid]"
+          fragment="qualifications-and-training"
+          class="btn btn-link btn-link-no-underline col-md-3"
+        >
+          Cancel
+        </a>
+      </div>
+    </div>
+  </form>
+</div>

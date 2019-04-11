@@ -18,7 +18,7 @@
         <div *ngIf="submitted && form.get('category').hasError('required')" class="alert alert-danger">
           <p>Select a training category</p>
         </div>
-        <select formControlName="category" class="form-control">
+        <select formControlName="category" class="form-control col-md-6">
           <option [ngValue]="null">Select a training category</option>
           <option *ngFor="let category of categories" [value]="category.id">
             {{ category.category }}
@@ -33,10 +33,10 @@
         <div *ngIf="submitted && form.get('title').hasError('required')" class="alert alert-danger">
           <p>Enter a training name</p>
         </div>
-        <div *ngIf="submitted && form.get('tile').hasError('maxlength')" class="alert alert-danger">
+        <div *ngIf="submitted && form.get('title').hasError('maxlength')" class="alert alert-danger">
           <p>Training name must be no longer than {{ form.get('title').getError('maxlength').requiredLength }} characters.</p>
         </div>
-        <input type="text" formControlName="title" class="form-control col-12" maxlength="120" />
+        <input type="text" formControlName="title" class="form-control col-md-6" maxlength="120" />
       </div>
 
       <div class="field-group mb-5">
@@ -119,7 +119,7 @@
         <textarea
           maxlength="1000"
           rows="5"
-          class="textarea main-body-text"
+          class="textarea main-body-text col-md-8 col-lg-6"
           formControlName="notes"
           id="notes"
         ></textarea>
