@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../core/services/user.service';
 import { AuthService } from '@core/services/auth-service';
 import { Subscription } from 'rxjs';
-import { UserAccount } from '@core/model/userAccount.model';
+import { UserDetails } from '@core/model/userDetails.model';
 
 @Component({
   selector: 'app-your-account-summary',
@@ -10,7 +10,7 @@ import { UserAccount } from '@core/model/userAccount.model';
 })
 export class YourAccountComponent implements OnInit, OnDestroy {
   public username: string;
-  public user: UserAccount;
+  public user: UserDetails;
   public establishment: any;
   private subscriptions: Subscription = new Subscription();
 
@@ -32,7 +32,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
 
   getUserSummary() {
     this.subscriptions.add(
-      this._userService.getUserDetails(this.username).subscribe((data: UserAccount) => {
+      this._userService.getUserDetails(this.username).subscribe((data: UserDetails) => {
         this.user = data;
         this._userService.updateState(data);
       })

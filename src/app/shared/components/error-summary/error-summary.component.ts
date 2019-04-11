@@ -61,7 +61,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
    * @param item
    * @param errorType
    */
-  public getErrorMessage(item: string, errorType: string): string {
+  public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 

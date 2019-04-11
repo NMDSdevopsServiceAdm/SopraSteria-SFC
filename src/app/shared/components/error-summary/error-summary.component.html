@@ -15,7 +15,7 @@
           routerLink="."
           fragment="{{ i.item }}-error"
           queryParamsHandling="merge">
-          {{ getErrorMessage(i.item, i.errors[0]) }}
+          {{ getFormErrorMessage(i.item, i.errors[0]) }}
         </a>
       </li>
       <li *ngIf="serverError">
