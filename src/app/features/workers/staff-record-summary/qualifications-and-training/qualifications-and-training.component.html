@@ -2,7 +2,7 @@
 <dl class="govuk-summary-list">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
-      Care Certificate
+      Started of completed Care Certificate
     </dt>
     <dd class="govuk-summary-list__value">
       {{ worker.careCertificate || '-' }}
@@ -23,7 +23,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
-      Social Care qualification
+      Any social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
       {{ worker.qualificationInSocialCare || '-' }}
@@ -44,7 +44,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displaySocialCareQualifications">
     <dt class="govuk-summary-list__key">
-      Level of Social Care qualification
+      Highest level of social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
       {{ worker.socialCareQualification?.title || '-' }}
@@ -69,7 +69,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
-      Other qualifications
+      Non-social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
       {{ worker.otherQualification || '-' }}
@@ -90,7 +90,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayOtherQualifications">
     <dt class="govuk-summary-list__key">
-      Level of other qualification
+      Highest level of non-social care qualification
     </dt>
     <dd class="govuk-summary-list__value">
       {{ worker.highestQualification?.title || '-' }}
@@ -111,7 +111,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
-      Apprenticeship training
+      Completing apprenticeship training
     </dt>
     <dd class="govuk-summary-list__value">
       {{ worker.apprenticeshipTraining || '-' }}
