@@ -16,17 +16,11 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 })
 export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
   public submitted: boolean;
   public userDetails: UserDetails;
-
-  private username: string;
-  private uid: string;
-  private securityQuestion: string;
-  private securityAnswer: string;
-  public formErrorsMap: Array<ErrorDetails>;
-  public serverErrorsMap: Array<ErrorDefinition>;
-  public serverError: string;
-
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -104,15 +98,9 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
 
   private setUserDetails(): void {
     if (this.userDetails) {
-      this.username = this.userDetails['username'];
-      this.uid = this.userDetails['uid'];
-
-      this.securityQuestion = this.userDetails['securityQuestion'];
-      this.securityAnswer = this.userDetails['securityQuestionAnswer'];
-
       this.form.setValue({
-        securityQuestionInput: this.securityQuestion,
-        securityAnswerInput: this.securityAnswer,
+        securityQuestionInput: this.userDetails['securityQuestion'],
+        securityAnswerInput: this.userDetails['securityQuestionAnswer'],
       });
     }
   }
@@ -129,7 +117,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
 
   private changeUserDetails(data: Object): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(this.username, data).subscribe(
+      this.userService.updateUserDetails(this.userDetails['username'], data).subscribe(
         () => this.router.navigate(['/your-account']),
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
