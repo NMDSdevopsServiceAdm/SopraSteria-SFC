@@ -45,7 +45,7 @@ export class ForgotYourPasswordEditComponent implements OnInit {
    * @param item
    * @param errorType
    */
-  public getErrorMessage(item: string, errorType: string): string {
+  public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 

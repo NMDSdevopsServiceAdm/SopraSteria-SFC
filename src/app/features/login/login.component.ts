@@ -86,7 +86,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     ];
   }
 
-  onSubmit() {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -103,11 +103,11 @@ export class LoginComponent implements OnInit, OnDestroy {
    * @param item
    * @param errorType
    */
-  public getErrorMessage(item: string, errorType: string): string {
+  public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  save() {
+  private save(): void {
     this.login.username = this.form.get('username').value;
     this.login.password = this.form.get('password').value;
 

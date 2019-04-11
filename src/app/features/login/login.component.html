@@ -20,7 +20,7 @@
           class="govuk-error-message"
           *ngIf="form.get('username').errors?.required && submitted"
         >
-          <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('username', 'required') }}
+          <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('username', 'required') }}
         </span>
         <input
           class="govuk-input"
@@ -41,7 +41,7 @@
           class="govuk-error-message"
           *ngIf="form.get('password').errors?.required && submitted"
         >
-          <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('password', 'required') }}
+          <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('password', 'required') }}
         </span>
         <input
           class="govuk-input"
