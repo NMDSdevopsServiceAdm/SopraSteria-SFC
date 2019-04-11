@@ -73,8 +73,8 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
       userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
     });
 
-    this.subscriptions.add(this.userService.userDetails$.subscribe(
-      (userDetails: UserDetails) => (this.userDetails = userDetails))
+    this.subscriptions.add(
+      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
     );
 
     this.setUserDetails();
@@ -182,7 +182,7 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private changeUserDetails(data): void {
+  private changeUserDetails(data: Object): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.username, data).subscribe(
         () => this.router.navigate(['/your-account']),
