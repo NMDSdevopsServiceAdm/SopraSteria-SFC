@@ -12,7 +12,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './edit.component.html',
 })
 export class ResetPasswordEditComponent implements OnInit, OnDestroy {
-  public resetPasswordForm: FormGroup;
+  public form: FormGroup;
   @Input() validatePasswordResetResponse;
   @Input() headerToken: string;
   public name: string;
@@ -26,22 +26,22 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
 
   constructor(
     private fb: FormBuilder,
-    private _passwordResetService: PasswordResetService,
+    private passwordResetService: PasswordResetService,
     private errorSummaryService: ErrorSummaryService
   ) {}
 
   // Get create password
   get getPasswordInput() {
-    return this.resetPasswordForm.get('passwordGroup.createPasswordInput');
+    return this.form.get('passwordGroup.createPasswordInput');
   }
 
   // Get confirm password
   get getConfirmPasswordInput() {
-    return this.resetPasswordForm.get('passwordGroup.confirmPasswordInput');
+    return this.form.get('passwordGroup.confirmPasswordInput');
   }
 
   ngOnInit() {
-    this.resetPasswordForm = this.fb.group({
+    this.form = this.fb.group({
       passwordGroup: this.fb.group(
         {
           createPasswordInput: [
@@ -103,17 +103,17 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
     ];
   }
 
-  onSubmit() {
+  public onSubmit(): void {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if (this.resetPasswordForm.invalid) {
+    if (this.form.invalid) {
       this.errorSummaryService.scrollToErrorSummary();
       this.submitted = true;
     } else {
       const newPassword = this.getPasswordInput.value;
 
       this.subscriptions.add(
-        this._passwordResetService.resetPassword(newPassword, this.headerToken).subscribe(
+        this.passwordResetService.resetPassword(newPassword, this.headerToken).subscribe(
           res => {
             this.resetPasswordOutput.emit(res);
           },
@@ -131,7 +131,7 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
    * @param item
    * @param errorType
    */
-  public getErrorMessage(item: string, errorType: string): string {
+  public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
