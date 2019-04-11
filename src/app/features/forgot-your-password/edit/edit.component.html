@@ -22,7 +22,7 @@
       class="govuk-error-message"
       *ngIf="form.get('usernameOrEmail').errors?.required && submitted"
     >
-      <span class="govuk-visually-hidden">Error:</span> {{ getErrorMessage('usernameOrEmail', 'required') }}
+      <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('usernameOrEmail', 'required') }}
     </span>
     <input
       class="govuk-input govuk-!-width-full"
