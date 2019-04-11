@@ -5,16 +5,19 @@ import { Router } from '@angular/router';
 
 import { UserService } from '../../core/services/user.service';
 import { Subscription } from 'rxjs';
+import { UserDetails } from '@core/model/userDetails.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-change-user-details',
   templateUrl: './change-user-details.component.html',
 })
 export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
-  public changeUserDetailsForm: FormGroup;
-  public displayError: boolean;
+  public form: FormGroup;
   public submitted: boolean;
-  public userDetails: {};
+  public userDetails: UserDetails;
 
   private username: string;
   private uid: string;
@@ -22,33 +25,41 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
   private jobTitle: string;
   private email: string;
   private phone: string;
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverError: string;
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private fb: FormBuilder, private router: Router, private _userService: UserService) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private userService: UserService,
+    private errorSummaryService: ErrorSummaryService
+  ) {}
 
   // Get fullname
   get getUserFullnameInput() {
-    return this.changeUserDetailsForm.get('userFullnameInput');
+    return this.form.get('userFullnameInput');
   }
 
   // Get job title
   get getUserJobTitle() {
-    return this.changeUserDetailsForm.get('userJobTitleInput');
+    return this.form.get('userJobTitleInput');
   }
 
   // Get email
   get getUserEmailInput() {
-    return this.changeUserDetailsForm.get('userEmailInput');
+    return this.form.get('userEmailInput');
   }
 
   // Get phone
   get getUserPhoneInput() {
-    return this.changeUserDetailsForm.get('userPhoneInput');
+    return this.form.get('userPhoneInput');
   }
 
   ngOnInit() {
-    this.changeUserDetailsForm = this.fb.group({
+    this.form = this.fb.group({
       userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]],
       userJobTitleInput: ['', [Validators.required, Validators.maxLength(120)]],
       userEmailInput: [
@@ -62,19 +73,87 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
       userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
     });
 
-    this.subscriptions.add(this._userService.userDetails$.subscribe(userDetails => (this.userDetails = userDetails)));
+    this.subscriptions.add(
+      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
+    );
 
     this.setUserDetails();
-
-    this.displayError = false;
     this.submitted = false;
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'userFullnameInput',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your full name.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your fullname must be no longer than 120 characters.',
+          },
+        ],
+      },
+      {
+        item: 'userJobTitleInput',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your job title.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your job title must be no longer than 120 characters.',
+          },
+        ],
+      },
+      {
+        item: 'userEmailInput',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your email address.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your email address must be no longer than 120 characters.',
+          },
+          {
+            name: 'pattern',
+            message: 'Please enter a valid email address.',
+          },
+        ],
+      },
+      {
+        item: 'userPhoneInput',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your contact phone number.',
+          },
+          {
+            name: 'pattern',
+            message: 'Invalid contact phone number.',
+          },
+        ],
+      },
+    ];
   }
 
-  setUserDetails() {
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 404,
+        message: 'User not found or does not belong to the given establishment.',
+      },
+    ];
+  }
+
+  private setUserDetails(): void {
     if (this.userDetails) {
       this.username = this.userDetails['username'];
       this.uid = this.userDetails['uid'];
@@ -84,7 +163,7 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
       this.email = this.userDetails['email'];
       this.phone = this.userDetails['phone'];
 
-      this.changeUserDetailsForm.setValue({
+      this.form.setValue({
         userFullnameInput: this.fullname,
         userJobTitleInput: this.jobTitle,
         userEmailInput: this.email,
@@ -93,26 +172,46 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeUserDetails(data) {
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private changeUserDetails(data: Object): void {
     this.subscriptions.add(
-      this._userService.updateUserDetails(this.username, data).subscribe(res => {
-        this.submitted = true;
-        this.router.navigate(['/your-account']);
-      })
+      this.userService.updateUserDetails(this.username, data).subscribe(
+        () => this.router.navigate(['/your-account']),
+        (error: HttpErrorResponse) => {
+          this.form.setErrors({ serverError: true });
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        }
+      )
     );
   }
 
-  onSubmit() {
-    if (this.changeUserDetailsForm.invalid) {
-      this.displayError = true;
-    } else {
-      const data = {
-        fullname: this.changeUserDetailsForm.value.userFullnameInput,
-        jobTitle: this.changeUserDetailsForm.value.userJobTitleInput,
-        email: this.changeUserDetailsForm.value.userEmailInput,
-        phone: this.changeUserDetailsForm.value.userPhoneInput,
+  public onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (this.form.valid) {
+      const data: Object = {
+        fullname: this.form.value.userFullnameInput,
+        jobTitle: this.form.value.userJobTitleInput,
+        email: this.form.value.userEmailInput,
+        phone: this.form.value.userPhoneInput,
       };
       this.changeUserDetails(data);
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
