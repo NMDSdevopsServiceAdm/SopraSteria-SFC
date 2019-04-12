@@ -402,26 +402,6 @@ class Worker {
                 ]
             };
 
-            // if history of the Worker is also required; attach the association
-            //  and order in reverse chronological - note, order on id (not when)
-            //  because ID is primay key and hence indexed
-            if (showHistory) {
-                fetchQuery.include.push({
-                    model: models.workerAudit,
-                    as: 'auditEvents'
-                });
-                fetchQuery.order = [
-                    [
-                        {
-                            model: models.workerAudit,
-                            as: 'auditEvents'
-                        },
-                        'id',
-                        'DESC'
-                    ]
-                ];
-            }
-
             const fetchResults = await models.worker.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
@@ -430,6 +410,20 @@ class Worker {
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
+
+                // if history of the Worker is also required; attach the association
+                //  and order in reverse chronological - note, order on id (not when)
+                //  because ID is primay key and hence indexed
+                if (showHistory) {
+                    fetchResults.auditEvents = await models.workerAudit.findAll({
+                        where: {
+                            workerFk: fetchResults.id
+                        },
+                        order: [
+                            ['id','DESC']
+                        ]
+                    });
+                }
 
                 if (fetchResults.auditEvents) {
                     this._auditEvents = fetchResults.auditEvents;
@@ -825,7 +819,6 @@ class Worker {
               break;
             case COMPLETED_PROPERTY_ELIGIBLE:
               const completedProperty = this._properties.get('Completed');
-              console.log("WA DEBUG - completed property value: ", completedProperty.savedAt)
               referenceTime = completedProperty && completedProperty.savedAt
                                     ? completedProperty.savedAt.getTime()
                                     : null;

@@ -75,7 +75,7 @@ router.route('/:id').get(async (req, res) => {
     const thisEstablishment = new Establishment.Establishment(req.username);
 
     try {
-        if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
+        if (await thisEstablishment.restore(byID, byUUID, showHistory && req.query.history !== 'property')) {
             // the property based framework for "other services" and "capacity services"
             //  is returning "allOtherServices" and "allServiceCapacities"
             //  we don't want those on the root GET establishment; only necessary for the

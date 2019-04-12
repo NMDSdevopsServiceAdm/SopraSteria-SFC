@@ -560,26 +560,6 @@ class User {
                 };
             }
 
-            // if history of the User is also required; attach the association
-            //  and order in reverse chronological - note, order on id (not when)
-            //  because ID is primay key and hence indexed
-            if (showHistory) {
-                fetchQuery.include.push({
-                    model: models.userAudit,
-                    as: 'auditEvents'
-                });
-                fetchQuery.order = [
-                    [
-                        {
-                            model: models.userAudit,
-                            as: 'auditEvents'
-                        },
-                        'id',
-                        'DESC'
-                    ]
-                ];
-            }
-
             const fetchResults = await models.user.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
@@ -590,6 +570,20 @@ class User {
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
+
+                // if history of the User is also required; attach the association
+                //  and order in reverse chronological - note, order on id (not when)
+                //  because ID is primay key and hence indexed
+                if (showHistory) {
+                    fetchResults.auditEvents = await models.userAudit.findAll({
+                        where: {
+                            userFk: this._id
+                        },
+                        order: [
+                            ['id','DESC']
+                        ]
+                    });
+                }
 
                 if (fetchResults.auditEvents) {
                     this._auditEvents = fetchResults.auditEvents;

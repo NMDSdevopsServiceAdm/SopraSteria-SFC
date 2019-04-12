@@ -500,26 +500,6 @@ class Establishment {
               ]
             );
 
-            // if history of the User is also required; attach the association
-            //  and order in reverse chronological - note, order on id (not when)
-            //  because ID is primay key and hence indexed
-            if (showHistory) {
-                fetchQuery.include.push({
-                    model: models.establishmentAudit,
-                    as: 'auditEvents'
-                });
-                fetchQuery.order = [
-                    [
-                        {
-                            model: models.establishmentAudit,
-                            as: 'auditEvents'
-                        },
-                        'id',
-                        'DESC'
-                    ]
-                ];
-            }
-
             const fetchResults = await models.establishment.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
@@ -540,6 +520,24 @@ class Establishment {
                     name: fetchResults.mainService.name
                 };
                 this._nmdsId = fetchResults.nmdsId;
+
+                // if history of the User is also required; attach the association
+                //  and order in reverse chronological - note, order on id (not when)
+                //  because ID is primay key and hence indexed
+                // There can be hundreds/thousands of audit history. The left joins
+                //   and multiple joins across tables incurs a hefty SQL
+                //   performance penalty if join audit data to.
+                // Therefore a separate fetch is used for audit data
+                if (showHistory) {
+                    fetchResults.auditEvents = await models.establishmentAudit.findAll({
+                        where: {
+                            establishmentFk: this._id
+                        },
+                        order: [
+                            ['id','DESC']
+                        ]
+                    });
+                }
 
                 // other services output requires a list of ALL services available to
                 //  the Establishment
@@ -861,11 +859,32 @@ class Establishment {
     }
 
     _isPropertyWdfBasicEligible(refEpoch, property) {
+        const PER_PROPERTY_ELIGIBLE=0;
+        const RECORD_LEVEL_ELIGIBLE=1;
+        const COMPLETED_PROPERTY_ELIGIBLE=2;
+        const ELIGIBILITY_REFERENCE = PER_PROPERTY_ELIGIBLE;
+
+        let referenceTime = null;
+
+        switch (ELIGIBILITY_REFERENCE) {
+            case PER_PROPERTY_ELIGIBLE:
+                referenceTime = property.savedAt.getTime();
+                break;
+            case RECORD_LEVEL_ELIGIBLE:
+                referenceTime = this._updated.getTime();
+                break;
+            case COMPLETED_PROPERTY_ELIGIBLE:
+                // there is no completed property (yet) - copy the code from '.../server/models/classes/worker.js' once there is
+                throw new Error('Establihsment WDF by Completion is Not implemented');
+                break;
+        }
+
         return property &&
                property.property !== null &&
                property.valid &&
                property.savedAt &&
-               property.savedAt.getTime() > refEpoch;
+               referenceTime !== null &&
+               referenceTime > refEpoch;
     }
 
     // returns the WDF eligibility of each WDF relevant property as referenced from
