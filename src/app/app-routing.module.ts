@@ -1,9 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConfirmAccountDetailsComponent } from '@features/confirm-account-details/confirm-account-details.component';
-import { ConfirmLeaversComponent } from '@features/confirm-leavers/confirm-leavers.component';
-import { ConfirmStartersComponent } from '@features/confirm-starters/confirm-starters.component';
-import { ConfirmVacanciesComponent } from '@features/confirm-vacancies/confirm-vacancies.component';
 import { ConfirmWorkplaceDetailsComponent } from '@features/confirm-workplace-details/confirm-workplace-details.component';
 import { ContactUsComponent } from '@features/contactUs/contactUs.component';
 import { ContinueCreatingAccountComponent } from '@features/continue-creating-account/continue-creating-account.component';
@@ -12,23 +9,15 @@ import { CreateUsernameComponent } from '@features/create-username/create-userna
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
-import { LeaversComponent } from '@features/leavers/leavers.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
 import { SecurityQuestionComponent } from '@features/security-question/security-question.component';
 import { SelectMainServiceComponent } from '@features/select-main-service/select-main-service.component';
-import { SelectOtherServicesComponent } from '@features/select-other-services/select-other-services.component';
 import { SelectWorkplaceAddressComponent } from '@features/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/select-workplace/select-workplace.component';
-import { ServicesCapacityComponent } from '@features/services-capacity/services-capacity.component';
-import { ShareLocalAuthorityComponent } from '@features/shareLocalAuthorities/shareLocalAuthority.component';
-import { ShareOptionsComponent } from '@features/shareOptions/shareOptions.component';
-import { StartersComponent } from '@features/starters/starters.component';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
-import { TypeOfEmployerComponent } from '@features/type-of-employer/type-of-employer.component';
 import { UserDetailsComponent } from '@features/user-details/user-details.component';
-import { VacanciesComponent } from '@features/vacancies/vacancies.component';
 
 import { PageNotFoundComponent } from './core/error/page-not-found/page-not-found.component';
 import {
@@ -42,7 +31,6 @@ import { ChangeUserSecurityComponent } from './features/change-user-security/cha
 import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
 import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
-import { ServiceUsersComponent } from './features/service-users/service-users.component';
 
 const routes: Routes = [
   {
@@ -140,66 +128,6 @@ const routes: Routes = [
     component: ContinueCreatingAccountComponent,
   },
   {
-    path: 'select-other-services',
-    component: SelectOtherServicesComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'type-of-employer',
-    component: TypeOfEmployerComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'vacancies',
-    component: VacanciesComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'confirm-vacancies',
-    component: ConfirmVacanciesComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'starters',
-    component: StartersComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'confirm-starters',
-    component: ConfirmStartersComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'leavers',
-    component: LeaversComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'confirm-leavers',
-    component: ConfirmLeaversComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'capacity-of-services',
-    component: ServicesCapacityComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'service-users',
-    component: ServiceUsersComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'share-local-authority',
-    component: ShareLocalAuthorityComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: 'share-options',
-    component: ShareOptionsComponent,
-    canActivate: [AuthGuard],
-  },
-  {
     path: 'feedback',
     component: FeedbackComponent,
   },
@@ -214,6 +142,11 @@ const routes: Routes = [
   {
     path: 'problem-with-the-service',
     component: ProblemWithTheServicePagesComponent,
+  },
+  {
+    path: '',
+    loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
+    canActivate: [AuthGuard],
   },
   {
     path: 'worker',

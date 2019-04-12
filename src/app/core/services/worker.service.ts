@@ -1,5 +1,13 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {
+  AvailableQualificationsResponse,
+  QualificationRequest,
+  QualificationResponse,
+  QualificationsResponse,
+  QualificationType,
+} from '@core/model/qualification.model';
+import { TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -32,6 +40,12 @@ export class WorkerService {
   private lastDeleted$ = new BehaviorSubject<string>(null);
   private returnToSummary$ = new BehaviorSubject<boolean>(false);
   public createStaffResponse = null;
+  public trainingRecordCreated = null;
+  public trainingRecordEdited = null;
+  public trainingRecordDeleted$ = new BehaviorSubject<boolean>(false);
+  public qualificationDeleted$ = new BehaviorSubject<boolean>(false);
+  public qualificationCreated = null;
+  public qualificationEdited = null;
 
   // All workers store
   private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
@@ -105,6 +119,145 @@ export class WorkerService {
         }),
       }
     );
+  }
+
+  getAvailableQualifcations(workerId: string, type: QualificationType) {
+    const params = new HttpParams().append('type', type);
+
+    return this.http
+      .get<AvailableQualificationsResponse>(
+        `api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/qualification/available`,
+        {
+          params,
+        }
+      )
+      .pipe(map(res => res.qualifications));
+  }
+
+  createQualification(workerId: string, record: QualificationRequest) {
+    return this.http.post<QualificationRequest>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/qualification`,
+      record
+    );
+  }
+
+  updateQualification(workerId: string, qualificationId: string, record) {
+    return this.http.put(
+      `/api/establishment/${
+        this.establishmentService.establishmentId
+      }/worker/${workerId}/qualification/${qualificationId}`,
+      record
+    );
+  }
+
+  deleteQualification(workerId: string, qualificationId: string) {
+    return this.http.delete(
+      `/api/establishment/${
+        this.establishmentService.establishmentId
+      }/worker/${workerId}/qualification/${qualificationId}`
+    );
+  }
+
+  getQualifications(workerId: string) {
+    return this.http.get<QualificationsResponse>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/qualification`
+    );
+  }
+
+  getQualification(workerId: string, qualificationId: string) {
+    return this.http.get<QualificationResponse>(
+      `/api/establishment/${
+        this.establishmentService.establishmentId
+      }/worker/${workerId}/qualification/${qualificationId}`
+    );
+  }
+
+  createTrainingRecord(workerId: string, record: TrainingRecordRequest) {
+    return this.http.post<TrainingRecordRequest>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`,
+      record
+    );
+  }
+
+  updateTrainingRecord(workerId: string, trainingRecordId: string, record: TrainingRecordRequest) {
+    return this.http.put<TrainingRecordRequest>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`,
+      record
+    );
+  }
+
+  deleteTrainingRecord(workerId: string, trainingRecordId: string) {
+    return this.http.delete(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`
+    );
+  }
+
+  getTrainingRecords(workerId: string) {
+    return this.http.get<TrainingResponse>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`
+    );
+  }
+
+  getTrainingRecord(workerId: string, trainingRecordId: string) {
+    return this.http.get<any>(
+      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`
+    );
+  }
+
+  setTrainingRecordDeleted(bool) {
+    this.trainingRecordDeleted$.next(bool);
+  }
+
+  setQualificationDeleted(bool) {
+    this.qualificationDeleted$.next(bool);
+  }
+
+  getTrainingRecordCreated() {
+    return this.trainingRecordCreated;
+  }
+
+  setTrainingRecordCreated() {
+    this.trainingRecordCreated = true;
+  }
+
+  resetTrainingRecordCreated() {
+    this.trainingRecordCreated = null;
+  }
+
+  getTrainingRecordEdited() {
+    return this.trainingRecordEdited;
+  }
+
+  setTrainingRecordEdited() {
+    this.trainingRecordEdited = true;
+  }
+
+  resetTrainingRecordEdited() {
+    this.trainingRecordEdited = null;
+  }
+
+  getQualificationCreated() {
+    return this.qualificationCreated;
+  }
+
+  setQualificationCreated() {
+    this.qualificationCreated = true;
+  }
+
+  resetQualificationCreated() {
+    this.qualificationCreated = null;
+  }
+
+  getQualificationEdited() {
+    return this.qualificationEdited;
+  }
+
+  setQualificationEdited() {
+    this.qualificationEdited = true;
+  }
+
+  resetQualificationEdited() {
+    this.qualificationEdited = null;
   }
 
   setCreateStaffResponse(success: number) {

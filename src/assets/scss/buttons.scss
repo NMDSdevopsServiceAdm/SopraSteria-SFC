@@ -10,7 +10,7 @@
   margin-top: 5rem;
 }
 
-a[role="button"] {
+a[role='button'] {
   text-decoration: none;
   line-height: 40px;
 }
@@ -103,13 +103,104 @@ a[role="button"] {
     line-height: 2rem;
     box-shadow: none;
 
-
     &.btn-link-no-underline {
       text-decoration: none;
     }
 
     @include media(map-get($breakpoints, tablet)) {
       line-height: 20px;
+    }
+  }
+}
+
+.govuk-button {
+  font-weight: 400;
+  box-sizing: border-box;
+  display: inline-block;
+  position: relative;
+  margin-top: 0;
+  padding: 7px 10px;
+  border: 2px solid transparent;
+  border-radius: 0;
+  color: #fff;
+  background-color: #00823b;
+  box-shadow: 0 2px 0 #003618;
+  text-align: center;
+  vertical-align: top;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-bottom: 32px;
+  width: auto;
+
+  &::before {
+    /* content: ""; */
+    display: block;
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    bottom: -4px;
+    left: -2px;
+    background: transparent;
+  }
+
+  &:link,
+  &:visited,
+  &:active,
+  &:hover {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: #00692f;
+  }
+
+  &:focus {
+    outline: 3px solid #ffbf47;
+    outline-offset: 0;
+  }
+
+  &:active {
+    top: 2px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  &.govuk-button--start {
+    font-weight: 700;
+    line-height: 1;
+    min-height: auto;
+    padding-top: 8px;
+    padding-right: 40px;
+    padding-bottom: 8px;
+    padding-left: 15px;
+    background-repeat: no-repeat;
+    background-position: 100% 50%;
+    background-image: url(/assets/img/icon-pointer-2x.png);
+    background-size: 30px 19px;
+  }
+
+  &.govuk-button--secondary {
+    background-color: map-get($color, grey-lighter);
+    box-shadow: 0 2px 0 map-get($color, grey-darker);
+
+    &:link,
+    &:visited,
+    &:active,
+    &:hover {
+      color: $sfc-blue;
+    }
+
+    &:hover,
+    &:focus {
+      color: #FFF;
+      background-color: map-get($color, grey);
+    }
+
+    &:focus {
+      outline: 3px solid #ffbf47;
+      outline-offset: 0;
     }
   }
 }
