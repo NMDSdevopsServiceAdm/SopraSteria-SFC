@@ -11,26 +11,20 @@ export class CustomValidators extends Validators {
     };
   }
 
-  // create a static method for your validation
-  static multipleValuesValidator(c: AbstractControl): { [key: string]: boolean } | null {
-    const postcodeControl = c.get('cqcRegisteredPostcode');
+  static checkMultipleInputValues(c: AbstractControl): { [key: string]: boolean } | null {
+    // const regulatedByCQCControl = c.parent.get('regulatedByCQC');
+    const postcodeControl = c.get('regulatedPostcode');
     const locationIdControl = c.get('locationId');
 
-    if (postcodeControl.pristine || locationIdControl.pristine) {
-      return null;
-    }
+    // if (regulatedByCQCControl.pristine) {
+    //   return null;
+    // }
 
-    if (postcodeControl.value.length < 1 && locationIdControl.value.length < 1) {
-      return null;
+    if (postcodeControl.value.length && locationIdControl.value.length) {
+      return { bothHaveContent: true };
+    } else if (!postcodeControl.value.length && !locationIdControl.value.length) {
+      return { bothAreEmpty: true };
     }
-
-    if (
-      (postcodeControl.value.length < 1 && locationIdControl.value.length > 0) ||
-      (postcodeControl.value.length > 0 && locationIdControl.value.length < 1)
-    ) {
-      return null;
-    }
-    return { bothHaveContent: true };
   }
 
   static matchInputValues(c: AbstractControl): null | void {

@@ -36,15 +36,5 @@ export interface RegistrationModel {
     county: string;
     postalCode: string;
   }];
-  //  fullname: string;
-  //  jobTitle: string;
-  //  emailAddress: string;
-  //  contactNumber: string;
-  //  username: string;
-  //  password: string;
-  //  securityQuestion: string;
-  //  securityAnswer: string;
-  //}],
-
 }
 
