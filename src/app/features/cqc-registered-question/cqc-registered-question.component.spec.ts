@@ -22,9 +22,8 @@ describe('CqcRegisteredQuestionComponent', () => {
     fixture.detectChanges();
   });
 
-  /*
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  */
+
 });
