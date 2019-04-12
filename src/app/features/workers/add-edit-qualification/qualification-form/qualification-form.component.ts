@@ -5,6 +5,7 @@ import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-qualification-form',
@@ -14,7 +15,7 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
   @Input() worker: Worker;
   @Input() group: FormGroup;
   @Input() type: { key: string; value: string };
-  @Input() qualification: Qualification;
+  @Input() preselectedQualification: Qualification;
   @Input() yearValidators: ValidatorFn[];
   public qualifications: Qualification[];
   private subscriptions: Subscription = new Subscription();
@@ -25,6 +26,7 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService
         .getAvailableQualifcations(this.worker.uid, this.type.value as QualificationType)
+        .pipe(take(1))
         .subscribe(qualifications => {
           this.qualifications = qualifications;
         })
@@ -33,17 +35,17 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
     this.group.get('qualification').valueChanges.subscribe(value => {
       const year = this.group.get('year');
       const extraValidators: ValidatorFn[] = [];
-      const qualification = this.qualifications.find(qualification => (qualification.id = value));
+      const selectedQualification = this.qualifications.find(qualification => qualification.id === parseInt(value, 10));
 
       year.clearValidators();
 
-      if (qualification.from) {
-        const from = moment(qualification.from);
+      if (selectedQualification.from) {
+        const from = moment(selectedQualification.from);
         extraValidators.push(Validators.min(from.year()));
       }
 
-      if (qualification.until) {
-        const until = moment(qualification.until);
+      if (selectedQualification.until) {
+        const until = moment(selectedQualification.until);
         extraValidators.push(Validators.max(until.year()));
       }
 
