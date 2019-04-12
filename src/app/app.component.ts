@@ -2,13 +2,8 @@ import 'core-js';
 
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, map } from 'rxjs/operators';
-
-declare let gtag: Function;
-
-function getWindow(): any {
-  return window;
-}
+import { Angulartics2GoogleGlobalSiteTag } from 'angulartics2/gst';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -17,27 +12,15 @@ function getWindow(): any {
 })
 export class AppComponent implements OnInit {
   title = 'ng-sfc-v2';
-  gaid: string;
 
-  constructor(private router: Router) {
-    if (getWindow().gaid) {
-      this.gaid = getWindow().gaid;
-    }
+  constructor(private router: Router, angulartics: Angulartics2GoogleGlobalSiteTag) {
+    angulartics.startTracking();
   }
 
   ngOnInit() {
-    this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationEnd),
-        map(event => event as NavigationEnd)
-      )
-      .subscribe(event => {
-        console.log(this.gaid, { page_path: event.urlAfterRedirects });
-        gtag('config', this.gaid, {
-          page_path: event.urlAfterRedirects,
-        });
-        window.scrollTo(0, 0);
-      });
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+      window.scrollTo(0, 0);
+    });
 
     if (localStorage.getItem('auth-token')) {
       localStorage.clear();
