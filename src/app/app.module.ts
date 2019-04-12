@@ -3,7 +3,6 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule } from '@angular/router';
 import { HttpInterceptor } from '@core/services/http-interceptor';
 import { TrainingService } from '@core/services/training.service';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
@@ -122,17 +121,6 @@ import { UserDetailsComponent } from './features/user-details/user-details.compo
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
-    RouterModule.forRoot([
-      {
-        path: '',
-        redirectTo: '/login',
-        pathMatch: 'full',
-      },
-      {
-        path: 'login',
-        component: LoginComponent,
-      },
-    ]),
     SharedModule,
     MomentModule,
   ],
