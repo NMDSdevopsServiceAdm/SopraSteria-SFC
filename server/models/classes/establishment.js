@@ -383,10 +383,10 @@ class Establishment {
                         // For now, we'll recalculate on every update!
                         const completedProperty = this._properties.get('Completed');
                         if (this._properties.get('Completed') && this._properties.get('Completed').modified) {
-                            await WdfCalculator.calculate(savedBy, this._id, this._uid);
+                            await WdfCalculator.calculate(savedBy, this._id, this._uid, thisTransaction);
                         } else {
                             // TODO - include Completed logic.
-                            await WdfCalculator.calculate(savedBy, this._id, this._uid);
+                            await WdfCalculator.calculate(savedBy, this._id, this._uid, thisTransaction);
                         }
 
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
@@ -963,6 +963,10 @@ class Establishment {
     // returns the WDF eligibilty as JSON object
     async wdfToJson() {
         const effectiveFrom = WdfCalculator.effectiveDate;
+        const effectiveTime = WdfCalculator.effectiveTime;
+
+        console.log("WA DEBUG - establishment's wdfToJson - effective date: ", effectiveDate)
+        console.log("WA DEBUG - establishment's wdfToJson - effective time: ", effectiveTime)
         const myWDF = {
             effectiveFrom: effectiveFrom.toISOString(),
             ... await this.isWdfEligible(effectiveFrom)
