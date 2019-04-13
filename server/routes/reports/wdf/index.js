@@ -30,10 +30,11 @@ router.route('/establishment/:id').get(async (req, res) => {
         }
 
         WdfCalculator.effectiveDate = effectiveFrom;
+    } else {
+        // reset the WDF calculator's effective date
+        WdfCalculator.effectiveDate = null;
+        effectiveFrom = WdfCalculator.effectiveDate;
     }
-
-
-    console.log("WA DEBUG - the WDF report effective from date: ", WdfCalculator.effectiveDate);
 
     // validating establishment id - must be a V4 UUID or it's an id
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -41,45 +42,26 @@ router.route('/establishment/:id').get(async (req, res) => {
     if (typeof establishmentId === 'string' && uuidRegex.test(establishmentId.toUpperCase())) {
         byUUID = establishmentId;
     } else if (Number.isInteger(establishmentId)) {
-      byID = parseInt(escape(establishmentId));
+        byID = parseInt(escape(establishmentId));
     } else {
-      // unexpected establishment id
-      return res.status(400).send();
+        // unexpected establishment id
+        return res.status(400).send();
     }
 
     try {
-        const thisEstablishment = new Establishment(req.username);
-        if (await thisEstablishment.restore(byID, byUUID, false)) {
-            const numberOfStaff = thisEstablishment.numberOfStaff;
-            const theseWorkers = await Worker.fetch(byID, byUUID, effectiveFrom);
-            const allEligibleWorkers = theseWorkers.filter(thisWorker => thisWorker.wdfEligible === true);
-            const workplaceEligibility = (await thisEstablishment.isWdfEligible(effectiveFrom)).isEligible;
+        const wdfReport = await WdfCalculator.report(byID, byUUID);
 
-            // there must exist at least one staff member
-            // all Worker records must equal the number of staff known by the establishment
-            // at least 90% of all known workers are eligible
-            const staffEligibility = (numberOfStaff >= 1) &&
-                                     (numberOfStaff != theseWorkers.length) &&
-                                     (allEligibleWorkers.length / theseWorkers.length >= 0.9); 
-    
-            return res.status(200).send({
-                establishmentId: byID ? byID : undefined,
-                establishmentUid: byUUID ? byUUID : undefined,
-                timestamp: new Date().toISOString(),
-                effectiveFrom: effectiveFrom.toISOString(),
-                wdf: {
-                    isEligible: workplaceEligibility && staffEligibility,
-                    workplace: workplaceEligibility,
-                    staff: staffEligibility,
-                },
-                customEffectiveFrom: isLocal(req) ? true : undefined
-            });
-    
-        } else {
-            // not found worker
-            return res.status(404).send('Not Found');
-        }
+        if (wdfReport === false) return res.status(404).send('Not Found');
 
+        return res.status(200).send({
+            establishmentId: byID ? byID : undefined,
+            establishmentUid: byUUID ? byUUID : undefined,
+            timestamp: new Date().toISOString(),
+            effectiveFrom: effectiveFrom.toISOString(),
+            wdf: wdfReport,
+            customEffectiveFrom: isLocal(req) ? true : undefined
+        });
+    
     } catch (err) {
         console.error('report/wdf/establishment/:eID - failed', err);
         return res.status(503).send();

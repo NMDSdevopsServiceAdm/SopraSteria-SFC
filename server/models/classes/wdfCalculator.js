@@ -29,6 +29,7 @@ class WdfCalculator {
 
   // recalculates an establishment's WDF eligibility
   //   - this method is called internally - not direct from API, hence no user constraint in the find
+  // returns true on success and false on error
   async calculate(savedBy, establishmentID, establishmentUID=null, externalTransaction=null) {
     console.log("WA DEBUG - recalculating Overall WDF Eligbility for establishment having id/uid: ", establishmentID, establishmentUID);
 
@@ -144,25 +145,110 @@ class WdfCalculator {
 
         // TODO - post to SNS topic
 
+        return true;
+
       } else {
         console.error('WdfCalculator::calculate - Failed to find establishment having id/uid: ', establishmentID, establishmentUID);
+        return false;
       }
       
     } catch (err) {
       console.error('WdfCalculator::calculate - Failed to fetch establishment/workers: ', err);
+      return false;
     }
 
   }
 
   // reports on WDF Eligibility for the given Establishment
+  // there is nothing sensitive in these results, therefore, intentionally
+  //   there is no specific restrictions imposed by username on the establishment lookup
+  //   other than that already imposed by the endpoint authorisation middleware
+  // returns true on success and false on error
   async report(establishmentID, establishmentUID) {
     // TODO
     console.log("WA DEBUG - recalculating Overall WDF Eligbility for establishment having id/uid: ", establishmentID, establishmentUID);
+
+    const wdfReport = {
+
+    };
+
+    try {
+      let thisEstablishment = null;
+      
+      if (establishmentUID) {
+        thisEstablishment = await models.establishment.findOne({
+          attributes: ['id', 'uid', 'lastWdfEligibility', 'overallWdfEligibility', 'NumberOfStaffValue', 'NumberOfStaffSavedAt'],
+          where: {
+            uid: establishmentUID
+          }
+        });
+      } else {
+        thisEstablishment = await models.establishment.findOne({
+          attributes: ['id', 'uid', 'lastWdfEligibility', 'overallWdfEligibility', 'NumberOfStaffValue', 'NumberOfStaffSavedAt'],
+          where: {
+            id: establishmentID
+          }
+        });
+      }
+
+      if (thisEstablishment && thisEstablishment.id) {
+        // present the Overall WDF Eligibility based on the current effective date
+        if (thisEstablishment.overallWdfEligibility &&
+            thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) {
+          wdfReport.isEligible = true;
+        } else {
+          wdfReport.isEligible = false;
+        }
+
+        // present the Establishment's WDF Eligibility based on the current effective date
+        if (thisEstablishment.lastWdfEligibility &&
+            thisEstablishment.lastWdfEligibility.getTime() > this.effectiveTime) {
+          wdfReport.workplace = true;
+        } else {
+          wdfReport.workplace = false;
+        }
+
+        // present the All Staff WDF Eligiblity based on the current effective date
+        const theseWorkers = await models.worker.findAll({
+          attributes: ['id', 'uid', 'lastWdfEligibility'],
+          where: {
+            establishmentFk: thisEstablishment.id,
+            archived: false
+          }
+        });
+
+        // the number of active worker records must be the same as the declared Establishment staff
+        console.log(`WA DEBUG - Establishment has #${theseWorkers.length} workers`)
+        if (!(theseWorkers && Array.isArray(theseWorkers) && theseWorkers.length === thisEstablishment.NumberOfStaffValue)) {
+          wdfReport.staff = false;
+          return wdfReport;
+        }
+
+        // at least 90% of all current workers must be eligible
+        const allEligibleWorkers = theseWorkers.filter(thisWorker => thisWorker.lastWdfEligibility ? thisWorker.lastWdfEligibility.getTime() > this.effectiveTime : false);
+        console.log(`WA DEBUG - establishment has #${allEligibleWorkers.length} eligible workers`)
+        const weightedStaffEligibility = (allEligibleWorkers.length / theseWorkers.length);
+        console.log(`WA DEBUG - establishment has ${weightedStaffEligibility*100}% eligible workers`)
+        if (weightedStaffEligibility < 0.9) {
+          wdfReport.staff = false;
+        } else {
+          wdfReport.staff = true;
+        }
+
+        return wdfReport;
+
+      } else {
+        console.error('WdfCalculator::report - Failed to find establishment having id/uid: ', establishmentID, establishmentUID);
+        return false;
+      }
+    } catch (err) {
+      console.error('WdfCalculator::report - Failed to fetch establishment/workers: ', err);
+      return false;
+    }
   }
 
 }
 
 const THE_WDF_CALCULATOR = new WdfCalculator();
-console.log("WA DEBUG - created Wdf Calculator singleton - effective date: ", THE_WDF_CALCULATOR.effectiveDate);
 
 exports.WdfCalculator = THE_WDF_CALCULATOR;
