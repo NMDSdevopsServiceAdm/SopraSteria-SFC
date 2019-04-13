@@ -798,7 +798,6 @@ class Establishment {
                 myDefaultJSON.locationRef = this.locationId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
-                //myDefaultJSON.mainService = ServiceFormatters.singleService(this.mainService);
             }
 
             myDefaultJSON.created = this.created.toJSON();

@@ -632,7 +632,8 @@ class Worker {
                         updated: thisWorker.updated.toJSON(),
                         updatedBy: thisWorker.updatedBy,
                         effectiveFrom: effectiveFromIso,
-                        wdfEligible: thisWorker.lastWdfEligibility && thisWorker.lastWdfEligibility.getTime() > effectiveFromTime ? true : false
+                        wdfEligible: thisWorker.lastWdfEligibility && thisWorker.lastWdfEligibility.getTime() > effectiveFromTime ? true : false,
+                        wdfEligibilityLastUpdated: thisWorker.lastWdfEligibility ? thisWorker.lastWdfEligibility.toISOString() : undefined
                     });
                 });
                 await Promise.all(workerPromise);
