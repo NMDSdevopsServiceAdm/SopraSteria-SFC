@@ -18,11 +18,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"EstablishmentFK"'
     },
-    currentWdfEligibiity: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      field: '"CurrentWdfEligibiity"'
-    },
     lastWdfEligibility: {
       type: DataTypes.DATE,
       allowNull: true,
