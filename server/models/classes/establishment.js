@@ -19,10 +19,13 @@ const ServiceFormatters = require('../api/services');
 // exceptions
 const EstablishmentExceptions = require('./establishment/establishmentExceptions');
 
-// User properties
+// Establishment properties
 const EstablishmentProperties = require('./establishment/establishmentProperties').EstablishmentPropertyManager;
 const JSON_DOCUMENT_TYPE = require('./user/userProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUMENT;
+
+// WDF Calculator
+const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
 class Establishment {
     constructor(username) {
@@ -42,6 +45,8 @@ class Establishment {
         this._isRegulated = null;
         this._mainService = null;
         this._nmdsId = null;
+        this._lastWdfEligibility = null;
+        this._currentWdfEligibiity = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -287,6 +292,20 @@ class Establishment {
                         updatedBy: savedBy
                     };
 
+                    // every time the establishment is saved, need to calculate
+                    //  it's current WDF Eligibility, and if it is eligible, update
+                    //  the last WDF Eligibility status
+                    const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
+                    let wdfAudit = null;
+                    if (currentWdfEligibiity.currentEligibility) {
+                        console.log("WA DEBUG - updating this establishment's last WDF Eligible timestamp")
+                        updateDocument.lastWdfEligibility = updatedTimestamp;
+                        wdfAudit = {
+                            username: savedBy,
+                            type: 'wdfEligible'
+                        };
+                    }
+
                     // now save the document
                     let [updatedRecordCount, updatedRows] =
                         await models.establishment.update(
@@ -308,6 +327,7 @@ class Establishment {
                         this._updatedBy = savedBy;
                         this._id = updatedRecord.EstablishmentID;
 
+                        // having updated the record, create the audit event
                         const allAuditEvents = [{
                             establishmentFk: this._id,
                             username: savedBy,
@@ -317,7 +337,10 @@ class Establishment {
                                     establishmentFk: this._id
                                 };
                             }));
-                            // having updated the record, create the audit event
+                        if (wdfAudit) {
+                            wdfAudit.establishmentFk = this._id;
+                            allAuditEvents.push(wdfAudit);
+                        }    
                         await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
@@ -352,12 +375,26 @@ class Establishment {
                         });
                         await Promise.all(createModelPromises);
 
+                        // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
+                        // having updated the Establishment, check to see whether it is necessary to recalculate
+                        //  the overall WDF eligibility for this establishment and all its workers
+                        //  This decision is done based on if the Establishment is being marked as Completed.
+                        // There does not yet exist a Completed property for establishment.
+                        // For now, we'll recalculate on every update!
+                        const completedProperty = this._properties.get('Completed');
+                        if (this._properties.get('Completed') && this._properties.get('Completed').modified) {
+                            await WdfCalculator.calculate(savedBy, this._id, this._uid);
+                        } else {
+                            // TODO - include Completed logic.
+                            await WdfCalculator.calculate(savedBy, this._id, this._uid);
+                        }
+
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
+
 
                     } else {
                         throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update resulting establishment record with id: ${this._id}`);
                     }
-
                 });
                 
             } catch (err) {
@@ -520,6 +557,8 @@ class Establishment {
                     name: fetchResults.mainService.name
                 };
                 this._nmdsId = fetchResults.nmdsId;
+                this._lastWdfEligibility = fetchResults.lastWdfEligibility;
+                this._currentWdfEligibiity = fetchResults.currentWdfEligibiity;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -700,7 +739,7 @@ class Establishment {
     //  or updated only)
     formatHistoryEvents(auditEvents) {
         if (auditEvents) {
-            return auditEvents.filter(thisEvent => ['created', 'updated'].includes(thisEvent.type))
+            return auditEvents.filter(thisEvent => ['created', 'updated', 'wdfEligible', 'overalWdfEligible'].includes(thisEvent.type))
                                .map(thisEvent => {
                                     return {
                                         when: thisEvent.when,
@@ -849,9 +888,12 @@ class Establishment {
     async isWdfEligible(effectiveFrom) {
         const wdfByProperty = await this.wdf(effectiveFrom);
 
-        // this establishment is eligible only if none of the properties are not eligible (don't care if a property is "Not relevant")
+        // this establishment is eligible only if the last eligible date is later than the effective date
+        //  the WDF by property will show the current eligibility of each property
         return {
-            isEligible: Object.values(wdfByProperty).every(thisProperty => {
+            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
+            currentEligibility: Object.values(wdfByProperty).every(thisProperty => {
                 return !(thisProperty === 'No');
             }),
             ... wdfByProperty
@@ -862,7 +904,7 @@ class Establishment {
         const PER_PROPERTY_ELIGIBLE=0;
         const RECORD_LEVEL_ELIGIBLE=1;
         const COMPLETED_PROPERTY_ELIGIBLE=2;
-        const ELIGIBILITY_REFERENCE = PER_PROPERTY_ELIGIBLE;
+        const ELIGIBILITY_REFERENCE = RECORD_LEVEL_ELIGIBLE;
 
         let referenceTime = null;
 
@@ -875,14 +917,13 @@ class Establishment {
                 break;
             case COMPLETED_PROPERTY_ELIGIBLE:
                 // there is no completed property (yet) - copy the code from '.../server/models/classes/worker.js' once there is
-                throw new Error('Establihsment WDF by Completion is Not implemented');
+                throw new Error('Establishment WDF by Completion is Not implemented');
                 break;
         }
 
         return property &&
                property.property !== null &&
                property.valid &&
-               property.savedAt &&
                referenceTime !== null &&
                referenceTime > refEpoch;
     }
@@ -921,7 +962,8 @@ class Establishment {
     }
 
     // returns the WDF eligibilty as JSON object
-    async wdfToJson(effectiveFrom) {
+    async wdfToJson() {
+        const effectiveFrom = WdfCalculator.effectiveDate;
         const myWDF = {
             effectiveFrom: effectiveFrom.toISOString(),
             ... await this.isWdfEligible(effectiveFrom)

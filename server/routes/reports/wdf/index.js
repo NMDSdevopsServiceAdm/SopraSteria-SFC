@@ -5,11 +5,11 @@ const router = express.Router();
 // security
 const Authorization = require('../../../utils/security/isAuthenticated');
 const isLocal = require('../../../utils/security/isLocalTest').isLocal;
-const WdfUtils = require('../../../utils/wdfEligibilityDate');
 
 // all user functionality is encapsulated
 const Establishment = require('../../../models/classes/establishment').Establishment;
 const Worker = require('../../../models/classes/worker').Worker;
+const WdfCalculator = require('../../../models/classes/wdfCalculator').WdfCalculator;
 
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
@@ -28,9 +28,12 @@ router.route('/establishment/:id').get(async (req, res) => {
             console.error('report/wdf/establishment/:eID - effectiveFrom parameter incorrect');
             return res.status(400).send();
         }
-    } else {
-        effectiveFrom = WdfUtils.wdfEligibilityDate();
+
+        WdfCalculator.effectiveDate = effectiveFrom;
     }
+
+
+    console.log("WA DEBUG - the WDF report effective from date: ", WdfCalculator.effectiveDate);
 
     // validating establishment id - must be a V4 UUID or it's an id
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -45,15 +48,10 @@ router.route('/establishment/:id').get(async (req, res) => {
     }
 
     try {
-       // TODO - mock data
-    //    const numStaff = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('NumberOfStaff')) ? this._properties.get('NumberOfStaff').property : 0;
-    //    myWdf['staff'] = numStaff === 0 ? false : Math.random() >= 0.5;                // TODO - cross-check numStaff against #workers (regardless of whether completed or not)
-    //    myWdf['weightedStaff'] = Math.random() >= 0.5;                                 // TODO - true if >= 90% of #workers completed
-
         const thisEstablishment = new Establishment(req.username);
         if (await thisEstablishment.restore(byID, byUUID, false)) {
             const numberOfStaff = thisEstablishment.numberOfStaff;
-            const theseWorkers = await Worker.fetch(establishmentId, effectiveFrom);
+            const theseWorkers = await Worker.fetch(byID, byUUID, effectiveFrom);
             const allEligibleWorkers = theseWorkers.filter(thisWorker => thisWorker.wdfEligible === true);
             const workplaceEligibility = (await thisEstablishment.isWdfEligible(effectiveFrom)).isEligible;
 
@@ -65,7 +63,8 @@ router.route('/establishment/:id').get(async (req, res) => {
                                      (allEligibleWorkers.length / theseWorkers.length >= 0.9); 
     
             return res.status(200).send({
-                establishmentUid: establishmentId,
+                establishmentId: byID ? byID : undefined,
+                establishmentUid: byUUID ? byUUID : undefined,
                 timestamp: new Date().toISOString(),
                 effectiveFrom: effectiveFrom.toISOString(),
                 wdf: {
