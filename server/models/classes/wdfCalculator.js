@@ -195,8 +195,10 @@ class WdfCalculator {
         // present the Overall WDF Eligibility based on the current effective date
         if (thisEstablishment.overallWdfEligibility &&
             thisEstablishment.overallWdfEligibility.getTime() > this.effectiveTime) {
+          wdfReport.overallWdfEligibility = thisEstablishment.overallWdfEligibility;
           wdfReport.isEligible = true;
         } else {
+          wdfReport.overallWdfEligibility = thisEstablishment.overallWdfEligibility ? thisEstablishment.overallWdfEligibility : undefined;
           wdfReport.isEligible = false;
         }
 

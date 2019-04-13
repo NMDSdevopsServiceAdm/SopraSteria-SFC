@@ -46,7 +46,7 @@ class Establishment {
         this._mainService = null;
         this._nmdsId = null;
         this._lastWdfEligibility = null;
-        this._currentWdfEligibiity = null;
+        this._overallWdfEligibility = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -558,7 +558,7 @@ class Establishment {
                 };
                 this._nmdsId = fetchResults.nmdsId;
                 this._lastWdfEligibility = fetchResults.lastWdfEligibility;
-                this._currentWdfEligibiity = fetchResults.currentWdfEligibiity;
+                this._overallWdfEligibility = fetchResults.overallWdfEligibility;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -890,11 +890,8 @@ class Establishment {
         // this establishment is eligible only if the last eligible date is later than the effective date
         //  the WDF by property will show the current eligibility of each property
         return {
-            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-            currentEligibility: Object.values(wdfByProperty).every(thisProperty => {
-                return !(thisProperty === 'No');
-            }),
+            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
             ... wdfByProperty
         };
     }
@@ -963,12 +960,9 @@ class Establishment {
     // returns the WDF eligibilty as JSON object
     async wdfToJson() {
         const effectiveFrom = WdfCalculator.effectiveDate;
-        const effectiveTime = WdfCalculator.effectiveTime;
-
-        console.log("WA DEBUG - establishment's wdfToJson - effective date: ", effectiveDate)
-        console.log("WA DEBUG - establishment's wdfToJson - effective time: ", effectiveTime)
         const myWDF = {
             effectiveFrom: effectiveFrom.toISOString(),
+            overalWdfEligible: this._overallWdfEligibility ? this._overallWdfEligibility.toISOString() : false,
             ... await this.isWdfEligible(effectiveFrom)
         };
         return myWDF;

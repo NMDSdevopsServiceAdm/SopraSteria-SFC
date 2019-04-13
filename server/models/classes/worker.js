@@ -49,7 +49,6 @@ class Worker {
         // local attributes
         this._reason = null;
         this._lastWdfEligibility = null;
-        this._currentWdfEligibiity = null;
     }
 
     // returns true if valid establishment id
@@ -238,11 +237,9 @@ class Worker {
                     //  it's current WDF Eligibility, and if it is eligible, update
                     //  the last WDF Eligibility status
                     const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
-                    console.log("WA DEBUG - updating Worker - current WDF Eligibility: ", currentWdfEligibiity)
 
                     let wdfAudit = null;
                     if (currentWdfEligibiity.currentEligibility) {
-                        console.log("WA DEBUG - updating this worker's last WDF Eligible timestamp")
                         updateDocument.lastWdfEligibility = updatedTimestamp;
                         wdfAudit = {
                             username: savedBy,
@@ -444,9 +441,6 @@ class Worker {
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
                 this._lastWdfEligibility = fetchResults.lastWdfEligibility;
-                this._currentWdfEligibiity = fetchResults.currentWdfEligibiity;
-
-                console.log("WA DEBUG - Worker eligibility: ", fetchResults.lastWdfEligibility, fetchResults.currentWdfEligibiity)
 
                 // if history of the Worker is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -849,11 +843,8 @@ class Worker {
         // NOTE - the worker does not have to be completed before it can be eligible for WDF
 
         return {
-            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
-            currentEligibility: Object.values(wdfByProperty).every(thisProperty => {
-                return !(thisProperty === 'No');
-            }),
+            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
             ... wdfByProperty
         };
     }
