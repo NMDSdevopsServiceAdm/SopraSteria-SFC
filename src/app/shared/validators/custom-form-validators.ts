@@ -12,17 +12,12 @@ export class CustomValidators extends Validators {
   }
 
   static checkMultipleInputValues(c: AbstractControl): { [key: string]: boolean } | null {
-    // const regulatedByCQCControl = c.parent.get('regulatedByCQC');
-    const postcodeControl = c.get('regulatedPostcode');
-    const locationIdControl = c.get('locationId');
+    const regulatedPostcode = c.get('regulatedPostcode');
+    const locationId = c.get('locationId');
 
-    // if (regulatedByCQCControl.pristine) {
-    //   return null;
-    // }
-
-    if (postcodeControl.value.length && locationIdControl.value.length) {
+    if (regulatedPostcode.value.length && locationId.value.length) {
       return { bothHaveContent: true };
-    } else if (!postcodeControl.value.length && !locationIdControl.value.length) {
+    } else if (!regulatedPostcode.value.length && !locationId.value.length) {
       return { bothAreEmpty: true };
     }
   }

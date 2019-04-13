@@ -102,21 +102,26 @@ export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
           regulatedPostcode: ['', Validators.maxLength(8)],
           locationId: ['', Validators.maxLength(50)],
         },
-        { validator: CustomValidators.checkMultipleInputValues }
       ),
       nonRegulatedPostcode: ['', Validators.maxLength(8)],
     });
   }
 
-  public setNonRegulatedPostcodelMandatory(): void {
-    console.log('setNonRegulatedPostcodelMandatory fired');
-    this.nonRegulatedPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
+  public onRegulatedByCQCTruthy(): void {
+    console.log('onRegulatedByCQCTruthy fired');
+    this.group.setValidators([CustomValidators.checkMultipleInputValues]);
+    this.group.updateValueAndValidity();
+
+    this.nonRegulatedPostcode.setValidators(Validators.maxLength(8));
     this.nonRegulatedPostcode.updateValueAndValidity();
   }
 
-  public setNonRegulatedPostcodelOptional(): void {
-    console.log('setNonRegulatedPostcodelOptional fired');
-    this.nonRegulatedPostcode.setValidators(Validators.maxLength(8));
+  public onRegulatedByCQCFalsy(): void {
+    console.log('onRegulatedByCQCFalsy fired');
+    this.group.clearValidators();
+    this.group.updateValueAndValidity();
+
+    this.nonRegulatedPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
     this.nonRegulatedPostcode.updateValueAndValidity();
   }
 

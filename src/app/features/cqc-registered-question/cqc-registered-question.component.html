@@ -14,7 +14,7 @@
     <div>regulatedByCQC errors = {{ regulatedByCQC.errors | json }}</div>
     <div>regulatedPostcode errors = {{ group.get('regulatedPostcode').errors | json }}</div>
     <div>group errors = {{ group.errors | json }}</div>
-    <div>regulatedByCQCControl dirty = {{ regulatedByCQC.dirty }}</div>
+    <div>regulatedByCQCControl status = {{ regulatedByCQC.dirty }}</div>
     <br />
     <br />
 
@@ -31,7 +31,7 @@
           </span>
           <div class="govuk-radios govuk-radios--conditional">
             <!-- regulated -->
-            <div class="govuk-radios__item" (click)="setNonRegulatedPostcodelOptional()">
+            <div class="govuk-radios__item" (click)="onRegulatedByCQCTruthy()">
               <input
                 data-aria-controls="regulatedByCQC-conditional-1"
                 class="govuk-radios__input"
@@ -46,7 +46,7 @@
               </label>
             </div>
 
-            <!-- group -->
+            <!-- group & conditional content -->
             <div
               *ngIf="regulatedByCQC.value === 'yes'"
               class="govuk-radios__conditional"
@@ -89,8 +89,8 @@
               </div>
             </div>
 
-            <!-- Not regulated -->
-            <div class="govuk-radios__item" (click)="setNonRegulatedPostcodelMandatory()">
+            <!-- Non regulated -->
+            <div class="govuk-radios__item" (click)="onRegulatedByCQCFalsy()">
               <input
                 data-aria-controls="regulatedByCQC-conditional-2"
                 class="govuk-radios__input"
@@ -105,6 +105,7 @@
               </label>
             </div>
 
+            <!-- conditional content -->
             <div
               *ngIf="regulatedByCQC.value === 'no'"
               class="govuk-radios__conditional"
@@ -129,159 +130,6 @@
           </div>
         </fieldset>
       </div>
-
-      <!--      <div class="form-group mb-5">-->
-      <!--        <div class="col-12 p-0">-->
-      <!--          <label class="main-body-text-bold mb-3 d-block"-->
-      <!--            >Are you regulated by the Care Quality Commission (CQC)?</label-->
-      <!--          >-->
-
-      <!--          <div class="row mb-5">-->
-      <!--            <div class="col-12">-->
-      <!--              <div class="multiple-choice">-->
-      <!--                <input type="radio" id="reqQuestionYes" value="true" formControlName="registeredQuestionSelected" />-->
-      <!--                <label class="main-body-text p-0" for="reqQuestionYes">Yes</label>-->
-      <!--              </div>-->
-      <!--            </div>-->
-
-      <!--            <div-->
-      <!--              *ngIf="registeredQuestionSelectedValue === 'true'"-->
-      <!--              class="panel panel-border-narrow col-10 col-lg-6"-->
-      <!--              [ngClass]="{-->
-      <!--                'is-invalid':-->
-      <!--                  (!submitted &&-->
-      <!--                    (regulatedPostcode.errors || locationId.errors || group.errors)) ||-->
-      <!--                  (submitted &&-->
-      <!--                    (regulatedPostcode.errors || locationId.errors || group.errors)) ||-->
-      <!--                  group.hasError('bothHaveContent') ||-->
-      <!--                  (cqcPostcodeApiError || cqclocationApiError)-->
-      <!--              }"-->
-      <!--            >-->
-      <!--              <div formGroupName="group">-->
-      <!--                <div class="form-group">-->
-      <!--                  <label class="form-label" for="postcodeYes">Enter your postcode</label>-->
-
-      <!--                  <span class="invalid-feedback">-->
-      <!--                    <span *ngIf="!submittedCqcRegPostcode" class="main-body-text mb-2">{{-->
-      <!--                      cqcRegPostcodeMessage-->
-      <!--                    }}</span>-->
-      <!--                    &lt;!&ndash; <span *ngIf="submitted && !submittedCqcRegPostcode && !submittedCqcRegLocationId" class="main-body-text mb-2">-->
-      <!--                        Please enter a postcode or Location ID.-->
-      <!--                    </span> &ndash;&gt;-->
-      <!--                    <span-->
-      <!--                      *ngIf="submittedCqcRegPostcode && regulatedPostcode.hasError('maxlength')"-->
-      <!--                      class="main-body-text mb-2"-->
-      <!--                    >-->
-      <!--                      Your postcode must be no longer than 8 characters.-->
-      <!--                    </span>-->
-      <!--                    <span-->
-      <!--                      *ngIf="submittedCqcRegPostcode && group.hasError('bothHaveContent')"-->
-      <!--                      class="main-body-text mb-2"-->
-      <!--                    >-->
-      <!--                      Both have content-->
-      <!--                    </span>-->
-      <!--                    <span *ngIf="cqcPostcodeApiError" class="main-body-text mb-2">-->
-      <!--                      {{ cqcPostcodeApiError }}-->
-      <!--                    </span>-->
-      <!--                  </span>-->
-
-      <!--                  <div class="form-control-feedback">-->
-      <!--                    <input-->
-      <!--                      placeholder="postcode"-->
-      <!--                      type="text"-->
-      <!--                      id="postcodeYes"-->
-      <!--                      class="form-control col-12"-->
-      <!--                      formControlName="regulatedPostcode"-->
-      <!--                    />-->
-      <!--                  </div>-->
-      <!--                </div>-->
-
-      <!--                <div class="form-group mt-2">-->
-      <!--                  <p class="label mt-4">or</p>-->
-
-      <!--                  <label class="form-label" for="locationId">Enter your location ID number</label>-->
-
-      <!--                  <span class="invalid-feedback">-->
-      <!--                    <span *ngIf="!submittedCqcRegLocationId" class="main-body-text mb-2">{{-->
-      <!--                      cqcRegLocationIdMessage-->
-      <!--                    }}</span>-->
-      <!--                    &lt;!&ndash; <span *ngIf="submitted && !submittedCqcRegPostcode && !submittedCqcRegLocationId" class="main-body-text mb-2">-->
-      <!--                        Please enter a postcode or Location ID.-->
-      <!--                    </span> &ndash;&gt;-->
-      <!--                    <span-->
-      <!--                      *ngIf="submittedCqcRegLocationId && locationId.hasError('maxlength')"-->
-      <!--                      class="main-body-text mb-2"-->
-      <!--                    >-->
-      <!--                      Your Location ID must be no longer than 50 characters.-->
-      <!--                    </span>-->
-      <!--                    <span-->
-      <!--                      *ngIf="submittedCqcRegPostcode && group.hasError('bothHaveContent')"-->
-      <!--                      class="main-body-text mb-2"-->
-      <!--                    >-->
-      <!--                      Both have content-->
-      <!--                    </span>-->
-      <!--                    <span *ngIf="cqclocationApiError" class="main-body-text mb-2">-->
-      <!--                      {{ cqclocationApiError }}-->
-      <!--                    </span>-->
-      <!--                  </span>-->
-
-      <!--                  <input-->
-      <!--                    placeholder="location"-->
-      <!--                    type="text"-->
-      <!--                    id="location"-->
-      <!--                    class="form-control col-12"-->
-      <!--                    formControlName="locationId"-->
-      <!--                  />-->
-      <!--                </div>-->
-      <!--              </div>-->
-      <!--            </div>-->
-      <!--          </div>-->
-
-      <!--          <div class="row">-->
-      <!--            <div class="col-12">-->
-      <!--              <div class="multiple-choice">-->
-      <!--                <input type="radio" id="regQuestionNo" value="false" formControlName="registeredQuestionSelected" />-->
-
-      <!--                <label class="main-body-text p-0" for="regQuestionNo">No</label>-->
-      <!--              </div>-->
-      <!--            </div>-->
-
-      <!--            <div-->
-      <!--              *ngIf="registeredQuestionSelectedValue === 'false'"-->
-      <!--              class="panel panel-border-narrow col-10 col-lg-6"-->
-      <!--              [ngClass]="{ 'is-invalid': nonCqcRegPostcodeMessage || nonCqcPostcodeApiError }"-->
-      <!--            >-->
-      <!--              <div class="field-group">-->
-      <!--                <label class="form-label" for="postcodeNo">What is your postcode?</label>-->
-
-      <!--                <span class="invalid-feedback">-->
-      <!--                  <span *ngIf="nonCqcRegPostcodeMessage" class="main-body-text mb-2">{{-->
-      <!--                    nonCqcRegPostcodeMessage-->
-      <!--                  }}</span>-->
-      <!--                  <span-->
-      <!--                    *ngIf="submittedCqcRegPostcode && nonRegulatedPostcode.hasError('maxlength')"-->
-      <!--                    class="main-body-text mb-2"-->
-      <!--                  >-->
-      <!--                    The Postcode must be no longer than 8 characters.-->
-      <!--                  </span>-->
-      <!--                  <span *ngIf="nonCqcPostcodeApiError" class="main-body-text mb-2">-->
-      <!--                    {{ nonCqcPostcodeApiError }}-->
-      <!--                  </span>-->
-      <!--                </span>-->
-
-      <!--                <input-->
-      <!--                  placeholder="postcode"-->
-      <!--                  type="text"-->
-      <!--                  id="postcodeNo"-->
-      <!--                  class="form-control col-12"-->
-      <!--                  formControlName="nonRegulatedPostcode"-->
-      <!--                />-->
-      <!--              </div>-->
-      <!--            </div>-->
-      <!--          </div>-->
-      <!--        </div>-->
-      <!--      </div>-->
-
       <button class="govuk-button govuk-!-margin-top-2" type="submit">Continue</button>
     </form>
   </div>
