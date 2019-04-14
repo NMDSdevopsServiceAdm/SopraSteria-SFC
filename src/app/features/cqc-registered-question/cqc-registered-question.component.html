@@ -12,7 +12,8 @@
     <div>submitted = {{ submitted }}</div>
     <div>form.invalid = {{ form.invalid }}</div>
     <div>regulatedByCQC errors = {{ regulatedByCQC.errors | json }}</div>
-    <div>regulatedPostcode errors = {{ group.get('regulatedPostcode').errors | json }}</div>
+    <div>regulatedPostcode errors = {{ regulatedPostcode.errors | json }}</div>
+    <div>locationId errors = {{ locationId.errors | json }}</div>
     <div>group errors = {{ group.errors | json }}</div>
     <div>regulatedByCQCControl status = {{ regulatedByCQC.dirty }}</div>
     <br />
@@ -27,7 +28,7 @@
             </h1>
           </legend>
           <span *ngIf="submitted && regulatedByCQC.errors" id="regulatedByCQC-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span> Please specify if you are regulated by CQC
+            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('regulatedByCQC', 'required') }}
           </span>
           <div class="govuk-radios govuk-radios--conditional">
             <!-- regulated -->
@@ -58,6 +59,14 @@
                 <label class="govuk-label" for="regulatedPostcode">
                   Enter your postcode
                 </label>
+                <span
+                  id="regulatedPostcode-error"
+                  class="govuk-error-message"
+                  *ngIf="submitted && regulatedPostcode.errors"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFormErrorMessage('regulatedPostcode', 'maxlength') }}
+                </span>
                 <input
                   class="govuk-input govuk-!-width-one-third"
                   id="regulatedPostcode"
@@ -77,6 +86,14 @@
                 <label class="govuk-label" for="locationId">
                   Enter your location ID number
                 </label>
+                <span
+                  id="locationId-error"
+                  class="govuk-error-message"
+                  *ngIf="submitted && locationId.errors"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFormErrorMessage('locationId', 'maxlength') }}
+                </span>
                 <input
                   class="govuk-input govuk-!-width-one-third"
                   id="locationId"
@@ -116,6 +133,19 @@
                 <label class="govuk-label" for="nonRegulatedPostcode">
                   What is your postcode
                 </label>
+                <span
+                  id="nonRegulatedPostcode-error"
+                  class="govuk-error-message"
+                  *ngIf="submitted && nonRegulatedPostcode.errors"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  <span *ngIf="nonRegulatedPostcode.hasError('required')">
+                    {{ getFormErrorMessage('nonRegulatedPostcode', 'required') }}
+                  </span>
+                  <span *ngIf="nonRegulatedPostcode.hasError('maxlength')">
+                    {{ getFormErrorMessage('nonRegulatedPostcode', 'maxlength') }}
+                  </span>
+                </span>
                 <input
                   class="govuk-input govuk-!-width-one-third"
                   id="nonRegulatedPostcode"

@@ -150,12 +150,7 @@ export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'maxlength',
-            message: 'Your Location ID must be no longer than 50 characters.',
-          },
-          // TODO update custom validator/error-summary to cater for either/or form group errors
-          {
-            name: '???',
-            message: '????',
+            message: 'Your location ID must be no longer than 50 characters.',
           },
         ],
       },
