@@ -7,8 +7,8 @@
       </div>
       <select formControlName="qualification" class="form-control">
         <option [ngValue]="null">Select</option>
-        <option *ngIf="qualification" [value]="qualification.id"
-          >{{ qualification.title }} {{ qualification?.level }}</option
+        <option *ngIf="preselectedQualification" [value]="preselectedQualification.id"
+          >{{ preselectedQualification.title }} {{ preselectedQualification?.level }}</option
         >
         <option *ngFor="let qualification of qualifications" [value]="qualification.id">
           {{ qualification.title }} {{ qualification?.level }}

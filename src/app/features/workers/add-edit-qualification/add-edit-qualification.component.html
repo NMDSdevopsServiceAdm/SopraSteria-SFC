@@ -33,7 +33,7 @@
             [worker]="worker"
             [type]="item"
             [yearValidators]="yearValidators"
-            [qualification]="record?.qualification?.group === item.value ? record.qualification : null"
+            [preselectedQualification]="record?.qualification?.group === item.value ? record.qualification : null"
           ></app-qualification-form>
         </ng-container>
       </div>
