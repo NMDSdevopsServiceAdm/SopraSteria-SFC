@@ -16,7 +16,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  public submitted: boolean;
+  public submitted = false;
   public userDetails: UserDetails;
 
   private username: string;
@@ -78,7 +78,6 @@ export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
     );
 
     this.setUserDetails();
-    this.submitted = false;
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }

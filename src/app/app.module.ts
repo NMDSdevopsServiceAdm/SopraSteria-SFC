@@ -46,9 +46,6 @@ import { ConfirmAccountDetailsComponent } from './features/confirm-account-detai
 import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
 import { ContactUsComponent } from './features/contact-us/contact-us.component';
 import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
-import {
-  CqcRegisteredQuestionEditComponent,
-} from './features/cqc-registered-question/cqc-registered-question-edit/cqc-registered-question-edit.component';
 import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
 import { CreateUsernameComponent } from './features/create-username/create-username.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
@@ -83,7 +80,6 @@ import { UserDetailsComponent } from './features/user-details/user-details.compo
     HeaderComponent,
     FooterComponent,
     CqcRegisteredQuestionComponent,
-    CqcRegisteredQuestionEditComponent,
     ConfirmWorkplaceDetailsComponent,
     SelectWorkplaceComponent,
     SelectWorkplaceAddressComponent,

@@ -33,7 +33,13 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
       if (isFormControl) {
         this.collectError(this.form.get(key), key);
       } else if (isFormGroup) {
-        const formGroupControls: any = this.form.get(key)['controls'];
+        const formGroup: AbstractControl = this.form.get(key);
+
+        if (formGroup.errors) {
+          Object.keys(formGroup.errors).forEach(i => this.collectError(formGroup, i, true));
+        }
+
+        const formGroupControls: AbstractControl = formGroup['controls'];
         Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], i));
       }
     });
@@ -46,10 +52,10 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
    * @param item
    * @param name
    */
-  private collectError(item: AbstractControl, name: string): void {
+  private collectError(item: AbstractControl, name: string, isGroup?: boolean): void {
     if (item.errors) {
       this.errors.push({
-        item: name,
+        item: isGroup ? 'group' : name,
         errors: [...Object.keys(item.errors)],
       });
     }

@@ -20,7 +20,7 @@ export class ErrorSummaryService {
   }
 
   /**
-   * Return route only only
+   * Return route only
    * Without query params and/or fragments
    */
   private getRouteName(): string {
