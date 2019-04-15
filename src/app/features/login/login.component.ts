@@ -116,7 +116,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         () => {
           const redirect = this.authService.redirect;
 
-          if (redirect.url.length) {
+          if (redirect && redirect.url.length) {
             const navExtras: NavigationExtras = {
               queryParams: redirect.queryParams,
               fragment: redirect.fragment,
