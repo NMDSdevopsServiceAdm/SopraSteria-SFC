@@ -137,6 +137,19 @@ export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
         ],
       },
       {
+        item: 'group',
+        type: [
+          {
+            name: 'bothAreEmpty',
+            message: 'Both postcode and location ID cannot be empty. Please enter a postcode or a location ID.',
+          },
+          {
+            name: 'bothHaveContent',
+            message: 'Both postcode and location ID cannot be entered. Please fill out one field.',
+          },
+        ],
+      },
+      {
         item: 'regulatedPostcode',
         type: [
           {

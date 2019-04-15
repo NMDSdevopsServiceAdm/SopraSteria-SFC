@@ -15,6 +15,8 @@
     <div>regulatedPostcode errors = {{ regulatedPostcode.errors | json }}</div>
     <div>locationId errors = {{ locationId.errors | json }}</div>
     <div>group errors = {{ group.errors | json }}</div>
+    <div>group bothAreEmpty = {{ group.hasError('bothAreEmpty') }}</div>
+    <div>group bothHaveContent = {{ group.hasError('bothHaveContent') }}</div>
     <div>regulatedByCQCControl status = {{ regulatedByCQC.dirty }}</div>
     <br />
     <br />
@@ -54,55 +56,57 @@
               id="regulatedByCQC-conditional-1"
               formGroupName="group"
             >
-              <!-- regulated postcode -->
-              <div class="govuk-form-group govuk-!-margin-bottom-2">
-                <label class="govuk-label" for="regulatedPostcode">
-                  Enter your postcode
-                </label>
-                <span
-                  id="regulatedPostcode-error"
-                  class="govuk-error-message"
-                  *ngIf="submitted && regulatedPostcode.errors"
-                >
-                  <span class="govuk-visually-hidden">Error:</span>
-                  {{ getFormErrorMessage('regulatedPostcode', 'maxlength') }}
-                </span>
-                <input
-                  class="govuk-input govuk-!-width-one-third"
-                  id="regulatedPostcode"
-                  name="regulatedPostcode"
-                  type="text"
-                  formControlName="regulatedPostcode"
-                  [class.govuk-input--error]="submitted && regulatedPostcode.errors"
-                  spellcheck="false"
-                />
-              </div>
+              <div id="group-error">
+                <!-- regulated postcode -->
+                <div class="govuk-form-group govuk-!-margin-bottom-2">
+                  <label class="govuk-label" for="regulatedPostcode">
+                    Enter your postcode
+                  </label>
+                  <span
+                    id="regulatedPostcode-error"
+                    class="govuk-error-message"
+                    *ngIf="submitted && regulatedPostcode.errors"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('regulatedPostcode', 'maxlength') }}
+                  </span>
+                  <input
+                    class="govuk-input govuk-!-width-one-third"
+                    id="regulatedPostcode"
+                    name="regulatedPostcode"
+                    type="text"
+                    formControlName="regulatedPostcode"
+                    [class.govuk-input--error]="submitted && (regulatedPostcode.errors || group.errors)"
+                    spellcheck="false"
+                  />
+                </div>
 
-              <!-- divider -->
-              <div class="govuk-radios__divider">Or</div>
+                <!-- divider -->
+                <div class="govuk-radios__divider">Or</div>
 
-              <!-- location Id -->
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="locationId">
-                  Enter your location ID number
-                </label>
-                <span
-                  id="locationId-error"
-                  class="govuk-error-message"
-                  *ngIf="submitted && locationId.errors"
-                >
-                  <span class="govuk-visually-hidden">Error:</span>
-                  {{ getFormErrorMessage('locationId', 'maxlength') }}
-                </span>
-                <input
-                  class="govuk-input govuk-!-width-one-third"
-                  id="locationId"
-                  name="locationId"
-                  type="text"
-                  formControlName="locationId"
-                  [class.govuk-input--error]="submitted && locationId.errors"
-                  spellcheck="false"
-                />
+                <!-- location Id -->
+                <div class="govuk-form-group">
+                  <label class="govuk-label" for="locationId">
+                    Enter your location ID number
+                  </label>
+                  <span
+                    id="locationId-error"
+                    class="govuk-error-message"
+                    *ngIf="submitted && locationId.errors"
+                  >
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('locationId', 'maxlength') }}
+                  </span>
+                  <input
+                    class="govuk-input govuk-!-width-one-third"
+                    id="locationId"
+                    name="locationId"
+                    type="text"
+                    formControlName="locationId"
+                    [class.govuk-input--error]="submitted && (locationId.errors || group.errors)"
+                    spellcheck="false"
+                  />
+                </div>
               </div>
             </div>
 
