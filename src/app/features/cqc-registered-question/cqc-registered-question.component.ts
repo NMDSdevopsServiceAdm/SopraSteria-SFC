@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegistrationModel } from '@core/model/registration.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { debounceTime } from 'rxjs/operators';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-cqc-registered-question',
@@ -57,38 +57,6 @@ export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
 
-    // CQC Registered Postcode watcher
-    // this.regulatedPostcode.valueChanges.pipe(debounceTime(1000)).subscribe(value => {
-    //   if (value.length > 0) {
-    //     if (this.group.errors) {
-    //       this.setCqcRegPostcodeMessage(this.group);
-    //     }
-    //     if (this.regulatedPostcode.errors) {
-    //       this.setCqcRegPostcodeMessage(this.regulatedPostcode);
-    //     }
-    //   } else {
-    //     this.submittedCqcRegPostcode = false;
-    //     this.submittedCqcRegLocationId = false;
-    //     this.setCqcRegPostcodeMessage(this.regulatedPostcode);
-    //   }
-    // });
-
-    // CQC Registered Postcode watcher
-    // this.locationId.valueChanges.pipe(debounceTime(1000)).subscribe(value => {
-    //   if (value.length > 0) {
-    //     if (this.group.errors) {
-    //       this.setCqcRegisteredLocationIdMessage(this.group);
-    //     }
-    //     if (this.locationId.errors) {
-    //       this.setCqcRegisteredLocationIdMessage(this.locationId);
-    //     }
-    //   } else {
-    //     this.submittedCqcRegPostcode = false;
-    //     this.submittedCqcRegLocationId = false;
-    //     this.setCqcRegisteredLocationIdMessage(this.locationId);
-    //   }
-    // });
-
     this.subscriptions.add(
       this.registrationService.registration$.subscribe((registration: RegistrationModel) => this.registration = registration)
     );
@@ -108,7 +76,6 @@ export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
   }
 
   public onRegulatedByCQCTruthy(): void {
-    console.log('onRegulatedByCQCTruthy fired');
     this.group.setValidators([CustomValidators.checkMultipleInputValues]);
     this.group.updateValueAndValidity();
 
@@ -117,7 +84,6 @@ export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
   }
 
   public onRegulatedByCQCFalsy(): void {
-    console.log('onRegulatedByCQCFalsy fired');
     this.group.clearValidators();
     this.group.updateValueAndValidity();
 
@@ -187,53 +153,20 @@ export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 404,
-        message: 'User not found or does not belong to the given establishment.',
+        message: 'No location found.',
+      },
+      {
+        name: 400,
+        message: 'Invalid Postcode.',
+      },
+      {
+        name: 503,
+        message: 'Database error.',
       },
     ];
   }
 
-  // -- START -- Set validation handlers
-  // setCqcRegPostcodeMessage(c: AbstractControl): void {
-  //   this.cqcRegPostcodeMessage = '';
-  //
-  //   if (c.errors) {
-  //     this.cqcRegPostcodeMessage = Object.keys(c.errors)
-  //       .map(key => (this.cqcRegPostcodeMessage += this.cqcRegPostcodeMessages[key]))
-  //       .join(' ');
-  //   } else {
-  //     if (this.submitted && !this.locationId.errors) {
-  //       this.save();
-  //     }
-  //   }
-  // }
-  //
-  // setCqcRegisteredLocationIdMessage(c: AbstractControl): void {
-  //   this.cqcRegLocationIdMessage = '';
-  //
-  //   if (c.errors) {
-  //     this.cqcRegLocationIdMessage = Object.keys(c.errors)
-  //       .map(key => (this.cqcRegLocationIdMessage += this.cqcRegLocationIdMessages[key]))
-  //       .join('<br />');
-  //   } else {
-  //     if (this.submitted && !this.regulatedPostcode.errors) {
-  //       this.save();
-  //     }
-  //   }
-  // }
-  //
-  // setNonCqcRegPostcodeMessage(c: AbstractControl): void {
-  //   this.nonCqcRegPostcodeMessage = '';
-  //
-  //   if ((c.touched || c.dirty) && c.errors) {
-  //     this.nonCqcRegPostcodeMessage = Object.keys(c.errors)
-  //       .map(key => (this.nonCqcRegPostcodeMessage += this.nonCqcRegPostcodeMessages[key]))
-  //       .join('<br />');
-  //   }
-  // }
-  // -- END -- Set validation handlers
-
   public onSubmit(): void {
-    console.log('onSubmit fired');
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -255,89 +188,44 @@ export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    if (this.regulatedPostcode.value.length > 0) {
-      this.registrationService.getLocationByPostCode(this.regulatedPostcode.value).subscribe(
-        (data: RegistrationModel) => {
-          if (data.success === 1) {
-            this.registrationService.updateState(data);
-            this.router.navigate(['/select-workplace']);
-          }
-        },
-        (err: any) => {
-          // this.cqcPostcodeApiError = err;
-          // this.setCqcRegPostcodeMessage(this.regulatedPostcode);
-        },
-        () => {
-          console.log('Get location by postcode complete');
-        }
+    if (this.regulatedPostcode.value.length) {
+      this.subscriptions.add(
+        this.registrationService.getLocationByPostCode(this.regulatedPostcode.value).subscribe(
+          (data: RegistrationModel) => this.onSuccess(data),
+          (error: HttpErrorResponse) => this.onError(error)
+        )
       );
-    } else if (this.locationId.value.length > 0) {
-      this.registrationService.getLocationByLocationId(this.locationId.value).subscribe(
-        (data: RegistrationModel) => {
-          if (data.success === 1) {
-            this.registrationService.updateState(data);
-            this.router.navigate(['/select-workplace']);
-          }
-        },
-        (err: any) => {
-          // TODO replace with error summary map
-          // this.cqclocationApiError = err;
-          // this.setCqcRegPostcodeMessage(this.regulatedPostcode);
-        },
-        () => {
-          console.log('Get location by id sucessful');
-        }
+    } else if (this.locationId.value.length) {
+      this.subscriptions.add(
+        this.registrationService.getLocationByLocationId(this.locationId.value).subscribe(
+          (data: RegistrationModel) => this.onSuccess(data),
+          (error: HttpErrorResponse) => this.onError(error)
+        )
       );
-    } else if (this.nonRegulatedPostcode.value.length > 0) {
-      this.registrationService.getAddressByPostCode(this.nonRegulatedPostcode.value).subscribe(
-        (data: RegistrationModel) => {
-          if (data.success === 1) {
-            // this.setRegulatedCheckFalse(data);
-
-            this.registrationService.updateState(data);
-          }
-        },
-        (err: any) => {
-          // this.nonCqcPostcodeApiError = err;
-          // this.setCqcRegPostcodeMessage(this.regulatedPostcode);
-        },
-        () => {
-          console.log('Get location by postcode complete');
-          this.router.navigate(['/select-workplace-address']);
-        }
+    } else if (this.nonRegulatedPostcode.value.length) {
+      this.subscriptions.add(
+        this.registrationService.getAddressByPostCode(this.nonRegulatedPostcode.value).subscribe(
+          (data: RegistrationModel) => this.onSuccess(data),
+          (error: HttpErrorResponse) => this.onError(error)
+        )
       );
     }
+  }
+
+  private onSuccess(data: RegistrationModel): void {
+    if (data.success === 1) {
+      this.registrationService.updateState(data);
+      this.router.navigate([ '/select-workplace' ]);
+    }
+  }
+
+  private onError(error: HttpErrorResponse): void {
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+    this.errorSummaryService.scrollToErrorSummary();
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
 
-  // Check if user is CQC Registered or not and display appropriate fields
-  // If not CQC registered is selected set postcodes validation
-  // registeredQuestionChanged(value: string): void {
-  //   if (this.regulatedByCQC.value === 'false') {
-  //     this.resetFormInputsOnChange('nonCqcReg');
-  //     this.nonRegulatedPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
-  //   } else if (this.regulatedByCQC.value === 'true') {
-  //     this.resetFormInputsOnChange('cqcReg');
-  //     this.nonRegulatedPostcode.setValidators(Validators.maxLength(8));
-  //   }
-  //   this.nonRegulatedPostcode.updateValueAndValidity();
-  // }
-  //
-  // resetFormInputsOnChange(isReg) {
-  //   if (isReg === 'cqcReg') {
-  //     this.regulatedPostcode.setValue('');
-  //     this.locationId.setValue('');
-  //   } else {
-  //     this.nonRegulatedPostcode.setValue('');
-  //   }
-  // }
-  //
-  // setRegulatedCheckFalse(reg) {
-  //   // clear default location data
-  //   reg.locationdata = [{}];
-  //   reg.locationdata[0]['isRegulated'] = false;
-  // }
 }

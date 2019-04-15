@@ -1,5 +1,5 @@
 <app-error-summary
-  *ngIf="submitted && form.invalid"
+  *ngIf="submitted && (form.invalid || serverError)"
   [formErrorsMap]="formErrorsMap"
   [form]="form"
   [serverError]="serverError"
@@ -9,20 +9,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-l">Care Quality Commission regulation</h1>
-    <div>submitted = {{ submitted }}</div>
-    <div>form.invalid = {{ form.invalid }}</div>
-    <div>regulatedByCQC errors = {{ regulatedByCQC.errors | json }}</div>
-    <div>regulatedPostcode errors = {{ regulatedPostcode.errors | json }}</div>
-    <div>locationId errors = {{ locationId.errors | json }}</div>
-    <div>group errors = {{ group.errors | json }}</div>
-    <div>group bothAreEmpty = {{ group.hasError('bothAreEmpty') }}</div>
-    <div>group bothHaveContent = {{ group.hasError('bothHaveContent') }}</div>
-    <div>regulatedByCQCControl status = {{ regulatedByCQC.dirty }}</div>
-    <br />
-    <br />
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
         <fieldset class="govuk-fieldset" aria-describedby="regulatedByCQC-error">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
             <h1 class="govuk-fieldset__heading">
