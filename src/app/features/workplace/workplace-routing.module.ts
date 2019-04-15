@@ -16,68 +16,63 @@ import { VacanciesComponent } from './vacancies/vacancies.component';
 
 const routes: Routes = [
   {
-    path: 'workplace',
-    children: [
-      {
-        path: 'start-screen',
-        // component:
-      },
-      // FLOW
-      {
-        path: 'type-of-employer',
-        component: TypeOfEmployerComponent,
-      },
-      {
-        path: 'select-other-services',
-        component: SelectOtherServicesComponent,
-      },
-      {
-        path: 'capacity-of-services',
-        component: ServicesCapacityComponent,
-      },
-      {
-        path: 'service-users',
-        component: ServiceUsersComponent,
-      },
-      {
-        path: 'share-options',
-        component: ShareOptionsComponent,
-      },
-      {
-        path: 'share-local-authority',
-        component: ShareLocalAuthorityComponent,
-      },
-      {
-        path: 'vacancies',
-        component: VacanciesComponent,
-      },
-      {
-        path: 'confirm-vacancies',
-        component: ConfirmVacanciesComponent,
-      },
-      {
-        path: 'starters',
-        component: StartersComponent,
-      },
-      {
-        path: 'confirm-starters',
-        component: ConfirmStartersComponent,
-      },
-      {
-        path: 'leavers',
-        component: LeaversComponent,
-      },
-      {
-        path: 'confirm-leavers',
-        component: ConfirmLeaversComponent,
-      },
-      {
-        path: 'volunteers',
-      },
-      {
-        path: 'summary',
-      },
-    ],
+    path: 'start-screen',
+    // component:
+  },
+  // FLOW
+  {
+    path: 'type-of-employer',
+    component: TypeOfEmployerComponent,
+  },
+  {
+    path: 'select-other-services',
+    component: SelectOtherServicesComponent,
+  },
+  {
+    path: 'capacity-of-services',
+    component: ServicesCapacityComponent,
+  },
+  {
+    path: 'service-users',
+    component: ServiceUsersComponent,
+  },
+  {
+    path: 'share-options',
+    component: ShareOptionsComponent,
+  },
+  {
+    path: 'share-local-authority',
+    component: ShareLocalAuthorityComponent,
+  },
+  {
+    path: 'vacancies',
+    component: VacanciesComponent,
+  },
+  {
+    path: 'confirm-vacancies',
+    component: ConfirmVacanciesComponent,
+  },
+  {
+    path: 'starters',
+    component: StartersComponent,
+  },
+  {
+    path: 'confirm-starters',
+    component: ConfirmStartersComponent,
+  },
+  {
+    path: 'leavers',
+    component: LeaversComponent,
+  },
+  {
+    path: 'confirm-leavers',
+    component: ConfirmLeaversComponent,
+  },
+  {
+    path: 'volunteers',
+  },
+  {
+    path: 'summary',
   },
 ];
 
