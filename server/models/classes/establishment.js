@@ -937,13 +937,35 @@ class Establishment {
         myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
         myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
 
-        // capacities eligibility is only relevant if the main service/other services are such that there
+        // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)
         //   are capacities. Otherwise, it (capacities eligibility) is not relevant.
         // All Known Capacities is available from the CapacityServices property JSON
         const hasCapacities = this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').toJSON(false, false).allServiceCapacities.length > 0 : false;
 
         if (hasCapacities) {
-            myWdf['capacities'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CapacityServices')) ? 'Yes' : 'No';
+            // first validate whether any of the capacities are eligible - this is simply a check that capacities are valid.
+            const capacitiesProperty = this._properties.get('CapacityServices');
+            let capacitiesEligibility = this._isPropertyWdfBasicEligible(effectiveFromEpoch, capacitiesProperty);
+
+            // we're only interested in the main service capacities
+            const mainServiceCapacities = capacitiesProperty.toJSON(false, false).allServiceCapacities.filter(thisCapacity => {
+                const mainServiceCapacityRegex = /^Main Service \- /;
+                if (mainServiceCapacityRegex.test(thisCapacity.service)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+
+            if (mainServiceCapacities.length === 0) {
+                myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
+            } else {
+                // ensure all all main service's capacities have been answered - note, the can only be one Main Service capacity set
+                myWdf['capacities'] = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
+            }
+
+
+            myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
         } else {
             myWdf['capacities'] = 'Not relevant';
         }
