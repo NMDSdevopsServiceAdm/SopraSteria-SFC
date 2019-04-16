@@ -1,201 +1,127 @@
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-
-import { RegistrationService } from '../../../core/services/registration.service';
-import { RegistrationModel } from '../../../core/model/registration.model';
-import { RegistrationTrackerError } from '@core/model/registrationTrackerError.model';
+import { RegistrationService } from '@core/services/registration.service';
+import { RegistrationModel } from '@core/model/registration.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-select-workplace',
   templateUrl: './select-workplace.component.html',
-  styleUrls: ['./select-workplace.component.scss']
 })
 export class SelectWorkplaceComponent implements OnInit, OnDestroy {
-  selectWorkplaceForm: FormGroup;
-  registration: RegistrationModel;
-  selectedAddressId: string;
-  addressPostcode: string;
-  mainService: string;
-
-  cqcPostcodeApiError: string;
-  cqclocationApiError: string;
-  nonCqcPostcodeApiError: string;
-
-  currentSection: number;
-  lastSection: number;
-  backLink: string;
-  secondItem: number;
-
-  isSubmitted = false;
-
+  private registration: RegistrationModel;
   private subscriptions: Subscription = new Subscription();
+  public form: FormGroup;
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public submitted = false;
 
   constructor(
-    private _registrationService: RegistrationService,
-    private router: Router,
-    private fb: FormBuilder
-  ) { }
+    private errorSummaryService: ErrorSummaryService,
+    private fb: FormBuilder,
+    private registrationService: RegistrationService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    this.selectWorkplaceForm = this.fb.group({
-      selectWorkplaceSelected: ['', Validators.required]
+    this.setupForm();
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
+
+    this.subscriptions.add(
+      this.registrationService.registration$.subscribe(
+        (registration: RegistrationModel) => this.registration = registration
+      )
+    );
+  }
+
+  private setupForm(): void {
+    this.form = this.fb.group({
+      workplace: ['', Validators.required],
     });
+  }
 
-    // Watch selectWorkplaceSelected
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'workplace',
+        type: [
+          {
+            name: 'required',
+            message: 'Please select an address.',
+          },
+        ],
+      },
+    ];
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 404,
+        message: 'No location found.',
+      },
+      {
+        name: 503,
+        message: 'Database error.',
+      },
+    ];
+  }
+
+  private getLocationId(): string {
+    const selectedLocation: any = this.form.get('workplace').value;
+    return this.registration.locationdata[selectedLocation].locationId;
+  }
+
+  public onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (this.form.valid) {
+      this.save();
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
+    }
+  }
+
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private save(): void {
     this.subscriptions.add(
-      this.selectWorkplaceForm.get('selectWorkplaceSelected').valueChanges.subscribe(
-        value => this.selectWorkplaceChanged(value)
-      )
-    );
-
-    this.subscriptions.add(
-      this._registrationService.registration$.subscribe(registration => this.registration = registration)
-    );
-
-    this.setSectionNumbers();
-    this.resetPostcodeApi();
-
-  }
-
-  resetPostcodeApi() {
-    const count = this.registration.locationdata.length;
-    const postcode = this.registration.locationdata[0].postalCode;
-    const routeArray = this.registration.userRoute['route'];
-
-    if (count === 1) {
-      if (routeArray.length >= 2) {
-        this.subscriptions.add(
-          this._registrationService.getLocationByPostCode(postcode).subscribe(res => {
-            this._registrationService.updateState(res);
-          })
-        );
-      }
-    }
-  }
-
-  clickBack() {
-    if (this.registration.userRoute) {
-
-      this.currentSection = this.registration.userRoute.currentPage;
-      this.currentSection = this.currentSection - 1;
-      this.registration.userRoute.route.splice(-1);
-
-      //this.updateSectionNumbers(this.registration);
-      this.registration['userRoute'] = this.registration.userRoute;
-      this.registration.userRoute['currentPage'] = this.currentSection;
-      //this.registration.userRoute['route'] = this.registration.userRoute['route'];
-      this._registrationService.updateState(this.registration);
-
-      this.router.navigate([this.backLink]);
-    }
-    else {
-      this.updateSectionNumbers(this.registration);
-      this.clickBack();
-    }
-
-  }
-
-  setSectionNumbers() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
-    this.secondItem = 1;
-
-    this.currentSection = this.currentSection + 1;
-    this.lastSection = 8;
-  }
-
-  // && (this.currentSection === 2)
-
-  selectWorkplaceChanged(value: string): void {
-    this.selectedAddressId = this.registration.locationdata[value].locationId;
-    this.mainService = this.registration.locationdata[value].mainService;
-
-  }
-
-  onSubmit() {
-    this.isSubmitted = true;
-
-
-    if (this.selectedAddressId) {
-
-      this.save(this.selectedAddressId);
-    }
-  }
-
-  save(selectedAddressId) {
-
-    this.subscriptions.add(
-      this._registrationService.getLocationByLocationId(selectedAddressId).subscribe(
+      this.registrationService.getLocationByLocationId(this.getLocationId()).subscribe(
         (data: RegistrationModel) => {
           if (data.success === 1) {
-
-            this.updateSectionNumbers(data);
-
-            this._registrationService.updateState(data);
-
-            this.router.navigate(['/registration/select-main-service']);
+            this.registrationService.updateState(data);
+            this.router.navigate(['/select-main-service']);
           }
         },
-        (err: RegistrationTrackerError) => {
-          this.cqcPostcodeApiError = err.message;
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.errorSummaryService.scrollToErrorSummary();
         },
-        () => {
-          console.log('Get location by postcode complete');
-        }
       )
     );
   }
 
-  updateSectionNumbers(data) {
-    if (this.registration.userRoute) {
-      data['userRoute'] = this.registration.userRoute;
-      data.userRoute['currentPage'] = this.currentSection;
-      data.userRoute['route'] = this.registration.userRoute['route'];
-      data.userRoute['route'].push('/registration/select-workplace');
-    }
-    else {
-
-      data['userRoute'] = {
-        currentPage: this.currentSection,
-        route: [
-          '/registration/regulated-by-cqc',
-          '/registration/select-workplace'
-        ]
-      };
-
-      this._registrationService.updateState(data);
-
-    }
-
+  private getPostalCode(): string {
+    return this.registration.locationdata[0].postalCode;
   }
 
-  setRegulatedCheckFalse(data) {
-    // clear default location data
-    data.locationdata = [{}];
-    data.locationdata[0]['isRegulated'] = false;
-  }
-
-  workplaceNotFound() {
-    this.addressPostcode = this.registration.locationdata[0].postalCode;
-
-    this.subscriptions.add(
-      this._registrationService.getAddressByPostCode(this.addressPostcode).subscribe(
-        (data: RegistrationModel) => {
-          if (data.success === 1) {
-            this.updateSectionNumbers(data);
-            this.setRegulatedCheckFalse(data);
-
-            this._registrationService.updateState(data);
-
-            this.router.navigate(['/registration/select-workplace-address']);
-          }
-        }
-      )
-    );
+  public workplaceNotFound(): void {
+    this.registrationService.workPlaceNotFound$.next(this.getPostalCode());
   }
 
   ngOnDestroy() {
