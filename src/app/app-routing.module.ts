@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ContactUsComponent } from '@features/contact-us/contact-us.component';
-import { ContinueCreatingAccountComponent } from '@features/continue-creating-account/continue-creating-account.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
@@ -53,10 +52,6 @@ const routes: Routes = [
     path: 'change-user-security',
     component: ChangeUserSecurityComponent,
     canActivate: [AuthGuard],
-  },
-  {
-    path: 'continue-creating-account',
-    component: ContinueCreatingAccountComponent,
   },
   {
     path: 'feedback',

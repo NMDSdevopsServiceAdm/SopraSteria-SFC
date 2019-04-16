@@ -42,7 +42,6 @@ import { ChangeUserDetailsComponent } from './features/change-user-details/chang
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
 import { YourAccountComponent } from './features/your-account/your-account.component';
 import { ContactUsComponent } from './features/contact-us/contact-us.component';
-import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { HomeTabComponent } from './features/dashboard/home-tab/home-tab.component';
 import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
@@ -68,7 +67,6 @@ import { PageNotFoundComponent } from '@core/components/error/page-not-found/pag
     RegisterComponent,
     HeaderComponent,
     FooterComponent,
-    ContinueCreatingAccountComponent,
     FeedbackComponent,
     ContactUsComponent,
     LogoutComponent,
