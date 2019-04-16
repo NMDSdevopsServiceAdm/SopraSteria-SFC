@@ -83,21 +83,25 @@ const config = convict({
         doc: 'Client SSL enabled or not',
         format: 'Boolean',
         default: false,
+        env: "DB_CLIENT_SSL_STATUS"
       },
       certificate: {
         doc: 'The full path location of the client certificate file',
         format: String,
-        default: 'TBC'
+        default: 'TBC',
+        env: "DB_CLIENT_SSL_CERTIFICATE"
       },
       key: {
         doc: 'The full path location of the client key file',
         format: String,
-        default: 'TBC'
+        default: 'TBC',
+        env: "DB_CLIENT_SSL_KEY"
       },
       ca: {
         doc: 'The full path location of the server certificate (authority - ca) file',
         format: String,
-        default: 'TBC'
+        default: 'TBC',
+        env: "DB_CLIENT_SSL_CA"
       }
     },
     pool: {

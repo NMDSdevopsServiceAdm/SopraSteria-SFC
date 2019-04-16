@@ -7,6 +7,6 @@ db:
     ssl: false
     client_ssl:
         status: true
-        certificate: 'E:/aylingw.crt'
-        key: 'E:/postgresql.key'
-        ca: 'E:/root.crt'
+        # certificate: 'E:/mycert.crt'
+        # key: 'E:/mykey.key'
+        # ca: 'E:/myca.crt'
