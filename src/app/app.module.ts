@@ -54,7 +54,6 @@ import { ForgotYourPasswordEditComponent } from './features/forgot-your-password
 import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from './features/login/login.component';
 import { LogoutComponent } from './features/logout/logout.component';
-import { RegisterComponent } from './features/register/register.component';
 import { ResetPasswordConfirmationComponent } from './features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from './features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
@@ -64,7 +63,6 @@ import { PageNotFoundComponent } from '@core/components/error/page-not-found/pag
   declarations: [
     AppComponent,
     LoginComponent,
-    RegisterComponent,
     HeaderComponent,
     FooterComponent,
     FeedbackComponent,
