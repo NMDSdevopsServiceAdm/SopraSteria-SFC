@@ -5,3 +5,8 @@ jwt:
 db:
     pool: 5
     ssl: false
+    client_ssl:
+        status: true
+        certificate: 'E:/aylingw.crt'
+        key: 'E:/postgresql.key'
+        ca: 'E:/root.crt'

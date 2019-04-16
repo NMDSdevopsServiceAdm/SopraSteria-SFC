@@ -20,6 +20,22 @@ config.dialectOptions = {
   ssl: appConfig.get('db.ssl')
 };
 
+console.log("WA DEBUG - client SSL: ", appConfig.get('db.client_ssl.status'))
+if (appConfig.get('db.client_ssl.status')) {
+  console.log("WA DEBUG: client cert: ", appConfig.get('db.client_ssl.certificate'));
+  console.log("WA DEBUG: client cert: ", appConfig.get('db.client_ssl.key'));
+  console.log("WA DEBUG: client cert: ", appConfig.get('db.client_ssl.ca'));
+  
+  config.dialectOptions.ssl = {
+    rejectUnauthorized : false,
+    ca   : fs.readFileSync(appConfig.get('db.client_ssl.ca')).toString(),
+    key  : fs.readFileSync(appConfig.get('db.client_ssl.key')).toString(),
+    cert : fs.readFileSync(appConfig.get('db.client_ssl.certificate')).toString(),
+  };
+}
+
+console.log("WA DEBUG - DB config: ", config)
+
 // setup connection pool
 config.pool = {
   max: appConfig.get('db.pool'),
