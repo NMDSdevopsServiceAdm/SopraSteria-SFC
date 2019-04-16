@@ -2,11 +2,8 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
-import { catchError } from 'rxjs/operators';
 
 import { RegistrationModel } from '../model/registration.model';
-import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
 const initialRegistration: RegistrationModel = {
   // Example initial dummy data
@@ -68,9 +65,7 @@ export class RegistrationService {
   constructor(private http: HttpClient, private router: Router) {}
 
   postRegistration(id: any) {
-    const $value = id.locationdata;
-    const options = { headers: { 'Content-type': 'application/json' } };
-    this.http.post<RegistrationModel>('/api/registration/', $value, options).subscribe(
+    this.http.post<RegistrationModel>('/api/registration/', id.locationdata).subscribe(
       data => console.log(data),
       error => console.log(error),
       () => {
@@ -80,67 +75,31 @@ export class RegistrationService {
   }
 
   getLocationByPostCode(id: string) {
-    const $value = id;
-
-    return this.http
-      .get<RegistrationModel>('/api/locations/pc/' + $value)
-      .pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/locations/pc/${id}`);
   }
 
   getLocationByLocationId(id: string) {
-    const $value = id;
-
-    return this.http
-      .get<RegistrationModel>('/api/locations/lid/' + $value)
-      .pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/locations/lid/${id}`);
   }
 
   getAddressByPostCode(id: string) {
-    const $value = id;
-
-    return this.http
-      .get<RegistrationModel>('/api/postcodes/' + $value)
-      .pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`);
   }
 
   getUpdatedAddressByPostCode(id: string) {
-    const $value = id;
-    return this.http
-      .get<RegistrationModel>('/api/postcodes/' + $value)
-      .pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`);
   }
 
   getMainServices(id: boolean) {
-    const $value = id;
-    return this.http.get('/api/services/byCategory?cqc=' + $value).pipe(catchError(err => this.handleHttpError(err)));
+    return this.http.get(`/api/services/byCategory?cqc=${id}`);
   }
 
   getUsernameDuplicate(id: string) {
-    const $value = id;
-    return this.http.get('/api/registration/username/' + $value).pipe(catchError(err => this.handleHttpError(err)));
-  }
-
-  routingCheck(data) {
-    if (data.locationdata.length > 1) {
-      this.router.navigate(['/select-workplace']);
-    } else {
-      // if ((data.locationdata[0].mainService === '') || (data.locationdata[0].mainService === null)) {
-      this.router.navigate(['/select-main-service']);
-      // } else {
-      //   this.router.navigate(['/confirm-workplace-details']);
-      // }
-    }
+    return this.http.get(`/api/registration/username/${id}`);
   }
 
   updateState(data) {
     this._registration$.next(data);
   }
 
-  private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
-    const dataError = new RegistrationTrackerError();
-    dataError.message = error.message;
-    dataError.success = error.error.success;
-    dataError.friendlyMessage = error.error.message;
-    return ErrorObservable.create(dataError);
-  }
 }

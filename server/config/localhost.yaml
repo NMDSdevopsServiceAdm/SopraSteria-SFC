@@ -2,11 +2,16 @@ slack:
     level: 0    # disables Slack notifications
 jwt:
     iss: 'localhost'
+    ttl:
+        login: 60
 db:
     pool: 5
     ssl: false
+
     client_ssl:
         status: true
         # certificate: 'E:/mycert.crt'
         # key: 'E:/mykey.key'
         # ca: 'E:/myca.crt'
+log:
+    sequelize: false

@@ -1,0 +1,43 @@
+<h1 class="pb-5">You are about to delete the following qualification.</h1>
+
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Staff Record
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.nameOrId }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Qualification type
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.record.qualification.group }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Qualification name
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.record.qualification.title }}
+    </dd>
+  </div>
+  <div *ngIf="data.record.qualification?.level" class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Qualification level
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.record.qualification?.level }}
+    </dd>
+  </div>
+</dl>
+
+<div class="btn-container container">
+  <div class="row">
+    <button type="button" class="btn btn-primary" (click)="close(true)">Delete qualification</button>
+    <button type="button" class="btn btn-link btn-link-no-underline" (click)="close(false)">Cancel</button>
+  </div>
+</div>

@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Qualification } from '@core/model/qualification.model';
+import { QualificationLevel } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { QualificationService } from '@core/services/qualification.service';
@@ -14,7 +14,7 @@ import { take } from 'rxjs/operators';
   templateUrl: './social-care-qualification-level.component.html',
 })
 export class SocialCareQualificationLevelComponent implements OnInit, OnDestroy {
-  public qualifications: Qualification[];
+  public qualifications: QualificationLevel[];
   public form: FormGroup;
   public backLink: string;
   private worker: Worker;

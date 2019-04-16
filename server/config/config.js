@@ -20,6 +20,11 @@ const config = convict({
       doc: 'Not yet used, but will be the default log level',
       format: String,
       default: 'NONE'
+    },
+    sequelize: {
+      doc: 'Whether to log sequelize SQL statements',
+      format: 'Boolean',
+      default: false
     }
   },
   listen: {
@@ -155,6 +160,19 @@ const config = convict({
         doc: 'The JWT signing secret',
         format: '*',
         env: 'Token_Secret'
+      },
+      ttl: {
+        default : {
+          doc: 'The (default) Time To Live (in minutes) for token (timeout)',
+          format: 'int',
+          default: 5
+        },
+        login: {
+          doc: 'The Time To Live (in minutes) for login token',
+          format: 'int',
+          default: 5,
+          env: 'LOGIN_JWT_TTL'
+        }
       },
       aud: {
         login: {

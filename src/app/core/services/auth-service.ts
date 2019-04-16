@@ -1,12 +1,11 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Params, Router, UrlSegment } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
 import { LoginApiModel } from '../model/loginApi.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
-import { HttpErrorHandler } from './http-error-handler.service';
 
 // TODO do we still need it?
 const initialRegistration: LoginApiModel = {
@@ -28,6 +27,7 @@ interface LoggedInEstablishment {
 interface LoggedInSession {
   fullname: string;
   isFirstLogin: boolean;
+  lastLoggedIn: string;
   establishment: LoggedInEstablishment;
   mainService: LoggedInMainService;
 }
@@ -44,12 +44,12 @@ export class AuthService {
   private _session: LoggedInSession = null;
   private _token: string = null;
 
-  redirectUrl: string = null;
+  public redirect: { url: UrlSegment[]; fragment?: string; queryParams?: Params };
 
   // Observable login stream
   public auth$: Observable<LoginApiModel> = this._auth$.asObservable();
 
-  constructor(private http: HttpClient, private httpErrorHandler: HttpErrorHandler, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   public get isLoggedIn(): boolean {
     return !!this.token;
@@ -82,6 +82,9 @@ export class AuthService {
     } else {
       return false;
     }
+  }
+  public get lastLoggedIn() {
+    return this._session ? this._session.lastLoggedIn : null;
   }
 
   public resetFirstLogin(): boolean {
@@ -119,8 +122,11 @@ export class AuthService {
 
   postLogin(id: any) {
     const $value = id;
-    const requestHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
-    return this.http.post<any>('/api/login/', $value, { headers: requestHeaders, observe: 'response' });
+    return this.http.post<any>('/api/login/', $value, { observe: 'response' });
+  }
+
+  refreshToken() {
+    return this.http.get<any>(`/api/login/refresh`, { observe: 'response' });
   }
 
   private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
@@ -146,6 +152,14 @@ export class AuthService {
       this._session = null;
       this.token = null;
       this.router.navigate(['/login']);
+    }
+  }
+
+  logoutWithoutRouting() {
+    if (localStorage.getItem('auth-token')) {
+      localStorage.clear();
+      this._session = null;
+      this.token = null;
     }
   }
 }

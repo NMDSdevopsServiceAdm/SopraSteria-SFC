@@ -48,7 +48,7 @@
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row" *ngFor="let worker of workers">
           <td class="govuk-table__cell" scope="row">
-            <a *ngIf="worker.completed" [routerLink]="['/worker', worker.uid, 'summary']">{{ worker.nameOrId }}</a>
+            <a *ngIf="worker.completed" [routerLink]="['/worker', worker.uid]">{{ worker.nameOrId }}</a>
             <ng-container *ngIf="!worker.completed">{{ worker.nameOrId }}</ng-container>
           </td>
           <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>

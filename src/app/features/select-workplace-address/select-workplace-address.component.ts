@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
-import { RegistrationTrackerError } from './../../core/model/registrationTrackerError.model';
 
 @Component({
   selector: 'app-select-workplace-address',
@@ -153,7 +152,6 @@ export class SelectWorkplaceAddressComponent implements OnInit {
           this._registrationService.updateState(data);
         },
         (err: any) => {
-          //this.nonCqcPostcodeApiError = err.friendlyMessage;
           this.postcodeApiError = true;
         },
         () => {
