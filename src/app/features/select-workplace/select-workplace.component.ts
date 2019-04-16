@@ -4,109 +4,128 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { RegistrationService } from '../../core/services/registration.service';
 import { RegistrationModel } from '../../core/model/registration.model';
-import { RegistrationTrackerError } from './../../core/model/registrationTrackerError.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-select-workplace',
   templateUrl: './select-workplace.component.html',
 })
 export class SelectWorkplaceComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
   private registration: RegistrationModel;
-  selectedAddressId: string;
-  addressPostcode: string;
-  mainService: string;
-  submitted = false;
-
   private subscriptions: Subscription = new Subscription();
+  public form: FormGroup;
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public submitted = false;
 
-  constructor(private registrationService: RegistrationService, private router: Router, private fb: FormBuilder) {}
+  constructor(
+    private errorSummaryService: ErrorSummaryService,
+    private fb: FormBuilder,
+    private registrationService: RegistrationService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
+    this.setupForm();
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
+
+    this.subscriptions.add(
+      this.registrationService.registration$.subscribe(
+        (registration: RegistrationModel) => this.registration = registration
+      )
+    );
+  }
+
+  private setupForm(): void {
     this.form = this.fb.group({
       workplace: ['', Validators.required],
     });
-
-    // Watch workplace
-    this.subscriptions.add(
-      this.form
-        .get('workplace')
-        .valueChanges.subscribe(value => this.selectWorkplaceChanged(value))
-    );
-
-    this.subscriptions.add(
-      this.registrationService.registration$.subscribe(registration => (this.registration = registration))
-    );
-
-    // this.resetPostcodeApi();
   }
 
-  resetPostcodeApi() {
-    const count = this.registration.locationdata.length;
-    const postcode = this.registration.locationdata[0].postalCode;
-    const routeArray = this.registration.userRoute['route'];
-
-    if (count === 1) {
-      if (routeArray.length >= 2) {
-        this.subscriptions.add(
-          this.registrationService.getLocationByPostCode(postcode).subscribe(res => {
-            this.registrationService.updateState(res);
-          })
-        );
-      }
-    }
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'workplace',
+        type: [
+          {
+            name: 'required',
+            message: 'Please select an address.',
+          },
+        ],
+      },
+    ];
   }
 
-  selectWorkplaceChanged(value: string): void {
-    this.selectedAddressId = this.registration.locationdata[value].locationId;
-    this.mainService = this.registration.locationdata[value].mainService;
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 404,
+        message: 'No location found.',
+      },
+      {
+        name: 400,
+        message: 'Invalid Postcode.',
+      },
+      {
+        name: 503,
+        message: 'Database error.',
+      },
+    ];
   }
 
-  onSubmit() {
+  private getLocationId(): string {
+    const selectedLocation: any = this.form.get('workplace').value;
+    return this.registration.locationdata[selectedLocation].locationId;
+  }
+
+  public onSubmit(): void {
     this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if (this.selectedAddressId) {
-      this.save(this.selectedAddressId);
+    if (this.form.valid) {
+      this.save();
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  save(selectedAddressId) {
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private save(): void {
     this.subscriptions.add(
-      this.registrationService.getLocationByLocationId(selectedAddressId).subscribe(
+      this.registrationService.getLocationByLocationId(this.getLocationId()).subscribe(
         (data: RegistrationModel) => {
           if (data.success === 1) {
             this.registrationService.updateState(data);
             this.router.navigate(['/select-main-service']);
           }
         },
-        (err: RegistrationTrackerError) => {
-
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.errorSummaryService.scrollToErrorSummary();
         },
-        () => {
-          console.log('Get location by postcode complete');
-        }
       )
     );
   }
 
-  setRegulatedCheckFalse(data) {
-    // clear default location data
-    data.locationdata = [{}];
-    data.locationdata[0]['isRegulated'] = false;
+  private getPostalCode(): string {
+    return this.registration.locationdata[0].postalCode;
   }
 
-  workplaceNotFound() {
-    this.addressPostcode = this.registration.locationdata[0].postalCode;
-
-    this.subscriptions.add(
-      this.registrationService.getAddressByPostCode(this.addressPostcode).subscribe((data: RegistrationModel) => {
-        if (data.success === 1) {
-          this.setRegulatedCheckFalse(data);
-          this.registrationService.updateState(data);
-          this.router.navigate(['/select-workplace-address']);
-        }
-      })
-    );
+  public workplaceNotFound(): void {
+    this.registrationService.workPlaceNotFound$.next(this.getPostalCode());
   }
 
   ngOnDestroy() {
