@@ -1,23 +1,23 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 
-import { CqcRegisteredQuestionComponent } from './cqc-registered-question.component';
+import { RegulatedByCqcComponent } from './regulated-by-cqc.component';
 
-describe('CqcRegisteredQuestionComponent', () => {
-  let component: CqcRegisteredQuestionComponent;
-  let fixture: ComponentFixture<CqcRegisteredQuestionComponent>;
+describe('RegulatedByCqcComponent', () => {
+  let component: RegulatedByCqcComponent;
+  let fixture: ComponentFixture<RegulatedByCqcComponent>;
 
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule],
-      declarations: [ CqcRegisteredQuestionComponent ]
+      declarations: [ RegulatedByCqcComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CqcRegisteredQuestionComponent);
+    fixture = TestBed.createComponent(RegulatedByCqcComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

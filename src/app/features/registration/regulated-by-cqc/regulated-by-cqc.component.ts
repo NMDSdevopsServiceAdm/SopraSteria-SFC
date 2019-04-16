@@ -10,10 +10,10 @@ import { Subscription } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-cqc-registered-question',
-  templateUrl: './cqc-registered-question.component.html',
+  selector: 'app-regulated-by-cqc',
+  templateUrl: './regulated-by-cqc.component.html',
 })
-export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
+export class RegulatedByCqcComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   private registration: RegistrationModel;
   public submitted = false;

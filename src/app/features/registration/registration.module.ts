@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ConfirmAccountDetailsComponent } from '@features/registration/confirm-account-details/confirm-account-details.component';
 import { ConfirmWorkplaceDetailsComponent } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
-import { CqcRegisteredQuestionComponent } from '@features/registration/cqc-registered-question/cqc-registered-question.component';
+import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { CreateUsernameComponent } from '@features/registration/create-username/create-username.component';
 import { EnterWorkplaceAddressComponent } from '@features/registration/enter-workplace-address/enter-workplace-address.component';
 import { NgModule } from '@angular/core';
@@ -20,7 +20,7 @@ import { RegistrationRoutingModule } from '@features/registration/registration-r
   declarations: [
     ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
-    CqcRegisteredQuestionComponent,
+    RegulatedByCqcComponent,
     CreateUsernameComponent,
     EnterWorkplaceAddressComponent,
     RegistrationCompleteComponent,

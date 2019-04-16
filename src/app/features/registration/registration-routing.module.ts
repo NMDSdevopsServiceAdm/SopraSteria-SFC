@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CqcRegisteredQuestionComponent } from '@features/registration/cqc-registered-question/cqc-registered-question.component';
+import { RegulatedByCqcComponent } from '@features/registration/regulated-by-cqc/regulated-by-cqc.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { RegisterGuard } from '@core/guards/register/register.guard';
 import { ConfirmWorkplaceDetailsComponent } from '@features/registration/confirm-workplace-details/confirm-workplace-details.component';
@@ -15,8 +15,8 @@ import { SelectMainServiceComponent } from '@features/registration/select-main-s
 
 const routes: Routes = [
   {
-    path: 'registered-question',
-    component: CqcRegisteredQuestionComponent,
+    path: 'regulated-by-cqc',
+    component: RegulatedByCqcComponent,
   },
   {
     path: 'select-workplace',

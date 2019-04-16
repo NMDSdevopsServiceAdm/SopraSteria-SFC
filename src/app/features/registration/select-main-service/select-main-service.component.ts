@@ -115,7 +115,7 @@ export class SelectMainServiceComponent implements OnInit {
     this.backLink = this.registration.userRoute.route[this.currentSection - 1];
     this.currentSection = this.currentSection + 1;
 
-    if (this.backLink === '/registration/registered-question') {
+    if (this.backLink === '/registration/regulated-by-cqc') {
       this.lastSection = 7;
     }
     else if (this.backLink === '/registration/select-workplace') {

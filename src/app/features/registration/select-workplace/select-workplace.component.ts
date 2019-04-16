@@ -162,7 +162,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
       data['userRoute'] = {
         currentPage: this.currentSection,
         route: [
-          '/registration/registered-question',
+          '/registration/regulated-by-cqc',
           '/registration/select-workplace'
         ]
       };
