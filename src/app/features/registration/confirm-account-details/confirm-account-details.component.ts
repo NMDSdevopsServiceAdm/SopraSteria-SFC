@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { RegistrationService } from '../../../core/services/registration.service';
-import { RegistrationModel } from '../../../core/model/registration.model';
+import { RegistrationService } from '@core/services/registration.service';
+import { RegistrationModel } from '@core/model/registration.model';
 
 @Component({
   selector: 'app-confirm-account-details',
