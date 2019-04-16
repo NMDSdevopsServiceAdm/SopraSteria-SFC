@@ -17,6 +17,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public worker: Worker;
   public submitted = false;
+  public returnTo: boolean;
   public formErrorsMap: Array<ErrorDetails>;
   public serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
@@ -36,13 +37,14 @@ export class QuestionComponent implements OnInit, OnDestroy {
       })
     );
 
+    this.returnTo = !!this.workerService.returnToSummary;
+
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-    console.log('destroyed');
   }
 
   public getFormErrorMessage(item: string, errorType: string): string {
