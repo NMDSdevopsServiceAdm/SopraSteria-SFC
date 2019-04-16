@@ -3,8 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
-import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationService } from '../../../core/services/registration.service';
+import { RegistrationModel } from '../../../core/model/registration.model';
 
 @Component({
   selector: 'app-select-main-service',
@@ -105,7 +105,7 @@ export class SelectMainServiceComponent implements OnInit {
       return;
     }
     else {
-      this.router.navigate(['/confirm-workplace-details']);
+      this.router.navigate(['/registration/confirm-workplace-details']);
     }
 
   }
@@ -115,17 +115,17 @@ export class SelectMainServiceComponent implements OnInit {
     this.backLink = this.registration.userRoute.route[this.currentSection - 1];
     this.currentSection = this.currentSection + 1;
 
-    if (this.backLink === '/registered-question') {
+    if (this.backLink === '/registration/registered-question') {
       this.lastSection = 7;
     }
-    else if (this.backLink === '/select-workplace') {
+    else if (this.backLink === '/registration/select-workplace') {
       this.lastSection = 8;
     }
-    else if (this.backLink === '/enter-workplace-address') {
+    else if (this.backLink === '/registration/enter-workplace-address') {
       this.lastSection = 9;
     }
-    else if (this.backLink === '/confirm-workplace-details') {
-      if (this.registration.userRoute[1].route === '/select-workplace') {
+    else if (this.backLink === '/registration/confirm-workplace-details') {
+      if (this.registration.userRoute[1].route === '/registration/select-workplace') {
         this.lastSection = 8;
       }
       else {
@@ -138,7 +138,7 @@ export class SelectMainServiceComponent implements OnInit {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/select-main-service');
+    data.userRoute['route'].push('/registration/select-main-service');
   }
 
 }

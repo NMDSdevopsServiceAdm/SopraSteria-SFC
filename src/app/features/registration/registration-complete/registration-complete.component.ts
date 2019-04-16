@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationService } from '../../../core/services/registration.service';
+import { RegistrationModel } from '../../../core/model/registration.model';
 
 @Component({
   selector: 'app-registration-complete',

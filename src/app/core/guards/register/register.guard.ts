@@ -20,7 +20,7 @@ export class RegisterGuard implements CanActivate {
       return true;
     }
 
-    this.router.navigate(['/registered-question']);
+    this.router.navigate(['/registration/registered-question']);
     return false;
   }
 }

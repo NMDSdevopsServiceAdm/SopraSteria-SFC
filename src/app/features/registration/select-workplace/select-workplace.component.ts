@@ -5,9 +5,9 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model';
-import { RegistrationTrackerError } from './../../core/model/registrationTrackerError.model';
+import { RegistrationService } from '../../../core/services/registration.service';
+import { RegistrationModel } from '../../../core/model/registration.model';
+import { RegistrationTrackerError } from '@core/model/registrationTrackerError.model';
 
 @Component({
   selector: 'app-select-workplace',
@@ -137,7 +137,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
 
             this._registrationService.updateState(data);
 
-            this.router.navigate(['/select-main-service']);
+            this.router.navigate(['/registration/select-main-service']);
           }
         },
         (err: RegistrationTrackerError) => {
@@ -155,15 +155,15 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
       data['userRoute'] = this.registration.userRoute;
       data.userRoute['currentPage'] = this.currentSection;
       data.userRoute['route'] = this.registration.userRoute['route'];
-      data.userRoute['route'].push('/select-workplace');
+      data.userRoute['route'].push('/registration/select-workplace');
     }
     else {
 
       data['userRoute'] = {
         currentPage: this.currentSection,
         route: [
-          '/registered-question',
-          '/select-workplace'
+          '/registration/registered-question',
+          '/registration/select-workplace'
         ]
       };
 
@@ -191,7 +191,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
 
             this._registrationService.updateState(data);
 
-            this.router.navigate(['/select-workplace-address']);
+            this.router.navigate(['/registration/select-workplace-address']);
           }
         }
       )

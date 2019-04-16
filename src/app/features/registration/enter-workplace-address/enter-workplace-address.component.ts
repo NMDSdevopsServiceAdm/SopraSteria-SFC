@@ -4,8 +4,8 @@ import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/fo
 import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 
-import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationService } from '../../../core/services/registration.service';
+import { RegistrationModel } from '../../../core/model/registration.model';
 
 @Component({
   selector: 'app-enter-workplace-address',
@@ -326,7 +326,7 @@ export class EnterWorkplaceAddressComponent implements OnInit {
 
     this._registrationService.updateState(this.registration);
 
-    this.router.navigate(['/select-main-service']);
+    this.router.navigate(['/registration/select-main-service']);
 
   }
 
@@ -342,7 +342,7 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/enter-workplace-address');
+    data.userRoute['route'].push('/registration/enter-workplace-address');
   }
 
 }

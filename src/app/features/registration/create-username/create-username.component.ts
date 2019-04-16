@@ -163,9 +163,9 @@ export class CreateUsernameComponent implements OnInit {
     this.currentSection = this.currentSection + 1;
 
     if (this.backLink === '/user-details') {
-      if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
+      if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace') {
         this.lastSection = 8;
-      } else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
+      } else if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace-address') {
         this.lastSection = 9;
       } else {
         this.lastSection = 7;
@@ -268,9 +268,9 @@ export class CreateUsernameComponent implements OnInit {
     this._registrationService.updateState(this.registration);
 
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-      this.router.navigate(['/confirm-account-details']);
+      this.router.navigate(['/registration/confirm-account-details']);
     } else {
-      this.router.navigate(['/security-question']);
+      this.router.navigate(['/registration/security-question']);
     }
   }
 
@@ -278,7 +278,7 @@ export class CreateUsernameComponent implements OnInit {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/create-username');
+    data.userRoute['route'].push('/registration/create-username');
   }
 
   clickBack() {

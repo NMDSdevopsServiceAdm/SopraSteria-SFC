@@ -16,12 +16,12 @@
       <div class="row border-line-bottom" *ngIf="registration.locationdata[0].locationId">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>CQC Location ID</strong></div>
         <div class="tb-cell col-4 pt-3 pb-3">{{ registration.locationdata[0].locationId }}</div>
-        <div class="tb-cell text-right col-3 pt-2 pb-3"><a routerLink="/registered-question" title="Edit CQC Location ID">Change</a></div>
+        <div class="tb-cell text-right col-3 pt-2 pb-3"><a routerLink="/registration/registered-question" title="Edit CQC Location ID">Change</a></div>
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>Workplace name</strong></div>
         <div class="tb-cell col-4 pt-3 pb-3">{{ registration.locationdata[0].locationName }}</div>
-        <!-- <div class="tb-cell text-right col-3 pt-2 pb-3"><a routerLink="/registered-question" title="Edit Workplace name">Change</a></div> -->
+        <!-- <div class="tb-cell text-right col-3 pt-2 pb-3"><a routerLink="/registration/registered-question" title="Edit Workplace name">Change</a></div> -->
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>Address</strong></div>
@@ -31,7 +31,7 @@
           {{ registration.locationdata[0].county }}<br />
           {{ registration.locationdata[0].postalCode }}
         </div>
-        <!-- <div class="tb-cell text-right col-3 pt-2 pb-3"><a routerLink="/registered-question" title="Edit Address">Change</a></div> -->
+        <!-- <div class="tb-cell text-right col-3 pt-2 pb-3"><a routerLink="/registration/registered-question" title="Edit Address">Change</a></div> -->
       </div>
       <div class="row border-line-bottom">
         <div class="tb-cell col-5 pt-3 pb-3"><strong>Main service provided</strong></div>

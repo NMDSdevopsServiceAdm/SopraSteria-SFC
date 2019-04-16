@@ -215,7 +215,7 @@ export class CqcRegisteredQuestionComponent implements OnInit, OnDestroy {
   private onSuccess(data: RegistrationModel): void {
     if (data.success === 1) {
       this.registrationService.updateState(data);
-      this.router.navigate([ '/select-workplace' ]);
+      this.router.navigate([ '/registration/select-workplace' ]);
     }
   }
 

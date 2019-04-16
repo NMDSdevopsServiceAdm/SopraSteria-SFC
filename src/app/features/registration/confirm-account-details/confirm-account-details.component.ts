@@ -3,8 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationService } from '../../../core/services/registration.service';
+import { RegistrationModel } from '../../../core/model/registration.model';
 
 @Component({
   selector: 'app-confirm-account-details',
@@ -53,11 +53,11 @@ export class ConfirmAccountDetailsComponent implements OnInit {
 
     this.currentSection = (this.currentSection + 1);
 
-    if (this.backLink === '/security-question') {
-      if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
+    if (this.backLink === '/registration/security-question') {
+      if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace') {
         this.lastSection = 8;
       }
-      else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
+      else if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace-address') {
         this.lastSection = 9;
       }
       else {
@@ -82,7 +82,7 @@ export class ConfirmAccountDetailsComponent implements OnInit {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/confirm-account-details');
+    data.userRoute['route'].push('/registration/confirm-account-details');
   }
 
   clickBack() {

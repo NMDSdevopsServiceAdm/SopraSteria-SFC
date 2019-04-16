@@ -4,8 +4,8 @@ import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/fo
 import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 
-import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationService } from '../../../core/services/registration.service';
+import { RegistrationModel } from '../../../core/model/registration.model';
 
 @Component({
   selector: 'app-security-question',
@@ -89,11 +89,11 @@ export class SecurityQuestionComponent implements OnInit {
 
     this.currentSection = this.currentSection + 1;
 
-    if (this.backLink === '/create-username') {
-      if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
+    if (this.backLink === '/registration/create-username') {
+      if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace') {
         this.lastSection = 8;
       }
-      else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
+      else if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace-address') {
         this.lastSection = 9;
       }
       else {
@@ -170,14 +170,14 @@ export class SecurityQuestionComponent implements OnInit {
 
     this._registrationService.updateState(this.registration);
 
-    this.router.navigate(['/confirm-account-details']);
+    this.router.navigate(['/registration/confirm-account-details']);
   }
 
   updateSectionNumbers(data) {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/security-question');
+    data.userRoute['route'].push('/registration/security-question');
   }
 
   clickBack() {

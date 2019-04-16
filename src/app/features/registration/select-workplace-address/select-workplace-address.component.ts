@@ -3,8 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
-import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationService } from '../../../core/services/registration.service';
+import { RegistrationModel } from '../../../core/model/registration.model';
 
 @Component({
   selector: 'app-select-workplace-address',
@@ -108,10 +108,10 @@ export class SelectWorkplaceAddressComponent implements OnInit {
 
       if (this.registration.locationdata[0].locationName === '') {
 
-        this.router.navigate(['/enter-workplace-address']);
+        this.router.navigate(['/registration/enter-workplace-address']);
       }
       else {
-        this.router.navigate(['/select-main-service']);
+        this.router.navigate(['/registration/select-main-service']);
       }
 
     }
@@ -130,7 +130,7 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     data['userRoute'] = this.registration.userRoute || {};
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = (this.registration.userRoute && this.registration.userRoute['route']) || [];
-    data.userRoute['route'].push('/select-workplace-address');
+    data.userRoute['route'].push('/registration/select-workplace-address');
   }
 
   postcodeChange() {

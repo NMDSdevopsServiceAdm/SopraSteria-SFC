@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { Router } from '@angular/router';
 
-import { RegistrationService } from '../../core/services/registration.service';
-import { RegistrationModel } from '../../core/model/registration.model';
+import { RegistrationService } from '../../../core/services/registration.service';
+import { RegistrationModel } from '../../../core/model/registration.model';
 
 @Component({
   selector: 'app-confirm-workplace-details',
@@ -38,11 +38,11 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
 
     this.currentSection = this.currentSection + 1;
 
-    if (this.backLink === '/select-main-service') {
-      if (this.registration.userRoute.route[this.secondItem] === '/select-workplace') {
+    if (this.backLink === '/registration/select-main-service') {
+      if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace') {
         this.lastSection = 8;
       }
-      else if (this.registration.userRoute.route[this.secondItem] === '/select-workplace-address') {
+      else if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace-address') {
         this.lastSection = 9;
       }
       else {
@@ -70,14 +70,14 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
 
     this._registrationService.updateState(this.registration);
 
-    this.router.navigate(['/user-details']);
+    this.router.navigate(['/registration/user-details']);
   }
 
   updateSectionNumbers(data) {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/confirm-workplace-details');
+    data.userRoute['route'].push('/registration/confirm-workplace-details');
   }
 
   clickBack() {
@@ -101,7 +101,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   }
   
   workplaceNotFound() {
-    this.router.navigate(["/select-workplace-address"]);
+    this.router.navigate(["/registration/select-workplace-address"]);
   }
 
 }
