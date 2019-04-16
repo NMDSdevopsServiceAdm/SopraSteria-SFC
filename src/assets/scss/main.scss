@@ -10,11 +10,16 @@ body {
   font-family: $govuk-font-family;
 }
 
+@import 'modules/utils';
+
 // Custom Partials
 @import 'partials/lists';
 
 // Custom Components
+@import 'components/buttons';
 @import 'components/tag';
 @import 'components/doh-logo';
 @import 'components/footer';
 @import 'components/header';
+
+
