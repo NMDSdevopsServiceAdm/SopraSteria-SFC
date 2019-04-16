@@ -67,10 +67,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
         message: 'No location found.',
       },
       {
-        name: 400,
-        message: 'Invalid Postcode.',
-      },
-      {
         name: 503,
         message: 'Database error.',
       },
