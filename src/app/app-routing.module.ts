@@ -87,7 +87,6 @@ const routes: Routes = [
   {
     path: 'registration',
     loadChildren: '@features/registration/registration.module#RegistrationModule',
-    canActivate: [AuthGuard],
   },
   {
     path: 'dashboard',
