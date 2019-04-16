@@ -69,7 +69,7 @@ export class RegistrationService {
       data => console.log(data),
       error => console.log(error),
       () => {
-        this.router.navigate(['/registration-complete']);
+        this.router.navigate(['/registration/complete']);
       }
     );
   }

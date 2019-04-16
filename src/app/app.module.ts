@@ -41,18 +41,11 @@ import { ChangePasswordConfirmationComponent } from './features/change-password/
 import { ChangePasswordEditComponent } from './features/change-password/edit/edit.component';
 import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
-import { YourAccountComponent } from './features/your-account/your-account.component';
-import { ConfirmAccountDetailsComponent } from './features/confirm-account-details/confirm-account-details.component';
-import { ConfirmWorkplaceDetailsComponent } from './features/confirm-workplace-details/confirm-workplace-details.component';
 import { ContactUsComponent } from './features/contact-us/contact-us.component';
-import { ContinueCreatingAccountComponent } from './features/continue-creating-account/continue-creating-account.component';
-import { CqcRegisteredQuestionComponent } from './features/cqc-registered-question/cqc-registered-question.component';
-import { CreateUsernameComponent } from './features/create-username/create-username.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 import { HomeTabComponent } from './features/dashboard/home-tab/home-tab.component';
 import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
 import { WorkplaceTabComponent } from './features/dashboard/workplace-tab/workplace-tab.component';
-import { EnterWorkplaceAddressComponent } from './features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from './features/feedback/feedback.component';
 import {
   ForgotYourPasswordConfirmationComponent,
@@ -61,36 +54,17 @@ import { ForgotYourPasswordEditComponent } from './features/forgot-your-password
 import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from './features/login/login.component';
 import { LogoutComponent } from './features/logout/logout.component';
-import { RegisterComponent } from './features/register/register.component';
-import { RegistrationCompleteComponent } from './features/registration-complete/registration-complete.component';
 import { ResetPasswordConfirmationComponent } from './features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from './features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
-import { SecurityQuestionComponent } from './features/security-question/security-question.component';
-import { SelectMainServiceComponent } from './features/select-main-service/select-main-service.component';
-import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
-import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
-import { UserDetailsComponent } from './features/user-details/user-details.component';
+import { YourAccountComponent } from './features/your-account/your-account.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    RegisterComponent,
     HeaderComponent,
     FooterComponent,
-    CqcRegisteredQuestionComponent,
-    ConfirmWorkplaceDetailsComponent,
-    SelectWorkplaceComponent,
-    SelectWorkplaceAddressComponent,
-    UserDetailsComponent,
-    CreateUsernameComponent,
-    SecurityQuestionComponent,
-    ConfirmAccountDetailsComponent,
-    RegistrationCompleteComponent,
-    EnterWorkplaceAddressComponent,
-    SelectMainServiceComponent,
-    ContinueCreatingAccountComponent,
     FeedbackComponent,
     ContactUsComponent,
     LogoutComponent,
