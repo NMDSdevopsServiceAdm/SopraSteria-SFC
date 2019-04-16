@@ -14,9 +14,9 @@
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
         <fieldset class="govuk-fieldset" aria-describedby="regulatedByCQC-error">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h1 class="govuk-fieldset__heading">
+            <h2 class="govuk-fieldset__heading">
               Are you regulated by the Care Quality Commission (CQC)?
-            </h1>
+            </h2>
           </legend>
           <span *ngIf="submitted && regulatedByCQC.errors" id="regulatedByCQC-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('regulatedByCQC', 'required') }}
