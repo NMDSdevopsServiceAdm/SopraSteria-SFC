@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DEFAULT_DATE_FORMAT } from '@core/constants/constants';
+import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -47,7 +47,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
       }
 
       if (this.worker.mainJobStartDate) {
-        const date = moment(this.worker.mainJobStartDate, DEFAULT_DATE_FORMAT);
+        const date = moment(this.worker.mainJobStartDate, DATE_PARSE_FORMAT);
         this.form.patchValue({
           year: date.year(),
           month: date.format('M'),
@@ -86,7 +86,7 @@ export class MainJobStartDateComponent implements OnInit, OnDestroy {
             : null;
 
         const props = {
-          mainJobStartDate: date ? date.format(DEFAULT_DATE_FORMAT) : null,
+          mainJobStartDate: date ? date.format(DATE_PARSE_FORMAT) : null,
         };
 
         this.subscriptions.add(
