@@ -7,6 +7,7 @@ import { HttpInterceptor } from '@core/services/http-interceptor';
 import { TrainingService } from '@core/services/training.service';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
+import { Angulartics2Module } from 'angulartics2';
 import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -121,6 +122,11 @@ import { UserDetailsComponent } from './features/user-details/user-details.compo
     AppRoutingModule,
     ReactiveFormsModule,
     HttpClientModule,
+    Angulartics2Module.forRoot({
+      pageTracking: {
+        clearIds: true,
+      },
+    }),
     SharedModule,
     MomentModule,
   ],
