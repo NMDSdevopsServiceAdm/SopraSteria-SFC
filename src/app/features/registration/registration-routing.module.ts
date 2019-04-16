@@ -49,7 +49,7 @@ const routes: Routes = [
     canActivate: [RegisterGuard],
   },
   {
-    path: 'registration-complete',
+    path: 'complete',
     component: RegistrationCompleteComponent,
     canActivate: [RegisterGuard],
   },
