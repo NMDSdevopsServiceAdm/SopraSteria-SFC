@@ -134,7 +134,7 @@ class Worker {
 
     // saves the Worker to DB. Returns true if saved; false is not.
     // Throws "WorkerSaveException" on error
-    async save(savedBy) {
+    async save(savedBy, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -163,6 +163,10 @@ class Worker {
                 // need to create the Worker record and the Worker Audit event
                 //  in one transaction
                 await models.sequelize.transaction(async t => {
+                    // the saving of an Worker can be initiated within
+                    //  an external transaction
+                    const thisTransaction = externalTransaction ? externalTransaction : t;
+
                     // now append the extendable properties.
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
@@ -170,7 +174,7 @@ class Worker {
                     const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
 
                     // now save the document
-                    let creation = await models.worker.create(modifedCreationDocument, {transaction: t});
+                    let creation = await models.worker.create(modifedCreationDocument, {transaction: thisTransaction});
 
                     const sanitisedResults = creation.get({plain: true});
 
@@ -190,7 +194,7 @@ class Worker {
                                 workerFk: this._id
                             };
                         }));
-                    await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                     this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 });
@@ -212,6 +216,10 @@ class Worker {
                 // need to update the existing Worker record and add an
                 //  updated audit event within a single transaction
                 await models.sequelize.transaction(async t => {
+                    // the saving of an Worker can be initiated within
+                    //  an external transaction
+                    const thisTransaction = externalTransaction ? externalTransaction : t;
+
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy, {});
 
@@ -230,7 +238,7 @@ class Worker {
                                                             uid: this.uid
                                                         },
                                                         attributes: ['id', 'updated'],
-                                                        transaction: t,
+                                                        transaction: thisTransaction,
                                                 });
 
                     if (updatedRecordCount === 1) {
@@ -250,7 +258,7 @@ class Worker {
                                 };
                             }));
                             // having updated the record, create the audit event
-                        await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+                        await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
                         const additionalModels = this._properties.additionalModels;
@@ -261,7 +269,8 @@ class Worker {
                                 models[thisModelByName].destroy({
                                     where: {
                                       workerFk: this._id
-                                    }
+                                    },
+                                    transaction: thisTransaction,
                                   })
                             );
                         });
@@ -270,12 +279,15 @@ class Worker {
                         additionalModelsByname.forEach(async thisModelByName => {
                             const thisModelData = additionalModels[thisModelByName];
                             createMmodelPromises.push(
-                                models[thisModelByName].bulkCreate(thisModelData.map(thisRecord => {
-                                    return {
-                                        ...thisRecord,
-                                        workerFk: this._id
-                                    };
-                                }))
+                                models[thisModelByName].bulkCreate(
+                                    thisModelData.map(thisRecord => {
+                                        return {
+                                            ...thisRecord,
+                                            workerFk: this._id
+                                        };
+                                    }),
+                                    { transaction: thisTransaction },
+                                )
                             );
                         });
                         await Promise.all(createMmodelPromises);
@@ -518,45 +530,70 @@ class Worker {
     };
 
     // returns a set of Workers based on given filter criteria (all if no filters defined) - restricted to the given Establishment
-    static async fetch(establishmentId, filters=null) {
+    static async fetch(establishmentId, effectiveFrom, filters=null) {
         const allWorkers = [];
-        const fetchResults = await models.worker.findAll({
-            where: {
-                establishmentFk: establishmentId,
-                archived: false
-            },
-            include: [
-                {
-                    model: models.job,
-                    as: 'mainJob',
-                    attributes: ['id', 'title']
-                  }
-            ],
-            attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", "created", "updated", "updatedBy"],
-            order: [
-                ['updated', 'DESC']
-            ]           
-        });
+        try {
 
-        if (fetchResults) {
-            fetchResults.forEach(thisWorker => {
-                allWorkers.push({
-                    uid: thisWorker.uid,
-                    nameOrId: thisWorker.NameOrIdValue,
-                    contract: thisWorker.ContractValue,
-                    mainJob: {
-                        jobId: thisWorker.mainJob.id,
-                        title: thisWorker.mainJob.title
-                    },
-                    completed: thisWorker.CompletedValue,
-                    created:  thisWorker.created.toJSON(),
-                    updated: thisWorker.updated.toJSON(),
-                    updatedBy: thisWorker.updatedBy
-                })
+            const fetchResults = await models.worker.findAll({
+                where: {
+                    establishmentFk: establishmentId,
+                    archived: false
+                },
+                include: [
+                    {
+                        model: models.job,
+                        as: 'mainJob',
+                        attributes: ['id', 'title']
+                      }
+                ],
+                attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", "created", "updated", "updatedBy"],
+                order: [
+                    ['updated', 'DESC']
+                ]           
             });
-        }
+    
+            if (fetchResults) {
+                const workerPromise = [];
 
-        return allWorkers;
+                fetchResults.forEach(thisWorker => {
+                    workerPromise.push(
+                        new Promise( async (resolve, reject) => {
+                            const newWorker = new Worker(establishmentId);
+                            try {
+                                await newWorker.restore(thisWorker.uid);
+    
+                                const wdfEligibility = await newWorker.isWdfEligible(effectiveFrom);
+    
+                                allWorkers.push({
+                                    uid: thisWorker.uid,
+                                    nameOrId: thisWorker.NameOrIdValue,
+                                    contract: thisWorker.ContractValue,
+                                    mainJob: {
+                                        jobId: thisWorker.mainJob.id,
+                                        title: thisWorker.mainJob.title
+                                    },
+                                    completed: thisWorker.CompletedValue,
+                                    created:  thisWorker.created.toJSON(),
+                                    updated: thisWorker.updated.toJSON(),
+                                    updatedBy: thisWorker.updatedBy,
+                                    effectiveFrom: effectiveFrom.toISOString(),
+                                    wdfEligible: wdfEligibility.isEligible
+                                });
+
+                                resolve();
+                            } catch (err) {
+                                reject(err);
+                            }
+                        })
+                    );
+                });
+                await Promise.all(workerPromise);
+                return allWorkers;
+            }
+        } catch (err) {
+            console.error("Worker::fetch - unexpected exception: ", error);
+            throw err;
+        }
     };
 
     // helper returns a set 'json ready' objects for representing a Worker's overall
@@ -753,6 +790,118 @@ class Worker {
         } else {
             return false;
         }
+    }
+
+    // returns true if this worker is WDF eligible as referenced from the
+    //  given effective date; otherwise returns false
+    async isWdfEligible(effectiveFrom) {
+        const wdfByProperty = await this.wdf(effectiveFrom);
+
+        // NOTE - the worker does not have to be completed before it can be eligible for WDF
+
+        return {
+            isEligible: Object.values(wdfByProperty).every(thisProperty => {
+                return !(thisProperty === 'No');
+            }),
+            ... wdfByProperty
+        };
+    }
+
+    _isPropertyWdfBasicEligible(refEpoch, property) {
+        // no record given, so test eligibility of this Worker
+        return property &&
+                property.property !== null &&
+                property.valid &&
+                property.savedAt &&
+                property.savedAt.getTime() > refEpoch;
+    }
+
+    // returns the WDF eligibility of each WDF relevant property as referenced from
+    //  the given effect date
+    // if "record" is given, then the WDF eligibility is calculated from the raw Worker record data
+    async wdf(effectiveFrom) {
+        const myWdf = {};
+        const effectiveFromEpoch = effectiveFrom.getTime();
+
+        // gender/date of birth/nationality
+        myWdf['gender'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Gender')) ? 'Yes' : 'No';
+        myWdf['dateOfBirth'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DateOfBirth')) ? 'Yes' : 'No';
+        myWdf['nationality'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Nationality')) ? 'Yes' : 'No';
+
+        // main job, other job, main job start date, source of recruitment, employment status (contract)
+        myWdf['mainJob'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJob')) ? 'Yes' : 'No';
+        myWdf['otherJobs'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherJobs')) ? 'Yes' : 'No';
+        myWdf['mainJobStartDate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainJobStartDate')) ? 'Yes' : 'No';
+        myWdf['recruitedFrom'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('RecruitedFrom')) ? 'Yes' : 'No';
+        myWdf['contract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Contract')) ? 'Yes' : 'No';
+
+        // zero hours contract, contracted/average weekly hours (dependent on zero hours selected and on employment status/contract), 
+        
+        const CONTRACT_TYPE = ['Permanent', 'Temporary', 'Pool/Bank', 'Agency', 'Other'];
+        myWdf['zeroHoursContract'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('ZeroHoursContract')) ? 'Yes' : 'No';
+        if (this._properties.get('ZeroHoursContract').property === null) {
+            // we have insufficient information to calculate whether the average/contracted weekly hours is WDF eligibnle
+            myWdf['weeklyHoursContracted'] = 'Not relevant';
+            myWdf['weeklyHoursAverage'] = 'Not relevant';
+        } else {
+            if (this._properties.get('ZeroHoursContract').property === 'No') {
+                if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
+                    myWdf['weeklyHoursContracted'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursContracted')) ? 'Yes' : 'No';
+                } else {
+                    myWdf['weeklyHoursContracted'] = 'Not relevant';
+                }
+
+                if (['Pool/Bank', 'Agency', 'Other'].includes(this._properties.get('Contract').property)) {
+                    myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+                } else {
+                    myWdf['weeklyHoursAverage'] = 'Not relevant';
+                }
+            } else if (this._properties.get('ZeroHoursContract').property === 'Yes') {
+                // regardless of contract, all workers on zero hours contract, have an average set of weekly hours
+                myWdf['weeklyHoursContracted'] = 'Not relevant';
+                myWdf['weeklyHoursAverage'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('WeeklyHoursAverage')) ? 'Yes' : 'No';
+            } else {
+                // if zero hours contract is neither Yes or No, the average/contracted hour egligibility is not relevant
+                myWdf['weeklyHoursContracted'] = 'Not relevant';
+                myWdf['weeklyHoursAverage'] = 'Not relevant';
+            }
+        }
+
+        // sickness and salary
+        myWdf['annualHourlyPay'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('AnnualHourlyPay')) ? 'Yes' : 'No';
+        // Note - contract is a mandatory property - it will always have value
+        if (['Permanent', 'Temporary'].includes(this._properties.get('Contract').property)) {
+            myWdf['daysSick'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('DaysSick')) ? 'Yes' : 'No';
+        } else {
+            myWdf['daysSick'] = 'Not relevant';
+        }
+
+        // qualifications and care certificate
+        myWdf['careCertificate'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CareCertificate')) ? 'Yes' : 'No';
+        myWdf['qualificationInSocialCare'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('QualificationInSocialCare')) ? 'Yes' : 'No';7
+        if (this._properties.get('QualificationInSocialCare').property === null || this._properties.get('QualificationInSocialCare').property === 'No') {
+            // if not having defined 'having a qualification in social care' or 'have said no'
+            myWdf['socialCareQualification'] = 'Not relevant';
+        } else {
+            myWdf['socialCareQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('SocialCareQualification')) ? 'Yes' : 'No';
+        }
+        myWdf['otherQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherQualifications')) ? 'Yes' : 'No';
+        if (this._properties.get('OtherQualifications').property === null || this._properties.get('OtherQualifications').property === 'No') {
+            // if not having defined 'having another qualification' or 'have said no'
+            myWdf['highestQualification'] = 'Not relevant';
+        } else {
+            myWdf['highestQualification'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('HighestQualification')) ? 'Yes' : 'No';
+        }
+        
+        return myWdf;
+    }
+
+    // returns the WDF eligibilty as JSON object
+    async wdfToJson(effectiveFrom) {
+        return {
+            effectiveFrom: effectiveFrom.toISOString(),
+            ... await this.isWdfEligible(effectiveFrom)
+        };
     }
 
 };

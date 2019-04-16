@@ -1,11 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
+import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
+import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import {
@@ -34,9 +37,9 @@ import {
 } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
+import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
-import { WorkerSummaryComponent } from './worker-summary/worker-summary.component';
 import { WorkerResolver } from './worker.resolver';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
@@ -62,6 +65,10 @@ const routes: Routes = [
     component: EditWorkerComponent,
     resolve: { worker: WorkerResolver },
     children: [
+      {
+        path: '',
+        component: StaffRecordComponent,
+      },
       {
         path: 'staff-details',
         component: StaffDetailsComponent,
@@ -172,7 +179,23 @@ const routes: Routes = [
       },
       {
         path: 'summary',
-        component: WorkerSummaryComponent,
+        component: CheckStaffRecordComponent,
+      },
+      {
+        path: 'add-qualification',
+        component: AddEditQualificationComponent,
+      },
+      {
+        path: 'qualification/:qualificationId',
+        component: AddEditQualificationComponent,
+      },
+      {
+        path: 'add-training',
+        component: AddEditTrainingComponent,
+      },
+      {
+        path: 'training/:trainingRecordId',
+        component: AddEditTrainingComponent,
       },
     ],
   },

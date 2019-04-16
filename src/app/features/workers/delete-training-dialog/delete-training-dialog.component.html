@@ -1,0 +1,36 @@
+<h1 class="pb-5">You are about to delete the following training record.</h1>
+
+{{ trainingRecord | json }}
+<dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Staff Record
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ data.nameOrId }}
+        </dd>
+      </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Training name
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.trainingRecord.title }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Training category
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ data.trainingRecord.trainingCategory.category }}
+    </dd>
+  </div>
+</dl>
+
+<div class="btn-container container">
+  <div class="row">
+    <button type="button" class="btn btn-primary" (click)="close(true)">Delete training record</button>
+    <button type="button" class="btn btn-link btn-link-no-underline" (click)="close(false)">Cancel</button>
+  </div>
+</div>

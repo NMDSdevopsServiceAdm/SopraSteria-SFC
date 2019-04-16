@@ -57,7 +57,6 @@ export class SelectMainServiceComponent implements OnInit {
   }
 
   clickBack() {
-    const routeArray = this.registration.userRoute.route;
     this.currentSection = this.registration.userRoute.currentPage;
     this.currentSection = this.currentSection - 1;
     this.registration.userRoute.route.splice(-1);
@@ -93,17 +92,12 @@ export class SelectMainServiceComponent implements OnInit {
   selectMainServiceChanged(value: string): void {
 
     this.registration.locationdata[0].mainService = value;
-
-    //console.log(this.registration[0]);
   }
 
   save() {
-    //routerLink = "/confirm-workplace-details"
 
     this.updateSectionNumbers(this.registration);
-    //
 
-    console.log(this.registration);
     this._registrationService.updateState(this.registration);
 
     if (this.SelectMainServiceForm.invalid) {

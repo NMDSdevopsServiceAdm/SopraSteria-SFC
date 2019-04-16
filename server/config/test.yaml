@@ -2,6 +2,8 @@ slack:
     level : 3     # enables Slack notifications
 jwt:
     iss: 'sfcstaging.cloudapps.digital'
+    ttl:
+        login: 10
 notify:
     replyTo: '73711295-a4da-4303-9127-65be2a409681'
     templates:

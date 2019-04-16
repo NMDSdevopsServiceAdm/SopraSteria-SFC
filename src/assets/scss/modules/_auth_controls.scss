@@ -4,6 +4,7 @@
   vertical-align: text-bottom;
   margin-top: 10px;
   text-align: right;
+  @include rem(padding, 20px 0 0 30px);
 
   @include media(map-get($breakpoints, laptop)) {
     margin-top: 0;
@@ -30,10 +31,12 @@
       }
 
       a,
-      a:visited {
+      a:visited,
+      p {
         font-size: 1.5rem;
         text-decoration: none;
         color: map-get($color, black);
+        @include rem(padding, 6px 0);
 
         @include media(map-get($breakpoints, laptop)) {
           font-size: 1.3rem;

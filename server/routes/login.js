@@ -1,13 +1,15 @@
  var express = require('express');
  const models = require('../models/index');
- const jwt = require('jsonwebtoken');
  const passport = require('passport');
  var router = express.Router();
  require('../utils/security/passport')(passport);
 const Login = require('../models').login;
 
 const generateJWT = require('../utils/security/generateJWT');
+const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
 const uuid = require('uuid');
+
+const config = require('..//config/config');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
@@ -19,13 +21,13 @@ router.post('/',async function(req, res) {
           isActive:true
         }
         ,
-        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash'],
+        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin'],
         include: [ {
           model: models.user,
           attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId', "UserRoleValue"],
           include: [{
             model: models.establishment,
-            attributes: ['id', 'name', 'isRegulated', 'nmdsId'],
+            attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId'],
             include: [{
               model: models.services,
               as: 'mainService',
@@ -45,13 +47,16 @@ router.post('/',async function(req, res) {
 
         login.comparePassword(escape(req.body.password), async (err, isMatch) => {
           if (isMatch && !err) {
-            const token = generateJWT.loginJWT(12, login.user.establishmentId, req.body.username, login.user.UserRoleValue);
+            const loginTokenTTL = config.get('jwt.ttl.login');
+
+            const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, req.body.username, login.user.UserRoleValue);
             var date = new Date().getTime();
-            date += (12 * 60 * 60 * 1000);          
+            date += (loginTokenTTL * 60  * 1000);
    
             const response = formatSuccessulLoginResponse(
               login.user.FullNameValue,
               login.firstLogin,
+              login.lastLogin,
               login.user.UserRoleValue,
               login.user.establishment,
               login.user.establishment.mainService,
@@ -81,6 +86,7 @@ router.post('/',async function(req, res) {
               await models.userAudit.create(auditEvent, {transaction: t});
             });
 
+            // TODO: ultimately remove "Bearer" from the response; this should be added by client
             return res.set({'Authorization': 'Bearer ' + token}).status(200).json(response);
 
           } else {
@@ -139,20 +145,22 @@ router.post('/',async function(req, res) {
       })
       .catch((error) => {
         console.error(error);
-        return res.status(400).send(error);
+        return res.status(503).send();
       });
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, firstLoginDate, role, establishment, mainService, expiryDate) => {
+const formatSuccessulLoginResponse = (fullname, firstLoginDate, lastLoggedDate, role, establishment, mainService, expiryDate) => {
   // note - the mainService can be null
   return {
     fullname,
     isFirstLogin: firstLoginDate ? false : true,
+    lastLoggedIn: lastLoggedDate ? lastLoggedDate.toISOString() : null,
     role,
     establishment: {
       id: establishment.id,
-      name: establishment.name,
+      uid: establishment.uid,
+      name: establishment.NameValue,
       isRegulated: establishment.isRegulated,
       nmdsId: establishment.nmdsId
     },
@@ -163,4 +171,24 @@ const formatSuccessulLoginResponse = (fullname, firstLoginDate, role, establishm
     expiryDate: expiryDate
   };
 };
+
+// renews a given bearer token; this token must exist and must be valid
+//  it must be a Logged In "Bearer" token
+router.use('/refresh', isAuthorised);
+router.get('/refresh', async function(req, res) {
+  // this assumes no re-authentication; this assumes no checking of origin; this assumes no validation against last logged in or timeout against last login
+
+  // gets here the given token is still valid
+  const loginTokenTTL = config.get('jwt.ttl.login');
+  const token = generateJWT.regenerateLoginToken(loginTokenTTL, req);
+  var expiryDate = new Date().getTime();
+  expiryDate += (loginTokenTTL * 60  * 1000);    // TTL is in minutes
+
+  // TODO: ultimately remove "Bearer" from the response; this should be added by client
+  return res.set({'Authorization': 'Bearer ' + token}).status(200).json({
+    expiryDate: new Date(expiryDate).toISOString()
+  });
+  
+});
+
 module.exports = router;

@@ -1,0 +1,8 @@
+@import "../../../../assets/scss/variables.scss";
+@import "../../../../assets/scss/mixins.scss";
+
+
+.notification-panel {
+  @include rem(padding, 17px);
+  background-color: $notification-background;
+}

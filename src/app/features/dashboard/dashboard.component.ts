@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
 import { AuthService } from '@core/services/auth-service';
+import { UserService } from '@core/services/user.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -7,16 +9,13 @@ import { AuthService } from '@core/services/auth-service';
 })
 export class DashboardComponent implements OnInit {
   public establishment: any;
-  public fullname: string;
+  public lastLoggedIn = null;
+  public dateFormat = DEFAULT_DATE_DISPLAY_FORMAT;
 
-  constructor(private authService: AuthService) {}
-
-  get isFirstLoggedIn(): boolean {
-    return this.authService.isFirstLogin == null ? false : this.authService.isFirstLogin;
-  }
+  constructor(private authService: AuthService, private userService: UserService) {}
 
   ngOnInit() {
     this.establishment = this.authService.establishment;
-    this.fullname = this.authService.fullname;
+    this.lastLoggedIn = this.authService.lastLoggedIn;
   }
 }

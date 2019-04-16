@@ -37,8 +37,7 @@ export class TabsComponent implements AfterContentInit {
     }
 
     this.unselectTabs();
-
-    this.location.replaceState(`${this.route.snapshot.url}#${tab.slug}`);
+    this.location.replaceState(`${this.location.path()}#${tab.slug}`);
     tab.active = true;
   }
 
