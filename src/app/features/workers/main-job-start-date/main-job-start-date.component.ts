@@ -74,21 +74,15 @@ export class MainJobStartDateComponent extends QuestionComponent implements OnIn
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      //   const { day, month, year } = this.form.value;
-      //   const date =
-      //     day && month && year
-      //       ? moment()
-      //           .year(year)
-      //           .month(month - 1)
-      //           .date(day)
-      //       : null;
+      const { day, month, year } = this.form.get('mainJobStartDate').value;
+      const date = day && month && year ? moment(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
 
-      //   const props = {
-      //     mainJobStartDate: date ? date.format(DATE_PARSE_FORMAT) : null,
-      //   };
+      const props = {
+        mainJobStartDate: date ? date.format(DATE_PARSE_FORMAT) : null,
+      };
 
-      this.save({});
-      //     this.router.navigate(['/worker', this.worker.uid, 'other-job-roles']);
+      this.save(props);
+      this.router.navigate(['/worker', this.worker.uid, 'other-job-roles']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
