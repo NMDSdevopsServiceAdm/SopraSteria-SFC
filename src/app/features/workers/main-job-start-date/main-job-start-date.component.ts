@@ -14,8 +14,6 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './main-job-start-date.component.html',
 })
 export class MainJobStartDateComponent extends QuestionComponent implements OnInit, OnDestroy {
-  public backLink: string;
-
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -37,18 +35,18 @@ export class MainJobStartDateComponent extends QuestionComponent implements OnIn
   init() {
     if (this.worker.mainJobStartDate) {
       const date = moment(this.worker.mainJobStartDate, DATE_PARSE_FORMAT);
-      this.form.patchValue({
+      this.form.get('mainJobStartDate').patchValue({
         year: date.year(),
         month: date.format('M'),
         day: date.date(),
       });
     }
 
-    // if (this.workerService.returnToSummary) {
-    //   this.backLink = 'summary';
-    // } else {
-    //   this.backLink = this.worker.mainJob.jobId === 27 ? 'mental-health-professional' : 'staff-details';
-    // }
+    this.next = ['/worker', this.worker.uid, 'other-job-roles'];
+    this.previous =
+      this.worker.mainJob.jobId === 27
+        ? ['/worker', this.worker.uid, 'mental-health-professional']
+        : ['/worker', this.worker.uid, 'staff-details'];
   }
 
   public setupFormErrorsMap(): void {
@@ -69,46 +67,16 @@ export class MainJobStartDateComponent extends QuestionComponent implements OnIn
     ];
   }
 
-  private generateUpdateProps() {
+  generateUpdateProps() {
     const { day, month, year } = this.form.get('mainJobStartDate').value;
     const date = day && month && year ? moment(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
 
-    return {
-      mainJobStartDate: date ? date.format(DATE_PARSE_FORMAT) : null,
-    };
-  }
-
-  public onSubmit(payload: { action: string; save: boolean }): void {
-    if (payload.save) {
-      this.submitted = true;
-      this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-      if (this.form.valid) {
-        const props = this.generateUpdateProps();
-
-        this.save(props);
-        this.router.navigate(['/worker', this.worker.uid, 'other-job-roles']);
-      } else {
-        this.errorSummaryService.scrollToErrorSummary();
-      }
+    if (date) {
+      return {
+        mainJobStartDate: date.format(DATE_PARSE_FORMAT),
+      };
     }
 
-    switch (payload.action) {
-      case 'continue':
-        console.log('next question');
-        break;
-
-      case 'summary':
-        console.log('summary page');
-        break;
-
-      case 'exit':
-        this.router.navigate(['/dashboard']);
-        break;
-
-      case 'return':
-        console.log('return');
-        break;
-    }
+    return null;
   }
 }
