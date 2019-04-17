@@ -26,10 +26,9 @@
               <input
                 class="govuk-radios__input"
                 id="workplace-{{ i }}"
-                value="{{ i }}"
+                value="{{ item.locationId }}"
                 name="workplace"
                 type="radio"
-                value="yes"
                 formControlName="workplace"
               />
               <label class="govuk-label govuk-radios__label" for="workplace-{{ i }}">
@@ -42,7 +41,7 @@
 
       <p>
         <a
-          [routerLink]="['/select-workplace-address']"
+          [routerLink]="['/registration/select-workplace-address']"
           (click)="workplaceNotFound()"
           title="My workplace isn’t displayed">
           My workplace isn’t displayed

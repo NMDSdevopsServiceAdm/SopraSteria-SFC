@@ -74,8 +74,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   private getLocationId(): string {
-    const selectedLocation: any = this.form.get('workplace').value;
-    return this.registration.locationdata[selectedLocation].locationId;
+    return this.form.get('workplace').value;
   }
 
   public onSubmit(): void {
@@ -100,20 +99,23 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    this.subscriptions.add(
-      this.registrationService.getLocationByLocationId(this.getLocationId()).subscribe(
-        (data: RegistrationModel) => {
-          if (data.success === 1) {
-            this.registrationService.updateState(data);
-            this.router.navigate(['/select-main-service']);
-          }
-        },
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          this.errorSummaryService.scrollToErrorSummary();
-        },
-      )
-    );
+    this.registrationService.selectedLocationId$.next(this.getLocationId());
+    this.router.navigate(['/registration/select-main-service']);
+
+    // this.subscriptions.add(
+    //   this.registrationService.getLocationByLocationId(this.getLocationId()).subscribe(
+    //     (data: RegistrationModel) => {
+    //       if (data.success === 1) {
+    //         this.registrationService.updateState(data);
+    //         this.router.navigate(['/registration/select-main-service']);
+    //       }
+    //     },
+    //     (error: HttpErrorResponse) => {
+    //       this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+    //       this.errorSummaryService.scrollToErrorSummary();
+    //     },
+    //   )
+    // );
   }
 
   private getPostalCode(): string {
