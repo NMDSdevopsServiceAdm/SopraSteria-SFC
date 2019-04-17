@@ -4,8 +4,10 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { RegistrationService } from '@core/services/registration.service';
 import { RegistrationModel } from '@core/model/registration.model';
+import { Location } from '@core/model/location.model';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { filter } from 'lodash';
 
 @Component({
   selector: 'app-select-workplace',
@@ -56,8 +58,9 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private getLocationId(): string {
-    return this.form.get('workplace').value;
+  private getSelectedLocation(): Location {
+    const selectedLocationId: string = this.form.get('workplace').value;
+    return filter(this.registration.locationdata, ['locationId', selectedLocationId])[0];
   }
 
   public onSubmit(): void {
@@ -82,7 +85,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    this.registrationService.selectedLocationId$.next(this.getLocationId());
+    this.registrationService.selectedLocation$.next(this.getSelectedLocation());
     this.router.navigate(['/registration/select-main-service']);
   }
 

@@ -1,15 +1,12 @@
-//class CqcRegisteredQuestion {
-//  constructor(
-//    public registeredQuestionSelected: string = '',
-//    public postcodeYes:string = '',
-//    public locationId:string = '',
-//    public postcodeNo:string = '') {
-//  }
-//}
-
-export class allLocations {
-  registeredQuestionSelected: string;
-  postcodeYes: string;
+export interface Location {
+  addressLine1: string;
+  addressLine2: string;
+  county: string;
+  isRegulated: boolean;
   locationId: string;
-  postcodeNo: string;
+  locationName: string;
+  mainService: string;
+  postalCode: string;
+  townCity: string;
 }
+

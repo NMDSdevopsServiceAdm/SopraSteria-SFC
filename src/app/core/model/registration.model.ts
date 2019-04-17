@@ -1,3 +1,4 @@
+import { Location } from '@core/model/location.model';
 
 export interface RegistrationModel {
   success: number;
@@ -7,27 +8,7 @@ export interface RegistrationModel {
     currentPage: number;
     route: [];
   };
-  locationdata: [{
-    locationId: string;
-    locationName: string;
-    addressLine1: string;
-    addressLine2: string;
-    townCity: string;
-    county: string;
-    postalCode: string;
-    mainService: string;
-    isRegulated: boolean;
-    user: {
-      fullname: string;
-      jobTitle: string;
-      emailAddress: string;
-      contactNumber: string;
-      username: string;
-      password: string;
-      securityQuestion: string;
-      securityAnswer: string;
-    };
-  }];
+  locationdata: Array<Location>;
   postcodedata: [{
     locationName: string;
     addressLine1: string;
@@ -37,4 +18,3 @@ export interface RegistrationModel {
     postalCode: string;
   }];
 }
-

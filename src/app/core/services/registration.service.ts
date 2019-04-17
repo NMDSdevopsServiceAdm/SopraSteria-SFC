@@ -1,8 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-
+import { Location } from '@core/model/location.model';
 import { RegistrationModel } from '../model/registration.model';
 
 const initialRegistration: RegistrationModel = {
@@ -25,16 +25,6 @@ const initialRegistration: RegistrationModel = {
       postalCode: '',
       townCity: '',
       isRegulated: null,
-      user: {
-        fullname: '',
-        jobTitle: '',
-        emailAddress: '',
-        contactNumber: '',
-        username: '',
-        password: '',
-        securityQuestion: '',
-        securityAnswer: '',
-      },
     },
   ],
   postcodedata: [
@@ -58,7 +48,7 @@ export class RegistrationService {
     initialRegistration
   );
   public registration$: Observable<RegistrationModel> = this._registration$.asObservable();
-  public selectedLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public selectedLocation$: BehaviorSubject<Location> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -88,8 +78,8 @@ export class RegistrationService {
     return this.http.get<RegistrationModel>(`/api/postcodes/${id}`);
   }
 
-  getMainServices(id: boolean) {
-    return this.http.get(`/api/services/byCategory?cqc=${id}`);
+  public getServicesByCategory(isRegulated: boolean) {
+    return this.http.get(`/api/services/byCategory?cqc=${isRegulated}`);
   }
 
   getUsernameDuplicate(id: string) {

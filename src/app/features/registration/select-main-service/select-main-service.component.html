@@ -1,53 +1,51 @@
-<div class="sub-page-container col-12">
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
 
-  <div id="back" class="back-link">
-    <a (click)="clickBack()">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Select your main service</h1>
+    <p>
+      We need some details about where you work. You need to answer these questions before we can create your account.
+    </p>
 
-  <!-- <p class="h5">Section {{ currentSection }} of {{ lastSection }}</p> -->
-  <h1 class="h1">Select your main service</h1>
-
-  <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">We need some details about where you work. You need to answer these questions before we can create your account.</p>
-
-  <form novalidate
-        (ngSubmit)="save()"
-        [formGroup]="SelectMainServiceForm">
-
-    <div class="form-group">
-
-      <div class="field-group pb-4" [ngClass]="{'is-invalid': isInvalid }">
-
-        <span class="invalid-feedback">
-          <span class="main-body-text mb-2" *ngIf="isInvalid">
-            Please select a main service.
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid"
+        *ngFor="let item of categories">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">
+              {{ item.category }}
+            </h2>
+          </legend>
+          <span *ngIf="submitted && form.invalid" id="mainService-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('mainService', 'required') }}
           </span>
-        </span>
-
-        <div class="mt-5" *ngFor="let item of allCategoriesArray; let i = index">
-          <label class="main-body-text-bold mb-4 p-0 d-block" *ngIf="item.category">{{ item.category }}</label>
-
-          <div *ngFor="let data of item.services">
-            <div class="row mb-4" *ngIf="data.isCQC === regulatedCheck">
-              <div class="col-12">
-                <div class="multiple-choice">
-                  <input type="radio" id="{{ data.id }}" value="{{ data.name }}" formControlName="mainServiceSelected">
-                  <label class="main-body-text p-0" for="{{ data.id }}">{{ data.name }}</label>
-                </div>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let service of item.services; let i = index">
+              <div *ngIf="service.isCQC === isRegulated()">
+                <input
+                  class="govuk-radios__input"
+                  id="mainService-{{ i }}"
+                  value="{{ service.id }}"
+                  name="mainService"
+                  type="radio"
+                  formControlName="mainService"
+                />
+                <label class="govuk-label govuk-radios__label" for="mainService-{{ i }}">
+                  {{ service.name }}
+                </label>
               </div>
             </div>
           </div>
-        </div>
+        </fieldset>
       </div>
 
-    </div>
-
-    <div class="btn-container">
-      <button class="btn btn-primary" type="submit">Continue</button>
-    </div>
-
-  </form>
-
-
+      <button class="govuk-button govuk-!-margin-top-2" type="submit">Continue</button>
+    </form>
+  </div>
 </div>
