@@ -69,7 +69,7 @@ export class MainJobStartDateComponent extends QuestionComponent implements OnIn
     ];
   }
 
-  private getUpdateProps() {
+  private generateUpdateProps() {
     const { day, month, year } = this.form.get('mainJobStartDate').value;
     const date = day && month && year ? moment(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
 
@@ -84,7 +84,7 @@ export class MainJobStartDateComponent extends QuestionComponent implements OnIn
       this.errorSummaryService.syncFormErrorsEvent.next(true);
 
       if (this.form.valid) {
-        const props = this.getUpdateProps();
+        const props = this.generateUpdateProps();
 
         this.save(props);
         this.router.navigate(['/worker', this.worker.uid, 'other-job-roles']);
