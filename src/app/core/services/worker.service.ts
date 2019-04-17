@@ -38,7 +38,7 @@ export class WorkerService {
   private _worker$ = new BehaviorSubject<Worker>(null);
   public worker$ = this._worker$.asObservable();
   private lastDeleted$ = new BehaviorSubject<string>(null);
-  private returnToSummary$ = new BehaviorSubject<boolean>(false);
+  private returnTo$ = new BehaviorSubject<string[]>(null);
   public createStaffResponse = null;
   public trainingRecordCreated = null;
   public trainingRecordEdited = null;
@@ -61,8 +61,8 @@ export class WorkerService {
     return this.lastDeleted$.value as string;
   }
 
-  public get returnToSummary() {
-    return this.returnToSummary$.value as boolean;
+  public get returnTo(): string[] {
+    return this.returnTo$.value;
   }
 
   setLastDeleted(name: string) {
@@ -77,8 +77,8 @@ export class WorkerService {
     this._worker$.next(worker);
   }
 
-  setReturnToSummary(val) {
-    this.returnToSummary$.next(val);
+  setReturnTo(val: string[]) {
+    this.returnTo$.next(val);
   }
 
   getWorker(workerId: string): Observable<Worker> {

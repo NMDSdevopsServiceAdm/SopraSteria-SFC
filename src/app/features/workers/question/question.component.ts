@@ -35,7 +35,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.return = null; //this.workerService.returnToSummary;
+    this.return = this.workerService.returnTo;
 
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe(worker => {
@@ -53,6 +53,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+    this.workerService.setReturnTo(null);
   }
 
   public getFormErrorMessage(item: string, errorType: string): string {

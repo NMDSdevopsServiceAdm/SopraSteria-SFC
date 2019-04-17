@@ -1,4 +1,4 @@
-<app-basic-record [worker]="worker"></app-basic-record>
-<app-personal-details [worker]="worker"></app-personal-details>
-<app-employment [worker]="worker"></app-employment>
-<app-qualifications-and-training [worker]="worker"></app-qualifications-and-training>
+<app-basic-record [worker]="worker" [return]="['/worker', worker.uid, 'summary']"></app-basic-record>
+<app-personal-details [worker]="worker" [return]="['/worker', worker.uid, 'summary']"></app-personal-details>
+<app-employment [worker]="worker" [return]="['/worker', worker.uid, 'summary']"></app-employment>
+<app-qualifications-and-training [worker]="worker" [return]="['/worker', worker.uid, 'summary']"></app-qualifications-and-training>

@@ -51,12 +51,12 @@
     </div>
     <app-tabs>
       <app-tab title="Staff Record">
-        <app-basic-record [worker]="worker"></app-basic-record>
-        <app-personal-details [worker]="worker"></app-personal-details>
-        <app-employment [worker]="worker"></app-employment>
+        <app-basic-record [worker]="worker" [return]="['/worker', worker.uid]"></app-basic-record>
+        <app-personal-details [worker]="worker" [return]="['/worker', worker.uid]"></app-personal-details>
+        <app-employment [worker]="worker" [return]="['/worker', worker.uid]"></app-employment>
       </app-tab>
       <app-tab title="Qualifications and training">
-        <app-qualifications-and-training [worker]="worker"></app-qualifications-and-training>
+        <app-qualifications-and-training [worker]="worker" [return]="['/worker', worker.uid]"></app-qualifications-and-training>
         <a
           [routerLink]="['/worker', worker.uid, 'add-qualification']"
           role="button"
