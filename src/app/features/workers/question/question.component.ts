@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -9,10 +9,6 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { isNull } from 'util';
 
-@Component({
-  selector: 'app-question',
-  template: '',
-})
 export class QuestionComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public worker: Worker;
