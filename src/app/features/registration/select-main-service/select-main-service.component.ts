@@ -1,4 +1,4 @@
-import { WorkPlaceCategory } from '@core/model/workplace-category.model';
+import { WorkplaceCategory } from '@core/model/workplace-category.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -8,6 +8,8 @@ import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { WorkplaceService } from '@core/model/workplace-service.model';
+import { filter } from 'lodash';
 
 @Component({
   selector: 'app-select-main-service',
@@ -16,7 +18,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private location: Location;
   private subscriptions: Subscription = new Subscription();
-  public categories: Array<WorkPlaceCategory>;
+  public categories: Array<WorkplaceCategory>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
@@ -39,14 +41,14 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
 
   private setupForm(): void {
     this.form = this.fb.group({
-      mainService: ['', Validators.required],
+      workplaceService: ['', Validators.required],
     });
   }
 
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'mainService',
+        item: 'workplaceService',
         type: [
           {
             name: 'required',
@@ -93,7 +95,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private getServicesByCategory(): void {
     this.subscriptions.add(
       this.registrationService.getServicesByCategory(this.isRegulated()).subscribe(
-        (categories: Array<WorkPlaceCategory>) => this.categories = categories,
+        (categories: Array<WorkplaceCategory>) => this.categories = categories,
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
@@ -102,11 +104,17 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     );
   }
 
+  private getSelectedWorkPlaceService(): WorkplaceService {
+    const selectedWorkPlaceServiceId: number = parseInt(this.form.get('workplaceService').value, 10);
+    return filter(this.categories, { services: [{ id: selectedWorkPlaceServiceId }] });
+  }
+
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
+      this.registrationService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
       this.router.navigate(['/registration/confirm-workplace-details']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();

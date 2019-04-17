@@ -17,8 +17,8 @@
       <div
         class="govuk-form-group"
         [class.govuk-form-group--error]="submitted && form.invalid">
-        <span *ngIf="submitted && form.invalid" id="mainService-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('mainService', 'required') }}
+        <span *ngIf="submitted && form.invalid" id="workplaceService-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplaceService', 'required') }}
         </span>
         <div *ngFor="let item of categories; let last = last" [class.govuk-!-padding-bottom-6]="!last">
           <fieldset class="govuk-fieldset">
@@ -32,13 +32,13 @@
                 <div *ngIf="service.isCQC === isRegulated()">
                   <input
                     class="govuk-radios__input"
-                    id="mainService-{{ i }}"
+                    id="workplaceService-{{ i }}"
                     value="{{ service.id }}"
-                    name="mainService"
+                    name="workplaceService"
                     type="radio"
-                    formControlName="mainService"
+                    formControlName="workplaceService"
                   />
-                  <label class="govuk-label govuk-radios__label" for="mainService-{{ i }}">
+                  <label class="govuk-label govuk-radios__label" for="workplaceService-{{ i }}">
                     {{ service.name }}
                   </label>
                 </div>

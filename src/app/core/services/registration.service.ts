@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Location } from '@core/model/location.model';
-import { RegistrationModel } from '../model/registration.model';
+import { RegistrationModel } from '@core/model/registration.model';
+import { WorkplaceService } from '@core/model/workplace-service.model';
 
 const initialRegistration: RegistrationModel = {
   // Example initial dummy data
@@ -60,6 +61,7 @@ export class RegistrationService {
   );
   public registration$: Observable<RegistrationModel> = this._registration$.asObservable();
   public selectedLocation$: BehaviorSubject<Location> = new BehaviorSubject(null);
+  public selectedWorkplaceService$: BehaviorSubject<WorkplaceService> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private router: Router) {}
 
