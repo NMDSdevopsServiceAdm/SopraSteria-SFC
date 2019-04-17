@@ -58,7 +58,6 @@ export class RegistrationService {
     initialRegistration
   );
   public registration$: Observable<RegistrationModel> = this._registration$.asObservable();
-  public workPlaceNotFound$: BehaviorSubject<string> = new BehaviorSubject(null);
   public selectedLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private router: Router) {}

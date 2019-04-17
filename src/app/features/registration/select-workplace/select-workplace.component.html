@@ -1,8 +1,7 @@
 <app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
+  *ngIf="submitted && form.invalid"
   [formErrorsMap]="formErrorsMap"
   [form]="form"
-  [serverError]="serverError"
 >
 </app-error-summary>
 
@@ -11,7 +10,7 @@
     <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Select your workplace</h1>
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
             <h2 class="govuk-fieldset__heading">
@@ -42,7 +41,6 @@
       <p>
         <a
           [routerLink]="['/registration/select-workplace-address']"
-          (click)="workplaceNotFound()"
           title="My workplace isn’t displayed">
           My workplace isn’t displayed
         </a>

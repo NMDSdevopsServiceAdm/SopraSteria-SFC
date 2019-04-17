@@ -4,9 +4,8 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { RegistrationService } from '@core/services/registration.service';
 import { RegistrationModel } from '@core/model/registration.model';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-select-workplace',
@@ -17,8 +16,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
-  public serverError: string;
-  public serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
 
   constructor(
@@ -31,7 +28,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.setupForm();
     this.setupFormErrorsMap();
-    this.setupServerErrorsMap();
 
     this.subscriptions.add(
       this.registrationService.registration$.subscribe(
@@ -56,19 +52,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
             message: 'Please select an address.',
           },
         ],
-      },
-    ];
-  }
-
-  public setupServerErrorsMap(): void {
-    this.serverErrorsMap = [
-      {
-        name: 404,
-        message: 'No location found.',
-      },
-      {
-        name: 503,
-        message: 'Database error.',
       },
     ];
   }
@@ -101,29 +84,6 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   private save(): void {
     this.registrationService.selectedLocationId$.next(this.getLocationId());
     this.router.navigate(['/registration/select-main-service']);
-
-    // this.subscriptions.add(
-    //   this.registrationService.getLocationByLocationId(this.getLocationId()).subscribe(
-    //     (data: RegistrationModel) => {
-    //       if (data.success === 1) {
-    //         this.registrationService.updateState(data);
-    //         this.router.navigate(['/registration/select-main-service']);
-    //       }
-    //     },
-    //     (error: HttpErrorResponse) => {
-    //       this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-    //       this.errorSummaryService.scrollToErrorSummary();
-    //     },
-    //   )
-    // );
-  }
-
-  private getPostalCode(): string {
-    return this.registration.locationdata[0].postalCode;
-  }
-
-  public workplaceNotFound(): void {
-    this.registrationService.workPlaceNotFound$.next(this.getPostalCode());
   }
 
   ngOnDestroy() {
