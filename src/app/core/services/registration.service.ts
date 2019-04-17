@@ -57,10 +57,8 @@ export class RegistrationService {
   private _registration$: BehaviorSubject<RegistrationModel> = new BehaviorSubject<RegistrationModel>(
     initialRegistration
   );
-
-  // Observable registration stream
   public registration$: Observable<RegistrationModel> = this._registration$.asObservable();
-  // registrationModel: RegistrationModel[];
+  public selectedLocationId$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private router: Router) {}
 

@@ -1,56 +1,51 @@
-<div class="sub-page-container col-12">
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+>
+</app-error-summary>
 
-  <div id="back" class="back-link">
-    <a (click)="clickBack()">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Select your workplace</h1>
 
-  <!-- <p class="h5">Section {{ currentSection }} of {{ lastSection }}</p> -->
-  <h1 class="h1">Select your workplace</h1>
-
-  <form novalidate
-        (ngSubmit)="onSubmit()"
-        [formGroup]="selectWorkplaceForm">
-
-    <app-messages></app-messages>
-
-    <div class="form-group mb-5">
-      <div class="col-12 p-0">
-        <label class="main-body-text-bold mb-3 d-block">Select your workplace from the following:</label>
-
-        <div [ngClass]="{'is-invalid panel col-10': this.isSubmitted && !selectWorkplaceForm.valid }">
-
-          <span class="invalid-feedback">
-            <span *ngIf="!selectWorkplaceForm.valid" class="main-body-text mb-2">
-              Please select an address
-            </span>
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">
+              Select your workplace from the following:
+            </h2>
+          </legend>
+          <span *ngIf="submitted && form.invalid" id="workplace-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}
           </span>
-
-          <div class="row mb-4" *ngFor="let item of registration.locationdata; let i = index">
-            <div class="col-12">
-              <div class="multiple-choice">
-                <input type="radio" id="selectWorkplace-{{i}}" formControlName="selectWorkplaceSelected" value="{{i}}" />
-                <label class="main-body-text p-0" for="selectWorkplace-{{i}}">{{ item.locationName }} - {{ item.townCity }} {{ item.postalCode }}</label>
-              </div>
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let item of registration.locationdata; let i = index">
+              <input
+                class="govuk-radios__input"
+                id="workplace-{{ i }}"
+                value="{{ item.locationId }}"
+                name="workplace"
+                type="radio"
+                formControlName="workplace"
+              />
+              <label class="govuk-label govuk-radios__label" for="workplace-{{ i }}">
+                {{ item.locationName }} - {{ item.townCity }} {{ item.postalCode }}
+              </label>
             </div>
           </div>
-
-        </div>
-
+        </fieldset>
       </div>
-    </div>
 
-
-    <div class="col-12  mt-4 mb-5 p-0">
-      <a class="text-link" (click)="workplaceNotFound()" title="My workplace isn’t displayed">My workplace isn’t displayed</a>
-    </div>
-
-    <div class="btn-container">
-      <button class="btn btn-primary" type="submit">Continue</button>
-    </div>
-
-  </form>
-
-
+      <p>
+        <a
+          [routerLink]="['/registration/select-workplace-address']"
+          title="My workplace isn’t displayed">
+          My workplace isn’t displayed
+        </a>
+      </p>
+      <button class="govuk-button govuk-!-margin-top-2" type="submit">Continue</button>
+    </form>
+  </div>
 </div>
