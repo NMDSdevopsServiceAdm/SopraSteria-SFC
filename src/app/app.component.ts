@@ -1,6 +1,8 @@
+import 'core-js';
+
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import 'core-js';
+import { Angulartics2GoogleGlobalSiteTag } from 'angulartics2/gst';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -11,7 +13,9 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   title = 'ng-sfc-v2';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, angulartics: Angulartics2GoogleGlobalSiteTag) {
+    angulartics.startTracking();
+  }
 
   ngOnInit() {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {

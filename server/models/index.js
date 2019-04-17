@@ -21,6 +21,15 @@ config.dialectOptions = {
 };
 config.logging = appConfig.get('log.sequelize');
 
+if (appConfig.get('db.client_ssl.status')) {
+  config.dialectOptions.ssl = {
+    rejectUnauthorized : false,
+    ca   : fs.readFileSync(appConfig.get('db.client_ssl.ca')).toString(),
+    key  : fs.readFileSync(appConfig.get('db.client_ssl.key')).toString(),
+    cert : fs.readFileSync(appConfig.get('db.client_ssl.certificate')).toString(),
+  };
+}
+
 // setup connection pool
 config.pool = {
   max: appConfig.get('db.pool'),

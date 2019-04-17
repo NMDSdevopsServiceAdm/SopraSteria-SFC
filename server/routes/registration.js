@@ -132,14 +132,15 @@ router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
 
 router.get('/estbname/:name', async (req, res) => {
   const requestedEstablishmentName = req.params.name;
+
   try {
     const results = await models.establishment.findOne({
       where: {
-        name: requestedEstablishmentName
+        NameValue: requestedEstablishmentName
       }
     });
 
-    if (results && results.id && (requestedEstablishmentName === results.name)) {
+    if (results && results.id && (requestedEstablishmentName === results.NameValue)) {
       return res.status(200).json({
         status: '1',
         message: `Establishment by name '${requestedEstablishmentName}' found`,
@@ -167,12 +168,12 @@ router.get('/estb/:name/:locationid', async (req, res) => {
   try {
     const results = await models.establishment.findOne({
       where: {
-        name: requestedEstablishmentName,
+        NameValue: requestedEstablishmentName,
         locationId: requestedEstablishmentLocationId
       }
     });
 
-    if (results && results.id && (requestedEstablishmentName === results.name)) {
+    if (results && results.id && (requestedEstablishmentName === results.NameValue)) {
       return res.status(200).json({
         status: '1',
         message: `Establishment by name '${requestedEstablishmentName}' and by location id '${requestedEstablishmentLocationId}' found`,

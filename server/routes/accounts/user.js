@@ -57,7 +57,7 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
     const thisUser = new User.User(establishmentId);
 
     try {
-        if (await thisUser.restore(byUUID, byUsername, showHistory)) {
+        if (await thisUser.restore(byUUID, byUsername, showHistory && req.query.history !== 'property')) {
             return res.status(200).json(thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false));
         } else {
             // not found worker

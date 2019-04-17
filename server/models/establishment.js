@@ -35,6 +35,16 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"IsRegulated"'
     },
+    overallWdfEligibility: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"OverallWdfEligibility"'
+    },
+    lastWdfEligibility: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LastWdfEligibility"'
+    },
     NameValue: {
       type: DataTypes.TEXT,
       allowNull: false,
