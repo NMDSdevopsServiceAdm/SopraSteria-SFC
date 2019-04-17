@@ -6,60 +6,11 @@ import { Location } from '@core/model/location.model';
 import { RegistrationModel } from '@core/model/registration.model';
 import { WorkplaceService } from '@core/model/workplace-service.model';
 
-const initialRegistration: RegistrationModel = {
-  // Example initial dummy data
-  success: 1,
-  message: 'Successful',
-  detailsChanged: false,
-  userRoute: {
-    currentPage: 1,
-    route: [],
-  },
-  locationdata: [
-    {
-      addressLine1: '',
-      addressLine2: '',
-      county: '',
-      isRegulated: null,
-      locationId: '',
-      locationName: '',
-      mainService: '',
-      postalCode: '',
-      townCity: '',
-      // TODO check if this user object can be moved
-      user: {
-        contactNumber: '',
-        emailAddress: '',
-        fullname: '',
-        jobTitle: '',
-        password: '',
-        securityAnswer: '',
-        securityQuestion: '',
-        username: '',
-      },
-    },
-  ],
-  postcodedata: [
-    {
-      addressLine1: '',
-      addressLine2: '',
-      county: '',
-      locationName: '',
-      postalCode: '',
-      townCity: '',
-    },
-  ],
-};
-
 @Injectable({
   providedIn: 'root',
 })
 export class RegistrationService {
-  // Observable registration source
-  private _registration$: BehaviorSubject<RegistrationModel> = new BehaviorSubject<RegistrationModel>(
-    initialRegistration
-  );
-  public registration$: Observable<RegistrationModel> = this._registration$.asObservable();
+  public registration$: BehaviorSubject<RegistrationModel> = new BehaviorSubject(null);
   public selectedLocation$: BehaviorSubject<Location> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<WorkplaceService> = new BehaviorSubject(null);
 
@@ -99,12 +50,11 @@ export class RegistrationService {
     return this.http.get(`/api/registration/username/${id}`);
   }
 
-  updateState(data) {
-    this._registration$.next(data);
+  public updateState(data): void {
+    this.registration$.next(data);
   }
 
   public isRegulated(location: Location): boolean {
     return location.isRegulated === true || location.locationId ? true : false;
   }
-
 }
