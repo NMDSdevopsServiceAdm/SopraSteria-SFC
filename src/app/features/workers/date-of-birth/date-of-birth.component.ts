@@ -38,7 +38,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
     });
     this.form.setValidators(Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator]));
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'national-insurance-number';

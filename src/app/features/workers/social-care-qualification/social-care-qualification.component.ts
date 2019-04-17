@@ -32,7 +32,7 @@ export class SocialCareQualificationComponent implements OnInit, OnDestroy {
       qualificationInSocialCare: null,
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'apprenticeship-training';

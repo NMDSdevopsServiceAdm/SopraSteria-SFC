@@ -32,7 +32,7 @@ export class ApprenticeshipTrainingComponent implements OnInit, OnDestroy {
       apprenticeshipTraining: null,
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'care-certificate';

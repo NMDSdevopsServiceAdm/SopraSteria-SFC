@@ -42,7 +42,7 @@ export class StaffDetailsComponent implements OnInit, OnDestroy {
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
 
-      if (this.workerService.returnToSummary) {
+      if (this.workerService.returnTo) {
         this.backLink = [this.worker.uid, 'summary'];
       } else {
         this.backLink = ['start-screen'];

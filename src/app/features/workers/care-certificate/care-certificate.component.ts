@@ -32,7 +32,7 @@ export class CareCertificateComponent implements OnInit, OnDestroy {
       careCertificate: null,
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'salary';

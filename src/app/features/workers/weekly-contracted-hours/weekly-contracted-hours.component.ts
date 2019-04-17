@@ -35,7 +35,7 @@ export class WeeklyContractedHoursComponent implements OnInit, OnDestroy {
       weeklyHoursContracted: [null, [Validators.min(0), Validators.max(65), this.hoursRequiredValidator]],
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'contract-with-zero-hours';

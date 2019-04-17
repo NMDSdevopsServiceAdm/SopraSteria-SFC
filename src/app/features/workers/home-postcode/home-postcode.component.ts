@@ -32,7 +32,7 @@ export class HomePostcodeComponent implements OnInit, OnDestroy {
       postcode: [null, this.postcodeValidator],
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'date-of-birth';
