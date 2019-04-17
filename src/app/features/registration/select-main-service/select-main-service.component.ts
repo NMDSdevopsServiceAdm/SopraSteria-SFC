@@ -1,4 +1,4 @@
-import { Category } from '@core/model/category.model';
+import { WorkPlaceCategory } from '@core/model/workplace-category.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -16,7 +16,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private location: Location;
   private subscriptions: Subscription = new Subscription();
-  public categories: Array<Category>;
+  public categories: Array<WorkPlaceCategory>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
@@ -93,7 +93,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private getServicesByCategory(): void {
     this.subscriptions.add(
       this.registrationService.getServicesByCategory(this.isRegulated()).subscribe(
-        (categories: Array<Category>) => this.categories = categories,
+        (categories: Array<WorkPlaceCategory>) => this.categories = categories,
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
