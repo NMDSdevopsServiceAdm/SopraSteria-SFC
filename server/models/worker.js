@@ -18,6 +18,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"EstablishmentFK"'
     },
+    lastWdfEligibility: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LastWdfEligibility"'
+    },
     NameOrIdValue: {
       type: DataTypes.TEXT,
       allowNull: false,

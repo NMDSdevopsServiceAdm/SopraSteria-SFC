@@ -2,6 +2,8 @@ slack:
     level : 3     # enables Slack notifications
 jwt:
     iss: 'asc-wds.skillsforcare.org.uk'
+    ttl:
+        login: 5
 db:
     pool: 5
     ssl: true       // enables SSL
