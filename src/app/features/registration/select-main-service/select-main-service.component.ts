@@ -16,7 +16,6 @@ import { filter } from 'lodash';
   templateUrl: './select-main-service.component.html',
 })
 export class SelectMainServiceComponent implements OnInit, OnDestroy {
-  private location: Location;
   private subscriptions: Subscription = new Subscription();
   public categories: Array<WorkplaceCategory>;
   public form: FormGroup;
@@ -80,21 +79,17 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private getSelectedLocation(): void {
     this.subscriptions.add(
       this.registrationService.selectedLocation$.subscribe(
-        (location: Location) => {
-          this.location = location;
-          this.getServicesByCategory();
-        }
+        (location: Location) => this.getServicesByCategory(location)
       )
     );
   }
 
-  private isRegulated(): boolean {
-    return this.location.isRegulated === true || this.location.locationId ? true : false;
-  }
+  private getServicesByCategory(location: Location): void {
+    const isRegulated: boolean = this.registrationService.isRegulated(location);
 
-  private getServicesByCategory(): void {
+
     this.subscriptions.add(
-      this.registrationService.getServicesByCategory(this.isRegulated()).subscribe(
+      this.registrationService.getServicesByCategory(isRegulated).subscribe(
         (categories: Array<WorkplaceCategory>) => this.categories = categories,
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

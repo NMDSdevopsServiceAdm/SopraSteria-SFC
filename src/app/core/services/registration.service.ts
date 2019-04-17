@@ -41,12 +41,12 @@ const initialRegistration: RegistrationModel = {
   ],
   postcodedata: [
     {
-      locationName: '',
       addressLine1: '',
       addressLine2: '',
-      townCity: '',
       county: '',
+      locationName: '',
       postalCode: '',
+      townCity: '',
     },
   ],
 };
@@ -83,12 +83,12 @@ export class RegistrationService {
     return this.http.get<RegistrationModel>(`/api/locations/lid/${id}`);
   }
 
-  getAddressByPostCode(id: string) {
-    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`);
+  public getAddressByPostCode(postcode: string): Observable<RegistrationModel> {
+    return this.http.get<RegistrationModel>(`/api/postcodes/${postcode}`);
   }
 
-  getUpdatedAddressByPostCode(id: string) {
-    return this.http.get<RegistrationModel>(`/api/postcodes/${id}`);
+  getUpdatedAddressByPostCode(postcode: string) {
+    return this.http.get<RegistrationModel>(`/api/postcodes/${postcode}`);
   }
 
   public getServicesByCategory(isRegulated: boolean) {
@@ -101,6 +101,10 @@ export class RegistrationService {
 
   updateState(data) {
     this._registration$.next(data);
+  }
+
+  public isRegulated(location: Location): boolean {
+    return location.isRegulated === true || location.locationId ? true : false;
   }
 
 }
