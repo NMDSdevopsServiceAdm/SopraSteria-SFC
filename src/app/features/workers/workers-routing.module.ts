@@ -47,6 +47,7 @@ const routes: Routes = [
   {
     path: 'start-screen',
     component: CreateStaffRecordStartScreenComponent,
+    data: { title: 'Start' },
   },
   {
     path: 'create-staff-record',
