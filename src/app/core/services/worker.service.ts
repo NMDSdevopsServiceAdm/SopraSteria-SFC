@@ -77,7 +77,7 @@ export class WorkerService {
     this._worker$.next(worker);
   }
 
-  setReturnTo(val: string[]) {
+  setReturnTo(val: string[]): void {
     this.returnTo$.next(val);
   }
 
