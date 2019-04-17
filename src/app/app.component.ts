@@ -2,6 +2,7 @@ import 'core-js';
 
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { TitleService } from '@core/services/title.service';
 import { Angulartics2GoogleGlobalSiteTag } from 'angulartics2/gst';
 import { filter } from 'rxjs/operators';
 
@@ -13,8 +14,13 @@ import { filter } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   title = 'ng-sfc-v2';
 
-  constructor(private router: Router, angulartics: Angulartics2GoogleGlobalSiteTag) {
-    angulartics.startTracking();
+  constructor(
+    private router: Router,
+    private titleService: TitleService,
+    private angulartics: Angulartics2GoogleGlobalSiteTag
+  ) {
+    this.titleService.init('Skills for Care');
+    this.angulartics.startTracking();
   }
 
   ngOnInit() {
