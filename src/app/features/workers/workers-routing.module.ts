@@ -51,14 +51,17 @@ const routes: Routes = [
   {
     path: 'create-staff-record',
     component: CreateStaffRecordComponent,
+    data: { title: 'Create Staff Records' },
   },
   {
     path: 'save-success',
     component: WorkerSaveSuccessComponent,
+    data: { title: 'Success' },
   },
   {
     path: 'delete-success',
     component: DeleteSuccessComponent,
+    data: { title: 'Delete Success' },
   },
   {
     path: ':id',
@@ -68,134 +71,167 @@ const routes: Routes = [
       {
         path: '',
         component: StaffRecordComponent,
+        data: { title: 'Staff Record' },
       },
       {
         path: 'staff-details',
         component: StaffDetailsComponent,
+        data: { title: 'Staff Details' },
       },
       {
         path: 'mental-health-professional',
         component: MentalHealthProfessionalComponent,
+        data: { title: 'Mental Health Professional' },
       },
       {
         path: 'main-job-start-date',
         component: MainJobStartDateComponent,
+        data: { title: 'Main Job Role Start Date' },
       },
       {
         path: 'other-job-roles',
         component: OtherJobRolesComponent,
+        data: { title: 'Other Job Roles' },
       },
       {
         path: 'national-insurance-number',
         component: NationalInsuranceNumberComponent,
+        data: { title: 'National Insurance Number' },
       },
       {
         path: 'date-of-birth',
         component: DateOfBirthComponent,
+        data: { title: 'Date of Birth' },
       },
       {
         path: 'home-postcode',
         component: HomePostcodeComponent,
+        data: { title: 'Home Postcode' },
       },
       {
         path: 'gender',
         component: GenderComponent,
+        data: { title: 'Gender' },
       },
       {
         path: 'disability',
         component: DisabilityComponent,
+        data: { title: 'Disability' },
       },
       {
         path: 'ethnicity',
         component: EthnicityComponent,
+        data: { title: 'Ethnicity' },
       },
       {
         path: 'nationality',
         component: NationalityComponent,
+        data: { title: 'Nationality' },
       },
       {
         path: 'british-citizenship',
         component: BritishCitizenshipComponent,
+        data: { title: 'British Citizenship' },
       },
       {
         path: 'country-of-birth',
         component: CountryOfBirthComponent,
+        data: { title: 'Country of Birth' },
       },
       {
         path: 'year-arrived-uk',
         component: YearArrivedUkComponent,
+        data: { title: 'Year Arrived in the UK' },
       },
       {
         path: 'recruited-from',
         component: RecruitedFromComponent,
+        data: { title: 'Recruited From' },
       },
       {
         path: 'adult-social-care-started',
         component: AdultSocialCareStartedComponent,
+        data: { title: 'Adult Social Care Started' },
       },
       {
         path: 'days-of-sickness',
         component: DaysOfSicknessComponent,
+        data: { title: 'Days of Sickness' },
       },
       {
         path: 'contract-with-zero-hours',
         component: ContractWithZeroHoursComponent,
+        data: { title: 'Contract with Zero Hours' },
       },
       {
         path: 'average-weekly-hours',
         component: AverageWeeklyHoursComponent,
+        data: { title: 'Average Weekly Hours' },
       },
       {
         path: 'weekly-contracted-hours',
         component: WeeklyContractedHoursComponent,
+        data: { title: 'Weekly Contracted Hours' },
       },
       {
         path: 'salary',
         component: SalaryComponent,
+        data: { title: 'Salary' },
       },
       {
         path: 'care-certificate',
         component: CareCertificateComponent,
+        data: { title: 'Care Certificate' },
       },
       {
         path: 'apprenticeship-training',
         component: ApprenticeshipTrainingComponent,
+        data: { title: 'Apprenticeship Training' },
       },
       {
         path: 'social-care-qualification',
         component: SocialCareQualificationComponent,
+        data: { title: 'Social Care Qualification' },
       },
       {
         path: 'social-care-qualification-level',
         component: SocialCareQualificationLevelComponent,
+        data: { title: 'Highest Social Care Qualification Level' },
       },
       {
         path: 'other-qualifications',
         component: OtherQualificationsComponent,
+        data: { title: 'Other Qualifications' },
       },
       {
         path: 'other-qualifications-level',
         component: OtherQualificationsLevelComponent,
+        data: { title: 'Highest Level of Other Qualifications' },
       },
       {
         path: 'summary',
         component: CheckStaffRecordComponent,
+        data: { title: 'Check Answers' },
       },
       {
         path: 'add-qualification',
         component: AddEditQualificationComponent,
+        data: { title: 'Add Qualification' },
       },
       {
         path: 'qualification/:qualificationId',
         component: AddEditQualificationComponent,
+        data: { title: 'Qualification' },
       },
       {
         path: 'add-training',
         component: AddEditTrainingComponent,
+        data: { title: 'Add Training' },
       },
       {
         path: 'training/:trainingRecordId',
         component: AddEditTrainingComponent,
+        data: { title: 'Training' },
       },
     ],
   },
