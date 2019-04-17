@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
@@ -36,11 +36,11 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
         const formGroup: AbstractControl = this.form.get(key);
 
         if (formGroup.errors) {
-          Object.keys(formGroup.errors).forEach(i => this.collectError(formGroup, i, true));
+          Object.keys(formGroup.errors).forEach(i => this.collectError(formGroup, key));
         }
 
         const formGroupControls: AbstractControl = formGroup['controls'];
-        Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], i));
+        Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], `${key}.${i}`));
       }
     });
   }
@@ -52,10 +52,10 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
    * @param item
    * @param name
    */
-  private collectError(item: AbstractControl, name: string, isGroup?: boolean): void {
+  private collectError(item: AbstractControl, name: string): void {
     if (item.errors) {
       this.errors.push({
-        item: isGroup ? 'group' : name,
+        item: name,
         errors: [...Object.keys(item.errors)],
       });
     }

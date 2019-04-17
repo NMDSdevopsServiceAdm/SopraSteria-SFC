@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
-import { filter } from 'lodash';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { filter } from 'lodash';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',

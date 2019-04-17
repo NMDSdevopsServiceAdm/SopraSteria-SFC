@@ -33,7 +33,7 @@ export class OtherJobRolesComponent implements OnInit, OnDestroy {
       selectedJobRoles: this.formBuilder.array([]),
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'main-job-start-date';

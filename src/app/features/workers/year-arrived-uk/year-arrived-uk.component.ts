@@ -34,7 +34,7 @@ export class YearArrivedUkComponent implements OnInit, OnDestroy {
       year: [null, this.yearValidator],
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'country-of-birth';

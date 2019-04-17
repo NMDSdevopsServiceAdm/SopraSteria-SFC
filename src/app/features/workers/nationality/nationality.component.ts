@@ -37,7 +37,7 @@ export class NationalityComponent implements OnInit, OnDestroy {
       nationalityName: [null, this.nationalityNameValidator],
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'ethnicity';

@@ -34,7 +34,7 @@ export class EthnicityComponent implements OnInit, OnDestroy {
       ethnicity: null,
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'disability';

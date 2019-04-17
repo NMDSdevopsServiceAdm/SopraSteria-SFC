@@ -35,7 +35,7 @@ export class OtherQualificationsLevelComponent implements OnInit, OnDestroy {
       qualification: [null, Validators.required],
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'other-qualifications';

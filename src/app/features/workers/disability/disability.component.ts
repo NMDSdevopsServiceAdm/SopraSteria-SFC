@@ -32,7 +32,7 @@ export class DisabilityComponent implements OnInit, OnDestroy {
       disability: null,
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'gender';

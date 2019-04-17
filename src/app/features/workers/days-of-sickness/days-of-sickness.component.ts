@@ -37,7 +37,7 @@ export class DaysOfSicknessComponent implements OnInit, OnDestroy {
       value: [null, [Validators.min(this.daysSicknessMin), Validators.max(this.daysSicknessMax), this.valueValidator]],
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'adult-social-care-started';

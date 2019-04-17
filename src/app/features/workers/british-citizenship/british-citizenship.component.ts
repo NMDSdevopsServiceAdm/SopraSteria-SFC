@@ -32,7 +32,7 @@ export class BritishCitizenshipComponent implements OnInit, OnDestroy {
       citizenship: null,
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'nationality';

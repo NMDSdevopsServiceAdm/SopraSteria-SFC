@@ -36,7 +36,7 @@ export class ContractWithZeroHoursComponent implements OnInit, OnDestroy {
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
 
-      if (this.workerService.returnToSummary) {
+      if (this.workerService.returnTo) {
         this.backLink = 'summary';
       } else {
         this.backLink = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)

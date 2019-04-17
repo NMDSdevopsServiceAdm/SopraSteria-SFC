@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DEFAULT_DATE_DISPLAY_FORMAT, DEFAULT_DATE_FORMAT } from '@core/constants/constants';
+import { DATE_PARSE_FORMAT, DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
 import { Worker } from '@core/model/worker.model';
 import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
@@ -38,7 +38,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
     });
     this.form.setValidators(Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator]));
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'national-insurance-number';
@@ -48,7 +48,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
       this.worker = worker;
 
       if (this.worker.dateOfBirth) {
-        const date = moment(this.worker.dateOfBirth, DEFAULT_DATE_FORMAT);
+        const date = moment(this.worker.dateOfBirth, DATE_PARSE_FORMAT);
         this.form.patchValue({
           year: date.year(),
           month: date.month() + 1,
@@ -86,7 +86,7 @@ export class DateOfBirthComponent implements OnInit, OnDestroy {
                 .date(day)
             : null;
         const props = {
-          dateOfBirth: date ? date.format(DEFAULT_DATE_FORMAT) : null,
+          dateOfBirth: date ? date.format(DATE_PARSE_FORMAT) : null,
         };
 
         this.subscriptions.add(

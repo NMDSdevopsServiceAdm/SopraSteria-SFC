@@ -32,7 +32,7 @@ export class GenderComponent implements OnInit, OnDestroy {
       gender: null,
     });
 
-    if (this.workerService.returnToSummary) {
+    if (this.workerService.returnTo) {
       this.backLink = 'summary';
     } else {
       this.backLink = 'home-postcode';
