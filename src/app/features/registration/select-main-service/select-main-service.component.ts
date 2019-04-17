@@ -106,7 +106,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
 
   private getSelectedWorkPlaceService(): WorkplaceService {
     const selectedWorkPlaceServiceId: number = parseInt(this.form.get('workplaceService').value, 10);
-    return filter(this.categories, { services: [{ id: selectedWorkPlaceServiceId }] });
+    return filter(this.categories, { services: [{ id: selectedWorkPlaceServiceId }] })[0].services[0];
   }
 
   public onSubmit(): void {

@@ -26,6 +26,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit {
   constructor(private _registrationService: RegistrationService, private router: Router) {}
 
   ngOnInit() {
+    this._registrationService.selectedWorkplaceService$.subscribe(val => console.log(val));
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     this.setSectionNumbers();
