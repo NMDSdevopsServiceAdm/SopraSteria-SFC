@@ -14,35 +14,38 @@
     </p>
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid"
-        *ngFor="let item of categories">
-        <fieldset class="govuk-fieldset">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h2 class="govuk-fieldset__heading">
-              {{ item.category }}
-            </h2>
-          </legend>
-          <span *ngIf="submitted && form.invalid" id="mainService-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('mainService', 'required') }}
-          </span>
-          <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let service of item.services; let i = index">
-              <div *ngIf="service.isCQC === isRegulated()">
-                <input
-                  class="govuk-radios__input"
-                  id="mainService-{{ i }}"
-                  value="{{ service.id }}"
-                  name="mainService"
-                  type="radio"
-                  formControlName="mainService"
-                />
-                <label class="govuk-label govuk-radios__label" for="mainService-{{ i }}">
-                  {{ service.name }}
-                </label>
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="submitted && form.invalid">
+        <span *ngIf="submitted && form.invalid" id="mainService-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('mainService', 'required') }}
+        </span>
+        <div *ngFor="let item of categories; let last = last" [class.govuk-!-padding-bottom-6]="!last">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">
+                {{ item.category }}
+              </h2>
+            </legend>
+            <div class="govuk-radios">
+              <div class="govuk-radios__item" *ngFor="let service of item.services; let i = index">
+                <div *ngIf="service.isCQC === isRegulated()">
+                  <input
+                    class="govuk-radios__input"
+                    id="mainService-{{ i }}"
+                    value="{{ service.id }}"
+                    name="mainService"
+                    type="radio"
+                    formControlName="mainService"
+                  />
+                  <label class="govuk-label govuk-radios__label" for="mainService-{{ i }}">
+                    {{ service.name }}
+                  </label>
+                </div>
               </div>
             </div>
-          </div>
-        </fieldset>
+          </fieldset>
+        </div>
       </div>
 
       <button class="govuk-button govuk-!-margin-top-2" type="submit">Continue</button>
