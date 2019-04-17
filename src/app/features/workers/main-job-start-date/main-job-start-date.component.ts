@@ -69,22 +69,46 @@ export class MainJobStartDateComponent extends QuestionComponent implements OnIn
     ];
   }
 
-  public onSubmit(): void {
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
+  private getUpdateProps() {
+    const { day, month, year } = this.form.get('mainJobStartDate').value;
+    const date = day && month && year ? moment(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
 
-    if (this.form.valid) {
-      const { day, month, year } = this.form.get('mainJobStartDate').value;
-      const date = day && month && year ? moment(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
+    return {
+      mainJobStartDate: date ? date.format(DATE_PARSE_FORMAT) : null,
+    };
+  }
 
-      const props = {
-        mainJobStartDate: date ? date.format(DATE_PARSE_FORMAT) : null,
-      };
+  public onSubmit(payload: { action: string; save: boolean }): void {
+    if (payload.save) {
+      this.submitted = true;
+      this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-      this.save(props);
-      this.router.navigate(['/worker', this.worker.uid, 'other-job-roles']);
-    } else {
-      this.errorSummaryService.scrollToErrorSummary();
+      if (this.form.valid) {
+        const props = this.getUpdateProps();
+
+        this.save(props);
+        this.router.navigate(['/worker', this.worker.uid, 'other-job-roles']);
+      } else {
+        this.errorSummaryService.scrollToErrorSummary();
+      }
+    }
+
+    switch (payload.action) {
+      case 'continue':
+        console.log('next question');
+        break;
+
+      case 'summary':
+        console.log('summary page');
+        break;
+
+      case 'exit':
+        this.router.navigate(['/dashboard']);
+        break;
+
+      case 'return':
+        console.log('return');
+        break;
     }
   }
 }

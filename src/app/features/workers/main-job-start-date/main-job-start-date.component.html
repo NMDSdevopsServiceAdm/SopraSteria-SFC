@@ -33,5 +33,5 @@
       <app-date-picker [formGroup]="form" formGroupName="mainJobStartDate"></app-date-picker>
     </fieldset>
   </div>
-  <app-submit-button [return]="returnTo"></app-submit-button>
+  <app-submit-button [return]="returnTo" (click)="onSubmit($event)"></app-submit-button>
 </form>
