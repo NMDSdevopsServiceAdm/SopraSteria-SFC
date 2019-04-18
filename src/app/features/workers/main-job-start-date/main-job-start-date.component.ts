@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
@@ -14,7 +14,7 @@ import { QuestionComponent } from '../question/question.component';
   selector: 'app-main-job-start-date',
   templateUrl: './main-job-start-date.component.html',
 })
-export class MainJobStartDateComponent extends QuestionComponent implements OnInit, OnDestroy {
+export class MainJobStartDateComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
