@@ -17,62 +17,77 @@ import { VacanciesComponent } from './vacancies/vacancies.component';
 const routes: Routes = [
   {
     path: 'start-screen',
+    data: { title: 'Start' },
     // component:
   },
   // FLOW
   {
     path: 'type-of-employer',
     component: TypeOfEmployerComponent,
+    data: { title: 'Type of Employer' },
   },
   {
     path: 'select-other-services',
     component: SelectOtherServicesComponent,
+    data: { title: 'Select Other Services' },
   },
   {
     path: 'capacity-of-services',
     component: ServicesCapacityComponent,
+    data: { title: 'Capacity of Services' },
   },
   {
     path: 'service-users',
     component: ServiceUsersComponent,
+    data: { title: 'Service Users' },
   },
   {
     path: 'share-options',
     component: ShareOptionsComponent,
+    data: { title: 'Data Sharing Options' },
   },
   {
     path: 'share-local-authority',
     component: ShareLocalAuthorityComponent,
+    data: { title: 'Share Data with Local Authority' },
   },
   {
     path: 'vacancies',
     component: VacanciesComponent,
+    data: { title: 'Vacancies' },
   },
   {
     path: 'confirm-vacancies',
     component: ConfirmVacanciesComponent,
+    data: { title: 'Confirm Vacancies' },
   },
   {
     path: 'starters',
     component: StartersComponent,
+    data: { title: 'Starters' },
   },
   {
     path: 'confirm-starters',
     component: ConfirmStartersComponent,
+    data: { title: 'Confirm Starters' },
   },
   {
     path: 'leavers',
     component: LeaversComponent,
+    data: { title: 'Leavers' },
   },
   {
     path: 'confirm-leavers',
     component: ConfirmLeaversComponent,
+    data: { title: 'Confirm Leavers' },
   },
   {
     path: 'volunteers',
+    data: { title: 'Volunteers' },
   },
   {
     path: 'summary',
+    data: { title: 'Check Answers' },
   },
 ];
 

@@ -11,6 +11,7 @@ import { ServiceUnavailableComponent } from '@core/components/error/service-unav
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { HttpInterceptor } from '@core/services/http-interceptor';
+import { TitleService } from '@core/services/title.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
@@ -131,6 +132,7 @@ import { YourAccountComponent } from './features/your-account/your-account.compo
     CountryService,
     TrainingService,
     WindowRef,
+    TitleService,
   ],
   bootstrap: [AppComponent],
 })

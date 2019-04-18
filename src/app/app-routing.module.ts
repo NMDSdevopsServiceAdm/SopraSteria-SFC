@@ -23,73 +23,89 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+    data: { title: 'Login' },
   },
   {
     path: 'logged-out',
     component: LogoutComponent,
+    data: { title: 'Logged Out' },
   },
   {
     path: 'forgot-your-password',
     component: ForgotYourPasswordComponent,
+    data: { title: 'Forgotten Password' },
   },
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
+    data: { title: 'Reset Password' },
   },
   {
     path: 'your-account',
     component: YourAccountComponent,
     canActivate: [AuthGuard],
+    data: { title: 'Your Account' },
   },
   {
     path: 'change-password',
     component: ChangePasswordComponent,
     canActivate: [AuthGuard],
+    data: { title: 'Change Password' },
   },
   {
     path: 'change-user-details',
     component: ChangeUserDetailsComponent,
     canActivate: [AuthGuard],
+    data: { title: 'Change User Details' },
   },
   {
     path: 'change-user-security',
     component: ChangeUserSecurityComponent,
     canActivate: [AuthGuard],
+    data: { title: 'Change Security Question' },
   },
   {
     path: 'feedback',
     component: FeedbackComponent,
+    data: { title: 'Give us Feedback' },
   },
   {
     path: 'contact-us',
     component: ContactUsComponent,
+    data: { title: 'Contact Us' },
   },
   {
     path: 'terms-and-conditions',
     component: TermsConditionsComponent,
+    data: { title: 'Terms and Conditions' },
   },
   {
     path: 'problem-with-the-service',
     component: ProblemWithTheServiceComponent,
+    data: { title: 'Problem with the Service' },
   },
   {
     path: 'workplace',
     loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
     canActivate: [AuthGuard],
+    data: { title: 'Workplace' },
   },
   {
     path: 'worker',
     loadChildren: '@features/workers/workers.module#WorkersModule',
     canActivate: [AuthGuard],
+    data: { title: 'Staff Records' },
   },
   {
     path: 'registration',
     loadChildren: '@features/registration/registration.module#RegistrationModule',
+    data: { title: 'Registration' },
   },
   {
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard],
+    data: { title: 'Dashboard' },
   },
   {
     path: '',
