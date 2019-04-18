@@ -63,6 +63,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   protected setupFormErrorsMap() {}
   protected setupServerErrorsMap() {}
   protected generateUpdateProps() {}
+  protected onSuccess() {}
 
   protected navigate(action): void {
     switch (action) {
@@ -108,12 +109,13 @@ export class QuestionComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService
         .updateWorker(this.worker.uid, props)
-        .subscribe(data => this.onSuccess(data, payload.action), error => this.onError(error))
+        .subscribe(data => this._onSuccess(data, payload.action), error => this.onError(error))
     );
   }
 
-  onSuccess(data, action) {
+  _onSuccess(data, action) {
     this.workerService.setState({ ...this.worker, ...data });
+    this.onSuccess();
     this.navigate(action);
   }
 
