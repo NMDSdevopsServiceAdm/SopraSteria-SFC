@@ -85,19 +85,21 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   generateUpdateProps() {
     const { nameOrId, contract, mainJob } = this.form.controls;
 
-    // TODO: Removing Other Jobs should be handled by the Server
-    // https://trello.com/c/x3N7dQJP
-    // if (this.worker.otherJobs) {
-    //   (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
-    // }
-
-    return {
+    const props = {
       nameOrId: nameOrId.value,
       contract: contract.value,
       mainJob: {
         jobId: parseInt(mainJob.value, 10),
       },
     };
+
+    // TODO: Removing Other Jobs should be handled by the Server
+    // https://trello.com/c/x3N7dQJP
+    if (this.worker.otherJobs) {
+      (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
+    }
+
+    return props;
   }
 
   onSuccess() {
