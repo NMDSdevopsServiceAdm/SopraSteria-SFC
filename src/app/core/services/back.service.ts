@@ -8,8 +8,8 @@ import { filter, map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class BackService {
-  private _back$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
-  public back$: Observable<URLStructure> = this._back$.asObservable();
+  private readonly _back$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
+  public readonly back$: Observable<URLStructure> = this._back$.asObservable();
 
   constructor(private router: Router) {
     this.router.events
@@ -23,7 +23,11 @@ export class BackService {
       });
   }
 
-  set back(back: URLStructure) {
+  private set back(back: URLStructure) {
     this._back$.next(back);
+  }
+
+  setBackLink(back: URLStructure) {
+    this.back = back;
   }
 }

@@ -42,7 +42,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
         this.init();
 
         this.back = this.return ? this.return : this.previous;
-        this.backService.back = { url: this.back };
+        this.backService.setBackLink({ url: this.back });
       })
     );
 
