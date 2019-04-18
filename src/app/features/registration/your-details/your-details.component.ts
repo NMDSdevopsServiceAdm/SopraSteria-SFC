@@ -1,39 +1,30 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { UserService } from '@core/services/user.service';
-import { Subscription } from 'rxjs';
-import { UserDetails } from '@core/model/userDetails.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { UserService } from '@core/services/user.service';
 
 @Component({
   selector: 'app-your-details',
   templateUrl: './your-details.component.html',
 })
 export class YourDetailsComponent implements OnInit, OnDestroy {
+  protected subscriptions: Subscription = new Subscription();
+  protected username: string;
   public form: FormGroup;
-  public submitted = false;
-  public userDetails: UserDetails;
-
-  private username: string;
-  private uid: string;
-  private fullname: string;
-  private jobTitle: string;
-  private email: string;
-  private phone: string;
   public formErrorsMap: Array<ErrorDetails>;
-  public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
-
-  private subscriptions: Subscription = new Subscription();
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public submitted = false;
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private userService: UserService,
-    private errorSummaryService: ErrorSummaryService
+    protected errorSummaryService: ErrorSummaryService,
+    protected fb: FormBuilder,
+    protected router: Router,
+    protected userService: UserService,
   ) {}
 
   // Get fullname
@@ -71,11 +62,6 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
       userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
     });
 
-    this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
-    );
-
-    this.setUserDetails();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
@@ -150,25 +136,6 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private setUserDetails(): void {
-    if (this.userDetails) {
-      this.username = this.userDetails['username'];
-      this.uid = this.userDetails['uid'];
-
-      this.fullname = this.userDetails['fullname'];
-      this.jobTitle = this.userDetails['jobTitle'];
-      this.email = this.userDetails['email'];
-      this.phone = this.userDetails['phone'];
-
-      this.form.setValue({
-        userFullnameInput: this.fullname,
-        userJobTitleInput: this.jobTitle,
-        userEmailInput: this.email,
-        userPhoneInput: this.phone,
-      });
-    }
-  }
-
   /**
    * Pass in formGroup or formControl name and errorType
    * Then return error message
@@ -197,9 +164,9 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
 
     if (this.form.valid) {
       const data: Object = {
+        email: this.form.value.userEmailInput,
         fullname: this.form.value.userFullnameInput,
         jobTitle: this.form.value.userJobTitleInput,
-        email: this.form.value.userEmailInput,
         phone: this.form.value.userPhoneInput,
       };
       this.changeUserDetails(data);
