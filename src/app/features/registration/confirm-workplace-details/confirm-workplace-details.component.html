@@ -11,12 +11,6 @@
         <dd class="govuk-summary-list__value">
           {{ workplaceLocation.locationId }}
         </dd>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" [routerLink]="['/registration/regulated-by-cqc']">
-            Change
-            <span class="govuk-visually-hidden"> CQC location ID</span>
-          </a>
-        </dd>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -24,12 +18,6 @@
         </dt>
         <dd class="govuk-summary-list__value">
           {{ workplaceLocation.locationName }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" [routerLink]="['/registration/select-workplace']">
-            Change
-            <span class="govuk-visually-hidden"> workplace name</span>
-          </a>
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -43,12 +31,6 @@
           <div *ngIf="workplaceLocation.county">{{ workplaceLocation.county }}</div>
           <div *ngIf="workplaceLocation.postalCode">{{ workplaceLocation.postalCode }}</div>
         </dd>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" [routerLink]="['/registration/select-workplace-address']">
-            Change
-            <span class="govuk-visually-hidden"> address</span>
-          </a>
-        </dd>
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -56,12 +38,6 @@
         </dt>
         <dd class="govuk-summary-list__value">
           {{ workplaceService.name }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a class="govuk-link" [routerLink]="['/registration/select-main-service']">
-            Change
-            <span class="govuk-visually-hidden"> main service provided</span>
-          </a>
         </dd>
       </div>
     </dl>
