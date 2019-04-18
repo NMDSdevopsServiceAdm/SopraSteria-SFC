@@ -1,13 +1,8 @@
 import { Injectable } from '@angular/core';
-import { NavigationEnd, Params, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-
-interface URLStructure {
-  url: string[];
-  fragment?: string;
-  queryParams?: Params;
-}
 
 @Injectable({
   providedIn: 'root',
