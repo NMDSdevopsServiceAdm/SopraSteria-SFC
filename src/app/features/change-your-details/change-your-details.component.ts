@@ -3,14 +3,14 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from '@core/services/user.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { AfterViewInit, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { UserDetails } from '@core/model/userDetails.model';
 
 @Component({
   selector: 'app-change-your-details',
   templateUrl: './../registration/your-details/your-details.component.html',
 })
-export class ChangeYourDetailsComponent extends YourDetailsComponent implements AfterViewInit {
+export class ChangeYourDetailsComponent extends YourDetailsComponent {
   constructor(
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
@@ -20,7 +20,7 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent implements 
     super(errorSummaryService, fb, router, userService);
   }
 
-  ngAfterViewInit() {
+  protected init() {
     this.getUserDetails();
   }
 

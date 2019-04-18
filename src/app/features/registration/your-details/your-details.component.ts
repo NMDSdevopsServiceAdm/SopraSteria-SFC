@@ -64,7 +64,10 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    this.init();
   }
+
+  protected init() {}
 
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
