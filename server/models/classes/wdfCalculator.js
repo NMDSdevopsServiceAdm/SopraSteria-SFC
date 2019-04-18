@@ -65,7 +65,7 @@ class WdfCalculator {
 
         console.log("WA DEBUG - not yet eligible")
         // the establishment must be eligible for the Overall WDF to be eligible
-        if (thisEstablishment.lastWdfEligibility === null |
+        if (thisEstablishment.lastWdfEligibility === null ||
             thisEstablishment.lastWdfEligibility.getTime() < this.effectiveTime) {
           // this establishment fails overal eligibility
           return;
