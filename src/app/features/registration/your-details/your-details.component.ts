@@ -9,10 +9,9 @@ import { RegistrationModel } from '../../../core/model/registration.model';
 
 @Component({
   selector: 'app-user-details',
-  templateUrl: './user-details.component.html',
-  styleUrls: ['./user-details.component.scss']
+  templateUrl: './your-details.component.html',
 })
-export class UserDetailsComponent implements OnInit {
+export class YourDetailsComponent implements OnInit {
   userDetailsForm: FormGroup;
   registration: RegistrationModel;
 
@@ -303,7 +302,7 @@ export class UserDetailsComponent implements OnInit {
       // }
     }
 
-    //this.registration.locationdata[0].prevPage = 'user-details';
+    //this.registration.locationdata[0].prevPage = 'your-details';
     //this.registration.locationdata[0].currentPage = this.currentSection;
     this.updateSectionNumbers(this.registration);
 
@@ -321,7 +320,7 @@ export class UserDetailsComponent implements OnInit {
     data['userRoute'] = this.registration.userRoute;
     data.userRoute['currentPage'] = this.currentSection;
     data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/user-details');
+    data.userRoute['route'].push('/your-details');
 
 
     // data.userRoute.currentPage = this.currentSection;

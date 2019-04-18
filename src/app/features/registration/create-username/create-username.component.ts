@@ -162,7 +162,7 @@ export class CreateUsernameComponent implements OnInit {
 
     this.currentSection = this.currentSection + 1;
 
-    if (this.backLink === '/user-details') {
+    if (this.backLink === '/your-details') {
       if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace') {
         this.lastSection = 8;
       } else if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace-address') {
