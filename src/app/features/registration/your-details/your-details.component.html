@@ -1,124 +1,113 @@
-<div class="sub-page-container col-12">
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
 
-  <div id="back" class="back-link">
-    <a (click)="clickBack()">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <span class="govuk-caption-m govuk-!-margin-bottom-2">User account</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Your details</h1>
 
-  <!-- <p class="h5">Section {{ currentSection }} of {{ lastSection }}</p> -->
-  <h1 class="h1">Your details</h1>
-
-  <form novalidate (ngSubmit)="onSubmit()" [formGroup]="userDetailsForm">
-
-    <div class="form-group mb-5">
-      <div class="col-12 col-md-6 p-0">
-
-        <div class="field-group"
-          [ngClass]="{'is-invalid': fullnameMessage || (submittedfullname && getUserFullnameInput.errors) }">
-
-          <label class="form-label" for="userFullname">Your full name</label>
-
-          <span class="invalid-feedback">
-            <span class="main-body-text mb-2" *ngIf="!submittedfullname">{{ fullnameMessage }}</span>
-            <span class="main-body-text mb-2" *ngIf="submittedfullname && getUserFullnameInput.hasError('required')">
-              Please enter your fullname.
-            </span>
-            <span class="main-body-text mb-2" *ngIf="submittedfullname && getUserFullnameInput.hasError('maxlength')">
-              Your fullname must be no longer than 120 characters.
-            </span>
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUserFullnameInput.errors">
+        <label class="govuk-label" for="userFullnameInput">
+          Your full name
+        </label>
+        <span *ngIf="submitted && getUserFullnameInput.errors" id="userFullnameInput-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <span *ngIf="getUserFullnameInput.hasError('required')">
+            {{ getFormErrorMessage('userFullnameInput', 'required') }}
           </span>
-          <!-- <span class="invalid-feedback" *ngIf="submitted && f.userFullnameInput.errors">
-              <span class="main-body-text mb-2" *ngIf="f.userFullnameInput.errors.required">
-                Please enter your fullname.
-              </span>
-              <span class="main-body-text mb-2" *ngIf="f.userFullnameInput.errors.maxlength">
-                Your fullname must be no longer than 120 characters.
-              </span>
-            </span> -->
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="userFullname" class="form-control col-12" formControlName="userFullnameInput" />
-
-          </div>
-
-        </div>
-        <div class="field-group mt-5"
-          [ngClass]="{'is-invalid': jobTitleMessage || (submittedJobTitle && getUserJobTitle.errors) }">
-
-          <label class="form-label" for="userJobTitle">Your job title</label>
-
-          <span class="invalid-feedback">
-            <span class="main-body-text mb-2" *ngIf="!submittedJobTitle">{{ jobTitleMessage }}</span>
-            <span class="main-body-text mb-2" *ngIf="submittedJobTitle && getUserJobTitle.hasError('required')">
-              Please enter your job title.
-            </span>
-            <span class="main-body-text mb-2" *ngIf="submittedJobTitle && getUserJobTitle.hasError('maxlength')">
-              Your job title must be no longer than 120 characters.
-            </span>
+          <span *ngIf="getUserFullnameInput.hasError('maxlength')">
+            {{ getFormErrorMessage('userFullnameInput', 'maxlength') }}
           </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="userJobTitle" class="form-control col-12" formControlName="userJobTitleInput" />
-
-          </div>
-        </div>
-        <div class="field-group mt-5"
-          [ngClass]="{'is-invalid': emailMessage || (submittedEmail && getUserEmailInput.errors) }">
-
-          <label class="form-label" for="userEmail">Your email address</label>
-
-          <span class="invalid-feedback">
-            <span class="main-body-text mb-2" *ngIf="!submittedEmail">{{ emailMessage }}</span>
-            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.hasError('required')">
-              Please enter your email address.
-            </span>
-            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.hasError('maxlength')">
-              Your email address must be no longer than 120 characters.
-            </span>
-            <span class="main-body-text mb-2" *ngIf="submittedEmail && getUserEmailInput.hasError('pattern')">
-              Please enter a valid email address.
-            </span>
-          </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="email" id="userEmail" class="form-control col-12" formControlName="userEmailInput" />
-
-          </div>
-        </div>
-        <div class="field-group mt-5"
-          [ngClass]="{'is-invalid': phoneMessage || (submittedPhone && getUserPhoneInput.errors) }">
-
-          <label class="form-label" for="userPhone">Contact phone number</label>
-
-          <span class="invalid-feedback">
-            <span class="main-body-text mb-2" *ngIf="!submittedPhone">{{ phoneMessage }}</span>
-            <span class="main-body-text mb-2" *ngIf="submittedPhone && getUserPhoneInput.hasError('required')">
-              Please enter your contact phone number.
-            </span>
-            <span class="main-body-text mb-2" *ngIf="submittedPhone && getUserPhoneInput.hasError('pattern')">
-              Invalid contact phone number.
-            </span>
-          </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="tel" id="userPhone" class="form-control col-12" formControlName="userPhoneInput" />
-
-          </div>
-        </div>
+        </span>
+        <input
+          class="govuk-input"
+          formControlName="userFullnameInput"
+          id="userFullnameInput"
+          name="userFullnameInput"
+          [class.govuk-input--error]="submitted && getUserFullnameInput.errors"
+          type="text"
+        />
       </div>
 
-    </div>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUserJobTitle.errors">
+        <label class="govuk-label" for="userJobTitleInput">
+          Your job title
+        </label>
+        <span *ngIf="submitted && getUserJobTitle.errors" id="userJobTitleInput-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <span *ngIf="getUserJobTitle.hasError('required')">
+            {{ getFormErrorMessage('userJobTitleInput', 'required') }}
+          </span>
+          <span *ngIf="getUserJobTitle.hasError('maxlength')">
+            {{ getFormErrorMessage('userJobTitleInput', 'maxlength') }}
+          </span>
+        </span>
+        <input
+          class="govuk-input"
+          formControlName="userJobTitleInput"
+          id="userJobTitleInput"
+          name="userJobTitleInput"
+          [class.govuk-input--error]="submitted && getUserJobTitle.errors"
+          type="text"
+        />
+      </div>
 
-    <div class="btn-container">
-      <button class="btn btn-primary" type="submit">Continue</button>
-    </div>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUserEmailInput.errors">
+        <label class="govuk-label" for="userEmailInput">
+          Your email address
+        </label>
+        <span *ngIf="submitted && getUserEmailInput.errors" id="userEmailInput-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <span *ngIf="getUserEmailInput.hasError('required')">
+            {{ getFormErrorMessage('userEmailInput', 'required') }}
+          </span>
+          <span *ngIf="getUserEmailInput.hasError('maxlength')">
+            {{ getFormErrorMessage('userEmailInput', 'maxlength') }}
+          </span>
+          <span *ngIf="getUserEmailInput.hasError('pattern')">
+            {{ getFormErrorMessage('userEmailInput', 'pattern') }}
+          </span>
+        </span>
+        <input
+          class="govuk-input"
+          formControlName="userEmailInput"
+          id="userEmailInput"
+          name="userEmailInput"
+          [class.govuk-input--error]="submitted && getUserEmailInput.errors"
+          type="text"
+        />
+      </div>
 
-  </form>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUserPhoneInput.errors">
+        <label class="govuk-label" for="userPhoneInput">
+          Contact phone number
+        </label>
+        <span *ngIf="submitted && getUserPhoneInput.errors" id="userPhoneInput-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <span *ngIf="getUserPhoneInput.hasError('required')">
+            {{ getFormErrorMessage('userPhoneInput', 'required') }}
+          </span>
+          <span *ngIf="getUserPhoneInput.hasError('pattern')">
+            {{ getFormErrorMessage('userPhoneInput', 'pattern') }}
+          </span>
+         </span>
+        <input
+          class="govuk-input"
+          formControlName="userPhoneInput"
+          id="userPhoneInput"
+          name="userPhoneInput"
+          [class.govuk-input--error]="submitted && getUserPhoneInput.errors"
+          type="text"
+        />
+      </div>
 
-
+      <button class="govuk-button govuk-!-margin-top-2" type="submit">Save and return</button>
+    </form>
+  </div>
 </div>
