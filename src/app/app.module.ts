@@ -10,6 +10,7 @@ import {
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
+import { BackService } from '@core/services/back.service';
 import { HttpInterceptor } from '@core/services/http-interceptor';
 import { TitleService } from '@core/services/title.service';
 import { TrainingService } from '@core/services/training.service';
@@ -133,6 +134,7 @@ import { YourAccountComponent } from './features/your-account/your-account.compo
     TrainingService,
     WindowRef,
     TitleService,
+    BackService,
   ],
   bootstrap: [AppComponent],
 })

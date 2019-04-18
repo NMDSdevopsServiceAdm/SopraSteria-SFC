@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Worker } from '@core/model/worker.model';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -26,6 +27,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {}
@@ -40,6 +42,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
         this.init();
 
         this.back = this.return ? this.return : this.previous;
+        this.backService.setBackLink({ url: this.back });
       })
     );
 
