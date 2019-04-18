@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { uniq } from 'lodash';
 import { filter, map } from 'rxjs/operators';
 
 @Injectable({
@@ -22,7 +23,7 @@ export class TitleService {
             }
             route = route.firstChild;
           }
-          return titleArray;
+          return uniq(titleArray);
         })
       )
       .subscribe(titleArray => {
@@ -32,6 +33,7 @@ export class TitleService {
   }
 
   public setTitle(title: string) {
+    console.log(title);
     this.title.setTitle(title);
   }
 }
