@@ -40,7 +40,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
 
     if (this.worker) {
-      console.log(this.worker.mainJob.jobId);
       this.form.patchValue({
         nameOrId: this.worker.nameOrId,
         mainJob: this.worker.mainJob.jobId,
@@ -103,7 +102,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   onSuccess() {
     this.next =
-      this.worker.mainJob.jobId === 27
+      parseInt(this.form.get('mainJob').value, 10) === 27
         ? ['/worker', this.worker.uid, 'mental-health-professional']
         : ['/worker', this.worker.uid, 'main-job-start-date'];
   }
