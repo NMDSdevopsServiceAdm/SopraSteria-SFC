@@ -59,7 +59,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Full name or ID number' is required.`,
+            message: `Full name or ID number is required.`,
           },
         ],
       },
@@ -68,7 +68,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Main job role' is required.`,
+            message: `Main job role is required.`,
           },
         ],
       },
@@ -77,7 +77,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         type: [
           {
             name: 'required',
-            message: `Type of contract' is required.`,
+            message: `Type of contract is required.`,
           },
         ],
       },
