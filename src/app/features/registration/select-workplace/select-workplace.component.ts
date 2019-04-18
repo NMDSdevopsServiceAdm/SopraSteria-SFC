@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { RegistrationService } from '@core/services/registration.service';
 import { RegistrationModel } from '@core/model/registration.model';
-import { Location } from '@core/model/location.model';
+import { WorkplaceLocation } from '@core/model/workplace-location.model';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { filter } from 'lodash';
@@ -58,7 +58,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private getSelectedLocation(): Location {
+  private getSelectedLocation(): WorkplaceLocation {
     const selectedLocationId: string = this.form.get('workplace').value;
     return filter(this.registration.locationdata, ['locationId', selectedLocationId])[0];
   }
@@ -85,7 +85,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    this.registrationService.selectedLocation$.next(this.getSelectedLocation());
+    this.registrationService.selectedWorkplaceLocation$.next(this.getSelectedLocation());
     this.router.navigate(['/registration/select-main-service']);
   }
 
