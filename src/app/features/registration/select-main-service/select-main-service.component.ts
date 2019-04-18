@@ -1,144 +1,132 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-
+import { WorkplaceCategory } from '@core/model/workplace-category.model';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Location } from '@core/model/location.model';
+import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
-
-import { RegistrationService } from '../../../core/services/registration.service';
-import { RegistrationModel } from '../../../core/model/registration.model';
+import { Subscription } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { WorkplaceService } from '@core/model/workplace-service.model';
+import { filter } from 'lodash';
 
 @Component({
   selector: 'app-select-main-service',
   templateUrl: './select-main-service.component.html',
-  styleUrls: ['./select-main-service.component.scss']
 })
-export class SelectMainServiceComponent implements OnInit {
-  SelectMainServiceForm: FormGroup;
-  registration: RegistrationModel;
-  selectedAddressId: string;
-  regulatedCheck: boolean;
-  //storeCopy: RegistrationModel;
-  allCategoriesArray: {};
-  uniqueCategoriesArray: any[];
-  newObject: [];
-  //temp = [];
-  catRegulatedCheck: boolean;
+export class SelectMainServiceComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription = new Subscription();
+  public categories: Array<WorkplaceCategory>;
+  public form: FormGroup;
+  public formErrorsMap: Array<ErrorDetails>;
+  public submitted = false;
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverError: string;
 
-  currentSection: number;
-  lastSection: number;
-  backLink: string;
-
-  servicesData = [];
-  testObject: [{}];
-  isInvalid: boolean;
-
-  //$scope.myArray = [];
-
-  constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) { }
+  constructor(
+    private errorSummaryService: ErrorSummaryService,
+    private registrationService: RegistrationService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit() {
-    this.SelectMainServiceForm = this.fb.group({
-      mainServiceSelected: ['', Validators.required]
+    this.setupForm();
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
+    this.getSelectedLocation();
+  }
+
+  private setupForm(): void {
+    this.form = this.fb.group({
+      workplaceService: ['', Validators.required],
     });
+  }
 
-    this._registrationService.registration$.subscribe(registration => this.registration = registration);
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'workplaceService',
+        type: [
+          {
+            name: 'required',
+            message: 'Please select a main service.',
+          },
+        ],
+      },
+    ];
+  }
 
-    this.setSectionNumbers();
+  // TODO clean up / verify from api doc
+  private setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 404,
+        message: 'No location found.',
+      },
+      {
+        name: 400,
+        message: 'Invalid Postcode.',
+      },
+      {
+        name: 503,
+        message: 'Database error.',
+      },
+    ];
+  }
 
-    // Get main services
-    this.getMainServices();
-
-    // Watch mainServiceSelected
-    this.SelectMainServiceForm.get('mainServiceSelected').valueChanges.subscribe(
-      value => this.selectMainServiceChanged(value)
+  private getSelectedLocation(): void {
+    this.subscriptions.add(
+      this.registrationService.selectedLocation$.subscribe(
+        (location: Location) => this.getServicesByCategory(location)
+      )
     );
-
-    this.isInvalid = false;
-
   }
 
-  clickBack() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.currentSection = this.currentSection - 1;
-    this.registration.userRoute.route.splice(-1);
+  private getServicesByCategory(location: Location): void {
+    const isRegulated: boolean = this.registrationService.isRegulated(location);
 
-    this.updateSectionNumbers(this.registration);
-    //this.registration.userRoute = this.registration.userRoute;
-    this.registration.userRoute.currentPage = this.currentSection;
-    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
-    this._registrationService.updateState(this.registration);
 
-    this.router.navigate([this.backLink]);
+    this.subscriptions.add(
+      this.registrationService.getServicesByCategory(isRegulated).subscribe(
+        (categories: Array<WorkplaceCategory>) => this.categories = categories,
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.errorSummaryService.scrollToErrorSummary();
+        }
+      )
+    );
   }
 
-  getMainServices() {
-    //this.regulatedCheck = this.registration[0].locationdata.isRegulated;
-
-    if (this.registration.locationdata[0].isRegulated === true) {
-      this.regulatedCheck = true;
-    }
-    else if (this.registration.locationdata[0].locationId) {
-      this.regulatedCheck = true;
-    }
-    else {
-      this.regulatedCheck = false;
-    }
-
-    this._registrationService.getMainServices(this.regulatedCheck)
-      .subscribe(
-        value => this.allCategoriesArray = value
-      );
+  private getSelectedWorkPlaceService(): WorkplaceService {
+    const selectedWorkPlaceServiceId: number = parseInt(this.form.get('workplaceService').value, 10);
+    return filter(this.categories, { services: [{ id: selectedWorkPlaceServiceId }] })[0].services[0];
   }
 
-  selectMainServiceChanged(value: string): void {
+  public onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    this.registration.locationdata[0].mainService = value;
-  }
-
-  save() {
-
-    this.updateSectionNumbers(this.registration);
-
-    this._registrationService.updateState(this.registration);
-
-    if (this.SelectMainServiceForm.invalid) {
-      this.isInvalid = true;
-      return;
-    }
-    else {
+    if (this.form.valid) {
+      this.registrationService.selectedWorkplaceService$.next(this.getSelectedWorkPlaceService());
       this.router.navigate(['/registration/confirm-workplace-details']);
-    }
-
-  }
-
-  setSectionNumbers() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
-    this.currentSection = this.currentSection + 1;
-
-    if (this.backLink === '/registration/regulated-by-cqc') {
-      this.lastSection = 7;
-    }
-    else if (this.backLink === '/registration/select-workplace') {
-      this.lastSection = 8;
-    }
-    else if (this.backLink === '/registration/enter-workplace-address') {
-      this.lastSection = 9;
-    }
-    else if (this.backLink === '/registration/confirm-workplace-details') {
-      if (this.registration.userRoute[1].route === '/registration/select-workplace') {
-        this.lastSection = 8;
-      }
-      else {
-        this.lastSection = 7;
-      }
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  updateSectionNumbers(data) {
-    data['userRoute'] = this.registration.userRoute;
-    data.userRoute['currentPage'] = this.currentSection;
-    data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/registration/select-main-service');
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
 }
