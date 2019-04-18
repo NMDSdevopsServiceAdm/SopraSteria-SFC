@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@core/validators/date.validator';
@@ -17,10 +18,11 @@ export class MainJobStartDateComponent extends QuestionComponent implements OnIn
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, errorSummaryService, workerService);
+    super(formBuilder, router, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       mainJobStartDate: this.formBuilder.group({
