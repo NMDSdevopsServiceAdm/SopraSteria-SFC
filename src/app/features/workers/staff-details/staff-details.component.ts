@@ -48,7 +48,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       });
     }
 
-    this.next = [];
     this.previous = ['/worker', this.worker.uid, 'start-screen'];
   }
 
