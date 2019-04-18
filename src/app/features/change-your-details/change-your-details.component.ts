@@ -11,10 +11,10 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-change-user-details',
-  templateUrl: './change-user-details.component.html',
+  selector: 'app-change-your-details',
+  templateUrl: './change-your-details.component.html',
 })
-export class ChangeUserDetailsComponent implements OnInit, OnDestroy {
+export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public submitted = false;
   public userDetails: UserDetails;

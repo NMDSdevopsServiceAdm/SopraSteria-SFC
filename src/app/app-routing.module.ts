@@ -14,7 +14,7 @@ import { TermsConditionsComponent } from '@features/terms-conditions/terms-condi
 
 import { AuthGuard } from './core/services/auth-guard.service';
 import { ChangePasswordComponent } from './features/change-password/change-password.component';
-import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
+import { ChangeYourDetailsComponent } from './features/change-your-details/change-your-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
 import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
 import { YourAccountComponent } from './features/your-account/your-account.component';
@@ -53,10 +53,10 @@ const routes: Routes = [
     data: { title: 'Change Password' },
   },
   {
-    path: 'change-user-details',
-    component: ChangeUserDetailsComponent,
+    path: 'change-your-details',
+    component: ChangeYourDetailsComponent,
     canActivate: [AuthGuard],
-    data: { title: 'Change User Details' },
+    data: { title: 'Change Your Details' },
   },
   {
     path: 'change-user-security',
