@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Location } from '@core/model/location.model';
+import { WorkplaceLocation } from '@core/model/workplace-location.model';
 import { RegistrationModel } from '@core/model/registration.model';
 import { WorkplaceService } from '@core/model/workplace-service.model';
 
@@ -11,7 +11,7 @@ import { WorkplaceService } from '@core/model/workplace-service.model';
 })
 export class RegistrationService {
   public registration$: BehaviorSubject<RegistrationModel> = new BehaviorSubject(null);
-  public selectedLocation$: BehaviorSubject<Location> = new BehaviorSubject(null);
+  public selectedWorkplaceLocation$: BehaviorSubject<WorkplaceLocation> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<WorkplaceService> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -54,7 +54,7 @@ export class RegistrationService {
     this.registration$.next(data);
   }
 
-  public isRegulated(location: Location): boolean {
+  public isRegulated(location: WorkplaceLocation): boolean {
     return location.isRegulated === true || location.locationId ? true : false;
   }
 }

@@ -1,4 +1,4 @@
-export interface Location {
+export interface WorkplaceLocation {
   addressLine1: string;
   addressLine2: string;
   county: string;
