@@ -33,7 +33,6 @@ export class TitleService {
   }
 
   public setTitle(title: string) {
-    console.log(title);
     this.title.setTitle(title);
   }
 }
