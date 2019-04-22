@@ -1,123 +1,238 @@
-<div class="sub-page-container col-12">
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
 
-  <div id="back" class="back-link">
-    <a (click)="clickBack()">
-      <span class="arrow"></span>Back
-    </a>
+<h1 class="govuk-heading-xl">Create a username</h1>
+
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUsername.errors">
+    <label class="govuk-label" for="username">
+      Password
+    </label>
+    <span *ngIf="submitted && getUsername.errors" id="username-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      <span *ngIf="getUsername.hasError('required')">
+        {{ getFormErrorMessage('username', 'required') }}
+      </span>
+      <span *ngIf="getUsername.hasError('maxLength')">
+        {{ getFormErrorMessage('username', 'maxLength') }}
+      </span>
+    </span>
+    <input
+      class="govuk-input"
+      formControlName="username"
+      id="username"
+      name="username"
+      [class.govuk-input--error]="submitted && getUsername.errors"
+      placeholder=""
+      type="text"
+    />
   </div>
-
-  <!-- <p class="h5">Section {{ currentSection }} of {{ lastSection }}</p> -->
-  <h1 class="h1">Create a username</h1>
-
-  <form (ngSubmit)="onSubmit()"
-        [formGroup]="createUserNamePasswordForm">
-
-    <div class="form-group mb-5">
-      <div class="col-12 col-md-6 p-0">
-
-        <div class="field-group"
-             [ngClass]="{'is-invalid': usernameMessage || (isSubmitted && !getCreateUsernameInput.valid) ||
-                          this.usernameApiError }">
-          <label class="form-label" for="createUsername">Username</label>
-          <p class="field-comment-text">You will use this to sign in. It should be unique to you</p>
-
-          <span class="invalid-feedback">
-            <span class="main-body-text mb-2"*ngIf="!submittedUsername">{{ usernameMessage }}</span>
-            <span *ngIf="submittedUsername && getCreateUsernameInput.hasError('maxlength')" class="main-body-text mb-2">
-              Your username must be no longer than 50 characters.
-            </span>
-            <span *ngIf="submittedUsername && getCreateUsernameInput.hasError('required')" class="main-body-text mb-2">
-              Please enter your username.
-            </span>
-            <span *ngIf="this.usernameApiError" class="main-body-text mb-2">
-              {{ this.usernameApiError }}
-            </span>
-          </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="createUsername" class="form-control col-12" formControlName="createUsernameInput" />
-
-          </div>
-        </div>
-
-        <div formGroupName="passwordGroup">
-          <div class="field-group mt-5"
-               [ngClass]="{'is-invalid': passwordMessage || (isSubmitted && !getPasswordInput.valid)}">
-            <label class="form-label" for="createPassword">Password</label>
-            <p class="field-comment-text">This should be at least 8 characters long, contain at least one uppercase and one lowercase letter and a number</p>
-
-            <span class="invalid-feedback">
-              <span class="main-body-text mb-2" *ngIf="!submittedPassword">{{ passwordMessage }}</span>
-              <!-- <span *ngIf="isSubmitted && submittedPassword && getPasswordInput.hasError('minlength')" class="main-body-text mb-2">
-                Your password must be a minimum of 8 characters.
-              </span>
-              <span *ngIf="isSubmitted && submittedPassword && getPasswordInput.hasError('maxlength')" class="main-body-text mb-2">
-                The Password must be no longer than 120 characters.
-              </span> -->
-              <span *ngIf="isSubmitted && submittedPassword && getPasswordInput.hasError('required')" class="main-body-text mb-2">
-                Please enter your Password.
-              </span>
-              <span *ngIf="submittedPassword && getPasswordInput.hasError('pattern')" class="main-body-text mb-2">
-                Invalid Password.
-              </span>
-              <!--<span *ngIf="createUserNamePasswordForm.get('passwordGroup').errors?.notMatched" class="main-body-text mb-2">
-                Password and Confirm Password do not match.
-              </span>-->
-            </span>
-
-            <div class="form-control-feedback">
-
-              <input placeholder="" type="password" id="createPassword" class="form-control col-12" formControlName="createPasswordInput" />
-
-            </div>
-          </div>
-          <div class="field-group mt-5"
-               [ngClass]="{'is-invalid': confirmPasswordMessage ||
-                            (isSubmitted && !getConfirmPasswordInput.valid) ||
-                            getPasswordGroup.hasError('notMatched') }">
-            <label class="form-label" for="confirmPassword">Confirm password</label>
-
-            <span class="invalid-feedback">
-              <span class="main-body-text mb-2" *ngIf="!isSubmitted && !submittedConfirmPassword">{{ confirmPasswordMessage }}</span>
-              <!-- <span *ngIf="submittedConfirmPassword && getConfirmPasswordInput.errors.maxlength" class="main-body-text mb-2">
-                The Password must be no longer than 120 characters.
-              </span> -->
-              <span *ngIf="submittedConfirmPassword && getConfirmPasswordInput.hasError('required')" class="main-body-text mb-2">
-                Please confirm your Password.
-              </span>
-              <span *ngIf="submittedConfirmPassword && getPasswordGroup.hasError('notMatched')" class="main-body-text mb-2 mb-2">
-                Confirm Password does not match.
-              </span>
-            </span>
-
-            <div class="form-control-feedback">
-
-              <input placeholder="" type="password" id="confirmPassword" class="form-control col-12" formControlName="confirmPasswordInput" />
-
-            </div>
-          </div>
-
-        </div>
-
-        </div>
-
-      </div>
-
-    <div class="btn-container">
-      <button class="btn btn-primary" type="submit">Continue</button>
+  
+  <div formGroupName="passwordGroup">
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPassword.errors">
+      <label class="govuk-label" for="createPasswordInput">
+        Password
+      </label>
+      <span id="createPasswordInput-hint" class="govuk-hint">
+        This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
+      </span>
+      <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        <span *ngIf="getPassword.hasError('required')">
+          {{ getFormErrorMessage('createPasswordInput', 'required') }}
+        </span>
+        <span *ngIf="getPassword.hasError('pattern')">
+          {{ getFormErrorMessage('createPasswordInput', 'pattern') }}
+        </span>
+      </span>
+      <input
+        aria-describedby="createPasswordInput-hint"
+        class="govuk-input"
+        formControlName="createPasswordInput"
+        id="createPasswordInput"
+        name="createPasswordInput"
+        [ngClass]="{ 'govuk-input--error': submitted && getPassword.errors }"
+        type="password"
+      />
     </div>
 
-  </form>
+    <div
+      class="govuk-form-group govuk-!-margin-bottom-8"
+      [class.govuk-form-group--error]="submitted && getConfirmPassword.errors"
+    >
+      <label class="govuk-label" for="confirmPasswordInput">
+        Confirm password
+      </label>
+      <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span>
+        <span
+          *ngIf="getConfirmPassword.hasError('required') || getConfirmPassword.hasError('notMatched')"
+          id="passwordGroup-error"
+        >
+          {{ getFormErrorMessage('confirmPasswordInput', 'required') }}
+        </span>
+      </span>
+      <input
+        class="govuk-input"
+        formControlName="confirmPasswordInput"
+        id="confirmPasswordInput"
+        name="confirmPasswordInput"
+        [class.govuk-input--error]="submitted && getConfirmPassword.errors"
+        type="password"
+      />
+    </div>
+  </div>
+
+  <button type="submit" class="govuk-button">
+    Continue
+  </button>
+</form>
 
 
-</div>
+<!-- <p class="h5">Section {{ currentSection }} of {{ lastSection }}</p> -->
+<!--  <h1 class="h1">Create a username</h1>-->
 
-<!-- <br>Dirty: {{ this.createUserNamePasswordForm.dirty }}
-<br>Touched: {{ this.createUserNamePasswordForm.touched }}
-<br>Valid: {{ this.createUserNamePasswordForm.valid }}
-<br>Value: {{ this.createUserNamePasswordForm.value | json }}
-<br>isSubmitted {{ this.isSubmitted }}
+<!--  <form (ngSubmit)="onSubmit()" [formGroup]="form">-->
+<!--    <div class="form-group mb-5">-->
+<!--      <div class="col-12 col-md-6 p-0">-->
+<!--        <div-->
+<!--          class="field-group"-->
+<!--          [ngClass]="{-->
+<!--            'is-invalid': usernameMessage || (submitted && !getUsername.valid) || this.usernameApiError-->
+<!--          }"-->
+<!--        >-->
+<!--          <label class="form-label" for="createUsername">Username</label>-->
+<!--          <p class="field-comment-text">You will use this to sign in. It should be unique to you</p>-->
+
+<!--          <span class="invalid-feedback">-->
+<!--            <span class="main-body-text mb-2" *ngIf="!submittedUsername">{{ usernameMessage }}</span>-->
+<!--            <span *ngIf="submittedUsername && getUsername.hasError('maxlength')" class="main-body-text mb-2">-->
+<!--              Your username must be no longer than 50 characters.-->
+<!--            </span>-->
+<!--            <span *ngIf="submittedUsername && getUsername.hasError('required')" class="main-body-text mb-2">-->
+<!--              Please enter your username.-->
+<!--            </span>-->
+<!--            <span *ngIf="this.usernameApiError" class="main-body-text mb-2">-->
+<!--              {{ this.usernameApiError }}-->
+<!--            </span>-->
+<!--          </span>-->
+
+<!--          <div class="form-control-feedback">-->
+<!--            <input-->
+<!--              placeholder=""-->
+<!--              type="text"-->
+<!--              id="createUsername"-->
+<!--              class="form-control col-12"-->
+<!--              formControlName="createUsernameInput"-->
+<!--            />-->
+<!--          </div>-->
+<!--        </div>-->
+
+<!--        <div formGroupName="passwordGroup">-->
+<!--          <div-->
+<!--            class="field-group mt-5"-->
+<!--            [ngClass]="{ 'is-invalid': passwordMessage || (submitted && !getPassword.valid) }"-->
+<!--          >-->
+<!--            <label class="form-label" for="createPassword">Password</label>-->
+<!--            <p class="field-comment-text">-->
+<!--              This should be at least 8 characters long, contain at least one uppercase and one lowercase letter and a-->
+<!--              number-->
+<!--            </p>-->
+
+<!--            <span class="invalid-feedback">-->
+<!--              <span class="main-body-text mb-2" *ngIf="!submittedPassword">{{ passwordMessage }}</span>-->
+<!--              &lt;!&ndash; <span *ngIf="submitted && submittedPassword && getPassword.hasError('minlength')" class="main-body-text mb-2">-->
+<!--                Your password must be a minimum of 8 characters.-->
+<!--              </span>-->
+<!--              <span *ngIf="submitted && submittedPassword && getPassword.hasError('maxlength')" class="main-body-text mb-2">-->
+<!--                The Password must be no longer than 120 characters.-->
+<!--              </span> &ndash;&gt;-->
+<!--              <span-->
+<!--                *ngIf="submitted && submittedPassword && getPassword.hasError('required')"-->
+<!--                class="main-body-text mb-2"-->
+<!--              >-->
+<!--                Please enter your Password.-->
+<!--              </span>-->
+<!--              <span *ngIf="submittedPassword && getPassword.hasError('pattern')" class="main-body-text mb-2">-->
+<!--                Invalid Password.-->
+<!--              </span>-->
+<!--              &lt;!&ndash;<span *ngIf="form.get('passwordGroup').errors?.notMatched" class="main-body-text mb-2">-->
+<!--                Password and Confirm Password do not match.-->
+<!--              </span>&ndash;&gt;-->
+<!--            </span>-->
+
+<!--            <div class="form-control-feedback">-->
+<!--              <input-->
+<!--                placeholder=""-->
+<!--                type="password"-->
+<!--                id="createPassword"-->
+<!--                class="form-control col-12"-->
+<!--                formControlName="createPasswordInput"-->
+<!--              />-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div-->
+<!--            class="field-group mt-5"-->
+<!--            [ngClass]="{-->
+<!--              'is-invalid':-->
+<!--                confirmPasswordMessage ||-->
+<!--                (submitted && !getConfirmPassword.valid) ||-->
+<!--                getPasswordGroup.hasError('notMatched')-->
+<!--            }"-->
+<!--          >-->
+<!--            <label class="form-label" for="confirmPassword">Confirm password</label>-->
+
+<!--            <span class="invalid-feedback">-->
+<!--              <span class="main-body-text mb-2" *ngIf="!submitted && !submittedConfirmPassword">{{-->
+<!--                confirmPasswordMessage-->
+<!--              }}</span>-->
+<!--              &lt;!&ndash; <span *ngIf="submittedConfirmPassword && getConfirmPassword.errors.maxlength" class="main-body-text mb-2">-->
+<!--                The Password must be no longer than 120 characters.-->
+<!--              </span> &ndash;&gt;-->
+<!--              <span-->
+<!--                *ngIf="submittedConfirmPassword && getConfirmPassword.hasError('required')"-->
+<!--                class="main-body-text mb-2"-->
+<!--              >-->
+<!--                Please confirm your Password.-->
+<!--              </span>-->
+<!--              <span-->
+<!--                *ngIf="submittedConfirmPassword && getPasswordGroup.hasError('notMatched')"-->
+<!--                class="main-body-text mb-2 mb-2"-->
+<!--              >-->
+<!--                Confirm Password does not match.-->
+<!--              </span>-->
+<!--            </span>-->
+
+<!--            <div class="form-control-feedback">-->
+<!--              <input-->
+<!--                placeholder=""-->
+<!--                type="password"-->
+<!--                id="confirmPassword"-->
+<!--                class="form-control col-12"-->
+<!--                formControlName="confirmPasswordInput"-->
+<!--              />-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+
+<!--    <div class="btn-container">-->
+<!--      <button class="btn btn-primary" type="submit">Continue</button>-->
+<!--    </div>-->
+<!--  </form>-->
+<!--</div>-->
+
+<!-- <br>Dirty: {{ this.form.dirty }}
+<br>Touched: {{ this.form.touched }}
+<br>Valid: {{ this.form.valid }}
+<br>Value: {{ this.form.value | json }}
+<br>submitted {{ this.submitted }}
 <br>submitted username: {{ this.submittedUsername }}
 <br>submitted password: {{ this.submittedPassword }}
 <br>submitted confirm password: {{ this.submittedConfirmPassword }}
@@ -125,6 +240,6 @@
 <br>passwordMessage: {{ this.passwordMessage }}
 <br>confirmPasswordMessage: {{ this.confirmPasswordMessage }}
 <br>getPasswordGroup errors: {{ getPasswordGroup.errors | json }}
-<br>getCreateUsernameInput errors: {{ getCreateUsernameInput.errors | json }}
-<br>getPasswordInput errors: {{ getPasswordInput.errors | json }}
-<br>getConfirmPasswordInput errors: {{ getConfirmPasswordInput.errors | json }} -->
+<br>getUsername errors: {{ getUsername.errors | json }}
+<br>getPassword errors: {{ getPassword.errors | json }}
+<br>getConfirmPassword errors: {{ getConfirmPassword.errors | json }} -->
