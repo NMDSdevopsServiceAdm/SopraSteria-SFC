@@ -25,7 +25,7 @@ router.post('/',async function(req, res) {
         attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin'],
         include: [ {
           model: models.user,
-          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId', "UserRoleValue"],
+          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin', 'isPrimary', 'establishmentId', "UserRoleValue"],
           include: [{
             model: models.establishment,
             attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId'],
@@ -57,6 +57,7 @@ router.post('/',async function(req, res) {
             const response = formatSuccessulLoginResponse(
               login.user.FullNameValue,
               login.firstLogin,
+              login.user.isPrimary,
               login.lastLogin,
               login.user.UserRoleValue,
               login.user.establishment,
@@ -151,11 +152,12 @@ router.post('/',async function(req, res) {
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, firstLoginDate, lastLoggedDate, role, establishment, mainService, expiryDate) => {
+const formatSuccessulLoginResponse = (fullname, firstLoginDate, isPrimary, lastLoggedDate, role, establishment, mainService, expiryDate) => {
   // note - the mainService can be null
   return {
     fullname,
     isFirstLogin: firstLoginDate ? false : true,
+    isPrimary,
     lastLoggedIn: lastLoggedDate ? lastLoggedDate.toISOString() : null,
     role,
     establishment: {
