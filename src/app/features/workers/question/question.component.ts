@@ -102,6 +102,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
     const props = this.generateUpdateProps();
 
     if (isNull(props)) {
+      this.onSuccess();
       this.navigate(payload.action);
       return;
     }
