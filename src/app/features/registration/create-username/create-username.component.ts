@@ -1,7 +1,7 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { RegistrationModel } from '@core/model/registration.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
@@ -51,15 +51,17 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.setupSubscription();
     this.setupForm();
+    this.setupSubscription();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
 
   private setupSubscription(): void {
     this.subscriptions.add(
-      this.getUsername.valueChanges.pipe(debounceTime(1000)).subscribe(
+      this.getUsername.valueChanges
+        .pipe(debounceTime(1000))
+        .pipe(distinctUntilChanged()).subscribe(
         (userName: string) => this.checkUsernameDoesntExist(userName)
       )
     );
@@ -94,10 +96,14 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
             name: 'maxLength',
             message: 'Your username must be no longer than 50 characters.',
           },
+          {
+            name: 'usernameExists',
+            message: 'Username already exists.',
+          },
         ],
       },
       {
-        item: 'password',
+        item: 'passwordGroup.createPasswordInput',
         type: [
           {
             name: 'required',
@@ -110,7 +116,7 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'confirmPassword',
+        item: 'passwordGroup.confirmPasswordInput',
         type: [
           {
             name: 'required',
@@ -138,13 +144,11 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.registrationService.getUsernameDuplicate(userName).subscribe(
         (data: Object) => {
-          console.log(data);
           if (data['status'] === '1') {
-            // TODO set username as invalid
-
+            this.getUsername.setErrors({ 'usernameExists': true });
           } else {
-            // TODO set username as valid
-
+            this.getUsername.setErrors({ 'usernameExists': null });
+            this.getUsername.updateValueAndValidity();
           }
         },
         (error: HttpErrorResponse) => {
