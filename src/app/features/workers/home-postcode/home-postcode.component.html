@@ -11,11 +11,7 @@
 </div>
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('postcode').invalid">
-      <span
-      *ngIf="submitted && form.get('postcode').errors"
-      id="postcode-error"
-      class="govuk-error-message"
-    >
+    <span *ngIf="submitted && form.get('postcode').errors" id="postcode-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span>
       {{ getFormErrorMessage('postcode', 'validPostcode') }}
     </span>
