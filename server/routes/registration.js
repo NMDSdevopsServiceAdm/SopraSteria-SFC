@@ -562,7 +562,7 @@ router.post('/requestPasswordReset', async (req, res) => {
   if (!req.body.usernameOrEmail) {
     return res.status(400).send();
   }
-  const givenEmailOrUsername = escape(req.body.usernameOrEmail);
+  const givenEmailOrUsername = escape(req.body.usernameOrEmail.toLowerCase());
 
   // for automated testing, allow the expiry to be overridden by a given TTL parameter (in seconds)
   //  only for localhost/dev
@@ -573,7 +573,9 @@ router.post('/requestPasswordReset', async (req, res) => {
     const loginResults = await models.login.findOne({
       attributes: ['id', 'username'],
       where: {
-          username: givenEmailOrUsername,
+          username: {
+            [models.Sequelize.Op.iLike] : givenEmailOrUsername
+          },
           isActive: true
       },
       include: [
@@ -586,7 +588,9 @@ router.post('/requestPasswordReset', async (req, res) => {
     const userResults = await models.user.findAll({
       attributes: ['EmailValue', 'FullNameValue', 'id'],
       where: {
-        EmailValue: givenEmailOrUsername
+        EmailValue: {
+          [models.Sequelize.Op.iLike] : givenEmailOrUsername
+        },
       },
       include: [
         {

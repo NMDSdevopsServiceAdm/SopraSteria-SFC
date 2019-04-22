@@ -91,7 +91,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
     if (uuidRegex.test(userId.toUpperCase())) {
         byUUID = userId;
     } else {
-        byUsername = escape(userId);
+        byUsername = escape(userId.toLowerCase());
     }
     
     const thisUser = new User.User(establishmentId);
@@ -158,7 +158,7 @@ router.route('/resetPassword').post(async (req, res) => {
         const loginResponse = await models.login.findOne({
             where: {
                 username: {
-                    [models.Sequelize.Op.iLike] : req.username.toLowerCase()
+                    [models.Sequelize.Op.iLike] : req.username
                 },
                 isActive: true
             },
@@ -241,7 +241,7 @@ router.route('/changePassword').post(async (req, res) => {
         const login = await models.login.findOne({
             where: {
                 username: {
-                    [models.Sequelize.Op.iLike] : req.username.toLowerCase()
+                    [models.Sequelize.Op.iLike] : req.username
                 },
                 isActive: true
             },
@@ -487,6 +487,9 @@ router.route('/add').post(async (req, res) => {
                 ...req.body,
                 role: trackingResponse.user.UserRoleValue
             };
+
+            // force the username to be lowercase
+            newUserProperties.username = newUserProperties.username.toLowerCase();
 
             const isValidUser = await thisUser.load(newUserProperties);
             // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!
