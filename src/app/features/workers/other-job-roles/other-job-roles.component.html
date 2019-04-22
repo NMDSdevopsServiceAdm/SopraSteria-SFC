@@ -1,37 +1,37 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a [routerLink]="['/worker', worker.uid, backLink]">
-      <span class="arrow"></span>Back
-    </a>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-xl">Do they have any other job roles?</h1>
   </div>
-
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form">
-
-    <header>
-      <h1 class="h1 col-12 col-lg-8">Do they have any other job roles?</h1>
-      <p class="page-input-info">Select all that apply.</p>
-    </header>
-
-    <app-messages></app-messages>
-
-    <div class="form-group mt-5">
-      <div class="field-group col-12 col-md-8 col-lg-6" formArrayName="selectedJobRoles">
-        <div *ngFor="let job of form.get('selectedJobRoles').controls; let idx = index" [formGroupName]="idx">
-          <div class="row mb-4">
-            <div class="col-12">
-              <label class="check main-body-text p-0">
-                <input type="checkbox" (change)="onChange(job)" [checked]="job.value.checked" />
-                <span class="checkmark"></span>
-                <span class="check-label main-body-text mt-0">{{job.value.title}}</span>
-              </label>
-            </div>
-          </div>
+</div>
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+    <fieldset class="govuk-fieldset" aria-describedby="otherJobRoles-hint">
+      <span id="otherJobRoles-hint" class="govuk-hint">
+        Select all that apply.
+      </span>
+      <div class="govuk-checkboxes" formArrayName="selectedJobRoles">
+        <div
+          *ngFor="let job of form.get('selectedJobRoles').controls; let idx = index"
+          class="govuk-checkboxes__item"
+          [formGroupName]="idx"
+        >
+          <input
+            class="govuk-checkboxes__input"
+            id="selectedJobRole-{{ idx }}"
+            name="jobRole"
+            type="checkbox"
+            (change)="onChange(job)"
+            [checked]="job.value.checked"
+            [value]="job.value.id"
+          />
+          <label class="govuk-label govuk-checkboxes__label" for="selectedJobRole-{{ idx }}">
+            {{ job.value.title }}
+          </label>
         </div>
       </div>
-    </div>
-
-    <app-submit-button [saveCallback]="saveHandler"></app-submit-button>
-  </form>
-</div>
+    </fieldset>
+  </div>
+  <app-submit-button [return]="!!return" (click)="onSubmit($event)"></app-submit-button>
+</form>
