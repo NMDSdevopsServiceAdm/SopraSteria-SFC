@@ -137,14 +137,14 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   private checkUsernameDoesntExist(userName: string): void {
     this.subscriptions.add(
       this.registrationService.getUsernameDuplicate(userName).subscribe(
-        (data: RegistrationModel) => {
+        (data: Object) => {
           console.log(data);
           if (data['status'] === '1') {
-            //   this.usernameApiError = data.message;
-            //
-            //   this.setCreateUsernameMessage(this.getUsername);
-            // } else {
-            //   this.usernameApiError = null;
+            // TODO set username as invalid
+
+          } else {
+            // TODO set username as valid
+
           }
         },
         (error: HttpErrorResponse) => {
@@ -166,39 +166,8 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    const createUsernameValue = this.form.get('username').value;
-    const createPasswordValue = this.form.get('passwordGroup.password').value;
-
-    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-      // Get updated form results
-      // if (this.registration.locationdata[0].user.hasOwnProperty('securityQuestion')) {
-      // this.createSecurityQuestionValue = this.registration.locationdata[0].user.securityQuestion;
-      // }
-      // if (this.registration.locationdata[0].user.hasOwnProperty('securityAnswer')) {
-      // this.createsecurityAnswerValue = this.registration.locationdata[0].user.securityAnswer;
-      // }
-    }
-
-    // this.registration.locationdata[0].user['username'] = createUsernameValue;
-    // this.registration.locationdata[0].user['password'] = createPasswordValue;
-
-    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-      // Get updated form results
-      // if (this.registration.locationdata[0].user.hasOwnProperty('securityQuestion')) {
-      //   this.registration.locationdata[0].user['securityQuestion'] = this.createSecurityQuestionValue;
-      // }
-      // if (this.registration.locationdata[0].user.hasOwnProperty('securityAnswer')) {
-      //   this.registration.locationdata[0].user['securityAnswer'] = this.createsecurityAnswerValue;
-      // }
-    }
-
     this.registrationService.updateState(this.registration);
-
-    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-      this.router.navigate(['/registration/confirm-account-details']);
-    } else {
-      this.router.navigate(['/registration/security-question']);
-    }
+    this.router.navigate(['/registration/security-question']);
   }
 
   /**
