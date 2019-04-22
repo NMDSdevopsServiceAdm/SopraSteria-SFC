@@ -3,7 +3,6 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { RegistrationService } from '@core/services/registration.service';
-import { RegistrationModel } from '@core/model/registration.model';
 import { WorkplaceLocation } from '@core/model/workplace-location.model';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -14,7 +13,7 @@ import { filter } from 'lodash';
   templateUrl: './select-workplace.component.html',
 })
 export class SelectWorkplaceComponent implements OnInit, OnDestroy {
-  private registration: RegistrationModel;
+  private workplaceLocations: Array<WorkplaceLocation>;
   private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
@@ -32,8 +31,8 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
 
     this.subscriptions.add(
-      this.registrationService.registration$.subscribe(
-        (registration: RegistrationModel) => this.registration = registration
+      this.registrationService.workplaceLocations$.subscribe(
+        (workplaceLocations: Array<WorkplaceLocation>) => this.workplaceLocations = workplaceLocations
       )
     );
   }
@@ -60,7 +59,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
 
   private getSelectedLocation(): WorkplaceLocation {
     const selectedLocationId: string = this.form.get('workplace').value;
-    return filter(this.registration.locationdata, ['locationId', selectedLocationId])[0];
+    return filter(this.workplaceLocations, ['locationId', selectedLocationId])[0];
   }
 
   public onSubmit(): void {

@@ -12,6 +12,7 @@ import { LoginApiModel } from '@core/model/loginApi.model';
 })
 export class RegistrationService {
   public registration$: BehaviorSubject<RegistrationModel> = new BehaviorSubject(null);
+  public workplaceLocations$: BehaviorSubject<Array<WorkplaceLocation>> = new BehaviorSubject(null);
   public selectedWorkplaceLocation$: BehaviorSubject<WorkplaceLocation> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<WorkplaceService> = new BehaviorSubject(null);
   public createCredentials$: BehaviorSubject<LoginApiModel> = new BehaviorSubject(null);
