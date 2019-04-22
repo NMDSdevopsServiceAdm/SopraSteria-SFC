@@ -38,6 +38,7 @@ class User {
         // localised attributes - optional on load
         this._username = null;
         this._password = null;
+        this._isPrimary - null;
 
         // abstracted properties
         const thisUserManager = new UserProperties();
@@ -127,6 +128,9 @@ class User {
     get updatedBy() {
         return this._updatedBy;
     }
+    get isPrimary() {
+        return this._auditEvents._isPrimary;
+    }
 
     get trackingId() {
         return this._trackingUUID;
@@ -165,6 +169,15 @@ class User {
             }
             if (document.password) {
                 this._password = escape(document.password);
+            }
+
+            if (document.isPrimary !== null) {
+                // by explicitly checking for "true", don't have to worry about any other value
+                if (document.isPrimary === true) {
+                    this._isPrimary = true;
+                } else {
+                    this._isPrimary = false;
+                }
             }
         } catch (err) {
             this._log(User.LOG_ERROR, `User::load - failed: ${err}`);
@@ -261,7 +274,7 @@ class User {
         await sendAddUserEmail(emailProperty, fullnameProperty, this._trackingUUID);
     }
 
-    // saves the User to DB. Returns true if saved; false is not.
+    // saves the User to DB. Returns true if saved; false if not.
     // Throws "UserSaveException" on error
     async save(savedBy, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
@@ -278,10 +291,18 @@ class User {
         if (mustSave && this._isNew) {
             // create new User
             try {
+                // TODO: change to a managed property
+                if (this._isPrimary === null) {
+                    this._isPrimary = false;        // isPrimary is only explicitly declared on registration and it is true
+                }
+
+                console.log("WA DEBUG - saving User - isPrimary: ", this._isPrimary)
+
                 const creationDocument = {
                     establishmentId: this._establishmentId,
                     uid: this.uid,
                     updatedBy: savedBy,
+                    isPrimary: this._isPrimary,
                     isAdmin: false,
                     archived: false,
                     attributes: ['id', 'created', 'updated'],
@@ -570,6 +591,9 @@ class User {
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
+
+                // TODO: change to amanaged property
+                this._isPrimary - fetchResults.isPrimary;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)

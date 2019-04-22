@@ -70,11 +70,13 @@ router.get('/username', (req, res) => {
   });
 });
 router.get('/username/:username', async (req, res) => {
-  const requestedUsername = req.params.username;
+  const requestedUsername = req.params.username.toLowerCase();
   try {
     const results = await models.login.findOne({
       where: {
-        username: requestedUsername
+        username: {
+          [models.Sequelize.Op.iLike] : requestedUsername
+        }
       }
     });
 
@@ -101,18 +103,22 @@ router.get('/username/:username', async (req, res) => {
 });
 
 router.get('/usernameOrEmail/:usernameOrEmail', async (req, res) => {
-  const requestedUsernameOrEmail = req.params.usernameOrEmail;
+  const requestedUsernameOrEmail = req.params.usernameOrEmail.toLowerCase();
 
   try {
     // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
     const loginResults = await models.login.findOne({
       where: {
-          username: requestedUsernameOrEmail
+        username: {
+          [models.Sequelize.Op.iLike] : requestedUsernameOrEmail
+        }
       }
     });
     const userResults = await models.user.findOne({
       where: {
-          EmailValue: requestedUsernameOrEmail
+        EmailValue: {
+          [models.Sequelize.Op.iLike] : requestedUsernameOrEmail
+        }
       }
     });
 
@@ -461,8 +467,9 @@ router.route('/')
             phone: Userdata.Phone,
             securityQuestion: Userdata.SecurityQuestion,
             securityQuestionAnswer: Userdata.SecurityQuestionAnswer,
-            username: Logindata.UserName,
+            username: Logindata.UserName.toLowerCase(),
             password: Logindata.Password,
+            isPrimary: true,
           });
           if (newUser.isValid) {
             await newUser.save(Logindata.UserName, 0, t);

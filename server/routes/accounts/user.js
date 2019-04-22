@@ -51,7 +51,7 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
     if (uuidRegex.test(userId.toUpperCase())) {
         byUUID = userId;
     } else {
-        byUsername = escape(userId);
+        byUsername = escape(userId.toLowerCase());
     }
 
     const thisUser = new User.User(establishmentId);
@@ -157,7 +157,9 @@ router.route('/resetPassword').post(async (req, res) => {
         // all checks pass, so find the user using facts from the token (now on the req)
         const loginResponse = await models.login.findOne({
             where: {
-                username: req.username,
+                username: {
+                    [models.Sequelize.Op.iLike] : req.username.toLowerCase()
+                },
                 isActive: true
             },
             include: [
@@ -238,7 +240,9 @@ router.route('/changePassword').post(async (req, res) => {
         // all checks pass, so find the user using facts from the token (now on the req)
         const login = await models.login.findOne({
             where: {
-                username: req.username,
+                username: {
+                    [models.Sequelize.Op.iLike] : req.username.toLowerCase()
+                },
                 isActive: true
             },
             include: [

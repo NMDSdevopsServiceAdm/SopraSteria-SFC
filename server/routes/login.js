@@ -17,10 +17,11 @@ router.post('/',async function(req, res) {
    Login
       .findOne({
         where: {
-          username: req.body.username,
+          username: {
+            [models.Sequelize.Op.iLike] : req.body.username.toLowerCase()
+          },
           isActive:true
-        }
-        ,
+        },
         attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin'],
         include: [ {
           model: models.user,
@@ -49,7 +50,7 @@ router.post('/',async function(req, res) {
           if (isMatch && !err) {
             const loginTokenTTL = config.get('jwt.ttl.login');
 
-            const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, req.body.username, login.user.UserRoleValue);
+            const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, req.body.username.toLowerCase(), login.user.UserRoleValue);
             var date = new Date().getTime();
             date += (loginTokenTTL * 60  * 1000);
    
