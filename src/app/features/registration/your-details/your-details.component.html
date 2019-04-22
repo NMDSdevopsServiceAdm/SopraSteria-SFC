@@ -13,10 +13,10 @@
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getFullName.errors">
-        <label class="govuk-label" for="userFullnameInput">
+        <label class="govuk-label" for="fullName">
           Your full name
         </label>
-        <span *ngIf="submitted && getFullName.errors" id="userFullnameInput-error" class="govuk-error-message">
+        <span *ngIf="submitted && getFullName.errors" id="fullName-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           <span *ngIf="getFullName.hasError('required')">
             {{ getFormErrorMessage('fullName', 'required') }}
@@ -27,19 +27,19 @@
         </span>
         <input
           class="govuk-input"
-          formControlName="userFullnameInput"
-          id="userFullnameInput"
-          name="userFullnameInput"
+          formControlName="fullName"
+          id="fullName"
+          name="fullName"
           [class.govuk-input--error]="submitted && getFullName.errors"
           type="text"
         />
       </div>
 
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getJobTitle.errors">
-        <label class="govuk-label" for="userJobTitleInput">
+        <label class="govuk-label" for="jobTitle">
           Your job title
         </label>
-        <span *ngIf="submitted && getJobTitle.errors" id="userJobTitleInput-error" class="govuk-error-message">
+        <span *ngIf="submitted && getJobTitle.errors" id="jobTitle-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           <span *ngIf="getJobTitle.hasError('required')">
             {{ getFormErrorMessage('jobTitle', 'required') }}
@@ -50,19 +50,19 @@
         </span>
         <input
           class="govuk-input"
-          formControlName="userJobTitleInput"
-          id="userJobTitleInput"
-          name="userJobTitleInput"
+          formControlName="jobTitle"
+          id="jobTitle"
+          name="jobTitle"
           [class.govuk-input--error]="submitted && getJobTitle.errors"
           type="text"
         />
       </div>
 
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getEmail.errors">
-        <label class="govuk-label" for="userEmailInput">
+        <label class="govuk-label" for="email">
           Your email address
         </label>
-        <span *ngIf="submitted && getEmail.errors" id="userEmailInput-error" class="govuk-error-message">
+        <span *ngIf="submitted && getEmail.errors" id="email-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           <span *ngIf="getEmail.hasError('required')">
             {{ getFormErrorMessage('email', 'required') }}
@@ -76,19 +76,19 @@
         </span>
         <input
           class="govuk-input"
-          formControlName="userEmailInput"
-          id="userEmailInput"
-          name="userEmailInput"
+          formControlName="email"
+          id="email"
+          name="email"
           [class.govuk-input--error]="submitted && getEmail.errors"
           type="text"
         />
       </div>
 
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPhone.errors">
-        <label class="govuk-label" for="userPhoneInput">
+        <label class="govuk-label" for="phone">
           Contact phone number
         </label>
-        <span *ngIf="submitted && getPhone.errors" id="userPhoneInput-error" class="govuk-error-message">
+        <span *ngIf="submitted && getPhone.errors" id="phone-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           <span *ngIf="getPhone.hasError('required')">
             {{ getFormErrorMessage('phone', 'required') }}
@@ -99,9 +99,9 @@
          </span>
         <input
           class="govuk-input"
-          formControlName="userPhoneInput"
-          id="userPhoneInput"
-          name="userPhoneInput"
+          formControlName="phone"
+          id="phone"
+          name="phone"
           [class.govuk-input--error]="submitted && getPhone.errors"
           type="text"
         />
