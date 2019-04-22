@@ -8,16 +8,5 @@ export interface WorkplaceLocation {
   mainService: string;
   postalCode: string;
   townCity: string;
-  // TODO check if this user object can be moved
-  user: {
-    contactNumber: string;
-    emailAddress: string;
-    fullname: string;
-    jobTitle: string;
-    password: string;
-    securityAnswer: string;
-    securityQuestion: string;
-    username: string;
-  };
 }
 

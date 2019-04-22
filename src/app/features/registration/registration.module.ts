@@ -12,7 +12,7 @@ import { SelectMainServiceComponent } from '@features/registration/select-main-s
 import { SelectWorkplaceAddressComponent } from '@features/registration/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { SharedModule } from '@shared/shared.module';
-import { UserDetailsComponent } from '@features/registration/user-details/user-details.component';
+import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
 
 @NgModule({
@@ -28,7 +28,7 @@ import { RegistrationRoutingModule } from '@features/registration/registration-r
     SelectMainServiceComponent,
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
-    UserDetailsComponent,
+    YourDetailsComponent,
   ]
 })
 export class RegistrationModule {}

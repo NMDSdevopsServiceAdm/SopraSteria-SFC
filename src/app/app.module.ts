@@ -41,7 +41,7 @@ import { WorkerService } from './core/services/worker.service';
 import { ChangePasswordComponent } from './features/change-password/change-password.component';
 import { ChangePasswordConfirmationComponent } from './features/change-password/confirmation/confirmation.component';
 import { ChangePasswordEditComponent } from './features/change-password/edit/edit.component';
-import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
+import { ChangeYourDetailsComponent } from './features/change-your-details/change-your-details.component';
 import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
 import { ContactUsComponent } from './features/contact-us/contact-us.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
@@ -86,7 +86,7 @@ import { YourAccountComponent } from './features/your-account/your-account.compo
     ChangePasswordComponent,
     ChangePasswordConfirmationComponent,
     ChangePasswordEditComponent,
-    ChangeUserDetailsComponent,
+    ChangeYourDetailsComponent,
     ChangeUserSecurityComponent,
     HomeTabComponent,
     WorkplaceTabComponent,
