@@ -1,3 +1,4 @@
+import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -23,10 +24,11 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
+    private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private fb: FormBuilder,
     private registrationService: RegistrationService,
-    private router: Router,
+    private router: Router
   ) {}
 
   // Get password group
@@ -54,15 +56,19 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
     this.setupSubscription();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    this.setBackLink();
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['your-details'] });
   }
 
   private setupSubscription(): void {
     this.subscriptions.add(
       this.getUsername.valueChanges
         .pipe(debounceTime(1000))
-        .pipe(distinctUntilChanged()).subscribe(
-        (userName: string) => this.checkUsernameDoesntExist(userName)
-      )
+        .pipe(distinctUntilChanged())
+        .subscribe((userName: string) => this.checkUsernameDoesntExist(userName))
     );
   }
 
@@ -71,10 +77,7 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
       username: ['', [Validators.required, Validators.maxLength(50)]],
       passwordGroup: this.fb.group(
         {
-          createPasswordInput: [
-            '',
-            [Validators.required, Validators.pattern(PASSWORD_PATTERN)],
-          ],
+          createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
           confirmPasswordInput: ['', [Validators.required]],
         },
         { validator: CustomValidators.matchInputValues }
@@ -145,9 +148,9 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
         (data: Object) => {
           if (data['status'] === '1') {
             this.submitted = true;
-            this.getUsername.setErrors({ 'usernameExists': true });
+            this.getUsername.setErrors({ usernameExists: true });
           } else {
-            this.getUsername.setErrors({ 'usernameExists': null });
+            this.getUsername.setErrors({ usernameExists: null });
             this.getUsername.updateValueAndValidity();
           }
         },
@@ -193,5 +196,4 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
 }
