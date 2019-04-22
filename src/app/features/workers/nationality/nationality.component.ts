@@ -103,11 +103,11 @@ export class NationalityComponent extends QuestionComponent {
 
   nationalityNameValidator() {
     if (this.form && this.availableNationalities) {
-      const { nationalityKnown, nationalityName } = this.form.value;
+      const { nationalityKnown, nationalityName } = this.form.controls;
 
-      if (nationalityKnown === 'Other') {
-        if (nationalityName) {
-          const nationalityNameLowerCase = nationalityName.toLowerCase();
+      if (nationalityKnown.value === 'Other') {
+        if (nationalityName.value) {
+          const nationalityNameLowerCase = nationalityName.value.toLowerCase();
           return this.availableNationalities.some(n => n.nationality.toLowerCase() === nationalityNameLowerCase)
             ? null
             : { validNationality: true };
