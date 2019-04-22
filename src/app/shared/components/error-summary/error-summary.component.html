@@ -13,7 +13,7 @@
       <li *ngFor="let i of errors">
         <a
           routerLink="."
-          fragment="{{ i.item }}-error"
+          fragment="{{ transformFragmentName(i.item) }}-error"
           queryParamsHandling="merge">
           {{ getFormErrorMessage(i.item, i.errors[0]) }}
         </a>

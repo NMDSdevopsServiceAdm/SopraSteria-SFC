@@ -72,6 +72,15 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Check if abstract control name name is nested and only return form control name
+   * This is because scrolling to a fragment such as `group.someNestedControl` does not work
+   * @param item
+   */
+  private transformFragmentName(item: string): string {
+    return item.includes('.') ? item.split('.')[1] : item;
+  }
+
+  /**
    * Unsubscribe hook to ensure no memory leaks
    */
   ngOnDestroy(): void {

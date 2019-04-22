@@ -53,7 +53,6 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
       this.userService.updateUserDetails(this.username, userDetails).subscribe(
         () => this.router.navigate(['/your-account']),
         (error: HttpErrorResponse) => {
-          this.form.setErrors({ serverError: true });
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         }
       )

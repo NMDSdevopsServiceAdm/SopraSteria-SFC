@@ -37,7 +37,7 @@ export class ConfirmAccountDetailsComponent implements OnInit {
     this._registrationService.registration$.subscribe(registration => this.registration = registration);
 
     if (this.registration.hasOwnProperty('detailsChanged')) {
-      delete this.registration.detailsChanged;
+      // delete this.registration.detailsChanged;
     }
 
     // Set section numbering on load
