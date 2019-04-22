@@ -12,16 +12,16 @@
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Your details</h1>
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUserFullnameInput.errors">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getFullName.errors">
         <label class="govuk-label" for="userFullnameInput">
           Your full name
         </label>
-        <span *ngIf="submitted && getUserFullnameInput.errors" id="userFullnameInput-error" class="govuk-error-message">
+        <span *ngIf="submitted && getFullName.errors" id="userFullnameInput-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getUserFullnameInput.hasError('required')">
+          <span *ngIf="getFullName.hasError('required')">
             {{ getFormErrorMessage('userFullnameInput', 'required') }}
           </span>
-          <span *ngIf="getUserFullnameInput.hasError('maxlength')">
+          <span *ngIf="getFullName.hasError('maxlength')">
             {{ getFormErrorMessage('userFullnameInput', 'maxlength') }}
           </span>
         </span>
@@ -30,21 +30,21 @@
           formControlName="userFullnameInput"
           id="userFullnameInput"
           name="userFullnameInput"
-          [class.govuk-input--error]="submitted && getUserFullnameInput.errors"
+          [class.govuk-input--error]="submitted && getFullName.errors"
           type="text"
         />
       </div>
 
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUserJobTitle.errors">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getJobTitle.errors">
         <label class="govuk-label" for="userJobTitleInput">
           Your job title
         </label>
-        <span *ngIf="submitted && getUserJobTitle.errors" id="userJobTitleInput-error" class="govuk-error-message">
+        <span *ngIf="submitted && getJobTitle.errors" id="userJobTitleInput-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getUserJobTitle.hasError('required')">
+          <span *ngIf="getJobTitle.hasError('required')">
             {{ getFormErrorMessage('userJobTitleInput', 'required') }}
           </span>
-          <span *ngIf="getUserJobTitle.hasError('maxlength')">
+          <span *ngIf="getJobTitle.hasError('maxlength')">
             {{ getFormErrorMessage('userJobTitleInput', 'maxlength') }}
           </span>
         </span>
@@ -53,24 +53,24 @@
           formControlName="userJobTitleInput"
           id="userJobTitleInput"
           name="userJobTitleInput"
-          [class.govuk-input--error]="submitted && getUserJobTitle.errors"
+          [class.govuk-input--error]="submitted && getJobTitle.errors"
           type="text"
         />
       </div>
 
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUserEmailInput.errors">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getEmail.errors">
         <label class="govuk-label" for="userEmailInput">
           Your email address
         </label>
-        <span *ngIf="submitted && getUserEmailInput.errors" id="userEmailInput-error" class="govuk-error-message">
+        <span *ngIf="submitted && getEmail.errors" id="userEmailInput-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getUserEmailInput.hasError('required')">
+          <span *ngIf="getEmail.hasError('required')">
             {{ getFormErrorMessage('userEmailInput', 'required') }}
           </span>
-          <span *ngIf="getUserEmailInput.hasError('maxlength')">
+          <span *ngIf="getEmail.hasError('maxlength')">
             {{ getFormErrorMessage('userEmailInput', 'maxlength') }}
           </span>
-          <span *ngIf="getUserEmailInput.hasError('pattern')">
+          <span *ngIf="getEmail.hasError('pattern')">
             {{ getFormErrorMessage('userEmailInput', 'pattern') }}
           </span>
         </span>
@@ -79,21 +79,21 @@
           formControlName="userEmailInput"
           id="userEmailInput"
           name="userEmailInput"
-          [class.govuk-input--error]="submitted && getUserEmailInput.errors"
+          [class.govuk-input--error]="submitted && getEmail.errors"
           type="text"
         />
       </div>
 
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUserPhoneInput.errors">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPhone.errors">
         <label class="govuk-label" for="userPhoneInput">
           Contact phone number
         </label>
-        <span *ngIf="submitted && getUserPhoneInput.errors" id="userPhoneInput-error" class="govuk-error-message">
+        <span *ngIf="submitted && getPhone.errors" id="userPhoneInput-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getUserPhoneInput.hasError('required')">
+          <span *ngIf="getPhone.hasError('required')">
             {{ getFormErrorMessage('userPhoneInput', 'required') }}
           </span>
-          <span *ngIf="getUserPhoneInput.hasError('pattern')">
+          <span *ngIf="getPhone.hasError('pattern')">
             {{ getFormErrorMessage('userPhoneInput', 'pattern') }}
           </span>
          </span>
@@ -102,7 +102,7 @@
           formControlName="userPhoneInput"
           id="userPhoneInput"
           name="userPhoneInput"
-          [class.govuk-input--error]="submitted && getUserPhoneInput.errors"
+          [class.govuk-input--error]="submitted && getPhone.errors"
           type="text"
         />
       </div>

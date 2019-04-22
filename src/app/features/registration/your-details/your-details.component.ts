@@ -2,48 +2,49 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UserService } from '@core/services/user.service';
+import { UserDetails } from '@core/model/userDetails.model';
 
 @Component({
   selector: 'app-your-details',
   templateUrl: './your-details.component.html',
 })
 export class YourDetailsComponent implements OnInit, OnDestroy {
+  protected serverError: string;
+  protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected username: string;
-  public form: FormGroup;
-  public formErrorsMap: Array<ErrorDetails>;
-  public serverError: string;
-  public serverErrorsMap: Array<ErrorDefinition>;
-  public submitted = false;
+  protected form: FormGroup;
+  protected formErrorsMap: Array<ErrorDetails>;
+  protected submitted = false;
+  protected userDetails: UserDetails;
 
   constructor(
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService,
+    protected userService: UserService
   ) {}
 
   // Get fullname
-  get getUserFullnameInput() {
+  get getFullName() {
     return this.form.get('userFullnameInput');
   }
 
   // Get job title
-  get getUserJobTitle() {
+  get getJobTitle() {
     return this.form.get('userJobTitleInput');
   }
 
   // Get email
-  get getUserEmailInput() {
+  get getEmail() {
     return this.form.get('userEmailInput');
   }
 
   // Get phone
-  get getUserPhoneInput() {
+  get getPhone() {
     return this.form.get('userPhoneInput');
   }
 
@@ -64,10 +65,20 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    this.setupUserDetails();
     this.init();
   }
 
   protected init() {}
+
+  protected setupUserDetails(): void {
+    this.userDetails = {
+      email: this.getEmail.value,
+      fullname: this.getFullName.value,
+      jobTitle: this.getJobTitle.value,
+      phone: this.getPhone.value,
+    };
+  }
 
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
@@ -149,33 +160,20 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private changeUserDetails(data: Object): void {
-    this.subscriptions.add(
-      this.userService.updateUserDetails(this.username, data).subscribe(
-        () => this.router.navigate(['/your-account']),
-        (error: HttpErrorResponse) => {
-          this.form.setErrors({ serverError: true });
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
-    );
-  }
-
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      const data: Object = {
-        email: this.form.value.userEmailInput,
-        fullname: this.form.value.userFullnameInput,
-        jobTitle: this.form.value.userJobTitleInput,
-        phone: this.form.value.userPhoneInput,
-      };
-      this.changeUserDetails(data);
+      this.onFormValidSubmit();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  protected onFormValidSubmit(): void {
+    this.userService.updateState(this.userDetails);
+    this.router.navigate(['/registration/create-username']);
   }
 
   ngOnDestroy() {

@@ -4,6 +4,7 @@ export interface RegistrationModel {
   success: number;
   message: string;
   detailsChanged: boolean;
+  // TODO to remove
   userRoute: {
     currentPage: number;
     route: [];

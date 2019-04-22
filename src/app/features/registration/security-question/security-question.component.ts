@@ -126,15 +126,16 @@ export class SecurityQuestionComponent implements OnInit {
 
   changeDetails(): void {
 
-    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-      const createSecurityQuestionValue = this.registration.locationdata[0].user.securityQuestion;
-      const createsecurityAnswerValue = this.registration.locationdata[0].user.securityAnswer;
-
-      this.securityQuestionAnswerForm.setValue({
-        securityQuestionInput: createSecurityQuestionValue,
-        securityAnswerInput: createsecurityAnswerValue,
-      });
-    }
+    // TODO refactor due to model change
+    // if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
+    //   const createSecurityQuestionValue = this.registration.locationdata[0].user.securityQuestion;
+    //   const createsecurityAnswerValue = this.registration.locationdata[0].user.securityAnswer;
+    //
+    //   this.securityQuestionAnswerForm.setValue({
+    //     securityQuestionInput: createSecurityQuestionValue,
+    //     securityAnswerInput: createsecurityAnswerValue,
+    //   });
+    // }
   }
 
   onSubmit() {
@@ -163,8 +164,9 @@ export class SecurityQuestionComponent implements OnInit {
     const securityQuestionValue = this.securityQuestionAnswerForm.get('securityQuestionInput').value;
     const securityAnswerValue = this.securityQuestionAnswerForm.get('securityAnswerInput').value;
 
-    this.registration.locationdata[0].user['securityQuestion'] = securityQuestionValue;
-    this.registration.locationdata[0].user['securityAnswer'] = securityAnswerValue;
+    // TODO refactor due to model change
+    // this.registration.locationdata[0].user['securityQuestion'] = securityQuestionValue;
+    // this.registration.locationdata[0].user['securityAnswer'] = securityAnswerValue;
 
     this.updateSectionNumbers(this.registration);
 

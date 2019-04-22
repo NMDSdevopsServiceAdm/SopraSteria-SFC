@@ -5,6 +5,7 @@ import { UserService } from '@core/services/user.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Component } from '@angular/core';
 import { UserDetails } from '@core/model/userDetails.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-change-your-details',
@@ -41,5 +42,21 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
         userPhoneInput: userDetails.phone,
       });
     }
+  }
+
+  protected onFormValidSubmit(): void {
+    this.changeUserDetails(this.userDetails);
+  }
+
+  private changeUserDetails(userDetails: UserDetails): void {
+    this.subscriptions.add(
+      this.userService.updateUserDetails(this.username, userDetails).subscribe(
+        () => this.router.navigate(['/your-account']),
+        (error: HttpErrorResponse) => {
+          this.form.setErrors({ serverError: true });
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        }
+      )
+    );
   }
 }

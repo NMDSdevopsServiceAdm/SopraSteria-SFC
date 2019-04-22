@@ -209,16 +209,17 @@ export class CreateUsernameComponent implements OnInit {
 
   changeDetails(): void {
     if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-      const createUsernameValue = this.registration.locationdata[0].user.username;
-      const createPasswordValue = this.registration.locationdata[0].user.password;
+      // TODO refactor due to model change
+      // const createUsernameValue = this.registration.locationdata[0].user.username;
+      // const createPasswordValue = this.registration.locationdata[0].user.password;
 
-      this.createUserNamePasswordForm.setValue({
-        createUsernameInput: createUsernameValue,
-        passwordGroup: {
-          createPasswordInput: createPasswordValue,
-          confirmPasswordInput: createPasswordValue,
-        },
-      });
+      // this.createUserNamePasswordForm.setValue({
+      //   createUsernameInput: createUsernameValue,
+      //   passwordGroup: {
+      //     createPasswordInput: createPasswordValue,
+      //     confirmPasswordInput: createPasswordValue,
+      //   },
+      // });
     }
   }
 
@@ -236,32 +237,33 @@ export class CreateUsernameComponent implements OnInit {
     }
   }
 
+  // TODO refactor due to model change
   save() {
     const createUsernameValue = this.createUserNamePasswordForm.get('createUsernameInput').value;
     const createPasswordValue = this.createUserNamePasswordForm.get('passwordGroup.createPasswordInput').value;
 
-    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-      // Get updated form results
-      if (this.registration.locationdata[0].user.hasOwnProperty('securityQuestion')) {
-        this.createSecurityQuestionValue = this.registration.locationdata[0].user.securityQuestion;
-      }
-      if (this.registration.locationdata[0].user.hasOwnProperty('securityAnswer')) {
-        this.createsecurityAnswerValue = this.registration.locationdata[0].user.securityAnswer;
-      }
-    }
-
-    this.registration.locationdata[0].user['username'] = createUsernameValue;
-    this.registration.locationdata[0].user['password'] = createPasswordValue;
-
-    if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-      // Get updated form results
-      if (this.registration.locationdata[0].user.hasOwnProperty('securityQuestion')) {
-        this.registration.locationdata[0].user['securityQuestion'] = this.createSecurityQuestionValue;
-      }
-      if (this.registration.locationdata[0].user.hasOwnProperty('securityAnswer')) {
-        this.registration.locationdata[0].user['securityAnswer'] = this.createsecurityAnswerValue;
-      }
-    }
+    // if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
+    //   // Get updated form results
+    //   if (this.registration.locationdata[0].user.hasOwnProperty('securityQuestion')) {
+    //     this.createSecurityQuestionValue = this.registration.locationdata[0].user.securityQuestion;
+    //   }
+    //   if (this.registration.locationdata[0].user.hasOwnProperty('securityAnswer')) {
+    //     this.createsecurityAnswerValue = this.registration.locationdata[0].user.securityAnswer;
+    //   }
+    // }
+    //
+    // this.registration.locationdata[0].user['username'] = createUsernameValue;
+    // this.registration.locationdata[0].user['password'] = createPasswordValue;
+    //
+    // if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
+    //   // Get updated form results
+    //   if (this.registration.locationdata[0].user.hasOwnProperty('securityQuestion')) {
+    //     this.registration.locationdata[0].user['securityQuestion'] = this.createSecurityQuestionValue;
+    //   }
+    //   if (this.registration.locationdata[0].user.hasOwnProperty('securityAnswer')) {
+    //     this.registration.locationdata[0].user['securityAnswer'] = this.createsecurityAnswerValue;
+    //   }
+    // }
 
     this.updateSectionNumbers(this.registration);
 

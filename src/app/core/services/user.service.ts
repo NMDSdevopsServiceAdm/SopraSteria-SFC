@@ -17,25 +17,25 @@ export class UserService {
   /*
    * GET /api/user/establishment/:establishmentId
    */
-  getUsernameFromEstbId() {
+  public getUsernameFromEstbId() {
     return this.http.get<any>(`/api/user/establishment/${this.establishmentService.establishmentId}`);
   }
 
   /*
    * GET /api/user/establishment/:establishmentId/:username
    */
-  getUserDetails(username): Observable<UserDetails> {
+  public getUserDetails(username): Observable<UserDetails> {
     return this.http.get<any>(`/api/user/establishment/${this.establishmentService.establishmentId}/${username}`);
   }
 
   /*
    * PUT /api/user/establishment/:establishmentId/:username
    */
-  updateUserDetails(username, data) {
+  public updateUserDetails(username, data) {
     return this.http.put<any>(`/api/user/establishment/${this.establishmentService.establishmentId}/${username}`, data);
   }
 
-  updateState(data) {
-    this._userDetails$.next(data);
+  public updateState(userDetails: UserDetails) {
+    this._userDetails$.next(userDetails);
   }
 }
