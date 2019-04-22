@@ -1,14 +1,14 @@
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { RegistrationModel } from '@core/model/registration.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { PASSWORD_PATTERN } from '@core/constants/constants';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Subscription } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
   selector: 'app-create-username',
@@ -17,7 +17,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 export class CreateUsernameComponent implements OnInit, OnDestroy {
   private form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
-  private registration: RegistrationModel;
   private serverError: string;
   private serverErrorsMap: Array<ErrorDefinition>;
   private submitted = false;
@@ -74,7 +73,7 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
         {
           createPasswordInput: [
             '',
-            [Validators.required, Validators.pattern('(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,50}')],
+            [Validators.required, Validators.pattern(PASSWORD_PATTERN)],
           ],
           confirmPasswordInput: ['', [Validators.required]],
         },
@@ -145,6 +144,7 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
       this.registrationService.getUsernameDuplicate(userName).subscribe(
         (data: Object) => {
           if (data['status'] === '1') {
+            this.submitted = true;
             this.getUsername.setErrors({ 'usernameExists': true });
           } else {
             this.getUsername.setErrors({ 'usernameExists': null });
@@ -170,7 +170,10 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    this.registrationService.updateState(this.registration);
+    this.registrationService.createCredentials$.next({
+      username: this.getUsername.value,
+      password: this.getPassword.value,
+    });
     this.router.navigate(['/registration/security-question']);
   }
 
