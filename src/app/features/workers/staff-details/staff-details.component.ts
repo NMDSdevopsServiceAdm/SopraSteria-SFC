@@ -40,7 +40,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
 
     if (this.worker) {
-      console.log(this.worker.mainJob.jobId);
       this.form.patchValue({
         nameOrId: this.worker.nameOrId,
         mainJob: this.worker.mainJob.jobId,
@@ -86,24 +85,26 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   generateUpdateProps() {
     const { nameOrId, contract, mainJob } = this.form.controls;
 
-    // TODO: Removing Other Jobs should be handled by the Server
-    // https://trello.com/c/x3N7dQJP
-    // if (this.worker.otherJobs) {
-    //   (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
-    // }
-
-    return {
+    const props = {
       nameOrId: nameOrId.value,
       contract: contract.value,
       mainJob: {
         jobId: parseInt(mainJob.value, 10),
       },
     };
+
+    // TODO: Removing Other Jobs should be handled by the Server
+    // https://trello.com/c/x3N7dQJP
+    if (this.worker.otherJobs) {
+      (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
+    }
+
+    return props;
   }
 
   onSuccess() {
     this.next =
-      this.worker.mainJob.jobId === 27
+      parseInt(this.form.get('mainJob').value, 10) === 27
         ? ['/worker', this.worker.uid, 'mental-health-professional']
         : ['/worker', this.worker.uid, 'main-job-start-date'];
   }
