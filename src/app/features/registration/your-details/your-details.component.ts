@@ -30,29 +30,29 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
 
   // Get fullname
   get getFullName() {
-    return this.form.get('userFullnameInput');
+    return this.form.get('fullName');
   }
 
   // Get job title
   get getJobTitle() {
-    return this.form.get('userJobTitleInput');
+    return this.form.get('jobTitle');
   }
 
   // Get email
   get getEmail() {
-    return this.form.get('userEmailInput');
+    return this.form.get('email');
   }
 
   // Get phone
   get getPhone() {
-    return this.form.get('userPhoneInput');
+    return this.form.get('phone');
   }
 
   ngOnInit() {
     this.form = this.fb.group({
-      userFullnameInput: ['', [Validators.required, Validators.maxLength(120)]],
-      userJobTitleInput: ['', [Validators.required, Validators.maxLength(120)]],
-      userEmailInput: [
+      fullName: ['', [Validators.required, Validators.maxLength(120)]],
+      jobTitle: ['', [Validators.required, Validators.maxLength(120)]],
+      email: [
         '',
         [
           Validators.required,
@@ -60,7 +60,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
           Validators.maxLength(120),
         ],
       ],
-      userPhoneInput: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
+      phone: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
     });
 
     this.setupFormErrorsMap();
@@ -83,7 +83,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'userFullnameInput',
+        item: 'fullName',
         type: [
           {
             name: 'required',
@@ -96,7 +96,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'userJobTitleInput',
+        item: 'jobTitle',
         type: [
           {
             name: 'required',
@@ -109,7 +109,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'userEmailInput',
+        item: 'email',
         type: [
           {
             name: 'required',
@@ -126,7 +126,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'userPhoneInput',
+        item: 'phone',
         type: [
           {
             name: 'required',

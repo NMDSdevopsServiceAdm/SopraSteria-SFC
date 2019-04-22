@@ -36,10 +36,10 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
       this.username = userDetails.username;
 
       this.form.setValue({
-        userEmailInput: userDetails.email,
-        userFullnameInput: userDetails.fullname,
-        userJobTitleInput: userDetails.jobTitle,
-        userPhoneInput: userDetails.phone,
+        email: userDetails.email,
+        fullName: userDetails.fullname,
+        jobTitle: userDetails.jobTitle,
+        phone: userDetails.phone,
       });
     }
   }

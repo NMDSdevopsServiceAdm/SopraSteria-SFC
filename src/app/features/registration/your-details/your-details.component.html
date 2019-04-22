@@ -19,10 +19,10 @@
         <span *ngIf="submitted && getFullName.errors" id="userFullnameInput-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           <span *ngIf="getFullName.hasError('required')">
-            {{ getFormErrorMessage('userFullnameInput', 'required') }}
+            {{ getFormErrorMessage('fullName', 'required') }}
           </span>
           <span *ngIf="getFullName.hasError('maxlength')">
-            {{ getFormErrorMessage('userFullnameInput', 'maxlength') }}
+            {{ getFormErrorMessage('fullName', 'maxlength') }}
           </span>
         </span>
         <input
@@ -42,10 +42,10 @@
         <span *ngIf="submitted && getJobTitle.errors" id="userJobTitleInput-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           <span *ngIf="getJobTitle.hasError('required')">
-            {{ getFormErrorMessage('userJobTitleInput', 'required') }}
+            {{ getFormErrorMessage('jobTitle', 'required') }}
           </span>
           <span *ngIf="getJobTitle.hasError('maxlength')">
-            {{ getFormErrorMessage('userJobTitleInput', 'maxlength') }}
+            {{ getFormErrorMessage('jobTitle', 'maxlength') }}
           </span>
         </span>
         <input
@@ -65,13 +65,13 @@
         <span *ngIf="submitted && getEmail.errors" id="userEmailInput-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           <span *ngIf="getEmail.hasError('required')">
-            {{ getFormErrorMessage('userEmailInput', 'required') }}
+            {{ getFormErrorMessage('email', 'required') }}
           </span>
           <span *ngIf="getEmail.hasError('maxlength')">
-            {{ getFormErrorMessage('userEmailInput', 'maxlength') }}
+            {{ getFormErrorMessage('email', 'maxlength') }}
           </span>
           <span *ngIf="getEmail.hasError('pattern')">
-            {{ getFormErrorMessage('userEmailInput', 'pattern') }}
+            {{ getFormErrorMessage('email', 'pattern') }}
           </span>
         </span>
         <input
@@ -91,10 +91,10 @@
         <span *ngIf="submitted && getPhone.errors" id="userPhoneInput-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           <span *ngIf="getPhone.hasError('required')">
-            {{ getFormErrorMessage('userPhoneInput', 'required') }}
+            {{ getFormErrorMessage('phone', 'required') }}
           </span>
           <span *ngIf="getPhone.hasError('pattern')">
-            {{ getFormErrorMessage('userPhoneInput', 'pattern') }}
+            {{ getFormErrorMessage('phone', 'pattern') }}
           </span>
          </span>
         <input
