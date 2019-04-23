@@ -6,6 +6,7 @@ import { WorkplaceLocation } from '@core/model/workplace-location.model';
 import { RegistrationModel } from '@core/model/registration.model';
 import { WorkplaceService } from '@core/model/workplace-service.model';
 import { LoginApiModel } from '@core/model/loginApi.model';
+import { SecurityDetails } from '@core/model/security-details.model';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,7 @@ export class RegistrationService {
   public selectedWorkplaceLocation$: BehaviorSubject<WorkplaceLocation> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<WorkplaceService> = new BehaviorSubject(null);
   public createCredentials$: BehaviorSubject<LoginApiModel> = new BehaviorSubject(null);
+  public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private router: Router) {}
 
