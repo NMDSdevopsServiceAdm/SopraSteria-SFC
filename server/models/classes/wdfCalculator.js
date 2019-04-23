@@ -111,7 +111,7 @@ class WdfCalculator {
 
           const updateDocument = {
             updated: updatedTimestamp,
-            updatedBy: savedBy,
+            updatedBy: savedBy.toLowerCase(),
             overallWdfEligibility: updatedTimestamp,
           };
           let [updatedRecordCount, updatedRows] = await models.establishment.update(
@@ -130,12 +130,12 @@ class WdfCalculator {
             const auditEvents = [
               {
                 establishmentFk: updatedRecord.EstablishmentID,
-                username: savedBy,
+                username: savedBy.toLowerCase(),
                 type: 'overalWdfEligible'
               },
               {
                 establishmentFk: updatedRecord.EstablishmentID,
-                username: savedBy,
+                username: savedBy.toLowerCase(),
                 type: 'updated'
               }
             ];
