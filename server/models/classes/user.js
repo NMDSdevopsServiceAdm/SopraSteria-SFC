@@ -265,7 +265,7 @@ class User {
                 created: now.toISOString(),
                 expires: expiresIn.toISOString(),
                 uuid: this._trackingUUID,
-                by: savedBy
+                by: savedBy.toLowerCase()
             },
             {transaction}
         );
@@ -301,7 +301,7 @@ class User {
                 const creationDocument = {
                     establishmentId: this._establishmentId,
                     uid: this.uid,
-                    updatedBy: savedBy,
+                    updatedBy: savedBy.toLowerCase(),
                     isPrimary: this._isPrimary,
                     isAdmin: false,
                     archived: false,
@@ -319,7 +319,7 @@ class User {
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
                     //   why we cannot create a User record with more properties
-                    const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
+                    const modifedCreationDocument = this._properties.save(savedBy.toLowerCase(), creationDocument);
 
                     // check all mandatory parameters have been provided
                     if (!this.hasMandatoryProperties) {
@@ -334,7 +334,7 @@ class User {
                     this._id = sanitisedResults.RegistrationID;
                     this._created = sanitisedResults.created;
                     this._updated = sanitisedResults.updated;
-                    this._updatedBy = savedBy;
+                    this._updatedBy = savedBy.toLowerCase();
                     this._isNew = false;
 
                     // create the associated Login record - if the username is known
@@ -386,7 +386,7 @@ class User {
                         // having the user we can now create the audit record; injecting the userFk
                         const allAuditEvents = [{
                             userFk: this._id,
-                            username: savedBy,
+                            username: savedBy.toLowerCase(),
                             type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
                                 return {
                                     ...thisEvent,
@@ -399,7 +399,7 @@ class User {
                     // send invitation email if the username is not known
                     if (this._username === null) {
                         // need to send an email having added an "Add User" tracking record
-                        await this.trackNewUser(savedBy, t, ttl);
+                        await this.trackNewUser(savedBy.toLowerCase(), t, ttl);
                     }
                     this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
                 });
@@ -427,12 +427,12 @@ class User {
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
                     // now append the extendable properties
-                    const modifedUpdateDocument = this._properties.save(savedBy, {});
+                    const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
                     const updateDocument = {
                         ...modifedUpdateDocument,
                         updated: updatedTimestamp,
-                        updatedBy: savedBy
+                        updatedBy: savedBy.toLowerCase()
                     };
 
                     // now save the document
@@ -452,7 +452,7 @@ class User {
                         const updatedRecord = updatedRows[0].get({plain: true});
 
                         this._updated = updatedRecord.updated;
-                        this._updatedBy = savedBy;
+                        this._updatedBy = savedBy.toLowerCase();
                         this._id = updatedRecord.RegistrationID;
 
                         // if we're updating a part added user (registered only not completed - username is not known)
@@ -460,14 +460,14 @@ class User {
                         //  and create another one, which includes sending an email with that tracking request.
                         if (this._username === null) {
                             // need to send an email having added an "Add User" tracking record
-                            await this.trackNewUser(savedBy, t, ttl);
+                            await this.trackNewUser(savedBy.toLowerCase(), t, ttl);
                         }
 
                         // only create the audit records for the new user the username is known
                         if (this._username !== null) {
                             const allAuditEvents = [{
                                 userFk: this._id,
-                                username: savedBy,
+                                username: savedBy.toLowerCase(),
                                 type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
                                     return {
                                         ...thisEvent,

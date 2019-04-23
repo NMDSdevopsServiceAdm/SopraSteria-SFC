@@ -357,7 +357,7 @@ class Training {
                         uid: this._uid,
                         created: now,
                         updated: now,
-                        updatedBy: savedBy,
+                        updatedBy: savedBy.toLowerCase(),
                         categoryFk: this._category.id,
                         title: this._title,
                         accredited: this._accredited,
@@ -384,7 +384,7 @@ class Training {
                         this._id = sanitisedResults.ID;
                         this._created = sanitisedResults.created;
                         this._updated = sanitisedResults.updated;
-                        this._updatedBy = savedBy;
+                        this._updatedBy = savedBy.toLowerCase();
                         this._isNew = false;
     
                         this._log(Training.LOG_INFO, `Created Training Record with uid (${this.uid})`);
@@ -416,7 +416,7 @@ class Training {
                         expires: this._expires,
                         notes: this._notes,
                         updated: updatedTimestamp,
-                        updatedBy: savedBy
+                        updatedBy: savedBy.toLowerCase()
                     };
 
                     // now save the document
@@ -436,7 +436,7 @@ class Training {
                         const updatedRecord = updatedRows[0].get({plain: true});
 
                         this._updated = updatedRecord.updated;
-                        this._updatedBy = savedBy;
+                        this._updatedBy = savedBy.toLowerCase();
                         this._id = updatedRecord.ID;
 
                         this._log(Training.LOG_INFO, `Updated Training record with uid (${this.uid})`);

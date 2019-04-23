@@ -103,6 +103,9 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         if (await thisUser.restore(byUUID, byUsername, null)) {
             // TODO: JSON validation
 
+            // force lowercase on email when updating
+            req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
+
             // by loading after the restore, only those properties defined in the
             //  PUT body will be updated (peristed)
             const isValidUser = await thisUser.load(req.body);
