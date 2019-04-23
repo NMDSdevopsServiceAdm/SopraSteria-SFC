@@ -39,10 +39,6 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
     private userService: UserService
   ) {}
 
-  get getTermsAndConditions() {
-    return this.form.get('termsAndConditions');
-  }
-
   ngOnInit() {
     this.setupForm();
     this.setupSubscriptions();
@@ -53,7 +49,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
 
   private setupForm(): void {
     this.form = this.fb.group({
-      termsAndConditions: ['', Validators.required],
+      termsAndConditions: [null, Validators.required],
     });
   }
 
@@ -168,6 +164,16 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
         }
       )
     );
+  }
+
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   /**
