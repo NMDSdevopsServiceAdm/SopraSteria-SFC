@@ -8,5 +8,5 @@ import { FormGroup } from '@angular/forms';
 export class DatePickerComponent {
   @Input() formGroup: FormGroup;
   @Input() formGroupName: string;
-  @Input() autocomplete = false;
+  @Input() autocomplete: string;
 }
