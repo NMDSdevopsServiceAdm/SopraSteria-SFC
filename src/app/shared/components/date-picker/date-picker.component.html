@@ -12,7 +12,7 @@
             id="{{ formGroupName }}-day"
             name="{{ formGroupName }}-day"
             type="number"
-            [attr.autocomplete]="autocomplete"
+            [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-day' : null"
             pattern="[0-9]*"
           />
         </div>
@@ -29,7 +29,7 @@
             id="{{ formGroupName }}-month"
             name="{{ formGroupName }}-month"
             type="number"
-            [attr.autocomplete]="autocomplete"
+            [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-month' : null"
             pattern="[0-9]*"
           />
         </div>
@@ -46,7 +46,7 @@
             id="{{ formGroupName }}-year"
             name="{{ formGroupName }}-year"
             type="number"
-            [attr.autocomplete]="autocomplete"
+            [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-year' : null"
             pattern="[0-9]*"
           />
         </div>
