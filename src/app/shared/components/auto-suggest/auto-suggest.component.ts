@@ -6,7 +6,6 @@ import { ControlValueAccessor, FormGroup, NG_VALUE_ACCESSOR } from '@angular/for
 @Component({
   selector: 'app-auto-suggest',
   templateUrl: './auto-suggest.component.html',
-  styleUrls: ['./auto-suggest.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
