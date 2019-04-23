@@ -1,23 +1,23 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { RegistrationService } from '../../services/registration.service';
-import { RegistrationModel } from '@core/model/registration.model';
+import { LocationAddress } from '@core/model/location-address.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegisterGuard implements CanActivate {
-  private registration: RegistrationModel;
+  private locationAddresses: Array<LocationAddress>;
 
   constructor(private registrationService: RegistrationService, private router: Router) {}
 
   canActivate() {
-    this.registrationService.registration$.subscribe(
-      (registration: RegistrationModel) => this.registration = registration
+    this.registrationService.locationAddresses$.subscribe(
+      (locationAddresses: Array<LocationAddress>) => this.locationAddresses = locationAddresses
     );
 
     // check if registration process has started
-    if (this.registration) {
+    if (this.locationAddresses) {
       return true;
     }
 

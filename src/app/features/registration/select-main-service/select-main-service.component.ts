@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { WorkplaceLocation } from '@core/model/workplace-location.model';
+import { LocationAddress } from '@core/model/location-address.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -78,13 +78,13 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
 
   private getSelectedLocation(): void {
     this.subscriptions.add(
-      this.registrationService.selectedWorkplaceLocation$.subscribe(
-        (location: WorkplaceLocation) => this.getServicesByCategory(location)
+      this.registrationService.selectedLocationAddress$.subscribe(
+        (location: LocationAddress) => this.getServicesByCategory(location)
       )
     );
   }
 
-  private getServicesByCategory(location: WorkplaceLocation): void {
+  private getServicesByCategory(location: LocationAddress): void {
     const isRegulated: boolean = this.registrationService.isRegulated(location);
 
 

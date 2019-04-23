@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { WorkplaceLocation } from '@core/model/workplace-location.model';
+import { LocationAddress } from '@core/model/location-address.model';
 import { RegistrationModel } from '@core/model/registration.model';
 import { WorkplaceService } from '@core/model/workplace-service.model';
 import { LoginApiModel } from '@core/model/loginApi.model';
@@ -13,7 +13,8 @@ import { SecurityDetails } from '@core/model/security-details.model';
 })
 export class RegistrationService {
   public registration$: BehaviorSubject<RegistrationModel> = new BehaviorSubject(null);
-  public selectedWorkplaceLocation$: BehaviorSubject<WorkplaceLocation> = new BehaviorSubject(null);
+  public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
+  public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<WorkplaceService> = new BehaviorSubject(null);
   public createCredentials$: BehaviorSubject<LoginApiModel> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
@@ -58,7 +59,7 @@ export class RegistrationService {
     this.registration$.next(data);
   }
 
-  public isRegulated(location: WorkplaceLocation): boolean {
+  public isRegulated(location: LocationAddress): boolean {
     return location.isRegulated === true || location.locationId ? true : false;
   }
 }

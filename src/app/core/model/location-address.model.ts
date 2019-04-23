@@ -1,12 +1,11 @@
-export interface WorkplaceLocation {
+export interface LocationAddress {
   addressLine1: string;
   addressLine2: string;
   county: string;
-  isRegulated: boolean;
-  locationId: string;
+  isRegulated?: boolean;
+  locationId?: string;
   locationName: string;
-  mainService: string;
+  mainService?: string;
   postalCode: string;
   townCity: string;
 }
-

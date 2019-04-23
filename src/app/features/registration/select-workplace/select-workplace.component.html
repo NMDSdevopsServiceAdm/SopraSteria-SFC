@@ -21,7 +21,7 @@
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplace', 'required') }}
           </span>
           <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let item of registration.locationdata; let i = index">
+            <div class="govuk-radios__item" *ngFor="let item of workplaceLocations; let i = index">
               <input
                 class="govuk-radios__input"
                 id="workplace-{{ i }}"
