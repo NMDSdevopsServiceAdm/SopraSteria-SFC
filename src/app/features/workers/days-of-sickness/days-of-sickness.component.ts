@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { FLOAT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -16,6 +17,7 @@ import { QuestionComponent } from '../question/question.component';
 export class DaysOfSicknessComponent extends QuestionComponent {
   public daysSicknessMin = 0;
   public daysSicknessMax = 366;
+  public floatPattern = FLOAT_PATTERN.toString();
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -83,6 +85,10 @@ export class DaysOfSicknessComponent extends QuestionComponent {
           {
             name: 'max',
             message: `Number of days must be between ${this.daysSicknessMin} and ${this.daysSicknessMax}.`,
+          },
+          {
+            name: 'pattern',
+            message: 'Number of days is invalid',
           },
         ],
       },
