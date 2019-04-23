@@ -55,24 +55,26 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
 
   private setupSubscriptions(): void {
     this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
+      this.userService.userDetails$.subscribe(
+        (userDetails: UserDetails) => this.userDetails = userDetails
+      )
     );
 
     this.subscriptions.add(
       this.registrationService.selectedLocationAddress$.subscribe(
-        (locationAddress: LocationAddress) => (this.locationAddress = locationAddress)
+        (locationAddress: LocationAddress) => this.locationAddress = locationAddress
       )
     );
 
     this.subscriptions.add(
       this.registrationService.loginCredentials$.subscribe(
-        (loginCredentials: LoginCredentials) => (this.username = loginCredentials.username)
+        (loginCredentials: LoginCredentials) => this.username = loginCredentials.username
       )
     );
 
     this.subscriptions.add(
       this.registrationService.securityDetails$.subscribe(
-        (securityDetails: SecurityDetails) => (this.securityDetails = securityDetails)
+        (securityDetails: SecurityDetails) => this.securityDetails = securityDetails
       )
     );
   }
