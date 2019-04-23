@@ -57,9 +57,11 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
   generateUpdateProps() {
     const { nationalInsuranceNumber } = this.form.controls;
 
-    return {
-      nationalInsuranceNumber: nationalInsuranceNumber.value.toUpperCase(),
-    };
+    return nationalInsuranceNumber.value
+      ? {
+          nationalInsuranceNumber: nationalInsuranceNumber.value.toUpperCase(),
+        }
+      : null;
   }
 
   ninValidator(control: AbstractControl) {
