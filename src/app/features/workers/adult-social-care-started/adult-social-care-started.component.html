@@ -23,12 +23,12 @@
         </label>
       </div>
       <div
-        class="govuk-radios__conditional govuk-input--width-20"
+        class="govuk-radios__conditional"
         [class.govuk-radios__conditional--hidden]="form.get('yearKnown').value !== 'Yes'"
         id="conditional-yearKnown-conditional-1"
       >
         <div class="govuk-form-group">
-          <label class="govuk-label" for="nationalityName">
+          <label class="govuk-label" for="year">
             Year
           </label>
           <span *ngIf="submitted && form.get('year').errors" id="year-error" class="govuk-error-message">
