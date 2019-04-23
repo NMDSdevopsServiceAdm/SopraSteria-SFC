@@ -24,7 +24,7 @@
             {{ getFormErrorMessage('username', 'required') }}
           </span>
           <span *ngIf="getUsername.hasError('maxLength')">
-            {{ getFormErrorMessage('username', 'maxLength') }}
+            {{ getFormErrorMessage('username', 'maxlength') }}
           </span>
           <span *ngIf="getUsername.hasError('usernameExists')">
             {{ getFormErrorMessage('username', 'usernameExists') }}
