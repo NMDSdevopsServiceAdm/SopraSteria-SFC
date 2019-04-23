@@ -5,7 +5,7 @@ import { Contracts } from '@core/constants/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
-import { isNull } from 'util';
+import { isNull } from 'lodash';
 
 import { QuestionComponent } from '../question/question.component';
 
