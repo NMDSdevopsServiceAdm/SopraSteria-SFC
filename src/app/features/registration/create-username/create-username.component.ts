@@ -173,7 +173,7 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    this.registrationService.createCredentials$.next({
+    this.registrationService.loginCredentials$.next({
       username: this.getUsername.value,
       password: this.getPassword.value,
     });

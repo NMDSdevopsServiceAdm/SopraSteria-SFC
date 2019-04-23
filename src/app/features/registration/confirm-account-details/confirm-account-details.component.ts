@@ -1,110 +1,104 @@
-import { Component, OnInit } from '@angular/core';
-
+import { BackService } from '@core/services/back.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-
 import { RegistrationService } from '@core/services/registration.service';
-import { RegistrationModel } from '@core/model/registration.model';
+import { Router } from '@angular/router';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { Subscription } from 'rxjs';
+import { LoginCredentials } from '@core/model/login-credentials.model';
+import { SecurityDetails } from '@core/model/security-details.model';
 
 @Component({
   selector: 'app-confirm-account-details',
   templateUrl: './confirm-account-details.component.html',
-  styleUrls: ['./confirm-account-details.component.scss']
 })
-export class ConfirmAccountDetailsComponent implements OnInit {
-  registration: RegistrationModel;
-  tcAgreementForm: FormGroup;
-
-  currentSection: number;
-  lastSection: number;
-  backLink: string;
-  secondItem: number;
-
-  submitDisabled: boolean;
+export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
+  private form: FormGroup;
+  private formErrorsMap: Array<ErrorDetails>;
+  private serverError: string;
+  private serverErrorsMap: Array<ErrorDefinition>;
+  private submitted = false;
+  private subscriptions: Subscription = new Subscription();
+  private username: string;
+  private securityDetails: SecurityDetails;
 
   constructor(
-    private _registrationService: RegistrationService,
+    private backService: BackService,
+    private errorSummaryService: ErrorSummaryService,
+    private fb: FormBuilder,
+    private registrationService: RegistrationService,
     private router: Router,
-    private route: ActivatedRoute,
-    private fb: FormBuilder
-  ) { }
+  ) {}
+
+  get getTermsAndConditions() {
+    return this.form.get('termsAndConditions');
+  }
 
   ngOnInit() {
-    this.tcAgreementForm = this.fb.group({
-      tcAgreement: ['', Validators.required]
+    this.setupForm();
+    this.setupSubscriptions();
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
+    this.setBackLink();
+  }
+
+  private setupForm(): void {
+    this.form = this.fb.group({
+      termsAndConditions: ['', Validators.required]
     });
-
-    this._registrationService.registration$.subscribe(registration => this.registration = registration);
-
-    if (this.registration.hasOwnProperty('detailsChanged')) {
-      // delete this.registration.detailsChanged;
-    }
-
-    // Set section numbering on load
-    this.setSectionNumbers();
-
-    this.submitDisabled = true;
   }
 
-  setSectionNumbers() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
-    this.secondItem = 1;
+  private setupSubscriptions(): void {
+    this.subscriptions.add(
+      this.registrationService.loginCredentials$.subscribe(
+        (loginCredentials: LoginCredentials) => this.username = loginCredentials.username
+      )
+    );
 
-    this.currentSection = (this.currentSection + 1);
-
-    if (this.backLink === '/registration/security-question') {
-      if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace') {
-        this.lastSection = 8;
-      }
-      else if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace-address') {
-        this.lastSection = 9;
-      }
-      else {
-        this.lastSection = 7;
-      }
-    }
+    this.subscriptions.add(
+      this.registrationService.securityDetails$.subscribe(
+        (securityDetails: SecurityDetails) => this.securityDetails = securityDetails
+      )
+    );
   }
 
-  submit() {
-    this._registrationService.postRegistration(this.registration);
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'termsAndConditions',
+        type: [
+          {
+            name: 'required',
+            message: 'Please agree to the terms and conditions.',
+          }
+        ],
+      },
+    ];
   }
 
-  changeDetails() {
-
-    this.registration['detailsChanged'] = true;
-
-    this._registrationService.updateState(this.registration);
-
+  private setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 503,
+        message: 'Database error.',
+      },
+    ];
   }
 
-  updateSectionNumbers(data) {
-    data['userRoute'] = this.registration.userRoute;
-    data.userRoute['currentPage'] = this.currentSection;
-    data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/registration/confirm-account-details');
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['/registration/security-question'] });
   }
 
-  clickBack() {
-    const routeArray = this.registration.userRoute.route;
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.currentSection = this.currentSection - 1;
-    this.registration.userRoute.route.splice(-1);
-
-    this.registration.userRoute.currentPage = this.currentSection;
-
-    this._registrationService.updateState(this.registration);
-
-    this.router.navigate([this.backLink]);
+  private submit(): void {
+    // this.registrationService.postRegistration(this.registration);
   }
 
-  toggleCheckbox($event: any) {
-    if ($event.checked) {
-      this.submitDisabled = false;
-    }
-    else {
-      this.submitDisabled = true;
-    }
+  /**
+   * Unsubscribe hook to ensure no memory leaks
+   */
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
 }

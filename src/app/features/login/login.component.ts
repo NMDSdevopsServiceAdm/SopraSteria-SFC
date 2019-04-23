@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationExtras, Router } from '@angular/router';
-import { LoginApiModel } from '@core/model/loginApi.model';
+import { LoginCredentials } from '@core/model/login-credentials.model';
 import { AuthService } from '@core/services/auth-service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
@@ -19,7 +19,7 @@ const TIMEOUT_INTERVAL = 1800;
 })
 export class LoginComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  login: LoginApiModel;
+  login: LoginCredentials;
   public submitted = false;
   private subscriptions: Subscription = new Subscription();
   public formErrorsMap: Array<ErrorDetails>;

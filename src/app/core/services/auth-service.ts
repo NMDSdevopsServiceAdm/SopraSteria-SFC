@@ -4,11 +4,11 @@ import { Params, Router, UrlSegment } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
-import { LoginApiModel } from '../model/loginApi.model';
+import { LoginCredentials } from '../model/login-credentials.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
 // TODO do we still need it?
-const initialRegistration: LoginApiModel = {
+const initialRegistration: LoginCredentials = {
   // Example initial dummy data
   username: 'Uname3',
   password: 'Bob',
@@ -38,7 +38,7 @@ interface LoggedInSession {
 })
 export class AuthService {
   // Observable login source
-  private _auth$: BehaviorSubject<LoginApiModel> = new BehaviorSubject<LoginApiModel>(initialRegistration);
+  private _auth$: BehaviorSubject<LoginCredentials> = new BehaviorSubject<LoginCredentials>(initialRegistration);
 
   // hold the response from login
   private _session: LoggedInSession = null;
@@ -47,7 +47,7 @@ export class AuthService {
   public redirect: { url: UrlSegment[]; fragment?: string; queryParams?: Params };
 
   // Observable login stream
-  public auth$: Observable<LoginApiModel> = this._auth$.asObservable();
+  public auth$: Observable<LoginCredentials> = this._auth$.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -141,7 +141,7 @@ export class AuthService {
     this._auth$.next(data);
 
     // TODO: because I don't understand how to extract data from the observable
-    //      and I don't understand Denny's original intentions in storing the LoginApiModel
+    //      and I don't understand Denny's original intentions in storing the LoginCredentials
     //      which is the username/password rather than the login API response.
     this._session = data;
   }

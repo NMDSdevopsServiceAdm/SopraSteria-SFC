@@ -20,6 +20,10 @@ export class RegisterGuard implements CanActivate {
     if (this.locationAddresses) {
       return true;
     }
+    // TODO remove me
+    else {
+      return true;
+    }
 
     this.router.navigate(['/registration/regulated-by-cqc']);
     return false;
