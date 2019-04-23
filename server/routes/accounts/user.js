@@ -343,6 +343,10 @@ router.route('/add/establishment/:id').post(async (req, res) => {
     try {
         // TODO: JSON validation
 
+        // force email to be lowercase
+        req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
+
+
         // only those properties defined in the POST body will be updated (peristed)
         const isValidUser = await thisUser.load(req.body);
 
@@ -488,8 +492,9 @@ router.route('/add').post(async (req, res) => {
                 role: trackingResponse.user.UserRoleValue
             };
 
-            // force the username to be lowercase
-            newUserProperties.username = newUserProperties.username.toLowerCase();
+            // force the username and email to be lowercase
+            newUserProperties.username = newUserProperties.username ? newUserProperties.username.toLowerCase() : newUserProperties.username;
+            newUserProperties.email = newUserProperties.email ? newUserProperties.email.toLowerCase() : newUserProperties.email;
 
             const isValidUser = await thisUser.load(newUserProperties);
             // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!

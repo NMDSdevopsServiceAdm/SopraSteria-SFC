@@ -463,7 +463,7 @@ router.route('/')
             role: 'Edit',
             fullname: Userdata.FullName,
             jobTitle: Userdata.JobTitle,
-            email: Userdata.Email,
+            email: Userdata.Email.toLowerCase(),
             phone: Userdata.Phone,
             securityQuestion: Userdata.SecurityQuestion,
             securityQuestionAnswer: Userdata.SecurityQuestionAnswer,
