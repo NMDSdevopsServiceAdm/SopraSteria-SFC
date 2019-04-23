@@ -214,7 +214,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
 
   private onSuccess(data: RegistrationModel): void {
     if (data.success === 1) {
-      this.registrationService.workplaceLocations$.next(data.locationdata || data.postcodedata);
+      this.registrationService.locationAddresses$.next(data.locationdata || data.postcodedata);
       if (data.locationdata) {
         this.router.navigate([ '/registration/select-workplace' ]);
       } else {

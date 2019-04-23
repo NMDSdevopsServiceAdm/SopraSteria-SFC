@@ -9,7 +9,7 @@
           CQC Location ID
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ workplaceLocation.locationId }}
+          {{ locationAddress.locationId }}
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -17,7 +17,7 @@
           Workplace name
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ workplaceLocation.locationName }}
+          {{ locationAddress.locationName }}
         </dd>
       </div>
       <div class="govuk-summary-list__row">
@@ -25,11 +25,11 @@
           Address
         </dt>
         <dd class="govuk-summary-list__value">
-          <div *ngIf="workplaceLocation.addressLine1">{{ workplaceLocation.addressLine1 }}</div>
-          <div *ngIf="workplaceLocation.addressLine2">{{ workplaceLocation.addressLine2 }}</div>
-          <div *ngIf="workplaceLocation.townCity">{{ workplaceLocation.townCity }}</div>
-          <div *ngIf="workplaceLocation.county">{{ workplaceLocation.county }}</div>
-          <div *ngIf="workplaceLocation.postalCode">{{ workplaceLocation.postalCode }}</div>
+          <div *ngIf="locationAddress.addressLine1">{{ locationAddress.addressLine1 }}</div>
+          <div *ngIf="locationAddress.addressLine2">{{ locationAddress.addressLine2 }}</div>
+          <div *ngIf="locationAddress.townCity">{{ locationAddress.townCity }}</div>
+          <div *ngIf="locationAddress.county">{{ locationAddress.county }}</div>
+          <div *ngIf="locationAddress.postalCode">{{ locationAddress.postalCode }}</div>
         </dd>
       </div>
       <div class="govuk-summary-list__row">

@@ -1,4 +1,4 @@
-import { WorkplaceLocation } from '@core/model/workplace-location.model';
+import { LocationAddress } from '@core/model/location-address.model';
 
 export interface RegistrationModel {
   success: number;
@@ -8,6 +8,6 @@ export interface RegistrationModel {
     currentPage: number;
     route: [];
   };
-  locationdata: Array<WorkplaceLocation>;
-  postcodedata: Array<WorkplaceLocation>;
+  locationdata: Array<LocationAddress>;
+  postcodedata: Array<LocationAddress>;
 }

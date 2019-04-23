@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { RegistrationService } from '@core/services/registration.service';
-import { WorkplaceLocation } from '@core/model/workplace-location.model';
+import { LocationAddress } from '@core/model/location-address.model';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { filter } from 'lodash';
@@ -13,7 +13,7 @@ import { filter } from 'lodash';
   templateUrl: './select-workplace.component.html',
 })
 export class SelectWorkplaceComponent implements OnInit, OnDestroy {
-  private workplaceLocations: Array<WorkplaceLocation>;
+  private locationAddresses: Array<LocationAddress>;
   private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
@@ -31,8 +31,8 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
 
     this.subscriptions.add(
-      this.registrationService.workplaceLocations$.subscribe(
-        (workplaceLocations: Array<WorkplaceLocation>) => this.workplaceLocations = workplaceLocations
+      this.registrationService.locationAddresses$.subscribe(
+        (locationAddresses: Array<LocationAddress>) => this.locationAddresses = locationAddresses
       )
     );
   }
@@ -57,9 +57,9 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private getSelectedLocation(): WorkplaceLocation {
+  private getSelectedLocation(): LocationAddress {
     const selectedLocationId: string = this.form.get('workplace').value;
-    return filter(this.workplaceLocations, ['locationId', selectedLocationId])[0];
+    return filter(this.locationAddresses, ['locationId', selectedLocationId])[0];
   }
 
   public onSubmit(): void {
@@ -84,7 +84,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    this.registrationService.selectedWorkplaceLocation$.next(this.getSelectedLocation());
+    this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation());
     this.router.navigate(['/registration/select-main-service']);
   }
 
