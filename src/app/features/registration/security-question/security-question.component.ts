@@ -63,7 +63,7 @@ export class SecurityQuestionComponent implements OnInit, OnDestroy {
             message: 'Please enter your security question.',
           },
           {
-            name: 'maxLength',
+            name: 'maxlength',
             message: `The security question must be no longer than ${this.securityDetailsMaxLength} characters.`,
           },
         ],
@@ -76,7 +76,7 @@ export class SecurityQuestionComponent implements OnInit, OnDestroy {
             message: 'Please enter your security answer.',
           },
           {
-            name: 'maxLength',
+            name: 'maxlength',
             message: `The security answer must be no longer than ${this.securityDetailsMaxLength} characters.`,
           },
         ],

@@ -95,7 +95,7 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
             message: 'Please enter your username.',
           },
           {
-            name: 'maxLength',
+            name: 'maxlength',
             message: 'Your username must be no longer than 50 characters.',
           },
           {

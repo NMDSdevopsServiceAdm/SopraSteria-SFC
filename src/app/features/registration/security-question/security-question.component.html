@@ -20,8 +20,8 @@
           <span *ngIf="getSecurityQuestion.hasError('required')">
             {{ getFormErrorMessage('securityQuestion', 'required') }}
           </span>
-          <span *ngIf="getSecurityQuestion.hasError('maxLength')">
-            {{ getFormErrorMessage('securityQuestion', 'maxLength') }}
+          <span *ngIf="getSecurityQuestion.hasError('maxlength')">
+            {{ getFormErrorMessage('securityQuestion', 'maxlength') }}
           </span>
         </span>
         <input
@@ -43,8 +43,8 @@
           <span *ngIf="getSecurityAnswer.hasError('required')">
             {{ getFormErrorMessage('securityAnswer', 'required') }}
           </span>
-          <span *ngIf="getSecurityAnswer.hasError('maxLength')">
-            {{ getFormErrorMessage('securityAnswer', 'maxLength') }}
+          <span *ngIf="getSecurityAnswer.hasError('maxlength')">
+            {{ getFormErrorMessage('securityAnswer', 'maxlength') }}
           </span>
         </span>
         <input
