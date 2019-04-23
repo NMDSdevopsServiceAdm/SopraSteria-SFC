@@ -11,6 +11,8 @@ export class WorkplaceSummaryComponent {
   public capacityMessages = [];
   public pluralMap = [];
   private _workplace: any;
+  @Input() reportDetails: any;
+  @Input() displayWDFReport: boolean;
 
   @Input()
   set workplace(workplace: any) {
@@ -34,6 +36,7 @@ export class WorkplaceSummaryComponent {
 
   get workplace(): any {
     return this._workplace;
+    debugger;
   }
 
   constructor(private i18nPluralPipe: I18nPluralPipe) {

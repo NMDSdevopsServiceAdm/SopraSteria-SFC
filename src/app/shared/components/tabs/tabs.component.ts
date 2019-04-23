@@ -1,5 +1,5 @@
+import { AfterContentInit, Component, ContentChildren, QueryList, Input } from '@angular/core';
 import { Location } from '@angular/common';
-import { AfterContentInit, Component, ContentChildren, QueryList } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { TabComponent } from './tab.component';
@@ -11,6 +11,7 @@ import { TabComponent } from './tab.component';
 })
 export class TabsComponent implements AfterContentInit {
   @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
+  @Input() displayWDFReport: boolean;
 
   constructor(private location: Location, private route: ActivatedRoute) {}
 

@@ -43,6 +43,7 @@
           <th class="govuk-table__header" scope="col">Job role</th>
           <th class="govuk-table__header" scope="col">Last updated</th>
           <th *ngIf="totalStaff === workers?.length" class="govuk-table__header" scope="col">Status</th>
+          <th *ngIf="workers" class="govuk-table__header" scope="col">WDF</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -54,6 +55,10 @@
           <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
           <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
           <td *ngIf="totalStaff === workers?.length" class="govuk-table__cell"><a *ngIf="!worker.completed" [routerLink]="['/worker', worker.uid, worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date']" class="icon-link icon-flag">Provide more information</a></td>
+          <td *ngIf="worker" class="govuk-table__cell">
+            <p class="main-body-text col-12 m-0 p-0" *ngIf="worker.wdfEligible"><img src="/assets/img/tick-icon.svg" /> Meeting criteria</p>
+            <p class="main-body-text col-12 m-0 p-0" *ngIf="!worker.wdfEligible"><img src="/assets/img/cross-icon.svg" /> Not meeting criteria</p>
+          </td>
         </tr>
       </tbody>
     </table>

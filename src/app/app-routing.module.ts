@@ -25,12 +25,13 @@ import {
 } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
-import { ChangePasswordComponent } from './features/change-password/change-password.component';
-import { ChangeUserDetailsComponent } from './features/change-user-details/change-user-details.component';
-import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
-import { ChangeUserSummaryComponent } from './features/change-user-summary/change-user-summary.component';
-import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
-import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
+import { ChangePasswordComponent } from '@features/change-password/change-password.component';
+import { ChangeUserDetailsComponent } from '@features/change-user-details/change-user-details.component';
+import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
+import { ChangeUserSummaryComponent } from '@features/change-user-summary/change-user-summary.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
+import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
+import { ReportsComponent } from '@features/reports/reports.component';
 
 const routes: Routes = [
   {
@@ -149,6 +150,11 @@ const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'reports',
+    component: ReportsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'worker',
     loadChildren: '@features/workers/workers.module#WorkersModule',
     canActivate: [AuthGuard],
@@ -163,6 +169,7 @@ const routes: Routes = [
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
+
   {
     path: '**',
     component: PageNotFoundComponent,

@@ -1,0 +1,55 @@
+<div class="sub-page-container col-12">
+
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="fs-16"><strong>User dashboard</strong></h3>
+    </div>
+
+    <div class="col-md-6 fs-16">
+      <div class="float-right">
+        <p><strong>Contact Skills for Care</strong></p>
+        <p>0113 241 0969</p>
+        <p><a href="mailto:ascwds@skillsforcare.org.uk">ascwds@skillsforcare.org.uk</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 col-md-12">
+      <p class="heading-caption m-0 pb-4">{{ establishment?.name }}</p>
+    </div>
+    <div class="col-12 col-md-12">
+      <h1 class="h1">Reports</h1>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="!displayWDFReport">
+    <div class="col-12 col-md-12">
+      <span class="text-link" (click)="displayWDF()" title="Workforce Development Fund">Workforce Development Fund</span>
+    </div>
+  </div>
+
+  <app-eligibility-display-overview
+  [eligibility]="eligibility"
+  *ngIf="displayWDFReport">
+  </app-eligibility-display-overview>
+
+  <div class="govuk-warning-text" *ngIf="displayWDFReport">
+    <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+    <strong class="govuk-warning-text__text">
+      <span class="govuk-warning-text__assistive">Warning</span>
+      You can be fined up to £5,000 if you do not register.
+    </strong>
+  </div>
+
+  <app-tabs *ngIf="displayWDFReport" [displayWDFReport]="displayWDFReport">
+    <app-tab title="Workplace">
+      <app-workplace-tab></app-workplace-tab>
+    </app-tab>
+
+    <app-tab title="Staff records">
+      <app-staff-records-tab></app-staff-records-tab>
+    </app-tab>
+  </app-tabs>
+
+</div>

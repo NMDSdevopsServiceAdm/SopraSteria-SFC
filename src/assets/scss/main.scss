@@ -170,3 +170,15 @@ p {
     }
   }
 }
+
+.tick-icon {
+  &:before {
+    background-image: url('/assets/img/tick-icon.svg');
+  }
+}
+
+.cross-icon {
+  &:before {
+    background-image: url('/assets/img/cross-icon.svg');
+  }
+}
