@@ -1,200 +1,122 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-
-import { Router, ActivatedRoute } from '@angular/router';
-import { debounceTime } from 'rxjs/operators';
-
-import { RegistrationService } from '../../../core/services/registration.service';
-import { RegistrationModel } from '../../../core/model/registration.model';
+import { BackService } from '@core/services/back.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RegistrationService } from '@core/services/registration.service';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-security-question',
   templateUrl: './security-question.component.html',
-  styleUrls: ['./security-question.component.scss']
 })
-export class SecurityQuestionComponent implements OnInit {
-  securityQuestionAnswerForm: FormGroup;
-  registration: RegistrationModel;
-
-  // Set up Validation messages
-  securityQuestionMessage: string;
-  securityAnswerMessage: string;
-
-  currentSection: number;
-  lastSection: number;
-  backLink: string;
-  secondItem: number;
-
-  isSubmitted = false;
-  submittedSecurityQ = false;
-  submittedSecurityA = false;
-
-  private securityQuestionMessages = {
-    maxlength: 'The security question must be no longer than 255 characters.',
-    required: 'Please enter your Security question.'
-  };
-
-  private securityAnswerMessages = {
-    maxlength: 'The security answer must be no longer than 255 characters.',
-    required: 'Please enter your Security answer.'
-  };
+export class SecurityQuestionComponent implements OnInit, OnDestroy {
+  private form: FormGroup;
+  private formErrorsMap: Array<ErrorDetails>;
+  private submitted = false;
+  private subscriptions: Subscription = new Subscription();
+  private securityDetailsMaxLength = 255;
 
   constructor(
-    private _registrationService: RegistrationService,
-    private router: Router, private route: ActivatedRoute,
-    private fb: FormBuilder
-  ) { }
+    private backService: BackService,
+    private errorSummaryService: ErrorSummaryService,
+    private fb: FormBuilder,
+    private registrationService: RegistrationService,
+    private router: Router
+  ) {}
 
-  // Get user security question
-  get getSecurityQuestionInput() {
-    return this.securityQuestionAnswerForm.get('securityQuestionInput');
+  // Get username
+  get getSecurityQuestion() {
+    return this.form.get('securityQuestion');
   }
 
-  // Get user security answer
-  get getSecurityAnswerInput() {
-    return this.securityQuestionAnswerForm.get('securityAnswerInput');
+  // Get username
+  get getSecurityAnswer() {
+    return this.form.get('securityAnswer');
   }
 
   ngOnInit() {
-    this.securityQuestionAnswerForm = this.fb.group({
-      securityQuestionInput: ['', [Validators.required, Validators.maxLength(255)]],
-      securityAnswerInput: ['', [Validators.required, Validators.maxLength(255)]]
+    this.setupForm();
+    this.setupFormErrorsMap();
+    this.setBackLink();
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['/registration/create-username'] });
+  }
+
+  private setupForm(): void {
+    this.form = this.fb.group({
+      securityQuestion: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
+      securityAnswer: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]]
     });
-    this._registrationService.registration$.subscribe(registration => this.registration = registration);
-
-    // security question watcher
-    this.getSecurityQuestionInput.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => this.setSecurityQuestionMessage(this.getSecurityQuestionInput)
-    );
-
-    // security answer watcher
-    this.getSecurityAnswerInput.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => this.setSecurityAnswerMessage(this.getSecurityAnswerInput)
-    );
-
-    this.changeDetails();
-
-    // Set section numbering on load
-    this.setSectionNumbers();
   }
 
-  setSectionNumbers() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
-    this.secondItem = 1;
-
-    this.currentSection = this.currentSection + 1;
-
-    if (this.backLink === '/registration/create-username') {
-      if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace') {
-        this.lastSection = 8;
-      }
-      else if (this.registration.userRoute.route[this.secondItem] === '/registration/select-workplace-address') {
-        this.lastSection = 9;
-      }
-      else {
-        this.lastSection = 7;
-      }
-    }
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'securityQuestion',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your security question.',
+          },
+          {
+            name: 'maxLength',
+            message: `The security question must be no longer than ${this.securityDetailsMaxLength} characters.`,
+          },
+        ],
+      },
+      {
+        item: 'securityAnswer',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your security answer.',
+          },
+          {
+            name: 'maxLength',
+            message: `The security answer must be no longer than ${this.securityDetailsMaxLength} characters.`,
+          },
+        ],
+      },
+    ];
   }
 
-  setSecurityQuestionMessage(c: AbstractControl): void {
-    this.securityQuestionMessage = '';
+  public onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if ((c.touched || c.dirty) && c.errors) {
-      this.securityQuestionMessage = Object.keys(c.errors).map(
-        key => this.securityQuestionMessage += this.securityQuestionMessages[key]).join('<br />');
-    }
-
-    //this.submittedSecurityQ = false;
-  }
-
-  setSecurityAnswerMessage(c: AbstractControl): void {
-    this.securityAnswerMessage = '';
-
-    if ((c.touched || c.dirty) && c.errors) {
-      this.securityAnswerMessage = Object.keys(c.errors).map(
-        key => this.securityAnswerMessage += this.securityAnswerMessages[key]).join('<br />');
-    }
-
-    //this.submittedSecurityA = false;
-  }
-
-  changeDetails(): void {
-
-    // TODO refactor due to model change
-    // if (this.registration.hasOwnProperty('detailsChanged') && this.registration.detailsChanged === true) {
-    //   const createSecurityQuestionValue = this.registration.locationdata[0].user.securityQuestion;
-    //   const createsecurityAnswerValue = this.registration.locationdata[0].user.securityAnswer;
-    //
-    //   this.securityQuestionAnswerForm.setValue({
-    //     securityQuestionInput: createSecurityQuestionValue,
-    //     securityAnswerInput: createsecurityAnswerValue,
-    //   });
-    // }
-  }
-
-  onSubmit() {
-
-    this.isSubmitted = true;
-    this.submittedSecurityQ = true;
-    this.submittedSecurityA = true;
-
-
-
-    // stop here if form is invalid
-    if (this.securityQuestionAnswerForm.invalid) {
-
-      // this.isSubmitted = false;
-      // this.submittedSecurityQ = false;
-      // this.submittedSecurityA = false;
-      return;
-    }
-    else {
-
+    if (this.form.valid) {
       this.save();
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  save() {
-    const securityQuestionValue = this.securityQuestionAnswerForm.get('securityQuestionInput').value;
-    const securityAnswerValue = this.securityQuestionAnswerForm.get('securityAnswerInput').value;
-
-    // TODO refactor due to model change
-    // this.registration.locationdata[0].user['securityQuestion'] = securityQuestionValue;
-    // this.registration.locationdata[0].user['securityAnswer'] = securityAnswerValue;
-
-    this.updateSectionNumbers(this.registration);
-
-    this._registrationService.updateState(this.registration);
-
+  private save(): void {
+    this.registrationService.securityDetails$.next({
+      securityQuestion: this.getSecurityQuestion.value,
+      securityAnswer: this.getSecurityAnswer.value,
+    });
     this.router.navigate(['/registration/confirm-account-details']);
   }
 
-  updateSectionNumbers(data) {
-    data['userRoute'] = this.registration.userRoute;
-    data.userRoute['currentPage'] = this.currentSection;
-    data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/registration/security-question');
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  clickBack() {
-    const routeArray = this.registration.userRoute.route;
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.currentSection = this.currentSection - 1;
-    this.registration.userRoute.route.splice(-1);
-
-    //this.updateSectionNumbers(this.registration);
-    //this.registration.userRoute = this.registration.userRoute;
-    this.registration.userRoute.currentPage = this.currentSection;
-    //this.registration.userRoute['route'] = this.registration.userRoute['route'];
-    this._registrationService.updateState(this.registration);
-
-    this.router.navigate([this.backLink]);
+  /**
+   * Unsubscribe hook to ensure no memory leaks
+   */
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
-
 }
