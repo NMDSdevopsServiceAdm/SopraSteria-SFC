@@ -1,10 +1,10 @@
-<div class="details row mt-5 mb-5 record" [class.open]="open">
-  <div class="col-12">
-    <summary role="button" class="fs-19" (click)="open = !open" [attr.aria-expanded]="open">
-      <span>{{ title }}</span>
-    </summary>
-    <div class="panel panel-border-narrow mt-4" [attr.aria-hidden]="!open">
-      <ng-content></ng-content>
-    </div>
+<details class="govuk-details">
+  <summary class="govuk-details__summary">
+    <span class="govuk-details__summary-text">
+      {{ title }}
+    </span>
+  </summary>
+  <div class="govuk-details__text">
+    <ng-content></ng-content>
   </div>
-</div>
+</details>
