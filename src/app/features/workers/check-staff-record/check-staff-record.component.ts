@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -21,28 +21,21 @@ export class CheckStaffRecordComponent implements OnInit {
     });
   }
 
-  async saveAndComplete() {
-    try {
-      await this.setWorkerCompleted();
+  saveAndComplete() {
+    const props = {
+      completed: true,
+    };
 
-      this.router.navigate(['/worker/save-success']);
-    } catch (err) {
-      // keep typescript transpiler silent
-    }
-  }
-
-  setWorkerCompleted(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const props = {
-        completed: true,
-      };
-
-      this.subscriptions.add(
-        this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+    this.subscriptions.add(
+      this.workerService.updateWorker(this.worker.uid, props).subscribe(
+        data => {
           this.workerService.setState({ ...this.worker, ...data });
-          resolve();
-        }, reject)
-      );
-    });
+          this.router.navigate(['/worker/save-success']);
+        },
+        err => {
+          console.log(err);
+        }
+      )
+    );
   }
 }
