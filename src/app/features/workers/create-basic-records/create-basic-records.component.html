@@ -4,40 +4,11 @@
   </div>
 
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
-    <h1 class="h1">Create your staff records</h1>
+    <h1 class="h1">Create basic records</h1>
 
-    <div class="form-group">
-      <div class="field-group mb-5">
-        <label>
-          Total number of staff
-          <div *ngIf="form.controls.totalStaff.errors?.min || form.controls.totalStaff.errors?.max" class="alert alert-danger">
-            <p class="pt-4">Total number of staff must be between 0 and 999.</p>
-          </div>
-          <div *ngIf="form.controls.totalStaff.errors?.required" class="alert alert-danger">
-            <p class="pt-4">Total number of staff is required.</p>
-          </div>
-          <ng-container *ngIf="tempTotalStaff !== null">
-            <p *ngIf="tempTotalStaff === 0" class="mt-4">This is the total number of staff at your workplace.</p>
-            <p *ngIf="tempTotalStaff > 0" class="mt-4">This includes all the staff you have already told us you have.</p>
-          </ng-container>
-          <span class="example">This includes permanent, temporary, pool/bank or agency staff</span>
-          <input
-            type="number"
-            formControlName="totalStaff"
-            min="1"
-            max="999"
-            step="1"
-            class="form-control"
-            [ngClass]="{
-              'is-invalid':
-                (form.get('totalStaff').touched || form.get('totalStaff').dirty) && !form.get('totalStaff').valid
-            }"
-          />
-        </label>
-      </div>
-    </div>
+    <app-total-staff-panel class="mb-5" [totalStaff]="totalStaff" [totalWorkers]="calculatedTotalStaff"></app-total-staff-panel>
 
-    <h3 class="h2 pb-2">Information about your staff</h3>
+    <h3 class="h2 pb-2 pt-5">Information about your staff</h3>
     <div *ngIf="form.controls.staffRecords.errors?.required && submitted" class="alert alert-danger">
         <p class="pt-4">At least 1 Staff record is required.</p>
       </div>
