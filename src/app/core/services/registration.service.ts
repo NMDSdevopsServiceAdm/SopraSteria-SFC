@@ -1,11 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LocationAddress } from '@core/model/location-address.model';
-import { RegistrationModel } from '@core/model/registration.model';
+import { RegistrationModel, RegistrationPayload } from '@core/model/registration.model';
 import { WorkplaceService } from '@core/model/workplace-service.model';
-import { LoginApiModel } from '@core/model/loginApi.model';
+import { LoginCredentials } from '@core/model/login-credentials.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 
 @Injectable({
@@ -16,19 +15,13 @@ export class RegistrationService {
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<WorkplaceService> = new BehaviorSubject(null);
-  public createCredentials$: BehaviorSubject<LoginApiModel> = new BehaviorSubject(null);
+  public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient) {}
 
-  postRegistration(id: any) {
-    this.http.post<RegistrationModel>('/api/registration/', id.locationdata).subscribe(
-      data => console.log(data),
-      error => console.log(error),
-      () => {
-        this.router.navigate(['/registration/complete']);
-      }
-    );
+  public postRegistration(registrationPayload: RegistrationPayload): Observable<RegistrationModel> {
+    return this.http.post<RegistrationModel>('/api/registration/', registrationPayload);
   }
 
   getLocationByPostCode(id: string) {

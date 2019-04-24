@@ -65,14 +65,13 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.setupUserDetails();
     this.init();
   }
 
   protected init() {}
 
-  protected setupUserDetails(): void {
-    this.userDetails = {
+  protected setUserDetails(): UserDetails {
+    return this.userDetails = {
       email: this.getEmail.value,
       fullname: this.getFullName.value,
       jobTitle: this.getJobTitle.value,
@@ -172,7 +171,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
   }
 
   protected onFormValidSubmit(): void {
-    this.userService.updateState(this.userDetails);
+    this.userService.updateState(this.setUserDetails());
     this.router.navigate(['/registration/create-username']);
   }
 
