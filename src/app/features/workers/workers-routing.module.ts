@@ -54,8 +54,12 @@ const routes: Routes = [
     component: TotalStaffComponent,
   },
   {
-    path: 'create-staff-record',
+    path: 'create-basic-records',
     component: CreateStaffRecordComponent,
+  },
+  {
+    path: 'create-staff-record',
+    component: StaffDetailsComponent,
   },
   {
     path: 'save-success',

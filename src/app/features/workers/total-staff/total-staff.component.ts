@@ -42,7 +42,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.establishmentService.postStaff(totalStaff.value).subscribe(
           () => {
-            this.router.navigate(['/worker', 'create-staff-record']);
+            this.router.navigate(['/worker', 'create-basic-records']);
           },
           error => {
             this.messageService.show('error', 'Server Error');

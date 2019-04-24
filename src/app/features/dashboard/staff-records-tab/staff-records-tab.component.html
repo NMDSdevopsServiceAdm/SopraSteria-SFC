@@ -1,20 +1,31 @@
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-4">
     <h3 class="fs-24 mb-4 text-weight-bold">Staff records ({{ workers?.length }})</h3>
   </div>
-  <div class="col-md-4">
-    <a routerLink="/worker/start-screen" role="button" class="btn btn-primary">
-      Add staff records
+  <div class="col-md-8 text-align-right">
+    <a
+      routerLink="/worker/start-screen"
+      role="button"
+      class="govuk-button govuk-button--secondary mr-5"
+      style="border-width: 0 2px; padding: 0 10px;"
+    >
+      Add a basic record
+    </a>
+    <a routerLink="/worker/create-staff-record" role="button" class="btn btn-primary">
+      Add a full record
     </a>
   </div>
 </div>
 <div class="row">
   <div *ngIf="createStaffResponse" class="col-12">
     <app-status title="&#10003; Success.">
-      {{ createStaffResponse | i18nPlural: {
-          '=1': '# staff record has been saved.',
-          'other': '# staff records have been saved.'
-        }
+      {{
+        createStaffResponse
+          | i18nPlural
+            : {
+                '=1': '# staff record has been saved.',
+                other: '# staff records have been saved.'
+              }
       }}
     </app-status>
   </div>
@@ -53,7 +64,18 @@
           </td>
           <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
           <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
-          <td *ngIf="totalStaff === workers?.length" class="govuk-table__cell"><a *ngIf="!worker.completed" [routerLink]="['/worker', worker.uid, worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date']" class="icon-link icon-flag">Provide more information</a></td>
+          <td *ngIf="totalStaff === workers?.length" class="govuk-table__cell">
+            <a
+              *ngIf="!worker.completed"
+              [routerLink]="[
+                '/worker',
+                worker.uid,
+                worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
+              ]"
+              class="icon-link icon-flag"
+              >Provide more information</a
+            >
+          </td>
         </tr>
       </tbody>
     </table>
