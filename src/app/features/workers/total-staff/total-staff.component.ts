@@ -24,6 +24,12 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       totalStaff: [null, [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(0), Validators.max(999)]],
     });
+
+    this.subscriptions.add(
+      this.establishmentService.getStaff().subscribe(staff => {
+        this.form.patchValue({ totalStaff: staff });
+      })
+    );
   }
 
   ngOnDestroy() {
@@ -34,8 +40,6 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   onSubmit() {
     const { totalStaff } = this.form.controls;
 
-    console.log(totalStaff.value);
-    console.log(this.form.valid);
     this.messageService.clearError();
 
     if (this.form.valid) {
