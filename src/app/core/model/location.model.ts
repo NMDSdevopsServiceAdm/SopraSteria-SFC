@@ -11,8 +11,8 @@ export interface LocationAddress {
 }
 
 export interface LocationSearchResponse {
-  success: number;
-  message: string;
   locationdata?: Array<LocationAddress>;
+  message: string;
   postcodedata?: Array<LocationAddress>;
+  success: number;
 }

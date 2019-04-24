@@ -4,8 +4,8 @@ import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/fo
 import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 
-import { RegistrationService } from '../../../core/services/registration.service';
-import { LocationSearchResponse } from '@core/model/locationSearchResponse';
+import { RegistrationService } from '@core/services/registration.service';
+import { LocationSearchResponse } from '@core/model/location.model';
 
 @Component({
   selector: 'app-enter-workplace-address',
