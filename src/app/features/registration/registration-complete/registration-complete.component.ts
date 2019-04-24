@@ -1,30 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-
-import { RegistrationService } from '../../../core/services/registration.service';
-import { RegistrationModel } from '../../../core/model/registration.model';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-registration-complete',
-  templateUrl: './registration-complete.component.html',
-  styleUrls: ['./registration-complete.component.scss']
+  templateUrl: './registration-complete.component.html'
 })
-export class RegistrationCompleteComponent implements OnInit {
-  registration: RegistrationModel;
-  isRegulated: boolean;
-
-  constructor(private _registrationService: RegistrationService) { }
-
-  ngOnInit() {
-    this._registrationService.registration$.subscribe(registration => this.registration = registration);
-
-    console.log(this.registration);
-
-    if (this.registration.locationdata[0].isRegulated) {
-      this.isRegulated = true;
-    }
-    else {
-      this.isRegulated = false;
-    }
-  }
-
-}
+export class RegistrationCompleteComponent {}
