@@ -11,7 +11,7 @@ import { SecurityDetails } from '@core/model/security-details.model';
   providedIn: 'root',
 })
 export class RegistrationService {
-  public registration$: BehaviorSubject<LocationSearchResponse> = new BehaviorSubject(null);
+  public registrationInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<WorkplaceService> = new BehaviorSubject(null);
@@ -48,8 +48,8 @@ export class RegistrationService {
     return this.http.get(`/api/registration/username/${id}`);
   }
 
-  public updateState(data): void {
-    this.registration$.next(data);
+  public updateState(inProgress: boolean): void {
+    this.registrationInProgress$.next(inProgress);
   }
 
   public isRegulated(location: LocationAddress): boolean {

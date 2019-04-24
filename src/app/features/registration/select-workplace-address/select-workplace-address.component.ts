@@ -12,7 +12,6 @@ import { LocationSearchResponse } from '@core/model/location.model';
 })
 export class SelectWorkplaceAddressComponent implements OnInit {
   selectWorkplaceAddressForm: FormGroup;
-  registration: LocationSearchResponse;
   selectedAddress: string;
   editPostcode: boolean;
   postcodeValue: string;
@@ -43,14 +42,13 @@ export class SelectWorkplaceAddressComponent implements OnInit {
       this.selectWorkplaceAddressChanged(value);
     });
 
-    this._registrationService.registration$.subscribe(registration => (this.registration = registration));
     this.editPostcode = false;
 
     // Check if postcode already exists on load
-    this.checkExistingPostcode(this.registration);
+    // this.checkExistingPostcode(this.registration);
 
     // set not registered
-    this.setRegulatedCheckFalse(this.registration);
+    // this.setRegulatedCheckFalse(this.registration);
   }
 
   setRegulatedCheckFalse(data) {
