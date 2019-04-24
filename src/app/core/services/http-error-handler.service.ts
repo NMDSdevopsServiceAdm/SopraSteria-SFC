@@ -3,7 +3,7 @@ import { Injectable, isDevMode } from '@angular/core';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
 
-import { AuthService } from './auth-service';
+import { AuthService } from './auth.service';
 import { MessageService } from './message.service';
 
 @Injectable({

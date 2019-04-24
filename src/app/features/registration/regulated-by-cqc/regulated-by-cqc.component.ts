@@ -15,7 +15,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class RegulatedByCqcComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  private registration: LocationSearchResponse;
   public submitted = false;
 
   public formErrorsMap: Array<ErrorDetails>;
@@ -56,10 +55,6 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-
-    this.subscriptions.add(
-      this.registrationService.registration$.subscribe((registration: LocationSearchResponse) => this.registration = registration)
-    );
   }
 
   private setupForm(): void {

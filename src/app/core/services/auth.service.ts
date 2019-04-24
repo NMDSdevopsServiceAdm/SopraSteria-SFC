@@ -7,13 +7,6 @@ import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 import { LoginCredentials } from '../model/login-credentials.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 
-// TODO do we still need it?
-const initialRegistration: LoginCredentials = {
-  // Example initial dummy data
-  username: 'Uname3',
-  password: 'Bob',
-};
-
 interface LoggedInMainService {
   id: number;
   name: string;
@@ -32,13 +25,12 @@ interface LoggedInSession {
   mainService: LoggedInMainService;
 }
 
-// TODO this file should be renamed to auth.service
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   // Observable login source
-  private _auth$: BehaviorSubject<LoginCredentials> = new BehaviorSubject<LoginCredentials>(initialRegistration);
+  private _auth$: BehaviorSubject<LoginCredentials> = new BehaviorSubject<LoginCredentials>(null);
 
   // hold the response from login
   private _session: LoggedInSession = null;
