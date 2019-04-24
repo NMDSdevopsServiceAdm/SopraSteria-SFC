@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RegistrationModel } from '@core/model/registration.model';
+import { LocationSearchResponse } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
@@ -15,7 +15,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class RegulatedByCqcComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  private registration: RegistrationModel;
+  private registration: LocationSearchResponse;
   public submitted = false;
 
   public formErrorsMap: Array<ErrorDetails>;
@@ -58,7 +58,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     this.setupServerErrorsMap();
 
     this.subscriptions.add(
-      this.registrationService.registration$.subscribe((registration: RegistrationModel) => this.registration = registration)
+      this.registrationService.registration$.subscribe((registration: LocationSearchResponse) => this.registration = registration)
     );
   }
 
@@ -191,28 +191,28 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     if (this.regulatedPostcode.value.length) {
       this.subscriptions.add(
         this.registrationService.getLocationByPostCode(this.regulatedPostcode.value).subscribe(
-          (data: RegistrationModel) => this.onSuccess(data),
+          (data: LocationSearchResponse) => this.onSuccess(data),
           (error: HttpErrorResponse) => this.onError(error)
         )
       );
     } else if (this.locationId.value.length) {
       this.subscriptions.add(
         this.registrationService.getLocationByLocationId(this.locationId.value).subscribe(
-          (data: RegistrationModel) => this.onSuccess(data),
+          (data: LocationSearchResponse) => this.onSuccess(data),
           (error: HttpErrorResponse) => this.onError(error)
         )
       );
     } else if (this.nonRegulatedPostcode.value.length) {
       this.subscriptions.add(
         this.registrationService.getAddressByPostCode(this.nonRegulatedPostcode.value).subscribe(
-          (data: RegistrationModel) => this.onSuccess(data),
+          (data: LocationSearchResponse) => this.onSuccess(data),
           (error: HttpErrorResponse) => this.onError(error)
         )
       );
     }
   }
 
-  private onSuccess(data: RegistrationModel): void {
+  private onSuccess(data: LocationSearchResponse): void {
     if (data.success === 1) {
       this.registrationService.locationAddresses$.next(data.locationdata || data.postcodedata);
       if (data.locationdata) {

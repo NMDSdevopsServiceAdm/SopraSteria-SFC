@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { LocationAddress } from '@core/model/location-address.model';
-import { RegistrationModel, RegistrationPayload } from '@core/model/registration.model';
+import { LocationAddress, LocationSearchResponse } from '@core/model/location.model';
+import { RegistrationPayload } from '@core/model/registration.model';
 import { WorkplaceService } from '@core/model/workplace-service.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { SecurityDetails } from '@core/model/security-details.model';
@@ -11,7 +11,7 @@ import { SecurityDetails } from '@core/model/security-details.model';
   providedIn: 'root',
 })
 export class RegistrationService {
-  public registration$: BehaviorSubject<RegistrationModel> = new BehaviorSubject(null);
+  public registration$: BehaviorSubject<LocationSearchResponse> = new BehaviorSubject(null);
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<WorkplaceService> = new BehaviorSubject(null);
@@ -20,24 +20,24 @@ export class RegistrationService {
 
   constructor(private http: HttpClient) {}
 
-  public postRegistration(registrationPayload: RegistrationPayload): Observable<RegistrationModel> {
-    return this.http.post<RegistrationModel>('/api/registration/', registrationPayload);
+  public postRegistration(registrationPayload: RegistrationPayload): Observable<any> {
+    return this.http.post<any>('/api/registration/', registrationPayload);
   }
 
   getLocationByPostCode(id: string) {
-    return this.http.get<RegistrationModel>(`/api/locations/pc/${id}`);
+    return this.http.get<LocationSearchResponse>(`/api/locations/pc/${id}`);
   }
 
   getLocationByLocationId(id: string) {
-    return this.http.get<RegistrationModel>(`/api/locations/lid/${id}`);
+    return this.http.get<LocationSearchResponse>(`/api/locations/lid/${id}`);
   }
 
-  public getAddressByPostCode(postcode: string): Observable<RegistrationModel> {
-    return this.http.get<RegistrationModel>(`/api/postcodes/${postcode}`);
+  public getAddressByPostCode(postcode: string): Observable<LocationSearchResponse> {
+    return this.http.get<LocationSearchResponse>(`/api/postcodes/${postcode}`);
   }
 
   getUpdatedAddressByPostCode(postcode: string) {
-    return this.http.get<RegistrationModel>(`/api/postcodes/${postcode}`);
+    return this.http.get<LocationSearchResponse>(`/api/postcodes/${postcode}`);
   }
 
   public getServicesByCategory(isRegulated: boolean) {

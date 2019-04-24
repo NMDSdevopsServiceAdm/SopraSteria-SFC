@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { RegistrationService } from '../../services/registration.service';
-import { LocationAddress } from '@core/model/location-address.model';
+import { LocationAddress } from '@core/model/location.model';
 
 @Injectable({
   providedIn: 'root'

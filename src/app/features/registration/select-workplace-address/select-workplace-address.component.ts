@@ -3,8 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
-import { RegistrationService } from '../../../core/services/registration.service';
-import { RegistrationModel } from '../../../core/model/registration.model';
+import { RegistrationService } from '@core/services/registration.service';
+import { LocationSearchResponse } from '@core/model/location.model';
 
 @Component({
   selector: 'app-select-workplace-address',
@@ -12,7 +12,7 @@ import { RegistrationModel } from '../../../core/model/registration.model';
 })
 export class SelectWorkplaceAddressComponent implements OnInit {
   selectWorkplaceAddressForm: FormGroup;
-  registration: RegistrationModel;
+  registration: LocationSearchResponse;
   selectedAddress: string;
   editPostcode: boolean;
   postcodeValue: string;
@@ -130,7 +130,7 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     }
 
     this._registrationService.getUpdatedAddressByPostCode(this.postcodeValue).subscribe(
-      (data: RegistrationModel) => {
+      (data: LocationSearchResponse) => {
         this.setRegulatedCheckFalse(data);
         this._registrationService.updateState(data);
       },

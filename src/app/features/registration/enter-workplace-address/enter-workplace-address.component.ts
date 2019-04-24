@@ -5,7 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 
 import { RegistrationService } from '../../../core/services/registration.service';
-import { RegistrationModel } from '../../../core/model/registration.model';
+import { LocationSearchResponse } from '@core/model/locationSearchResponse';
 
 @Component({
   selector: 'app-enter-workplace-address',
@@ -14,7 +14,7 @@ import { RegistrationModel } from '../../../core/model/registration.model';
 })
 export class EnterWorkplaceAddressComponent implements OnInit {
   enterWorkplaceAddressForm: FormGroup;
-  registration: RegistrationModel;
+  registration: LocationSearchResponse;
 
   currentSection: number;
   lastSection: number;

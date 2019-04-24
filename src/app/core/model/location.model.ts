@@ -9,3 +9,10 @@ export interface LocationAddress {
   postalCode: string;
   townCity: string;
 }
+
+export interface LocationSearchResponse {
+  success: number;
+  message: string;
+  locationdata?: Array<LocationAddress>;
+  postcodedata?: Array<LocationAddress>;
+}
