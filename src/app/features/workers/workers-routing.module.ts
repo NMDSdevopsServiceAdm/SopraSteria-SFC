@@ -38,6 +38,7 @@ import {
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
+import { TotalStaffComponent } from './total-staff/total-staff.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkerResolver } from './worker.resolver';
@@ -47,6 +48,10 @@ const routes: Routes = [
   {
     path: 'start-screen',
     component: CreateStaffRecordStartScreenComponent,
+  },
+  {
+    path: 'total-staff',
+    component: TotalStaffComponent,
   },
   {
     path: 'create-staff-record',
