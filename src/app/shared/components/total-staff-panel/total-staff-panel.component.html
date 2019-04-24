@@ -1,0 +1,26 @@
+<div class="row" *ngIf="total">
+  <div class="col-lg-4">
+    <span class="text-weight-bold fs-30 mb-3 mt-4 dib">{{ total.staff }}</span>
+    <p>Total number of staff</p>
+  </div>
+  <ng-container *ngIf="total.staff !== total.workers">
+    <div class="col-lg-4">
+      <span
+        class="text-weight-bold fs-30 mb-3 mt-4 dib"
+        [ngClass]="{ 'icon-link icon-flag': total.staff < total.workers }"
+      >
+        {{ total.workers }}
+      </span>
+      <p>Staff records added</p>
+    </div>
+    <div class="col-lg-4">
+      <span
+        class="text-weight-bold fs-30 mb-3 mt-4 dib"
+        [ngClass]="{ 'icon-link icon-flag': total.staff > total.workers }"
+      >
+        {{ total.staff > total.workers ? total.staff - total.workers : 0 }}
+      </span>
+      <p>Staff records missing</p>
+    </div>
+  </ng-container>
+</div>

@@ -170,3 +170,9 @@ p {
     }
   }
 }
+
+.dib.icon-link {
+  &:before {
+    vertical-align: inherit;
+  }
+}

@@ -29,22 +29,8 @@
       }}
     </app-status>
   </div>
-  <div *ngIf="incomplete" class="col-12">
-    <p><strong>What you need to do next.</strong></p>
-
-    <app-inset-text *ngIf="totalStaff > workers?.length" color="todo">
-      You said you have {{ totalStaff }} members of staff.<br />
-      You need to update your Number of Staff or complete {{ totalStaff - workers.length }} more staff records.
-    </app-inset-text>
-
-    <app-inset-text *ngIf="totalStaff < workers?.length" color="todo">
-      You have created more staff records than you have members of staff ({{ totalStaff }}).<br />
-      You need to update your Number of Staff to {{ workers.length }} or delete some records.
-    </app-inset-text>
-
-    <p *ngIf="totalStaff === workers?.length">Provide more information for {{ incomplete }} staff records.</p>
-  </div>
 </div>
+<app-total-staff-panel></app-total-staff-panel>
 <div class="row">
   <div class="col-12">
     <table class="govuk-table">

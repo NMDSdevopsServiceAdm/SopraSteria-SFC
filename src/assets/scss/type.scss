@@ -112,6 +112,14 @@ strong {
   @extend %fs-36;
 }
 
+%fs-30 {
+  @include rem(font-size, 30px);
+  @include rem(line-height, 30px);
+}
+.fs-30 {
+  @extend %fs-30;
+}
+
 .fs-27 {
 
   @include rem(font-size, 27px);
@@ -142,6 +150,10 @@ strong {
 
   @include rem(font-size, 14px);
   @include rem(line-height, 14px);
+}
+
+.dib {
+  display: inline-block;
 }
 
 .main-page-container {
