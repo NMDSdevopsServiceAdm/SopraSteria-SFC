@@ -12,11 +12,11 @@ import { Subscription } from 'rxjs';
 import { isNull } from 'util';
 
 @Component({
-  selector: 'app-create-staff-record',
-  templateUrl: './create-staff-record.component.html',
-  styleUrls: ['./create-staff-record.component.scss'],
+  selector: 'app-create-basic-records',
+  templateUrl: './create-basic-records.component.html',
+  styleUrls: ['./create-basic-records.component.scss'],
 })
-export class CreateStaffRecordComponent implements OnInit, OnDestroy {
+export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   public contractsAvailable: Array<string> = [];
   public jobsAvailable: Job[] = [];
   public totalWorkers = 0;

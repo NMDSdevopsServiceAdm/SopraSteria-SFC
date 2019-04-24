@@ -11,10 +11,10 @@ import { CareCertificateComponent } from './care-certificate/care-certificate.co
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
+import { CreateBasicRecordsComponent } from './create-basic-records/create-basic-records.component';
 import {
   CreateStaffRecordStartScreenComponent,
 } from './create-staff-record-start-screen/create-staff-record-start-screen.component';
-import { CreateStaffRecordComponent } from './create-staff-record/create-staff-record.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteSuccessComponent } from './delete-success/delete-success.component';
@@ -55,7 +55,7 @@ const routes: Routes = [
   },
   {
     path: 'create-basic-records',
-    component: CreateStaffRecordComponent,
+    component: CreateBasicRecordsComponent,
   },
   {
     path: 'create-staff-record',
