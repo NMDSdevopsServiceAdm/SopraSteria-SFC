@@ -89,17 +89,17 @@ export class SalaryComponent extends QuestionComponent {
           },
           {
             name: 'min',
-            message: `Annual salary must be between £${this.decimalPipe.transform(
+            message: `Annual salary must be between &pound;${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0'
-            )} and £${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
           },
           {
             name: 'max',
-            message: `Annual salary must be between £${this.decimalPipe.transform(
+            message: `Annual salary must be between &pound;${this.decimalPipe.transform(
               this.annually.min,
               '1.0-0'
-            )} and £${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.annually.max, '1.0-0')}.`,
           },
         ],
       },
@@ -112,17 +112,17 @@ export class SalaryComponent extends QuestionComponent {
           },
           {
             name: 'min',
-            message: `Hourly rate must be between £${this.decimalPipe.transform(
+            message: `Hourly rate must be between &pound;${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2'
-            )} and £${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
           },
           {
             name: 'max',
-            message: `Hourly rate must be between £${this.decimalPipe.transform(
+            message: `Hourly rate must be between &pound;${this.decimalPipe.transform(
               this.hourly.min,
               '1.2-2'
-            )} and £${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
+            )} and &pound;${this.decimalPipe.transform(this.hourly.max, '1.2-2')}.`,
           },
         ],
       },
