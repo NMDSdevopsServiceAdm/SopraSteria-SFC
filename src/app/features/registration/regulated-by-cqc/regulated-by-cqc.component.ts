@@ -208,6 +208,8 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
   }
 
   private onSuccess(data: LocationSearchResponse): void {
+    this.registrationService.registrationInProgress$.next(true);
+
     if (data.success === 1) {
       this.registrationService.locationAddresses$.next(data.locationdata || data.postcodedata);
       if (data.locationdata) {

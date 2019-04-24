@@ -48,10 +48,6 @@ export class RegistrationService {
     return this.http.get(`/api/registration/username/${id}`);
   }
 
-  public updateState(inProgress: boolean): void {
-    this.registrationInProgress$.next(inProgress);
-  }
-
   public isRegulated(location: LocationAddress): boolean {
     return location.isRegulated === true || location.locationId ? true : false;
   }
