@@ -40,19 +40,24 @@ export class StaffDetailsComponent implements OnInit, OnDestroy {
     });
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
+      console.log(worker);
+      if (worker) {
+        this.worker = worker;
 
-      if (this.workerService.returnToSummary) {
-        this.backLink = [this.worker.uid, 'summary'];
+        if (this.workerService.returnToSummary) {
+          this.backLink = ['/worker', this.worker.uid, 'summary'];
+        } else {
+          this.backLink = ['/worker', 'start-screen'];
+        }
+
+        this.form.patchValue({
+          nameOrId: this.worker.nameOrId,
+          mainJob: this.worker.mainJob.jobId,
+          contract: this.worker.contract,
+        });
       } else {
-        this.backLink = ['start-screen'];
+        this.backLink = ['/dashboard'];
       }
-
-      this.form.patchValue({
-        nameOrId: this.worker.nameOrId,
-        mainJob: this.worker.mainJob.jobId,
-        contract: this.worker.contract,
-      });
     });
 
     this.contractsAvailable = Object.values(Contracts);
@@ -95,17 +100,27 @@ export class StaffDetailsComponent implements OnInit, OnDestroy {
           },
         };
 
-        // TODO: https://trello.com/c/x3N7dQJP
-        if (this.worker.otherJobs) {
-          (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
-        }
+        if (this.worker) {
+          // TODO: https://trello.com/c/x3N7dQJP
+          if (this.worker.otherJobs) {
+            (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
+          }
 
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
+          this.subscriptions.add(
+            this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
+              this.workerService.setState({ ...this.worker, ...data });
+              resolve();
+            }, reject)
+          );
+        } else {
+          this.subscriptions.add(
+            this.workerService.createWorker(props as Worker).subscribe(data => {
+              this.workerService.setState({ ...this.worker, ...data });
+              this.worker = data as Worker;
+              resolve();
+            }, reject)
+          );
+        }
       } else {
         if (nameOrId.errors && nameOrId.errors.required) {
           this.messageService.show('error', `'Full name or ID number' is required.`);
