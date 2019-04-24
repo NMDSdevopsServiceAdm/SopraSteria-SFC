@@ -46,8 +46,6 @@ export class SelectWorkplaceAddressComponent implements OnInit {
     this._registrationService.registration$.subscribe(registration => (this.registration = registration));
     this.editPostcode = false;
 
-    this.setSectionNumbers();
-
     // Check if postcode already exists on load
     this.checkExistingPostcode(this.registration);
 
@@ -91,8 +89,6 @@ export class SelectWorkplaceAddressComponent implements OnInit {
 
       postcodeObj.locationdata[0]['isRegulated'] = false;
 
-      this.updateSectionNumbers(postcodeObj);
-
       this._registrationService.updateState(postcodeObj);
 
       if (this.registration.locationdata[0].locationName === '') {
@@ -101,21 +97,6 @@ export class SelectWorkplaceAddressComponent implements OnInit {
         this.router.navigate(['/registration/select-main-service']);
       }
     }
-  }
-
-  setSectionNumbers() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
-
-    this.currentSection = this.currentSection + 1;
-    this.lastSection = 8;
-  }
-
-  updateSectionNumbers(data) {
-    data['userRoute'] = this.registration.userRoute || {};
-    data.userRoute['currentPage'] = this.currentSection;
-    data.userRoute['route'] = (this.registration.userRoute && this.registration.userRoute['route']) || [];
-    data.userRoute['route'].push('/registration/select-workplace-address');
   }
 
   postcodeChange() {
