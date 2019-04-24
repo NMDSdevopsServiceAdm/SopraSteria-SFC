@@ -55,12 +55,12 @@ import { StaffRecordSummaryComponent } from './staff-record-summary/staff-record
 import { QualificationsComponent } from './staff-record/qualifications/qualifications.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TrainingComponent } from './staff-record/training/training.component';
+import { TotalStaffComponent } from './total-staff/total-staff.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkerResolver } from './worker.resolver';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { TotalStaffComponent } from './total-staff/total-staff.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule, OverlayModule],
