@@ -1,30 +1,28 @@
-import { Component, OnInit } from '@angular/core';
-
-import { RegistrationService } from '../../../core/services/registration.service';
-import { RegistrationModel } from '../../../core/model/registration.model';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { RegistrationService } from '@core/services/registration.service';
+import { LocationAddress } from '@core/model/location-address.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-registration-complete',
-  templateUrl: './registration-complete.component.html',
-  styleUrls: ['./registration-complete.component.scss']
+  templateUrl: './registration-complete.component.html'
 })
-export class RegistrationCompleteComponent implements OnInit {
-  registration: RegistrationModel;
-  isRegulated: boolean;
+export class RegistrationCompleteComponent implements OnInit, OnDestroy {
+  private isRegulated: boolean;
+  private subscriptions: Subscription = new Subscription();
 
-  constructor(private _registrationService: RegistrationService) { }
+  constructor(private registrationService: RegistrationService) {}
 
   ngOnInit() {
-    this._registrationService.registration$.subscribe(registration => this.registration = registration);
+    this.subscriptions.add(
+      this.registrationService.selectedLocationAddress$.subscribe(
+        (locationAddress: LocationAddress) => this.isRegulated = locationAddress.isRegulated || false
+      )
+    );
+  }
 
-    console.log(this.registration);
-
-    if (this.registration.locationdata[0].isRegulated) {
-      this.isRegulated = true;
-    }
-    else {
-      this.isRegulated = false;
-    }
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
 }
