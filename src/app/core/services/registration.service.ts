@@ -24,27 +24,23 @@ export class RegistrationService {
     return this.http.post<any>('/api/registration/', registrationPayload);
   }
 
-  getLocationByPostCode(id: string) {
+  public getLocationByPostCode(id: string): Observable<LocationSearchResponse> {
     return this.http.get<LocationSearchResponse>(`/api/locations/pc/${id}`);
   }
 
-  getLocationByLocationId(id: string) {
+  public getLocationByLocationId(id: string): Observable<LocationSearchResponse> {
     return this.http.get<LocationSearchResponse>(`/api/locations/lid/${id}`);
   }
 
-  public getAddressByPostCode(postcode: string): Observable<LocationSearchResponse> {
+  public getAddressesByPostCode(postcode: string): Observable<LocationSearchResponse> {
     return this.http.get<LocationSearchResponse>(`/api/postcodes/${postcode}`);
   }
 
-  getUpdatedAddressByPostCode(postcode: string) {
-    return this.http.get<LocationSearchResponse>(`/api/postcodes/${postcode}`);
-  }
-
-  public getServicesByCategory(isRegulated: boolean) {
+  public getServicesByCategory(isRegulated: boolean): Observable<any>  {
     return this.http.get(`/api/services/byCategory?cqc=${isRegulated}`);
   }
 
-  getUsernameDuplicate(id: string) {
+  public getUsernameDuplicate(id: string): Observable<any>  {
     return this.http.get(`/api/registration/username/${id}`);
   }
 

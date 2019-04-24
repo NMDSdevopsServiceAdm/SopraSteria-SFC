@@ -1,127 +1,196 @@
-import { Component, OnInit } from '@angular/core';
+import { BackService } from '@core/services/back.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-
-import { Router } from '@angular/router';
-
+import { HttpErrorResponse } from '@angular/common/http';
+import { LocationAddress, LocationSearchResponse } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
-import { LocationSearchResponse } from '@core/model/location.model';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-workplace-address',
   templateUrl: './select-workplace-address.component.html',
 })
-export class SelectWorkplaceAddressComponent implements OnInit {
-  selectWorkplaceAddressForm: FormGroup;
-  selectedAddress: string;
-  editPostcode: boolean;
-  postcodeValue: string;
-  locationdata = [];
+export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
+  private enteredPostcode: string;
+  private form: FormGroup;
+  private formErrorsMap: Array<ErrorDetails>;
+  private locationAddresses: Array<LocationAddress>;
+  private selectedLocationAddress: LocationAddress;
+  private serverError: string;
+  private serverErrorsMap: Array<ErrorDefinition>;
+  private submitted = false;
+  private subscriptions: Subscription = new Subscription();
+  private editPostcode = false;
 
-  cqcPostcodeApiError: string;
-  cqclocationApiError: string;
-  postcodeApiError: boolean;
-  selectAddressMessage: boolean;
+  constructor(
+    private backService: BackService,
+    private errorSummaryService: ErrorSummaryService,
+    private registrationService: RegistrationService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
 
-  currentSection: number;
-  lastSection: number;
-  backLink: string;
+  get getAddress() {
+    return this.form.get('address');
+  }
 
-  constructor(private _registrationService: RegistrationService, private router: Router, private fb: FormBuilder) {}
+  get getPostcode() {
+    return this.form.get('postcode');
+  }
 
   ngOnInit() {
-    this.selectAddressMessage = false;
-    this.postcodeApiError = false;
-
-    this.selectWorkplaceAddressForm = this.fb.group({
-      selectWorkplaceAddressSelected: ['', [Validators.required]],
-      postcodeInput: ['', Validators.maxLength(8)],
+    // TODO remove
+    this.registrationService.selectedLocationAddress$.next({
+      addressLine1: '14A',
+      addressLine2: 'DUKE ROAD',
+      county: 'REDBRIDGE',
+      locationName: '',
+      postalCode: 'IG6 1NQ',
+      townCity: 'ILFORD',
     });
+    // TODO remove
 
-    // Watch selectWorkplaceSelected
-    this.selectWorkplaceAddressForm.get('selectWorkplaceAddressSelected').valueChanges.subscribe(value => {
-      this.selectWorkplaceAddressChanged(value);
+    this.setupForm();
+    this.setupSubscriptions();
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
+    this.setBackLink();
+  }
+
+  private setupForm(): void {
+    this.form = this.fb.group({
+      address: ['', [Validators.required]],
+      postcode: '',
     });
-
-    this.editPostcode = false;
-
-    // Check if postcode already exists on load
-    // this.checkExistingPostcode(this.registration);
-
-    // set not registered
-    // this.setRegulatedCheckFalse(this.registration);
   }
 
-  setRegulatedCheckFalse(data) {
-    // clear default location data
-    data.locationdata = [{}];
-    data.locationdata[0]['isRegulated'] = false;
-  }
-
-  checkExistingPostcode(data) {
-    if (data.locationdata[0].postalCode) {
-      this.postcodeValue = data.locationdata[0].postalCode;
-    } else if (data.postcodedata[0].postalCode) {
-      this.postcodeValue = data.postcodedata[0].postalCode;
-    }
-
-    if (data.locationdata.length <= 1 && data.locationdata[0].postalCode) {
-      const existingPostcode = data.locationdata[0].postalCode;
-      this.updatePostcode(existingPostcode);
-    }
-  }
-
-  selectWorkplaceAddressChanged(value: string): void {
-    this.selectedAddress = this.registration.postcodedata[value];
-    this.selectAddressMessage = false;
-  }
-
-  save() {
-    if (!this.selectedAddress) {
-      this.selectAddressMessage = true;
-    } else {
-      const locationdata = [this.selectedAddress];
-
-      const postcodeObj = {
-        locationdata,
-      };
-
-      postcodeObj.locationdata[0]['isRegulated'] = false;
-
-      this._registrationService.updateState(postcodeObj);
-
-      if (this.registration.locationdata[0].locationName === '') {
-        this.router.navigate(['/registration/enter-workplace-address']);
-      } else {
-        this.router.navigate(['/registration/select-main-service']);
-      }
-    }
-  }
-
-  postcodeChange() {
-    this.editPostcode = true;
-  }
-
-  updatePostcode(existingPostcode) {
-    if (!existingPostcode) {
-      this.postcodeValue = this.selectWorkplaceAddressForm.get('postcodeInput').value;
-    } else {
-      this.postcodeValue = existingPostcode;
-    }
-
-    this._registrationService.getUpdatedAddressByPostCode(this.postcodeValue).subscribe(
-      (data: LocationSearchResponse) => {
-        this.setRegulatedCheckFalse(data);
-        this._registrationService.updateState(data);
-      },
-      (err: any) => {
-        this.postcodeApiError = true;
-      },
-      () => {
-        console.log('Updated locations by postcode complete');
-        this.postcodeApiError = false;
-      }
+  private setupSubscriptions(): void {
+    this.subscriptions.add(
+      this.registrationService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
+        this.enteredPostcode = locationAddresses[0].postalCode;
+        this.locationAddresses = locationAddresses;
+      })
     );
 
-    this.editPostcode = false;
+    this.subscriptions.add(
+      this.registrationService.selectedLocationAddress$.subscribe(
+        (locationAddress: LocationAddress) => this.selectedLocationAddress = locationAddress
+      )
+    );
+  }
+
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'address',
+        type: [
+          {
+            name: 'required',
+            message: 'Please select an address.',
+          },
+        ],
+      },
+      {
+        item: 'postcode',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter a postcode.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Invalid postcode.',
+          },
+        ],
+      },
+    ];
+  }
+
+  private setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'No results found.',
+      },
+      {
+        name: 404,
+        message: 'Invalid postcode.',
+      },
+      {
+        name: 503,
+        message: 'Database error.',
+      },
+    ];
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
+  }
+
+  private changePostcode(): void {
+    this.editPostcode = true;
+    this.getPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
+    this.getPostcode.updateValueAndValidity();
+
+    if (this.getAddress.valid) {
+      this.getAddressesByPostCode();
+    } else {
+      this.onSubmit();
+    }
+  }
+
+  private getAddressesByPostCode(): void {
+    this.subscriptions.add(
+      this.registrationService.getAddressesByPostCode(this.getPostcode.value).subscribe(
+        (data: LocationSearchResponse) => {
+          this.registrationService.locationAddresses$.next(data.postcodedata);
+          this.editPostcode = false;
+        },
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.errorSummaryService.scrollToErrorSummary();
+        }
+      )
+    );
+  }
+
+  private onAddressChange($event: LocationAddress): void {
+    this.registrationService.selectedLocationAddress$.next($event);
+  }
+
+  private onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (this.form.valid) {
+      this.navigateToNextRoute(this.selectedLocationAddress.locationName);
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
+    }
+  }
+
+  private navigateToNextRoute(locationName: string): void {
+    if (!locationName.length) {
+      this.router.navigate(['/registration/enter-workplace-address']);
+    } else {
+      this.router.navigate(['/registration/select-main-service']);
+    }
+  }
+
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

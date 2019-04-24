@@ -1,67 +1,102 @@
-<div class="sub-page-container col-12">
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
 
-  <div id="back" class="back-link">
-    <a routerLink="/registration/regulated-by-cqc">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Select your workplace address</h1>
+    <p>We couldn’t find your workplace from CQC, select the appropriate address below.</p>
 
-  <!-- <p class="h5">Section 2 of 9</p> -->
-  <h1 class="h1">Select your workplace address</h1>
+    <div>form.valid = {{ form.valid }}</div>
+    <div>getPostcode.errors = {{ getPostcode.errors | json  }}</div>
+    <div>getAddress.errors = {{ getAddress.errors | json  }}</div>
 
-  <p class="main-body-text mb-5 d-block col-12 col-md-7 p-0">We couldn’t find your workplace from CQC, select the appropriate address below</p>
-
-  <form novalidate
-        [formGroup]="selectWorkplaceAddressForm">
-
-    <div class="form-group mb-5">
-      <div class="col-12 col-md-7 p-0">
-
-        <div class="field-group updatePostcode" [ngClass]="{'is-invalid': postcodeApiError }">
-
-          <span class="invalid-feedback">
-            <span class="main-body-text mb-2" *ngIf="postcodeApiError">
-              Invalid Postcode
-            </span>
-          </span>
-
-          <div class="row ml-0 mb-5" *ngIf="editPostcode">
-            <input placeholder="" type="text" id="postcode" class="form-control col-md-4 d-inline-block" formControlName="postcodeInput" />
-            <button class="btn btn-secondary d-inline-block align-top ml-4" (click)="updatePostcode()">Update</button>
-          </div>
-          <div class="row mb-5" *ngIf="!editPostcode">
-            <div class="main-body-text-bold col-5 col-sm-3">{{ postcodeValue }}</div>
-            <div class="main-body-text col-5 col-sm-3 pl-0"><span class="text-link" title="Edit postcode" (click)="postcodeChange()">Change</span></div>
-          </div>
-        </div>
-
-        <div class="field-group" [ngClass]="{'is-invalid': selectAddressMessage, 'd-none': postcodeApiError }">
-
-          <span class="invalid-feedback">
-            <span class="main-body-text mb-2" *ngIf="selectAddressMessage">
-              Select your address
-            </span>
-          </span>
-
-          <select class="col-12 col-md-10 pl-2 pr-2" id="selectWorkplaceAddress" formControlName="selectWorkplaceAddressSelected">
-            <option value="" hidden disabled>Please select your workplace address</option>
-            <option value="{{i}}" *ngFor="let item of registration.postcodedata; let i = index;">{{ item.locationName ? item.locationName + ', ' : '' }}{{ item.addressLine1 }}, {{ item.addressLine2 }} - {{ item.townCity }} {{ item.postalCode }}</option>
-          </select>
-        </div>
-
+    <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div
+        class="govuk-form-group"
+        *ngIf="editPostcode"
+        [class.govuk-form-group--error]="submitted && getPostcode.errors"
+      >
+        <label class="govuk-label" for="postcode">
+          Password
+        </label>
+        <span *ngIf="submitted && getPostcode.errors" id="postcode-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <ng-container *ngIf="getPostcode.hasError('required')">
+            {{ getFormErrorMessage('postcode', 'required') }}
+          </ng-container>
+          <ng-container *ngIf="getPostcode.hasError('maxlength')">
+            {{ getFormErrorMessage('postcode', 'maxlength') }}
+          </ng-container>
+        </span>
+        <input
+          class="govuk-input"
+          formControlName="postcode"
+          id="postcode"
+          name="postcode"
+          [class.govuk-input--error]="submitted && getPostcode.errors"
+          type="text"
+        />
       </div>
 
-    </div>
+      <!--      <div class="form-group mb-5">-->
+      <!--        <div class="col-12 col-md-7 p-0">-->
+      <!--          <div class="field-group updatePostcode" [ngClass]="{ 'is-invalid': postcodeApiError }">-->
+      <!--            <span class="invalid-feedback">-->
+      <!--              <span class="main-body-text mb-2" *ngIf="postcodeApiError">-->
+      <!--                Invalid Postcode-->
+      <!--              </span>-->
+      <!--            </span>-->
 
-    <div class="col-12  mt-4 mb-5 p-0">
-      <a class="text-link" routerLink="/registration/enter-workplace-address" title="I can't find my address">I can't find my address</a>
-    </div>
+      <!--            <div class="row ml-0 mb-5" *ngIf="editPostcode">-->
+      <!--              <input-->
+      <!--                placeholder=""-->
+      <!--                type="text"-->
+      <!--                id="postcode"-->
+      <!--                class="form-control col-md-4 d-inline-block"-->
+      <!--                formControlName="postcodeInput"-->
+      <!--              />-->
+      <!--              <button class="btn btn-secondary d-inline-block align-top ml-4" (click)="updatePostcode()">Update</button>-->
+      <!--            </div>-->
+      <!--            <div class="row mb-5" *ngIf="!editPostcode">-->
+      <!--              <div class="main-body-text-bold col-5 col-sm-3">{{ postcodeValue }}</div>-->
+      <!--              <div class="main-body-text col-5 col-sm-3 pl-0">-->
+      <!--                <span class="text-link" title="Edit postcode" (click)="postcodeChange()">Change</span>-->
+      <!--              </div>-->
+      <!--            </div>-->
+      <!--          </div>-->
 
-    <div class="btn-container">
-      <button class="btn btn-primary" type="submit" (click)="save()">Continue</button>
-    </div>
+      <!--          <div class="field-group" [ngClass]="{ 'is-invalid': selectAddressMessage, 'd-none': postcodeApiError }">-->
+      <!--            <span class="invalid-feedback">-->
+      <!--              <span class="main-body-text mb-2" *ngIf="selectAddressMessage">-->
+      <!--                Select your address-->
+      <!--              </span>-->
+      <!--            </span>-->
 
-  </form>
+      <!--            <select-->
+      <!--              class="col-12 col-md-10 pl-2 pr-2"-->
+      <!--              id="selectWorkplaceAddress"-->
+      <!--              formControlName="selectWorkplaceAddressSelected"-->
+      <!--            >-->
+      <!--              <option value="" hidden disabled>Please select your workplace address</option>-->
+      <!--              <option value="{{ i }}" *ngFor="let item of registration.postcodedata; let i = index"-->
+      <!--                >{{ item.locationName ? item.locationName + ', ' : '' }}{{ item.addressLine1 }},-->
+      <!--                {{ item.addressLine2 }} - {{ item.townCity }} {{ item.postalCode }}</option-->
+      <!--              >-->
+      <!--            </select>-->
+      <!--          </div>-->
+      <!--        </div>-->
+      <!--      </div>-->
 
+      <p>
+        <a [routerLink]="['/registration/enter-workplace-address']">I can't find my address</a>
+      </p>
 
+      <button class="govuk-button" type="submit">Continue</button>
+    </form>
+  </div>
 </div>

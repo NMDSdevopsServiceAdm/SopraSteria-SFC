@@ -199,7 +199,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
       );
     } else if (this.nonRegulatedPostcode.value.length) {
       this.subscriptions.add(
-        this.registrationService.getAddressByPostCode(this.nonRegulatedPostcode.value).subscribe(
+        this.registrationService.getAddressesByPostCode(this.nonRegulatedPostcode.value).subscribe(
           (data: LocationSearchResponse) => this.onSuccess(data),
           (error: HttpErrorResponse) => this.onError(error)
         )
