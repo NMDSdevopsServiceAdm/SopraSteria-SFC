@@ -6,15 +6,16 @@ import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
+import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
+import { CreateBasicRecordsComponent } from './create-basic-records/create-basic-records.component';
 import {
   CreateStaffRecordStartScreenComponent,
 } from './create-staff-record-start-screen/create-staff-record-start-screen.component';
-import { CreateStaffRecordComponent } from './create-staff-record/create-staff-record.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteSuccessComponent } from './delete-success/delete-success.component';
@@ -38,6 +39,7 @@ import {
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
+import { TotalStaffComponent } from './total-staff/total-staff.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkerResolver } from './worker.resolver';
@@ -49,8 +51,20 @@ const routes: Routes = [
     component: CreateStaffRecordStartScreenComponent,
   },
   {
+    path: 'total-staff',
+    component: TotalStaffComponent,
+  },
+  {
+    path: 'create-basic-records',
+    component: CreateBasicRecordsComponent,
+  },
+  {
+    path: 'basic-records-save-success',
+    component: BasicRecordsSaveSuccessComponent,
+  },
+  {
     path: 'create-staff-record',
-    component: CreateStaffRecordComponent,
+    component: StaffDetailsComponent,
   },
   {
     path: 'save-success',

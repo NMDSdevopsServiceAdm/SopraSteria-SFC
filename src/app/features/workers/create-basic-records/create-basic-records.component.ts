@@ -12,17 +12,17 @@ import { Subscription } from 'rxjs';
 import { isNull } from 'util';
 
 @Component({
-  selector: 'app-create-staff-record',
-  templateUrl: './create-staff-record.component.html',
-  styleUrls: ['./create-staff-record.component.scss'],
+  selector: 'app-create-basic-records',
+  templateUrl: './create-basic-records.component.html',
+  styleUrls: ['./create-basic-records.component.scss'],
 })
-export class CreateStaffRecordComponent implements OnInit, OnDestroy {
+export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   public contractsAvailable: Array<string> = [];
   public jobsAvailable: Job[] = [];
+  public totalStaff: number;
   public totalWorkers = 0;
   public form: FormGroup;
   public submitted = false;
-  private tempTotalStaff: number = null;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -56,26 +56,21 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions.add(
       this.establishmentService.getStaff().subscribe(establishmentStaff => {
-        const totalStaff = establishmentStaff ? establishmentStaff : 0;
-        this.tempTotalStaff = totalStaff;
-        this.form.controls.totalStaff.patchValue(totalStaff);
-        this.form.updateValueAndValidity();
+        this.totalStaff = establishmentStaff ? establishmentStaff : 0;
       })
     );
+
     this.subscriptions.add(
       this.workerService.getAllWorkers().subscribe(workers => {
-        if (workers) {
-          this.totalWorkers = workers.length;
-          this.form.updateValueAndValidity();
-        }
+        this.totalWorkers = workers ? workers.length : 0;
       })
     );
+
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
     this.contractsAvailable = Object.values(Contracts);
 
     this.form = this.formBuilder.group({
-      totalStaff: [0, [Validators.min(0), Validators.max(999), Validators.required]],
-      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()], this.staffRecordsRequiredValidator),
+      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
     });
   }
 
@@ -121,7 +116,6 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.workerService.deleteWorker(staffRecord.controls.uid.value).subscribe(() => {
           this.staffRecordsControl.controls.splice(index, 1);
-          this.updateTotalStaff();
         })
       );
     } else {
@@ -129,21 +123,12 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
     }
   }
 
-  staffRecordsRequiredValidator(control: FormArray) {
-    if (!control.controls.some(c => !isNull(c.get('uid').value))) {
-      return { required: true };
-    }
-
-    return null;
-  }
-
   submitHandler() {
     this.submitted = true;
 
-    if (this.form.valid) {
-      this.updateTotalStaff();
+    if (this.form.valid || this.staffRecordsControl.length === 0) {
       this.workerService.setCreateStaffResponse(this.staffRecordsControl.length);
-      this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+      this.router.navigate(['/worker', 'basic-records-save-success']);
     } else {
       const unsavedIndex = this.staffRecordsControl.controls.findIndex(control => {
         return isNull(control.get('uid').value);
@@ -155,23 +140,6 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
       } else {
         this.elementRef.nativeElement.querySelector('form').scrollIntoView(true);
       }
-    }
-  }
-
-  updateTotalStaff() {
-    const totalStaff =
-      this.calculatedTotalStaff > this.form.controls.totalStaff.value
-        ? this.calculatedTotalStaff
-        : this.form.controls.totalStaff.value;
-
-    if (totalStaff !== this.tempTotalStaff) {
-      this.subscriptions.add(
-        this.establishmentService.postStaff(totalStaff).subscribe(data => {
-          this.form.patchValue({ totalStaff: data.numberOfStaff });
-          this.tempTotalStaff = data.numberOfStaff;
-          this.form.updateValueAndValidity();
-        })
-      );
     }
   }
 
@@ -208,7 +176,6 @@ export class CreateStaffRecordComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
           this.workerService.createWorker(props as Worker).subscribe(data => {
             staffRecord.patchValue({ uid: data.uid });
-            this.updateTotalStaff();
             resolve();
           }, reject)
         );

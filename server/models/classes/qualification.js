@@ -304,7 +304,7 @@ class Qualification {
                         uid: this._uid,
                         created: now,
                         updated: now,
-                        updatedBy: savedBy,
+                        updatedBy: savedBy.toLowerCase(),
                         qualificationFk: this._qualification.id,
                         year: this._year,
                         notes: this._notes,
@@ -328,7 +328,7 @@ class Qualification {
                         this._id = sanitisedResults.ID;
                         this._created = sanitisedResults.created;
                         this._updated = sanitisedResults.updated;
-                        this._updatedBy = savedBy;
+                        this._updatedBy = savedBy.toLowerCase();
                         this._isNew = false;
     
                         this._log(Qualification.LOG_INFO, `Created Qualification Record with uid (${this.uid})`);
@@ -364,7 +364,7 @@ class Qualification {
                         year: this._year,
                         notes: this._notes,
                         updated: updatedTimestamp,
-                        updatedBy: savedBy
+                        updatedBy: savedBy.toLowerCase()
                     };
 
                     // now save the document
@@ -384,7 +384,7 @@ class Qualification {
                         const updatedRecord = updatedRows[0].get({plain: true});
 
                         this._updated = updatedRecord.updated;
-                        this._updatedBy = savedBy;
+                        this._updatedBy = savedBy.toLowerCase();
                         this._id = updatedRecord.ID;
 
                         this._log(Qualification.LOG_INFO, `Updated Qualification record with uid (${this.uid})`);
