@@ -1,321 +1,229 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-
-import { Router, ActivatedRoute } from '@angular/router';
-import { debounceTime } from 'rxjs/operators';
-
+import { ActivatedRoute, Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LocationAddress } from '@core/model/location-address.model';
 import { RegistrationService } from '@core/services/registration.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-enter-workplace-address',
   templateUrl: './enter-workplace-address.component.html',
   styleUrls: ['./enter-workplace-address.component.scss']
 })
-export class EnterWorkplaceAddressComponent implements OnInit {
-  enterWorkplaceAddressForm: FormGroup;
-
-  currentSection: number;
-  lastSection: number;
-  backLink: string;
-
-  // Set up Messages
-  isSubmitted = false;
-  submittedPostcodeInput = false;
-  submittedAddress1Input = false;
-  submittedAddress2Input = false;
-  submittedTownCityInput = false;
-  submittedCountyInput = false;
-  submittedWpNameInput = false;
-
-  postcodeMessage: string;
-  address1Message: string;
-  address2Message: string;
-  townCityMessage: string;
-  countyMessage: string;
-  wpNameMessage: string;
-
-  private postcodeMessages = {
-    maxlength: 'Your postcode must be no longer than 8 characters.',
-    required: 'Please enter your postcode.'
-  };
-
-  private address1Messages = {
-    maxlength: 'Your address must be no longer than 40 characters.',
-    required: 'Please enter your address'
-  };
-
-  private address2Messages = {
-    maxlength: 'Your address must be no longer than 40 characters.',
-    required: 'Please enter your address'
-  };
-
-  private townCityMessages = {
-    maxlength: 'Your town/city must be no longer than 40 characters.',
-    required: 'Please enter your town/city'
-  };
-
-  private countyMessages = {
-    maxlength: 'Your county must be no longer than 40 characters.',
-    required: 'Please enter your county'
-  };
-
-  private wpNameMessages = {
-    maxlength: 'Your workplace name must be no longer than 120 characters.',
-    required: 'Please enter a workplace name'
-  };
+export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
+  private form: FormGroup;
+  private formErrorsMap: Array<ErrorDetails>;
+  private submitted = false;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private _registrationService: RegistrationService,
-    private router: Router,
+    private backService: BackService,
+    private errorSummaryService: ErrorSummaryService,
+    private fb: FormBuilder,
+    private registrationService: RegistrationService,
     private route: ActivatedRoute,
-    private fb: FormBuilder
-  ) { }
+    private router: Router,
+  ) {}
 
   // Get postcode
   get getPostcode() {
-    return this.enterWorkplaceAddressForm.get('postcodeInput');
+    return this.form.get('postcode');
   }
 
   // Get address 1
   get getAddress1() {
-    return this.enterWorkplaceAddressForm.get('address1Input');
+    return this.form.get('address1');
   }
 
   // Get address 2
   get getAddress2() {
-    return this.enterWorkplaceAddressForm.get('address2Input');
+    return this.form.get('address2');
   }
 
   // Get town/city
   get getTownCity() {
-    return this.enterWorkplaceAddressForm.get('townCityInput');
+    return this.form.get('townOrCity');
   }
 
   // Get county
   get getCounty() {
-    return this.enterWorkplaceAddressForm.get('countyInput');
+    return this.form.get('county');
   }
 
   // Get workplace name
-  get getWpName() {
-    return this.enterWorkplaceAddressForm.get('wpNameInput');
+  get getWorkplaceName() {
+    return this.form.get('workplaceName');
   }
 
   ngOnInit() {
-    this.enterWorkplaceAddressForm = this.fb.group({
-      postcodeInput: ['', [Validators.required, Validators.maxLength(8)]],
-      address1Input: ['', [Validators.required, Validators.maxLength(40)]],
-      address2Input: ['', [Validators.required, Validators.maxLength(40)]],
-      townCityInput: ['', [Validators.required, Validators.maxLength(40)]],
-      countyInput: ['', [Validators.required, Validators.maxLength(40)]],
-      wpNameInput: ['', [Validators.required, Validators.maxLength(120)]]
+    this.setupForm();
+    this.setupSubscription();
+    this.setupFormErrorsMap();
+    this.setBackLink();
+  }
+
+  private setupForm(): void {
+    this.form = this.fb.group({
+      address1: ['', [Validators.required, Validators.maxLength(40)]],
+      address2: ['', [Validators.required, Validators.maxLength(40)]],
+      county: ['', [Validators.required, Validators.maxLength(40)]],
+      postcode: ['', [Validators.required, Validators.maxLength(8)]],
+      townOrCity: ['', [Validators.required, Validators.maxLength(40)]],
+      workplaceName: ['', [Validators.required, Validators.maxLength(120)]]
     });
+  }
 
-    this.loadExistingValues();
-
-    // -- START -- Validation check watchers
-    // Watch registeredQuestionSelected
-    this.getPostcode.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => {
-        if (value.length > 0) {
-
-          if (this.getPostcode.errors) {
-            this.setPostcodeMessage(this.getPostcode);
+  private setupSubscription(): void {
+    this.subscriptions.add(
+      this.registrationService.selectedLocationAddress$.subscribe(
+        (selectedLocation: LocationAddress) => {
+          if (selectedLocation) {
+            this.preFillForm(selectedLocation);
           }
         }
-      }
+      )
     );
-
-    this.getAddress1.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => {
-        if (value.length > 0) {
-
-          if (this.getAddress1.errors) {
-            this.setAddress1Message(this.getAddress1);
-          }
-        }
-      }
-    );
-
-    this.getAddress2.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => {
-        if (value.length > 0) {
-
-          if (this.getAddress2.errors) {
-            this.setAddress2Message(this.getAddress2);
-          }
-        }
-      }
-    );
-
-    this.getTownCity.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => {
-        if (value.length > 0) {
-
-          if (this.getTownCity.errors) {
-            this.setTownCityMessage(this.getTownCity);
-          }
-        }
-      }
-    );
-
-    this.getCounty.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => {
-        if (value.length > 0) {
-
-          if (this.getCounty.errors) {
-            this.setCountyMessage(this.getCounty);
-          }
-        }
-      }
-    );
-
-    this.getWpName.valueChanges.pipe(
-      debounceTime(1000)
-    ).subscribe(
-      value => {
-        if (value.length > 0) {
-
-          if (this.getWpName.errors) {
-            this.setWpNameMessage(this.getWpName);
-          }
-        }
-      }
-    );
-
-    // -- END -- Validation check watchers
   }
 
-  // -- START -- Set validation handlers
-  setPostcodeMessage(c: AbstractControl): void {
-    this.postcodeMessage = '';
-
-    if ((c.touched || c.dirty) && c.errors) {
-      this.postcodeMessage = Object.keys(c.errors).map(
-        key => this.postcodeMessage += this.postcodeMessages[key]).join(' ');
-    }
-    //this.submittedPostcodeInput = false;
+  private preFillForm(selectedLocation: LocationAddress): void {
+    this.form.setValue({
+      address1: selectedLocation.addressLine1,
+      address2: selectedLocation.addressLine2,
+      county: selectedLocation.county,
+      postcode: selectedLocation.postalCode,
+      townOrCity: selectedLocation.townCity,
+      workplaceName: selectedLocation.locationName
+    });
   }
 
-  setAddress1Message(c: AbstractControl): void {
-    this.address1Message = '';
-
-    if ((c.touched || c.dirty) && c.errors) {
-      this.address1Message = Object.keys(c.errors).map(
-        key => this.address1Message += this.address1Messages[key]).join(' ');
-    }
-    //this.submittedAddress1Input = false;
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'address1',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your address.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your address must be no longer than 40 characters.',
+          },
+        ],
+      },
+      {
+        item: 'address2',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your address.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your address must be no longer than 40 characters.',
+          },
+        ],
+      },
+      {
+        item: 'county',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your county.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your county must be no longer than 8 characters.',
+          },
+        ],
+      },
+      {
+        item: 'postcode',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your postcode.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your postcode must be no longer than 8 characters.',
+          },
+        ],
+      },
+      {
+        item: 'townOrCity',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your town or city.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your town or city must be no longer than 40 characters.',
+          },
+        ],
+      },
+      {
+        item: 'workplaceName',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your workplace name.',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your workplace name must be no longer than 120 characters.',
+          },
+        ],
+      },
+    ];
   }
 
-  setAddress2Message(c: AbstractControl): void {
-    this.address2Message = '';
+  private onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if ((c.touched || c.dirty) && c.errors) {
-      this.address2Message = Object.keys(c.errors).map(
-        key => this.address2Message += this.address2Messages[key]).join(' ');
-    }
-    //this.submittedAddress2Input = false;
-  }
-
-  setTownCityMessage(c: AbstractControl): void {
-    this.townCityMessage = '';
-
-    if ((c.touched || c.dirty) && c.errors) {
-      this.townCityMessage = Object.keys(c.errors).map(
-        key => this.townCityMessage += this.townCityMessages[key]).join(' ');
-    }
-    //this.submittedTownCityInput = false;
-  }
-
-  setCountyMessage(c: AbstractControl): void {
-    this.countyMessage = '';
-
-    if ((c.touched || c.dirty) && c.errors) {
-      this.countyMessage = Object.keys(c.errors).map(
-        key => this.countyMessage += this.countyMessages[key]).join(' ');
-    }
-    //this.submittedCountyInput = false;
-  }
-
-  setWpNameMessage(c: AbstractControl): void {
-    this.wpNameMessage = '';
-
-    if ((c.touched || c.dirty) && c.errors) {
-      this.wpNameMessage = Object.keys(c.errors).map(
-        key => this.wpNameMessage += this.wpNameMessages[key]).join(' ');
-    }
-    //this.submittedWpNameInput = false;
-  }
-  // -- END -- Set validation handlers
-
-  loadExistingValues() {
-
-    // if ((this.registration.locationdata[0].hasOwnProperty('locationName')) && (this.registration.locationdata[0].locationName === '')) {
-    //   const postcodeValue = this.registration.locationdata[0].postalCode;
-    //   const address1Value = this.registration.locationdata[0].addressLine1;
-    //   const address2Value = this.registration.locationdata[0].addressLine2;
-    //   const townCityValue = this.registration.locationdata[0].townCity;
-    //   const countyValue = this.registration.locationdata[0].county;
-    //
-    //   this.enterWorkplaceAddressForm.setValue({
-    //     postcodeInput: postcodeValue,
-    //     address1Input: address1Value,
-    //     address2Input: address2Value,
-    //     townCityInput: townCityValue,
-    //     countyInput: countyValue,
-    //     wpNameInput: '',
-    //   });
-    // }
-  }
-
-  onSubmit() {
-    //this.isSubmitted = false;
-    this.submittedPostcodeInput = true;
-    this.submittedAddress1Input = true;
-    this.submittedAddress2Input = true;
-    this.submittedTownCityInput = true;
-    this.submittedCountyInput = true;
-    this.submittedWpNameInput = true;
-
-    // stop here if form is invalid
-    if (this.enterWorkplaceAddressForm.invalid) {
-      return;
-    }
-    else {
-
-      this.save();
+    if (this.form.valid) {
+      this.setSelectedLocationAddress();
+      this.router.navigate(['/registration/select-main-service']);
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  save() {
-    const postcodeValue = this.enterWorkplaceAddressForm.get('postcodeInput').value;
-    const address1Value = this.enterWorkplaceAddressForm.get('address1Input').value;
-    const address2Value = this.enterWorkplaceAddressForm.get('address2Input').value;
-    const townCityValue = this.enterWorkplaceAddressForm.get('townCityInput').value;
-    const countyValue = this.enterWorkplaceAddressForm.get('countyInput').value;
-    const wpNameValue = this.enterWorkplaceAddressForm.get('wpNameInput').value;
+  private setSelectedLocationAddress(): void {
+    this.registrationService.selectedLocationAddress$.next({
+      addressLine1: this.getAddress1.value,
+      addressLine2: this.getAddress2.value,
+      county: this.getCounty.value,
+      locationName: this.getWorkplaceName.value,
+      postalCode: this.getPostcode.value,
+      townCity: this.getTownCity.value,
+    });
+  }
 
-    // this.registration.locationdata[0]['postalCode'] = postcodeValue;
-    // this.registration.locationdata[0]['addressLine1'] = address1Value;
-    // this.registration.locationdata[0]['addressLine2'] = address2Value;
-    // this.registration.locationdata[0]['townCity'] = townCityValue;
-    // this.registration.locationdata[0]['county'] = countyValue;
-    // this.registration.locationdata[0]['locationName'] = wpNameValue;
-    //
-    // const updateRegistration = this.registration.locationdata[0];
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
 
-    this.router.navigate(['/registration/select-main-service']);
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['/registration/select-workplace-address'] });
+  }
 
+  /**
+   * Unsubscribe hook to ensure no memory leaks
+   */
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
 }

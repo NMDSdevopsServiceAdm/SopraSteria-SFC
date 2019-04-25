@@ -1,147 +1,150 @@
-<div class="sub-page-container col-12">
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
 
-  <div id="back" class="back-link">
-    <a routerLink="/registration/select-workplace-address">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Enter your workplace address</h1>
 
-  <!-- <p class="h5">Section 3 of 9</p> -->
-  <h1 class="h1">Enter your workplace address</h1>
-
-  <form novalidate
-        (ngSubmit)="onSubmit()"
-        [formGroup]="enterWorkplaceAddressForm">
-
-    <div class="form-group mb-5">
-      <div class="col-12 col-md-6 p-0">
-
-        <div class="field-group"
-             [ngClass]="{'is-invalid': postcodeMessage || (submittedPostcodeInput && getPostcode.errors) }">
-          <label class="form-label" for="postcode">Postcode</label>
-
-          <span class="invalid-feedback">
-            <span class="main-body-text mb-2"*ngIf="!submittedPostcodeInput">{{ postcodeMessage }}</span>
-            <span *ngIf="submittedPostcodeInput && getPostcode.hasError('maxlength')" class="main-body-text mb-2">
-              Your postcode must be no longer than 8 characters.
-            </span>
-            <span *ngIf="submittedPostcodeInput && getPostcode.hasError('required')" class="main-body-text mb-2">
-              Please enter your postcode.
-            </span>
-          </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="postcode" class="form-control col-12 col-md-3" formControlName="postcodeInput" />
-
-          </div>
-        </div>
-        <div class="field-group mt-5"
-             [ngClass]="{'is-invalid': address1Message || (submittedAddress1Input && getAddress1.errors) }">
-          <label class="form-label" for="address-1-1">Building and street</label>
-
-          <span class="invalid-feedback">
-            <span *ngIf="submittedAddress1Input && getAddress1.hasError('maxlength')" class="main-body-text mb-2">
-              Your address must be no longer than 40 characters.
-            </span>
-            <span *ngIf="submittedAddress1Input && getAddress1.hasError('required')" class="main-body-text mb-2">
-              Please enter your address.
-            </span>
-          </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="address1" class="form-control col-12 mb-4" formControlName="address1Input" />
-
-          </div>
-        </div>
-
-        <div class="field-group mt-4"
-             [ngClass]="{'is-invalid': address2Message || (submittedAddress2Input && getAddress2.errors) }">
-
-          <span class="invalid-feedback">
-            <span *ngIf="submittedAddress2Input && getAddress2.hasError('maxlength')" class="main-body-text mb-2">
-                Your address must be no longer than 40 characters.
-            </span>
-            <span *ngIf="submittedAddress2Input && getAddress2.hasError('required')" class="main-body-text mb-2">
-              Please enter your address.
-            </span>
-          </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="address2" class="form-control col-12" formControlName="address2Input" />
-
-          </div>
-        </div>
-
-        <div class="field-group mt-5"
-             [ngClass]="{'is-invalid': townCityMessage || (submittedTownCityInput && getTownCity.errors) }">
-          <label class="form-label" for="townCity">Town or city</label>
-
-          <span class="invalid-feedback">
-            <span *ngIf="submittedTownCityInput && getTownCity.hasError('maxlength')" class="main-body-text mb-2">
-                Your town/city must be no longer than 40 characters.
-            </span>
-            <span *ngIf="submittedTownCityInput && getTownCity.hasError('required')" class="main-body-text mb-2">
-                Please enter your town/city.
-            </span>
-          </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="townCity" class="form-control col-12 col-md-7" formControlName="townCityInput" />
-
-          </div>
-        </div>
-
-        <div class="field-group mt-5"
-             [ngClass]="{'is-invalid': countyMessage || (submittedCountyInput && getCounty.errors) }">
-          <label class="form-label" for="county">County</label>
-
-          <span class="invalid-feedback">
-            <span *ngIf="submittedCountyInput && getCounty.hasError('maxlength')" class="main-body-text mb-2">
-              Your county must be no longer than 40 characters.
-            </span>
-            <span *ngIf="submittedCountyInput && getCounty.hasError('required')" class="main-body-text mb-2">
-              Please enter your county.
-            </span>
-          </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="county" class="form-control col-12 col-md-7" formControlName="countyInput" />
-
-          </div>
-        </div>
-        <div class="field-group mt-5"
-             [ngClass]="{'is-invalid': wpNameMessage || (submittedWpNameInput && getWpName.errors) }">
-          <label class="form-label" for="wpName">Workplace name</label>
-
-          <span class="invalid-feedback">
-            <span *ngIf="submittedWpNameInput && getWpName.hasError('maxlength')" class="main-body-text mb-2">
-              The Workplace name must be no longer than 120 characters.
-            </span>
-            <span *ngIf="submittedWpNameInput && getWpName.hasError('required')" class="main-body-text mb-2">
-              Please enter your Workplace name.
-            </span>
-          </span>
-
-          <div class="form-control-feedback">
-
-            <input placeholder="" type="text" id="wpName" class="form-control col-12 col-md-9" formControlName="wpNameInput" />
-
-          </div>
-        </div>
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPostcode.errors">
+        <label class="govuk-label" for="postcode">
+          Postcode
+        </label>
+        <span *ngIf="submitted && getPostcode.errors" id="postcode-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <ng-container *ngIf="getPostcode.hasError('required')">
+            {{ getFormErrorMessage('postcode', 'required') }}
+          </ng-container>
+          <ng-container *ngIf="getPostcode.hasError('maxlength')">
+            {{ getFormErrorMessage('postcode', 'maxlength') }}
+          </ng-container>
+        </span>
+        <input
+          class="govuk-input govuk-!-width-one-quarter"
+          formControlName="postcode"
+          id="postcode"
+          name="postcode"
+          [class.govuk-input--error]="submitted && getPostcode.errors"
+          type="text"
+        />
       </div>
 
-    </div>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress1.errors">
+        <label class="govuk-label" for="address1">
+          Building and street <span class="govuk-visually-hidden">line 1 of 2</span>
+        </label>
+        <span *ngIf="submitted && getAddress1.errors" id="address1-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <ng-container *ngIf="getAddress1.hasError('required')">
+            {{ getFormErrorMessage('address1', 'required') }}
+          </ng-container>
+          <ng-container *ngIf="getAddress1.hasError('maxlength')">
+            {{ getFormErrorMessage('address1', 'maxlength') }}
+          </ng-container>
+        </span>
+        <input
+          class="govuk-input govuk-!-width-three-quarters"
+          formControlName="address1"
+          id="address1"
+          name="address1"
+          [class.govuk-input--error]="submitted && getAddress1.errors"
+          type="text"
+        />
+      </div>
 
-    <div class="btn-container">
-      <button class="btn btn-primary" type="submit">Continue</button>
-    </div>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress2.errors">
+        <label class="govuk-label" for="address2">
+          <span class="govuk-visually-hidden">Building and street line 2 of 2</span>
+        </label>
+        <span *ngIf="submitted && getAddress2.errors" id="address2-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <ng-container *ngIf="getAddress2.hasError('required')">
+            {{ getFormErrorMessage('address2', 'required') }}
+          </ng-container>
+          <ng-container *ngIf="getAddress2.hasError('maxlength')">
+            {{ getFormErrorMessage('address2', 'maxlength') }}
+          </ng-container>
+        </span>
+        <input
+          class="govuk-input govuk-!-width-three-quarters"
+          formControlName="address2"
+          id="address2"
+          name="address2"
+          [class.govuk-input--error]="submitted && getAddress2.errors"
+          type="text"
+        />
+      </div>
 
-  </form>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getTownCity.errors">
+        <label class="govuk-label" for="townOrCity">
+          Town or City
+        </label>
+        <span *ngIf="submitted && getTownCity.errors" id="townOrCity-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <ng-container *ngIf="getTownCity.hasError('required')">
+            {{ getFormErrorMessage('townOrCity', 'required') }}
+          </ng-container>
+          <ng-container *ngIf="getTownCity.hasError('maxlength')">
+            {{ getFormErrorMessage('townOrCity', 'maxlength') }}
+          </ng-container>
+        </span>
+        <input
+          class="govuk-input govuk-!-width-one-half"
+          formControlName="townOrCity"
+          id="townOrCity"
+          name="townOrCity"
+          [class.govuk-input--error]="submitted && getTownCity.errors"
+          type="text"
+        />
+      </div>
+
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getCounty.errors">
+        <label class="govuk-label" for="county">
+          County
+        </label>
+        <span *ngIf="submitted && getCounty.errors" id="county-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <ng-container *ngIf="getCounty.hasError('required')">
+            {{ getFormErrorMessage('county', 'required') }}
+          </ng-container>
+          <ng-container *ngIf="getCounty.hasError('maxlength')">
+            {{ getFormErrorMessage('county', 'maxlength') }}
+          </ng-container>
+        </span>
+        <input
+          class="govuk-input govuk-!-width-one-half"
+          formControlName="county"
+          id="county"
+          name="county"
+          [class.govuk-input--error]="submitted && getCounty.errors"
+          type="text"
+        />
+      </div>
 
 
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getWorkplaceName.errors">
+        <label class="govuk-label" for="workplaceName">
+          Workplace name
+        </label>
+        <span *ngIf="submitted && getWorkplaceName.errors" id="workplaceName-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          <ng-container *ngIf="getWorkplaceName.hasError('required')">
+            {{ getFormErrorMessage('workplaceName', 'required') }}
+          </ng-container>
+          <ng-container *ngIf="getWorkplaceName.hasError('maxlength')">
+            {{ getFormErrorMessage('workplaceName', 'maxlength') }}
+          </ng-container>
+        </span>
+        <input
+          class="govuk-input govuk-!-width-three-quarters"
+          formControlName="workplaceName"
+          id="workplaceName"
+          name="workplaceName"
+          [class.govuk-input--error]="submitted && getWorkplaceName.errors"
+          type="text"
+        />
+      </div>
+
+      <button class="govuk-button govuk-!-margin-top-2" type="submit">Continue</button>
+    </form>
+  </div>
 </div>
