@@ -22,7 +22,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      totalStaff: [null, [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(1), Validators.max(999)]],
+      totalStaff: [null, [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(0), Validators.max(999)]],
     });
 
     this.subscriptions.add(
