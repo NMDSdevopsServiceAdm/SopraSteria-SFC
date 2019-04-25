@@ -1,13 +1,13 @@
 import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
-import { LocationAddress, LocationSearchResponse } from '@core/model/location.model';
+import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { filter } from 'lodash';
 
 @Component({
   selector: 'app-select-workplace-address',
@@ -19,11 +19,8 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
   private formErrorsMap: Array<ErrorDetails>;
   private locationAddresses: Array<LocationAddress>;
   private selectedLocationAddress: LocationAddress;
-  private serverError: string;
-  private serverErrorsMap: Array<ErrorDefinition>;
   private submitted = false;
   private subscriptions: Subscription = new Subscription();
-  private editPostcode = false;
 
   constructor(
     private backService: BackService,
@@ -37,33 +34,16 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
     return this.form.get('address');
   }
 
-  get getPostcode() {
-    return this.form.get('postcode');
-  }
-
   ngOnInit() {
-    // TODO remove
-    this.registrationService.selectedLocationAddress$.next({
-      addressLine1: '14A',
-      addressLine2: 'DUKE ROAD',
-      county: 'REDBRIDGE',
-      locationName: '',
-      postalCode: 'IG6 1NQ',
-      townCity: 'ILFORD',
-    });
-    // TODO remove
-
     this.setupForm();
     this.setupSubscriptions();
     this.setupFormErrorsMap();
-    this.setupServerErrorsMap();
     this.setBackLink();
   }
 
   private setupForm(): void {
     this.form = this.fb.group({
       address: ['', [Validators.required]],
-      postcode: '',
     });
   }
 
@@ -92,37 +72,7 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
             message: 'Please select an address.',
           },
         ],
-      },
-      {
-        item: 'postcode',
-        type: [
-          {
-            name: 'required',
-            message: 'Please enter a postcode.',
-          },
-          {
-            name: 'maxlength',
-            message: 'Invalid postcode.',
-          },
-        ],
-      },
-    ];
-  }
-
-  private setupServerErrorsMap(): void {
-    this.serverErrorsMap = [
-      {
-        name: 400,
-        message: 'No results found.',
-      },
-      {
-        name: 404,
-        message: 'Invalid postcode.',
-      },
-      {
-        name: 503,
-        message: 'Database error.',
-      },
+      }
     ];
   }
 
@@ -130,35 +80,10 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
     this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
   }
 
-  private changePostcode(): void {
-    this.editPostcode = true;
-    this.getPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
-    this.getPostcode.updateValueAndValidity();
-
-    if (this.getAddress.valid) {
-      this.getAddressesByPostCode();
-    } else {
-      this.onSubmit();
-    }
-  }
-
-  private getAddressesByPostCode(): void {
-    this.subscriptions.add(
-      this.registrationService.getAddressesByPostCode(this.getPostcode.value).subscribe(
-        (data: LocationSearchResponse) => {
-          this.registrationService.locationAddresses$.next(data.postcodedata);
-          this.editPostcode = false;
-        },
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          this.errorSummaryService.scrollToErrorSummary();
-        }
-      )
-    );
-  }
-
-  private onAddressChange($event: LocationAddress): void {
-    this.registrationService.selectedLocationAddress$.next($event);
+  private onLocationChange(addressLine1: string): void {
+    const selectedLocation: LocationAddress = filter(this.locationAddresses, ['addressLine1', addressLine1])[0];
+    console.log('selectedLocation', selectedLocation);
+    this.registrationService.selectedLocationAddress$.next(selectedLocation);
   }
 
   private onSubmit(): void {
@@ -178,6 +103,12 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigate(['/registration/select-main-service']);
     }
+  }
+
+  private getLocationName(location: LocationAddress): string {
+    let name: string = location.locationName.length ? `${location.locationName}, ` : '';
+    name += `${location.addressLine1}, ${location.addressLine2} - ${location.townCity} ${location.postalCode}`;
+    return name;
   }
 
   /**
