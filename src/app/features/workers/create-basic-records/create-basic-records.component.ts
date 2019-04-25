@@ -70,7 +70,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.contractsAvailable = Object.values(Contracts);
 
     this.form = this.formBuilder.group({
-      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()], this.staffRecordsRequiredValidator),
+      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
     });
   }
 
@@ -121,14 +121,6 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     } else {
       this.staffRecordsControl.controls.splice(index, 1);
     }
-  }
-
-  staffRecordsRequiredValidator(control: FormArray) {
-    if (!control.controls.some(c => !isNull(c.get('uid').value))) {
-      return { required: true };
-    }
-
-    return null;
   }
 
   submitHandler() {
