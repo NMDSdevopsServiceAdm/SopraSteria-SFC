@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MessageService } from '@core/services/message.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -11,16 +12,22 @@ import { Subscription } from 'rxjs';
 })
 export class TotalStaffComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+  public returnToDash = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
     private messageService: MessageService,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
+    private workerService: WorkerService
   ) {}
 
   ngOnInit() {
+    this.returnToDash = this.workerService.totalStaffReturn;
+
+    console.log(this.returnToDash);
+
     this.form = this.formBuilder.group({
       totalStaff: [null, [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(0), Validators.max(999)]],
     });
@@ -35,6 +42,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
     this.messageService.clearError();
+    this.workerService.setTotalStaffReturn(false);
   }
 
   onSubmit() {
@@ -46,7 +54,11 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
       this.subscriptions.add(
         this.establishmentService.postStaff(totalStaff.value).subscribe(
           () => {
-            this.router.navigate(['/worker', 'create-basic-records']);
+            if (this.returnToDash) {
+              this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+            } else {
+              this.router.navigate(['/worker', 'create-basic-records']);
+            }
           },
           error => {
             this.messageService.show('error', 'Server Error');
