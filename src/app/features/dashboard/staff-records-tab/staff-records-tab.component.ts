@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -15,6 +15,7 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
   public errors;
   public incomplete = 0;
   private subscriptions: Subscription = new Subscription();
+  @Input() displayWDFReport;
 
   constructor(private establishmentService: EstablishmentService, private workerService: WorkerService) {}
 

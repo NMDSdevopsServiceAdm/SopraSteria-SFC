@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportsService } from '@core/services/reports.service';
 import { Subscription } from 'rxjs';
@@ -12,6 +12,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   public workplace: any;
   public reportDetails: any;
   public updateWorkplace: boolean;
+  @Input() displayWDFReport;
   private subscriptions: Subscription = new Subscription();
 
   constructor(

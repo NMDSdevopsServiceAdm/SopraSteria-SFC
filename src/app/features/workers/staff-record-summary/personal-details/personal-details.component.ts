@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
 import * as moment from 'moment';
 
@@ -8,7 +8,15 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
   selector: 'app-personal-details',
   templateUrl: './personal-details.component.html',
 })
-export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
+export class PersonalDetailsComponent extends StaffRecordSummaryComponent implements OnInit {
+  @Input() reportDetails;
+
+  ngOnInit() {
+    if (this.reportDetails != null && this.reportDetails.hasOwnProperty('displayWDFReport')) {
+      this.reportDetails['displayWDFReport'] = true;
+    }
+  }
+
   get displayBritishCitizenship() {
     return !(this.worker.nationality && this.worker.nationality.value === 'British');
   }

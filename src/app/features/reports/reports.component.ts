@@ -1,7 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
+import { DateValidator } from '@core/validators/date.validator';
 import { AuthService } from '@core/services/auth-service';
 import { ReportsService } from '@core/services/reports.service';
+import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -10,6 +13,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./reports.component.scss']
 })
 export class ReportsComponent implements OnInit, OnDestroy {
+  public form: FormGroup;
   public establishment: any;
   public reportDetails: {};
   public lastLoggedIn = null;
@@ -21,10 +25,20 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private reportsService: ReportsService
-  ) {}
+    private reportsService: ReportsService,
+    private formBuilder: FormBuilder,
+  ) {
+    this.formValidator = this.formValidator.bind(this);
+  }
 
   ngOnInit() {
+    this.form = this.formBuilder.group({
+      day: null,
+      month: null,
+      year: null,
+    });
+    this.form.setValidators(Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator]));
+
     this.establishment = this.authService.establishment;
 
     this.subscriptions.add(
@@ -43,15 +57,35 @@ export class ReportsComponent implements OnInit, OnDestroy {
       this.reportsService.getWDFReport()
       .subscribe(res => {
         this.eligibility = res;
-
-        this.reportsService.updateState(this.eligibility);
         this.displayWDFReport = true;
+        this.eligibility['displayWDFReport'] = this.displayWDFReport;
+        this.reportsService.updateState(this.eligibility);
       })
     );
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  formValidator(formGroup: FormGroup): ValidationErrors {
+    if (this.form) {
+      const { day, month, year } = this.form.value;
+
+      if (day && month && year) {
+        const date = moment()
+          .year(year)
+          .month(month - 1)
+          .date(day);
+        if (date.isValid()) {
+          // TODO: https://trello.com/c/sYDV6vTN
+          // Cross Validation
+
+        }
+      }
+    }
+
+    return null;
   }
 
 }

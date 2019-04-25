@@ -1,12 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
+import { ReportsService } from '@core/services/reports.service';
 
 @Component({
   templateUrl: './edit-worker.component.html',
 })
 export class EditWorkerComponent implements OnInit, OnDestroy {
-  constructor(private route: ActivatedRoute, private workerService: WorkerService) {}
+  public reportDetails: {};
+
+  constructor(
+    private route: ActivatedRoute,
+    private workerService: WorkerService,
+    private reportsService: ReportsService
+  ) {}
 
   ngOnInit() {
     this.workerService.setState(this.route.snapshot.data.worker);
@@ -15,5 +22,6 @@ export class EditWorkerComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.workerService.setState(null);
     this.workerService.setReturnToSummary(false);
+    this.reportsService.updateState(null);
   }
 }

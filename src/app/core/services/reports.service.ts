@@ -4,7 +4,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { EstablishmentService } from './establishment.service';
 
-
 @Injectable({
   providedIn: 'root'
 })
