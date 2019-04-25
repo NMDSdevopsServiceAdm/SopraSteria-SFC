@@ -44,11 +44,23 @@
         <h1 class="h1">{{ worker.nameOrId }}</h1>
       </div>
       <div class="col-md-4 text-right">
-        <a href="#" (click)="deleteWorker($event)" class="delete">
-          <img src="/assets/img/bin.svg" />Delete staff record
-        </a>
+          <a href="#" (click)="deleteWorker($event)" class="delete">
+            <img src="/assets/img/bin.svg" />Delete staff record
+          </a>
+          <a
+            *ngIf="!worker.completed"
+            [routerLink]="[
+              '/worker',
+              worker.uid,
+              worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
+            ]"
+            role="button"
+            class="btn btn-primary mt-5"
+            >Complete Full Record</a
+          >
       </div>
     </div>
+
     <app-tabs>
       <app-tab title="Staff Record">
         <app-basic-record [worker]="worker"></app-basic-record>
@@ -71,7 +83,9 @@
           class="govuk-button govuk-button--secondary"
           >Add training</a
         >
-        <p class="mb-5"><img src="/assets/img/icon-information.svg" /> Adding additional qualifications or training is optional.</p>
+        <p class="mb-5">
+          <img src="/assets/img/icon-information.svg" /> Adding additional qualifications or training is optional.
+        </p>
         <app-qualifications [worker]="worker"></app-qualifications>
         <app-training [worker]="worker"></app-training>
       </app-tab>
