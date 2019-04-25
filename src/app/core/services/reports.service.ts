@@ -16,9 +16,14 @@ export class ReportsService {
     private establishmentService: EstablishmentService
   ) {}
 
-  getWDFReport() {
+  getWDFReport(updatedEffectiveFrom?) {
+
+    if (updatedEffectiveFrom) {
+      const effectiveFrom = 'effectiveFrom=2019-03-01T12:30:00.000Z';
+    }
+
     return this.http.get<any>(
-      `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}`
+      `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}?effectiveFrom`
     );
   }
 

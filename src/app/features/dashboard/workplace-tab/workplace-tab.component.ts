@@ -43,8 +43,6 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.reportsService.reportDetails$.subscribe(reportDetails => this.reportDetails = reportDetails)
     );
-
-    console.log(this.subscriptions);
   }
 
   ngOnDestroy(): void {
