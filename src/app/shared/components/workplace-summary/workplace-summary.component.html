@@ -301,12 +301,12 @@
       New starters
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="isArray(workplace.Vacancies)">
+      <ng-container *ngIf="isArray(workplace.Starters)">
         <ul>
-          <li *ngFor="let vacancy of workplace.Vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
+          <li *ngFor="let vacancy of workplace.Starters">{{ vacancy.total }} {{ vacancy.title }}</li>
         </ul>
       </ng-container>
-      <ng-container *ngIf="!isArray(workplace.Vacancies)">
+      <ng-container *ngIf="!isArray(workplace.Starters)">
 
         <ng-container *ngIf="displayWDFReport">
           <ng-container *ngIf="workplace.wdf.starters === 'No'">
