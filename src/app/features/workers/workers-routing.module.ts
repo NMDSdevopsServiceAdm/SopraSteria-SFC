@@ -6,6 +6,7 @@ import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
+import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
@@ -56,6 +57,10 @@ const routes: Routes = [
   {
     path: 'create-basic-records',
     component: CreateBasicRecordsComponent,
+  },
+  {
+    path: 'basic-records-save-success',
+    component: BasicRecordsSaveSuccessComponent,
   },
   {
     path: 'create-staff-record',

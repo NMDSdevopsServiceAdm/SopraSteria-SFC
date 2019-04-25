@@ -61,6 +61,7 @@ import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-su
 import { WorkerResolver } from './worker.resolver';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule, OverlayModule],
@@ -113,6 +114,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     QualificationsComponent,
     QualificationFormComponent,
     TotalStaffComponent,
+    BasicRecordsSaveSuccessComponent,
   ],
   providers: [WorkerResolver, DialogService],
   entryComponents: [DeleteTrainingDialogComponent, DeleteQualificationDialogComponent, DeleteWorkerDialogComponent],

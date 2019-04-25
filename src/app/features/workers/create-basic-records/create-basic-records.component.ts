@@ -128,7 +128,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
 
     if (this.form.valid || this.staffRecordsControl.length === 0) {
       this.workerService.setCreateStaffResponse(this.staffRecordsControl.length);
-      this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+      this.router.navigate(['/worker', 'basic-records-save-success']);
     } else {
       const unsavedIndex = this.staffRecordsControl.controls.findIndex(control => {
         return isNull(control.get('uid').value);
