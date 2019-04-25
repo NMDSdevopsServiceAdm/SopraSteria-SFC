@@ -49,6 +49,17 @@
         </a>
       </div>
     </div>
+    <a
+      *ngIf="!worker.completed"
+      [routerLink]="[
+        '/worker',
+        worker.uid,
+        worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
+      ]"
+      role="button"
+      class="btn btn-primary"
+      >Complete Full Record</a
+    >
     <app-tabs>
       <app-tab title="Staff Record">
         <app-basic-record [worker]="worker"></app-basic-record>
@@ -71,7 +82,9 @@
           class="govuk-button govuk-button--secondary"
           >Add training</a
         >
-        <p class="mb-5"><img src="/assets/img/icon-information.svg" /> Adding additional qualifications or training is optional.</p>
+        <p class="mb-5">
+          <img src="/assets/img/icon-information.svg" /> Adding additional qualifications or training is optional.
+        </p>
         <app-qualifications [worker]="worker"></app-qualifications>
         <app-training [worker]="worker"></app-training>
       </app-tab>
