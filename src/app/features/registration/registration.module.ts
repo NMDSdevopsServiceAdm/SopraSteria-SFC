@@ -14,16 +14,18 @@ import { SelectWorkplaceComponent } from '@features/registration/select-workplac
 import { SharedModule } from '@shared/shared.module';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { RegistrationRoutingModule } from '@features/registration/registration-routing.module';
+import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule],
   declarations: [
     ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
-    RegulatedByCqcComponent,
     CreateUsernameComponent,
     EnterWorkplaceAddressComponent,
+    FindWorkplaceAddressComponent,
     RegistrationCompleteComponent,
+    RegulatedByCqcComponent,
     SecurityQuestionComponent,
     SelectMainServiceComponent,
     SelectWorkplaceAddressComponent,
