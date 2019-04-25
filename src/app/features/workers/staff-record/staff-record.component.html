@@ -44,22 +44,23 @@
         <h1 class="h1">{{ worker.nameOrId }}</h1>
       </div>
       <div class="col-md-4 text-right">
-        <a href="#" (click)="deleteWorker($event)" class="delete">
-          <img src="/assets/img/bin.svg" />Delete staff record
-        </a>
+          <a href="#" (click)="deleteWorker($event)" class="delete">
+            <img src="/assets/img/bin.svg" />Delete staff record
+          </a>
+          <a
+            *ngIf="!worker.completed"
+            [routerLink]="[
+              '/worker',
+              worker.uid,
+              worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
+            ]"
+            role="button"
+            class="btn btn-primary mt-5"
+            >Complete Full Record</a
+          >
       </div>
     </div>
-    <a
-      *ngIf="!worker.completed"
-      [routerLink]="[
-        '/worker',
-        worker.uid,
-        worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
-      ]"
-      role="button"
-      class="btn btn-primary"
-      >Complete Full Record</a
-    >
+
     <app-tabs>
       <app-tab title="Staff Record">
         <app-basic-record [worker]="worker"></app-basic-record>

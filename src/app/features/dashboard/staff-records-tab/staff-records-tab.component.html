@@ -39,7 +39,7 @@
           <th class="govuk-table__header" scope="col">Staff name</th>
           <th class="govuk-table__header" scope="col">Job role</th>
           <th class="govuk-table__header" scope="col">Last updated</th>
-          <th *ngIf="totalStaff === workers?.length" class="govuk-table__header" scope="col">Status</th>
+          <th class="govuk-table__header" scope="col"></th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -49,7 +49,7 @@
           </td>
           <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
           <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
-          <td *ngIf="totalStaff === workers?.length" class="govuk-table__cell">
+          <td class="govuk-table__cell">
             <a
               *ngIf="!worker.completed"
               [routerLink]="[
@@ -57,7 +57,7 @@
                 worker.uid,
                 worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
               ]"
-              class="icon-link icon-flag"
+              style="white-space: nowrap;"
               >Provide more information</a
             >
           </td>
