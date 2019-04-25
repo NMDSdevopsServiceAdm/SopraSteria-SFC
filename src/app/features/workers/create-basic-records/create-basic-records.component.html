@@ -24,7 +24,7 @@
           <button type="button" class="btn btn-link" (click)="deleteStaffRecord(i)">Delete</button>
         </div>
         <div class="tb-cell text-right col-2 pt-2 pb-0">
-          <button *ngIf="!staffRecord.get('active').value" type="button" class="btn btn-link"  (click)="openStaffRecord(i)">Change</button>
+          <button *ngIf="!staffRecord.get('active').value" type="button" class="btn btn-link"  (click)="openStaffRecord(i)">View or Change</button>
         </div>
 
         <div class="form-group border-line-top" *ngIf="staffRecord.get('active').value">
