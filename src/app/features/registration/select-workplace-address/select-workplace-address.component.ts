@@ -82,7 +82,6 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
 
   private onLocationChange(addressLine1: string): void {
     const selectedLocation: LocationAddress = filter(this.locationAddresses, ['addressLine1', addressLine1])[0];
-    console.log('selectedLocation', selectedLocation);
     this.registrationService.selectedLocationAddress$.next(selectedLocation);
   }
 
