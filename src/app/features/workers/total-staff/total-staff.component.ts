@@ -22,7 +22,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      totalStaff: [null, [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(0), Validators.max(999)]],
+      totalStaff: [null, [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(1), Validators.max(999)]],
     });
 
     this.subscriptions.add(
@@ -59,9 +59,9 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
       } else if (totalStaff.errors.pattern) {
         this.messageService.show('error', 'Total Staff must be a number');
       } else if (totalStaff.errors.min) {
-        this.messageService.show('error', `Total Staff must be greater than ${totalStaff.errors.min.min}`);
+        this.messageService.show('error', `Total Staff must be greater than or equal to ${totalStaff.errors.min.min}`);
       } else if (totalStaff.errors.max) {
-        this.messageService.show('error', `Total Staff must be lower than ${totalStaff.errors.max.max}`);
+        this.messageService.show('error', `Total Staff must be lower than or equal to ${totalStaff.errors.max.max}`);
       }
     }
   }
