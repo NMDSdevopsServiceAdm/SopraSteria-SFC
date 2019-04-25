@@ -303,7 +303,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="isArray(workplace.Starters)">
         <ul>
-          <li *ngFor="let vacancy of workplace.Starters">{{ vacancy.total }} {{ vacancy.title }}</li>
+          <li *ngFor="let starter of workplace.Starters">{{ starter.total }} {{ starter.title }}</li>
         </ul>
       </ng-container>
       <ng-container *ngIf="!isArray(workplace.Starters)">
