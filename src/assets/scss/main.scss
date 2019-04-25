@@ -231,3 +231,10 @@ p {
   font-weight: normal;
   padding-left: 50px;
 }
+
+.dib.icon-link {
+  &:before {
+    vertical-align: inherit;
+  }
+}
+

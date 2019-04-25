@@ -27,8 +27,8 @@ export class ChangeUserSummaryComponent implements OnInit, OnDestroy {
 
   getUsername() {
     this.subscriptions.add(
-      this._userService.getUsernameFromEstbId().subscribe(data => {
-        this.username = data.users[0].username;
+      this.authService.auth$.subscribe(data => {
+        this.username = data.username;
 
         this.getUserSummary();
       })

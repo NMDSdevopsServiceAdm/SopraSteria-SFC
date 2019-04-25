@@ -87,7 +87,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.authService.postLogin(this.login).subscribe(
         response => {
+          response.body['username'] = this.usernameValue;
           this.authService.updateState(response.body);
+
 
           // // update the establishment service state with the given establishment oid
           this.establishmentService.establishmentId = response.body.establishment.id;

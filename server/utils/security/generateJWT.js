@@ -22,7 +22,6 @@ exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, username, rol
 // this re-generates the login JWT
 exports.regenerateLoginToken = (ttlMinutes, req) => {
 
-  console.log("WA DEBUG - establishment: ", req.establishment)
   var claims = {
     EstblishmentId: req.establishment.id,
     EstablishmentUID: req.establishment.uid ? req.establishment.uid : null,

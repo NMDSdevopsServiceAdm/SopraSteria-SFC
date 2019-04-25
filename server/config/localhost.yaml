@@ -9,7 +9,7 @@ db:
     ssl: false
 
     client_ssl:
-        status: true
+        status: false
         # certificate: 'E:/mycert.crt'
         # key: 'E:/mykey.key'
         # ca: 'E:/myca.crt'
