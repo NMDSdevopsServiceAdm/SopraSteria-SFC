@@ -40,7 +40,6 @@ export class StaffDetailsComponent implements OnInit, OnDestroy {
     });
 
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      console.log(worker);
       if (worker) {
         this.worker = worker;
 
