@@ -39,7 +39,8 @@
           <th class="govuk-table__header" scope="col">Staff name</th>
           <th class="govuk-table__header" scope="col">Job role</th>
           <th class="govuk-table__header" scope="col">Last updated</th>
-          <th class="govuk-table__header" scope="col"></th>
+          <th *ngIf="!displayWDFReport" class="govuk-table__header" scope="col"></th>
+          <th *ngIf="displayWDFReport" class="govuk-table__header" scope="col">WDF</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -49,7 +50,7 @@
           </td>
           <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
           <td class="govuk-table__cell">{{ worker.updated | amTimeAgo }}</td>
-          <td class="govuk-table__cell">
+          <td *ngIf="!displayWDFReport" class="govuk-table__cell">
             <a
               *ngIf="!worker.completed"
               [routerLink]="[
@@ -60,6 +61,10 @@
               style="white-space: nowrap;"
               >Provide more information</a
             >
+          </td>
+          <td *ngIf="displayWDFReport" class="govuk-table__cell">
+            <p class="main-body-text col-12 m-0 p-0" *ngIf="worker.wdfEligible"><img src="/assets/img/tick-icon.svg" /> Meeting criteria</p>
+            <p class="main-body-text col-12 m-0 p-0" *ngIf="!worker.wdfEligible"><img src="/assets/img/cross-icon.svg" /> Not meeting criteria</p>
           </td>
         </tr>
       </tbody>

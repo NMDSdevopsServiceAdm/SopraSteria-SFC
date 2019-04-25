@@ -5,6 +5,8 @@ import { DialogService } from '@core/services/dialog.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { ReportsService } from '@core/services/reports.service';
+import * as moment from 'moment';
 
 import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 
@@ -21,9 +23,16 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public qualificationEdited = false;
   public qualificationDeleted = false;
   private worker: Worker;
+  public reportDetails: {};
+  public updatedDate: any;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private router: Router, private dialogService: DialogService, private workerService: WorkerService) {}
+  constructor(
+    private router: Router,
+    private dialogService: DialogService,
+    private workerService: WorkerService,
+    private reportsService: ReportsService
+  ) {}
 
   ngOnInit() {
     this.subscriptions.add(
@@ -31,6 +40,14 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         this.worker = worker;
       })
     );
+
+    this.subscriptions.add(
+      this.reportsService.reportDetails$.subscribe(reportDetails => this.reportDetails = reportDetails)
+    );
+
+    if (this.reportDetails != null && this.reportDetails.hasOwnProperty('displayWDFReport')) {
+      this.reportDetails['displayWDFReport'] = true;
+    }
 
     this.trainingRecordCreated = this.workerService.getTrainingRecordCreated();
     this.trainingRecordEdited = this.workerService.getTrainingRecordEdited();
@@ -53,6 +70,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         this.qualificationDeleted = bool;
       })
     );
+
+    this.setDate();
   }
 
   ngOnDestroy() {
@@ -63,6 +82,10 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.workerService.resetQualificationEdited();
     this.workerService.setQualificationDeleted(false);
     this.subscriptions.unsubscribe();
+  }
+
+  setDate() {
+    this.updatedDate = moment(this.worker.updated).format('LL');
   }
 
   deleteWorker(event) {

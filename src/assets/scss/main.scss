@@ -171,8 +171,70 @@ p {
   }
 }
 
+.tick-icon {
+  &:before {
+    background-image: url('/assets/img/tick-icon.svg');
+  }
+}
+
+.cross-icon {
+  &:before {
+    background-image: url('/assets/img/cross-icon.svg');
+  }
+}
+
+/* ---- Warning Text .Gov ---- */
+.govuk-warning-text {
+  @include rem(font-size, 19px);
+  color: $black;
+
+  position: relative;
+  @include rem(margin-bottom, 30px);
+  @include rem(padding, 10px 0);
+}
+
+.govuk-warning-text__icon {
+  @include rem(font-size, 1.6em);
+  font-weight: bold;
+
+  display: inline-block;
+
+  position: absolute;
+  top: 50%;
+  left: 0;
+
+  min-width: 34px;
+  min-height: 34px;
+  margin-top: -20px; // Half the height of the circle (adjusted for NTA)
+  padding-top: 0;
+
+  // When a user customises their colours the background colour will often be removed.
+  // Adding a border to the component keeps it's shape as a circle.
+  border: 3px solid $black;
+  border-radius: 50%;
+
+  color: $white;
+  background: $black;
+
+  font-size: 1.6em;
+  line-height: 29px;
+
+  text-align: center;
+
+  // Prevent the exclamation mark from being included when the warning text
+  // is copied, for example.
+  user-select: none;
+}
+
+.govuk-warning-text__text {
+  display: block;
+  font-weight: normal;
+  padding-left: 50px;
+}
+
 .dib.icon-link {
   &:before {
     vertical-align: inherit;
   }
 }
+
