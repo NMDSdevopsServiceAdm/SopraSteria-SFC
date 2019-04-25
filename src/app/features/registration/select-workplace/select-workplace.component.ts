@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { RegistrationService } from '@core/services/registration.service';
-import { LocationAddress } from '@core/model/location-address.model';
+import { LocationAddress } from '@core/model/location.model';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { filter } from 'lodash';

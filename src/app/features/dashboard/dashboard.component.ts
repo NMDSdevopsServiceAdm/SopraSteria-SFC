@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
-import { AuthService } from '@core/services/auth-service';
+import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({

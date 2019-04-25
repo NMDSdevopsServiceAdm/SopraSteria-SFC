@@ -4,7 +4,7 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { LocationAddress } from '@core/model/location-address.model';
+import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
 import { RegistrationService } from '@core/services/registration.service';

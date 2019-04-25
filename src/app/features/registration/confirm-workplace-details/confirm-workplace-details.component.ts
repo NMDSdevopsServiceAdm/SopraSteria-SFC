@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { RegistrationService } from '../../../core/services/registration.service';
 import { Subscription } from 'rxjs';
-import { LocationAddress } from '@core/model/location-address.model';
+import { LocationAddress } from '@core/model/location.model';
 import { WorkplaceService } from '@core/model/workplace-service.model';
 
 @Component({

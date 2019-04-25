@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LocationAddress } from '@core/model/location-address.model';
+import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';

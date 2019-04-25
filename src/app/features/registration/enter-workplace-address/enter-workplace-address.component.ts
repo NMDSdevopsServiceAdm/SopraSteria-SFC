@@ -4,8 +4,7 @@ import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/fo
 import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 
-import { RegistrationService } from '../../../core/services/registration.service';
-import { RegistrationModel } from '../../../core/model/registration.model';
+import { RegistrationService } from '@core/services/registration.service';
 
 @Component({
   selector: 'app-enter-workplace-address',
@@ -14,7 +13,6 @@ import { RegistrationModel } from '../../../core/model/registration.model';
 })
 export class EnterWorkplaceAddressComponent implements OnInit {
   enterWorkplaceAddressForm: FormGroup;
-  registration: RegistrationModel;
 
   currentSection: number;
   lastSection: number;
@@ -113,8 +111,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
       wpNameInput: ['', [Validators.required, Validators.maxLength(120)]]
     });
 
-    this._registrationService.registration$.subscribe(registration => this.registration = registration);
-
     this.loadExistingValues();
 
     // -- START -- Validation check watchers
@@ -198,8 +194,6 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     );
 
     // -- END -- Validation check watchers
-
-    this.setSectionNumbers();
   }
 
   // -- START -- Set validation handlers
@@ -266,22 +260,22 @@ export class EnterWorkplaceAddressComponent implements OnInit {
 
   loadExistingValues() {
 
-    if ((this.registration.locationdata[0].hasOwnProperty('locationName')) && (this.registration.locationdata[0].locationName === '')) {
-      const postcodeValue = this.registration.locationdata[0].postalCode;
-      const address1Value = this.registration.locationdata[0].addressLine1;
-      const address2Value = this.registration.locationdata[0].addressLine2;
-      const townCityValue = this.registration.locationdata[0].townCity;
-      const countyValue = this.registration.locationdata[0].county;
-
-      this.enterWorkplaceAddressForm.setValue({
-        postcodeInput: postcodeValue,
-        address1Input: address1Value,
-        address2Input: address2Value,
-        townCityInput: townCityValue,
-        countyInput: countyValue,
-        wpNameInput: '',
-      });
-    }
+    // if ((this.registration.locationdata[0].hasOwnProperty('locationName')) && (this.registration.locationdata[0].locationName === '')) {
+    //   const postcodeValue = this.registration.locationdata[0].postalCode;
+    //   const address1Value = this.registration.locationdata[0].addressLine1;
+    //   const address2Value = this.registration.locationdata[0].addressLine2;
+    //   const townCityValue = this.registration.locationdata[0].townCity;
+    //   const countyValue = this.registration.locationdata[0].county;
+    //
+    //   this.enterWorkplaceAddressForm.setValue({
+    //     postcodeInput: postcodeValue,
+    //     address1Input: address1Value,
+    //     address2Input: address2Value,
+    //     townCityInput: townCityValue,
+    //     countyInput: countyValue,
+    //     wpNameInput: '',
+    //   });
+    // }
   }
 
   onSubmit() {
@@ -311,38 +305,17 @@ export class EnterWorkplaceAddressComponent implements OnInit {
     const countyValue = this.enterWorkplaceAddressForm.get('countyInput').value;
     const wpNameValue = this.enterWorkplaceAddressForm.get('wpNameInput').value;
 
-    // this._registrationService.registration$.subscribe(registration => this.registration = registration);
-
-    this.registration.locationdata[0]['postalCode'] = postcodeValue;
-    this.registration.locationdata[0]['addressLine1'] = address1Value;
-    this.registration.locationdata[0]['addressLine2'] = address2Value;
-    this.registration.locationdata[0]['townCity'] = townCityValue;
-    this.registration.locationdata[0]['county'] = countyValue;
-    this.registration.locationdata[0]['locationName'] = wpNameValue;
-
-    const updateRegistration = this.registration.locationdata[0];
-
-    this.updateSectionNumbers(this.registration);
-
-    this._registrationService.updateState(this.registration);
+    // this.registration.locationdata[0]['postalCode'] = postcodeValue;
+    // this.registration.locationdata[0]['addressLine1'] = address1Value;
+    // this.registration.locationdata[0]['addressLine2'] = address2Value;
+    // this.registration.locationdata[0]['townCity'] = townCityValue;
+    // this.registration.locationdata[0]['county'] = countyValue;
+    // this.registration.locationdata[0]['locationName'] = wpNameValue;
+    //
+    // const updateRegistration = this.registration.locationdata[0];
 
     this.router.navigate(['/registration/select-main-service']);
 
-  }
-
-  setSectionNumbers() {
-    this.currentSection = this.registration.userRoute.currentPage;
-    this.backLink = this.registration.userRoute.route[this.currentSection - 1];
-
-    this.currentSection = this.currentSection + 1;
-    this.lastSection = 8;
-  }
-
-  updateSectionNumbers(data) {
-    data['userRoute'] = this.registration.userRoute;
-    data.userRoute['currentPage'] = this.currentSection;
-    data.userRoute['route'] = this.registration.userRoute['route'];
-    data.userRoute['route'].push('/registration/enter-workplace-address');
   }
 
 }

@@ -20,6 +20,7 @@ import {
 } from '@features/registration/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
+import { FindWorkplaceAddressComponent } from '@features/registration/find-workplace-address/find-workplace-address.component';
 
 const routes: Routes = [
   {
@@ -68,6 +69,12 @@ const routes: Routes = [
     component: RegistrationCompleteComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Complete' },
+  },
+  {
+    path: 'find-workplace-address',
+    component: FindWorkplaceAddressComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Find Workplace Address' },
   },
   {
     path: 'select-workplace-address',
