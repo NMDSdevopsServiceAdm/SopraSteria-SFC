@@ -17,6 +17,7 @@ import { ReportsComponent } from '@features/reports/reports.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
 import { YourAccountComponent } from '@features/your-account/your-account.component';
+import { ChangePasswordComponent } from '@features/change-password/change-password.component';
 
 const routes: Routes = [
   {
