@@ -19,7 +19,7 @@ const TIMEOUT_INTERVAL = 1800;
 })
 export class LoginComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  login: LoginCredentials;
+  private login: LoginCredentials;
   public submitted = false;
   private subscriptions: Subscription = new Subscription();
   public formErrorsMap: Array<ErrorDetails>;
@@ -107,12 +107,16 @@ export class LoginComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private save(): void {
-    this.login.username = this.form.get('username').value;
-    this.login.password = this.form.get('password').value;
+  private getLoginCredentials(): LoginCredentials {
+    return {
+      username: this.form.get('username').value,
+      password: this.form.get('password').value,
+    };
+  }
 
+  private save(): void {
     this.subscriptions.add(
-      this.authService.postLogin(this.login).subscribe(
+      this.authService.postLogin(this.getLoginCredentials()).subscribe(
         response => {
           this.authService.updateState(response.body);
 
