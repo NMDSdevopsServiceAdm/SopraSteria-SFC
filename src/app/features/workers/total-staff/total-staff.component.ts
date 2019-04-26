@@ -26,8 +26,6 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.returnToDash = this.workerService.totalStaffReturn;
 
-    console.log(this.returnToDash);
-
     this.form = this.formBuilder.group({
       totalStaff: [null, [Validators.required, Validators.pattern('^[0-9]+$'), Validators.min(0), Validators.max(999)]],
     });
