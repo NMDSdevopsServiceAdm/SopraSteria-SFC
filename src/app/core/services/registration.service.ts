@@ -21,7 +21,7 @@ export class RegistrationService {
 
   constructor(private http: HttpClient) {}
 
-  public postRegistration(registrationPayload: RegistrationPayload): Observable<any> {
+  public postRegistration(registrationPayload: Array<RegistrationPayload>): Observable<any> {
     return this.http.post<any>('/api/registration/', registrationPayload);
   }
 
