@@ -80,6 +80,10 @@ export class LoginComponent implements OnInit, OnDestroy {
         message: 'User unauthorised - username or password is incorrect.',
       },
       {
+        name: 404,
+        message: 'User not found.',
+      },
+      {
         name: 503,
         message: 'Unable to authenticate user.',
       },

@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
     <app-error-summary
-      *ngIf="submitted && form.invalid"
+      *ngIf="(form.invalid || serverError) && submitted"
       [formErrorsMap]="formErrorsMap"
       [serverError]="serverError"
       [form]="form"
@@ -11,20 +11,23 @@
     <h1 class="govuk-heading-xl">Sign in</h1>
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-      <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('username').errors && submitted }">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="(form.get('username').errors || serverError) && submitted"
+      >
         <label class="govuk-label" for="username">
           Username
         </label>
         <span
           id="username-error"
           class="govuk-error-message"
-          *ngIf="form.get('username').errors?.required && submitted"
+          *ngIf="form.get('username').errors && submitted"
         >
           <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('username', 'required') }}
         </span>
         <input
           class="govuk-input"
-          [ngClass]="{ 'govuk-input--error': form.get('username').errors && submitted }"
+          [class.govuk-input--error]="(form.get('username').errors || serverError) && submitted"
           id="username"
           name="username"
           type="text"
@@ -32,20 +35,23 @@
         />
       </div>
 
-      <div class="govuk-form-group" [ngClass]="{ 'govuk-form-group--error': form.get('password').errors && submitted }">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="(form.get('password').errors || serverError) && submitted"
+      >
         <label class="govuk-label" for="password">
           Password
         </label>
         <span
           id="password-error"
           class="govuk-error-message"
-          *ngIf="form.get('password').errors?.required && submitted"
+          *ngIf="form.get('password').errors && submitted"
         >
           <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('password', 'required') }}
         </span>
         <input
           class="govuk-input"
-          [ngClass]="{ 'govuk-input--error': form.get('password').errors && submitted }"
+          [class.govuk-input--error]="(form.get('password').errors || serverError) && submitted"
           id="password"
           name="password"
           type="password"
