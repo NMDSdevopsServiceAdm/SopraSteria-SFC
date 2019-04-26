@@ -58,7 +58,6 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // TODO clean up / verify from api doc
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {

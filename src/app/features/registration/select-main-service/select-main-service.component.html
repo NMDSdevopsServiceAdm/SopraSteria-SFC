@@ -29,19 +29,17 @@
             </legend>
             <div class="govuk-radios">
               <div class="govuk-radios__item" *ngFor="let service of item.services; let i = index">
-                <div *ngIf="service.isCQC">
-                  <input
-                    class="govuk-radios__input"
-                    id="workplaceService-{{ i }}"
-                    value="{{ service.id }}"
-                    name="workplaceService"
-                    type="radio"
-                    formControlName="workplaceService"
-                  />
-                  <label class="govuk-label govuk-radios__label" for="workplaceService-{{ i }}">
-                    {{ service.name }}
-                  </label>
-                </div>
+                <input
+                  class="govuk-radios__input"
+                  id="workplaceService-{{ i }}"
+                  value="{{ service.id }}"
+                  name="workplaceService"
+                  type="radio"
+                  formControlName="workplaceService"
+                />
+                <label class="govuk-label govuk-radios__label" for="workplaceService-{{ i }}">
+                  {{ service.name }}
+                </label>
               </div>
             </div>
           </fieldset>

@@ -6,6 +6,7 @@ import { RegistrationPayload } from '@core/model/registration.model';
 import { WorkplaceService } from '@core/model/workplace-service.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { SecurityDetails } from '@core/model/security-details.model';
+import { WorkplaceCategory } from '@core/model/workplace-category.model';
 
 @Injectable({
   providedIn: 'root',
@@ -36,8 +37,8 @@ export class RegistrationService {
     return this.http.get<LocationSearchResponse>(`/api/postcodes/${postcode}`);
   }
 
-  public getServicesByCategory(isRegulated: boolean): Observable<any>  {
-    return this.http.get(`/api/services/byCategory?cqc=${isRegulated}`);
+  public getServicesByCategory(isRegulated: boolean): Observable<Array<WorkplaceCategory>> {
+    return this.http.get<Array<WorkplaceCategory>>(`/api/services/byCategory?cqc=${isRegulated}`);
   }
 
   public getUsernameDuplicate(id: string): Observable<any>  {
