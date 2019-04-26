@@ -1,7 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { CreateStaffRecordStartScreenComponent } from './create-staff-record-start-screen.component';
 
-describe('CreateStaffRecordComponent', () => {
+describe('CreateStaffRecordStartScreenComponent', () => {
   let component: CreateStaffRecordStartScreenComponent;
   let fixture: ComponentFixture<CreateStaffRecordStartScreenComponent>;
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 
@@ -6,7 +6,15 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
   selector: 'app-qualifications-and-training',
   templateUrl: './qualifications-and-training.component.html',
 })
-export class QualificationsAndTrainingComponent extends StaffRecordSummaryComponent {
+export class QualificationsAndTrainingComponent extends StaffRecordSummaryComponent implements OnInit {
+  @Input() reportDetails;
+
+  ngOnInit() {
+    if (this.reportDetails != null && this.reportDetails.hasOwnProperty('displayWDFReport')) {
+      this.reportDetails['displayWDFReport'] = true;
+    }
+  }
+
   get displaySocialCareQualifications() {
     return this.worker.qualificationInSocialCare === 'Yes';
   }

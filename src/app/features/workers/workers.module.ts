@@ -11,15 +11,19 @@ import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
+import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import {
+  CreateBasicRecordsStartScreenComponent,
+} from './create-basic-records-start-screen/create-basic-records-start-screen.component';
+import { CreateBasicRecordsComponent } from './create-basic-records/create-basic-records.component';
+import {
   CreateStaffRecordStartScreenComponent,
 } from './create-staff-record-start-screen/create-staff-record-start-screen.component';
-import { CreateStaffRecordComponent } from './create-staff-record/create-staff-record.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
@@ -55,6 +59,7 @@ import { StaffRecordSummaryComponent } from './staff-record-summary/staff-record
 import { QualificationsComponent } from './staff-record/qualifications/qualifications.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TrainingComponent } from './staff-record/training/training.component';
+import { TotalStaffComponent } from './total-staff/total-staff.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkerResolver } from './worker.resolver';
@@ -76,7 +81,8 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     ContractWithZeroHoursComponent,
     CountryOfBirthComponent,
     CreateStaffRecordStartScreenComponent,
-    CreateStaffRecordComponent,
+    CreateBasicRecordsComponent,
+    CreateBasicRecordsStartScreenComponent,
     DateOfBirthComponent,
     DaysOfSicknessComponent,
     DeleteSuccessComponent,
@@ -111,6 +117,8 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     YearArrivedUkComponent,
     QualificationsComponent,
     QualificationFormComponent,
+    TotalStaffComponent,
+    BasicRecordsSaveSuccessComponent,
   ],
   providers: [WorkerResolver, DialogService],
   entryComponents: [DeleteTrainingDialogComponent, DeleteQualificationDialogComponent, DeleteWorkerDialogComponent],

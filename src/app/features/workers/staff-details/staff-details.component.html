@@ -1,6 +1,6 @@
 <div class="main-page-container col-12">
     <div id="back" class="back-link">
-      <a [routerLink]="['/worker'].concat(backLink)">
+      <a [routerLink]="backLink">
         <span class="arrow"></span>Back
       </a>
     </div>
@@ -10,7 +10,7 @@
       [formGroup]="form">
 
       <header>
-        <h1 class="h1">Edit Staff Details</h1>
+        <h1 class="h1">{{ worker ? 'Edit' : 'Create' }} Staff Details</h1>
       </header>
 
       <app-messages></app-messages>

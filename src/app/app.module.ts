@@ -72,6 +72,10 @@ import { SelectMainServiceComponent } from './features/select-main-service/selec
 import { SelectWorkplaceAddressComponent } from './features/select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './features/select-workplace/select-workplace.component';
 import { UserDetailsComponent } from './features/user-details/user-details.component';
+import { ReportsComponent } from './features/reports/reports.component';
+import {
+  EligibilityDisplayOverviewComponent,
+} from './features/reports/eligibility-display-overview/eligibility-display-overview.component';
 
 @NgModule({
   declarations: [
@@ -115,6 +119,8 @@ import { UserDetailsComponent } from './features/user-details/user-details.compo
     ChangeUserSecurityComponent,
     HomeTabComponent,
     WorkplaceTabComponent,
+    EligibilityDisplayOverviewComponent,
+    ReportsComponent,
   ],
   imports: [
     BrowserModule,

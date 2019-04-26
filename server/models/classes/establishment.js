@@ -200,7 +200,7 @@ class Establishment {
                     locationId: this._locationId,
                     MainServiceFKValue: this.mainService.id,
                     nmdsId: this._nmdsId,
-                    updatedBy: savedBy,
+                    updatedBy: savedBy.toLowerCase(),
                     ShareDataValue: false,
                     shareWithCQC: false,
                     shareWithLA: false,
@@ -218,7 +218,7 @@ class Establishment {
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
                     //   why we cannot create an Establishment record with more properties
-                    const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
+                    const modifedCreationDocument = this._properties.save(savedBy.toLowerCase(), creationDocument);
 
                     // check all mandatory parameters have been provided
                     if (!this.hasMandatoryProperties) {
@@ -239,7 +239,7 @@ class Establishment {
                     // having the user we can now create the audit record; injecting the userFk
                     const allAuditEvents = [{
                         establishmentFk: this._id,
-                        username: savedBy,
+                        username: savedBy.toLowerCase(),
                         type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
                             return {
                                 ...thisEvent,
@@ -284,12 +284,12 @@ class Establishment {
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
                     // now append the extendable properties
-                    const modifedUpdateDocument = this._properties.save(savedBy, {});
+                    const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
                     const updateDocument = {
                         ...modifedUpdateDocument,
                         updated: updatedTimestamp,
-                        updatedBy: savedBy
+                        updatedBy: savedBy.toLowerCase()
                     };
 
                     // every time the establishment is saved, need to calculate
@@ -301,7 +301,7 @@ class Establishment {
                         console.log("WA DEBUG - updating this establishment's last WDF Eligible timestamp")
                         updateDocument.lastWdfEligibility = updatedTimestamp;
                         wdfAudit = {
-                            username: savedBy,
+                            username: savedBy.toLowerCase(),
                             type: 'wdfEligible'
                         };
                     }
@@ -324,13 +324,13 @@ class Establishment {
                         const updatedRecord = updatedRows[0].get({plain: true});
 
                         this._updated = updatedRecord.updated;
-                        this._updatedBy = savedBy;
+                        this._updatedBy = savedBy.toLowerCase();
                         this._id = updatedRecord.EstablishmentID;
 
                         // having updated the record, create the audit event
                         const allAuditEvents = [{
                             establishmentFk: this._id,
-                            username: savedBy,
+                            username: savedBy.toLowerCase(),
                             type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
                                 return {
                                     ...thisEvent,
@@ -383,10 +383,10 @@ class Establishment {
                         // For now, we'll recalculate on every update!
                         const completedProperty = this._properties.get('Completed');
                         if (this._properties.get('Completed') && this._properties.get('Completed').modified) {
-                            await WdfCalculator.calculate(savedBy, this._id, this._uid, thisTransaction);
+                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
                         } else {
                             // TODO - include Completed logic.
-                            await WdfCalculator.calculate(savedBy, this._id, this._uid, thisTransaction);
+                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
                         }
 
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
@@ -886,12 +886,14 @@ class Establishment {
     //  given effective date; otherwise returns false
     async isWdfEligible(effectiveFrom) {
         const wdfByProperty = await this.wdf(effectiveFrom);
+        const wdfPropertyValues = Object.values(wdfByProperty);
 
         // this establishment is eligible only if the last eligible date is later than the effective date
         //  the WDF by property will show the current eligibility of each property
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
             isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty !== 'No'),
             ... wdfByProperty
         };
     }
