@@ -4,14 +4,14 @@
   </div>
   <div class="col-md-8 text-align-right">
     <a
-      routerLink="/worker/start-screen"
+      routerLink="/worker/create-basic-records-start-screen"
       role="button"
       class="govuk-button govuk-button--secondary mr-5"
       style="border-width: 0 2px; padding: 0 10px;"
     >
       Add a basic record
     </a>
-    <a routerLink="/worker/create-staff-record" role="button" class="btn btn-primary">
+    <a routerLink="/worker/start-screen" role="button" class="btn btn-primary">
       Add a full record
     </a>
   </div>
@@ -30,7 +30,7 @@
     </app-status>
   </div>
 </div>
-<app-total-staff-panel [totalStaff]="totalStaff" [totalWorkers]="this.workers?.length"></app-total-staff-panel>
+<app-total-staff-panel [totalStaff]="totalStaff" [totalWorkers]="this.workers?.length" [returnToDash]="true"></app-total-staff-panel>
 <div class="row">
   <div class="col-12">
     <table class="govuk-table">

@@ -29,7 +29,9 @@
 
     <div class="btn-container container">
       <div class="row">
-        <button type="submit" class="btn btn-primary">Save and continue</button>
+        <button type="submit" class="btn btn-primary">
+          {{ returnToDash ? 'Save and return' : 'Save and continue' }}
+        </button>
         <a [routerLink]="['/dashboard']" fragment="staff-records" class="btn btn-link btn-link-no-underline col-md-3">
           Cancel
         </a>
