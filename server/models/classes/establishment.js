@@ -19,10 +19,13 @@ const ServiceFormatters = require('../api/services');
 // exceptions
 const EstablishmentExceptions = require('./establishment/establishmentExceptions');
 
-// User properties
+// Establishment properties
 const EstablishmentProperties = require('./establishment/establishmentProperties').EstablishmentPropertyManager;
 const JSON_DOCUMENT_TYPE = require('./user/userProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUMENT;
+
+// WDF Calculator
+const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
 class Establishment {
     constructor(username) {
@@ -42,6 +45,8 @@ class Establishment {
         this._isRegulated = null;
         this._mainService = null;
         this._nmdsId = null;
+        this._lastWdfEligibility = null;
+        this._overallWdfEligibility = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -195,7 +200,7 @@ class Establishment {
                     locationId: this._locationId,
                     MainServiceFKValue: this.mainService.id,
                     nmdsId: this._nmdsId,
-                    updatedBy: savedBy,
+                    updatedBy: savedBy.toLowerCase(),
                     ShareDataValue: false,
                     shareWithCQC: false,
                     shareWithLA: false,
@@ -213,7 +218,7 @@ class Establishment {
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
                     //   why we cannot create an Establishment record with more properties
-                    const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
+                    const modifedCreationDocument = this._properties.save(savedBy.toLowerCase(), creationDocument);
 
                     // check all mandatory parameters have been provided
                     if (!this.hasMandatoryProperties) {
@@ -234,7 +239,7 @@ class Establishment {
                     // having the user we can now create the audit record; injecting the userFk
                     const allAuditEvents = [{
                         establishmentFk: this._id,
-                        username: savedBy,
+                        username: savedBy.toLowerCase(),
                         type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
                             return {
                                 ...thisEvent,
@@ -279,13 +284,27 @@ class Establishment {
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
                     // now append the extendable properties
-                    const modifedUpdateDocument = this._properties.save(savedBy, {});
+                    const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
                     const updateDocument = {
                         ...modifedUpdateDocument,
                         updated: updatedTimestamp,
-                        updatedBy: savedBy
+                        updatedBy: savedBy.toLowerCase()
                     };
+
+                    // every time the establishment is saved, need to calculate
+                    //  it's current WDF Eligibility, and if it is eligible, update
+                    //  the last WDF Eligibility status
+                    const currentWdfEligibiity = await this.isWdfEligible(WdfCalculator.effectiveDate);
+                    let wdfAudit = null;
+                    if (currentWdfEligibiity.currentEligibility) {
+                        console.log("WA DEBUG - updating this establishment's last WDF Eligible timestamp")
+                        updateDocument.lastWdfEligibility = updatedTimestamp;
+                        wdfAudit = {
+                            username: savedBy.toLowerCase(),
+                            type: 'wdfEligible'
+                        };
+                    }
 
                     // now save the document
                     let [updatedRecordCount, updatedRows] =
@@ -305,19 +324,23 @@ class Establishment {
                         const updatedRecord = updatedRows[0].get({plain: true});
 
                         this._updated = updatedRecord.updated;
-                        this._updatedBy = savedBy;
+                        this._updatedBy = savedBy.toLowerCase();
                         this._id = updatedRecord.EstablishmentID;
 
+                        // having updated the record, create the audit event
                         const allAuditEvents = [{
                             establishmentFk: this._id,
-                            username: savedBy,
+                            username: savedBy.toLowerCase(),
                             type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
                                 return {
                                     ...thisEvent,
                                     establishmentFk: this._id
                                 };
                             }));
-                            // having updated the record, create the audit event
+                        if (wdfAudit) {
+                            wdfAudit.establishmentFk = this._id;
+                            allAuditEvents.push(wdfAudit);
+                        }    
                         await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
@@ -352,12 +375,26 @@ class Establishment {
                         });
                         await Promise.all(createModelPromises);
 
+                        // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
+                        // having updated the Establishment, check to see whether it is necessary to recalculate
+                        //  the overall WDF eligibility for this establishment and all its workers
+                        //  This decision is done based on if the Establishment is being marked as Completed.
+                        // There does not yet exist a Completed property for establishment.
+                        // For now, we'll recalculate on every update!
+                        const completedProperty = this._properties.get('Completed');
+                        if (this._properties.get('Completed') && this._properties.get('Completed').modified) {
+                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
+                        } else {
+                            // TODO - include Completed logic.
+                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
+                        }
+
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
+
 
                     } else {
                         throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update resulting establishment record with id: ${this._id}`);
                     }
-
                 });
                 
             } catch (err) {
@@ -500,26 +537,6 @@ class Establishment {
               ]
             );
 
-            // if history of the User is also required; attach the association
-            //  and order in reverse chronological - note, order on id (not when)
-            //  because ID is primay key and hence indexed
-            if (showHistory) {
-                fetchQuery.include.push({
-                    model: models.establishmentAudit,
-                    as: 'auditEvents'
-                });
-                fetchQuery.order = [
-                    [
-                        {
-                            model: models.establishmentAudit,
-                            as: 'auditEvents'
-                        },
-                        'id',
-                        'DESC'
-                    ]
-                ];
-            }
-
             const fetchResults = await models.establishment.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
@@ -540,6 +557,26 @@ class Establishment {
                     name: fetchResults.mainService.name
                 };
                 this._nmdsId = fetchResults.nmdsId;
+                this._lastWdfEligibility = fetchResults.lastWdfEligibility;
+                this._overallWdfEligibility = fetchResults.overallWdfEligibility;
+
+                // if history of the User is also required; attach the association
+                //  and order in reverse chronological - note, order on id (not when)
+                //  because ID is primay key and hence indexed
+                // There can be hundreds/thousands of audit history. The left joins
+                //   and multiple joins across tables incurs a hefty SQL
+                //   performance penalty if join audit data to.
+                // Therefore a separate fetch is used for audit data
+                if (showHistory) {
+                    fetchResults.auditEvents = await models.establishmentAudit.findAll({
+                        where: {
+                            establishmentFk: this._id
+                        },
+                        order: [
+                            ['id','DESC']
+                        ]
+                    });
+                }
 
                 // other services output requires a list of ALL services available to
                 //  the Establishment
@@ -702,7 +739,7 @@ class Establishment {
     //  or updated only)
     formatHistoryEvents(auditEvents) {
         if (auditEvents) {
-            return auditEvents.filter(thisEvent => ['created', 'updated'].includes(thisEvent.type))
+            return auditEvents.filter(thisEvent => ['created', 'updated', 'wdfEligible', 'overalWdfEligible'].includes(thisEvent.type))
                                .map(thisEvent => {
                                     return {
                                         when: thisEvent.when,
@@ -761,7 +798,6 @@ class Establishment {
                 myDefaultJSON.locationRef = this.locationId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
-                //myDefaultJSON.mainService = ServiceFormatters.singleService(this.mainService);
             }
 
             myDefaultJSON.created = this.created.toJSON();
@@ -851,21 +887,41 @@ class Establishment {
     async isWdfEligible(effectiveFrom) {
         const wdfByProperty = await this.wdf(effectiveFrom);
 
-        // this establishment is eligible only if none of the properties are not eligible (don't care if a property is "Not relevant")
+        // this establishment is eligible only if the last eligible date is later than the effective date
+        //  the WDF by property will show the current eligibility of each property
         return {
-            isEligible: Object.values(wdfByProperty).every(thisProperty => {
-                return !(thisProperty === 'No');
-            }),
+            lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
+            isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
             ... wdfByProperty
         };
     }
 
     _isPropertyWdfBasicEligible(refEpoch, property) {
+        const PER_PROPERTY_ELIGIBLE=0;
+        const RECORD_LEVEL_ELIGIBLE=1;
+        const COMPLETED_PROPERTY_ELIGIBLE=2;
+        const ELIGIBILITY_REFERENCE = RECORD_LEVEL_ELIGIBLE;
+
+        let referenceTime = null;
+
+        switch (ELIGIBILITY_REFERENCE) {
+            case PER_PROPERTY_ELIGIBLE:
+                referenceTime = property.savedAt.getTime();
+                break;
+            case RECORD_LEVEL_ELIGIBLE:
+                referenceTime = this._updated.getTime();
+                break;
+            case COMPLETED_PROPERTY_ELIGIBLE:
+                // there is no completed property (yet) - copy the code from '.../server/models/classes/worker.js' once there is
+                throw new Error('Establishment WDF by Completion is Not implemented');
+                break;
+        }
+
         return property &&
                property.property !== null &&
                property.valid &&
-               property.savedAt &&
-               property.savedAt.getTime() > refEpoch;
+               referenceTime !== null &&
+               referenceTime > refEpoch;
     }
 
     // returns the WDF eligibility of each WDF relevant property as referenced from
@@ -881,13 +937,35 @@ class Establishment {
         myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
         myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
 
-        // capacities eligibility is only relevant if the main service/other services are such that there
+        // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)
         //   are capacities. Otherwise, it (capacities eligibility) is not relevant.
         // All Known Capacities is available from the CapacityServices property JSON
         const hasCapacities = this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').toJSON(false, false).allServiceCapacities.length > 0 : false;
 
         if (hasCapacities) {
-            myWdf['capacities'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('CapacityServices')) ? 'Yes' : 'No';
+            // first validate whether any of the capacities are eligible - this is simply a check that capacities are valid.
+            const capacitiesProperty = this._properties.get('CapacityServices');
+            let capacitiesEligibility = this._isPropertyWdfBasicEligible(effectiveFromEpoch, capacitiesProperty);
+
+            // we're only interested in the main service capacities
+            const mainServiceCapacities = capacitiesProperty.toJSON(false, false).allServiceCapacities.filter(thisCapacity => {
+                const mainServiceCapacityRegex = /^Main Service \- /;
+                if (mainServiceCapacityRegex.test(thisCapacity.service)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+
+            if (mainServiceCapacities.length === 0) {
+                myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
+            } else {
+                // ensure all all main service's capacities have been answered - note, the can only be one Main Service capacity set
+                myWdf['capacities'] = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
+            }
+
+
+            myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
         } else {
             myWdf['capacities'] = 'Not relevant';
         }
@@ -902,9 +980,11 @@ class Establishment {
     }
 
     // returns the WDF eligibilty as JSON object
-    async wdfToJson(effectiveFrom) {
+    async wdfToJson() {
+        const effectiveFrom = WdfCalculator.effectiveDate;
         const myWDF = {
             effectiveFrom: effectiveFrom.toISOString(),
+            overalWdfEligible: this._overallWdfEligibility ? this._overallWdfEligibility.toISOString() : false,
             ... await this.isWdfEligible(effectiveFrom)
         };
         return myWDF;

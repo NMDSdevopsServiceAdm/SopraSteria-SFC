@@ -4,45 +4,21 @@
   </div>
 
   <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
-    <h1 class="h1">Create your staff records</h1>
+    <h1 class="h1">Create basic records</h1>
 
-    <div class="form-group">
-      <div class="field-group mb-5">
-        <label>
-          Total number of staff
-          <div *ngIf="form.controls.totalStaff.errors?.min || form.controls.totalStaff.errors?.max" class="alert alert-danger">
-            <p class="pt-4">Total number of staff must be between 0 and 999.</p>
-          </div>
-          <div *ngIf="form.controls.totalStaff.errors?.required" class="alert alert-danger">
-            <p class="pt-4">Total number of staff is required.</p>
-          </div>
-          <ng-container *ngIf="tempTotalStaff !== null">
-            <p *ngIf="tempTotalStaff === 0" class="mt-4">This is the total number of staff at your workplace.</p>
-            <p *ngIf="tempTotalStaff > 0" class="mt-4">This includes all the staff you have already told us you have.</p>
-          </ng-container>
-          <span class="example">This includes permanent, temporary, pool/bank or agency staff</span>
-          <input
-            type="number"
-            formControlName="totalStaff"
-            min="1"
-            max="999"
-            step="1"
-            class="form-control"
-            [ngClass]="{
-              'is-invalid':
-                (form.get('totalStaff').touched || form.get('totalStaff').dirty) && !form.get('totalStaff').valid
-            }"
-          />
-        </label>
-      </div>
-    </div>
+    <app-total-staff-panel
+      class="mb-5"
+      [totalStaff]="totalStaff"
+      [totalWorkers]="calculatedTotalStaff"
+    ></app-total-staff-panel>
 
-    <h3 class="h2 pb-2">Information about your staff</h3>
-    <div *ngIf="form.controls.staffRecords.errors?.required && submitted" class="alert alert-danger">
-        <p class="pt-4">At least 1 Staff record is required.</p>
-      </div>
+    <h3 class="h2 pb-2 pt-5">Information about your staff</h3>
     <div formArrayName="staffRecords" class="staff-records">
-      <div class="row staff-record fs-19" *ngFor="let staffRecord of form.get('staffRecords').controls; let i = index" [formGroupName]="i">
+      <div
+        class="row staff-record fs-19"
+        *ngFor="let staffRecord of form.get('staffRecords').controls; let i = index"
+        [formGroupName]="i"
+      >
         <div class="tb-cell col-2 pt-4 pb-4 pr-2">
           <strong>Staff record {{ i + 1 + totalWorkers }}</strong>
         </div>
@@ -53,14 +29,24 @@
           <button type="button" class="btn btn-link" (click)="deleteStaffRecord(i)">Delete</button>
         </div>
         <div class="tb-cell text-right col-2 pt-2 pb-0">
-          <button *ngIf="!staffRecord.get('active').value" type="button" class="btn btn-link"  (click)="openStaffRecord(i)">Change</button>
+          <button
+            *ngIf="!staffRecord.get('active').value"
+            type="button"
+            class="btn btn-link"
+            (click)="openStaffRecord(i)"
+          >
+            View or Change
+          </button>
         </div>
 
         <div class="form-group border-line-top" *ngIf="staffRecord.get('active').value">
           <div class="field-group mb-5">
             <label class="col-12 col-md-11 col-lg-8">
               Full name or ID number?
-              <div *ngIf="staffRecord.controls.nameOrId.errors && staffRecord.controls.nameOrId.touched" class="alert alert-danger">
+              <div
+                *ngIf="staffRecord.controls.nameOrId.errors && staffRecord.controls.nameOrId.touched"
+                class="alert alert-danger"
+              >
                 <p>Enter a full name or ID number</p>
               </div>
               <input type="text" formControlName="nameOrId" maxlength="50" class="form-control col-12" />
@@ -70,7 +56,10 @@
           <div class="field-group mb-5">
             <label>
               What is their main job role?
-              <div *ngIf="staffRecord.controls.mainJob.errors && staffRecord.controls.mainJob.touched" class="alert alert-danger">
+              <div
+                *ngIf="staffRecord.controls.mainJob.errors && staffRecord.controls.mainJob.touched"
+                class="alert alert-danger"
+              >
                 <p>Select a job role</p>
               </div>
               <select formControlName="mainJob" class="form-control">
@@ -85,7 +74,10 @@
           <div class="field-group mb-5">
             <label class="d-block">
               What type of contract do they have?
-              <div *ngIf="staffRecord.controls.contract.errors && staffRecord.controls.contract.touched" class="alert alert-danger">
+              <div
+                *ngIf="staffRecord.controls.contract.errors && staffRecord.controls.contract.touched"
+                class="alert alert-danger"
+              >
                 <p>Select a contract type</p>
               </div>
             </label>

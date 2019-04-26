@@ -38,6 +38,7 @@ class User {
         // localised attributes - optional on load
         this._username = null;
         this._password = null;
+        this._isPrimary - null;
 
         // abstracted properties
         const thisUserManager = new UserProperties();
@@ -127,6 +128,9 @@ class User {
     get updatedBy() {
         return this._updatedBy;
     }
+    get isPrimary() {
+        return this._auditEvents._isPrimary;
+    }
 
     get trackingId() {
         return this._trackingUUID;
@@ -165,6 +169,15 @@ class User {
             }
             if (document.password) {
                 this._password = escape(document.password);
+            }
+
+            if (document.isPrimary !== null) {
+                // by explicitly checking for "true", don't have to worry about any other value
+                if (document.isPrimary === true) {
+                    this._isPrimary = true;
+                } else {
+                    this._isPrimary = false;
+                }
             }
         } catch (err) {
             this._log(User.LOG_ERROR, `User::load - failed: ${err}`);
@@ -252,7 +265,7 @@ class User {
                 created: now.toISOString(),
                 expires: expiresIn.toISOString(),
                 uuid: this._trackingUUID,
-                by: savedBy
+                by: savedBy.toLowerCase()
             },
             {transaction}
         );
@@ -261,7 +274,7 @@ class User {
         await sendAddUserEmail(emailProperty, fullnameProperty, this._trackingUUID);
     }
 
-    // saves the User to DB. Returns true if saved; false is not.
+    // saves the User to DB. Returns true if saved; false if not.
     // Throws "UserSaveException" on error
     async save(savedBy, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
@@ -278,10 +291,18 @@ class User {
         if (mustSave && this._isNew) {
             // create new User
             try {
+                // TODO: change to a managed property
+                if (this._isPrimary === null) {
+                    this._isPrimary = false;        // isPrimary is only explicitly declared on registration and it is true
+                }
+
+                console.log("WA DEBUG - saving User - isPrimary: ", this._isPrimary)
+
                 const creationDocument = {
                     establishmentId: this._establishmentId,
                     uid: this.uid,
-                    updatedBy: savedBy,
+                    updatedBy: savedBy.toLowerCase(),
+                    isPrimary: this._isPrimary,
                     isAdmin: false,
                     archived: false,
                     attributes: ['id', 'created', 'updated'],
@@ -298,7 +319,7 @@ class User {
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
                     //   why we cannot create a User record with more properties
-                    const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
+                    const modifedCreationDocument = this._properties.save(savedBy.toLowerCase(), creationDocument);
 
                     // check all mandatory parameters have been provided
                     if (!this.hasMandatoryProperties) {
@@ -313,7 +334,7 @@ class User {
                     this._id = sanitisedResults.RegistrationID;
                     this._created = sanitisedResults.created;
                     this._updated = sanitisedResults.updated;
-                    this._updatedBy = savedBy;
+                    this._updatedBy = savedBy.toLowerCase();
                     this._isNew = false;
 
                     // create the associated Login record - if the username is known
@@ -365,7 +386,7 @@ class User {
                         // having the user we can now create the audit record; injecting the userFk
                         const allAuditEvents = [{
                             userFk: this._id,
-                            username: savedBy,
+                            username: savedBy.toLowerCase(),
                             type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
                                 return {
                                     ...thisEvent,
@@ -378,7 +399,7 @@ class User {
                     // send invitation email if the username is not known
                     if (this._username === null) {
                         // need to send an email having added an "Add User" tracking record
-                        await this.trackNewUser(savedBy, t, ttl);
+                        await this.trackNewUser(savedBy.toLowerCase(), t, ttl);
                     }
                     this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
                 });
@@ -406,12 +427,12 @@ class User {
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
                     // now append the extendable properties
-                    const modifedUpdateDocument = this._properties.save(savedBy, {});
+                    const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
                     const updateDocument = {
                         ...modifedUpdateDocument,
                         updated: updatedTimestamp,
-                        updatedBy: savedBy
+                        updatedBy: savedBy.toLowerCase()
                     };
 
                     // now save the document
@@ -431,7 +452,7 @@ class User {
                         const updatedRecord = updatedRows[0].get({plain: true});
 
                         this._updated = updatedRecord.updated;
-                        this._updatedBy = savedBy;
+                        this._updatedBy = savedBy.toLowerCase();
                         this._id = updatedRecord.RegistrationID;
 
                         // if we're updating a part added user (registered only not completed - username is not known)
@@ -439,14 +460,14 @@ class User {
                         //  and create another one, which includes sending an email with that tracking request.
                         if (this._username === null) {
                             // need to send an email having added an "Add User" tracking record
-                            await this.trackNewUser(savedBy, t, ttl);
+                            await this.trackNewUser(savedBy.toLowerCase(), t, ttl);
                         }
 
                         // only create the audit records for the new user the username is known
                         if (this._username !== null) {
                             const allAuditEvents = [{
                                 userFk: this._id,
-                                username: savedBy,
+                                username: savedBy.toLowerCase(),
                                 type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
                                     return {
                                         ...thisEvent,
@@ -560,26 +581,6 @@ class User {
                 };
             }
 
-            // if history of the User is also required; attach the association
-            //  and order in reverse chronological - note, order on id (not when)
-            //  because ID is primay key and hence indexed
-            if (showHistory) {
-                fetchQuery.include.push({
-                    model: models.userAudit,
-                    as: 'auditEvents'
-                });
-                fetchQuery.order = [
-                    [
-                        {
-                            model: models.userAudit,
-                            as: 'auditEvents'
-                        },
-                        'id',
-                        'DESC'
-                    ]
-                ];
-            }
-
             const fetchResults = await models.user.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
@@ -590,6 +591,23 @@ class User {
                 this._created = fetchResults.created;
                 this._updated = fetchResults.updated;
                 this._updatedBy = fetchResults.updatedBy;
+
+                // TODO: change to amanaged property
+                this._isPrimary - fetchResults.isPrimary;
+
+                // if history of the User is also required; attach the association
+                //  and order in reverse chronological - note, order on id (not when)
+                //  because ID is primay key and hence indexed
+                if (showHistory) {
+                    fetchResults.auditEvents = await models.userAudit.findAll({
+                        where: {
+                            userFk: this._id
+                        },
+                        order: [
+                            ['id','DESC']
+                        ]
+                    });
+                }
 
                 if (fetchResults.auditEvents) {
                     this._auditEvents = fetchResults.auditEvents;

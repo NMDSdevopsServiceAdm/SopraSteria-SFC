@@ -57,25 +57,10 @@ router.route('/:id').get(async (req, res) => {
       return res.status(400).send();
     }
 
-    let effectiveFrom = null;    
-    if(isLocal(req) && req.query.effectiveFrom) {
-        // can only override the WDF effective date in local dev/test environments
-        effectiveFrom = new Date(req.query.effectiveFrom);
-        
-        // NOTE - effectiveFrom must include milliseconds and trailing Z - e.g. ?effectiveFrom=2019-03-01T12:30:00.000Z
-
-        if (effectiveFrom.toISOString() !== req.query.effectiveFrom) {
-            console.error('report/wdf/establishment/:eID - effectiveFrom parameter incorrect');
-            return res.status(400).send();
-        }
-    } else {
-        effectiveFrom = WdfUtils.wdfEligibilityDate();
-    }
-
     const thisEstablishment = new Establishment.Establishment(req.username);
 
     try {
-        if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
+        if (await thisEstablishment.restore(byID, byUUID, showHistory && req.query.history !== 'property')) {
             // the property based framework for "other services" and "capacity services"
             //  is returning "allOtherServices" and "allServiceCapacities"
             //  we don't want those on the root GET establishment; only necessary for the
@@ -85,7 +70,7 @@ router.route('/:id').get(async (req, res) => {
             delete jsonResponse.allOtherServices;
             delete jsonResponse.allServiceCapacities;
 
-            if (!showHistory) jsonResponse.wdf = await thisEstablishment.wdfToJson(effectiveFrom);
+            if (!showHistory) jsonResponse.wdf = await thisEstablishment.wdfToJson();
 
             // need also to return the WDF eligibility
             return res.status(200).json(jsonResponse);

@@ -25,7 +25,16 @@
     <dt class="govuk-summary-list__key">
       Any social care qualification
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.qualificationInSocialCare === 'No'">
+        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.qualificationInSocialCare != 'No'">
+        {{ worker.qualificationInSocialCare || '-' }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       {{ worker.qualificationInSocialCare || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -71,7 +80,16 @@
     <dt class="govuk-summary-list__key">
       Non-social care qualification
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.otherQualification === 'No'">
+        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.otherQualification != 'No'">
+        {{ worker.otherQualification || '-' }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       {{ worker.otherQualification || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">

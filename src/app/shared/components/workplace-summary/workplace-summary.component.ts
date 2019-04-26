@@ -11,6 +11,7 @@ export class WorkplaceSummaryComponent {
   public capacityMessages = [];
   public pluralMap = [];
   private _workplace: any;
+  @Input() displayWDFReport: boolean;
 
   @Input()
   set workplace(workplace: any) {

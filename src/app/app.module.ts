@@ -10,56 +10,58 @@ import {
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
+import { AuthGuard } from '@core/services/auth-guard.service';
+import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
+import { CountryService } from '@core/services/country.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { EthnicityService } from '@core/services/ethnicity.service';
+import { FeedbackService } from '@core/services/feedback.service';
+import { HttpErrorHandler } from '@core/services/http-error-handler.service';
 import { HttpInterceptor } from '@core/services/http-interceptor';
+import { JobService } from '@core/services/job.service';
+import { LocalAuthorityService } from '@core/services/localAuthority.service';
+import { LocationService } from '@core/services/location.service';
+import { MessageService } from '@core/services/message.service';
+import { NationalityService } from '@core/services/nationality.service';
+import { QualificationService } from '@core/services/qualification.service';
+import { RecruitmentService } from '@core/services/recruitment.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { TitleService } from '@core/services/title.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
+import { ChangePasswordComponent } from '@features/change-password/change-password.component';
+import { ChangePasswordConfirmationComponent } from '@features/change-password/confirmation/confirmation.component';
+import { ChangePasswordEditComponent } from '@features/change-password/edit/edit.component';
+import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
+import { ChangeYourDetailsComponent } from '@features/change-your-details/change-your-details.component';
+import { ContactUsComponent } from '@features/contact-us/contact-us.component';
+import { DashboardComponent } from '@features/dashboard/dashboard.component';
+import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
+import { StaffRecordsTabComponent } from '@features/dashboard/staff-records-tab/staff-records-tab.component';
+import { WorkplaceTabComponent } from '@features/dashboard/workplace-tab/workplace-tab.component';
+import { FeedbackComponent } from '@features/feedback/feedback.component';
+import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
+import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/edit/edit.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
+import { LoginComponent } from '@features/login/login.component';
+import { LogoutComponent } from '@features/logout/logout.component';
+import {
+  EligibilityDisplayOverviewComponent,
+} from '@features/reports/eligibility-display-overview/eligibility-display-overview.component';
+import { ReportsComponent } from '@features/reports/reports.component';
+import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
+import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
+import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
+import { YourAccountComponent } from '@features/your-account/your-account.component';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthGuard } from './core/services/auth-guard.service';
-import { AuthInterceptor } from './core/services/auth-interceptor';
-import { CountryService } from './core/services/country.service';
-import { EstablishmentService } from './core/services/establishment.service';
-import { EthnicityService } from './core/services/ethnicity.service';
-import { FeedbackService } from './core/services/feedback.service';
-import { HttpErrorHandler } from './core/services/http-error-handler.service';
-import { JobService } from './core/services/job.service';
-import { LocalAuthorityService } from './core/services/localAuthority.service';
-import { LocationService } from './core/services/location.service';
-import { MessageService } from './core/services/message.service';
-import { NationalityService } from './core/services/nationality.service';
-import { QualificationService } from './core/services/qualification.service';
-import { RecruitmentService } from './core/services/recruitment.service';
-import { RegistrationService } from './core/services/registration.service';
-import { WorkerService } from './core/services/worker.service';
-import { ChangePasswordComponent } from './features/change-password/change-password.component';
-import { ChangePasswordConfirmationComponent } from './features/change-password/confirmation/confirmation.component';
-import { ChangePasswordEditComponent } from './features/change-password/edit/edit.component';
-import { ChangeYourDetailsComponent } from './features/change-your-details/change-your-details.component';
-import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
-import { ContactUsComponent } from './features/contact-us/contact-us.component';
-import { DashboardComponent } from './features/dashboard/dashboard.component';
-import { HomeTabComponent } from './features/dashboard/home-tab/home-tab.component';
-import { StaffRecordsTabComponent } from './features/dashboard/staff-records-tab/staff-records-tab.component';
-import { WorkplaceTabComponent } from './features/dashboard/workplace-tab/workplace-tab.component';
-import { FeedbackComponent } from './features/feedback/feedback.component';
-import {
-  ForgotYourPasswordConfirmationComponent,
-} from './features/forgot-your-password/confirmation/confirmation.component';
-import { ForgotYourPasswordEditComponent } from './features/forgot-your-password/edit/edit.component';
-import { ForgotYourPasswordComponent } from './features/forgot-your-password/forgot-your-password.component';
-import { LoginComponent } from './features/login/login.component';
-import { LogoutComponent } from './features/logout/logout.component';
-import { ResetPasswordConfirmationComponent } from './features/reset-password/confirmation/confirmation.component';
-import { ResetPasswordEditComponent } from './features/reset-password/edit/edit.component';
-import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
-import { YourAccountComponent } from './features/your-account/your-account.component';
 
 @NgModule({
   declarations: [
@@ -90,6 +92,8 @@ import { YourAccountComponent } from './features/your-account/your-account.compo
     ChangeUserSecurityComponent,
     HomeTabComponent,
     WorkplaceTabComponent,
+    EligibilityDisplayOverviewComponent,
+    ReportsComponent,
   ],
   imports: [
     BrowserModule,

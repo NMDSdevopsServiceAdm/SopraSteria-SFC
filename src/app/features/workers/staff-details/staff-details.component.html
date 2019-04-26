@@ -2,7 +2,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-xl">Edit Staff Details</h1>
+    <h1 class="govuk-heading-xl">{{ worker ? 'Edit' : 'Create' }} Staff Details</h1>
   </div>
 </div>
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -14,9 +14,9 @@
       Full name or ID number
     </label>
     <span *ngIf="submitted && form.get('nameOrId').errors" id="nameOrId-error" class="govuk-error-message">
-        <span class="govuk-visually-hidden">Error:</span>
-        {{ getFormErrorMessage('nameOrId', 'required') }}
-      </span>
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ getFormErrorMessage('nameOrId', 'required') }}
+    </span>
     <input
       class="govuk-input govuk-!-width-two-thirds"
       [class.govuk-input--error]="submitted && form.get('nameOrId').invalid"
@@ -31,9 +31,9 @@
       What is their main job role
     </label>
     <span *ngIf="submitted && form.get('mainJob').errors" id="mainJob-error" class="govuk-error-message">
-        <span class="govuk-visually-hidden">Error:</span>
-        {{ getFormErrorMessage('mainJob', 'required') }}
-      </span>
+      <span class="govuk-visually-hidden">Error:</span>
+      {{ getFormErrorMessage('mainJob', 'required') }}
+    </span>
     <select
       class="govuk-select"
       [class.govuk-select--error]="submitted && form.get('mainJob').invalid"
@@ -55,9 +55,9 @@
         </h1>
       </legend>
       <span *ngIf="submitted && form.get('contract').errors" id="contract-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          {{ getFormErrorMessage('contract', 'required') }}
-        </span>
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ getFormErrorMessage('contract', 'required') }}
+      </span>
       <div class="govuk-radios">
         <div *ngFor="let contract of contractsAvailable; let idx = index" class="govuk-radios__item">
           <input

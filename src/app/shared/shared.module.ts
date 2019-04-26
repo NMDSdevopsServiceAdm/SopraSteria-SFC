@@ -18,6 +18,7 @@ import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
+import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { NumberDigitsMax } from './directives/number-digits-max.directive';
 import { NumberIntOnly } from './directives/number-int-only.directive';
@@ -44,6 +45,7 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     SubmitButtonComponent,
     TabComponent,
     TabsComponent,
+    TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
     AbsoluteNumberPipe,
     NumberDigitsMax,
@@ -68,6 +70,7 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     SubmitButtonComponent,
     TabComponent,
     TabsComponent,
+    TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
     NumberDigitsMax,
     NumberIntOnly,

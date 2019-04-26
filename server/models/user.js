@@ -26,6 +26,12 @@ module.exports = function(sequelize, DataTypes) {
       default: false,
       field: '"Archived"'
     },
+    isPrimary: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      default: true,
+      field: '"IsPrimary"'
+    },
     FullNameValue: {
       type: DataTypes.TEXT,
       allowNull: false,

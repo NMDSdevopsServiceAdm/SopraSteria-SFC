@@ -39,24 +39,77 @@
       </app-inset-text>
     </ng-container>
     <div class="row">
+      <div class="col-md-12">
+        <h2 class="heading-caption text-weight-normal">
+          Staff record
+          <span *ngIf="reportDetails?.displayWDFReport">summary</span>
+        </h2>
+      </div>
       <div class="col-md-8">
-        <h2 class="heading-caption text-weight-normal">Staff record</h2>
         <h1 class="h1">{{ worker.nameOrId }}</h1>
       </div>
       <div class="col-md-4 text-right">
-        <a href="#" (click)="deleteWorker($event)" class="delete">
-          <img src="/assets/images/bin.svg" />Delete staff record
-        </a>
+        <ng-container *ngIf="!reportDetails?.displayWDFReport">
+          <a href="#" (click)="deleteWorker($event)" class="delete">
+            <img src="/assets/images/bin.svg" />Delete staff record
+          </a>
+          <a
+            *ngIf="!worker.completed"
+            [routerLink]="[
+              '/worker',
+              worker.uid,
+              worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
+            ]"
+            role="button"
+            class="btn btn-primary mt-5"
+            >Complete Full Record</a
+          >
+        </ng-container>
+        <p *ngIf="reportDetails?.displayWDFReport" class="mt-5">Last updated on {{ updatedDate }}</p>
       </div>
     </div>
+    <div class="row m-0" *ngIf="reportDetails?.displayWDFReport">
+      <p class="main-body-text col-12 m-0 p-0 tick-icon" *ngIf="worker.wdf.isEligible">
+        <img src="/assets/img/tick-icon.svg" /> Meeting criteria
+      </p>
+      <p class="main-body-text col-12 m-0 p-0 cross-icon" *ngIf="!worker.wdf.isEligible">
+        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+      </p>
+    </div>
+    <div class="row m-0" *ngIf="reportDetails?.displayWDFReport">
+      <div class="govuk-warning-text col-6 mt-5 mb-5">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <span class="govuk-warning-text__text">
+          You must update your ASC-WDS data before the 31 March 2020 to qualify for WDF.
+        </span>
+      </div>
+      <p>Check the information provided on this staff record is correct.</p>
+    </div>
+
     <app-tabs>
       <app-tab title="Staff Record">
-        <app-basic-record [worker]="worker" [return]="['/worker', worker.uid]"></app-basic-record>
-        <app-personal-details [worker]="worker" [return]="['/worker', worker.uid]"></app-personal-details>
-        <app-employment [worker]="worker" [return]="['/worker', worker.uid]"></app-employment>
+        <app-basic-record
+          [worker]="worker"
+          [return]="['/worker', worker.uid]"
+          [reportDetails]="reportDetails"
+        ></app-basic-record>
+        <app-personal-details
+          [worker]="worker"
+          [return]="['/worker', worker.uid]"
+          [reportDetails]="reportDetails"
+        ></app-personal-details>
+        <app-employment
+          [worker]="worker"
+          [return]="['/worker', worker.uid]"
+          [reportDetails]="reportDetails"
+        ></app-employment>
       </app-tab>
       <app-tab title="Qualifications and training">
-        <app-qualifications-and-training [worker]="worker" [return]="['/worker', worker.uid]"></app-qualifications-and-training>
+        <app-qualifications-and-training
+          [worker]="worker"
+          [return]="['/worker', worker.uid]"
+          [reportDetails]="reportDetails"
+        ></app-qualifications-and-training>
         <a
           [routerLink]="['/worker', worker.uid, 'add-qualification']"
           role="button"
@@ -71,7 +124,9 @@
           class="govuk-button govuk-button--secondary"
           >Add training</a
         >
-        <p class="mb-5"><img src="/assets/images/icon-information.svg" /> Adding additional qualifications or training is optional.</p>
+        <p>
+          <img src="/assets/images/icon-information.svg" /> Adding additional qualifications or training is optional.
+        </p>
         <app-qualifications [worker]="worker"></app-qualifications>
         <app-training [worker]="worker"></app-training>
       </app-tab>

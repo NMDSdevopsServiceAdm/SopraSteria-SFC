@@ -17,14 +17,15 @@ router.post('/',async function(req, res) {
    Login
       .findOne({
         where: {
-          username: req.body.username,
+          username: {
+            [models.Sequelize.Op.iLike] : req.body.username.toLowerCase()
+          },
           isActive:true
-        }
-        ,
+        },
         attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin'],
         include: [ {
           model: models.user,
-          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin','establishmentId', "UserRoleValue"],
+          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin', 'isPrimary', 'establishmentId', "UserRoleValue"],
           include: [{
             model: models.establishment,
             attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId'],
@@ -49,13 +50,14 @@ router.post('/',async function(req, res) {
           if (isMatch && !err) {
             const loginTokenTTL = config.get('jwt.ttl.login');
 
-            const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, req.body.username, login.user.UserRoleValue);
+            const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, req.body.username.toLowerCase(), login.user.UserRoleValue);
             var date = new Date().getTime();
             date += (loginTokenTTL * 60  * 1000);
    
             const response = formatSuccessulLoginResponse(
               login.user.FullNameValue,
               login.firstLogin,
+              login.user.isPrimary,
               login.lastLogin,
               login.user.UserRoleValue,
               login.user.establishment,
@@ -139,7 +141,9 @@ router.post('/',async function(req, res) {
               await models.userAudit.create(auditEvent, {transaction: t});
             });
 
-            return res.status(401).send({success: false, msg: 'Authentication failed.'});
+            return res.status(401).send({
+              message: 'Authentication failed.',
+            });
           }
         })
       })
@@ -150,11 +154,12 @@ router.post('/',async function(req, res) {
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, firstLoginDate, lastLoggedDate, role, establishment, mainService, expiryDate) => {
+const formatSuccessulLoginResponse = (fullname, firstLoginDate, isPrimary, lastLoggedDate, role, establishment, mainService, expiryDate) => {
   // note - the mainService can be null
   return {
     fullname,
     isFirstLogin: firstLoginDate ? false : true,
+    isPrimary,
     lastLoggedIn: lastLoggedDate ? lastLoggedDate.toISOString() : null,
     role,
     establishment: {

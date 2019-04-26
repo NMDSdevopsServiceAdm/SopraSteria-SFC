@@ -131,7 +131,6 @@ export class AuthService {
 
   updateState(data) {
     this._auth$.next(data);
-
     // TODO: because I don't understand how to extract data from the observable
     //      and I don't understand Denny's original intentions in storing the LoginCredentials
     //      which is the username/password rather than the login API response.

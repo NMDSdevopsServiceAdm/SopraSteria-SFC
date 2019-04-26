@@ -67,7 +67,23 @@
     <dt class="govuk-summary-list__key">
       Other job roles
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd *ngIf="reportDetails?.displayWDFReport"  class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.otherJobs === 'No'">
+        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.otherJobs != 'No'">
+        <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
+            -
+          </ng-template>
+          <ng-template #otherJobs>
+            <ul>
+              <li *ngFor="let otherJob of worker.otherJobs">{{ otherJob.title }}</li>
+            </ul>
+          </ng-template>
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
         -
       </ng-template>
@@ -95,7 +111,20 @@
     <dt class="govuk-summary-list__key">
       Recruited from
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.recruitedFrom === 'No'">
+        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.recruitedFrom != 'No'">
+          {{
+            worker.recruitedFrom?.from?.from !== null
+              ? worker.recruitedFrom?.from?.from
+              : worker.recruitedFrom?.value || '-'
+          }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       {{
         worker.recruitedFrom?.from?.from !== null
           ? worker.recruitedFrom?.from?.from
@@ -143,7 +172,16 @@
     <dt class="govuk-summary-list__key">
       Sickness in last 12 months
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.daysSick === 'No'">
+        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.daysSick != 'No'">
+        {{ worker.daysSick?.days !== '' ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       {{ worker.daysSick?.days !== '' ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -164,7 +202,16 @@
     <dt class="govuk-summary-list__key">
       Zero hours contract
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.zeroHoursContract === 'No'">
+        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.zeroHoursContract != 'No'">
+        {{ worker.zeroHoursContract || '-' }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       {{ worker.zeroHoursContract || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">

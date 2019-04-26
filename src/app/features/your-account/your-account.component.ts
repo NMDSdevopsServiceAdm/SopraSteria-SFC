@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UserService } from '../../core/services/user.service';
-import { AuthService } from '@core/services/auth.service';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserDetails } from '@core/model/userDetails.model';
+import { AuthService } from '@core/services/auth.service';
+import { UserService } from '@core/services/user.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-your-account-summary',

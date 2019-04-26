@@ -4,20 +4,19 @@ import { PageNotFoundComponent } from '@core/components/error/page-not-found/pag
 import {
   ProblemWithTheServiceComponent,
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { AuthGuard } from '@core/services/auth-guard.service';
+import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
+import { ChangeYourDetailsComponent } from '@features/change-your-details/change-your-details.component';
 import { ContactUsComponent } from '@features/contact-us/contact-us.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
+import { ReportsComponent } from '@features/reports/reports.component';
+import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
-
-import { AuthGuard } from './core/services/auth-guard.service';
-import { ChangePasswordComponent } from './features/change-password/change-password.component';
-import { ChangeYourDetailsComponent } from './features/change-your-details/change-your-details.component';
-import { ChangeUserSecurityComponent } from './features/change-user-security/change-user-security.component';
-import { ResetPasswordComponent } from './features/reset-password/reset-password.component';
-import { YourAccountComponent } from './features/your-account/your-account.component';
+import { YourAccountComponent } from '@features/your-account/your-account.component';
 
 const routes: Routes = [
   {
@@ -91,6 +90,11 @@ const routes: Routes = [
     data: { title: 'Workplace' },
   },
   {
+    path: 'reports',
+    component: ReportsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'worker',
     loadChildren: '@features/workers/workers.module#WorkersModule',
     canActivate: [AuthGuard],
@@ -112,6 +116,7 @@ const routes: Routes = [
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
+
   {
     path: '**',
     component: PageNotFoundComponent,
