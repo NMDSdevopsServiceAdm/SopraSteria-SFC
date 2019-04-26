@@ -886,12 +886,14 @@ class Establishment {
     //  given effective date; otherwise returns false
     async isWdfEligible(effectiveFrom) {
         const wdfByProperty = await this.wdf(effectiveFrom);
+        const wdfPropertyValues = Object.values(wdfByProperty);
 
         // this establishment is eligible only if the last eligible date is later than the effective date
         //  the WDF by property will show the current eligibility of each property
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
             isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty !== 'No'),
             ... wdfByProperty
         };
     }
