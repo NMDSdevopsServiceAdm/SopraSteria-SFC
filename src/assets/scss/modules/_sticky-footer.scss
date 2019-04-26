@@ -1,0 +1,14 @@
+app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  > * {
+    width: 100%
+  }
+
+  #main {
+    flex: 1 0 auto;
+  }
+}
