@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { FLOAT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -13,6 +14,8 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './weekly-contracted-hours.component.html',
 })
 export class WeeklyContractedHoursComponent extends QuestionComponent {
+  public floatPattern = FLOAT_PATTERN.toString();
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -21,6 +24,8 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
     protected workerService: WorkerService
   ) {
     super(formBuilder, router, backService, errorSummaryService, workerService);
+
+    this.floatPattern = this.floatPattern.substring(2, this.floatPattern.length - 2);
 
     this.form = this.formBuilder.group({
       hoursKnown: null,
@@ -76,6 +81,10 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
           {
             name: 'max',
             message: 'Contracted weekly hours must be between 0 and 65.',
+          },
+          {
+            name: 'pattern',
+            message: 'Contracted weekly hours must contain only numbers.',
           },
         ],
       },

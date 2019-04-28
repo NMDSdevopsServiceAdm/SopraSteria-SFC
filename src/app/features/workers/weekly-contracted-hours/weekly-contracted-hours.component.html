@@ -52,10 +52,12 @@
             id="hours"
             name="hours"
             type="number"
-            pattern="^[0-9]+$"
+            [pattern]="floatPattern"
           />
         </div>
       </div>
+
+      {{ form.get('hours').errors | json }}
 
       <div class="govuk-radios__item">
         <input
