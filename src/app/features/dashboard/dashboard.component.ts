@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
+import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 
@@ -10,7 +10,7 @@ import { UserService } from '@core/services/user.service';
 export class DashboardComponent implements OnInit {
   public establishment: any;
   public lastLoggedIn = null;
-  public dateFormat = DEFAULT_DATE_DISPLAY_FORMAT;
+  public dateFormat = DATE_DISPLAY_DEFAULT;
 
   constructor(private authService: AuthService, private userService: UserService) {}
 

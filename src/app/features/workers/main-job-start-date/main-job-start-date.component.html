@@ -24,6 +24,10 @@
           <span class="govuk-visually-hidden">Error:</span>
           {{ getFormErrorMessage('mainJobStartDate', 'todayOrBefore') }}
         </ng-container>
+        <ng-container *ngIf="form.get('mainJobStartDate').hasError('dateMin')">
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFormErrorMessage('mainJobStartDate', 'dateMin') }}
+        </ng-container>
       </span>
       <app-date-picker [formGroup]="form" formGroupName="mainJobStartDate"></app-date-picker>
     </fieldset>

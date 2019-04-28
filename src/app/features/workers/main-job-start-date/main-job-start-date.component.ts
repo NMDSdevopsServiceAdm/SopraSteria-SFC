@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DATE_PARSE_FORMAT } from '@core/constants/constants';
+import { DATE_DISPLAY_FULL, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -15,6 +15,8 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './main-job-start-date.component.html',
 })
 export class MainJobStartDateComponent extends QuestionComponent {
+  private dateMin = moment().subtract(100, 'years');
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -31,7 +33,9 @@ export class MainJobStartDateComponent extends QuestionComponent {
         year: null,
       }),
     });
-    this.form.get('mainJobStartDate').setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore()]);
+    this.form
+      .get('mainJobStartDate')
+      .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(this.dateMin)]);
   }
 
   init() {
@@ -58,11 +62,15 @@ export class MainJobStartDateComponent extends QuestionComponent {
         type: [
           {
             name: 'dateValid',
-            message: 'DATE IS NOT VALID',
+            message: 'Main job start date is not a valid date',
           },
           {
             name: 'todayOrBefore',
-            message: 'DATE NEEDS TO BE IN THE PAST',
+            message: 'Main job start date must be today or in the past',
+          },
+          {
+            name: 'dateMin',
+            message: `Main job start date must be after ${this.dateMin.format(DATE_DISPLAY_FULL)}`,
           },
         ],
       },
