@@ -32,6 +32,8 @@ export class DaysOfSicknessComponent extends QuestionComponent {
       daysKnown: null,
       days: null,
     });
+
+    this.floatPattern = this.floatPattern.substring(2, this.floatPattern.length - 2);
   }
 
   init() {
