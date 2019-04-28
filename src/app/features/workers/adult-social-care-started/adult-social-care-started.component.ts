@@ -95,8 +95,8 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
 
     return {
       socialCareStartDate: {
-        value: yearKnown.value,
-        year: year.value,
+        value: yearKnown,
+        year: year,
       },
     };
   }
