@@ -35,29 +35,31 @@
             For example 10.40
           </span>
           <span *ngIf="submitted && form.get('hourlyRate').errors" id="hourlyRate-error" class="govuk-error-message">
-              <ng-container *ngIf="form.get('hourlyRate').hasError('required')">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ getFormErrorMessage('hourlyRate', 'required') }}
-              </ng-container>
-              <ng-container *ngIf="form.get('hourlyRate').hasError('min')">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ getFormErrorMessage('hourlyRate', 'min') }}
-              </ng-container>
-              <ng-container *ngIf="form.get('hourlyRate').hasError('max')">
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ getFormErrorMessage('hourlyRate', 'max') }}
-              </ng-container>
-            </span>
-          <input
-            class="govuk-input govuk-date-input__input govuk-input--width-4"
-            [class.govuk-input--error]="submitted && form.get('hourlyRate').invalid"
-            formControlName="hourlyRate"
-            id="hourlyRate"
-            name="hourlyRate"
-            type="number"
-            pattern="^([0-9]*[.])?[0-9]+$"
-            aria-describedby="hourlyRate-hint"
-          />
+            <ng-container *ngIf="form.get('hourlyRate').hasError('required')">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('hourlyRate', 'required') }}
+            </ng-container>
+            <ng-container *ngIf="form.get('hourlyRate').hasError('min')">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('hourlyRate', 'min') }}
+            </ng-container>
+            <ng-container *ngIf="form.get('hourlyRate').hasError('max')">
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFormErrorMessage('hourlyRate', 'max') }}
+            </ng-container>
+          </span>
+          <span class="govuk-input__currency">
+            <input
+              class="govuk-input govuk-date-input__input govuk-input--width-4"
+              [class.govuk-input--error]="submitted && form.get('hourlyRate').invalid"
+              formControlName="hourlyRate"
+              id="hourlyRate"
+              name="hourlyRate"
+              type="number"
+              pattern="^([0-9]*[.])?[0-9]+$"
+              aria-describedby="hourlyRate-hint"
+            />
+          </span>
         </div>
       </div>
 
@@ -101,16 +103,18 @@
               {{ getFormErrorMessage('annualRate', 'max') }}
             </ng-container>
           </span>
-          <input
-            class="govuk-input govuk-date-input__input govuk-input--width-5"
-            [class.govuk-input--error]="submitted && form.get('annualRate').invalid"
-            formControlName="annualRate"
-            id="annualRate"
-            name="annualRate"
-            type="number"
-            pattern="^[0-9]+$"
-            aria-describedby="annualRate-hint"
-          />
+          <span class="govuk-input__currency">
+            <input
+              class="govuk-input govuk-date-input__input govuk-input--width-5"
+              [class.govuk-input--error]="submitted && form.get('annualRate').invalid"
+              formControlName="annualRate"
+              id="annualRate"
+              name="annualRate"
+              type="number"
+              pattern="^[0-9]+$"
+              aria-describedby="annualRate-hint"
+            />
+          </span>
         </div>
       </div>
 
