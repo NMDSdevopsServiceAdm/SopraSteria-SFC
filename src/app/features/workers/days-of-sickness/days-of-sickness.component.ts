@@ -43,7 +43,6 @@ export class DaysOfSicknessComponent extends QuestionComponent {
 
     this.subscriptions.add(
       this.form.get('daysKnown').valueChanges.subscribe(value => {
-        this.form.get('days').reset();
         this.form.get('days').clearValidators();
 
         if (value === 'Yes') {

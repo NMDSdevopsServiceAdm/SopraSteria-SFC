@@ -35,7 +35,6 @@ export class YearArrivedUkComponent extends QuestionComponent {
 
     this.subscriptions.add(
       this.form.get('yearKnown').valueChanges.subscribe(value => {
-        this.form.get('year').reset();
         this.form.get('year').clearValidators();
 
         if (value === 'Yes') {

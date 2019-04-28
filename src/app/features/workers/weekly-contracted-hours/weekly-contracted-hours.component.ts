@@ -43,7 +43,6 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
 
     this.subscriptions.add(
       this.form.get('hoursKnown').valueChanges.subscribe(value => {
-        this.form.get('hours').reset();
         this.form.get('hours').clearValidators();
 
         if (value === 'Yes') {

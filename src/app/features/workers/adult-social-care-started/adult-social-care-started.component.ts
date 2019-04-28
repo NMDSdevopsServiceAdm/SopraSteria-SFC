@@ -32,7 +32,6 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
   init(): void {
     this.subscriptions.add(
       this.form.get('yearKnown').valueChanges.subscribe(value => {
-        this.form.get('year').reset();
         this.form.get('year').clearValidators();
 
         if (value === 'Yes') {
