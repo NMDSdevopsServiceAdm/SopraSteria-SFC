@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
+import { ReportsService } from '@core/services/reports.service';
 import { WorkerService } from '@core/services/worker.service';
+import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { ReportsService } from '@core/services/reports.service';
-import * as moment from 'moment';
 
 import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 
@@ -28,7 +27,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private router: Router,
     private dialogService: DialogService,
     private workerService: WorkerService,
     private reportsService: ReportsService
@@ -42,7 +40,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     );
 
     this.subscriptions.add(
-      this.reportsService.reportDetails$.subscribe(reportDetails => this.reportDetails = reportDetails)
+      this.reportsService.reportDetails$.subscribe(reportDetails => (this.reportDetails = reportDetails))
     );
 
     if (this.reportDetails != null && this.reportDetails.hasOwnProperty('displayWDFReport')) {
@@ -90,13 +88,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
   deleteWorker(event) {
     event.preventDefault();
-    const dialog = this.dialogService.open(DeleteWorkerDialogComponent, this.worker);
-    dialog.afterClosed.pipe(take(1)).subscribe(nameOrId => {
-      if (nameOrId) {
-        this.workerService.setLastDeleted(nameOrId);
-        this.router.navigate(['/worker', 'delete-success']);
-      }
-    });
+    this.dialogService.open(DeleteWorkerDialogComponent, this.worker);
   }
 
   closeTrainingCreatedAlert(event) {

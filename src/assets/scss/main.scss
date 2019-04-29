@@ -9,6 +9,7 @@ body {
   font-family: $govuk-font-family;
 }
 
+@import 'modules/overlay';
 @import 'modules/sticky-footer';
 @import 'modules/utils';
 
