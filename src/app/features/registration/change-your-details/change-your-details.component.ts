@@ -27,6 +27,7 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
 
   protected init() {
     this.getUserDetails();
+    this.setBackLink();
   }
 
   private getUserDetails(): void {
@@ -50,6 +51,10 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
 
   protected onFormValidSubmit(): void {
     this.changeUserDetails(this.userDetails);
+  }
+
+  protected setBackLink(): void {
+    this.backService.setBackLink({ url: ['/registration/confirm-account-details'] });
   }
 
   private changeUserDetails(userDetails: UserDetails): void {

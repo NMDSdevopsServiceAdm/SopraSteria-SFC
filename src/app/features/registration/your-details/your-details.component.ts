@@ -179,7 +179,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/registration/create-username']);
   }
 
-  private setBackLink(): void {
+  protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/registration/confirm-workplace-details'] });
   }
 
