@@ -20,6 +20,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   public dateFormat = DEFAULT_DATE_DISPLAY_FORMAT;
   public displayWDFReport: {};
   public eligibility: {};
+  public newDate: string;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -68,11 +69,16 @@ export class ReportsComponent implements OnInit, OnDestroy {
     const minute = this.updateEligibilityForm.get('minute').value;
     const second = this.updateEligibilityForm.get('second').value;
 
-    const newDate = date + 'T' + hour + ':' + minute + ':' + second + 'Z';
+    this.newDate = '';
+
+    if (date.length > 0) {
+      this.newDate = date + 'T' + hour + ':' + minute + ':' + second + 'Z';
+    }
+
     debugger;
 
     this.subscriptions.add(
-      this.reportsService.getWDFReport(newDate)
+      this.reportsService.getWDFReport(this.newDate)
       .subscribe(res => {
         debugger;
       })

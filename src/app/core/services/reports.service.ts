@@ -18,13 +18,19 @@ export class ReportsService {
 
   getWDFReport(updatedEffectiveFrom?) {
 
-    // if (updatedEffectiveFrom) {
-    //   const effectiveFrom = 'effectiveFrom=2019-03-01T12:30:00.000Z';
-    // }
-    debugger;
-    return this.http.get<any>(
-      `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}?updatedEffectiveFrom`
-    );
+    if (updatedEffectiveFrom) {
+      const effectiveFrom = '?effectiveFrom=' + updatedEffectiveFrom;
+      debugger;
+      return this.http.get<any>(
+        `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}${effectiveFrom}`
+      );
+    }
+    else {
+      debugger;
+      return this.http.get<any>(
+        `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}`
+      );
+    }
   }
 
   updateState(data) {
