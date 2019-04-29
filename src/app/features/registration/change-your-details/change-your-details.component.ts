@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
 import { UserService } from '@core/services/user.service';
@@ -14,25 +15,36 @@ import { YourDetailsComponent } from '@features/registration/your-details/your-d
 })
 export class ChangeYourDetailsComponent extends YourDetailsComponent {
   protected callToActionLabel = 'Save and return';
+  protected registrationInProgress: boolean;
 
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
+    protected registrationService: RegistrationService,
     protected router: Router,
-    protected userService: UserService
+    protected userService: UserService,
   ) {
     super(backService, errorSummaryService, fb, router, userService);
   }
 
   protected init() {
-    this.getUserDetails();
+    this.setupSubscriptions();
     this.setBackLink();
   }
 
-  private getUserDetails(): void {
+  private setupSubscriptions(): void {
     this.subscriptions.add(
       this.userService.userDetails$.subscribe((userDetails: UserDetails) => this.prefillForm(userDetails))
+    );
+
+    this.subscriptions.add(
+      this.registrationService.registrationInProgress$.subscribe(
+        (registrationInProgress: boolean) => {
+          console.log('registrationInProgress', registrationInProgress);
+          this.registrationInProgress = registrationInProgress;
+        }
+      )
     );
   }
 
@@ -60,7 +72,14 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.username, userDetails).subscribe(
-        () => this.router.navigate(['/your-account']),
+        () => {
+          console.warn('registrationInProgress', this.registrationInProgress);
+          if (this.registrationInProgress) {
+            this.router.navigate(['/registration/confirm-account-details']);
+          } else {
+            this.router.navigate(['/your-account']);
+          }
+        },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         }
