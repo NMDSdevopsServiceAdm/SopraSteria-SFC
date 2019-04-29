@@ -16,10 +16,19 @@ export class ReportsService {
     private establishmentService: EstablishmentService
   ) {}
 
-  getWDFReport() {
-    return this.http.get<any>(
-      `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}`
-    );
+  getWDFReport(updatedEffectiveFrom?) {
+
+    if (updatedEffectiveFrom) {
+      const effectiveFrom = '?effectiveFrom=' + updatedEffectiveFrom;
+      return this.http.get<any>(
+        `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}${effectiveFrom}`
+      );
+    }
+    else {
+      return this.http.get<any>(
+        `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}`
+      );
+    }
   }
 
   updateState(data) {
