@@ -1,12 +1,6 @@
-<div class="main-page-container col-12">
-
-<div id="back" class="back-link">
-    <a routerLink="/dashboard">
-      <span class="arrow"></span>Back
-    </a>
-  </div>
-
-  <app-inset-text color="success" class="fs-19">
-    {{ nameOrId }} has been deleted <a routerLink="/dashboard" class="close-link">Close</a>
-  </app-inset-text>
-</div>
+<app-inset-text color="success">
+  {{ nameOrId }} has been deleted
+  <a routerLink="/dashboard" fragment="staff-records" class="govuk-util__float-right">
+    Cancel
+  </a>
+</app-inset-text>
