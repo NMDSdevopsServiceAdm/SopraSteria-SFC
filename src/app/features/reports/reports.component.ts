@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
-import { DateValidator } from '@core/validators/date.validator';
 import { AuthService } from '@core/services/auth-service';
 import { ReportsService } from '@core/services/reports.service';
 import * as moment from 'moment';
