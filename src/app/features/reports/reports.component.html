@@ -35,17 +35,31 @@
   </app-eligibility-display-overview>
 
   <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="form"
-    *ngIf="displayWDFReport && reportDetails.wdf.effectiveFrom">
+    (ngSubmit)="updateEffectiveFrom()"
+    [formGroup]="updateEligibilityForm"
+    *ngIf="displayWDFReport  && reportDetails.customEffectiveFrom">
 
-    <div class="form-group">
-      <div class="field-group mb-5">
-        dfdgfhjklk;lkjhgf
+    <div class="form-group mb-0">
+      <div class="field-group mb-0">
+        <fieldset>
+          <legend *ngIf="label">Update eligibility date</legend>
+          <label class="date mb-0">Date
+            <input type="text" formControlName="date" class="form-control" placeholder="2019-03-01">
+          </label>
+          <label class="hour mb-0">Hour
+            <input type="text" formControlName="hour" class="form-control" placeholder="12">
+          </label>
+          <label class="minute mb-0">Minute
+            <input type="text" formControlName="minute" class="form-control" placeholder="30">
+          </label>
+          <label class="second mb-0">Second
+            <input type="text" formControlName="second" class="form-control" placeholder="00.000">
+          </label>
+        </fieldset>
       </div>
     </div>
 
-    <button>Send</button>
+    <button class="btn btn-secondary">Send</button>
   </form>
 
   <div class="govuk-warning-text col-6 mt-5 mb-5" *ngIf="displayWDFReport">

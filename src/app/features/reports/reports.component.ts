@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./reports.component.scss']
 })
 export class ReportsComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
+  public updateEligibilityForm: FormGroup;
   public establishment: any;
   public reportDetails: {};
   public lastLoggedIn = null;
@@ -27,17 +27,15 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private reportsService: ReportsService,
     private formBuilder: FormBuilder,
-  ) {
-    this.formValidator = this.formValidator.bind(this);
-  }
+  ) {}
 
   ngOnInit() {
-    this.form = this.formBuilder.group({
-      day: null,
-      month: null,
-      year: null,
+    this.updateEligibilityForm = this.formBuilder.group({
+      date: null,
+      hour: null,
+      minute: null,
+      second: null,
     });
-    this.form.setValidators(Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator]));
 
     this.establishment = this.authService.establishment;
 
@@ -64,28 +62,25 @@ export class ReportsComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  updateEffectiveFrom() {
+    const date = this.updateEligibilityForm.get('date').value;
+    const hour = this.updateEligibilityForm.get('hour').value;
+    const minute = this.updateEligibilityForm.get('minute').value;
+    const second = this.updateEligibilityForm.get('second').value;
+
+    const newDate = date + 'T' + hour + ':' + minute + ':' + second + 'Z';
+    debugger;
+
+    this.subscriptions.add(
+      this.reportsService.getWDFReport(newDate)
+      .subscribe(res => {
+        debugger;
+      })
+    );
   }
 
-  formValidator(formGroup: FormGroup): ValidationErrors {
-    if (this.form) {
-      const { day, month, year } = this.form.value;
-
-      if (day && month && year) {
-        const date = moment()
-          .year(year)
-          .month(month - 1)
-          .date(day);
-        if (date.isValid()) {
-          // TODO: https://trello.com/c/sYDV6vTN
-          // Cross Validation
-
-        }
-      }
-    }
-
-    return null;
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
 }
