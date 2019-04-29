@@ -1,0 +1,16 @@
+.govuk-summary-list--wrap-border {
+  border: 1px solid map-get($color, grey);
+  border-width: 1px 0;
+}
+.govuk-summary-list--bottom-border {
+  .govuk-summary-list__key,
+  .govuk-summary-list__value,
+  .govuk-summary-list__actions,
+  .govuk-summary-list__row {
+    border: 1px solid map-get($color, grey);
+    border-width: 0 0 1px 0;
+  }
+}
+.govuk-summary-list--top-border {
+  border-top: 1px solid map-get($color, grey);
+}
