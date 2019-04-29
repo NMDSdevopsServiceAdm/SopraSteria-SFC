@@ -13,6 +13,7 @@ import { UserService } from '@core/services/user.service';
   templateUrl: './your-details.component.html',
 })
 export class YourDetailsComponent implements OnInit, OnDestroy {
+  protected callToActionLabel = 'Continue';
   protected form: FormGroup;
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverError: string;
@@ -178,7 +179,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/registration/create-username']);
   }
 
-  private setBackLink(): void {
+  protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/registration/confirm-workplace-details'] });
   }
 
