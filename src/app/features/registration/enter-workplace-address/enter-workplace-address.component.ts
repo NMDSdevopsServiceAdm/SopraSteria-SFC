@@ -10,8 +10,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-enter-workplace-address',
-  templateUrl: './enter-workplace-address.component.html',
-  styleUrls: ['./enter-workplace-address.component.scss']
+  templateUrl: './enter-workplace-address.component.html'
 })
 export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
   private form: FormGroup;
