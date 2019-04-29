@@ -56,7 +56,7 @@
               id="hourlyRate"
               name="hourlyRate"
               type="number"
-              pattern="^([0-9]*[.])?[0-9]+$"
+              [pattern]="floatPattern"
               aria-describedby="hourlyRate-hint"
             />
           </span>
@@ -111,7 +111,7 @@
               id="annualRate"
               name="annualRate"
               type="number"
-              pattern="^[0-9]+$"
+              [pattern]="intPattern"
               aria-describedby="annualRate-hint"
             />
           </span>
