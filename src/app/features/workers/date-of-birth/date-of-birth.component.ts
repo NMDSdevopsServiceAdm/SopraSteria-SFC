@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DATE_PARSE_FORMAT, DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
+import { DATE_DISPLAY_DEFAULT, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -64,9 +64,9 @@ export class DateOfBirthComponent extends QuestionComponent {
           },
           {
             name: 'dateBetween',
-            message: `The date has to be between ${this.minDate.format(
-              DEFAULT_DATE_DISPLAY_FORMAT
-            )} and ${this.maxDate.format(DEFAULT_DATE_DISPLAY_FORMAT)}.`,
+            message: `The date has to be between ${this.minDate.format(DATE_DISPLAY_DEFAULT)} and ${this.maxDate.format(
+              DATE_DISPLAY_DEFAULT
+            )}.`,
           },
         ],
       },

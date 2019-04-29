@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
+import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import * as moment from 'moment';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
@@ -22,6 +22,6 @@ export class PersonalDetailsComponent extends StaffRecordSummaryComponent implem
   }
 
   get dob() {
-    return moment(this.worker.dateOfBirth).format(DEFAULT_DATE_DISPLAY_FORMAT);
+    return moment(this.worker.dateOfBirth).format(DATE_DISPLAY_DEFAULT);
   }
 }

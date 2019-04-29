@@ -1,23 +1,23 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
-import { DateValidator } from '@core/validators/date.validator';
+import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { AuthService } from '@core/services/auth.service';
 import { ReportsService } from '@core/services/reports.service';
+import { DateValidator } from '@core/validators/date.validator';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.scss']
+  styleUrls: ['./reports.component.scss'],
 })
 export class ReportsComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public establishment: any;
   public reportDetails: {};
   public lastLoggedIn = null;
-  public dateFormat = DEFAULT_DATE_DISPLAY_FORMAT;
+  public dateFormat = DATE_DISPLAY_DEFAULT;
   public displayWDFReport: {};
   public eligibility: {};
 
@@ -26,7 +26,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private reportsService: ReportsService,
-    private formBuilder: FormBuilder,
+    private formBuilder: FormBuilder
   ) {
     this.formValidator = this.formValidator.bind(this);
   }
@@ -42,7 +42,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.establishment = this.authService.establishment;
 
     this.subscriptions.add(
-      this.reportsService.reportDetails$.subscribe(reportDetails => this.reportDetails = reportDetails)
+      this.reportsService.reportDetails$.subscribe(reportDetails => (this.reportDetails = reportDetails))
     );
 
     this.displayWDFReport = false;
@@ -54,8 +54,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     }
 
     this.subscriptions.add(
-      this.reportsService.getWDFReport()
-      .subscribe(res => {
+      this.reportsService.getWDFReport().subscribe(res => {
         this.eligibility = res;
         this.displayWDFReport = true;
         this.eligibility['displayWDFReport'] = this.displayWDFReport;
@@ -80,12 +79,10 @@ export class ReportsComponent implements OnInit, OnDestroy {
         if (date.isValid()) {
           // TODO: https://trello.com/c/sYDV6vTN
           // Cross Validation
-
         }
       }
     }
 
     return null;
   }
-
 }

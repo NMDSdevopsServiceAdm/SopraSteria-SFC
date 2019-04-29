@@ -32,6 +32,8 @@ export class DaysOfSicknessComponent extends QuestionComponent {
       daysKnown: null,
       days: null,
     });
+
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
   }
 
   init() {
@@ -41,7 +43,6 @@ export class DaysOfSicknessComponent extends QuestionComponent {
 
     this.subscriptions.add(
       this.form.get('daysKnown').valueChanges.subscribe(value => {
-        this.form.get('days').reset();
         this.form.get('days').clearValidators();
 
         if (value === 'Yes') {

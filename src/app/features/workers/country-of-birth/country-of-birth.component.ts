@@ -30,7 +30,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
     this.form = this.formBuilder.group({
       countryOfBirthKnown: null,
-      countryOfBirthName: [null, this.countryOfBirthNameValidator],
+      countryOfBirthName: null,
     });
   }
 
@@ -38,8 +38,13 @@ export class CountryOfBirthComponent extends QuestionComponent {
     this.subscriptions.add(this.countryService.getCountries().subscribe(res => (this.availableCountries = res)));
 
     this.subscriptions.add(
-      this.form.get('countryOfBirthKnown').valueChanges.subscribe(() => {
-        this.form.get('countryOfBirthName').reset();
+      this.form.get('countryOfBirthKnown').valueChanges.subscribe(value => {
+        this.form.get('countryOfBirthName').clearValidators();
+
+        if (value === 'Other') {
+          this.form.get('countryOfBirthName').setValidators([this.countryOfBirthNameValidator]);
+        }
+
         this.form.get('countryOfBirthName').updateValueAndValidity();
       })
     );

@@ -31,7 +31,7 @@ export class NationalityComponent extends QuestionComponent {
 
     this.form = this.formBuilder.group({
       nationalityKnown: null,
-      nationalityName: [null, this.nationalityNameValidator],
+      nationalityName: null,
     });
   }
 
@@ -43,8 +43,13 @@ export class NationalityComponent extends QuestionComponent {
     );
 
     this.subscriptions.add(
-      this.form.get('nationalityKnown').valueChanges.subscribe(() => {
-        this.form.get('nationalityName').reset();
+      this.form.get('nationalityKnown').valueChanges.subscribe(value => {
+        this.form.get('nationalityName').clearValidators();
+
+        if (value === 'Other') {
+          this.form.get('nationalityName').setValidators([this.nationalityNameValidator]);
+        }
+
         this.form.get('nationalityName').updateValueAndValidity();
       })
     );

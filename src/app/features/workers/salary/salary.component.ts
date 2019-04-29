@@ -2,6 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { FLOAT_PATTERN, INT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -17,6 +18,8 @@ import { QuestionComponent } from '../question/question.component';
 export class SalaryComponent extends QuestionComponent {
   public hourly = { min: 2.5, max: 200 };
   public annually = { min: 500, max: 200000 };
+  public intPattern = INT_PATTERN.toString();
+  public floatPattern = FLOAT_PATTERN.toString();
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -27,6 +30,9 @@ export class SalaryComponent extends QuestionComponent {
     private decimalPipe: DecimalPipe
   ) {
     super(formBuilder, router, backService, errorSummaryService, workerService);
+
+    this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
 
     this.form = this.formBuilder.group({
       terms: null,

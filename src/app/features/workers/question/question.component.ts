@@ -85,7 +85,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onSubmit(payload: { action: string; save: boolean }) {
+  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
     if (!payload.save) {
       this.navigate(payload.action);
       return;

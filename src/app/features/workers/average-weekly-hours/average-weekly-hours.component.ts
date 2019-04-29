@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { FLOAT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -14,6 +15,8 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './average-weekly-hours.component.html',
 })
 export class AverageWeeklyHoursComponent extends QuestionComponent {
+  public floatPattern = FLOAT_PATTERN.toString();
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -22,6 +25,8 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
     protected workerService: WorkerService
   ) {
     super(formBuilder, router, backService, errorSummaryService, workerService);
+
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
 
     this.form = this.formBuilder.group({
       hoursKnown: null,
@@ -41,7 +46,6 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
 
     this.subscriptions.add(
       this.form.get('hoursKnown').valueChanges.subscribe(value => {
-        this.form.get('hours').reset();
         this.form.get('hours').clearValidators();
 
         if (value === 'Yes') {

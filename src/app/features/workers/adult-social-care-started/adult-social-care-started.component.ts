@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { INT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -14,6 +15,8 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './adult-social-care-started.component.html',
 })
 export class AdultSocialCareStartedComponent extends QuestionComponent {
+  public intPattern = INT_PATTERN.toString();
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -22,6 +25,8 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
     protected workerService: WorkerService
   ) {
     super(formBuilder, router, backService, errorSummaryService, workerService);
+
+    this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
     this.form = this.formBuilder.group({
       yearKnown: null,
@@ -32,7 +37,6 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
   init(): void {
     this.subscriptions.add(
       this.form.get('yearKnown').valueChanges.subscribe(value => {
-        this.form.get('year').reset();
         this.form.get('year').clearValidators();
 
         if (value === 'Yes') {
@@ -95,8 +99,8 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
 
     return {
       socialCareStartDate: {
-        value: yearKnown.value,
-        year: year.value,
+        value: yearKnown,
+        year: year,
       },
     };
   }
