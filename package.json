@@ -42,7 +42,7 @@
     "core-js": "^2.5.4",
     "express-http-proxy": "^1.5.1",
     "express-sanitizer": "^1.0.5",
-    "govuk-frontend": "^2.7.0",
+    "govuk-frontend": "^2.11.0",
     "helmet": "^3.15.0",
     "jade": "^1.11.0",
     "js-yaml": "^3.12.2",
