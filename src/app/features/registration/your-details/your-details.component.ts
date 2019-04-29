@@ -1,31 +1,33 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { BackService } from '@core/services/back.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { UserService } from '@core/services/user.service';
 import { UserDetails } from '@core/model/userDetails.model';
+import { UserService } from '@core/services/user.service';
 
 @Component({
   selector: 'app-your-details',
   templateUrl: './your-details.component.html',
 })
 export class YourDetailsComponent implements OnInit, OnDestroy {
-  protected serverError: string;
-  protected serverErrorsMap: Array<ErrorDefinition>;
-  protected subscriptions: Subscription = new Subscription();
-  protected username: string;
   protected form: FormGroup;
   protected formErrorsMap: Array<ErrorDetails>;
+  protected serverError: string;
+  protected serverErrorsMap: Array<ErrorDefinition>;
   protected submitted = false;
+  protected subscriptions: Subscription = new Subscription();
   protected userDetails: UserDetails;
+  protected username: string;
 
   constructor(
+    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService
+    protected userService: UserService,
   ) {}
 
   // Get fullname
@@ -65,6 +67,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    this.setBackLink();
     this.init();
   }
 
@@ -173,6 +176,10 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
   protected onFormValidSubmit(): void {
     this.userService.updateState(this.setUserDetails());
     this.router.navigate(['/registration/create-username']);
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['/registration/confirm-workplace-details'] });
   }
 
   ngOnDestroy() {
