@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { RegistrationService } from '@core/services/registration.service';
-import { LocationAddress } from '@core/model/location.model';
+import { BackService } from '@core/services/back.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { filter } from 'lodash';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { LocationAddress } from '@core/model/location.model';
+import { RegistrationService } from '@core/services/registration.service';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-workplace',
@@ -20,15 +21,17 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   public submitted = false;
 
   constructor(
+    private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private fb: FormBuilder,
     private registrationService: RegistrationService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit() {
     this.setupForm();
     this.setupFormErrorsMap();
+    this.setBackLink();
 
     this.subscriptions.add(
       this.registrationService.locationAddresses$.subscribe(
@@ -86,6 +89,10 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
   private save(): void {
     this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation());
     this.router.navigate(['/registration/select-main-service']);
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
   }
 
   ngOnDestroy() {

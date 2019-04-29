@@ -1,11 +1,12 @@
-import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
-import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-import { UserService } from '@core/services/user.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
-import { UserDetails } from '@core/model/userDetails.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { UserDetails } from '@core/model/userDetails.model';
+import { UserService } from '@core/services/user.service';
+import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 
 @Component({
   selector: 'app-change-your-details',
@@ -13,12 +14,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class ChangeYourDetailsComponent extends YourDetailsComponent {
   constructor(
+    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
     protected userService: UserService
   ) {
-    super(errorSummaryService, fb, router, userService);
+    super(backService, errorSummaryService, fb, router, userService);
   }
 
   protected init() {

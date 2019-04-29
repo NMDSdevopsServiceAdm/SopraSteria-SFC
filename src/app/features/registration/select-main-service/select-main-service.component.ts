@@ -1,15 +1,16 @@
-import { WorkplaceCategory } from '@core/model/workplace-category.model';
+import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { filter } from 'lodash';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import { WorkplaceCategory } from '@core/model/workplace-category.model';
 import { WorkplaceService } from '@core/model/workplace-service.model';
-import { filter } from 'lodash';
 
 @Component({
   selector: 'app-select-main-service',
@@ -25,10 +26,11 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   public serverError: string;
 
   constructor(
+    private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
+    private fb: FormBuilder,
     private registrationService: RegistrationService,
     private router: Router,
-    private fb: FormBuilder
   ) {}
 
   ngOnInit() {
@@ -36,6 +38,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.getSelectedLocation();
+    this.setBackLink();
   }
 
   private setupForm(): void {
@@ -123,6 +126,10 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
    */
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
   }
 
   ngOnDestroy() {

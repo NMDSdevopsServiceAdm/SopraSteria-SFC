@@ -1,34 +1,34 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LocationSearchResponse } from '@core/model/location.model';
-import { RegistrationService } from '@core/services/registration.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { Subscription } from 'rxjs';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { LocationSearchResponse } from '@core/model/location.model';
+import { RegistrationService } from '@core/services/registration.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-regulated-by-cqc',
   templateUrl: './regulated-by-cqc.component.html',
 })
 export class RegulatedByCqcComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
 
-  public formErrorsMap: Array<ErrorDetails>;
-  public serverErrorsMap: Array<ErrorDefinition>;
-  public serverError: string;
-
-  private subscriptions: Subscription = new Subscription();
-
   constructor(
-    private registrationService: RegistrationService,
-    private router: Router,
-    private route: ActivatedRoute,
+    private backService: BackService,
+    private errorSummaryService: ErrorSummaryService,
     private fb: FormBuilder,
-    private errorSummaryService: ErrorSummaryService
+    private registrationService: RegistrationService,
+    private route: ActivatedRoute,
+    private router: Router,
   ) {}
 
   get regulatedByCQC() {
@@ -55,6 +55,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    this.setBackLink();
   }
 
   private setupForm(): void {
@@ -223,6 +224,10 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
   private onError(error: HttpErrorResponse): void {
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['/login'] });
   }
 
   ngOnDestroy() {
