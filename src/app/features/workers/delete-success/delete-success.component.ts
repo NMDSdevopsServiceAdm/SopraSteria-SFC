@@ -15,9 +15,9 @@ export class DeleteSuccessComponent implements OnInit {
     this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
 
     this.nameOrId = this.workerService.lastDeleted;
-    // if (!this.nameOrId) {
-    //   this.router.navigate(['/dashboard'], { replaceUrl: true });
-    // }
+    if (!this.nameOrId) {
+      this.router.navigate(['/dashboard'], { replaceUrl: true });
+    }
 
     this.workerService.clearLastDeleted();
   }
