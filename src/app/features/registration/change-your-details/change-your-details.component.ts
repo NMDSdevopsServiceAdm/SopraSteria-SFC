@@ -59,7 +59,12 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
   }
 
   protected onFormValidSubmit(): void {
-    this.changeUserDetails(this.userDetails);
+    if (this.registrationInProgress) {
+      this.userService.updateState(this.setUserDetails());
+      this.router.navigate([ '/registration/confirm-account-details' ]);
+    } else {
+      this.changeUserDetails(this.userDetails);
+    }
   }
 
   protected setBackLink(): void {
@@ -69,13 +74,7 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.username, userDetails).subscribe(
-        () => {
-          if (this.registrationInProgress) {
-            this.router.navigate(['/registration/confirm-account-details']);
-          } else {
-            this.router.navigate(['/your-account']);
-          }
-        },
+        () => this.router.navigate(['/your-account']),
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         }
