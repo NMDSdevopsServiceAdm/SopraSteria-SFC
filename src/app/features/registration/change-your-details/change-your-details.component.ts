@@ -13,6 +13,8 @@ import { YourDetailsComponent } from '@features/registration/your-details/your-d
   templateUrl: './../your-details/your-details.component.html',
 })
 export class ChangeYourDetailsComponent extends YourDetailsComponent {
+  protected callToActionLabel = 'Save and return';
+
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
