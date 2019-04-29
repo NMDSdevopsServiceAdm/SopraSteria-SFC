@@ -31,8 +31,8 @@ export class SalaryComponent extends QuestionComponent {
   ) {
     super(formBuilder, router, backService, errorSummaryService, workerService);
 
-    this.intPattern = this.intPattern.substring(2, this.intPattern.length - 2);
-    this.floatPattern = this.floatPattern.substring(2, this.floatPattern.length - 2);
+    this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
 
     this.form = this.formBuilder.group({
       terms: null,

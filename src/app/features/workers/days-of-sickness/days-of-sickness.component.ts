@@ -33,7 +33,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
       days: null,
     });
 
-    this.floatPattern = this.floatPattern.substring(2, this.floatPattern.length - 2);
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
   }
 
   init() {

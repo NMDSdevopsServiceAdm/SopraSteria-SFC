@@ -25,7 +25,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
   ) {
     super(formBuilder, router, backService, errorSummaryService, workerService);
 
-    this.floatPattern = this.floatPattern.substring(2, this.floatPattern.length - 2);
+    this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
 
     this.form = this.formBuilder.group({
       hoursKnown: null,

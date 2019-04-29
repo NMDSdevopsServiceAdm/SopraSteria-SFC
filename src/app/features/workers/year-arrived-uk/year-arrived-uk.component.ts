@@ -25,7 +25,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
   ) {
     super(formBuilder, router, backService, errorSummaryService, workerService);
 
-    this.intPattern = this.intPattern.substring(2, this.intPattern.length - 2);
+    this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
     this.form = this.formBuilder.group({
       yearKnown: null,
