@@ -21,6 +21,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   public displayWDFReport: {};
   public eligibility: {};
   public newDate: string;
+  public effectiveFromDateNextYear: string;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -47,6 +48,11 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.displayWDFReport = false;
   }
 
+  setEffectiveFromDate(data) {
+    const effectiveFrom = data.effectiveFrom;
+    this.effectiveFromDateNextYear = moment(effectiveFrom).add(1, 'years').format('YYYY');
+  }
+
   displayWDF(event: Event) {
     if (event) {
       event.preventDefault();
@@ -55,9 +61,12 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.reportsService.getWDFReport()
       .subscribe(res => {
+        this.setEffectiveFromDate(res);
+
         this.eligibility = res;
         this.displayWDFReport = true;
         this.eligibility['displayWDFReport'] = this.displayWDFReport;
+        this.eligibility['effectiveFromDateNextYear'] = this.effectiveFromDateNextYear;
         this.reportsService.updateState(this.eligibility);
       })
     );
@@ -69,18 +78,17 @@ export class ReportsComponent implements OnInit, OnDestroy {
     const minute = this.updateEligibilityForm.get('minute').value;
     const second = this.updateEligibilityForm.get('second').value;
 
-    this.newDate = '';
-
-    if (date.length > 0) {
+    if ((date === null) || (date === '')) {
+      this.newDate = '';
+    }
+    else {
       this.newDate = date + 'T' + hour + ':' + minute + ':' + second + 'Z';
     }
-
-    debugger;
 
     this.subscriptions.add(
       this.reportsService.getWDFReport(this.newDate)
       .subscribe(res => {
-        debugger;
+
       })
     );
   }

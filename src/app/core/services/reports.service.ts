@@ -20,13 +20,11 @@ export class ReportsService {
 
     if (updatedEffectiveFrom) {
       const effectiveFrom = '?effectiveFrom=' + updatedEffectiveFrom;
-      debugger;
       return this.http.get<any>(
         `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}${effectiveFrom}`
       );
     }
     else {
-      debugger;
       return this.http.get<any>(
         `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}`
       );
