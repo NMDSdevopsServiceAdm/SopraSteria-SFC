@@ -21,6 +21,7 @@ import {
 import { SelectWorkplaceComponent } from '@features/registration/select-workplace/select-workplace.component';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 import { FindWorkplaceAddressComponent } from '@features/registration/find-workplace-address/find-workplace-address.component';
+import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 
 const routes: Routes = [
   {
@@ -45,6 +46,12 @@ const routes: Routes = [
     component: YourDetailsComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Your Details' },
+  },
+  {
+    path: 'change-your-details',
+    component: ChangeYourDetailsComponent,
+    canActivate: [RegisterGuard],
+    data: { title: 'Change Your Details' },
   },
   {
     path: 'create-username',

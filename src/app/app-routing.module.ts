@@ -6,7 +6,6 @@ import {
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/services/auth-guard.service';
 import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
-import { ChangeYourDetailsComponent } from '@features/change-your-details/change-your-details.component';
 import { ContactUsComponent } from '@features/contact-us/contact-us.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
@@ -51,12 +50,6 @@ const routes: Routes = [
     component: ChangePasswordComponent,
     canActivate: [AuthGuard],
     data: { title: 'Change Password' },
-  },
-  {
-    path: 'change-your-details',
-    component: ChangeYourDetailsComponent,
-    canActivate: [AuthGuard],
-    data: { title: 'Change Your Details' },
   },
   {
     path: 'change-user-security',

@@ -35,7 +35,6 @@ import { ChangePasswordComponent } from '@features/change-password/change-passwo
 import { ChangePasswordConfirmationComponent } from '@features/change-password/confirmation/confirmation.component';
 import { ChangePasswordEditComponent } from '@features/change-password/edit/edit.component';
 import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
-import { ChangeYourDetailsComponent } from '@features/change-your-details/change-your-details.component';
 import { ContactUsComponent } from '@features/contact-us/contact-us.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
@@ -88,7 +87,6 @@ import { AppComponent } from './app.component';
     ChangePasswordComponent,
     ChangePasswordConfirmationComponent,
     ChangePasswordEditComponent,
-    ChangeYourDetailsComponent,
     ChangeUserSecurityComponent,
     HomeTabComponent,
     WorkplaceTabComponent,

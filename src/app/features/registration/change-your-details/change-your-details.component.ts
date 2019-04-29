@@ -10,7 +10,7 @@ import { YourDetailsComponent } from '@features/registration/your-details/your-d
 
 @Component({
   selector: 'app-change-your-details',
-  templateUrl: './../registration/your-details/your-details.component.html',
+  templateUrl: './../your-details/your-details.component.html',
 })
 export class ChangeYourDetailsComponent extends YourDetailsComponent {
   constructor(
