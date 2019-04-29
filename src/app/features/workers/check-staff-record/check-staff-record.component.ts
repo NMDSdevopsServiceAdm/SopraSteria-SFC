@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
@@ -13,7 +14,7 @@ export class CheckStaffRecordComponent implements OnInit {
   private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private router: Router, private workerService: WorkerService) {}
+  constructor(private router: Router, private location: Location, private workerService: WorkerService) {}
 
   ngOnInit() {
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
@@ -44,5 +45,10 @@ export class CheckStaffRecordComponent implements OnInit {
         }, reject)
       );
     });
+  }
+
+  goBack(event) {
+    event.preventDefault();
+    this.location.back();
   }
 }
