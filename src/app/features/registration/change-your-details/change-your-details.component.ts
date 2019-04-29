@@ -40,10 +40,7 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
 
     this.subscriptions.add(
       this.registrationService.registrationInProgress$.subscribe(
-        (registrationInProgress: boolean) => {
-          console.log('registrationInProgress', registrationInProgress);
-          this.registrationInProgress = registrationInProgress;
-        }
+        (registrationInProgress: boolean) => this.registrationInProgress = registrationInProgress
       )
     );
   }
@@ -73,7 +70,6 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.username, userDetails).subscribe(
         () => {
-          console.warn('registrationInProgress', this.registrationInProgress);
           if (this.registrationInProgress) {
             this.router.navigate(['/registration/confirm-account-details']);
           } else {
