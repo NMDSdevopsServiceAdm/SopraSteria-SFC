@@ -100,6 +100,10 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
         message: 'Database error.',
       },
       {
+        name: 400,
+        message: 'Bad request.',
+      },
+      {
         name: -400,
         message: 'Unknown location.',
       },
@@ -138,11 +142,11 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
     this.backService.setBackLink({ url: ['/registration/security-question'] });
   }
 
-  private generatePayload(): RegistrationPayload {
+  private generatePayload(): Array<RegistrationPayload> {
     const payload: any = this.locationAddress;
     payload.user = this.userDetails;
 
-    return payload;
+    return [payload];
   }
 
   private onSubmit(): void {
