@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { UserService } from '../../core/services/user.service';
+import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -118,7 +118,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
   private changeUserDetails(data: Object): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.userDetails['username'], data).subscribe(
-        () => this.router.navigate(['/your-account']),
+        () => this.router.navigate(['/account-management/your-account']),
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
