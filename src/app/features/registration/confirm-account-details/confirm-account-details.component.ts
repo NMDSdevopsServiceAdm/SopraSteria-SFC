@@ -101,39 +101,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
       },
       {
         name: 400,
-        message: 'Bad request.',
-      },
-      {
-        name: -400,
-        message: 'Unknown location.',
-      },
-      {
-        name: -300,
-        message: 'Unexpected main service ID.',
-      },
-      {
-        name: -200,
-        message: 'Duplicate username.',
-      },
-      {
-        name: -100,
-        message: 'Duplicate non-CQC establishment.',
-      },
-      {
-        name: -150,
-        message: 'Duplicate CQC establishment.',
-      },
-      {
-        name: -190,
-        message: 'Duplicate establishment.',
-      },
-      {
-        name: -600,
-        message: 'Unknown NMDS letter/CSSR region.',
-      },
-      {
-        name: -500,
-        message: 'Unknown NMDS sequence.',
+        message: 'Registration failed.',
       },
     ];
   }
