@@ -5,7 +5,6 @@ import {
   ProblemWithTheServiceComponent,
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/services/auth-guard.service';
-import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
 import { ContactUsComponent } from '@features/contact-us/contact-us.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
@@ -15,8 +14,6 @@ import { LogoutComponent } from '@features/logout/logout.component';
 import { ReportsComponent } from '@features/reports/reports.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
-import { YourAccountComponent } from '@features/your-account/your-account.component';
-import { ChangePasswordComponent } from '@features/change-password/change-password.component';
 
 const routes: Routes = [
   {
@@ -38,24 +35,6 @@ const routes: Routes = [
     path: 'reset-password',
     component: ResetPasswordComponent,
     data: { title: 'Reset Password' },
-  },
-  {
-    path: 'your-account',
-    component: YourAccountComponent,
-    canActivate: [AuthGuard],
-    data: { title: 'Your Account' },
-  },
-  {
-    path: 'change-password',
-    component: ChangePasswordComponent,
-    canActivate: [AuthGuard],
-    data: { title: 'Change Password' },
-  },
-  {
-    path: 'change-user-security',
-    component: ChangeUserSecurityComponent,
-    canActivate: [AuthGuard],
-    data: { title: 'Change Security Question' },
   },
   {
     path: 'feedback',
@@ -98,6 +77,11 @@ const routes: Routes = [
     path: 'registration',
     loadChildren: '@features/registration/registration.module#RegistrationModule',
     data: { title: 'Registration' },
+  },
+  {
+    path: 'account-management',
+    loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
+    data: { title: 'Account Management' },
   },
   {
     path: 'dashboard',

@@ -74,7 +74,7 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(this.username, userDetails).subscribe(
-        () => this.router.navigate(['/your-account']),
+        () => this.router.navigate(['/account-management/your-account']),
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         }

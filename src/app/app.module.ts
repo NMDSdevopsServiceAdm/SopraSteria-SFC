@@ -31,10 +31,6 @@ import { TitleService } from '@core/services/title.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { ChangePasswordComponent } from '@features/change-password/change-password.component';
-import { ChangePasswordConfirmationComponent } from '@features/change-password/confirmation/confirmation.component';
-import { ChangePasswordEditComponent } from '@features/change-password/edit/edit.component';
-import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
 import { ContactUsComponent } from '@features/contact-us/contact-us.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
@@ -54,7 +50,6 @@ import { ResetPasswordConfirmationComponent } from '@features/reset-password/con
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
-import { YourAccountComponent } from '@features/your-account/your-account.component';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { MomentModule } from 'ngx-moment';
@@ -83,11 +78,6 @@ import { AppComponent } from './app.component';
     ResetPasswordComponent,
     ResetPasswordEditComponent,
     ResetPasswordConfirmationComponent,
-    YourAccountComponent,
-    ChangePasswordComponent,
-    ChangePasswordConfirmationComponent,
-    ChangePasswordEditComponent,
-    ChangeUserSecurityComponent,
     HomeTabComponent,
     WorkplaceTabComponent,
     EligibilityDisplayOverviewComponent,
