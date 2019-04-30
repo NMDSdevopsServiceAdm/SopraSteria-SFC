@@ -23,6 +23,7 @@ export class Dialog<T, R = any> {
         .centerVertically(),
       hasBackdrop: true,
       scrollStrategy: this.overlay.scrollStrategies.block(),
+      disposeOnNavigation: true,
     });
 
     const customInjector = this.createInjector(this.data);
