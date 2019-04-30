@@ -1,11 +1,8 @@
-.row {
-  > div {
-    background: #E9E9E9;
-  }
-}
+@import '~govuk-frontend/settings/spacing';
+@import '~govuk-frontend/helpers/spacing';
 
-.change-link {
-  float: right;
-  margin-right: 120px;
-  margin-top: 15px;
+.govuk-grid-column-full > div {
+  padding-top: govuk-spacing(3);
+  padding-bottom: govuk-spacing(3);
+  background: #e9e9e9;
 }
