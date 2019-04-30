@@ -1,31 +1,29 @@
-<div class="sub-page-container col-12">
-  <app-dashboard-header></app-dashboard-header>
+<app-dashboard-header></app-dashboard-header>
 
-  <div class="row">
-    <div class="col-md-12">
-      <h2 class="h2 fs-36 mb-4">{{ establishment?.name }}</h2>
-    </div>
-    <div class="col-md-6">
-      <p>Workplace ID: {{ establishment?.nmdsId }}</p>
-    </div>
-    <div class="col-md-6">
-      <p class="text-right" *ngIf="lastLoggedIn">Last signed in {{ lastLoggedIn | date : 'd MMMM y' }}</p>
-    </div>
+<div class="row">
+  <div class="col-md-12">
+    <h2 class="h2 fs-36 mb-4">{{ establishment?.name }}</h2>
   </div>
-
-  <div class="row">
-    <app-tabs>
-      <app-tab title="Home">
-        <app-home-tab></app-home-tab>
-      </app-tab>
-
-      <app-tab title="Workplace">
-        <app-workplace-tab></app-workplace-tab>
-      </app-tab>
-
-      <app-tab title="Staff records">
-        <app-staff-records-tab></app-staff-records-tab>
-      </app-tab>
-    </app-tabs>
+  <div class="col-md-6">
+    <p>Workplace ID: {{ establishment?.nmdsId }}</p>
   </div>
+  <div class="col-md-6">
+    <p class="text-right" *ngIf="lastLoggedIn">Last signed in {{ lastLoggedIn | date: 'd MMMM y' }}</p>
+  </div>
+</div>
+
+<div>
+  <app-tabs>
+    <app-tab title="Home">
+      <app-home-tab></app-home-tab>
+    </app-tab>
+
+    <app-tab title="Workplace">
+      <app-workplace-tab></app-workplace-tab>
+    </app-tab>
+
+    <app-tab title="Staff records">
+      <app-staff-records-tab></app-staff-records-tab>
+    </app-tab>
+  </app-tabs>
 </div>
