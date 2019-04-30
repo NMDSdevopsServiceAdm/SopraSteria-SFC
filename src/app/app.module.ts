@@ -56,6 +56,7 @@ import { MomentModule } from 'ngx-moment';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { DashboardHeaderComponent } from './features/dashboard/dashboard-header/dashboard-header.component';
 
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ import { AppComponent } from './app.component';
     WorkplaceTabComponent,
     EligibilityDisplayOverviewComponent,
     ReportsComponent,
+    DashboardHeaderComponent,
   ],
   imports: [
     BrowserModule,
