@@ -9,6 +9,7 @@ body {
   font-family: $govuk-font-family;
 }
 
+@import 'modules/overlay';
 @import 'modules/sticky-footer';
 @import 'modules/utils';
 
@@ -22,5 +23,8 @@ body {
 @import 'components/footer';
 @import 'components/header';
 @import 'components/input';
+@import 'components/inset-text';
 @import 'components/radios';
+@import 'components/summary-list';
+@import 'components/tabs';
 @import 'components/tag';
