@@ -79,7 +79,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'createPasswordInput',
+        item: 'passwordGroup.createPasswordInput',
         type: [
           {
             name: 'required',
@@ -92,7 +92,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'confirmPasswordInput',
+        item: 'passwordGroup.confirmPasswordInput',
         type: [
           {
             name: 'required',

@@ -40,10 +40,10 @@
       <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span>
         <span *ngIf="getCreatePasswordInput.hasError('required')">
-          {{ getFormErrorMessage('createPasswordInput', 'required') }}
+          {{ getFormErrorMessage('passwordGroup.createPasswordInput', 'required') }}
         </span>
         <span *ngIf="getCreatePasswordInput.hasError('pattern')">
-          {{ getFormErrorMessage('createPasswordInput', 'pattern') }}
+          {{ getFormErrorMessage('passwordGroup.createPasswordInput', 'pattern') }}
         </span>
       </span>
       <input
@@ -71,7 +71,7 @@
           *ngIf="getConfirmPasswordInput.hasError('required') || getConfirmPasswordInput.hasError('notMatched')"
           id="passwordGroup-error"
         >
-          {{ getFormErrorMessage('confirmPasswordInput', 'required') }}
+          {{ getFormErrorMessage('passwordGroup.confirmPasswordInput', 'required') }}
         </span>
       </span>
       <input
