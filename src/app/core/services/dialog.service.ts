@@ -1,3 +1,4 @@
+import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal, ComponentType, PortalInjector } from '@angular/cdk/portal';
 import { Injectable, InjectionToken, Injector } from '@angular/core';
@@ -8,11 +9,13 @@ export const DIALOG_DATA = new InjectionToken<any>('DIALOG_DATA');
 export class Dialog<T, R = any> {
   private readonly _afterClosed = new Subject<R | undefined>();
   private readonly overlayRef: OverlayRef;
+  private readonly focusTrap: FocusTrap;
 
   constructor(
     private componentType: ComponentType<T>,
     private overlay: Overlay,
     private injector: Injector,
+    private focusTrapFactory: FocusTrapFactory,
     private data: any
   ) {
     const config = new OverlayConfig({
@@ -32,6 +35,9 @@ export class Dialog<T, R = any> {
     const componentPortal = new ComponentPortal(this.componentType, null, customInjector);
 
     this.overlayRef.attach(componentPortal);
+    this.focusTrap = this.focusTrapFactory.create(this.overlayRef.overlayElement);
+    this.overlayRef.overlayElement.setAttribute('tabindex', '-1');
+    this.overlayRef.overlayElement.focus();
   }
 
   get afterClosed(): Observable<R | undefined> {
@@ -42,6 +48,7 @@ export class Dialog<T, R = any> {
     this._afterClosed.next(result);
     this._afterClosed.complete();
 
+    this.focusTrap.destroy();
     this.overlayRef.dispose();
   }
 
@@ -57,10 +64,10 @@ export class Dialog<T, R = any> {
 
 @Injectable()
 export class DialogService {
-  constructor(private overlay: Overlay, private injector: Injector) {}
+  constructor(private overlay: Overlay, private injector: Injector, private focusTrapFactory: FocusTrapFactory) {}
 
   open<T, D = any>(componentType: ComponentType<T>, data) {
-    const dialog = new Dialog<T, D>(componentType, this.overlay, this.injector, data);
+    const dialog = new Dialog<T, D>(componentType, this.overlay, this.injector, this.focusTrapFactory, data);
 
     return dialog;
   }
