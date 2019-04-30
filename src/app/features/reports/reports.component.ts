@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { AuthService } from '@core/services/auth.service';
 import { ReportsService } from '@core/services/reports.service';
-import { DateValidator } from '@core/validators/date.validator';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
@@ -13,13 +12,15 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./reports.component.scss'],
 })
 export class ReportsComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
+  public updateEligibilityForm: FormGroup;
   public establishment: any;
   public reportDetails: {};
   public lastLoggedIn = null;
   public dateFormat = DATE_DISPLAY_DEFAULT;
   public displayWDFReport: {};
   public eligibility: {};
+  public newDate: string;
+  public effectiveFromDateNextYear: string;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -27,17 +28,15 @@ export class ReportsComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private reportsService: ReportsService,
     private formBuilder: FormBuilder
-  ) {
-    this.formValidator = this.formValidator.bind(this);
-  }
+  ) {}
 
   ngOnInit() {
-    this.form = this.formBuilder.group({
-      day: null,
-      month: null,
-      year: null,
+    this.updateEligibilityForm = this.formBuilder.group({
+      date: null,
+      hour: null,
+      minute: null,
+      second: null,
     });
-    this.form.setValidators(Validators.compose([this.form.validator, DateValidator.dateValid(), this.formValidator]));
 
     this.establishment = this.authService.establishment;
 
@@ -48,6 +47,13 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.displayWDFReport = false;
   }
 
+  setEffectiveFromDate(data) {
+    const effectiveFrom = data.effectiveFrom;
+    this.effectiveFromDateNextYear = moment(effectiveFrom)
+      .add(1, 'years')
+      .format('YYYY');
+  }
+
   displayWDF(event: Event) {
     if (event) {
       event.preventDefault();
@@ -55,34 +61,33 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.reportsService.getWDFReport().subscribe(res => {
+        this.setEffectiveFromDate(res);
+
         this.eligibility = res;
         this.displayWDFReport = true;
         this.eligibility['displayWDFReport'] = this.displayWDFReport;
+        this.eligibility['effectiveFromDateNextYear'] = this.effectiveFromDateNextYear;
         this.reportsService.updateState(this.eligibility);
       })
     );
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-  }
+  updateEffectiveFrom() {
+    const date = this.updateEligibilityForm.get('date').value;
+    const hour = this.updateEligibilityForm.get('hour').value;
+    const minute = this.updateEligibilityForm.get('minute').value;
+    const second = this.updateEligibilityForm.get('second').value;
 
-  formValidator(formGroup: FormGroup): ValidationErrors {
-    if (this.form) {
-      const { day, month, year } = this.form.value;
-
-      if (day && month && year) {
-        const date = moment()
-          .year(year)
-          .month(month - 1)
-          .date(day);
-        if (date.isValid()) {
-          // TODO: https://trello.com/c/sYDV6vTN
-          // Cross Validation
-        }
-      }
+    if (date === null || date === '') {
+      this.newDate = '';
+    } else {
+      this.newDate = date + 'T' + hour + ':' + minute + ':' + second + 'Z';
     }
 
-    return null;
+    this.subscriptions.add(this.reportsService.getWDFReport(this.newDate).subscribe(res => {}));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }

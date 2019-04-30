@@ -839,12 +839,14 @@ class Worker {
     //  given effective date; otherwise returns false
     async isWdfEligible(effectiveFrom) {
         const wdfByProperty = await this.wdf(effectiveFrom);
+        const wdfPropertyValues = Object.values(wdfByProperty);
 
         // NOTE - the worker does not have to be completed before it can be eligible for WDF
 
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
             isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty !== 'No'),
             ... wdfByProperty
         };
     }

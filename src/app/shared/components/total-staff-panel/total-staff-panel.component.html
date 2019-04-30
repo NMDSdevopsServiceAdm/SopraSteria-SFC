@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
     <div class="govuk-grid-row govuk-!-padding-top-3 govuk-!-padding-bottom-3">
       <div class="govuk-grid-column-one-third">
-          <a routerLink="/worker/total-staff" class="govuk-util__float-right">Change</a>
+          <a routerLink="/worker/total-staff" class="govuk-util__float-right" (click)="setReturn()">Change</a>
         <h3 class="govuk-heading-m govuk-!-margin-bottom-1">{{ totalStaff }}</h3>
         <p class="govuk-!-margin-0">Total number of staff</p>
       </div>

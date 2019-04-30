@@ -11,11 +11,15 @@ import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
+import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 import { BritishCitizenshipComponent } from './british-citizenship/british-citizenship.component';
 import { CareCertificateComponent } from './care-certificate/care-certificate.component';
 import { CheckStaffRecordComponent } from './check-staff-record/check-staff-record.component';
 import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contract-with-zero-hours.component';
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
+import {
+  CreateBasicRecordsStartScreenComponent,
+} from './create-basic-records-start-screen/create-basic-records-start-screen.component';
 import { CreateBasicRecordsComponent } from './create-basic-records/create-basic-records.component';
 import {
   CreateStaffRecordStartScreenComponent,
@@ -61,7 +65,6 @@ import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-su
 import { WorkerResolver } from './worker.resolver';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/basic-records-save-success.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule, OverlayModule],
@@ -79,6 +82,7 @@ import { BasicRecordsSaveSuccessComponent } from './basic-records-save-success/b
     CountryOfBirthComponent,
     CreateStaffRecordStartScreenComponent,
     CreateBasicRecordsComponent,
+    CreateBasicRecordsStartScreenComponent,
     DateOfBirthComponent,
     DaysOfSicknessComponent,
     DeleteSuccessComponent,

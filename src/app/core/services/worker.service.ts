@@ -39,6 +39,7 @@ export class WorkerService {
   public worker$ = this._worker$.asObservable();
   private lastDeleted$ = new BehaviorSubject<string>(null);
   private returnTo$ = new BehaviorSubject<string[]>(null);
+  private totalStaffReturn$ = new BehaviorSubject<boolean>(false);
   public createStaffResponse = null;
   public trainingRecordCreated = null;
   public trainingRecordEdited = null;
@@ -65,6 +66,10 @@ export class WorkerService {
     return this.returnTo$.value;
   }
 
+  public get totalStaffReturn() {
+    return this.totalStaffReturn$.value as boolean;
+  }
+
   setLastDeleted(name: string) {
     this.lastDeleted$.next(name);
   }
@@ -79,6 +84,10 @@ export class WorkerService {
 
   setReturnTo(val: string[]): void {
     this.returnTo$.next(val);
+  }
+
+  setTotalStaffReturn(val) {
+    this.totalStaffReturn$.next(val);
   }
 
   getWorker(workerId: string): Observable<Worker> {

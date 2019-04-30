@@ -25,9 +25,20 @@
     <dt class="govuk-summary-list__key">
       Date started
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.mainJobStartDate === 'No'">
+        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.mainJobStartDate != 'No'">
+        {{ worker.mainJobStartDate ? mainStartDate : '-' }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       {{ worker.mainJobStartDate ? mainStartDate : '-' }}
     </dd>
+
+
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'main-job-start-date']" (click)="setReturn()">
         <ng-container *ngIf="!worker.mainJobStartDate">
@@ -282,7 +293,17 @@
     <dt class="govuk-summary-list__key">
       Salary
     </dt>
-    <dd class="govuk-summary-list__value">
+
+    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.annualHourlyPay === 'No'">
+        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.annualHourlyPay != 'No'">
+        {{ worker.annualHourlyPay?.rate ? salary : worker.annualHourlyPay?.value || '-' }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       {{ worker.annualHourlyPay?.rate ? salary : worker.annualHourlyPay?.value || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">

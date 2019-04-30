@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-total-staff-panel',
@@ -8,6 +9,11 @@ import { Component, Input } from '@angular/core';
 export class TotalStaffPanelComponent {
   @Input() totalStaff = 0;
   @Input() totalWorkers = 0;
+  @Input() returnToDash = false;
 
-  constructor() {}
+  constructor(private workerService: WorkerService) {}
+
+  setReturn() {
+    this.workerService.setTotalStaffReturn(this.returnToDash);
+  }
 }
