@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-delete-worker-dialog',
   templateUrl: './delete-worker-dialog.component.html',
 })
-export class DeleteWorkerDialogComponent implements OnInit {
+export class DeleteWorkerDialogComponent implements OnInit, OnDestroy {
   public reasons: Reason[];
   public maxLength = 500;
   public form: FormGroup;
@@ -44,6 +44,10 @@ export class DeleteWorkerDialogComponent implements OnInit {
     this.setupFormErrors();
   }
 
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
@@ -53,8 +57,6 @@ export class DeleteWorkerDialogComponent implements OnInit {
   }
 
   public onSubmit() {
-    this.submitted = true;
-
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
