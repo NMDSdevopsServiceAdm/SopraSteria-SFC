@@ -14,15 +14,15 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-tabs>
-      <app-tab title="Home">
+      <app-tab [title]="'Home'">
         <app-home-tab></app-home-tab>
       </app-tab>
 
-      <app-tab title="Workplace">
+      <app-tab [title]="'Workplace'">
         <app-workplace-tab></app-workplace-tab>
       </app-tab>
 
-      <app-tab title="Staff records">
+      <app-tab [title]="'Staff records'">
         <app-staff-records-tab></app-staff-records-tab>
       </app-tab>
     </app-tabs>
