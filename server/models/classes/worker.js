@@ -875,8 +875,8 @@ class Worker {
               break;
         }
 
-        return property &&
-                property.property !== null &&
+        return  property &&
+                (property.property !== null && property.property !== undefined) &&
                 property.valid &&
                 referenceTime !== null &&
                 referenceTime > refEpoch;
