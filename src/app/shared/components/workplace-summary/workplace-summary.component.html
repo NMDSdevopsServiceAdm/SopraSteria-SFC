@@ -30,7 +30,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.employerType === 'No'">
-          <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.employerType === 'Yes'">
           {{ workplace.employerType || '-' }}
@@ -62,7 +62,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.mainService === 'No'">
-          <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.mainService === 'Yes'">
           {{ workplace.mainService?.name || '-' }}
@@ -98,7 +98,7 @@
       <ng-template #otherServices>
         <ng-container *ngIf="displayWDFReport">
           <ng-container *ngIf="workplace.wdf.otherService === 'No'">
-            <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+            <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
           </ng-container>
           <ng-container *ngIf="workplace.wdf.otherService === 'Yes'">
             <ul class="govuk-list">
@@ -139,7 +139,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.capacities === 'No'">
-          <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.capacities === 'Yes'">
           <ng-template [ngIf]="!workplace.capacities?.length" [ngIfElse]="capacities">
@@ -185,7 +185,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.serviceUsers === 'No'">
-          <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.serviceUsers === 'Yes'">
           <ng-template [ngIf]="!workplace.serviceUsers?.length" [ngIfElse]="serviceUsers">
@@ -266,7 +266,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
-          <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.vacancies === 'Yes'">
@@ -281,7 +281,7 @@
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.Vacancies)">
               <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
-                <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+                <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
               </ng-container>
               <ng-container *ngIf="workplace.wdf.vacancies != 'No'">
                 {{ workplace.Vacancies }}
@@ -303,7 +303,7 @@
           </ng-container>
           <ng-container *ngIf="!isArray(workplace.Vacancies)">
             <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
-              <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+              <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
             </ng-container>
             <ng-container *ngIf="workplace.wdf.vacancies != 'No'">
               {{ workplace.Vacancies }}
@@ -339,7 +339,7 @@
       <ng-container *ngIf="!isArray(workplace.Starters)">
         <ng-container *ngIf="displayWDFReport">
           <ng-container *ngIf="workplace.wdf.starters === 'No'">
-            <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+            <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
           </ng-container>
 
           <ng-container *ngIf="workplace.wdf.starters === 'Yes'">
@@ -397,7 +397,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.leavers === 'No'">
-          <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.leavers === 'Yes'">
