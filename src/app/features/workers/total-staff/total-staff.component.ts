@@ -48,7 +48,13 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.backService.setBackLink({ url: ['/worker/create-staff-record'] });
+    this.returnToDash = this.workerService.totalStaffReturn;
+
+    if (this.returnToDash) {
+      this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
+    } else {
+      this.backService.setBackLink({ url: ['/worker/create-staff-record'] });
+    }
 
     this.setupFormErrors();
   }
