@@ -6,24 +6,7 @@ import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
 
 import { LoginCredentials } from '../model/login-credentials.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
-
-interface LoggedInMainService {
-  id: number;
-  name: string;
-}
-interface LoggedInEstablishment {
-  id: number;
-  name: string;
-  isRegulated: boolean;
-  nmdsId: string;
-}
-interface LoggedInSession {
-  fullname: string;
-  isFirstLogin: boolean;
-  lastLoggedIn: string;
-  establishment: LoggedInEstablishment;
-  mainService: LoggedInMainService;
-}
+import { LoggedInEstablishment, LoggedInMainService, LoggedInSession } from '@core/model/logged-in.model';
 
 @Injectable({
   providedIn: 'root',
@@ -47,21 +30,21 @@ export class AuthService {
     return !!this.token;
   }
 
-  public get establishment(): LoggedInEstablishment {
+  public get establishment(): LoggedInEstablishment | null {
     if (this._session) {
       return this._session.establishment;
     } else {
       return null;
     }
   }
-  public get mainService(): LoggedInMainService {
+  public get mainService(): LoggedInMainService | null {
     if (this._session) {
       return this._session.mainService;
     } else {
       return null;
     }
   }
-  public get fullname(): string {
+  public get fullname(): string | null {
     if (this._session) {
       return this._session.fullname;
     } else {
