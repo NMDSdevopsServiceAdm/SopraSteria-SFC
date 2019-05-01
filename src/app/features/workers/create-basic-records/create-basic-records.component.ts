@@ -4,9 +4,9 @@ import { Router } from '@angular/router';
 import { Contracts } from '@core/constants/contracts.enum';
 import { Job } from '@core/model/job.model';
 import { Worker } from '@core/model/worker.model';
+import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { MessageService } from '@core/services/message.service';
 import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { isNull } from 'util';
@@ -26,15 +26,19 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private establishmentService: EstablishmentService,
-    private workerService: WorkerService,
-    private jobService: JobService,
-    private messageService: MessageService,
+    private elementRef: ElementRef,
     private formBuilder: FormBuilder,
     private router: Router,
-    private elementRef: ElementRef
+    private backService: BackService,
+    private establishmentService: EstablishmentService,
+    private jobService: JobService,
+    private workerService: WorkerService
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
+
+    this.form = this.formBuilder.group({
+      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
+    });
   }
 
   get displayAddMore() {
@@ -69,9 +73,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
     this.contractsAvailable = Object.values(Contracts);
 
-    this.form = this.formBuilder.group({
-      staffRecords: this.formBuilder.array([this.createStaffRecordsItem()]),
-    });
+    this.backService.setBackLink({ url: ['/worker/basic-records-start-screen'] });
   }
 
   ngOnDestroy() {
