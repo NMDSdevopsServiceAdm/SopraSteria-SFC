@@ -26,18 +26,26 @@ import { NumberMax } from './directives/number-max.directive';
 import { NumberPositiveOnly } from './directives/number-positive-only.directive';
 import { Number } from './directives/number.directive';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
+import { DashboardHeaderComponent } from '@shared/components/dashboard-header/dashboard-header.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   declarations: [
+    AbsoluteNumberPipe,
     AutoSuggestComponent,
     BackLinkComponent,
     CharacterCountComponent,
+    DashboardHeaderComponent,
     DatePickerComponent,
     DetailsComponent,
     ErrorSummaryComponent,
     InsetTextComponent,
     MessagesComponent,
+    Number,
+    NumberDigitsMax,
+    NumberIntOnly,
+    NumberMax,
+    NumberPositiveOnly,
     PanelComponent,
     PhaseBannerComponent,
     StartButtonComponent,
@@ -47,22 +55,22 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
-    AbsoluteNumberPipe,
-    NumberDigitsMax,
-    NumberIntOnly,
-    NumberMax,
-    NumberPositiveOnly,
-    Number,
   ],
   exports: [
     AutoSuggestComponent,
     BackLinkComponent,
     CharacterCountComponent,
+    DashboardHeaderComponent,
     DatePickerComponent,
     DetailsComponent,
     ErrorSummaryComponent,
     InsetTextComponent,
     MessagesComponent,
+    Number,
+    NumberDigitsMax,
+    NumberIntOnly,
+    NumberMax,
+    NumberPositiveOnly,
     PanelComponent,
     PhaseBannerComponent,
     StartButtonComponent,
@@ -72,11 +80,6 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
-    NumberDigitsMax,
-    NumberIntOnly,
-    NumberMax,
-    NumberPositiveOnly,
-    Number,
   ],
 })
 export class SharedModule {}
