@@ -60,7 +60,7 @@ const routes: Routes = [
     data: { title: 'Total Staff' },
   },
   {
-    path: 'create-basic-records-start-screen',
+    path: 'basic-records-start-screen',
     component: CreateBasicRecordsStartScreenComponent,
   },
   {
