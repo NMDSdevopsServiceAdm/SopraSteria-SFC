@@ -14,7 +14,6 @@ export class TotalStaffPanelComponent {
   constructor(private workerService: WorkerService) {}
 
   setReturn() {
-    console.log(true);
     this.workerService.setTotalStaffReturn(this.returnToDash);
   }
 }
