@@ -23,7 +23,11 @@
   }}
 </app-status>
 
-<app-total-staff-panel [totalStaff]="totalStaff" [totalWorkers]="this.workers?.length" [returnToDash]="true"></app-total-staff-panel>
+<app-total-staff-panel
+  [totalStaff]="totalStaff"
+  [totalWorkers]="this.workers?.length"
+  [returnToDash]="true"
+></app-total-staff-panel>
 
 <table class="govuk-table">
   <thead class="govuk-table__head">
@@ -47,6 +51,7 @@
       <td *ngIf="!displayWDFReport" class="govuk-table__cell">
         <a
           *ngIf="!worker.completed"
+          class="govuk-util__float-right"
           [routerLink]="[
             '/worker',
             worker.uid,
@@ -57,7 +62,9 @@
       </td>
       <td *ngIf="displayWDFReport" class="govuk-table__cell">
         <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
-        <ng-container *ngIf="worker.wdfEligible"><img src="/assets/images/tick-icon.svg" /> Meeting criteria</ng-container>
+        <ng-container *ngIf="worker.wdfEligible"
+          ><img src="/assets/images/tick-icon.svg" /> Meeting criteria</ng-container
+        >
         <ng-container *ngIf="!worker.wdfEligible"
           ><img src="/assets/images/cross-icon.svg" /> Not meeting criteria</ng-container
         >
