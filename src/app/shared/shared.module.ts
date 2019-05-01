@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { DashboardHeaderComponent } from '@shared/components/dashboard-header/dashboard-header.component';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
@@ -13,6 +14,7 @@ import { InsetTextComponent } from './components/inset-text/inset-text.component
 import { MessagesComponent } from './components/messages/messages.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
+import { SkipLinkComponent } from './components/skip-link/skip-link.component';
 import { StartButtonComponent } from './components/start-button/start-button.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
@@ -26,7 +28,6 @@ import { NumberMax } from './directives/number-max.directive';
 import { NumberPositiveOnly } from './directives/number-positive-only.directive';
 import { Number } from './directives/number.directive';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
-import { DashboardHeaderComponent } from '@shared/components/dashboard-header/dashboard-header.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
@@ -55,6 +56,7 @@ import { DashboardHeaderComponent } from '@shared/components/dashboard-header/da
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    SkipLinkComponent,
   ],
   exports: [
     AutoSuggestComponent,
@@ -80,6 +82,7 @@ import { DashboardHeaderComponent } from '@shared/components/dashboard-header/da
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    SkipLinkComponent,
   ],
 })
 export class SharedModule {}
