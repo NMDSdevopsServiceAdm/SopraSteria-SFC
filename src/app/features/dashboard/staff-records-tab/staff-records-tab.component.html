@@ -57,9 +57,9 @@
       </td>
       <td *ngIf="displayWDFReport" class="govuk-table__cell">
         <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
-        <ng-container *ngIf="worker.wdfEligible"><img src="/assets/img/tick-icon.svg" /> Meeting criteria</ng-container>
+        <ng-container *ngIf="worker.wdfEligible"><img src="/assets/images/tick-icon.svg" /> Meeting criteria</ng-container>
         <ng-container *ngIf="!worker.wdfEligible"
-          ><img src="/assets/img/cross-icon.svg" /> Not meeting criteria</ng-container
+          ><img src="/assets/images/cross-icon.svg" /> Not meeting criteria</ng-container
         >
       </td>
     </tr>
