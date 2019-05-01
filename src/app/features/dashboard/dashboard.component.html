@@ -7,7 +7,7 @@
     <p>Workplace ID: {{ establishment?.nmdsId }}</p>
   </div>
   <div class="govuk-grid-column-one-third">
-    <p *ngIf="lastLoggedIn">Last signed in {{ lastLoggedIn | date: 'd MMMM y' }}</p>
+    <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16">Last signed in {{ lastLoggedIn | date: 'd MMMM y' }}</p>
   </div>
 </div>
 
