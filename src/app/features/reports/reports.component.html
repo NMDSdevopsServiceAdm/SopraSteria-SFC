@@ -1,19 +1,19 @@
 <app-dashboard-header></app-dashboard-header>
 
-<div class="row">
-  <div class="col-12 col-md-12">
-    <p class="heading-caption m-0 pb-4">{{ establishment?.name }}</p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l govuk-!-margin-bottom-2">Omar Mirza{{ establishment?.name }}</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+      <ng-container *ngIf="!displayWDFReport">Reports</ng-container>
+      <ng-container *ngIf="displayWDFReport">Workforce Development Fund</ng-container>
+    </h1>
   </div>
-  <div class="col-12 col-md-12">
-    <h1 class="h1">Reports</h1>
+  <div class="govuk-grid-column-one-third">
+    <p (click)="displayWDF($event)">Workforce Development Fund</p>
   </div>
 </div>
 
-<div class="row" *ngIf="!displayWDFReport">
-  <div class="col-12 col-md-12">
-    <span class="text-link" (click)="displayWDF()" title="Workforce Development Fund">Workforce Development Fund</span>
-  </div>
-</div>
+<p *ngIf="!displayWDFReport" (click)="displayWDF($event)">Workforce Development Fund</p>
 
 <app-eligibility-display-overview [eligibility]="eligibility" *ngIf="displayWDFReport">
 </app-eligibility-display-overview>
