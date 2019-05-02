@@ -5,6 +5,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
+import { SecurityDetails } from '@core/model/security-details.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -12,11 +13,13 @@ import { Subscription } from 'rxjs';
   templateUrl: './security-question.component.html',
 })
 export class SecurityQuestionComponent implements OnInit, OnDestroy {
+  private callToActionLabel: string;
   private form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
+  private securityDetails: SecurityDetails;
+  private securityDetailsMaxLength = 255;
   private submitted = false;
   private subscriptions: Subscription = new Subscription();
-  private securityDetailsMaxLength = 255;
 
   constructor(
     private backService: BackService,
@@ -26,30 +29,58 @@ export class SecurityQuestionComponent implements OnInit, OnDestroy {
     private router: Router
   ) {}
 
-  // Get username
+  // Get security question
   get getSecurityQuestion() {
     return this.form.get('securityQuestion');
   }
 
-  // Get username
+  // Get security answer
   get getSecurityAnswer() {
     return this.form.get('securityAnswer');
   }
 
   ngOnInit() {
     this.setupForm();
+    this.checkExistingSecurityDetails();
     this.setupFormErrorsMap();
+    this.preFillForm();
+    this.setCallToActionLabel();
     this.setBackLink();
   }
 
+  private checkExistingSecurityDetails(): void {
+    this.subscriptions.add(
+      this.registrationService.securityDetails$.subscribe((securityDetails: SecurityDetails) => {
+        if (securityDetails) {
+          this.securityDetails = securityDetails;
+        }
+      })
+    );
+  }
+
+  private preFillForm(): void {
+    if (this.securityDetails) {
+      this.getSecurityQuestion.setValue(this.securityDetails.securityQuestion);
+      this.getSecurityAnswer.setValue(this.securityDetails.securityAnswer);
+    }
+  }
+
+  private setCallToActionLabel(): void {
+    const label: string = this.securityDetails ? 'Save and return' : 'Continue';
+    this.callToActionLabel = label;
+  }
+
   private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/create-username'] });
+    const route: string = this.securityDetails
+      ? '/registration/confirm-account-details'
+      : '/registration/create-username';
+    this.backService.setBackLink({ url: [route] });
   }
 
   private setupForm(): void {
     this.form = this.fb.group({
       securityQuestion: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
-      securityAnswer: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]]
+      securityAnswer: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
     });
   }
 
