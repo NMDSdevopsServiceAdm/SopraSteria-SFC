@@ -41,7 +41,7 @@ export class RegistrationService {
     return this.http.get<Array<WorkplaceCategory>>(`/api/services/byCategory?cqc=${isRegulated}`);
   }
 
-  public getUsernameDuplicate(id: string): Observable<any>  {
+  public getUsernameDuplicate(id: string): Observable<any> {
     return this.http.get(`/api/registration/username/${id}`);
   }
 

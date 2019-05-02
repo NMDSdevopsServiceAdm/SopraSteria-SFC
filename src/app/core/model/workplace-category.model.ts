@@ -4,4 +4,3 @@ export interface WorkplaceCategory {
   category: string;
   services: Array<WorkplaceService>;
 }
-

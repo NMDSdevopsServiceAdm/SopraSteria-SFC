@@ -3,4 +3,3 @@ export interface WorkplaceService {
   isCQC: boolean;
   name: string;
 }
-
