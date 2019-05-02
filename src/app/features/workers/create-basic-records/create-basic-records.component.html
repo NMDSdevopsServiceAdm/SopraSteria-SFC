@@ -52,7 +52,7 @@
               <span class="govuk-visually-hidden">Error:</span> Enter a full name or ID number.
             </span>
             <input
-              class="govuk-input govuk-!-width-two-thirds"
+              class="govuk-input govuk-input--width-20"
               [class.govuk-input--error]="staffRecord.get('nameOrId').invalid && staffRecord.get('nameOrId').touched"
               formControlName="nameOrId"
               id="nameOrId-{{ i }}"
@@ -122,6 +122,19 @@
           </div>
           <button class="govuk-button govuk-button--tertiary" type="button" (click)="saveStaffRecord(i)">
             Save this staff record
+          </button>
+          <button
+            class="govuk-button govuk-button--link govuk-!-margin-left-8"
+            type="button"
+            (click)="deleteStaffRecord($event, i)"
+          >
+            <ng-container *ngIf="staffRecord.get('uid').value; then delete; else cancel"></ng-container>
+            <ng-template #delete>
+                Delete record<span class="govuk-visually-hidden"> {{ i + 1 + totalWorkers }}</span>
+            </ng-template>
+            <ng-template #cancel>
+                Cancel
+            </ng-template>
           </button>
         </fieldset>
       </ng-template>

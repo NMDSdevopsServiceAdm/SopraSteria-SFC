@@ -12,5 +12,12 @@
   }
 }
 .govuk-summary-list--top-border {
-  border-top: 1px solid $govuk-border-colour;
+  .govuk-summary-list__row:first-child {
+    .govuk-summary-list__key,
+    .govuk-summary-list__value,
+    .govuk-summary-list__actions,
+    .govuk-summary-list__row {
+      border-top: 1px solid $govuk-border-colour;
+    }
+  }
 }
