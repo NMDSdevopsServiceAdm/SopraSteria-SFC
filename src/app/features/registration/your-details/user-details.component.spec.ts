@@ -8,9 +8,8 @@ describe('YourDetailsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ YourDetailsComponent ]
-    })
-    .compileComponents();
+      declarations: [YourDetailsComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -20,6 +19,6 @@ describe('YourDetailsComponent', () => {
   });
 
   it('should create', () => {
-   expect(component).toBeTruthy();
+    expect(component).toBeTruthy();
   });
 });

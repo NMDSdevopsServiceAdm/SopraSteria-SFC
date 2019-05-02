@@ -8,9 +8,8 @@ describe('EligibilityDisplayOverviewComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EligibilityDisplayOverviewComponent ]
-    })
-    .compileComponents();
+      declarations: [EligibilityDisplayOverviewComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

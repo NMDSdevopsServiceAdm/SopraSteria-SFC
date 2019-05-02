@@ -8,9 +8,8 @@ describe('CharacterCountComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CharacterCountComponent ]
-    })
-    .compileComponents();
+      declarations: [CharacterCountComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

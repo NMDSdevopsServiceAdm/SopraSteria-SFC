@@ -8,9 +8,8 @@ describe('ChangeUserSecurityComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ChangeUserSecurityComponent ]
-    })
-    .compileComponents();
+      declarations: [ChangeUserSecurityComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

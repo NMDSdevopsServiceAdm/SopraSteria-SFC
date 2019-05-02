@@ -8,9 +8,8 @@ describe('SelectMainServiceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SelectMainServiceComponent ]
-    })
-    .compileComponents();
+      declarations: [SelectMainServiceComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -8,9 +8,8 @@ describe('SelectWorkplaceAddressComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SelectWorkplaceAddressComponent ]
-    })
-    .compileComponents();
+      declarations: [SelectWorkplaceAddressComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -7,13 +7,11 @@ describe('RegulatedByCqcComponent', () => {
   let component: RegulatedByCqcComponent;
   let fixture: ComponentFixture<RegulatedByCqcComponent>;
 
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule],
-      declarations: [ RegulatedByCqcComponent ]
-    })
-    .compileComponents();
+      declarations: [RegulatedByCqcComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -25,5 +23,4 @@ describe('RegulatedByCqcComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
 });
