@@ -51,11 +51,15 @@
   <button class="btn btn-secondary">Send</button>
 </form>
 
-<div class="govuk-warning-text col-6 mt-5 mb-5" *ngIf="displayWDFReport">
-  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-  <span class="govuk-warning-text__text">
-    You must update your ASC-WDS data before the 31 March {{ effectiveFromDateNextYear }} to qualify for WDF.
-  </span>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <div class="govuk-warning-text govuk-!-margin-bottom-2" *ngIf="displayWDFReport">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <span class="govuk-warning-text__text">
+        You must update your ASC-WDS data before the 31 March {{ effectiveFromDateNextYear }} to qualify for WDF.
+      </span>
+    </div>
+  </div>
 </div>
 
 <app-tabs *ngIf="displayWDFReport" [displayWDFReport]="displayWDFReport">
