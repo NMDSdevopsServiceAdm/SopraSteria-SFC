@@ -1,11 +1,11 @@
-import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SecurityDetails } from '@core/model/security-details.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -43,7 +43,6 @@ export class SecurityQuestionComponent implements OnInit, OnDestroy {
     this.setupForm();
     this.checkExistingSecurityDetails();
     this.setupFormErrorsMap();
-    this.preFillForm();
     this.setCallToActionLabel();
     this.setBackLink();
   }
@@ -53,6 +52,7 @@ export class SecurityQuestionComponent implements OnInit, OnDestroy {
       this.registrationService.securityDetails$.subscribe((securityDetails: SecurityDetails) => {
         if (securityDetails) {
           this.securityDetails = securityDetails;
+          this.preFillForm();
         }
       })
     );
