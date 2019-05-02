@@ -3,8 +3,7 @@ import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-total-staff-panel',
-  templateUrl: './total-staff-panel.component.html',
-  styleUrls: ['./total-staff-panel.component.scss'],
+  templateUrl: './total-staff-panel.component.html'
 })
 export class TotalStaffPanelComponent {
   @Input() totalStaff = 0;

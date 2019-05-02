@@ -1,23 +1,24 @@
 <app-dashboard-header></app-dashboard-header>
 
-<div class="row">
-  <div class="col-12 col-md-12">
-    <p class="heading-caption m-0 pb-4">{{ establishment?.name }}</p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment?.name }}</span>
+    <h1 class="govuk-heading-ls">
+      <ng-container *ngIf="!displayWDFReport">Reports</ng-container>
+      <ng-container *ngIf="displayWDFReport">Workforce Development Fund</ng-container>
+    </h1>
   </div>
-  <div class="col-12 col-md-12">
-    <h1 class="h1">Reports</h1>
+  <div class="govuk-grid-column-one-third">
+    <p (click)="displayWDF($event)">Workforce Development Fund</p>
   </div>
 </div>
 
-<div class="row" *ngIf="!displayWDFReport">
-  <div class="col-12 col-md-12">
-    <span class="text-link" (click)="displayWDF()" title="Workforce Development Fund">Workforce Development Fund</span>
-  </div>
-</div>
+<p *ngIf="!displayWDFReport" (click)="displayWDF($event)">Workforce Development Fund</p>
 
 <app-eligibility-display-overview [eligibility]="eligibility" *ngIf="displayWDFReport">
 </app-eligibility-display-overview>
 
+<!-- Below form is for testing purposes only -->
 <form
   novalidate
   (ngSubmit)="updateEffectiveFrom()"
@@ -51,11 +52,15 @@
   <button class="btn btn-secondary">Send</button>
 </form>
 
-<div class="govuk-warning-text col-6 mt-5 mb-5" *ngIf="displayWDFReport">
-  <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-  <span class="govuk-warning-text__text">
-    You must update your ASC-WDS data before the 31 March {{ effectiveFromDateNextYear }} to qualify for WDF.
-  </span>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <div class="govuk-warning-text govuk-!-margin-bottom-2" *ngIf="displayWDFReport">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <span class="govuk-warning-text__text">
+        You must update your ASC-WDS data before the 31 March {{ effectiveFromDateNextYear }} to qualify for WDF.
+      </span>
+    </div>
+  </div>
 </div>
 
 <app-tabs *ngIf="displayWDFReport" [displayWDFReport]="displayWDFReport">
