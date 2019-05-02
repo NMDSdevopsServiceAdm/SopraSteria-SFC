@@ -2,8 +2,8 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-l govuk-!-margin-bottom-2">Omar Mirza{{ establishment?.name }}</span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
+    <span class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment?.name }}</span>
+    <h1 class="govuk-heading-ls">
       <ng-container *ngIf="!displayWDFReport">Reports</ng-container>
       <ng-container *ngIf="displayWDFReport">Workforce Development Fund</ng-container>
     </h1>
