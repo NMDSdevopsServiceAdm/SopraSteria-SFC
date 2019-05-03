@@ -45,6 +45,22 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"LastWdfEligibility"'
     },
+    isParent: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      default: false,
+      field: '"IsParent"'
+    },
+    parentId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"ParentID"'
+    },
+    parentUid: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      field: '"ParentUID"'
+    },
     NameValue: {
       type: DataTypes.TEXT,
       allowNull: false,
