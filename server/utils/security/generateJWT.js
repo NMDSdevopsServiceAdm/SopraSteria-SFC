@@ -4,17 +4,16 @@ const Authorization = require('./isAuthenticated');
 const Token_Secret = Authorization.getTokenSecret();
 
 // this generates the login JWT
-exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, username, role) => {
+exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, isParent, username, role) => {
   var claims = {
     EstblishmentId: establishmentId,
     EstablishmentUID: establishmentUid,
     role,
+    isParent,
     sub: username,
     aud: config.get('jwt.aud.login'),
     iss: config.get('jwt.iss')
   };
-
-  console.log("WA DEBUG: Login ttl in: ", ttlMinutes)
 
   return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});   
 };
