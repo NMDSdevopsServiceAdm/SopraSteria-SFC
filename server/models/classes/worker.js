@@ -157,7 +157,7 @@ class Worker {
                 const creationDocument = {
                     establishmentFk: this._establishmentId,
                     uid: this.uid,
-                    updatedBy: savedBy,
+                    updatedBy: savedBy.toLowerCase(),
                     archived: false,
                     updated: creationDate,
                     created: creationDate,
@@ -175,7 +175,7 @@ class Worker {
                     // Note - although the POST (create) has a default
                     //   set of mandatory properties, there is no reason
                     //   why we cannot create a Worker record with more properties
-                    const modifedCreationDocument = this._properties.save(savedBy, creationDocument);
+                    const modifedCreationDocument = this._properties.save(savedBy.toLowerCase(), creationDocument);
 
                     // now save the document
                     let creation = await models.worker.create(modifedCreationDocument, {transaction: thisTransaction});
@@ -185,13 +185,13 @@ class Worker {
                     this._id = sanitisedResults.ID;
                     this._created = sanitisedResults.created;
                     this._updated = sanitisedResults.updated;
-                    this._updatedBy = savedBy;
+                    this._updatedBy = savedBy.toLowerCase();
                     this._isNew = false;
 
                     // having the worker id we can now create the audit record; inserting the workerFk
                     const allAuditEvents = [{
                         workerFk: this._id,
-                        username: savedBy,
+                        username: savedBy.toLowerCase(),
                         type: 'created'}].concat(this._properties.auditEvents.map(thisEvent => {
                             return {
                                 ...thisEvent,
@@ -225,12 +225,12 @@ class Worker {
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
                     // now append the extendable properties
-                    const modifedUpdateDocument = this._properties.save(savedBy, {});
+                    const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
                     const updateDocument = {
                         ...modifedUpdateDocument,
                         updated: updatedTimestamp,
-                        updatedBy: savedBy
+                        updatedBy: savedBy.toLowerCase()
                     };
 
                     // every time the worker is saved, need to calculate
@@ -242,7 +242,7 @@ class Worker {
                     if (currentWdfEligibiity.currentEligibility) {
                         updateDocument.lastWdfEligibility = updatedTimestamp;
                         wdfAudit = {
-                            username: savedBy,
+                            username: savedBy.toLowerCase(),
                             type: 'wdfEligible'
                         };
                     }
@@ -263,13 +263,13 @@ class Worker {
                         const updatedRecord = updatedRows[0].get({plain: true});
 
                         this._updated = updatedRecord.updated;
-                        this._updatedBy = savedBy;
+                        this._updatedBy = savedBy.toLowerCase();
                         this._id = updatedRecord.ID;
 
                         // having updated the record, create the audit event
                         const allAuditEvents = [{
                             workerFk: this._id,
-                            username: savedBy,
+                            username: savedBy.toLowerCase(),
                             type: 'updated'}].concat(this._properties.auditEvents.map(thisEvent => {
                                 return {
                                     ...thisEvent,
@@ -320,7 +320,7 @@ class Worker {
                         //  This decision is done based on if this Worker is being marked as Completed.
                         const completedProperty = this._properties.get('Completed');
                         if (completedProperty && completedProperty.modified) {
-                            await WdfCalculator.calculate(savedBy, this._establishmentId, null, thisTransaction);
+                            await WdfCalculator.calculate(savedBy.toLowerCase(), this._establishmentId, null, thisTransaction);
                         }
 
                         this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
@@ -839,12 +839,14 @@ class Worker {
     //  given effective date; otherwise returns false
     async isWdfEligible(effectiveFrom) {
         const wdfByProperty = await this.wdf(effectiveFrom);
+        const wdfPropertyValues = Object.values(wdfByProperty);
 
         // NOTE - the worker does not have to be completed before it can be eligible for WDF
 
         return {
             lastEligibility: this._lastWdfEligibility ? this._lastWdfEligibility.toISOString() : null,
             isEligible: this._lastWdfEligibility && this._lastWdfEligibility.getTime() > effectiveFrom.getTime() ? true : false,
+            currentEligibility: wdfPropertyValues.every(thisWdfProperty => thisWdfProperty !== 'No'),
             ... wdfByProperty
         };
     }
@@ -873,8 +875,8 @@ class Worker {
               break;
         }
 
-        return property &&
-                property.property !== null &&
+        return  property &&
+                (property.property !== null && property.property !== undefined) &&
                 property.valid &&
                 referenceTime !== null &&
                 referenceTime > refEpoch;

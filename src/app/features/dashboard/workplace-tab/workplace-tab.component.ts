@@ -1,5 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { ReportsService } from '@core/services/reports.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -9,10 +10,12 @@ import { take } from 'rxjs/operators';
 })
 export class WorkplaceTabComponent implements OnInit, OnDestroy {
   public workplace: any;
+  public reportDetails: any;
   public updateWorkplace: boolean;
+  @Input() displayWDFReport;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private establishmentService: EstablishmentService) {}
+  constructor(private establishmentService: EstablishmentService, private reportsService: ReportsService) {}
 
   ngOnInit() {
     const workplaceId = parseInt(localStorage.getItem('establishmentId'), 10);
@@ -32,6 +35,10 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
         .subscribe(d => {
           this.updateWorkplace = !d.employerType;
         })
+    );
+
+    this.subscriptions.add(
+      this.reportsService.reportDetails$.subscribe(reportDetails => (this.reportDetails = reportDetails))
     );
   }
 

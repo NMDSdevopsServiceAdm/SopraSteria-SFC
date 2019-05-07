@@ -65,7 +65,7 @@ class WdfCalculator {
 
         console.log("WA DEBUG - not yet eligible")
         // the establishment must be eligible for the Overall WDF to be eligible
-        if (thisEstablishment.lastWdfEligibility === null |
+        if (thisEstablishment.lastWdfEligibility === null ||
             thisEstablishment.lastWdfEligibility.getTime() < this.effectiveTime) {
           // this establishment fails overal eligibility
           return;
@@ -111,7 +111,7 @@ class WdfCalculator {
 
           const updateDocument = {
             updated: updatedTimestamp,
-            updatedBy: savedBy,
+            updatedBy: savedBy.toLowerCase(),
             overallWdfEligibility: updatedTimestamp,
           };
           let [updatedRecordCount, updatedRows] = await models.establishment.update(
@@ -130,12 +130,12 @@ class WdfCalculator {
             const auditEvents = [
               {
                 establishmentFk: updatedRecord.EstablishmentID,
-                username: savedBy,
+                username: savedBy.toLowerCase(),
                 type: 'overalWdfEligible'
               },
               {
                 establishmentFk: updatedRecord.EstablishmentID,
-                username: savedBy,
+                username: savedBy.toLowerCase(),
                 type: 'updated'
               }
             ];

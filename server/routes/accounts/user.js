@@ -51,7 +51,7 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
     if (uuidRegex.test(userId.toUpperCase())) {
         byUUID = userId;
     } else {
-        byUsername = escape(userId);
+        byUsername = escape(userId.toLowerCase());
     }
 
     const thisUser = new User.User(establishmentId);
@@ -91,7 +91,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
     if (uuidRegex.test(userId.toUpperCase())) {
         byUUID = userId;
     } else {
-        byUsername = escape(userId);
+        byUsername = escape(userId.toLowerCase());
     }
     
     const thisUser = new User.User(establishmentId);
@@ -102,6 +102,9 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         //  is to restore from given UID
         if (await thisUser.restore(byUUID, byUsername, null)) {
             // TODO: JSON validation
+
+            // force lowercase on email when updating
+            req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
 
             // by loading after the restore, only those properties defined in the
             //  PUT body will be updated (peristed)
@@ -157,7 +160,9 @@ router.route('/resetPassword').post(async (req, res) => {
         // all checks pass, so find the user using facts from the token (now on the req)
         const loginResponse = await models.login.findOne({
             where: {
-                username: req.username,
+                username: {
+                    [models.Sequelize.Op.iLike] : req.username
+                },
                 isActive: true
             },
             include: [
@@ -238,7 +243,9 @@ router.route('/changePassword').post(async (req, res) => {
         // all checks pass, so find the user using facts from the token (now on the req)
         const login = await models.login.findOne({
             where: {
-                username: req.username,
+                username: {
+                    [models.Sequelize.Op.iLike] : req.username
+                },
                 isActive: true
             },
             include: [
@@ -338,6 +345,10 @@ router.route('/add/establishment/:id').post(async (req, res) => {
     
     try {
         // TODO: JSON validation
+
+        // force email to be lowercase
+        req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
+
 
         // only those properties defined in the POST body will be updated (peristed)
         const isValidUser = await thisUser.load(req.body);
@@ -483,6 +494,10 @@ router.route('/add').post(async (req, res) => {
                 ...req.body,
                 role: trackingResponse.user.UserRoleValue
             };
+
+            // force the username and email to be lowercase
+            newUserProperties.username = newUserProperties.username ? newUserProperties.username.toLowerCase() : newUserProperties.username;
+            newUserProperties.email = newUserProperties.email ? newUserProperties.email.toLowerCase() : newUserProperties.email;
 
             const isValidUser = await thisUser.load(newUserProperties);
             // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!

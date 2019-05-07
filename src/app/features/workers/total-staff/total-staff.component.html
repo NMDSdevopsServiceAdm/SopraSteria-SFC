@@ -1,0 +1,41 @@
+<div class="main-page-container col-12">
+  <div id="back" class="back-link">
+    <a routerLink="/worker/start-screen"> <span class="arrow"></span>Back </a>
+  </div>
+
+  <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <header>
+      <h1 class="h1 col-12 col-lg-8">What is the total number of staff at your workplace?</h1>
+    </header>
+
+    <app-messages></app-messages>
+
+    <div class="form-group mt-5">
+      <div class="field-group">
+        <label class="form-label">
+          <span class="example">This includes permanent, temporary, pool/bank or agency staff</span>
+          <input
+            type="text"
+            formControlName="totalStaff"
+            class="form-control col-2"
+            [ngClass]="{
+              'is-invalid':
+                (form.get('totalStaff').touched || form.get('totalStaff').dirty) && !form.get('totalStaff').valid
+            }"
+          />
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-container container">
+      <div class="row">
+        <button type="submit" class="btn btn-primary">
+          {{ returnToDash ? 'Save and return' : 'Save and continue' }}
+        </button>
+        <a [routerLink]="['/dashboard']" fragment="staff-records" class="btn btn-link btn-link-no-underline col-md-3">
+          Cancel
+        </a>
+      </div>
+    </div>
+  </form>
+</div>
