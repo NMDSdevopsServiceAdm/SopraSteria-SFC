@@ -1,20 +1,21 @@
+import * as moment from 'moment';
 import { Component, OnDestroy, OnInit, Input } from '@angular/core';
-import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+import { Worker } from '@core/model/worker.model';
+import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-staff-records-tab',
   templateUrl: './staff-records-tab.component.html',
 })
 export class StaffRecordsTabComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription = new Subscription();
   public createStaffResponse = null;
-  public workers: Worker[];
-  public totalStaff: number;
   public errors;
   public incomplete = 0;
-  private subscriptions: Subscription = new Subscription();
+  public totalStaff: number;
+  public workers: Worker[];
   @Input() displayWDFReport;
 
   constructor(private establishmentService: EstablishmentService, private workerService: WorkerService) {}
@@ -34,6 +35,13 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
     );
 
     this.createStaffResponse = this.workerService.getCreateStaffResponse();
+  }
+
+  private lastUpdated(timestamp: string): string {
+    const lastUpdated: moment.Moment = moment(timestamp);
+    const isToday: boolean = moment().isSame(lastUpdated, 'day');
+
+    return isToday ? 'Today' : lastUpdated.format('D MMMM YYYY');
   }
 
   ngOnDestroy() {
