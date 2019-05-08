@@ -239,14 +239,17 @@ export class AddEditTrainingComponent implements OnInit {
   }
 
   private onSuccess() {
-    if (this.trainingRecordId) {
-      this.workerService.setTrainingRecordEdited();
-    } else {
-      this.workerService.setTrainingRecordCreated();
-    }
-    this.router.navigate(['/worker', this.worker.uid], {
-      fragment: 'qualifications-and-training',
-    });
+    this.router
+      .navigate(['/worker', this.worker.uid], {
+        fragment: 'qualifications-and-training',
+      })
+      .then(() => {
+        if (this.trainingRecordId) {
+          this.workerService.setTrainingRecordEdited();
+        } else {
+          this.workerService.setTrainingRecordCreated();
+        }
+      });
   }
 
   private onError(error) {
