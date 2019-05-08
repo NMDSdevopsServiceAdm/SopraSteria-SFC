@@ -1,36 +1,36 @@
 <ng-container *ngIf="worker">
   <ng-container *ngIf="trainingRecordCreated">
-    <app-inset-text color="success" class="fs-19">
-      Training has been added <a href="#" (click)="closeTrainingCreatedAlert($event)" class="close-link">Close</a>
+    <app-inset-text color="success">
+      Training has been added <a href="#" (click)="closeTrainingCreatedAlert($event)" class="govuk-util__float-right">Close</a>
     </app-inset-text>
   </ng-container>
   <ng-container *ngIf="trainingRecordEdited">
-    <app-inset-text color="success" class="fs-19">
-      Training has been saved <a href="#" (click)="closeTrainingEditedAlert($event)" class="close-link">Close</a>
+    <app-inset-text color="success">
+      Training has been saved <a href="#" (click)="closeTrainingEditedAlert($event)" class="govuk-util__float-right">Close</a>
     </app-inset-text>
   </ng-container>
   <ng-container *ngIf="trainingRecordDeleted">
-    <app-inset-text color="success" class="fs-19">
-      Training has been deleted <a href="#" (click)="closeTrainingDeletedAlert($event)" class="close-link">Close</a>
+    <app-inset-text color="success">
+      Training has been deleted <a href="#" (click)="closeTrainingDeletedAlert($event)" class="govuk-util__float-right">Close</a>
     </app-inset-text>
   </ng-container>
 
   <ng-container *ngIf="qualificationCreated">
-    <app-inset-text color="success" class="fs-19">
+    <app-inset-text color="success">
       Qualification has been added
-      <a href="#" (click)="closeQualificationCreatedAlert($event)" class="close-link">Close</a>
+      <a href="#" (click)="closeQualificationCreatedAlert($event)" class="govuk-util__float-right">Close</a>
     </app-inset-text>
   </ng-container>
   <ng-container *ngIf="qualificationEdited">
-    <app-inset-text color="success" class="fs-19">
+    <app-inset-text color="success">
       Qualification has been saved
-      <a href="#" (click)="closeQualificationEditedAlert($event)" class="close-link">Close</a>
+      <a href="#" (click)="closeQualificationEditedAlert($event)" class="govuk-util__float-right">Close</a>
     </app-inset-text>
   </ng-container>
   <ng-container *ngIf="qualificationDeleted">
-    <app-inset-text color="success" class="fs-19">
+    <app-inset-text color="success">
       Qualification has been deleted
-      <a href="#" (click)="closeQualificationDeletedAlert($event)" class="close-link">Close</a>
+      <a href="#" (click)="closeQualificationDeletedAlert($event)" class="govuk-util__float-right">Close</a>
     </app-inset-text>
   </ng-container>
 
@@ -107,23 +107,25 @@
         [return]="['/worker', worker.uid]"
         [reportDetails]="reportDetails"
       ></app-qualifications-and-training>
-      <a
-        [routerLink]="['/worker', worker.uid, 'add-qualification']"
-        role="button"
-        draggable="false"
-        class="govuk-button govuk-button--secondary"
-      >
-        Add a qualification
-      </a>
-      <a
-        [routerLink]="['/worker', worker.uid, 'add-training']"
-        role="button"
-        draggable="false"
-        class="govuk-button govuk-button--secondary"
-      >
-        Add training
-      </a>
       <p><img src="/assets/images/icon-information.svg" /> Adding additional qualifications or training is optional.</p>
+      <p>
+        <a
+          [routerLink]="['/worker', worker.uid, 'add-qualification']"
+          role="button"
+          draggable="false"
+          class="govuk-button govuk-button--secondary govuk-!-margin-right-8"
+        >
+          Add a qualification
+        </a>
+        <a
+          [routerLink]="['/worker', worker.uid, 'add-training']"
+          role="button"
+          draggable="false"
+          class="govuk-button govuk-button--secondary"
+        >
+          Add training
+        </a>
+      </p>
       <app-qualifications [worker]="worker"></app-qualifications>
       <app-training [worker]="worker"></app-training>
     </app-tab>
