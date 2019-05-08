@@ -65,7 +65,9 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   private setBackLink(): void {
-    const route: string = this.loginCredentialsExist ? '/registration/confirm-account-details' : '/registration/your-details';
+    const route: string = this.loginCredentialsExist
+      ? '/registration/confirm-account-details'
+      : '/registration/your-details';
     this.backService.setBackLink({ url: [route] });
   }
 
@@ -75,13 +77,12 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
 
   private setupSubscriptions(): void {
     this.subscriptions.add(
-      this.registrationService.loginCredentials$
-        .subscribe((loginCredentials: LoginCredentials) => {
-          if (loginCredentials) {
-            this.loginCredentialsExist = true;
-            this.preFillForm(loginCredentials);
-          }
-        })
+      this.registrationService.loginCredentials$.subscribe((loginCredentials: LoginCredentials) => {
+        if (loginCredentials) {
+          this.loginCredentialsExist = true;
+          this.preFillForm(loginCredentials);
+        }
+      })
     );
 
     this.subscriptions.add(
@@ -206,13 +207,12 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    this.router.navigate([this.setFormSubmissionLink()])
-      .then(() => {
-        this.registrationService.loginCredentials$.next({
-          username: this.getUsername.value,
-          password: this.getPassword.value,
-        });
+    this.router.navigate([this.setFormSubmissionLink()]).then(() => {
+      this.registrationService.loginCredentials$.next({
+        username: this.getUsername.value,
+        password: this.getPassword.value,
       });
+    });
   }
 
   /**
