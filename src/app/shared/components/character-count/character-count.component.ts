@@ -19,10 +19,14 @@ export class CharacterCountComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.control.valueChanges.pipe(debounceTime(200)).subscribe((value: string) => {
-        if (this.words) {
-          this.remaining = this.max - value.match(/\S+/g).length;
+        if (value) {
+          if (this.words) {
+            this.remaining = this.max - value.match(/\S+/g).length;
+          } else {
+            this.remaining = this.max - value.length;
+          }
         } else {
-          this.remaining = this.max - value.length;
+          this.remaining = this.max;
         }
       })
     );
