@@ -35,7 +35,12 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
 
   private setupSubscriptions(): void {
     this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => this.prefillForm(userDetails))
+      this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
+        if (userDetails) {
+          this.userDetails = userDetails;
+          this.prefillForm(userDetails);
+        }
+      })
     );
 
     this.subscriptions.add(
@@ -47,8 +52,6 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
 
   private prefillForm(userDetails: UserDetails): void {
     if (userDetails) {
-      this.username = userDetails.username;
-
       this.form.setValue({
         email: userDetails.email,
         fullName: userDetails.fullname,
@@ -58,22 +61,33 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
     }
   }
 
+  protected updateUserDetails(): UserDetails {
+    this.userDetails.email = this.getEmail.value;
+    this.userDetails.fullname = this.getFullName.value;
+    this.userDetails.jobTitle = this.getJobTitle.value;
+    this.userDetails.phone = this.getPhone.value;
+
+    return this.userDetails;
+  }
+
   protected onFormValidSubmit(): void {
+    this.userService.updateState(this.updateUserDetails());
+
     if (this.registrationInProgress) {
-      this.userService.updateState(this.setUserDetails());
       this.router.navigate([ '/registration/confirm-account-details' ]);
     } else {
       this.changeUserDetails(this.userDetails);
     }
   }
 
+  // TODO fix
   protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/registration/confirm-account-details'] });
   }
 
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(this.username, userDetails).subscribe(
+      this.userService.updateUserDetails(userDetails).subscribe(
         () => this.router.navigate(['/account-management/your-account']),
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
