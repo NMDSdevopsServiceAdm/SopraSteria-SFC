@@ -21,7 +21,7 @@
           {{ getFormErrorMessage('dob', 'dateBetween') }}
         </ng-container>
       </span>
-      <app-date-picker [formGroup]="form" formGroupName="dob" autocomplete="bday"></app-date-picker>
+      <app-date-picker [formGroup]="form" formGroupName="dob" autocomplete="bday" [submitted]="submitted"></app-date-picker>
     </fieldset>
   </div>
   <app-submit-button [return]="!!return" (click)="onSubmit($event)"></app-submit-button>

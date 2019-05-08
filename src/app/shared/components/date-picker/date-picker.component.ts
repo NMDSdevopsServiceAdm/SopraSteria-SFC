@@ -9,4 +9,5 @@ export class DatePickerComponent {
   @Input() formGroup: FormGroup;
   @Input() formGroupName: string;
   @Input() autocomplete: string;
+  @Input() submitted: boolean;
 }
