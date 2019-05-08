@@ -1,11 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { SecurityDetails } from '@core/model/security-details.model';
 import { BackService } from '@core/services/back.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegistrationService } from '@core/services/registration.service';
+import { Router } from '@angular/router';
+import { SecurityDetails } from '@core/model/security-details.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,7 +16,7 @@ export class SecurityQuestionComponent implements OnInit, OnDestroy {
   private callToActionLabel: string;
   private form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
-  private securityDetails: SecurityDetails;
+  private securityDetailsExist = false;
   private securityDetailsMaxLength = 255;
   private submitted = false;
   private subscriptions: Subscription = new Subscription();
@@ -51,27 +51,27 @@ export class SecurityQuestionComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.registrationService.securityDetails$.subscribe((securityDetails: SecurityDetails) => {
         if (securityDetails) {
-          this.securityDetails = securityDetails;
-          this.preFillForm();
+          this.securityDetailsExist = true;
+          this.preFillForm(securityDetails);
         }
       })
     );
   }
 
-  private preFillForm(): void {
-    if (this.securityDetails) {
-      this.getSecurityQuestion.setValue(this.securityDetails.securityQuestion);
-      this.getSecurityAnswer.setValue(this.securityDetails.securityAnswer);
+  private preFillForm(securityDetails: SecurityDetails): void {
+    if (securityDetails) {
+      this.getSecurityQuestion.setValue(securityDetails.securityQuestion);
+      this.getSecurityAnswer.setValue(securityDetails.securityAnswer);
     }
   }
 
   private setCallToActionLabel(): void {
-    const label: string = this.securityDetails ? 'Save and return' : 'Continue';
+    const label: string = this.securityDetailsExist ? 'Save and return' : 'Continue';
     this.callToActionLabel = label;
   }
 
   private setBackLink(): void {
-    const route: string = this.securityDetails
+    const route: string = this.securityDetailsExist
       ? '/registration/confirm-account-details'
       : '/registration/create-username';
     this.backService.setBackLink({ url: [route] });
@@ -131,6 +131,7 @@ export class SecurityQuestionComponent implements OnInit, OnDestroy {
       securityQuestion: this.getSecurityQuestion.value,
       securityAnswer: this.getSecurityAnswer.value,
     });
+
     this.router.navigate(['/registration/confirm-account-details']);
   }
 
