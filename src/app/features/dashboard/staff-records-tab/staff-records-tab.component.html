@@ -46,7 +46,7 @@
       </td>
       <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>
       <td class="govuk-table__cell">
-        <span class="govuk-visually-hidden">last updated</span> {{ worker.updated | date: 'd MMMM y' }}
+        <span class="govuk-visually-hidden">last updated</span> {{ lastUpdated(worker.updated) }}
       </td>
       <td *ngIf="!displayWDFReport" class="govuk-table__cell">
         <a
