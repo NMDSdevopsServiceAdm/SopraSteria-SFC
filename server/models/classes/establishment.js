@@ -963,14 +963,12 @@ class Establishment {
             });
 
             if (mainServiceCapacities.length === 0) {
-                myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
+                myWdf['capacities'] = 'Not relevant';
             } else {
                 // ensure all all main service's capacities have been answered - note, the can only be one Main Service capacity set
                 myWdf['capacities'] = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
             }
 
-
-            myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
         } else {
             myWdf['capacities'] = 'Not relevant';
         }
