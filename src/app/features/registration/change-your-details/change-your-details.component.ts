@@ -23,7 +23,7 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
     protected fb: FormBuilder,
     protected registrationService: RegistrationService,
     protected router: Router,
-    protected userService: UserService,
+    protected userService: UserService
   ) {
     super(backService, errorSummaryService, fb, router, userService);
   }
@@ -45,7 +45,7 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
 
     this.subscriptions.add(
       this.registrationService.registrationInProgress$.subscribe(
-        (registrationInProgress: boolean) => this.registrationInProgress = registrationInProgress
+        (registrationInProgress: boolean) => (this.registrationInProgress = registrationInProgress)
       )
     );
   }
@@ -74,15 +74,17 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
     this.userService.updateState(this.updateUserDetails());
 
     if (this.registrationInProgress) {
-      this.router.navigate([ '/registration/confirm-account-details' ]);
+      this.router.navigate(['/registration/confirm-account-details']);
     } else {
       this.changeUserDetails(this.userDetails);
     }
   }
 
-  // TODO fix
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/confirm-account-details'] });
+    const url: string = this.registrationInProgress
+      ? '/registration/confirm-account-details'
+      : '/account-management/your-account';
+    this.backService.setBackLink({ url: [url] });
   }
 
   private changeUserDetails(userDetails: UserDetails): void {
