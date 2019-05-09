@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DATE_PARSE_FORMAT } from '@core/constants/constants';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@core/validators/date.validator';
@@ -20,12 +24,17 @@ export class AddEditTrainingComponent implements OnInit {
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
   public worker: Worker;
+  public formErrorsMap: Array<ErrorDetails>;
+  private titleMaxLength = 120;
+  private notesMaxLength = 1000;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private backService: BackService,
+    private errorSummaryService: ErrorSummaryService,
     private trainingService: TrainingService,
     private workerService: WorkerService
   ) {}
@@ -33,6 +42,8 @@ export class AddEditTrainingComponent implements OnInit {
   ngOnInit() {
     this.worker = this.workerService.worker;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
+
+    this.backService.setBackLink({ url: ['/worker', this.worker.uid], fragment: 'qualifications-and-training' });
 
     this.form = this.formBuilder.group({
       title: [null, [Validators.required, Validators.maxLength(120)]],
@@ -48,18 +59,15 @@ export class AddEditTrainingComponent implements OnInit {
         month: null,
         year: null,
       }),
-      notes: [null, Validators.maxLength(1000)],
+      notes: [null, Validators.maxLength(this.notesMaxLength)],
     });
-    this.form.controls.completed.setValidators([
-      DateValidator.dateValid(),
-      this.pastDateValidator,
-      this.minDateValidator(moment().subtract(100, 'years')),
-    ]);
-    this.form.controls.expires.setValidators([
-      DateValidator.dateValid(),
-      this.minDateValidator(moment().subtract(100, 'years')),
-    ]);
-    this.form.setValidators([this.expiresDateValidator]);
+
+    const minDate = moment().subtract(100, 'years');
+
+    this.form
+      .get('completed')
+      .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(minDate)]);
+    this.form.get('expires').setValidators([DateValidator.dateValid(), DateValidator.min(minDate)]);
 
     this.subscriptions.add(
       this.trainingService.getCategories().subscribe(categories => {
@@ -98,129 +106,176 @@ export class AddEditTrainingComponent implements OnInit {
         })
       );
     }
+
+    this.setupFormErrorsMap();
   }
 
-  async submitHandler() {
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'category',
+        type: [
+          {
+            name: 'required',
+            message: 'Select a training category',
+          },
+        ],
+      },
+      {
+        item: 'title',
+        type: [
+          {
+            name: 'required',
+            message: `Enter a training name`,
+          },
+          {
+            name: 'maxlength',
+            message: `max length is ${this.titleMaxLength}`,
+          },
+        ],
+      },
+      {
+        item: 'accredited',
+        type: [
+          {
+            name: 'required',
+            message: 'Select if training is accredited',
+          },
+        ],
+      },
+      {
+        item: 'completed',
+        type: [
+          {
+            name: 'required',
+            message: 'Completed date is required.',
+          },
+          {
+            name: 'dateValid',
+            message: 'Completed date must be a valid date.',
+          },
+          {
+            name: 'todayOrBefore',
+            message: 'Completed date must be before today.',
+          },
+          {
+            name: 'dateMin',
+            message: 'Completed date cannot be more than 100 years ago.',
+          },
+        ],
+      },
+      {
+        item: 'expires',
+        type: [
+          {
+            name: 'dateValid',
+            message: 'Expiry date must be a valid date.',
+          },
+          {
+            name: 'dateMin',
+            message: 'Expiry date cannot be more than 100 years ago.',
+          },
+          {
+            name: 'expiresBeforeCompleted',
+            message: 'Expiry date must be after date completed',
+          },
+        ],
+      },
+      {
+        item: 'notes',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Notes must be ${this.notesMaxLength} characters or less`,
+          },
+        ],
+      },
+    ];
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  public onSubmit(): void {
     this.submitted = true;
 
-    if (this.form.valid) {
-      try {
-        await this.saveHandler();
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
+
+    const { title, category, accredited, completed, expires, notes } = this.form.controls;
+    const completedDate = this.dateGroupToMoment(completed as FormGroup);
+    const expiresDate = this.dateGroupToMoment(expires as FormGroup);
+
+    const record: TrainingRecordRequest = {
+      trainingCategory: {
+        id: parseInt(category.value, 10),
+      },
+      title: title.value,
+      accredited: accredited.value,
+      completed: completedDate ? completedDate.toISOString() : null,
+      expires: expiresDate ? expiresDate.toISOString() : null,
+      notes: notes.value,
+    };
+
+    if (this.trainingRecordId) {
+      this.subscriptions.add(
+        this.workerService
+          .updateTrainingRecord(this.worker.uid, this.trainingRecordId, record)
+          .subscribe(() => this.onSuccess(), error => this.onError(error))
+      );
+    } else {
+      this.subscriptions.add(
+        this.workerService
+          .createTrainingRecord(this.worker.uid, record)
+          .subscribe(() => this.onSuccess(), error => this.onError(error))
+      );
+    }
+  }
+
+  private onSuccess() {
+    this.router
+      .navigate(['/worker', this.worker.uid], {
+        fragment: 'qualifications-and-training',
+      })
+      .then(() => {
         if (this.trainingRecordId) {
           this.workerService.setTrainingRecordEdited();
         } else {
           this.workerService.setTrainingRecordCreated();
         }
-        this.router.navigate(['/worker', this.worker.uid], {
-          fragment: 'qualifications-and-training',
-        });
-      } catch (err) {}
-    }
+      });
   }
 
-  saveHandler(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const { title, category, accredited, completed, expires, notes } = this.form.controls;
-
-      const completedDate = this.dateGroupToMoment(completed as FormGroup);
-      const expiresDate = this.dateGroupToMoment(expires as FormGroup);
-
-      const record: TrainingRecordRequest = {
-        trainingCategory: {
-          id: parseInt(category.value, 10),
-        },
-        title: title.value,
-        accredited: accredited.value,
-        completed: completedDate ? completedDate.toISOString() : null,
-        expires: expiresDate ? expiresDate.toISOString() : null,
-        notes: notes.value,
-      };
-
-      if (this.trainingRecordId) {
-        this.subscriptions.add(
-          this.workerService
-            .updateTrainingRecord(this.worker.uid, this.trainingRecordId, record)
-            .subscribe(resolve, reject)
-        );
-      } else {
-        this.subscriptions.add(
-          this.workerService.createTrainingRecord(this.worker.uid, record).subscribe(resolve, reject)
-        );
-      }
-    });
+  private onError(error) {
+    console.log(error);
   }
 
   dateGroupToMoment(group: FormGroup): moment.Moment {
-    const { day, month, year } = group.controls;
-
-    return day.value && month.value && year.value
-      ? moment()
-          .year(year.value)
-          .month(month.value - 1)
-          .date(day.value)
-      : null;
+    const { day, month, year } = group.value;
+    return day && month && year ? moment(`${year}-${month}-${day}`, DATE_PARSE_FORMAT) : null;
   }
 
-  dateRequired(group: FormGroup): ValidationErrors {
-    const { day, month, year } = group.controls;
-
-    if (!(day.value && month.value && year.value)) {
-      return { required: true };
-    }
-
-    return null;
-  }
-
-  minDateValidator(minDate: moment.Moment): ValidatorFn {
-    return (group: FormGroup): ValidationErrors => {
-      const { day, month, year } = group.controls;
-
-      if (day.value && month.value && year.value) {
-        const date = moment()
-          .year(year.value)
-          .month(month.value - 1)
-          .date(day.value);
-
-        if (date.isValid()) {
-          return date.isAfter(minDate) ? null : { minDate: true };
-        }
-      }
-
-      return null;
-    };
-  }
-
-  pastDateValidator(group: FormGroup): ValidationErrors {
-    const { day, month, year } = group.controls;
-
-    if (day.value && month.value && year.value) {
-      const date = moment()
-        .year(year.value)
-        .month(month.value - 1)
-        .date(day.value);
-
-      if (date.isValid()) {
-        return date.isBefore(moment()) ? null : { pastDate: true };
-      }
-    }
-
-    return null;
-  }
-
+  // TODO: Expiry Date validation cannot be before completed date
   expiresDateValidator(group: FormGroup): ValidationErrors {
     const completed = group.get('completed') as FormGroup;
     const expires = group.get('expires') as FormGroup;
 
-    if (expires.controls.day.value && expires.controls.month.value && expires.controls.year.value) {
-      if (completed.controls.day.value && completed.controls.month.value && completed.controls.year.value) {
+    if (expires.get('day').value && expires.get('month').value && expires.get('year').value) {
+      if (completed.get('day').value && completed.get('month').value && completed.get('year').value) {
         const completedDate = moment()
-          .year(completed.controls.year.value)
-          .month(completed.controls.month.value - 1)
-          .date(completed.controls.day.value);
+          .year(completed.get('year').value)
+          .month(completed.get('month').value - 1)
+          .date(completed.get('day').value);
         const expiresDate = moment()
-          .year(expires.controls.year.value)
-          .month(expires.controls.month.value - 1)
-          .date(expires.controls.day.value);
+          .year(expires.get('year').value)
+          .month(expires.get('month').value - 1)
+          .date(expires.get('day').value);
 
         if (completedDate.isValid() && expiresDate.isValid()) {
           return completedDate.isBefore(expiresDate) ? null : { expiresBeforeCompleted: true };
