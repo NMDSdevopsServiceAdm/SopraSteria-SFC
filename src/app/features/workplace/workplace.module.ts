@@ -6,6 +6,7 @@ import { SharedModule } from '@shared/shared.module';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
+import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { SelectOtherServicesComponent } from './select-other-services/select-other-services.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
@@ -16,6 +17,8 @@ import { StartersComponent } from './starters/starters.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { WorkplaceResolver } from './workplace.resolver';
+import { QuestionComponent } from './question/question.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkplaceRoutingModule],
@@ -32,6 +35,9 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     StartersComponent,
     TypeOfEmployerComponent,
     VacanciesComponent,
+    EditWorkplaceComponent,
+    QuestionComponent,
   ],
+  providers: [WorkplaceResolver],
 })
 export class WorkplaceModule {}
