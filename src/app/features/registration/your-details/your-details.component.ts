@@ -21,7 +21,6 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
   protected submitted = false;
   protected subscriptions: Subscription = new Subscription();
   protected userDetails: UserDetails;
-  protected username: string;
 
   constructor(
     protected backService: BackService,

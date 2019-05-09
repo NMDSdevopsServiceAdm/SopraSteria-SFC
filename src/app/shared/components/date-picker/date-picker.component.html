@@ -1,55 +1,55 @@
 <ng-container [formGroup]="formGroup">
-    <div class="govuk-date-input" [formGroupName]="formGroupName">
-      <div class="govuk-date-input__item">
-        <div class="govuk-form-group">
-          <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-day">
-            Day
-          </label>
-          <input
-            class="govuk-input govuk-date-input__input govuk-input--width-2"
-            [class.govuk-input--error]="formGroup.get(formGroupName).invalid"
-            formControlName="day"
-            id="{{ formGroupName }}-day"
-            name="{{ formGroupName }}-day"
-            type="number"
-            [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-day' : null"
-            pattern="[0-9]*"
-          />
-        </div>
-      </div>
-      <div class="govuk-date-input__item">
-        <div class="govuk-form-group">
-          <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-month">
-            Month
-          </label>
-          <input
-            class="govuk-input govuk-date-input__input govuk-input--width-2"
-            [class.govuk-input--error]="formGroup.get(formGroupName).invalid"
-            formControlName="month"
-            id="{{ formGroupName }}-month"
-            name="{{ formGroupName }}-month"
-            type="number"
-            [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-month' : null"
-            pattern="[0-9]*"
-          />
-        </div>
-      </div>
-      <div class="govuk-date-input__item">
-        <div class="govuk-form-group">
-          <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-year">
-            Year
-          </label>
-          <input
-            class="govuk-input govuk-date-input__input govuk-input--width-4"
-            [class.govuk-input--error]="formGroup.get(formGroupName).invalid"
-            formControlName="year"
-            id="{{ formGroupName }}-year"
-            name="{{ formGroupName }}-year"
-            type="number"
-            [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-year' : null"
-            pattern="[0-9]*"
-          />
-        </div>
+  <div class="govuk-date-input" [formGroupName]="formGroupName">
+    <div class="govuk-date-input__item">
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-day">
+          Day
+        </label>
+        <input
+          class="govuk-input govuk-date-input__input govuk-input--width-2"
+          [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
+          formControlName="day"
+          id="{{ formGroupName }}-day"
+          name="{{ formGroupName }}-day"
+          type="number"
+          [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-day' : null"
+          pattern="[0-9]*"
+        />
       </div>
     </div>
-  </ng-container>
+    <div class="govuk-date-input__item">
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-month">
+          Month
+        </label>
+        <input
+          class="govuk-input govuk-date-input__input govuk-input--width-2"
+          [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
+          formControlName="month"
+          id="{{ formGroupName }}-month"
+          name="{{ formGroupName }}-month"
+          type="number"
+          [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-month' : null"
+          pattern="[0-9]*"
+        />
+      </div>
+    </div>
+    <div class="govuk-date-input__item">
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-date-input__label" for="{{ formGroupName }}-year">
+          Year
+        </label>
+        <input
+          class="govuk-input govuk-date-input__input govuk-input--width-4"
+          [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
+          formControlName="year"
+          id="{{ formGroupName }}-year"
+          name="{{ formGroupName }}-year"
+          type="number"
+          [attr.autocomplete]="autocomplete?.length > 0 ? autocomplete + '-year' : null"
+          pattern="[0-9]*"
+        />
+      </div>
+    </div>
+  </div>
+</ng-container>

@@ -115,9 +115,9 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private changeUserDetails(data: Object): void {
+  private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(this.userDetails['username'], data).subscribe(
+      this.userService.updateUserDetails(userDetails).subscribe(
         () => this.router.navigate(['/account-management/your-account']),
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
@@ -132,11 +132,9 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      const data = {
-        securityQuestion: this.form.value.securityQuestionInput,
-        securityQuestionAnswer: this.form.value.securityAnswerInput,
-      };
-      this.changeUserDetails(data);
+      this.userDetails.securityQuestion = this.form.value.securityQuestionInput,
+      this.userDetails.securityQuestionAnswer = this.form.value.securityAnswerInput,
+      this.changeUserDetails(this.userDetails);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

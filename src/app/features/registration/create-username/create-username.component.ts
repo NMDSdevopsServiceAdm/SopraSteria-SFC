@@ -6,6 +6,7 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { LoginCredentials } from '@core/model/login-credentials.model';
 import { PASSWORD_PATTERN } from '@core/constants/constants';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
@@ -16,8 +17,10 @@ import { Subscription } from 'rxjs';
   templateUrl: './create-username.component.html',
 })
 export class CreateUsernameComponent implements OnInit, OnDestroy {
+  private callToActionLabel: string;
   private form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
+  private loginCredentialsExist = false;
   private serverError: string;
   private serverErrorsMap: Array<ErrorDefinition>;
   private submitted = false;
@@ -53,23 +56,54 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setupForm();
-    this.setupSubscription();
+    this.setupSubscriptions();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    this.setCallToActionLabel();
     this.setBackLink();
+    this.setFormSubmissionLink();
   }
 
   private setBackLink(): void {
-    this.backService.setBackLink({ url: ['your-details'] });
+    const route: string = this.loginCredentialsExist
+      ? '/registration/confirm-account-details'
+      : '/registration/your-details';
+    this.backService.setBackLink({ url: [route] });
   }
 
-  private setupSubscription(): void {
+  private setFormSubmissionLink(): string {
+    return this.loginCredentialsExist ? '/registration/confirm-account-details' : '/registration/security-question';
+  }
+
+  private setupSubscriptions(): void {
+    this.subscriptions.add(
+      this.registrationService.loginCredentials$.subscribe((loginCredentials: LoginCredentials) => {
+        if (loginCredentials) {
+          this.loginCredentialsExist = true;
+          this.preFillForm(loginCredentials);
+        }
+      })
+    );
+
     this.subscriptions.add(
       this.getUsername.valueChanges
         .pipe(debounceTime(1000))
         .pipe(distinctUntilChanged())
         .subscribe((userName: string) => this.checkUsernameDoesntExist(userName))
     );
+  }
+
+  private setCallToActionLabel(): void {
+    const label: string = this.loginCredentialsExist ? 'Save and return' : 'Continue';
+    this.callToActionLabel = label;
+  }
+
+  private preFillForm(loginCredentials: LoginCredentials): void {
+    if (loginCredentials) {
+      this.getUsername.setValue(loginCredentials.username);
+      this.getPassword.setValue(loginCredentials.password);
+      this.getConfirmPassword.setValue(loginCredentials.password);
+    }
   }
 
   private setupForm(): void {
@@ -173,11 +207,12 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    this.registrationService.loginCredentials$.next({
-      username: this.getUsername.value,
-      password: this.getPassword.value,
+    this.router.navigate([this.setFormSubmissionLink()]).then(() => {
+      this.registrationService.loginCredentials$.next({
+        username: this.getUsername.value,
+        password: this.getPassword.value,
+      });
     });
-    this.router.navigate(['/registration/security-question']);
   }
 
   /**
