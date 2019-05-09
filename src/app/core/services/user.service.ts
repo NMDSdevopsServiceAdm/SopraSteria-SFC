@@ -31,8 +31,11 @@ export class UserService {
   /*
    * PUT /api/user/establishment/:establishmentId/:username
    */
-  public updateUserDetails(username, data) {
-    return this.http.put<any>(`/api/user/establishment/${this.establishmentService.establishmentId}/${username}`, data);
+  public updateUserDetails(userDetails: UserDetails): Observable<UserDetails> {
+    return this.http.put<UserDetails>(
+      `/api/user/establishment/${this.establishmentService.establishmentId}/${userDetails.username}`,
+      userDetails
+    );
   }
 
   public updateState(userDetails: UserDetails) {
