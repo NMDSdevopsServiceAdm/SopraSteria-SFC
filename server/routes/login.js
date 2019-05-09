@@ -28,7 +28,7 @@ router.post('/',async function(req, res) {
           attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin', 'isPrimary', 'establishmentId', "UserRoleValue"],
           include: [{
             model: models.establishment,
-            attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId'],
+            attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid'],
             include: [{
               model: models.services,
               as: 'mainService',
@@ -50,7 +50,7 @@ router.post('/',async function(req, res) {
           if (isMatch && !err) {
             const loginTokenTTL = config.get('jwt.ttl.login');
 
-            const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, req.body.username.toLowerCase(), login.user.UserRoleValue);
+            const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, login.user.establishment.isParent, req.body.username.toLowerCase(), login.user.UserRoleValue);
             var date = new Date().getTime();
             date += (loginTokenTTL * 60  * 1000);
    
@@ -167,7 +167,9 @@ const formatSuccessulLoginResponse = (fullname, firstLoginDate, isPrimary, lastL
       uid: establishment.uid,
       name: establishment.NameValue,
       isRegulated: establishment.isRegulated,
-      nmdsId: establishment.nmdsId
+      nmdsId: establishment.nmdsId,
+      isParent: establishment.isParent,
+      parentUid: establishment.parentUid ? establishment.parentUid : undefined
     },
     mainService: {
       id: mainService ? mainService.id : null,

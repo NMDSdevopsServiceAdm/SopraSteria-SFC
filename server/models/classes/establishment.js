@@ -47,6 +47,9 @@ class Establishment {
         this._nmdsId = null;
         this._lastWdfEligibility = null;
         this._overallWdfEligibility = null;
+        this._isParent = false;
+        this._parentUid = null;
+        this._parentId = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -120,6 +123,13 @@ class Establishment {
         return this._updatedBy;
     }
 
+    get isParent() {
+        return this._isParent;
+    }
+    get parentUid() {
+        return this._parentUid;
+    }
+
     get numberOfStaff() {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
     }
@@ -189,13 +199,14 @@ class Establishment {
         }
 
         if (mustSave && this._isNew) {
-            // create new User
+            // create new Establishment
             try {
                 const creationDocument = {
                     uid: this.uid,
                     NameValue: this.name,
                     address: this._address,
                     postcode: this._postcode,
+                    isParent: this._isParent,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
                     MainServiceFKValue: this.mainService.id,
@@ -559,6 +570,9 @@ class Establishment {
                 this._nmdsId = fetchResults.nmdsId;
                 this._lastWdfEligibility = fetchResults.lastWdfEligibility;
                 this._overallWdfEligibility = fetchResults.overallWdfEligibility;
+                this._isParent = fetchResults.isParent;
+                this._parentId = fetchResults.parentId;
+                this._parentUid = fetchResults.parentUid;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
