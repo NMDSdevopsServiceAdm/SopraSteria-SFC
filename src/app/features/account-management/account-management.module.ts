@@ -8,6 +8,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { YourAccountComponent } from '@features/account-management/your-account/your-account.component';
+import { ChangeYourDetailsComponent } from './change-your-details/change-your-details.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, AccountManagementRoutingModule],
@@ -17,6 +18,7 @@ import { YourAccountComponent } from '@features/account-management/your-account/
     ChangePasswordEditComponent,
     ChangeUserSecurityComponent,
     YourAccountComponent,
+    ChangeYourDetailsComponent,
   ]
 })
 export class AccountManagementModule {}
