@@ -1,9 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FeedbackModel } from '@core/model/feedback.model';
 import { FeedbackService } from '@core/services/feedback.service';
-import { WindowRef } from '@core/services/window.ref';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { TEN_WORDS_PATTERN } from '@core/constants/constants';
+import { WindowRef } from '@core/services/window.ref';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-feedback',
@@ -11,26 +15,98 @@ import { Subscription } from 'rxjs';
 })
 export class FeedbackComponent implements OnInit, OnDestroy {
   private _pendingFeedback = true;
+  private doingWhatCharacterLimit = 500;
+  private emailCharacterLimit = 120;
   private form: FormGroup;
+  private formErrorsMap: Array<ErrorDetails>;
+  private fullNameCharacterLimit = 120;
+  private serverError: string;
+  private serverErrorsMap: Array<ErrorDefinition>;
+  private submitted = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
+    private errorSummaryService: ErrorSummaryService,
     private feedbackService: FeedbackService,
     private formBuilder: FormBuilder,
     private windowRef: WindowRef
   ) {}
 
   ngOnInit() {
+    this.setupForm();
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
+  }
+
+  private setupForm(): void {
     this.form = this.formBuilder.group({
-      tellUs: [null, [Validators.required, Validators.maxLength(500)]],
-      doingWhat: [null, [Validators.required, Validators.maxLength(500)]],
-      fullname: [null, [Validators.maxLength(120)]],
-      email: [null, [Validators.email, Validators.maxLength(120)]],
+      doingWhat: [null, [Validators.required, Validators.maxLength(this.doingWhatCharacterLimit)]],
+      email: [null, [Validators.email, Validators.maxLength(this.emailCharacterLimit)]],
+      fullname: [null, [Validators.maxLength(this.fullNameCharacterLimit)]],
+      tellUs: [null, [Validators.required, Validators.pattern(TEN_WORDS_PATTERN)]],
     });
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'doingWhat',
+        type: [
+          {
+            name: 'required',
+            message: 'Please tell us what you were trying to do.',
+          },
+          {
+            name: 'maxlength',
+            message: `Character limit of ${this.doingWhatCharacterLimit} exceeded.`,
+          },
+        ],
+      },
+      {
+        item: 'email',
+        type: [
+          {
+            name: 'email',
+            message: 'Please enter a valid email address.',
+          },
+          {
+            name: 'maxlength',
+            message: `Character limit of ${this.emailCharacterLimit} exceeded.`,
+          },
+        ],
+      },
+      {
+        item: 'fullname',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Character limit of ${this.fullNameCharacterLimit} exceeded.`,
+          },
+        ],
+      },
+      {
+        item: 'tellUs',
+        type: [
+          {
+            name: 'required',
+            message: 'Please tell us your feedback.',
+          },
+          {
+            name: 'pattern',
+            message: 'Maximum word count exceeded.',
+          },
+        ],
+      },
+    ];
+  }
+
+  private setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 503,
+        message: 'Unable to update database.',
+      },
+    ];
   }
 
   get pendingFeedback(): boolean {
@@ -45,7 +121,10 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     this.windowRef.nativeWindow.close();
   }
 
-  onSubmit() {
+  private onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
     if (this.form.valid) {
       if (this.pendingFeedback) {
         const { doingWhat, tellUs, fullname, email } = this.form.controls;
@@ -57,8 +136,32 @@ export class FeedbackComponent implements OnInit, OnDestroy {
           email: email.value,
         };
 
-        this.subscriptions.add(this.feedbackService.post(request).subscribe(() => this.resetPendingFeedback()));
+        this.subscriptions.add(
+          this.feedbackService.post(request).subscribe(
+            () => this.resetPendingFeedback(),
+            (error: HttpErrorResponse) => {
+              this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+              this.errorSummaryService.scrollToErrorSummary();
+            }
+          )
+        );
       }
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
