@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -12,21 +12,24 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public form: FormGroup;
   @Input() public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError?: string;
-  public errors: Array<ErrorSummary>;
+  @ViewChild('errorSummary') private errorSummaryElement: ElementRef;
   private subscriptions: Subscription = new Subscription();
-  @ViewChild('errorSummary') private errorSummary: HTMLElement;
+  public errors: Array<ErrorSummary>;
 
   constructor(private errorSummaryService: ErrorSummaryService) {}
 
   ngOnInit(): void {
+    this.setKeyboardFocus();
     this.subscriptions.add(this.errorSummaryService.syncFormErrorsEvent.subscribe(() => this.getFormErrors()));
     this.subscriptions.add(this.form.valueChanges.subscribe(() => this.getFormErrors()));
-    this.setKeyboardFocus();
   }
 
+  /**
+   * As per GDS toolkit the error summary
+   * needs to gain keyboard focus upon initialisation
+   */
   private setKeyboardFocus(): void {
-    console.log('setKeyboardFocus fired', this.errorSummary);
-    this.errorSummary.focus();
+    this.errorSummaryElement.nativeElement.focus();
   }
 
   private getFormErrors(): void {
