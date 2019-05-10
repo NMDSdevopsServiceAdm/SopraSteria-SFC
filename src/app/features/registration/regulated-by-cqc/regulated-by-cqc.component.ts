@@ -2,7 +2,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { distinctUntilChanged, skip } from 'rxjs/operators';
+import { skip } from 'rxjs/operators';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -171,7 +171,6 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.regulatedByCQC.valueChanges
         .pipe(skip(1))
-        .pipe(distinctUntilChanged())
         .subscribe(() => (this.serverError = null))
     );
   }
