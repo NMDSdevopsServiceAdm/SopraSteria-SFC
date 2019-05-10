@@ -258,7 +258,7 @@ router.route('/changePassword').post(async (req, res) => {
 
         if (login && login.username === req.username && login.user.id) {
             // now authenticate the given current password
-            login.comparePassword(currentPassword, async (err, isMatch) => {
+            login.comparePassword(currentPassword, null, false, async (err, isMatch, rehashTribal) => {
                 if (isMatch && !err) {
                     await models.sequelize.transaction(async t => {
                         // login account found - update the passowrd, reset invalid attempts
