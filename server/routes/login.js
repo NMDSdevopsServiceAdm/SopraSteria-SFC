@@ -1,9 +1,12 @@
- var express = require('express');
- const models = require('../models/index');
- const passport = require('passport');
- var router = express.Router();
- require('../utils/security/passport')(passport);
+var express = require('express');
+const models = require('../models/index');
+const passport = require('passport');
+var router = express.Router();
+require('../utils/security/passport')(passport);
 const Login = require('../models').login;
+const crypto = require('crypto');
+const bcrypt = require('bcrypt-nodejs');
+
 
 const generateJWT = require('../utils/security/generateJWT');
 const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
@@ -12,6 +15,19 @@ const uuid = require('uuid');
 const config = require('..//config/config');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
+
+const tribalHashCompare = (password, salt, expectedHash) => {
+  const hash = crypto.createHash('sha256');
+  hash.update(`${password}${salt}`, 'ucs2');     // .NET C# Unicode encoding defaults to UTF-16
+
+  const calculatedHash = hash.digest('base64');
+
+  if (calculatedHash === expectedHash) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 router.post('/',async function(req, res) {
    Login
@@ -22,10 +38,10 @@ router.post('/',async function(req, res) {
           },
           isActive:true
         },
-        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin'],
+        attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt'],
         include: [ {
           model: models.user,
-          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin', 'isPrimary', 'establishmentId', "UserRoleValue"],
+          attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
           include: [{
             model: models.establishment,
             attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid'],
@@ -46,7 +62,20 @@ router.post('/',async function(req, res) {
           });
         }
 
-        login.comparePassword(escape(req.body.password), async (err, isMatch) => {
+        // if this found login account is a migrated tribal account, and there is no current hash, then
+        //  we need to first validate password using tribal hashing
+        let tribalErr = null;
+        let tribalHashValidated = false;
+        if (login.user.tribalId !== null && login.Hash === null) {
+          tribalHashValidated = true;
+          const tribalHashCompareReset = tribalHashCompare(req.body.password, login.tribalSalt, login.tribalHash);
+
+          if (tribalHashCompareReset === false) {
+            tribalErr = 'Failed to authenticate using tribal hash';
+          }
+        }
+
+        login.comparePassword(escape(req.body.password), tribalErr, tribalHashValidated, async (err, isMatch, rehashTribal) => {
           if (isMatch && !err) {
             const loginTokenTTL = config.get('jwt.ttl.login');
 
@@ -72,6 +101,14 @@ router.post('/',async function(req, res) {
                 invalidAttempt: 0,
                 lastLogin: new Date(),
               };
+
+              // if this is a migrated tribal user's first login, and consequently, the compare is successful
+              //   but they still have no "Hash", we need to create a hash and store it.
+              if (rehashTribal) {
+                loginUpdate.Hash =  await bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10), null)
+              }
+
+
               if (!login.firstLogin) {
                 loginUpdate.firstLogin = new Date();
               }
