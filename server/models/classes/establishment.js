@@ -47,6 +47,9 @@ class Establishment {
         this._nmdsId = null;
         this._lastWdfEligibility = null;
         this._overallWdfEligibility = null;
+        this._isParent = false;
+        this._parentUid = null;
+        this._parentId = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -120,6 +123,13 @@ class Establishment {
         return this._updatedBy;
     }
 
+    get isParent() {
+        return this._isParent;
+    }
+    get parentUid() {
+        return this._parentUid;
+    }
+
     get numberOfStaff() {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
     }
@@ -189,13 +199,14 @@ class Establishment {
         }
 
         if (mustSave && this._isNew) {
-            // create new User
+            // create new Establishment
             try {
                 const creationDocument = {
                     uid: this.uid,
                     NameValue: this.name,
                     address: this._address,
                     postcode: this._postcode,
+                    isParent: this._isParent,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
                     MainServiceFKValue: this.mainService.id,
@@ -559,6 +570,9 @@ class Establishment {
                 this._nmdsId = fetchResults.nmdsId;
                 this._lastWdfEligibility = fetchResults.lastWdfEligibility;
                 this._overallWdfEligibility = fetchResults.overallWdfEligibility;
+                this._isParent = fetchResults.isParent;
+                this._parentId = fetchResults.parentId;
+                this._parentUid = fetchResults.parentUid;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -920,7 +934,7 @@ class Establishment {
         }
 
         return property &&
-               property.property !== null &&
+               (property.property !== null && property.property !== undefined) &&
                property.valid &&
                referenceTime !== null &&
                referenceTime > refEpoch;
@@ -937,6 +951,9 @@ class Establishment {
 
         // main service & Other Service & Service Capacities & Service Users
         myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
+        
+        
+        console.log("WA DEBUG - other services check: ", this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')))
         myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)
@@ -960,14 +977,12 @@ class Establishment {
             });
 
             if (mainServiceCapacities.length === 0) {
-                myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
+                myWdf['capacities'] = 'Not relevant';
             } else {
                 // ensure all all main service's capacities have been answered - note, the can only be one Main Service capacity set
                 myWdf['capacities'] = mainServiceCapacities[0].questions.every(thisQuestion => thisQuestion.hasOwnProperty('answer')) ? 'Yes' : 'No';
             }
 
-
-            myWdf['capacities'] = capacitiesEligibility ? 'Yes' : 'No';
         } else {
             myWdf['capacities'] = 'Not relevant';
         }
