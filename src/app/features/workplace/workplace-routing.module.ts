@@ -22,9 +22,9 @@ const routes: Routes = [
     data: { title: 'Start' },
   },
   {
-    path: ':id',
+    path: ':establishmentid',
     component: EditWorkplaceComponent,
-    resolve: { worker: WorkplaceResolver },
+    resolve: { establishment: WorkplaceResolver },
     children: [
       {
         path: '',

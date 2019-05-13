@@ -1,25 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { ReportsService } from '@core/services/reports.service';
 
 @Component({
   selector: 'app-edit-workplace',
   templateUrl: './edit-workplace.component.html',
 })
 export class EditWorkplaceComponent implements OnInit, OnDestroy {
-  constructor(
-    private route: ActivatedRoute,
-    private establishmentService: EstablishmentService,
-    private reportsService: ReportsService
-  ) {}
+  constructor(private route: ActivatedRoute, private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
-    console.log(this.route.snapshot.data.worker);
-    // this.establishmentService.sta
+    this.establishmentService.setState(this.route.snapshot.data.establishment);
   }
 
-  ngOnDestroy(): void {
-    //this.reportsService.updateState(null);
-  }
+  ngOnDestroy(): void {}
 }
