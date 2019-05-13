@@ -65,35 +65,14 @@ export class Question implements OnInit, OnDestroy {
   protected setupFormErrorsMap(): void {}
   protected setupServerErrorsMap(): void {}
   protected generateUpdateProps(): any {}
-  protected updateEstablishment(props, action): void {}
+  protected updateEstablishment(props): void {}
   protected onSuccess(): void {}
 
-  protected navigate(action): void {
-    switch (action) {
-      case 'continue':
-        this.router.navigate(this.next);
-        break;
-
-      case 'summary':
-        this.router.navigate(['/workplace', this.establishment.uid, 'summary']);
-        break;
-
-      case 'exit':
-        this.router.navigate(['/dashboard'], { fragment: 'workplace' });
-        break;
-
-      case 'return':
-        this.router.navigate(this.return);
-        break;
-    }
+  protected navigate(): void {
+    this.router.navigate(this.next);
   }
 
-  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
-    if (!payload.save) {
-      this.navigate(payload.action);
-      return;
-    }
-
+  public onSubmit() {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -106,17 +85,17 @@ export class Question implements OnInit, OnDestroy {
 
     if (isNull(props)) {
       this.onSuccess();
-      this.navigate(payload.action);
+      this.navigate();
       return;
     }
 
-    this.updateEstablishment(props, payload.action);
+    this.updateEstablishment(props);
   }
 
-  _onSuccess(data, action) {
+  _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
     this.onSuccess();
-    this.navigate(action);
+    this.navigate();
   }
 
   onError(error) {
