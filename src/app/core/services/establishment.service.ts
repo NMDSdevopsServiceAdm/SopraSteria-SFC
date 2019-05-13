@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { LocalAuthorityModel } from '../model/localAuthority.model';
@@ -35,9 +37,20 @@ interface EmployerTypeResponse {
   providedIn: 'root',
 })
 export class EstablishmentService {
+  private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
+  public establishment$: Observable<Establishment> = this._establishment$.asObservable();
+
   constructor(private http: HttpClient) {}
 
   private _establishmentId: number = null;
+
+  public get establishment() {
+    return this._establishment$.value as Establishment;
+  }
+
+  setState(establishment) {
+    this._establishment$.next(establishment);
+  }
 
   public set establishmentId(value: number) {
     this._establishmentId = value;
@@ -140,8 +153,8 @@ export class EstablishmentService {
     return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`);
   }
 
-  postEmployerType(data) {
-    return this.http.post<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`, data);
+  postEmployerType(establishmentId, data) {
+    return this.http.post<EmployerTypeResponse>(`/api/establishment/${establishmentId}/employerType`, data);
   }
 
   getAllServices() {
