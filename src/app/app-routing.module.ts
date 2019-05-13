@@ -60,7 +60,7 @@ const routes: Routes = [
   },
   {
     path: 'public',
-    loadChildren: '@features/public/public.module#PublicRoutingModule',
+    loadChildren: '@features/public/public.module#PublicModule',
     data: { title: 'Public' },
   },
   {
