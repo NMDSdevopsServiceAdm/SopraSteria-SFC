@@ -18,7 +18,6 @@ import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.com
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { WorkplaceResolver } from './workplace.resolver';
-import { QuestionComponent } from './question/question.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkplaceRoutingModule],
@@ -36,7 +35,6 @@ import { QuestionComponent } from './question/question.component';
     TypeOfEmployerComponent,
     VacanciesComponent,
     EditWorkplaceComponent,
-    QuestionComponent,
   ],
   providers: [WorkplaceResolver],
 })
