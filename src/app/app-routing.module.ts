@@ -1,19 +1,14 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/services/auth-guard.service';
-import { ContactUsComponent } from '@features/contact-us/contact-us.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
-import { FeedbackComponent } from '@features/feedback/feedback.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
+import { NgModule } from '@angular/core';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { ReportsComponent } from '@features/reports/reports.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
-import { TermsConditionsComponent } from '@features/terms-conditions/terms-conditions.component';
+import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
@@ -35,21 +30,6 @@ const routes: Routes = [
     path: 'reset-password',
     component: ResetPasswordComponent,
     data: { title: 'Reset Password' },
-  },
-  {
-    path: 'feedback',
-    component: FeedbackComponent,
-    data: { title: 'Give us Feedback' },
-  },
-  {
-    path: 'contact-us',
-    component: ContactUsComponent,
-    data: { title: 'Contact Us' },
-  },
-  {
-    path: 'terms-and-conditions',
-    component: TermsConditionsComponent,
-    data: { title: 'Terms and Conditions' },
   },
   {
     path: 'problem-with-the-service',
@@ -79,6 +59,11 @@ const routes: Routes = [
     data: { title: 'Registration' },
   },
   {
+    path: 'public',
+    loadChildren: '@features/public/public.module#PublicRoutingModule',
+    data: { title: 'Public' },
+  },
+  {
     path: 'account-management',
     loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
     canActivate: [AuthGuard],
@@ -95,7 +80,6 @@ const routes: Routes = [
     redirectTo: 'dashboard',
     pathMatch: 'full',
   },
-
   {
     path: '**',
     component: PageNotFoundComponent,
