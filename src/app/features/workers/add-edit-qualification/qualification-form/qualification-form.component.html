@@ -53,7 +53,7 @@
       </span>
       <textarea
         class="govuk-textarea govuk-grid-column-two-thirds-from-desktop"
-        [class.govuk-input--error]="submitted && group.get('notes').invalid"
+        [class.govuk-textarea--error]="submitted && group.get('notes').invalid"
         formControlName="notes"
         id="{{ type.key }}-notes"
         name="notes"

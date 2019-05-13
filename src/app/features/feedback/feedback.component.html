@@ -1,40 +1,62 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <ng-template [ngIf]="pendingFeedback" [ngIfElse]="feedbackSubmitted">
       <h1 class="govuk-heading-xl">Feedback</h1>
 
-      <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+      <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
         <div class="govuk-character-count">
-          <div class="govuk-form-group">
-            <label class="govuk-label govuk-label--m" for="more-detail">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('doingWhat').errors">
+            <label class="govuk-label govuk-label--m" for="doingWhat">
               What were you trying to do?
             </label>
+            <span *ngIf="submitted" id="doingWhat-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              <ng-container *ngIf="form.get('doingWhat').hasError('required')">
+                {{ getFormErrorMessage('doingWhat', 'required') }}
+              </ng-container>
+              <ng-container *ngIf="form.get('doingWhat').hasError('maxlength')">
+                {{ getFormErrorMessage('doingWhat', 'maxlength') }}
+              </ng-container>
+            </span>
             <textarea
               class="govuk-textarea"
-              id="more-detail"
-              name="more-detail"
+              [class.govuk-textarea--error]="submitted && form.get('doingWhat').errors"
+              id="doingWhat"
+              name="doingWhat"
               rows="6"
               formControlName="doingWhat"
             ></textarea>
           </div>
           <app-character-count max="500" [control]="form.get('doingWhat')"></app-character-count>
         </div>
-        <!-- <span *ngIf="form.get('doingWhat').errors?.required" class="main-body-text">
-            Please give reason.
-          </span>
-          <span *ngIf="form.get('doingWhat').errors?.maxlength" class="main-body-text">
-            Must be no longer than {{ _countdownValidation['doingWhat'].max }} characters.
-          </span> -->
 
         <div class="govuk-character-count">
-          <div class="govuk-form-group">
-            <label class="govuk-label govuk-label--m" for="tell-us-about">
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('tellUs').errors">
+            <label class="govuk-label govuk-label--m" for="tellUs">
               What would you like to tell us about?
             </label>
+            <span *ngIf="submitted" id="tellUs-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              <ng-container *ngIf="form.get('tellUs').hasError('required')">
+                {{ getFormErrorMessage('tellUs', 'required') }}
+              </ng-container>
+              <ng-container *ngIf="form.get('tellUs').hasError('maxwords')">
+                {{ getFormErrorMessage('tellUs', 'maxwords') }}
+              </ng-container>
+            </span>
             <textarea
               class="govuk-textarea"
-              id="tell-us-about"
-              name="tell-us-about"
+              [class.govuk-textarea--error]="submitted && form.get('tellUs').errors"
+              id="tellUs"
+              name="tellUs"
               rows="6"
               formControlName="tellUs"
             ></textarea>
@@ -44,32 +66,49 @@
 
         <h3 class="govuk-heading-m">If you would like us to respond to your feedback, enter your details below.</h3>
 
-        <div class="govuk-form-group">
-          <label class="govuk-label" for="full-name">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('fullname').errors">
+          <label class="govuk-label" for="fullname">
             Full name
           </label>
-          <span id="full-name-hint" class="govuk-hint">
+          <span id="fullname-hint" class="govuk-hint">
             Optional
+          </span>
+          <span *ngIf="submitted" id="fullname-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            <ng-container *ngIf="form.get('fullname').hasError('maxlength')">
+              {{ getFormErrorMessage('fullname', 'maxlength') }}
+            </ng-container>
           </span>
           <input
             class="govuk-input govuk-input--width-20"
-            id="full-name"
-            name="full-name"
+            [class.govuk-input--error]="submitted && form.get('fullname').errors"
+            id="fullname"
+            name="fullname"
             type="text"
-            aria-describedby="full-name-hint"
+            aria-describedby="fullname-hint"
             formControlName="fullname"
           />
         </div>
 
-        <div class="govuk-form-group">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('email').errors">
           <label class="govuk-label" for="email">
             Email address
           </label>
           <span id="email-hint" class="govuk-hint">
             Optional
           </span>
+          <span *ngIf="submitted" id="email-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            <ng-container *ngIf="form.get('email').hasError('email')">
+              {{ getFormErrorMessage('email', 'email') }}
+            </ng-container>
+            <ng-container *ngIf="form.get('email').hasError('maxlength')">
+              {{ getFormErrorMessage('email', 'maxlength') }}
+            </ng-container>
+          </span>
           <input
             class="govuk-input"
+            [class.govuk-input--error]="submitted && form.get('email').errors"
             id="email"
             name="email"
             type="email"
@@ -84,85 +123,6 @@
           Send
         </button>
       </form>
-
-      <!-- <div class="form-group mb-5">
-        <div class="row form">
-
-
-        <div class="row form">
-          <p class="col-12 page-title">What would you like to tell us about?</p>
-          <div class="col-12">
-            <div
-              class="col-12"
-              [ngClass]="{
-                'is-invalid':
-                  (form.get('tellUs').touched || form.get('tellUs').dirty) && !form.get('tellUs').valid
-              }"
-            >
-              <textarea
-                id="tellUs"
-                formControlName="tellUs"
-                class="col-9"
-                [maxlength]="_countdownValidation['tellUs'].max"
-                (input)="validateCountdown('tellUs')"
-              >
-              </textarea>
-              <div class="col-12">
-                <span class="col-6">{{ countdownTellUs() }}</span> characters remaining
-                <span class="col-6 invalid-feedback">
-                  <span *ngIf="form.get('tellUs').errors?.required" class="main-body-text">
-                    Please give reason.
-                  </span>
-                  <span *ngIf="form.get('tellUs').errors?.maxlength" class="main-body-text">
-                    Must be no longer than {{ _countdownValidation['tellUs'].max }} characters.
-                  </span>
-                </span>
-              </div>
-            </div>
-            <div class="col-3"></div>
-          </div>
-        </div>
-
-        <div class="row form">
-          <p class="col-12 form-title">Full name</p>
-          <div
-            class="col-12"
-            [ngClass]="{
-              'is-invalid': (form.get('fullname').touched || form.get('fullname').dirty) && !form.get('fullname').valid
-            }"
-          >
-            <p class="col-12 form-caveat">Optional</p>
-            <input id="fullname" formControlName="fullname" class="col-9" />
-            <span class="invalid-feedback">
-              <span *ngIf="form.get('fullname').errors?.maxlength" class="main-body-text">
-                Must be no longer than 120 characters.
-              </span>
-            </span>
-          </div>
-        </div>
-
-        <div class="row form">
-          <p class="col-12 form-title">Email</p>
-          <div
-            class="col-12"
-            [ngClass]="{
-              'is-invalid': (form.get('email').touched || form.get('email').dirty) && !form.get('email').valid
-            }"
-          >
-            <p class="col-12 form-caveat">Optional</p>
-            <input id="email" formControlName="email" class="col-9" />
-            <span class="invalid-feedback">
-              <span *ngIf="form.get('email').errors?.maxlength" class="main-body-text">
-                Must be no longer than 120 characters.
-              </span>
-              <span *ngIf="form.get('email').errors?.email" class="main-body-text">
-                Must be a valid email format.
-              </span>
-            </span>
-          </div>
-        </div>
-      </div>
-    </form> -->
     </ng-template>
 
     <ng-template #feedbackSubmitted>
