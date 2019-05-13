@@ -33,8 +33,6 @@ export class Question implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // this.return = this.workerService.returnTo;
-
     this.subscriptions.add(
       this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
         this.establishment = establishment;
@@ -52,7 +50,6 @@ export class Question implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-    // this.workerService.setReturnTo(null);
   }
 
   public getFormErrorMessage(item: string, errorType: string): string {
@@ -60,7 +57,8 @@ export class Question implements OnInit, OnDestroy {
   }
 
   public getFirstErrorMessage(item: string): string {
-    return '';
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   protected init(): void {}
