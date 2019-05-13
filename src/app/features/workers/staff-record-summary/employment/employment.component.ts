@@ -1,6 +1,6 @@
 import { DecimalPipe, Location } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
-import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
+import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/constants/contracts.enum';
 import { WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
@@ -52,7 +52,7 @@ export class EmploymentComponent extends StaffRecordSummaryComponent implements 
   }
 
   get mainStartDate() {
-    return moment(this.worker.mainJobStartDate).format(DEFAULT_DATE_DISPLAY_FORMAT);
+    return moment(this.worker.mainJobStartDate).format(DATE_DISPLAY_DEFAULT);
   }
 
   get salary() {

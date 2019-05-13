@@ -1,0 +1,43 @@
+.department-of-health-logo {
+  display: inline-block;
+  font-weight: 400;
+  font-size: govuk-px-to-rem(13);
+  line-height: govuk-px-to-rem(15);
+  letter-spacing: normal;
+
+  @media (min-width: 641px) {
+    font-size: govuk-px-to-rem(18);
+    line-height: govuk-px-to-rem(20);
+  }
+
+  .department-of-health-logo__crest {
+    text-transform: none;
+    text-decoration: none;
+    display: block;
+    color: govuk-colour('black');
+    height: auto;
+    width: auto;
+    direction: ltr;
+
+    background: url('/assets/images/govuk-crest.png') no-repeat govuk-px-to-rem(6) 0;
+    background-size: auto govuk-px-to-rem(26);
+    background-image: url('/assets/images/govuk-crest-2x.png');
+
+    border-left: 2px solid govuk-colour('black');
+    padding-top: govuk-px-to-rem(20);
+    padding-left: govuk-px-to-rem(6);
+
+    border-color: govuk-organisation-colour('department-of-health', false);
+
+    @media (min-width: 641px) {
+      padding-top: govuk-px-to-rem(25);
+      padding-left: govuk-px-to-rem(7);
+    }
+
+    .department-of-health-logo__name {
+      position: relative;
+      top: govuk-px-to-rem(3);
+      font-family: 'HelveticaNeue', 'Helvetica Neue', 'Arial', 'Helvetica', sans-serif;
+    }
+  }
+}

@@ -1,0 +1,20 @@
+.govuk-input__currency {
+  &::before {
+    content: '£';
+    display: inline-block;
+    box-sizing: border-box;
+
+    outline: none;
+    vertical-align: top;
+
+    height: 40px;
+    margin-top: 0;
+
+    padding: govuk-spacing(1) govuk-spacing(2);
+    border: $govuk-border-width-form-element solid $govuk-input-border-colour;
+    border-right: 0;
+    border-radius: 0;
+
+    @include govuk-font($size: 19, $weight: normal, $line-height: 26px);
+  }
+}

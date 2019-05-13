@@ -1,3 +1,3 @@
 export class Message {
-  constructor(public status: "info" | "success" | "error", public message: string) {}
+  constructor(public status: 'info' | 'success' | 'error', public message: string) {}
 }

@@ -5,7 +5,7 @@ import { RegisterGuard } from './register.guard';
 describe('RegisterGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [RegisterGuard]
+      providers: [RegisterGuard],
     });
   });
 

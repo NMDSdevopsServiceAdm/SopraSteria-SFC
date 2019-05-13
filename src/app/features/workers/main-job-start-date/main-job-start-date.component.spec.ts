@@ -8,9 +8,8 @@ describe('MainJobStartDateComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MainJobStartDateComponent ]
-    })
-    .compileComponents();
+      declarations: [MainJobStartDateComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

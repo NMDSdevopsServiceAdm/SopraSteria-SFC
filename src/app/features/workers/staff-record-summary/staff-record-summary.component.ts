@@ -9,6 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 })
 export class StaffRecordSummaryComponent {
   @Input() worker: Worker;
+  @Input() return: string[] = null;
 
   constructor(private location: Location, public workerService: WorkerService) {}
 
@@ -19,6 +20,6 @@ export class StaffRecordSummaryComponent {
   }
 
   setReturn() {
-    this.workerService.setReturnToSummary(true);
+    this.workerService.setReturnTo(this.return);
   }
 }

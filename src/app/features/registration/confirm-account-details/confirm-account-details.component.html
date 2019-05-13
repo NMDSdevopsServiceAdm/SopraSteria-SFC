@@ -1,0 +1,153 @@
+<app-error-summary
+  *ngIf="(form.invalid || serverError) && submitted"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row" id="server-error">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Confirm your account details</h1>
+
+    <dl class="govuk-summary-list basic-records govuk-!-margin-bottom-8">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Full name
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ userDetails?.fullname }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/change-your-details']" class="govuk-link">
+            Change
+            <span class="govuk-visually-hidden"> full name</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Job title
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ userDetails?.jobTitle }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/change-your-details']" class="govuk-link">
+            Change
+            <span class="govuk-visually-hidden"> job title</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Email address
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ userDetails?.email }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/change-your-details']" class="govuk-link">
+            Change
+            <span class="govuk-visually-hidden"> email address</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Contact phone
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ userDetails?.phone }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/change-your-details']" class="govuk-link">
+            Change
+            <span class="govuk-visually-hidden"> contact phone</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Username
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ username }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/create-username']" class="govuk-link">
+            Change
+            <span class="govuk-visually-hidden"> username</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Security question
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ securityDetails?.securityQuestion }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/security-question']" class="govuk-link">
+            Change
+            <span class="govuk-visually-hidden"> security question</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Security answer
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ securityDetails?.securityAnswer }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/security-question']" class="govuk-link">
+            Change
+            <span class="govuk-visually-hidden"> security answer</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+
+    <form (ngSubmit)="onSubmit()" [formGroup]="form">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <fieldset class="govuk-fieldset" aria-describedby="termsAndConditions-hint">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">
+              Are these details correct?
+            </h2>
+          </legend>
+          <span id="termsAndConditions-hint" class="govuk-hint">
+            Check the box to confirm you agree to the
+            <a [routerLink]="['/public/terms-and-conditions']" target="_blank">terms and conditions</a>.
+            You must agree to them before you can submit your application.
+          </span>
+          <span *ngIf="submitted && form.invalid" id="termsAndConditions-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('termsAndConditions', 'required') }}
+          </span>
+          <div class="govuk-checkboxes">
+            <div class="govuk-checkboxes__item">
+              <input
+                class="govuk-checkboxes__input"
+                [class.govuk-input--error]="submitted && form.errors"
+                id="termsAndConditions"
+                name="termsAndConditions"
+                type="checkbox"
+                formControlName="termsAndConditions"
+              />
+              <label class="govuk-label govuk-checkboxes__label" for="termsAndConditions">
+                I agree to the terms and conditions of this service
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+      <button type="submit" class="govuk-button">
+        Submit
+      </button>
+    </form>
+  </div>
+</div>

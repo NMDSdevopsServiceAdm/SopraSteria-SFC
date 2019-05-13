@@ -6,8 +6,7 @@ import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home-tab',
-  templateUrl: './home-tab.component.html',
-  styleUrls: ['./home-tab.component.scss'],
+  templateUrl: './home-tab.component.html'
 })
 export class HomeTabComponent implements OnInit {
   public updateWorkplace: boolean;

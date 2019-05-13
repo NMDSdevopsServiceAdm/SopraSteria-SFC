@@ -8,9 +8,8 @@ describe('WorkplaceSummaryComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ WorkplaceSummaryComponent ]
-    })
-    .compileComponents();
+      declarations: [WorkplaceSummaryComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,43 +1,61 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RequestPasswordResetResponse } from '@core/services/password-reset.service';
-import { Subscription } from 'rxjs';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
   selector: 'app-fp-edit',
   templateUrl: './edit.component.html',
 })
 export class ForgotYourPasswordEditComponent implements OnInit {
-  public forgotPasswordForm: FormGroup;
-  public forgottenPasswordMessage: boolean;
-
+  public form: FormGroup;
+  public submitted = false;
+  public formErrorsMap: Array<ErrorDetails>;
+  @Input() public serverError: string;
   @Output() formDataOutput = new EventEmitter<RequestPasswordResetResponse>();
 
-  constructor(
-    private fb: FormBuilder,
-  ) { }
+  constructor(private formBuilder: FormBuilder, private errorSummaryService: ErrorSummaryService) {}
 
   ngOnInit() {
-
-    this.forgotPasswordForm = this.fb.group({
+    this.form = this.formBuilder.group({
       usernameOrEmail: ['', [Validators.required, Validators.maxLength(120)]],
     });
 
-    this.forgottenPasswordMessage = false;
+    this.setupFormErrorsMap();
+  }
+
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'usernameOrEmail',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your username or email address.',
+          },
+        ],
+      },
+    ];
+  }
+
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   onSubmit() {
+    const { usernameOrEmail } = this.form.controls;
 
-    const usernameOrEmail = this.forgotPasswordForm.value;
+    this.submitted = true;
 
-    if (this.forgotPasswordForm.invalid) {
-
-      this.forgottenPasswordMessage = true;
-    }
-    else {
-      this.formDataOutput.emit(usernameOrEmail);
+    if (this.form.valid) {
+      this.formDataOutput.emit(usernameOrEmail.value);
     }
   }
-
 }

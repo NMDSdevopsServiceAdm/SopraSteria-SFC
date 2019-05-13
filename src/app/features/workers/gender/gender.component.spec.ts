@@ -8,9 +8,8 @@ describe('GenderComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GenderComponent ]
-    })
-    .compileComponents();
+      declarations: [GenderComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,22 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
-import { AuthService } from '@core/services/auth-service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { AuthService } from '@core/services/auth.service';
 import { ReportsService } from '@core/services/reports.service';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reports',
-  templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.scss']
+  templateUrl: './reports.component.html'
 })
 export class ReportsComponent implements OnInit, OnDestroy {
   public updateEligibilityForm: FormGroup;
   public establishment: any;
   public reportDetails: {};
-  public lastLoggedIn = null;
-  public dateFormat = DEFAULT_DATE_DISPLAY_FORMAT;
   public displayWDFReport: {};
   public eligibility: {};
   public newDate: string;
@@ -27,7 +23,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private reportsService: ReportsService,
-    private formBuilder: FormBuilder,
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit() {
@@ -41,7 +37,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.establishment = this.authService.establishment;
 
     this.subscriptions.add(
-      this.reportsService.reportDetails$.subscribe(reportDetails => this.reportDetails = reportDetails)
+      this.reportsService.reportDetails$.subscribe(reportDetails => (this.reportDetails = reportDetails))
     );
 
     this.displayWDFReport = false;
@@ -49,7 +45,9 @@ export class ReportsComponent implements OnInit, OnDestroy {
 
   setEffectiveFromDate(data) {
     const effectiveFrom = data.effectiveFrom;
-    this.effectiveFromDateNextYear = moment(effectiveFrom).add(1, 'years').format('YYYY');
+    this.effectiveFromDateNextYear = moment(effectiveFrom)
+      .add(1, 'years')
+      .format('YYYY');
   }
 
   displayWDF(event: Event) {
@@ -58,8 +56,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     }
 
     this.subscriptions.add(
-      this.reportsService.getWDFReport()
-      .subscribe(res => {
+      this.reportsService.getWDFReport().subscribe(res => {
         this.setEffectiveFromDate(res);
 
         this.eligibility = res;
@@ -77,23 +74,16 @@ export class ReportsComponent implements OnInit, OnDestroy {
     const minute = this.updateEligibilityForm.get('minute').value;
     const second = this.updateEligibilityForm.get('second').value;
 
-    if ((date === null) || (date === '')) {
+    if (date === null || date === '') {
       this.newDate = '';
-    }
-    else {
+    } else {
       this.newDate = date + 'T' + hour + ':' + minute + ':' + second + 'Z';
     }
 
-    this.subscriptions.add(
-      this.reportsService.getWDFReport(this.newDate)
-      .subscribe(res => {
-
-      })
-    );
+    this.subscriptions.add(this.reportsService.getWDFReport(this.newDate).subscribe(res => {}));
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
-
 }

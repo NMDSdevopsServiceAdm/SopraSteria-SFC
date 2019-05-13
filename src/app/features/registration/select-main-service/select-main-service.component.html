@@ -1,0 +1,52 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Select your main service</h1>
+    <p>
+      We need some details about where you work. You need to answer these questions before we can create your account.
+    </p>
+
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="submitted && form.invalid">
+        <span *ngIf="submitted && form.invalid" id="workplaceService-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplaceService', 'required') }}
+        </span>
+        <div *ngFor="let item of categories; let last = last" [class.govuk-!-padding-bottom-6]="!last">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+              <h2 class="govuk-fieldset__heading">
+                {{ item.category }}
+              </h2>
+            </legend>
+            <div class="govuk-radios">
+              <div class="govuk-radios__item" *ngFor="let service of item.services; let i = index">
+                <input
+                  class="govuk-radios__input"
+                  id="workplaceService-{{ i }}"
+                  value="{{ service.id }}"
+                  name="workplaceService"
+                  type="radio"
+                  formControlName="workplaceService"
+                />
+                <label class="govuk-label govuk-radios__label" for="workplaceService-{{ i }}">
+                  {{ service.name }}
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <button class="govuk-button govuk-!-margin-top-2" type="submit">Continue</button>
+    </form>
+  </div>
+</div>

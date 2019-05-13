@@ -8,9 +8,8 @@ describe('HomePostcodeComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HomePostcodeComponent ]
-    })
-    .compileComponents();
+      declarations: [HomePostcodeComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

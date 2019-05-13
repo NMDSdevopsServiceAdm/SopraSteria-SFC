@@ -1,34 +1,34 @@
-@import '../../../../assets/scss/variables.scss';
-@import '../../../../assets/scss/mixins.scss';
+// @import '../../../../assets/scss/variables.scss';
+// @import '../../../../assets/scss/mixins.scss';
 
-:host {
-  display: block;
-}
+// :host {
+//   display: block;
+// }
 
-.status {
-  display: inline-block;
-  @include rem(font-size, 19px);
-  color: white;
-  font-weight: 700;
-  @include rem(padding, 20px);
-  @include rem(margin-top, 20px);
-  @include rem(margin-bottom, 20px);
+// .status {
+//   display: inline-block;
+//   @include rem(font-size, 19px);
+//   color: white;
+//   font-weight: 700;
+//   @include rem(padding, 20px);
+//   @include rem(margin-top, 20px);
+//   @include rem(margin-bottom, 20px);
 
-  &.success {
-    background-color: $mint-green;
-  }
+//   &.success {
+//     background-color: $mint-green;
+//   }
 
-  &.error,
-  &.fail {
-    background-color: $error-red;
-  }
+//   &.error,
+//   &.fail {
+//     background-color: $error-red;
+//   }
 
-  p {
-    line-height: 1em;
-    margin: 0;
-  }
+//   p {
+//     line-height: 1em;
+//     margin: 0;
+//   }
 
-  .status-extra {
-    font-weight: 400;
-  }
-}
+//   .status-extra {
+//     font-weight: 400;
+//   }
+// }

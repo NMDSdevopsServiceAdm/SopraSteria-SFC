@@ -1,109 +1,150 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a routerLink="/worker/start-screen"> <span class="arrow"></span>Back </a>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-xl">Provide basic information for each member of staff.</h1>
   </div>
-
-  <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
-    <h1 class="h1">Create basic records</h1>
-
-    <app-total-staff-panel
-      class="mb-5"
-      [totalStaff]="totalStaff"
-      [totalWorkers]="calculatedTotalStaff"
-    ></app-total-staff-panel>
-
-    <h3 class="h2 pb-2 pt-5">Information about your staff</h3>
-    <div formArrayName="staffRecords" class="staff-records">
-      <div
-        class="row staff-record fs-19"
-        *ngFor="let staffRecord of form.get('staffRecords').controls; let i = index"
-        [formGroupName]="i"
-      >
-        <div class="tb-cell col-2 pt-4 pb-4 pr-2">
-          <strong>Staff record {{ i + 1 + totalWorkers }}</strong>
-        </div>
-        <div class="tb-cell col-4 pt-4 pb-4 pr-2">
-          {{ staffRecord.get('nameOrId').value }}
-        </div>
-        <div class="tb-cell col-4 pt-2 pb-0 pr-2">
-          <button type="button" class="btn btn-link" (click)="deleteStaffRecord(i)">Delete</button>
-        </div>
-        <div class="tb-cell text-right col-2 pt-2 pb-0">
-          <button
-            *ngIf="!staffRecord.get('active').value"
-            type="button"
-            class="btn btn-link"
-            (click)="openStaffRecord(i)"
-          >
-            View or Change
-          </button>
-        </div>
-
-        <div class="form-group border-line-top" *ngIf="staffRecord.get('active').value">
-          <div class="field-group mb-5">
-            <label class="col-12 col-md-11 col-lg-8">
-              Full name or ID number?
-              <div
-                *ngIf="staffRecord.controls.nameOrId.errors && staffRecord.controls.nameOrId.touched"
-                class="alert alert-danger"
-              >
-                <p>Enter a full name or ID number</p>
-              </div>
-              <input type="text" formControlName="nameOrId" maxlength="50" class="form-control col-12" />
-            </label>
-          </div>
-
-          <div class="field-group mb-5">
-            <label>
-              What is their main job role?
-              <div
-                *ngIf="staffRecord.controls.mainJob.errors && staffRecord.controls.mainJob.touched"
-                class="alert alert-danger"
-              >
-                <p>Select a job role</p>
-              </div>
-              <select formControlName="mainJob" class="form-control">
-                <option [ngValue]="null">Select Main Job Role</option>
-                <option *ngFor="let job of jobsAvailable" [value]="job.id">
-                  {{ job.title }}
-                </option>
-              </select>
-            </label>
-          </div>
-
-          <div class="field-group mb-5">
-            <label class="d-block">
-              What type of contract do they have?
-              <div
-                *ngIf="staffRecord.controls.contract.errors && staffRecord.controls.contract.touched"
-                class="alert alert-danger"
-              >
-                <p>Select a contract type</p>
-              </div>
-            </label>
-            <div *ngFor="let contract of contractsAvailable; let i = index" class="multiple-choice">
-              <input
-                type="radio"
-                formControlName="contract"
-                class="form-control"
-                [value]="contract"
-                id="contract-type-{{ i }}"
-              />
-              <label for="contract-type-{{ i }}">{{ contract }}</label>
-            </div>
-          </div>
-
-          <button type="button" class="btn btn-blue" (click)="saveStaffRecord(i)">Save this staff record</button>
-        </div>
-      </div>
-    </div>
-
-    <a *ngIf="!displayAddMore" (click)="addStaffRecord()">+ Add another staff record</a>
-
-    <div class="btn-container container">
-      <div class="row">
-        <button type="submit" class="btn btn-primary">Save and continue</button>
-      </div>
-    </div>
-  </form>
 </div>
+
+<p class="govuk-!-margin-bottom-7">This is mandatory information needed to create a basic staff record.</p>
+
+<app-total-staff-panel [totalStaff]="totalStaff" [totalWorkers]="calculatedTotalStaff"></app-total-staff-panel>
+
+<form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
+  <dl class="govuk-summary-list govuk-summary-list--top-border" formArrayName="staffRecords">
+    <div
+      class="govuk-summary-list__row"
+      *ngFor="let staffRecord of form.get('staffRecords').controls; let i = index"
+      [formGroupName]="i"
+    >
+      <ng-container *ngIf="staffRecord.get('active').value; then form; else summary"></ng-container>
+      <ng-template #summary>
+        <dt class="govuk-summary-list__key">Staff record {{ i + 1 + totalWorkers }}</dt>
+        <dd class="govuk-summary-list__value">
+          {{ staffRecord.get('nameOrId').value }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link--no-visited-state" href="#" (click)="deleteStaffRecord($event, i)">
+            Delete<span class="govuk-visually-hidden"> basic record</span>
+          </a>
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a class="govuk-link--no-visited-state" href="#" (click)="openStaffRecord($event, i)">
+            View or Change<span class="govuk-visually-hidden"> basic record</span>
+          </a>
+        </dd>
+      </ng-template>
+      <ng-template #form>
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m govuk-!-padding-top-3">
+            <h2 class="govuk-fieldset__heading">Staff record {{ i + 1 + totalWorkers }}</h2>
+          </legend>
+          <div
+            class="govuk-form-group"
+            [class.govuk-form-group--error]="staffRecord.get('nameOrId').invalid && staffRecord.get('nameOrId').touched"
+          >
+            <label class="govuk-label" for="nameOrId-{{ i }}">
+              Full name or ID number?
+            </label>
+            <span
+              *ngIf="staffRecord.get('nameOrId').invalid && staffRecord.get('nameOrId').touched"
+              class="govuk-error-message"
+              id="nameOrId-{{ i }}-error"
+            >
+              <span class="govuk-visually-hidden">Error:</span> Enter a full name or ID number.
+            </span>
+            <input
+              class="govuk-input govuk-input--width-20"
+              [class.govuk-input--error]="staffRecord.get('nameOrId').invalid && staffRecord.get('nameOrId').touched"
+              formControlName="nameOrId"
+              id="nameOrId-{{ i }}"
+              type="text"
+            />
+          </div>
+          <div
+            class="govuk-form-group"
+            [class.govuk-form-group--error]="
+              staffRecord.get('mainJobRole').invalid && staffRecord.get('mainJobRole').touched
+            "
+          >
+            <label class="govuk-label" for="mainJobRole-{{ i }}">
+              What is their main job role?
+            </label>
+            <span
+              *ngIf="staffRecord.get('mainJobRole').invalid && staffRecord.get('mainJobRole').touched"
+              class="govuk-error-message"
+              id="mainJobRole-{{ i }}-error"
+            >
+              <span class="govuk-visually-hidden">Error:</span> Select a job role.
+            </span>
+            <select
+              class="govuk-select"
+              [class.govuk-select--error]="
+                staffRecord.get('mainJobRole').invalid && staffRecord.get('mainJobRole').touched
+              "
+              formControlName="mainJobRole"
+              id="mainJobRole-{{ i }}"
+            >
+              <option [ngValue]="null">Select Main Job Role</option>
+              <option *ngFor="let job of jobs" [value]="job.id">
+                {{ job.title }}
+              </option>
+            </select>
+          </div>
+          <div
+            class="govuk-form-group"
+            [class.govuk-form-group--error]="staffRecord.get('contract').invalid && staffRecord.get('contract').touched"
+          >
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend">
+                What type of contract do they have?
+              </legend>
+              <span
+                *ngIf="staffRecord.get('contract').invalid && staffRecord.get('contract').touched"
+                class="govuk-error-message"
+                id="contract-{{ i }}-error"
+              >
+                <span class="govuk-visually-hidden">Error:</span> Select yes if you have changed your name.
+              </span>
+              <div class="govuk-radios">
+                <div class="govuk-radios__item" *ngFor="let contract of contracts; let idx = index">
+                  <input
+                    class="govuk-radios__input"
+                    formControlName="contract"
+                    id="contract-{{ i }}-{{ idx }}"
+                    type="radio"
+                    [value]="contract"
+                  />
+                  <label class="govuk-label govuk-radios__label" for="contract-{{ i }}-{{ idx }}">
+                    {{ contract }}
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <button class="govuk-button govuk-button--tertiary" type="button" (click)="saveStaffRecord(i)">
+            Save this staff record
+          </button>
+          <button
+            class="govuk-button govuk-button--link govuk-!-margin-left-8"
+            type="button"
+            (click)="deleteStaffRecord($event, i)"
+          >
+            <ng-container *ngIf="staffRecord.get('uid').value; then delete; else cancel"></ng-container>
+            <ng-template #delete>
+                Delete record<span class="govuk-visually-hidden"> {{ i + 1 + totalWorkers }}</span>
+            </ng-template>
+            <ng-template #cancel>
+                Cancel
+            </ng-template>
+          </button>
+        </fieldset>
+      </ng-template>
+    </div>
+  </dl>
+
+  <button *ngIf="!displayAddMore" class="govuk-button govuk-button--secondary" type="button" (click)="addStaffRecord()">
+    Add another staff record
+  </button>
+  <div class="govuk-row">
+    <button class="govuk-button" type="submit">Save and continue</button>
+  </div>
+</form>

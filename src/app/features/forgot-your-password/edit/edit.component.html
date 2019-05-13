@@ -1,33 +1,41 @@
-<h1 class="h1">Forgot your password?</h1>
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+>
+</app-error-summary>
 
-<p class="main-body-text col-7 p-0 mb-5">Enter your username or email address and we will send you a link to
-  reset your password.</p>
+<h1 class="govuk-heading-xl">Forgot your password?</h1>
+<p>Enter your username or email address and we will send you a link to reset your password.</p>
 
-<form novalidate
-  (ngSubmit)="onSubmit()"
-  [formGroup]="forgotPasswordForm">
-
-  <div class="field-group mb-5"
-    [ngClass]="{'is-invalid': forgottenPasswordMessage }">
-
-    <label for="usernameOrEmail" class="d-block m-0">Username or email address</label>
-
-    <span class="invalid-feedback">
-      <span class="main-body-text mb-2" *ngIf="forgottenPasswordMessage">
-        Please enter your username or email address.
-      </span>
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div
+    class="govuk-form-group"
+    [ngClass]="{ 'govuk-form-group--error': form.get('usernameOrEmail').errors && submitted }"
+  >
+    <label class="govuk-label" for="usernameOrEmail">
+      Username or email address
+    </label>
+    <span
+      id="username-issued-error"
+      class="govuk-error-message"
+      *ngIf="form.get('usernameOrEmail').errors?.required && submitted"
+    >
+      <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('usernameOrEmail', 'required') }}
     </span>
-
-    <input type="text"
-            placeholder=""
-            id="usernameOrEmail"
-            formControlName="usernameOrEmail"
-            class="form-control col-12 col-lg-6" />
+    <input
+      class="govuk-input govuk-!-width-full"
+      [ngClass]="{ 'govuk-input--error': form.get('usernameOrEmail').errors && submitted }"
+      id="usernameOrEmail"
+      name="usernameOrEmail"
+      type="text"
+      formControlName="usernameOrEmail"
+    />
   </div>
 
-  <div class="btn-container">
-    <button class="btn btn-primary" type="submit">Send reset link</button>
-  </div>
-
-  <a routerLink="/login" class="text-link d-block mt-5" title="Sign in">Back to sign in</a>
+  <button type="submit" class="govuk-button">
+    Send reset link
+  </button>
 </form>
+<p><a routerLink="/login">Back to sign in</a></p>

@@ -18,10 +18,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   public submitted: boolean;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private _passwordResetService: PasswordResetService,
-    private route: ActivatedRoute,
-  ) { }
+  constructor(private _passwordResetService: PasswordResetService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.submitted = false;
@@ -46,7 +43,6 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   validatePasswordReset(data) {
     this.subscriptions.add(
       this._passwordResetService.validatePasswordReset(data).subscribe(res => {
-
         this.headerToken = res.headers.get('authorization');
 
         this.validatePasswordResetResponse = res;
@@ -59,5 +55,4 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
   getresetPasswordSuccessData(responseData) {
     this.submitted = true;
   }
-
 }

@@ -1,5 +1,5 @@
-<h3 class="fs-24 mb-4 text-weight-bold">Qualifications and training</h3>
-<dl class="govuk-summary-list">
+<h2 class="govuk-heading-m">Qualifications and training</h2>
+<dl class="govuk-summary-list govuk-summary-list--top-border">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       Started or completed Care Certificate
@@ -7,7 +7,7 @@
 
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.careCertificate === 'No'">
-        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.careCertificate != 'No'">
         {{ worker.careCertificate || '-' }}
@@ -38,7 +38,7 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.qualificationInSocialCare === 'No'">
-        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.qualificationInSocialCare != 'No'">
         {{ worker.qualificationInSocialCare || '-' }}
@@ -68,7 +68,7 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.socialCareQualification === 'No'">
-        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.socialCareQualification != 'No'">
         {{ worker.socialCareQualification?.title || '-' }}
@@ -102,7 +102,7 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.otherQualification === 'No'">
-        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.otherQualification != 'No'">
         {{ worker.otherQualification || '-' }}
@@ -132,7 +132,7 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.highestQualification === 'No'">
-        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.highestQualification != 'No'">
         {{ worker.highestQualification?.title || '-' }}

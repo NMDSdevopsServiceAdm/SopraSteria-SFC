@@ -1,0 +1,11 @@
+.govuk-list--inline {
+  > li {
+    display: inline-block;
+
+    margin-right: govuk-spacing(4);
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}

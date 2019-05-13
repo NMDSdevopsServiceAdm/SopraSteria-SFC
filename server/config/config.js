@@ -6,7 +6,7 @@ const yaml = require('js-yaml');
 const config = convict({
   env: {
     doc: 'The application environment',
-    format: ['production', 'development', 'test', 'localhost'],
+    format: ['production', 'development', 'test', 'accessibility', 'localhost'],
     default: 'localhost',
     env: 'NODE_ENV'
   },
