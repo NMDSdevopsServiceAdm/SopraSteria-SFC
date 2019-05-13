@@ -59,6 +59,10 @@ export class Question implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
+  public getFirstErrorMessage(item: string): string {
+    return '';
+  }
+
   protected init(): void {}
   protected setupFormErrorsMap(): void {}
   protected setupServerErrorsMap(): void {}
