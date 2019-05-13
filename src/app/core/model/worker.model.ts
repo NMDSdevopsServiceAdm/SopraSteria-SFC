@@ -1,4 +1,4 @@
-import { Contracts } from '../constants/contracts.enum';
+import { Contracts } from './contracts.enum';
 import { Job } from './job.model';
 
 export interface Worker {

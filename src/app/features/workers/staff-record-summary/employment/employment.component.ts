@@ -1,7 +1,7 @@
 import { DecimalPipe, Location } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
-import { Contracts } from '@core/constants/contracts.enum';
+import { Contracts } from '@core/model/contracts.enum';
 import { WorkerService } from '@core/services/worker.service';
 import * as moment from 'moment';
 
