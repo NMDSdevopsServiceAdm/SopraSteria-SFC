@@ -48,8 +48,8 @@
               <ng-container *ngIf="form.get('tellUs').hasError('required')">
                 {{ getFormErrorMessage('tellUs', 'required') }}
               </ng-container>
-              <ng-container *ngIf="form.get('tellUs').hasError('pattern')">
-                {{ getFormErrorMessage('tellUs', 'pattern') }}
+              <ng-container *ngIf="form.get('tellUs').hasError('maxwords')">
+                {{ getFormErrorMessage('tellUs', 'maxwords') }}
               </ng-container>
             </span>
             <textarea

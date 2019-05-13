@@ -9,7 +9,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
-import { DateValidator } from '@core/validators/date.validator';
+import { DateValidator } from '@shared/validators/date.validator';
 import * as moment from 'moment';
 import { Subscription } from 'rxjs';
 

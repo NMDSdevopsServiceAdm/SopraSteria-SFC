@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FeedbackModel } from '@core/model/feedback.model';
 import { FeedbackService } from '@core/services/feedback.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { TEN_WORDS_PATTERN } from '@core/constants/constants';
-import { WindowRef } from '@core/services/window.ref';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Subscription } from 'rxjs';
+import { WindowRef } from '@core/services/window.ref';
 
 @Component({
   selector: 'app-feedback',
@@ -43,7 +43,7 @@ export class FeedbackComponent implements OnInit, OnDestroy {
       doingWhat: [null, [Validators.required, Validators.maxLength(this.doingWhatCharacterLimit)]],
       email: [null, [Validators.email, Validators.maxLength(this.emailCharacterLimit)]],
       fullname: [null, [Validators.maxLength(this.fullNameCharacterLimit)]],
-      tellUs: [null, [Validators.required, Validators.pattern(TEN_WORDS_PATTERN)]],
+      tellUs: [null, [Validators.required, CustomValidators.maxWords(10)]],
     });
   }
 
@@ -92,7 +92,7 @@ export class FeedbackComponent implements OnInit, OnDestroy {
             message: 'Please tell us your feedback.',
           },
           {
-            name: 'pattern',
+            name: 'maxwords',
             message: 'Maximum word count exceeded.',
           },
         ],
@@ -104,7 +104,7 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 503,
-        message: 'Unable to update database.',
+        message: 'We could not submit your feedback. You can try again or contact us',
       },
     ];
   }
