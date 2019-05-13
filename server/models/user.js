@@ -216,6 +216,11 @@ module.exports = function(sequelize, DataTypes) {
       default: false,
       field: '"AdminUser"'
     },
+    tribalId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"TribalID"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,
