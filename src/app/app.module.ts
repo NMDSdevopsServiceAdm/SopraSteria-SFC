@@ -31,12 +31,10 @@ import { TitleService } from '@core/services/title.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { ContactUsComponent } from '@features/public/contact-us/contact-us.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { StaffRecordsTabComponent } from '@features/dashboard/staff-records-tab/staff-records-tab.component';
 import { WorkplaceTabComponent } from '@features/dashboard/workplace-tab/workplace-tab.component';
-import { FeedbackComponent } from '@features/public/feedback/feedback.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
 import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/edit/edit.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
@@ -49,7 +47,6 @@ import { ReportsComponent } from '@features/reports/reports.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
-import { TermsConditionsComponent } from '@features/public/terms-conditions/terms-conditions.component';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { MomentModule } from 'ngx-moment';
@@ -60,52 +57,60 @@ import { AppComponent } from './app.component';
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent,
-    HeaderComponent,
-    FooterComponent,
-    FeedbackComponent,
-    ContactUsComponent,
-    LogoutComponent,
-    PageNotFoundComponent,
-    ProblemWithTheServiceComponent,
-    ServiceUnavailableComponent,
-    TermsConditionsComponent,
     DashboardComponent,
-    StaffRecordsTabComponent,
+    EligibilityDisplayOverviewComponent,
+    FooterComponent,
     ForgotYourPasswordComponent,
     ForgotYourPasswordConfirmationComponent,
     ForgotYourPasswordEditComponent,
-    ResetPasswordComponent,
-    ResetPasswordEditComponent,
-    ResetPasswordConfirmationComponent,
+    HeaderComponent,
     HomeTabComponent,
-    WorkplaceTabComponent,
-    EligibilityDisplayOverviewComponent,
+    LoginComponent,
+    LogoutComponent,
+    PageNotFoundComponent,
+    ProblemWithTheServiceComponent,
     ReportsComponent,
+    ResetPasswordComponent,
+    ResetPasswordConfirmationComponent,
+    ResetPasswordEditComponent,
+    ServiceUnavailableComponent,
+    StaffRecordsTabComponent,
+    WorkplaceTabComponent,
   ],
   imports: [
-    BrowserModule,
-    CommonModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    HttpClientModule,
     Angulartics2Module.forRoot({
       pageTracking: {
         clearIds: true,
       },
     }),
-    SharedModule,
+    AppRoutingModule,
+    BrowserModule,
+    CommonModule,
+    HttpClientModule,
     MomentModule,
+    ReactiveFormsModule,
+    SharedModule,
   ],
   providers: [
-    LocationService,
-    RegistrationService,
-    JobService,
-    QualificationService,
-    MessageService,
-    HttpErrorHandler,
-    FeedbackService,
+    AuthGuard,
+    BackService,
+    CountryService,
     EstablishmentService,
+    EthnicityService,
+    FeedbackService,
+    HttpErrorHandler,
+    JobService,
+    LocalAuthorityService,
+    LocationService,
+    MessageService,
+    NationalityService,
+    QualificationService,
+    RecruitmentService,
+    RegistrationService,
+    TitleService,
+    TrainingService,
+    WindowRef,
+    WorkerService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: HttpInterceptor,
@@ -116,17 +121,6 @@ import { AppComponent } from './app.component';
       useClass: AuthInterceptor,
       multi: true,
     },
-    LocalAuthorityService,
-    AuthGuard,
-    WorkerService,
-    EthnicityService,
-    RecruitmentService,
-    NationalityService,
-    CountryService,
-    TrainingService,
-    WindowRef,
-    TitleService,
-    BackService,
   ],
   bootstrap: [AppComponent],
 })
