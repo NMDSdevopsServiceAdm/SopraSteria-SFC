@@ -2,6 +2,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { skip } from 'rxjs/operators';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -28,7 +29,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private registrationService: RegistrationService,
     private route: ActivatedRoute,
-    private router: Router,
+    private router: Router
   ) {}
 
   get regulatedByCQC() {
@@ -56,17 +57,16 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.setBackLink();
+    this.setupSubscription();
   }
 
   private setupForm(): void {
     this.form = this.fb.group({
       regulatedByCQC: [null, Validators.required],
-      group: this.fb.group(
-        {
-          regulatedPostcode: ['', Validators.maxLength(8)],
-          locationId: ['', Validators.maxLength(50)],
-        },
-      ),
+      group: this.fb.group({
+        regulatedPostcode: ['', Validators.maxLength(8)],
+        locationId: ['', Validators.maxLength(50)],
+      }),
       nonRegulatedPostcode: ['', Validators.maxLength(8)],
     });
   }
@@ -162,6 +162,19 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     ];
   }
 
+  /**
+   * If a user chooses submits a postcode that throws a server side error
+   * and changes cqc radio selection
+   * then remove server side error
+   */
+  private setupSubscription(): void {
+    this.subscriptions.add(
+      this.regulatedByCQC.valueChanges
+        .pipe(skip(1))
+        .subscribe(() => (this.serverError = null))
+    );
+  }
+
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -186,24 +199,30 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
   private save(): void {
     if (this.regulatedPostcode.value.length) {
       this.subscriptions.add(
-        this.registrationService.getLocationByPostCode(this.regulatedPostcode.value).subscribe(
-          (data: LocationSearchResponse) => this.onSuccess(data),
-          (error: HttpErrorResponse) => this.onError(error)
-        )
+        this.registrationService
+          .getLocationByPostCode(this.regulatedPostcode.value)
+          .subscribe(
+            (data: LocationSearchResponse) => this.onSuccess(data),
+            (error: HttpErrorResponse) => this.onError(error)
+          )
       );
     } else if (this.locationId.value.length) {
       this.subscriptions.add(
-        this.registrationService.getLocationByLocationId(this.locationId.value).subscribe(
-          (data: LocationSearchResponse) => this.onSuccess(data),
-          (error: HttpErrorResponse) => this.onError(error)
-        )
+        this.registrationService
+          .getLocationByLocationId(this.locationId.value)
+          .subscribe(
+            (data: LocationSearchResponse) => this.onSuccess(data),
+            (error: HttpErrorResponse) => this.onError(error)
+          )
       );
     } else if (this.nonRegulatedPostcode.value.length) {
       this.subscriptions.add(
-        this.registrationService.getAddressesByPostCode(this.nonRegulatedPostcode.value).subscribe(
-          (data: LocationSearchResponse) => this.onSuccess(data),
-          (error: HttpErrorResponse) => this.onError(error)
-        )
+        this.registrationService
+          .getAddressesByPostCode(this.nonRegulatedPostcode.value)
+          .subscribe(
+            (data: LocationSearchResponse) => this.onSuccess(data),
+            (error: HttpErrorResponse) => this.onError(error)
+          )
       );
     }
   }
@@ -214,9 +233,9 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     if (data.success === 1) {
       this.registrationService.locationAddresses$.next(data.locationdata || data.postcodedata);
       if (data.locationdata) {
-        this.router.navigate([ '/registration/select-workplace' ]);
+        this.router.navigate(['/registration/select-workplace']);
       } else {
-        this.router.navigate([ '/registration/select-workplace-address' ]);
+        this.router.navigate(['/registration/select-workplace-address']);
       }
     }
   }
@@ -233,5 +252,4 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
-
 }
