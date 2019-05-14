@@ -1,6 +1,23 @@
-<div class="govuk-form-group">
-  <label class="govuk-label govuk-visually-hidden" for="fileUpload">
-    Choose files
-  </label>
-  <input class="govuk-fileUpload" id="fileUpload" name="fileUpload" type="file" [attr.multiple]="multiple" />
-</div>
+<div>form = {{ form.errors | json }}</div>
+<div>form invalid = {{ form.invalid }}</div>
+<div>submitted = {{ submitted }}</div>
+
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-form-group" [class.govuk-form-group--error]="form.invalid && submitted">
+    <label class="govuk-label govuk-visually-hidden" for="fileUpload">
+      Choose files
+    </label>
+    <input
+      class="govuk-file-upload"
+      id="fileUpload"
+      name="fileUpload"
+      type="file"
+      formControlName="fileUpload"
+      (change)="onFilesSelection($event)"
+      [attr.multiple]="multiple"
+    />
+  </div>
+  <button type="submit" class="govuk-button">
+    Upload files
+  </button>
+</form>
