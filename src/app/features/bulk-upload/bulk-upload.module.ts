@@ -6,6 +6,7 @@ import { DownloadDataFilesComponent } from './download-data-files/download-data-
 import { NgModule } from '@angular/core';
 import { SharedModule } from '@shared/shared.module';
 import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 
 @NgModule({
   imports: [CommonModule, SharedModule, BulkUploadRoutingModule],
@@ -13,6 +14,7 @@ import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.
     BulkUploadPageComponent,
     CheckWorkplaceReferencesComponent,
     DownloadDataFilesComponent,
+    FileUploadComponent,
     UploadDataFilesComponent,
   ],
 })
