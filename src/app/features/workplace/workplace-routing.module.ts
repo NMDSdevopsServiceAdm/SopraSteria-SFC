@@ -4,13 +4,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
+import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { ShareLocalAuthorityComponent } from './share-local-authorities/share-local-authority.component';
-import { ShareOptionsComponent } from './share-options/share-options.component';
 import { StartersComponent } from './starters/starters.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
@@ -51,8 +51,8 @@ const routes: Routes = [
         data: { title: 'Service Users' },
       },
       {
-        path: 'share-options',
-        component: ShareOptionsComponent,
+        path: 'data-sharing',
+        component: DataSharingComponent,
         data: { title: 'Data Sharing Options' },
       },
       {

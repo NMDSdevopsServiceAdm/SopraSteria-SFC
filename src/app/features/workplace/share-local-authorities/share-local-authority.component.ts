@@ -108,7 +108,7 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.doNotShareControl) {
-      this.router.navigate(['/workplace', 'share-options']);
+      this.router.navigate(['/workplace', 'data-sharing']);
     } else {
       // get the list of authorities from the form array, but filter
       //   the default option (whereby custodian code is null), and

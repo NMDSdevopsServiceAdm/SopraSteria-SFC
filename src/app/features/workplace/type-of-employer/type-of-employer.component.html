@@ -7,7 +7,7 @@
 </div>
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('employerType').invalid">
-    <span id="employerType-error" class="govuk-error-message">
+    <span *ngIf="submitted && form.get('employerType').invalid" id="employerType-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('employerType') }}
     </span>
     <div class="govuk-radios">

@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ShareOptionsComponent } from './share-options.component';
+import { DataSharingComponent } from './data-sharing.component';
 
 describe('StaffComponent', () => {
-  let component: ShareOptionsComponent;
-  let fixture: ComponentFixture<ShareOptionsComponent>;
+  let component: DataSharingComponent;
+  let fixture: ComponentFixture<DataSharingComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ShareOptionsComponent],
+      declarations: [DataSharingComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ShareOptionsComponent);
+    fixture = TestBed.createComponent(DataSharingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -86,7 +86,7 @@ export class OtherServicesComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .postOtherServices(this.establishment.id, props)
+        .updateOtherServices(this.establishment.id, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
