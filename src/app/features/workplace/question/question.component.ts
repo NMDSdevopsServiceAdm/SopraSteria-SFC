@@ -21,6 +21,7 @@ export class Question implements OnInit, OnDestroy {
   public back: string[];
 
   public formErrorsMap: Array<ErrorDetails>;
+  public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
 
@@ -99,6 +100,7 @@ export class Question implements OnInit, OnDestroy {
   }
 
   protected onError(error) {
-    console.log(error);
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+    this.errorSummaryService.scrollToErrorSummary();
   }
 }

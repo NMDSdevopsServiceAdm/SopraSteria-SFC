@@ -64,6 +64,15 @@ export class OtherServicesComponent extends Question {
     this.form.get('otherServices').setValue(selected);
   }
 
+  protected setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'Other Services could not be updated.',
+      },
+    ];
+  }
+
   protected generateUpdateProps() {
     const { otherServices } = this.form.value;
 
@@ -75,6 +84,7 @@ export class OtherServicesComponent extends Question {
   }
 
   protected updateEstablishment(props) {
+    props = 'dsdsds';
     this.subscriptions.add(
       this.establishmentService
         .postOtherServices(this.establishment.id, props)
@@ -87,17 +97,13 @@ export class OtherServicesComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
         response => {
-          this.next = response.capacities.length
-            ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
-            : ['/workplace', `${this.establishment.id}`, 'service-users'];
-          this.navigate();
+          // this.next = response.capacities.length
+          //   ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
+          //   : ['/workplace', `${this.establishment.id}`, 'service-users'];
+          // this.navigate();
         },
         error => this.onError(error)
       )
     );
-  }
-
-  protected onSuccess() {
-    console.log(this.establishment);
   }
 }
