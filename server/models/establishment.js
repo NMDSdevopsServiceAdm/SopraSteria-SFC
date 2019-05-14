@@ -72,7 +72,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ['Workplace','Worker'],
-      field: '"OwnerDataAcess"',
+      field: '"OwnerDataAccess"',
     },
     NameValue: {
       type: DataTypes.TEXT,

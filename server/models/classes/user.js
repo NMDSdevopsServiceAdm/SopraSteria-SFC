@@ -52,6 +52,8 @@ class User {
         this._logLevel = User.LOG_INFO;
 
         this._trackingUUID = trackingUUID;
+
+        console.log("WA DEBUG - User class constructor")
     }
 
     // returns true if valid establishment id
@@ -864,7 +866,114 @@ class User {
         }
 
         return allExistAndValid;
-    }
+    };
+
+    // returns the set Establishments associated to this user
+    //   the primary establishment is identified within the JWT
+    // returns false if primary establishment is not found
+    async myEstablishments(isParent, filters=null) {
+        if (filters) throw new Error("Filters not implemented");
+
+        const primaryEstablishmentId = this._establishmentId;
+        //const myRole =  this._properties.get('UserRole');
+        const myRole = this._properties.get('UserRole') ? this._properties.get('UserRole').property : null;
+
+        // for each establishment, need:
+        //  1. Name
+        //  2. Main Service (by title)
+        //  3. Data Owner
+        //  4. Data Owner Permissions
+        //  5. Updated
+        //  6. UID (significantly to be able to navigate to the specific establishment)
+        //  7. ParentUID
+        let allSubResults = null;
+        let primaryEstablishmentRecord = null;
+
+        // first - get the user's primary establishment (every user will have a primary establishment)
+        const fetchResults = await models.establishment.findOne({
+            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'dataOwnerPermissions', 'NameValue', 'updated'],
+            include: [
+                {
+                    model: models.services,
+                    as: 'mainService',
+                    attributes: ['id', 'name']
+                }
+            ],
+            where: {
+                "id": primaryEstablishmentId
+            }
+        });
+
+        if (fetchResults) {
+            // this is the primary establishemnt
+            primaryEstablishmentRecord = fetchResults;
+
+            console.log("WA DEBUG - is parent/role: ", isParent, myRole)
+
+            // now, if the primary establishment is a parent
+            //  and if the user's role against their primary parent is Edit
+            //  fetch all other establishments associated with this parnet
+            if (myRole === 'Edit' && isParent) {
+                // get all subsidaries associated with this parent
+                allSubResults = await models.establishment.findAll({
+                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'dataOwnerPermissions', 'NameValue', 'updated'],
+                    include: [
+                        {
+                            model: models.services,
+                            as: 'mainService',
+                            attributes: ['id', 'name']
+                        }
+                    ],
+                    where: {
+                        "parentUid": primaryEstablishmentRecord.uid
+                    },
+                    order: [
+                        ['updated','DESC']
+                    ]
+                });
+
+                // note - there is no error is there are no subs; an establishment can exist as a parent but with no subs
+            }
+            // else - do nothing - there is no error
+
+        } else {
+            return false;
+        }
+
+        // before returning, need to format the response
+        const myEstablishments = {
+            primary: {
+                uid: primaryEstablishmentRecord.uid,
+                updated: primaryEstablishmentRecord.updated,
+                isParent: primaryEstablishmentRecord.isParent,
+                parentUid: primaryEstablishmentRecord.parentUid,
+                name: primaryEstablishmentRecord.NameValue,
+                mainService: primaryEstablishmentRecord.mainService.name,
+                dataOwner: primaryEstablishmentRecord.dataOwner,
+                dataOwnerPermissions: primaryEstablishmentRecord.dataOwnerPermissions,
+            }
+        };
+        
+        if (allSubResults && allSubResults.length > 0) {
+            myEstablishments.subsidaries = {
+                count: allSubResults.length,
+                establishments: allSubResults.map(thisSub => {
+                    return {
+                        uid: thisSub.uid,
+                        updated: thisSub.updated,
+                        isParent: thisSub.isParent,
+                        parentUid: thisSub.parentUid,
+                        name: thisSub.NameValue,
+                        mainService: thisSub.mainService.name,
+                        dataOwner: thisSub.dataOwner,
+                        dataOwnerPermissions: thisSub.dataOwnerPermissions,    
+                    };
+                })
+            };
+        }
+
+        return myEstablishments;
+    };
 
 };
 

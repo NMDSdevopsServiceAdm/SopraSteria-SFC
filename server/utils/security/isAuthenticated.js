@@ -20,6 +20,7 @@ exports.isAuthorised = (req, res , next) => {
       } else {
         req.username= claim.sub;
         req.role = claim.role;
+        req.isParent = claim.isParent;
         req.establishment = {
           id: claim.EstblishmentId,
           uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null
@@ -77,7 +78,12 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
         }
 
         req.username= claim.sub;
+        req.isParent = claim.isParent;
         req.role = claim.role;
+        req.establishment = {
+          id: claim.EstblishmentId,
+          uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null
+        };
         next();
       }     
     });
