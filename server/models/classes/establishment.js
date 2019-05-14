@@ -50,6 +50,8 @@ class Establishment {
         this._isParent = false;
         this._parentUid = null;
         this._parentId = null;
+        this._dataOwner = null;
+        this._dataOwnerPermissions = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -128,6 +130,14 @@ class Establishment {
     }
     get parentUid() {
         return this._parentUid;
+    }
+
+    get dataOwner() {
+        return this._dataOwner;
+    }
+
+    get dataOwnerPermissions() {
+        return this._dataOwnerPermissions;
     }
 
     get numberOfStaff() {
@@ -215,6 +225,7 @@ class Establishment {
                     ShareDataValue: false,
                     shareWithCQC: false,
                     shareWithLA: false,
+                    dataOwner: 'Workplace',
                     attributes: ['id', 'created', 'updated'],
                 };
 
@@ -573,6 +584,8 @@ class Establishment {
                 this._isParent = fetchResults.isParent;
                 this._parentId = fetchResults.parentId;
                 this._parentUid = fetchResults.parentUid;
+                this._dataOwner = fetchResults.dataOwner;
+                this._dataOwnerPermissions = fetchResults.dataOwnerPermissions;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -812,6 +825,10 @@ class Establishment {
                 myDefaultJSON.locationRef = this.locationId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
+                myDefaultJSON.isParent = this.isParent;
+                myDefaultJSON.parentUid = this.parentUid;
+                myDefaultJSON.dataOwner = this.dataOwner;
+                myDefaultJSON.dataOwnerPermissions = this.dataOwnerPermissions;
             }
 
             myDefaultJSON.created = this.created.toJSON();
