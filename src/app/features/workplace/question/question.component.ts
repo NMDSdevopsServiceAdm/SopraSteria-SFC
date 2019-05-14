@@ -21,6 +21,7 @@ export class Question implements OnInit, OnDestroy {
   public back: string[];
 
   public formErrorsMap: Array<ErrorDetails>;
+  public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
 
@@ -61,17 +62,6 @@ export class Question implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected init(): void {}
-  protected setupFormErrorsMap(): void {}
-  protected setupServerErrorsMap(): void {}
-  protected generateUpdateProps(): any {}
-  protected updateEstablishment(props): void {}
-  protected onSuccess(): void {}
-
-  protected navigate(): void {
-    this.router.navigate(this.next);
-  }
-
   public onSubmit() {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -92,13 +82,25 @@ export class Question implements OnInit, OnDestroy {
     this.updateEstablishment(props);
   }
 
-  _onSuccess(data) {
+  protected init(): void {}
+  protected setupFormErrorsMap(): void {}
+  protected setupServerErrorsMap(): void {}
+  protected generateUpdateProps(): any {}
+  protected updateEstablishment(props): void {}
+  protected onSuccess(): void {}
+
+  protected navigate(): void {
+    this.router.navigate(this.next);
+  }
+
+  protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
     this.onSuccess();
     this.navigate();
   }
 
-  onError(error) {
-    console.log(error);
+  protected onError(error) {
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+    this.errorSummaryService.scrollToErrorSummary();
   }
 }

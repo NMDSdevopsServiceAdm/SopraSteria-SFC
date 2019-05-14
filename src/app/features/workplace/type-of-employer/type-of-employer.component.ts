@@ -41,7 +41,7 @@ export class TypeOfEmployerComponent extends Question {
       });
     }
 
-    this.next = ['/workplace', `${this.establishment.id}`, 'select-other-services'];
+    this.next = ['/workplace', `${this.establishment.id}`, 'other-services'];
     this.previous = ['/workplace', 'start-screen'];
   }
 

@@ -1,3 +1,18 @@
+export interface Service {
+  id: number;
+  name: string;
+  isMyService?: boolean;
+}
+
+export interface ServiceGroup {
+  category: string;
+  services: Service[];
+}
+
+export interface AllServicesResponse {
+  allOtherServices: ServiceGroup[];
+}
+
 export interface ServicesModel {
   id: number;
   name: string;
