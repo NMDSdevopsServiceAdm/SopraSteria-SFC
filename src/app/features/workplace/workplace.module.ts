@@ -8,7 +8,7 @@ import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.co
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
-import { SelectOtherServicesComponent } from './select-other-services/select-other-services.component';
+import { OtherServicesComponent } from './other-services/other-services.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { ShareLocalAuthorityComponent } from './share-local-authorities/share-local-authority.component';
@@ -25,8 +25,9 @@ import { WorkplaceResolver } from './workplace.resolver';
     ConfirmLeaversComponent,
     ConfirmStartersComponent,
     ConfirmVacanciesComponent,
+    EditWorkplaceComponent,
     LeaversComponent,
-    SelectOtherServicesComponent,
+    OtherServicesComponent,
     ServicesCapacityComponent,
     ServiceUsersComponent,
     ShareLocalAuthorityComponent,
@@ -34,7 +35,6 @@ import { WorkplaceResolver } from './workplace.resolver';
     StartersComponent,
     TypeOfEmployerComponent,
     VacanciesComponent,
-    EditWorkplaceComponent,
   ],
   providers: [WorkplaceResolver],
 })

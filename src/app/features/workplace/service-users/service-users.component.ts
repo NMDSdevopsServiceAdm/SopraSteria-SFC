@@ -95,7 +95,7 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
         if (res.allServiceCapacities.length) {
           this.router.navigate(['/workplace', 'capacity-of-services']);
         } else {
-          this.router.navigate(['/workplace', 'select-other-services']);
+          this.router.navigate(['/workplace', 'other-services']);
         }
       })
     );

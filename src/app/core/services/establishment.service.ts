@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 
 import { LocalAuthorityModel } from '../model/localAuthority.model';
 import { PostServicesModel } from '../model/postServices.model';
-import { ServicesModel } from '../model/services.model';
+import { AllServicesResponse, ServiceGroup, ServicesModel } from '../model/services.model';
 import { SharingOptionsModel } from '../model/sharingOptions.model';
 
 interface EstablishmentApiResponse {
@@ -77,8 +77,9 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${id}`);
   }
 
-  getCapacity(all = false) {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/capacity?all=${all}`);
+  getCapacity(establishmentId, all = false) {
+    const params = new HttpParams().set('all', `${all}`);
+    return this.http.get<any>(`/api/establishment/${establishmentId}/capacity`, { params });
   }
 
   postCapacity(capacities) {
@@ -157,16 +158,19 @@ export class EstablishmentService {
     return this.http.post<EmployerTypeResponse>(`/api/establishment/${establishmentId}/employerType`, data);
   }
 
-  getAllServices() {
-    return this.http.get<ServicesModel>(`/api/establishment/${this.establishmentId}/services?all=true`);
+  getAllServices(establishmentId): Observable<ServiceGroup[]> {
+    const params = new HttpParams().set('all', 'true');
+    return this.http
+      .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
+      .pipe(map(res => res.allOtherServices));
   }
 
   getCurrentServices() {
     return this.http.get<ServicesModel>(`/api/establishment/${this.establishmentId}/services?all=false`);
   }
 
-  postOtherServices(obj: PostServicesModel) {
-    return this.http.post<PostServicesModel>(`/api/establishment/${this.establishmentId}/services`, obj);
+  postOtherServices(establishmentId, obj: PostServicesModel) {
+    return this.http.post<PostServicesModel>(`/api/establishment/${establishmentId}/services`, obj);
   }
 
   getAllServiceUsers() {
