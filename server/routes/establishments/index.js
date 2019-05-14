@@ -20,6 +20,7 @@ const Staff = require('./staff');
 const Jobs = require('./jobs');
 const LA = require('./la');
 const Worker = require('./worker');
+const BulkUpload = require('./bulkUpload');
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -34,7 +35,7 @@ router.use('/:id/staff', Staff);
 router.use('/:id/jobs', Jobs);
 router.use('/:id/localAuthorities', LA);
 router.use('/:id/worker', Worker);
-
+router.use('/:id/bulkupload', BulkUpload);
 
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"

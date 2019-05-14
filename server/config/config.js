@@ -207,7 +207,33 @@ const config = convict({
           env: 'SLACK_LEVEL',
           default: 0
       }
-  }
+  },
+  bulkuploaduser: {
+    accessKeyId: {
+      doc: 'The BU user',
+      format: '*',
+      default: '',
+      env: 'Access_KEY_ID',
+    },
+    secretAccessKey: {
+      doc: 'The BU user',
+      format: '*',
+      default: '',
+      env: 'Secret_Access_KEY',
+    },
+    bucketname: {
+      doc: 'The BU user',
+      format: '*',
+      default: '',
+      env: 'S3_BUCKET',
+    },
+    region: {
+      doc: 'The BU user',
+      format: '*',
+      default: '',
+      env: 'S3_REGION',
+    },
+  },
 });
 
 // Load environment dependent configuration
