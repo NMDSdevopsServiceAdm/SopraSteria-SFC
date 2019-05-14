@@ -1,21 +1,34 @@
+import { AuthService } from '@core/services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { WorkerService } from '@core/services/worker.service';
+import { LoggedInSession } from '@core/model/logged-in.model';
 
 @Component({
   selector: 'app-home-tab',
-  templateUrl: './home-tab.component.html'
+  templateUrl: './home-tab.component.html',
 })
 export class HomeTabComponent implements OnInit {
-  public updateWorkplace: boolean;
-  public updateStaffRecords: boolean;
   private subscriptions: Subscription = new Subscription();
+  public updateStaffRecords: boolean;
+  public updateWorkplace: boolean;
+  private role: string;
 
-  constructor(private establishmentService: EstablishmentService, private workerService: WorkerService) {}
+  constructor(
+    private authService: AuthService,
+    private establishmentService: EstablishmentService,
+    private workerService: WorkerService
+  ) {}
 
   ngOnInit() {
+    this.subscriptions.add(
+      this.authService.auth$
+        .pipe(take(1))
+        .subscribe((loggedInSession: LoggedInSession) => (this.role = loggedInSession.role))
+    );
+
     this.subscriptions.add(
       this.workerService
         .getAllWorkers()

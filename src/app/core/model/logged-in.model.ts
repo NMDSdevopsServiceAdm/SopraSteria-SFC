@@ -11,9 +11,12 @@ export interface LoggedInEstablishment {
 }
 
 export interface LoggedInSession {
+  establishment: LoggedInEstablishment;
+  expiryDate: string;
   fullname: string;
   isFirstLogin: boolean;
+  isPrimary: boolean;
   lastLoggedIn: string;
-  establishment: LoggedInEstablishment;
   mainService: LoggedInMainService;
+  role: string;
 }

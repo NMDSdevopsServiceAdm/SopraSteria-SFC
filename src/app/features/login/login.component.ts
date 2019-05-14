@@ -41,7 +41,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: [null, Validators.required],
     });
 
-    this.subscriptions.add(this.authService.auth$.subscribe(login => (this.login = login)));
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
