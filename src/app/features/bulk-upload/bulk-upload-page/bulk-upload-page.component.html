@@ -1,3 +1,18 @@
-<p>
-  bulk-upload-page works!
-</p>
+<app-dashboard-header></app-dashboard-header>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ establishment?.name }}</p>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Bulk upload</h1>
+    <p>Bulk upload is used to edit large quantities of staff, workplace and training information.</p>
+  </div>
+
+  <div class="govuk-grid-column-one-third">
+    <!-- TODO uncomment once relevant sections have been developed
+    <ul class="govuk-list">
+      <li class="govuk-link"><a [routerLink]="['/bulk-upload/home']">View bulk upload codes</a></li>
+      <li class="govuk-link"><a [routerLink]="['/']">View bulk upload history</a></li>
+    </ul>
+    -->
+  </div>
+</div>
