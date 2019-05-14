@@ -84,7 +84,6 @@ export class OtherServicesComponent extends Question {
   }
 
   protected updateEstablishment(props) {
-    props = 'dsdsds';
     this.subscriptions.add(
       this.establishmentService
         .postOtherServices(this.establishment.id, props)
@@ -97,10 +96,10 @@ export class OtherServicesComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
         response => {
-          // this.next = response.capacities.length
-          //   ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
-          //   : ['/workplace', `${this.establishment.id}`, 'service-users'];
-          // this.navigate();
+          this.next = response.capacities.length
+            ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
+            : ['/workplace', `${this.establishment.id}`, 'service-users'];
+          this.navigate();
         },
         error => this.onError(error)
       )
