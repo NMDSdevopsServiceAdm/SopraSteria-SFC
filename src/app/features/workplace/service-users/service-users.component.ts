@@ -84,7 +84,7 @@ export class ServiceUsersComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService
         .postServiceUsers(serviceUsersSelected)
-        .subscribe((data: any) => this.router.navigate(['/workplace', 'share-data']))
+        .subscribe((data: any) => this.router.navigate(['/workplace', 'sharing-data']))
     );
   }
 

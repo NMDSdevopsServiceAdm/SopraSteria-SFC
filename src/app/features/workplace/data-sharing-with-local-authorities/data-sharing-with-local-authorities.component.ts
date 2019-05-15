@@ -107,7 +107,7 @@ export class DataSharingWithLocalAuthoritiesComponent implements OnInit, OnDestr
 
   onSubmit() {
     if (this.doNotShareControl) {
-      this.router.navigate(['/workplace', 'share-data']);
+      this.router.navigate(['/workplace', 'sharing-data']);
     } else {
       // get the list of authorities from the form array, but filter
       //   the default option (whereby custodian code is null), and

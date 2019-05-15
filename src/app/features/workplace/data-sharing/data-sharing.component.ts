@@ -83,7 +83,7 @@ export class DataSharingComponent extends Question {
     const { localAuthorities } = this.form.get('shareWith').value;
 
     this.next = localAuthorities
-      ? ['/workplace', `${this.establishment.id}`, 'share-data-with-local-authorities']
+      ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
       : ['/workplace', `${this.establishment.id}`, 'vacancies'];
   }
 }

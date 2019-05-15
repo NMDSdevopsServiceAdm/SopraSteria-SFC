@@ -53,12 +53,12 @@ const routes: Routes = [
         data: { title: 'Service Users' },
       },
       {
-        path: 'share-data',
+        path: 'sharing-data',
         component: DataSharingComponent,
         data: { title: 'Share Data' },
       },
       {
-        path: 'share-data-with-local-authorities',
+        path: 'sharing-data-with-local-authorities',
         component: DataSharingWithLocalAuthoritiesComponent,
         data: { title: 'Share Data With Local Authorities' },
       },
