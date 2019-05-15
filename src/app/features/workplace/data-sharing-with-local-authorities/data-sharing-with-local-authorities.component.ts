@@ -7,11 +7,10 @@ import { LocalAuthorityService } from '@core/services/localAuthority.service';
 import { MessageService } from '@core/services/message.service';
 
 @Component({
-  selector: 'app-share-local-authority',
-  templateUrl: './share-local-authority.component.html',
-  styleUrls: ['./share-local-authority.component.scss'],
+  selector: 'app-data-sharing-with-local-authorities',
+  templateUrl: './data-sharing-with-local-authorities.component.html',
 })
-export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
+export class DataSharingWithLocalAuthoritiesComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private establishmentService: EstablishmentService,
@@ -108,7 +107,7 @@ export class ShareLocalAuthorityComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if (this.doNotShareControl) {
-      this.router.navigate(['/workplace', 'data-sharing']);
+      this.router.navigate(['/workplace', 'share-data']);
     } else {
       // get the list of authorities from the form array, but filter
       //   the default option (whereby custodian code is null), and
