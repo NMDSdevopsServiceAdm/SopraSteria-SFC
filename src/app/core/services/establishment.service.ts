@@ -82,9 +82,8 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${establishmentId}/capacity`, { params });
   }
 
-  postCapacity(capacities) {
-    const data = { capacities };
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/capacity`, data);
+  updateCapacity(establishmentId, data) {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/capacity`, data);
   }
 
   getJobs() {
