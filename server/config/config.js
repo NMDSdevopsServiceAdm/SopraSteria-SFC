@@ -63,7 +63,7 @@ const config = convict({
     password: {
         doc: 'Database username',
         format: '*',
-        default: 'unknown',           // note - bug in notify - must provide a default value for it to use env var
+      default: 'unknown',           // note - bug in notify - must provide a default value for it to use env var
         env: 'DB_PASS'
     },
     port: {
@@ -207,7 +207,27 @@ const config = convict({
           env: 'SLACK_LEVEL',
           default: 0
       }
-  }
+  },
+  bulkuploaduser: {
+    accessKeyId: {
+      doc: 'Access key for AWS IAM user',
+      format: '*',
+      default: '',
+      env: 'ACCESS_KEY_ID',
+    },
+    secretAccessKey: {
+      doc: 'Bulk user secret key needed to upload file programmatically from aws sdk',
+      format: '*',
+      default: '',
+      env: 'SECRET_ACCESS_KEY',
+    },
+    bucketname: {
+      doc: 'Bucket used to upload all client related csv files',
+      format: '*',
+      default: '',
+      env: 'S3_BUCKET',
+    },
+  },
 });
 
 // Load environment dependent configuration
