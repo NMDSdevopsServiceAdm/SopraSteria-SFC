@@ -549,7 +549,6 @@ router.route('/my/establishments').get(async (req, res) => {
         await thisUser.restore(null, theLoggedInUser, false);
 
         const myEstablishments = await thisUser.myEstablishments(isParent, null);
-        console.info("/user/my/establishments: ", myEstablishments);
         return res.status(200).send(myEstablishments);
 
     } catch (err) {

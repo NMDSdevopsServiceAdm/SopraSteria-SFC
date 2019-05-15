@@ -52,8 +52,6 @@ class User {
         this._logLevel = User.LOG_INFO;
 
         this._trackingUUID = trackingUUID;
-
-        console.log("WA DEBUG - User class constructor")
     }
 
     // returns true if valid establishment id
