@@ -38,7 +38,6 @@ router.use('/:id/worker', Worker);
 
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
-router.use('/:id', Authorization.hasAuthorisedEstablishment);
 router.route('/:id').get(async (req, res) => {
     const establishmentId = req.establishmentId;
     const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;

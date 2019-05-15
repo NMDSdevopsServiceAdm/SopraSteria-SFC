@@ -2,6 +2,7 @@ const config = require('../../config/config');
 const jwt = require('jsonwebtoken');
 const AUTH_HEADER = 'authorization';
 const thisIss = config.get('jwt.iss');
+const models = require('../../models');
 
 exports.getTokenSecret = () => {
   return process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
@@ -60,8 +61,10 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
         }
 
         // the given parameter could be a UUID or integer
+        let establishmentIdIsUID = false;
         if (uuidV4Regex.test(req.params.id)) {
           // establishment id in params is a UUID - tests against UID in claim
+          establishmentIdIsUID = true;
           if (claim.EstablishmentUID !== req.params.id) {
             console.error(`hasAuthorisedEstablishment - given and known establishment uid do not match: given (${req.params.id})/known (${claim.EstablishmentUID})`);
             return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
@@ -82,9 +85,30 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
         req.role = claim.role;
         req.establishment = {
           id: claim.EstblishmentId,
-          uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null
+          uid: establishmentIdIsUID ? claim.EstablishmentUID : null
         };
-        next();
+
+        // having settled all claims, it is necessary to normalise req.establishmentId so it is always the establishment primary key
+        if (establishmentIdIsUID) {
+          models.establishment.findOne({
+            attributes: ['id'],
+            where: {
+              uid: req.establishment.uid
+            }
+          })
+          .then(record => record.get())
+          .then(establishment => {
+            req.establishmentId = establishment.id;
+            next();
+          })
+          .catch(err => {
+            // failed to find establishment by UUID - not authorised
+            return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+          });
+        } else {
+          // it's already primary key
+          next();
+        }
       }     
     });
  

@@ -17,17 +17,6 @@ const Workers = require('../../models/classes/worker');
 const TrainingRoutes = require('./training');
 const QualificationRoutes = require('./qualification');
 
-// middleware to validate the establishment on all worker endpoints
-const validateEstablishment = async (req, res, next) => {
-    const establishmentId = req.establishmentId;
-    const validatedEstablishment = await Workers.Worker.validateEstablishment(establishmentId);
-    if (!validatedEstablishment) {
-        return res.status(404).send('Establishment unknown.');
-    } else {
-        next();
-    }
-};
-
 // this middleware validates a worker against known establishment ID
 const validateWorker = async (req, res, next) => {
     const workerId = req.params.workerId;
@@ -53,7 +42,6 @@ const validateWorker = async (req, res, next) => {
     }
 };
 
-router.use('/', validateEstablishment);
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
 
@@ -62,7 +50,7 @@ router.route('/').get(async (req, res) => {
     const establishmentId = req.establishmentId;
 
     try {
-        const allTheseWorkers = await Workers.Worker.fetch(establishmentId, null);
+        const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
         return res.status(200).json({
             workers: allTheseWorkers
         });

@@ -555,57 +555,29 @@ class Worker {
     };
 
     // returns a set of Workers based on given filter criteria (all if no filters defined) - restricted to the given Establishment
-    static async fetch(establishmentId, establishmentUid, filters=null) {
+    static async fetch(establishmentId, filters=null) {
         const allWorkers = [];
         try {
 
             let fetchResults = null;
-            
-            if (establishmentId) {
-                fetchResults =  await models.worker.findAll({
-                    where: {
-                        establishmentFk: establishmentId,
-                        archived: false
-                    },
-                    include: [
-                        {
-                            model: models.job,
-                            as: 'mainJob',
-                            attributes: ['id', 'title']
-                          }
-                    ],
-                    attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", 'lastWdfEligibility', "created", "updated", "updatedBy"],
-                    order: [
-                        ['updated', 'DESC']
-                    ]
-                });
-            } else {
-                fetchResults =  await models.worker.findAll({
-                    where: {
-                        establishmentFk: establishmentId,
-                        archived: false
-                    },
-                    include: [
-                        {
-                            model: models.job,
-                            as: 'mainJob',
-                            attributes: ['id', 'title']
-                        },
-                        {
-                            model: models.establishment,
-                            as: 'establishment',
-                            attributes: ['id', 'uid'],
-                            where: {
-                                uid: establishmentUid
-                            }
+
+            fetchResults =  await models.worker.findAll({
+                where: {
+                    establishmentFk: establishmentId,
+                    archived: false
+                },
+                include: [
+                    {
+                        model: models.job,
+                        as: 'mainJob',
+                        attributes: ['id', 'title']
                         }
-                    ],
-                    attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", 'lastWdfEligibility', "created", "updated", "updatedBy"],
-                    order: [
-                        ['updated', 'DESC']
-                    ]
-                });
-            }
+                ],
+                attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", 'lastWdfEligibility', "created", "updated", "updatedBy"],
+                order: [
+                    ['updated', 'DESC']
+                ]
+            });
     
             if (fetchResults) {
                 const workerPromise = [];
