@@ -5,16 +5,18 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { WorkerService } from '@core/services/worker.service';
 import { LoggedInSession } from '@core/model/logged-in.model';
+import { Roles } from '@core/model/roles.enum';
 
 @Component({
   selector: 'app-home-tab',
   templateUrl: './home-tab.component.html',
 })
 export class HomeTabComponent implements OnInit {
+  private editRole: Roles = Roles.Edit;
+  private role: Roles;
   private subscriptions: Subscription = new Subscription();
   public updateStaffRecords: boolean;
   public updateWorkplace: boolean;
-  private role: string;
 
   constructor(
     private authService: AuthService,
