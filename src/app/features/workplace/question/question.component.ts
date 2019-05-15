@@ -63,6 +63,7 @@ export class Question implements OnInit, OnDestroy {
   }
 
   public onSubmit() {
+    this.serverError = null;
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 

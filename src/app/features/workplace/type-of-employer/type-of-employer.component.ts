@@ -72,7 +72,7 @@ export class TypeOfEmployerComponent extends Question {
   updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .postEmployerType(this.establishment.id, props)
+        .updateTypeOfEmployer(this.establishment.id, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
