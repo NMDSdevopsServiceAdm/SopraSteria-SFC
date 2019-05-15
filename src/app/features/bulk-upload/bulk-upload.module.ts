@@ -5,7 +5,7 @@ import { CheckWorkplaceReferencesComponent } from './check-workplace-references/
 import { CommonModule } from '@angular/common';
 import { DownloadDataFilesComponent } from './download-data-files/download-data-files.component';
 import { FilesUploadProgressComponent } from './files-upload-progress/files-upload-progress.component';
-import { FileUploadComponent } from './file-upload/file-upload.component';
+import { FilesUploadComponent } from './files-upload/files-upload.component';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SelectedFilesListComponent } from './selected-files-list/selected-files-list.component';
@@ -20,7 +20,7 @@ import { ValidatedFilesListComponent } from './validated-files-list/validated-fi
     CheckWorkplaceReferencesComponent,
     DownloadDataFilesComponent,
     FilesUploadProgressComponent,
-    FileUploadComponent,
+    FilesUploadComponent,
     SelectedFilesListComponent,
     UploadDataFilesComponent,
     ValidatedFilesListComponent,

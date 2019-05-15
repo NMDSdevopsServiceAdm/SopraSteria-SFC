@@ -4,10 +4,10 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-file-upload',
-  templateUrl: './file-upload.component.html'
+  selector: 'app-files-upload',
+  templateUrl: './files-upload.component.html'
 })
-export class FileUploadComponent implements OnInit {
+export class FilesUploadComponent implements OnInit {
   private selectedFiles: Array<File>;
   private submitted = false;
   private form: FormGroup;
