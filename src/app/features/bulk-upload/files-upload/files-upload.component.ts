@@ -1,7 +1,9 @@
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnInit } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { forkJoin, Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-files-upload',
@@ -39,15 +41,23 @@ export class FilesUploadComponent implements OnInit {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.getPresignedUrls();
+      this.getAllPresignedUrls();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  private getPresignedUrls(): void {
-    this.bulkUploadService.getPresignedUrl(this.selectedFiles[0].name).subscribe((data: any) => {
-      console.log('data', data);
+  private getAllPresignedUrls(): void {
+    const url1: Observable<string> = this.getPresignedUrl(this.selectedFiles[0].name);
+    const url2: Observable<string> = this.getPresignedUrl(this.selectedFiles[1].name);
+    const url3: Observable<string> = this.getPresignedUrl(this.selectedFiles[2].name);
+
+    forkJoin([url1, url2, url3]).subscribe((urls: Array<string>) => {
+      console.warn(urls);
     });
+  }
+
+  private getPresignedUrl(filename: string): Observable<any> {
+    return this.bulkUploadService.getPresignedUrl(filename).pipe(map(data => data.urls));
   }
 }
