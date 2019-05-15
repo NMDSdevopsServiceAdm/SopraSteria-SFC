@@ -13,32 +13,30 @@
 </div>
 
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-form-group">
-    <div class="govuk-form-group" *ngFor="let group of serviceGroups">
-      <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-          <h2 class="govuk-fieldset__heading">
-            {{ group.category }}
-          </h2>
-        </legend>
-        <div class="govuk-checkboxes">
-          <div class="govuk-checkboxes__item" *ngFor="let service of group.services">
-            <input
-              class="govuk-checkboxes__input"
-              id="otherServices-{{ service.id }}"
-              name="otherServices"
-              type="checkbox"
-              [value]="service.id"
-              [checked]="service.isMyService"
-              (change)="toggle($event.target)"
-            />
-            <label class="govuk-label govuk-checkboxes__label" for="otherServices-{{ service.id }}">
-              {{ service.name }}
-            </label>
-          </div>
+  <div class="govuk-form-group" *ngFor="let group of serviceGroups">
+    <fieldset class="govuk-fieldset">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+        <h2 class="govuk-fieldset__heading">
+          {{ group.category }}
+        </h2>
+      </legend>
+      <div class="govuk-checkboxes">
+        <div class="govuk-checkboxes__item" *ngFor="let service of group.services">
+          <input
+            class="govuk-checkboxes__input"
+            id="otherServices-{{ service.id }}"
+            name="otherServices"
+            type="checkbox"
+            [value]="service.id"
+            [checked]="service.isMyService"
+            (change)="toggle($event.target)"
+          />
+          <label class="govuk-label govuk-checkboxes__label" for="otherServices-{{ service.id }}">
+            {{ service.name }}
+          </label>
         </div>
-      </fieldset>
-    </div>
+      </div>
+    </fieldset>
   </div>
   <div class="govuk-button-group">
     <button type="submit" class="govuk-button">Save and continue</button>
