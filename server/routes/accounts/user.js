@@ -544,17 +544,9 @@ router.route('/my/establishments').get(async (req, res) => {
     const primaryEstablishmentId = req.establishment.id;
     const isParent = req.isParent;
 
-    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-    let byUUID = null, byUsername = null;
-    if (uuidRegex.test(theLoggedInUser.toUpperCase())) {
-        byUUID = theLoggedInUser;
-    } else {
-        byUsername = escape(theLoggedInUser.toLowerCase());
-    }
-
     try {
         const thisUser = new User.User(primaryEstablishmentId);;
-        await thisUser.restore(byUUID, byUsername, false);
+        await thisUser.restore(null, theLoggedInUser, false);
 
         const myEstablishments = await thisUser.myEstablishments(isParent, null);
         console.info("/user/my/establishments: ", myEstablishments);
