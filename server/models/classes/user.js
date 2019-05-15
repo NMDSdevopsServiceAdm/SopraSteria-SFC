@@ -908,8 +908,6 @@ class User {
             // this is the primary establishemnt
             primaryEstablishmentRecord = fetchResults;
 
-            console.log("WA DEBUG - is parent/role: ", isParent, myRole)
-
             // now, if the primary establishment is a parent
             //  and if the user's role against their primary parent is Edit
             //  fetch all other establishments associated with this parnet
