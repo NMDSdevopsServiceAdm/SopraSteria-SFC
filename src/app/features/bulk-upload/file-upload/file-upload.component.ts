@@ -10,7 +10,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class FileUploadComponent implements OnInit {
   private submitted = false;
   private form: FormGroup;
-  @Input() public multiple?: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
