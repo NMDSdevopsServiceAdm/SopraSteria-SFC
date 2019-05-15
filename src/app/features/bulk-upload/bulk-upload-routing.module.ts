@@ -4,9 +4,8 @@ import { BulkUploadPageComponent } from '@features/bulk-upload/bulk-upload-page/
 
 const routes: Routes = [
   {
-    path: 'home',
+    path: '',
     component: BulkUploadPageComponent,
-    data: { title: 'Home' },
   },
 ];
 

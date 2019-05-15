@@ -5,12 +5,7 @@
     <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ establishment?.name }}</p>
     <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Bulk upload</h1>
     <p>Bulk upload is used to edit large quantities of staff, workplace and training information.</p>
-
-    <app-check-workplace-references></app-check-workplace-references>
-    <app-download-data-files></app-download-data-files>
-    <app-upload-data-files></app-upload-data-files>
   </div>
-
   <div class="govuk-grid-column-one-third">
     <!-- TODO uncomment once relevant sections have been developed
     <ul class="govuk-list">
@@ -22,5 +17,15 @@
 </div>
 
 <div class="govuk-grid-row govuk-!-margin-bottom-5">
-  <app-selected-files-list></app-selected-files-list>
+  <div class="govuk-grid-column-two-thirds">
+    <app-check-workplace-references></app-check-workplace-references>
+    <app-download-data-files></app-download-data-files>
+    <app-upload-data-files></app-upload-data-files>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
+  <div class="govuk-grid-column-full">
+    <app-selected-files-list></app-selected-files-list>
+  </div>
 </div>
