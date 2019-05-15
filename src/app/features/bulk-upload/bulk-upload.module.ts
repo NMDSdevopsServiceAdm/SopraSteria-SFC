@@ -9,6 +9,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.component';
+import { SelectedFilesListComponent } from './selected-files-list/selected-files-list.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, BulkUploadRoutingModule],
@@ -18,6 +19,7 @@ import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.
     DownloadDataFilesComponent,
     FileUploadComponent,
     UploadDataFilesComponent,
+    SelectedFilesListComponent,
   ],
   providers: [BulkUploadService]
 })
