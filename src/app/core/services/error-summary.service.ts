@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { filter } from 'lodash';
 import { BehaviorSubject } from 'rxjs';
+import * as parse from 'url-parse';
 
 @Injectable({
   providedIn: 'root',
@@ -24,15 +25,7 @@ export class ErrorSummaryService {
    * Without query params and/or fragments
    */
   private getRouteName(): string {
-    let url: string = this.router.url;
-
-    if (url.includes('?')) {
-      url = url.split('?')[0];
-    } else if (url.includes('#')) {
-      url = url.split('#')[0];
-    }
-
-    return url;
+    return parse(this.router.url).pathname;
   }
 
   /**
