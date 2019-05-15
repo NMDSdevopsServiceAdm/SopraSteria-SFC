@@ -3,8 +3,6 @@ import { Injectable } from '@angular/core';
 import { Params, Router, UrlSegment } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
-
-import { LoginCredentials } from '../model/login-credentials.model';
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 import { LoggedInEstablishment, LoggedInMainService, LoggedInSession } from '@core/model/logged-in.model';
 
@@ -13,7 +11,7 @@ import { LoggedInEstablishment, LoggedInMainService, LoggedInSession } from '@co
 })
 export class AuthService {
   // Observable login source
-  private _auth$: BehaviorSubject<LoginCredentials> = new BehaviorSubject<LoginCredentials>(null);
+  private _auth$: BehaviorSubject<LoggedInSession> = new BehaviorSubject<LoggedInSession>(null);
 
   // hold the response from login
   private _session: LoggedInSession = null;
@@ -22,7 +20,7 @@ export class AuthService {
   public redirect: { url: UrlSegment[]; fragment?: string; queryParams?: Params };
 
   // Observable login stream
-  public auth$: Observable<LoginCredentials> = this._auth$.asObservable();
+  public auth$: Observable<LoggedInSession> = this._auth$.asObservable();
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -114,9 +112,6 @@ export class AuthService {
 
   updateState(data) {
     this._auth$.next(data);
-    // TODO: because I don't understand how to extract data from the observable
-    //      and I don't understand Denny's original intentions in storing the LoginCredentials
-    //      which is the username/password rather than the login API response.
     this._session = data;
   }
 

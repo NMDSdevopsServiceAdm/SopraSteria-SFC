@@ -1,3 +1,5 @@
+import { Roles } from '@core/model/roles.enum';
+
 export interface LoggedInMainService {
   id: number;
   name: string;
@@ -11,9 +13,12 @@ export interface LoggedInEstablishment {
 }
 
 export interface LoggedInSession {
+  establishment: LoggedInEstablishment;
+  expiryDate: string;
   fullname: string;
   isFirstLogin: boolean;
+  isPrimary: boolean;
   lastLoggedIn: string;
-  establishment: LoggedInEstablishment;
   mainService: LoggedInMainService;
+  role: Roles;
 }

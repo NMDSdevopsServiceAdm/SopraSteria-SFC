@@ -1,16 +1,15 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
-import { AuthGuard } from '@core/services/auth-guard.service';
+import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
+import { NgModule } from '@angular/core';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { ReportsComponent } from '@features/reports/reports.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
+import { RoleGuard } from '@core/guards/role/role.guard';
+import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
@@ -75,6 +74,15 @@ const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard],
     data: { title: 'Dashboard' },
+  },
+  {
+    path: 'bulk-upload',
+    loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
+    canActivate: [AuthGuard, RoleGuard],
+    data: {
+      roles: ['Edit'],
+      title: 'Bulk Upload',
+    },
   },
   {
     path: '',

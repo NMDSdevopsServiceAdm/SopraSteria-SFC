@@ -19,7 +19,6 @@ const TIMEOUT_INTERVAL = 1800;
 })
 export class LoginComponent implements OnInit, OnDestroy {
   public form: FormGroup;
-  private login: LoginCredentials;
   public submitted = false;
   private subscriptions: Subscription = new Subscription();
   public formErrorsMap: Array<ErrorDetails>;
@@ -41,7 +40,6 @@ export class LoginComponent implements OnInit, OnDestroy {
       password: [null, Validators.required],
     });
 
-    this.subscriptions.add(this.authService.auth$.subscribe(login => (this.login = login)));
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
   }
@@ -124,7 +122,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         response => {
           this.authService.updateState(response.body);
 
-          // // update the establishment service state with the given establishment oid
+          // // update the establishment service state with the given establishment id
           this.establishmentService.establishmentId = response.body.establishment.id;
 
           const token = response.headers.get('authorization');

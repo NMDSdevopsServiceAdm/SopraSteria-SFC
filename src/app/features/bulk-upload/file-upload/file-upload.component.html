@@ -1,0 +1,19 @@
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-form-group" [class.govuk-form-group--error]="form.invalid && submitted">
+    <label class="govuk-label govuk-visually-hidden" for="fileUpload">
+      Choose files
+    </label>
+    <input
+      class="govuk-file-upload"
+      id="fileUpload"
+      name="fileUpload"
+      type="file"
+      formControlName="fileUpload"
+      (change)="onFilesSelection($event)"
+      multiple
+    />
+  </div>
+  <button type="submit" class="govuk-button">
+    Upload files
+  </button>
+</form>
