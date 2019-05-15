@@ -452,23 +452,6 @@ class Establishment {
                     id,
                 },
                 include: [
-                    {
-                        model: models.user,
-                        as: 'users',
-                        attributes: ['id'],
-                        where: {
-                            archived: false,
-                        },
-                        include: [
-                            {
-                                model: models.login,
-                                attributes: ['username'],
-                                where: {
-                                    username: this._username,
-                                }
-                            }
-                        ]
-                    }
                 ]
             };
 
@@ -936,9 +919,6 @@ class Establishment {
 
         // main service & Other Service & Service Capacities & Service Users
         myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
-        
-        
-        console.log("WA DEBUG - other services check: ", this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')))
         myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)
