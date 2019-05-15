@@ -1,7 +1,3 @@
-<div>form = {{ form.errors | json }}</div>
-<div>form invalid = {{ form.invalid }}</div>
-<div>submitted = {{ submitted }}</div>
-
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-form-group" [class.govuk-form-group--error]="form.invalid && submitted">
     <label class="govuk-label govuk-visually-hidden" for="fileUpload">

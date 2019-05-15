@@ -1,3 +1,4 @@
+import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -12,8 +13,9 @@ export class FileUploadComponent implements OnInit {
   @Input() public multiple?: boolean;
 
   constructor(
+    private bulkUploadService: BulkUploadService,
     private errorSummaryService: ErrorSummaryService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
   ) {}
 
   ngOnInit() {
@@ -29,16 +31,15 @@ export class FileUploadComponent implements OnInit {
   private onFilesSelection($event: Event): void {
     const target = $event.target || $event.srcElement;
     const files = target['files'];
-    console.log('files', files);
+    this.bulkUploadService.selectedFiles$.next(files);
   }
 
   public onSubmit(): void {
-    console.log('onSubmit fired');
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-
+      // TODO in seperate pr
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

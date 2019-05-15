@@ -1,5 +1,6 @@
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
 import { BulkUploadRoutingModule } from '@features/bulk-upload/bulk-upload-routing.module';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { CheckWorkplaceReferencesComponent } from './check-workplace-references/check-workplace-references.component';
 import { CommonModule } from '@angular/common';
 import { DownloadDataFilesComponent } from './download-data-files/download-data-files.component';
@@ -18,5 +19,6 @@ import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.
     FileUploadComponent,
     UploadDataFilesComponent,
   ],
+  providers: [BulkUploadService]
 })
 export class BulkUploadModule {}
