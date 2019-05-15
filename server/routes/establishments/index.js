@@ -44,22 +44,10 @@ router.route('/:id').get(async (req, res) => {
     const showHistoryTime = req.query.history === 'timeline' ? true : false;
     const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
-    // validating establishment id - must be a V4 UUID or it's an id
-    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-    let byUUID = null, byID = null;
-    if (typeof establishmentId === 'string' && uuidRegex.test(establishmentId.toUpperCase())) {
-        byUUID = establishmentId;
-    } else if (Number.isInteger(establishmentId)) {
-      byID = parseInt(escape(establishmentId));
-    } else {
-      // unexpected establishment id
-      return res.status(400).send();
-    }
-
     const thisEstablishment = new Establishment.Establishment(req.username);
 
     try {
-        if (await thisEstablishment.restore(byID, byUUID, showHistory && req.query.history !== 'property')) {
+        if (await thisEstablishment.restore(establishmentId, showHistory && req.query.history !== 'property')) {
             // the property based framework for "other services" and "capacity services"
             //  is returning "allOtherServices" and "allServiceCapacities"
             //  we don't want those on the root GET establishment; only necessary for the

@@ -431,8 +431,8 @@ class Establishment {
     // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
     // returns true on success; false if no User
     // Can throw EstablishmentRestoreException exception.
-    async restore(id, uid, showHistory=false) {
-        if (!id && !uid) {
+    async restore(id, showHistory=false) {
+        if (!id) {
             throw new EstablishmentExceptions.EstablishmentRestoreException(null,
                 null,
                 null,
@@ -446,63 +446,31 @@ class Establishment {
             //  fetch, we are sure to only fetch those
             //  Establishment records associated to the known
             //   user
-            let fetchQuery = null;
-            
-            if (uid) {
-                // fetch by uid
-                fetchQuery = {
-                    // attributes: ['id', 'uid'],
-                    where: {
-                        uid,
-                    },
-                    include: [
-                        {
-                            model: models.user,
-                            as: 'users',
-                            attributes: ['id'],
-                            where: {
-                                archived: false,
-                            },
-                            include: [
-                                {
-                                    model: models.login,
-                                    attributes: ['username'],
-                                    where: {
-                                        username: this._username,
-                                    }
+            const fetchQuery = {
+                // attributes: ['id', 'uid'],
+                where: {
+                    id,
+                },
+                include: [
+                    {
+                        model: models.user,
+                        as: 'users',
+                        attributes: ['id'],
+                        where: {
+                            archived: false,
+                        },
+                        include: [
+                            {
+                                model: models.login,
+                                attributes: ['username'],
+                                where: {
+                                    username: this._username,
                                 }
-                            ]
-                        }
-                    ]
-                };
-            } else {
-                // fetch by id
-                fetchQuery = {
-                    // attributes: ['id', 'uid'],
-                    where: {
-                        id,
-                    },
-                    include: [
-                        {
-                            model: models.user,
-                            as: 'users',
-                            attributes: ['id'],
-                            where: {
-                                archived: false,
-                            },
-                            include: [
-                                {
-                                    model: models.login,
-                                    attributes: ['username'],
-                                    where: {
-                                        username: this._username,
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                };
-            }
+                            }
+                        ]
+                    }
+                ]
+            };
 
             // now join across the other dependent tables
             fetchQuery.include = fetchQuery.include.concat([
