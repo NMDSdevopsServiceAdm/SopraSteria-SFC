@@ -8,6 +8,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   templateUrl: './file-upload.component.html'
 })
 export class FileUploadComponent implements OnInit {
+  private selectedFiles: Array<File>;
   private submitted = false;
   private form: FormGroup;
 
@@ -29,8 +30,8 @@ export class FileUploadComponent implements OnInit {
 
   private onFilesSelection($event: Event): void {
     const target = $event.target || $event.srcElement;
-    const files = target['files'];
-    this.bulkUploadService.selectedFiles$.next(files);
+    this.selectedFiles = target['files'];
+    this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
   }
 
   public onSubmit(): void {
