@@ -20,7 +20,7 @@ export class SelectedFilesListComponent implements OnInit {
     this.setupSubscription();
   }
 
-  private showFileSize(fileSize: number): string {
+  private transformFileSize(fileSize: number): string {
     const size: number = Math.round(fileSize / 1024);
 
     if (size < 1024) {
@@ -28,6 +28,10 @@ export class SelectedFilesListComponent implements OnInit {
     } else {
       return `${Math.round(size / 1024)} MB`;
     }
+  }
+
+  private transformFileType(fileType: string): string {
+    return fileType.split('/').pop().toUpperCase();
   }
 
   private setupSubscription(): void {

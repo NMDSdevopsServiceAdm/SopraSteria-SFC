@@ -9,9 +9,9 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let file of selectedFiles">
       <td class="govuk-table__cell" scope="row">{{ file.name }}</td>
-      <td class="govuk-table__cell">{{ file.type }}</td>
+      <td class="govuk-table__cell">{{ transformFileType(file.type) }}</td>
       <td class="govuk-table__cell">
-        {{ showFileSize(file.size) }}
+        {{ transformFileSize(file.size) }}
         <a href="#" (click)="removeFile($event, file.name)" class="govuk-util__float-right">
           Remove
           <span class="govuk-visually-hidden">{{ file.name }}</span>
