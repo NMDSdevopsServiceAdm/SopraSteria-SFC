@@ -1,17 +1,23 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ChangePasswordComponent } from '@features/change-password/change-password.component';
+import { ChangeUserDetailsComponent } from '@features/change-user-details/change-user-details.component';
+import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
+import { ChangeUserSummaryComponent } from '@features/change-user-summary/change-user-summary.component';
 import { ConfirmAccountDetailsComponent } from '@features/confirm-account-details/confirm-account-details.component';
 import { ConfirmWorkplaceDetailsComponent } from '@features/confirm-workplace-details/confirm-workplace-details.component';
 import { ContactUsComponent } from '@features/contactUs/contactUs.component';
 import { ContinueCreatingAccountComponent } from '@features/continue-creating-account/continue-creating-account.component';
-import { CqcRegisteredQuestionComponent } from '@features/cqc-registered-question/cqc-registered-question.component';
 import { CreateUsernameComponent } from '@features/create-username/create-username.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { EnterWorkplaceAddressComponent } from '@features/enter-workplace-address/enter-workplace-address.component';
 import { FeedbackComponent } from '@features/feedback/feedback.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { RegistrationCompleteComponent } from '@features/registration-complete/registration-complete.component';
+import { ReportsComponent } from '@features/reports/reports.component';
+import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SecurityQuestionComponent } from '@features/security-question/security-question.component';
 import { SelectMainServiceComponent } from '@features/select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from '@features/select-workplace-address/select-workplace-address.component';
@@ -25,13 +31,6 @@ import {
 } from './core/error/problem-with-the-service-pages/problem-with-the-service-pages.component';
 import { RegisterGuard } from './core/guards/register/register.guard';
 import { AuthGuard } from './core/services/auth-guard.service';
-import { ChangePasswordComponent } from '@features/change-password/change-password.component';
-import { ChangeUserDetailsComponent } from '@features/change-user-details/change-user-details.component';
-import { ChangeUserSecurityComponent } from '@features/change-user-security/change-user-security.component';
-import { ChangeUserSummaryComponent } from '@features/change-user-summary/change-user-summary.component';
-import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
-import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
-import { ReportsComponent } from '@features/reports/reports.component';
 
 const routes: Routes = [
   {
@@ -70,10 +69,10 @@ const routes: Routes = [
     component: ChangeUserSecurityComponent,
     canActivate: [AuthGuard],
   },
-  {
-    path: 'registered-question',
-    component: CqcRegisteredQuestionComponent,
-  },
+  // {
+  //   path: 'registered-question',
+  //   component: CqcRegisteredQuestionComponent,
+  // },
   {
     path: 'select-workplace',
     component: SelectWorkplaceComponent,
