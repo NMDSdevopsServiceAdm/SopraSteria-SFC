@@ -4,13 +4,15 @@ import { RouterModule, Routes } from '@angular/router';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
+import {
+  DataSharingWithLocalAuthoritiesComponent,
+} from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
-import { ShareLocalAuthorityComponent } from './share-local-authorities/share-local-authority.component';
 import { StartersComponent } from './starters/starters.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
@@ -51,14 +53,14 @@ const routes: Routes = [
         data: { title: 'Service Users' },
       },
       {
-        path: 'data-sharing',
+        path: 'sharing-data',
         component: DataSharingComponent,
-        data: { title: 'Data Sharing Options' },
+        data: { title: 'Share Data' },
       },
       {
-        path: 'share-local-authority',
-        component: ShareLocalAuthorityComponent,
-        data: { title: 'Share Data with Local Authority' },
+        path: 'sharing-data-with-local-authorities',
+        component: DataSharingWithLocalAuthoritiesComponent,
+        data: { title: 'Share Data With Local Authorities' },
       },
       {
         path: 'vacancies',
