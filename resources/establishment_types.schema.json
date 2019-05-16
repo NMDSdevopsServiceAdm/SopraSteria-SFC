@@ -89,10 +89,10 @@
             "type" : "string",
             "enum" : ["Workplace", "Parent"]
         },
-        "DataOwnerPermissions" : {
-            "description" : "Associated with an Establishment, this represents permissions granted to the owner (typically the parent). If workplace, then only workplace no worker access. If staff, then owner has access to both workplace and staff.",
+        "ParentPermissions" : {
+            "description" : "Associated with an Establishment, this represents permissions granted to the parent. If Workplace, then only workplace no worker access. If Workplace and Staff, then parent has access to both workplace and staff. If null/not present, parent has no access.",
             "type" : "string",
-            "enum" : ["Workplace", "Staff"]
+            "enum" : ["Workplace", "Workplace and Staff"]
         },
         "EstablishmentName" : {
             "description": "the name of the Establishment",
@@ -1354,7 +1354,7 @@
                 "dataOnwer" : {
                     "$ref" : "#/definitions/DataOwner"
                 },
-                "dataOwnerPermissions" : {
+                "parentPermissions" : {
                     "$ref" : "#/definitions/DataOwnerPermissions"
                 },
                 "mainService" : {

@@ -51,7 +51,7 @@ class Establishment {
         this._parentUid = null;
         this._parentId = null;
         this._dataOwner = null;
-        this._dataOwnerPermissions = null;
+        this._parentPermissions = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -136,8 +136,8 @@ class Establishment {
         return this._dataOwner;
     }
 
-    get dataOwnerPermissions() {
-        return this._dataOwnerPermissions;
+    get parentPermissions() {
+        return this._parentPermissions;
     }
 
     get numberOfStaff() {
@@ -452,23 +452,6 @@ class Establishment {
                     id,
                 },
                 include: [
-                    {
-                        model: models.user,
-                        as: 'users',
-                        attributes: ['id'],
-                        where: {
-                            archived: false,
-                        },
-                        include: [
-                            {
-                                model: models.login,
-                                attributes: ['username'],
-                                where: {
-                                    username: this._username,
-                                }
-                            }
-                        ]
-                    }
                 ]
             };
 
@@ -553,7 +536,7 @@ class Establishment {
                 this._parentId = fetchResults.parentId;
                 this._parentUid = fetchResults.parentUid;
                 this._dataOwner = fetchResults.dataOwner;
-                this._dataOwnerPermissions = fetchResults.dataOwnerPermissions;
+                this._parentPermissions = fetchResults.parentPermissions;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -796,7 +779,7 @@ class Establishment {
                 myDefaultJSON.isParent = this.isParent;
                 myDefaultJSON.parentUid = this.parentUid;
                 myDefaultJSON.dataOwner = this.dataOwner;
-                myDefaultJSON.dataOwnerPermissions = this.dataOwnerPermissions;
+                myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
             }
 
             myDefaultJSON.created = this.created.toJSON();
@@ -936,9 +919,6 @@ class Establishment {
 
         // main service & Other Service & Service Capacities & Service Users
         myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
-        
-        
-        console.log("WA DEBUG - other services check: ", this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')))
         myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)

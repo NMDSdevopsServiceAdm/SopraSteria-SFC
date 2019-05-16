@@ -68,11 +68,11 @@ module.exports = function(sequelize, DataTypes) {
       field: '"Owner"',
       default: 'Workplace',
     },
-    dataOwnerPermissions: {
+    parentPermissions: {
       type: DataTypes.ENUM,
       allowNull: true,
       values: ['Workplace','Worker'],
-      field: '"OwnerDataAccess"',
+      field: '"ParentAccess"',
     },
     NameValue: {
       type: DataTypes.TEXT,
