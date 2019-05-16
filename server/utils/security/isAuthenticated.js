@@ -82,7 +82,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
         //  including that of the given establishment (only known by it's UID)
         if (isAuthorised === false && claim.isParent) {
           models.establishment.findOne({
-            attributes: ['id', 'dataOwnerPermissions'],
+            attributes: ['id', 'parentPermissions'],
             where: {
               parentId: claim.EstblishmentId,
               uid: req.params.id,
@@ -92,15 +92,15 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           .then(establishment => {
             // this is a known subsidairy of this given parent establishment
             
-            // but, so be able to access the subsidary, then the permissions must not be null
-            if (establishment.dataOwnerPermissions === null) {
+            // but, to be able to access the subsidary, then the permissions must not be null
+            if (establishment.parentPermissions === null) {
               console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
               // failed to find establishment by UUID - being a subsidairy of this known parent
               return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
             }
 
             req.establishmentId = establishment.id;
-            req.dataOwnerPermissions = establishment.dataOwnerPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
+            req.parentPermissions = establishment.parentPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
 
             // we now know the 
             establishmentIdIsUID = false;

@@ -26,8 +26,8 @@ const validateWorker = async (req, res, next) => {
     //  not their primary establishment, then they must have been granted "staff" level permission to access the worker
     if (req.isParent && req.establishmentId !== req.establishment.id) {
         // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
-        if (req.dataOwnerPermissions === null ||
-            req.dataOwnerPermissions !== "Staff") {
+        if (req.parentPermissions === null ||
+            req.parentPermissions !== "Workplace and Staff") {
                 console.error("validateWorker authorisation - parent is requesting a subdiaries worker without required permission");
                 return res.status(403).send('Not Found');
         }

@@ -889,7 +889,7 @@ class User {
 
         // first - get the user's primary establishment (every user will have a primary establishment)
         const fetchResults = await models.establishment.findOne({
-            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'dataOwnerPermissions', 'NameValue', 'updated'],
+            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'parentPermissions', 'NameValue', 'updated'],
             include: [
                 {
                     model: models.services,
@@ -912,7 +912,7 @@ class User {
             if (myRole === 'Edit' && isParent) {
                 // get all subsidaries associated with this parent
                 allSubResults = await models.establishment.findAll({
-                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'dataOwnerPermissions', 'NameValue', 'updated'],
+                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'parentPermissions', 'NameValue', 'updated'],
                     include: [
                         {
                             model: models.services,
@@ -946,7 +946,7 @@ class User {
                 name: primaryEstablishmentRecord.NameValue,
                 mainService: primaryEstablishmentRecord.mainService.name,
                 dataOwner: primaryEstablishmentRecord.dataOwner,
-                dataOwnerPermissions: primaryEstablishmentRecord.dataOwnerPermissions,
+                parentPermissions: isParent ? undefined : primaryEstablishmentRecord.parentPermissions,
             }
         };
         
@@ -957,12 +957,11 @@ class User {
                     return {
                         uid: thisSub.uid,
                         updated: thisSub.updated,
-                        isParent: thisSub.isParent,
                         parentUid: thisSub.parentUid,
                         name: thisSub.NameValue,
                         mainService: thisSub.mainService.name,
                         dataOwner: thisSub.dataOwner,
-                        dataOwnerPermissions: thisSub.dataOwnerPermissions,    
+                        parentPermissions: thisSub.parentPermissions,    
                     };
                 })
             };
