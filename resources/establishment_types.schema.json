@@ -84,6 +84,16 @@
             "minLength": 8,
             "maxLength": 12
         },
+        "DataOwner" : {
+            "description" : "Associated with an Establishment, this represents the entity that owns the establishment - be it the workplace itself or it's parent",
+            "type" : "string",
+            "enum" : ["Workplace", "Parent"]
+        },
+        "ParentPermissions" : {
+            "description" : "Associated with an Establishment, this represents permissions granted to the parent. If Workplace, then only workplace no worker access. If Workplace and Staff, then parent has access to both workplace and staff. If null/not present, parent has no access.",
+            "type" : "string",
+            "enum" : ["Workplace", "Workplace and Staff"]
+        },
         "EstablishmentName" : {
             "description": "the name of the Establishment",
             "type" : "string",
@@ -1340,6 +1350,12 @@
                 "parentUID" : {
                     "description": "Optional - if this Establishment (sub) belongs to another, this is the reference (UUID) to that parent Establishment",
                     "$ref" : "#/definitions/Uid"
+                },
+                "dataOnwer" : {
+                    "$ref" : "#/definitions/DataOwner"
+                },
+                "parentPermissions" : {
+                    "$ref" : "#/definitions/DataOwnerPermissions"
                 },
                 "mainService" : {
                     "description" : "(Optionally), the primary service associated with this Establishment",

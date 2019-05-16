@@ -50,6 +50,8 @@ class Establishment {
         this._isParent = false;
         this._parentUid = null;
         this._parentId = null;
+        this._dataOwner = null;
+        this._parentPermissions = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -128,6 +130,14 @@ class Establishment {
     }
     get parentUid() {
         return this._parentUid;
+    }
+
+    get dataOwner() {
+        return this._dataOwner;
+    }
+
+    get parentPermissions() {
+        return this._parentPermissions;
     }
 
     get numberOfStaff() {
@@ -215,6 +225,7 @@ class Establishment {
                     ShareDataValue: false,
                     shareWithCQC: false,
                     shareWithLA: false,
+                    dataOwner: 'Workplace',
                     attributes: ['id', 'created', 'updated'],
                 };
 
@@ -420,8 +431,8 @@ class Establishment {
     // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
     // returns true on success; false if no User
     // Can throw EstablishmentRestoreException exception.
-    async restore(id, uid, showHistory=false) {
-        if (!id && !uid) {
+    async restore(id, showHistory=false) {
+        if (!id) {
             throw new EstablishmentExceptions.EstablishmentRestoreException(null,
                 null,
                 null,
@@ -435,63 +446,14 @@ class Establishment {
             //  fetch, we are sure to only fetch those
             //  Establishment records associated to the known
             //   user
-            let fetchQuery = null;
-            
-            if (uid) {
-                // fetch by uid
-                fetchQuery = {
-                    // attributes: ['id', 'uid'],
-                    where: {
-                        uid,
-                    },
-                    include: [
-                        {
-                            model: models.user,
-                            as: 'users',
-                            attributes: ['id'],
-                            where: {
-                                archived: false,
-                            },
-                            include: [
-                                {
-                                    model: models.login,
-                                    attributes: ['username'],
-                                    where: {
-                                        username: this._username,
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                };
-            } else {
-                // fetch by id
-                fetchQuery = {
-                    // attributes: ['id', 'uid'],
-                    where: {
-                        id,
-                    },
-                    include: [
-                        {
-                            model: models.user,
-                            as: 'users',
-                            attributes: ['id'],
-                            where: {
-                                archived: false,
-                            },
-                            include: [
-                                {
-                                    model: models.login,
-                                    attributes: ['username'],
-                                    where: {
-                                        username: this._username,
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                };
-            }
+            const fetchQuery = {
+                // attributes: ['id', 'uid'],
+                where: {
+                    id,
+                },
+                include: [
+                ]
+            };
 
             // now join across the other dependent tables
             fetchQuery.include = fetchQuery.include.concat([
@@ -573,6 +535,8 @@ class Establishment {
                 this._isParent = fetchResults.isParent;
                 this._parentId = fetchResults.parentId;
                 this._parentUid = fetchResults.parentUid;
+                this._dataOwner = fetchResults.dataOwner;
+                this._parentPermissions = fetchResults.parentPermissions;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -812,6 +776,10 @@ class Establishment {
                 myDefaultJSON.locationRef = this.locationId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
+                myDefaultJSON.isParent = this.isParent;
+                myDefaultJSON.parentUid = this.parentUid;
+                myDefaultJSON.dataOwner = this.dataOwner;
+                myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
             }
 
             myDefaultJSON.created = this.created.toJSON();
@@ -951,9 +919,6 @@ class Establishment {
 
         // main service & Other Service & Service Capacities & Service Users
         myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
-        
-        
-        console.log("WA DEBUG - other services check: ", this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')))
         myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)

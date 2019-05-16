@@ -2,6 +2,7 @@ const config = require('../../config/config');
 const jwt = require('jsonwebtoken');
 const AUTH_HEADER = 'authorization';
 const thisIss = config.get('jwt.iss');
+const models = require('../../models');
 
 exports.getTokenSecret = () => {
   return process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
@@ -20,6 +21,7 @@ exports.isAuthorised = (req, res , next) => {
       } else {
         req.username= claim.sub;
         req.role = claim.role;
+        req.isParent = claim.isParent;
         req.establishment = {
           id: claim.EstblishmentId,
           uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null
@@ -58,31 +60,105 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           return res.status(400).send(`Unknown Establishment UID`);
         }
 
-        // the given parameter could be a UUID or integer
+        // the given parameter could be a UUID or integer - first authorised against known primary establishment
+        let establishmentIdIsUID = false;
+        let isAuthorised = false;
         if (uuidV4Regex.test(req.params.id)) {
           // establishment id in params is a UUID - tests against UID in claim
-          if (claim.EstablishmentUID !== req.params.id) {
-            console.error(`hasAuthorisedEstablishment - given and known establishment uid do not match: given (${req.params.id})/known (${claim.EstablishmentUID})`);
-            return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+          establishmentIdIsUID = true;
+          if (claim.EstablishmentUID === req.params.id) {
+            req.establishmentId=claim.EstablishmentUID;
+            isAuthorised = true;
           }
-
-          req.establishmentId=   claim.EstablishmentUID;
         } else {
-          if (claim.EstblishmentId !== parseInt(req.params.id)) {
-            console.error(`hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId})`);
-            return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+          if (claim.EstblishmentId === parseInt(req.params.id)) {
+            req.establishmentId = claim.EstblishmentId;
+            isAuthorised = true;
           }
-
-          req.establishmentId =   claim.EstblishmentId;
         }
 
-        req.username= claim.sub;
-        req.role = claim.role;
-        next();
+        // if still not authorised - and only if this user is attributed to a parent establishment
+        //  then follow up by checking against any of the known subsidaries of this parent establishment
+        //  including that of the given establishment (only known by it's UID)
+        if (isAuthorised === false && claim.isParent) {
+          models.establishment.findOne({
+            attributes: ['id', 'parentPermissions'],
+            where: {
+              parentId: claim.EstblishmentId,
+              uid: req.params.id,
+            }
+          })
+          .then(record => record.get())
+          .then(establishment => {
+            // this is a known subsidairy of this given parent establishment
+            
+            // but, to be able to access the subsidary, then the permissions must not be null
+            if (establishment.parentPermissions === null) {
+              console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
+              // failed to find establishment by UUID - being a subsidairy of this known parent
+              return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+            }
+
+            req.establishmentId = establishment.id;
+            req.parentPermissions = establishment.parentPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
+
+            // we now know the 
+            establishmentIdIsUID = false;
+
+            // restore claims
+            req.username= claim.sub;
+            req.isParent = claim.isParent;
+            req.role = claim.role;
+            req.establishment = {
+              id: claim.EstblishmentId,
+              uid: establishmentIdIsUID ? claim.EstablishmentUID : null
+            };
+
+            next();
+          })
+          .catch(err => {
+            // failed to find establishment by UUID - being a subsidairy of this known parent
+            console.error(`Failed to find subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID})`);
+            return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+          });
+        } else if (isAuthorised === false) {
+          console.error(`hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId}/${claim.EstablishmentUID})`);
+          return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+        } else {
+          // gets here and all is authorised
+          req.username= claim.sub;
+          req.isParent = claim.isParent;
+          req.role = claim.role;
+          req.establishment = {
+            id: claim.EstblishmentId,
+            uid: establishmentIdIsUID ? claim.EstablishmentUID : null
+          };
+
+          // having settled all claims, it is necessary to normalise req.establishmentId so it is always the establishment primary key
+          if (establishmentIdIsUID) {
+            models.establishment.findOne({
+              attributes: ['id'],
+              where: {
+                uid: req.establishment.uid
+              }
+            })
+            .then(record => record.get())
+            .then(establishment => {
+              req.establishmentId = establishment.id;
+              next();
+            })
+            .catch(err => {
+              // failed to find establishment by UUID - not authorised
+              console.error(`FATAL - Authorised against primary establishment (${claim.EstblishmentId}/${claim.EstablishmentUID}), but failed to normalise the establishment UUID`);
+              return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+            });
+          } else {
+            // it's already primary key
+            next();
+          }
+        }
       }     
     });
- 
-
   } else {
     // not authenticated
     res.status(401).send('Requires authorisation');
