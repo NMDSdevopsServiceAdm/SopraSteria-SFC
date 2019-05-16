@@ -20,6 +20,16 @@ export class SelectedFilesListComponent implements OnInit {
     this.setupSubscription();
   }
 
+  private showFileSize(fileSize: number): string {
+    const size: number = Math.round(fileSize / 1024);
+
+    if (size < 1024) {
+      return `${size} KB`;
+    } else {
+      return `${Math.round(size / 1024)} MB`;
+    }
+  }
+
   private setupSubscription(): void {
     this.subscriptions.add(
       this.bulkUploadService.selectedFiles$
