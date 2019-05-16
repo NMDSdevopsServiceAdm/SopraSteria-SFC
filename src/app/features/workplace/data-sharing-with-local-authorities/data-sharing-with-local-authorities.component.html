@@ -13,84 +13,48 @@
 </div>
 
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-form-group" *ngIf="hasPrimaryAuthority">
+  <div class="govuk-form-group" *ngIf="primaryAuthority">
     <div class="govuk-checkboxes__item">
       <input
         class="govuk-checkboxes__input"
+        formControlName="primaryAuthority"
         id="primaryAuthority"
         type="checkbox"
         aria-describedby="primaryAuthority-hint"
       />
       <label class="govuk-label govuk-checkboxes__label" for="primaryAuthority">
-          {{ primaryAuthorityName }}
+        {{ primaryAuthority.name }}
       </label>
       <span id="primaryAuthority-hint" class="govuk-hint govuk-checkboxes__hint">
-          This is the local authority you are located in
+        This is the local authority you are located in
       </span>
     </div>
   </div>
   <p>Add more local authorities to share your data with.</p>
+  <ng-container formArrayName="localAuthorities">
+    <h2 class="govuk-heading-m">Local Authorities</h2>
+    <div
+      class="govuk-form-group"
+      *ngFor="let localAuthorities of form.get('localAuthorities').controls; let i = index"
+      [formGroupName]="i"
+    >
+      <select class="govuk-select" formControlName="custodianCode" id="localAuthorities-{{ i }}">
+        <option [ngValue]="null">Select Local Authority</option>
+        <option *ngFor="let authority of authorities" [value]="authority.custodianCode">{{ authority.name }}</option>
+      </select>
+      <button
+        class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+        type="button"
+        (click)="deleteLocalAuthority($event, i)"
+      >
+        Remove <span class="govuk-visually-hidden"> local authority {{ localAuthorities.get('custodianCode').value }}</span>
+      </button>
+    </div>
+  </ng-container>
+  <button class="govuk-button govuk-button--secondary" type="button" (click)="addLocalAuthority()">
+    Add another local authority
+  </button>
+  <div class="govuk-button-group">
+    <button type="submit" class="govuk-button">Save and continue</button>
+  </div>
 </form>
-
-<!-- <form novalidate (ngSubmit)="onSubmit()" [formGroup]="shareLocalAuthoritiesForm">
-  <ng-template [ngIf]="isSharingEnabled" [ngIfElse]="notSharing">
-
-      <div class="form-group mb-5 col-12 p-0">
-        <div formArrayName="authoritiesCtl">
-           Note - it is significant that each record/row within the authorityCtl array
-                 is placed within a div having that formArrayName - otherwise, you
-                 cannot use [formGroupName]
-
-          <div class="row column-des">
-            <p *ngIf="hasLocalAuthorities" class="page-emphasis">Local authorities</p>
-          </div>
-
-          <div
-            *ngFor="let thisLA of shareLocalAuthoritiesForm.get('authoritiesCtl').controls; let idx = index"
-            [formGroupName]="idx"
-            class="row record"
-          >
-            <div class="col-9 col-sm-10">
-              <!-- <select class="form-control"> -->
-              <select class="form-control" formControlName="custodianCode">
-                <option [ngValue]="null">Select Local Authority</option>
-                <option *ngFor="let myLa of allAuthorties" [value]="myLa.custodianCode">{{ myLa.name }}</option>
-              </select>
-            </div>
-            <div class="center-v no-padding-left">
-              <button type="button" class="btn-link" (click)="removeAuthority(idx)">Remove</button>
-            </div>
-          </div>
-          <div class="row summary-and-controls mb-5 record">
-            <div class="col-6 col-sm-7 center-v">
-              <button type="button" class="btn-link" (click)="addAuthority()">+ Add another local authority</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group mb-5">
-        <div class="row round">
-          <div class="col-1">
-            <input type="checkbox" id="doShareCtl" formControlName="doNotShareCtl" class="form-control" />
-            <label for="doShareCtl"></label>
-          </div>
-          <div class="col-11">
-            <p>No, don't share any data with any local authority.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="btn-container">
-      <button type="submit" class="btn btn-primary">Save and continue</button>
-    </div>
-  </ng-template>
-
-  <ng-template #notSharing>
-    <div *ngIf="!isSharingEnabled">
-      <p class="page-description">Sharing with Local Authorities is not enabled</p>
-    </div>
-    <div class="btn-container">
-      <button type="submit" class="btn btn-primary">Continue</button>
-    </div>
-  </ng-template>
-</form> -->

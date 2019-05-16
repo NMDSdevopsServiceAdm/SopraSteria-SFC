@@ -134,13 +134,6 @@ export class EstablishmentService {
     );
   }
 
-  postLocalAuthorities(authorities: LocalAuthorityModel[]) {
-    const postBody: ShareWithLocalAuthorityRequest = {
-      localAuthorities: authorities,
-    };
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/localAuthorities`, postBody);
-  }
-
   getEmployerType() {
     return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`);
   }
@@ -178,5 +171,9 @@ export class EstablishmentService {
 
   updateDataSharing(establishmentId, data: DataSharingRequest): Observable<any> {
     return this.http.post<any>(`/api/establishment/${establishmentId}/share`, data);
+  }
+
+  updateLocalAuthorities(establishmentId, data) {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }
 }
