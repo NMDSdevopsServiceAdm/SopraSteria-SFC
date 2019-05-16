@@ -20,9 +20,9 @@ export class Question implements OnInit, OnDestroy {
   public next: string[];
   public back: string[];
 
-  public formErrorsMap: Array<ErrorDetails>;
+  public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
-  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverErrorsMap: Array<ErrorDefinition> = [];
   protected subscriptions: Subscription = new Subscription();
 
   constructor(
