@@ -82,4 +82,8 @@ export class FilesUploadComponent implements OnInit {
     this.selectedFiles = [];
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
   }
+
+  public cancelUpload(): void {
+    console.log('cancel upload');
+  }
 }

@@ -16,12 +16,12 @@
 
   <app-selected-files-list></app-selected-files-list>
 
-  <button type="submit" class="govuk-button">
+  <button type="submit" class="govuk-button" *ngIf="!filesUploading">
     Upload files
   </button>
 
   <button
-    *ngIf="selectedFiles?.length"
+    *ngIf="selectedFiles?.length && !filesUploading"
     type="button"
     class="govuk-button govuk-button--link govuk-!-margin-left-8"
     (click)="removeFiles()"
@@ -30,4 +30,16 @@
   </button>
 </form>
 
-<div>filesUploading = {{ filesUploading }}</div>
+<div class="govuk-grid-row" *ngIf="filesUploading">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-util__normal govuk-!-font-size-19 govuk-util__inline-block">Files uploading</div>
+    <progress max="100" class="govuk-!-margin-right-8 govuk-!-margin-left-8"></progress>
+    <button
+      type="button"
+      class="govuk-button govuk-button--link"
+      (click)="cancelUpload()"
+    >
+      Cancel
+    </button>
+  </div>
+</div>
