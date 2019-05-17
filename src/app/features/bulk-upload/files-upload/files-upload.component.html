@@ -19,6 +19,15 @@
   <button type="submit" class="govuk-button">
     Upload files
   </button>
+
+  <button
+    *ngIf="selectedFiles?.length"
+    type="button"
+    class="govuk-button govuk-button--link govuk-!-margin-left-8"
+    (click)="removeFiles()"
+  >
+    Remove files
+  </button>
 </form>
 
 <div>filesUploading = {{ filesUploading }}</div>

@@ -76,4 +76,10 @@ export class FilesUploadComponent implements OnInit {
   private uploadFile(file: File, signedURL: string): Observable<string> {
     return this.bulkUploadService.uploadFile(file, signedURL);
   }
+
+  public removeFiles(): void {
+    this.form.reset();
+    this.selectedFiles = [];
+    this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
+  }
 }
