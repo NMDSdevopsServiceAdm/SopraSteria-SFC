@@ -1,9 +1,9 @@
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnInit } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { Observable } from 'rxjs';
+import { forkJoin, Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { map, take } from 'rxjs/operators';
+import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-files-upload',
@@ -13,6 +13,7 @@ export class FilesUploadComponent implements OnInit {
   private form: FormGroup;
   private selectedFiles: Array<File>;
   private submitted = false;
+  public filesUploading = false;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -41,34 +42,38 @@ export class FilesUploadComponent implements OnInit {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.getAllPresignedUrls();
+      this.uploadFiles();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  private getAllPresignedUrls(): void {
-    this.selectedFiles.forEach((file: File) => {
-      this.getPresignedUrl(file.name)
-        .pipe(take(1))
-        .subscribe((url: string) => this.uploadFile(file, url));
-    });
-  }
+  private uploadFiles(): void {
+    this.filesUploading = true;
 
-  private getPresignedUrl(filename: string): Observable<string> {
-    return this.bulkUploadService.getPresignedUrl(filename).pipe(map(data => data.urls));
-  }
-
-  private uploadFile(file: File, signedURL: string) {
-    this.bulkUploadService.uploadFile(file, signedURL).subscribe(
-      data => {
-        console.log('FILE UPLOAD SUCCESS', data);
-        // this.downloadLink = data;
-        this.form.reset();
+    forkJoin(
+      this.selectedFiles.map((file: File) =>
+        this.getPresignedUrl(file)
+          .pipe(take(1))
+          .pipe(mergeMap((signedURL: string) => this.uploadFile(file, signedURL)))
+      )
+    )
+    .pipe(take(1))
+    .subscribe(
+      () => {
+        this.filesUploading = false;
       },
-      error => {
-        console.log('FILE UPLOAD ERROR', error);
+      () => {
+        this.filesUploading = false;
       }
     );
+  }
+
+  private getPresignedUrl(file: File): Observable<string> {
+    return this.bulkUploadService.getPresignedUrl(file.name);
+  }
+
+  private uploadFile(file: File, signedURL: string): Observable<string> {
+    return this.bulkUploadService.uploadFile(file, signedURL);
   }
 }

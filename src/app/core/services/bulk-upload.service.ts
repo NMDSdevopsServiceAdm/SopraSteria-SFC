@@ -13,7 +13,7 @@ export class BulkUploadService {
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
-  public getPresignedUrl(filename: string): Observable<PresignedUrlResponse> {
+  public getPresignedUrl(filename: string): Observable<string> {
     const params = new HttpParams().set('filename', filename);
 
     return this.http.get<PresignedUrlResponse>(
@@ -21,13 +21,11 @@ export class BulkUploadService {
       {
         params,
       }
-    );
+    ).pipe(map((data: PresignedUrlResponse) => data.urls));
   }
 
   public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
-    const fileURL = signedURL.split('?')[0];
-
-    return this.http.put(signedURL, file, { headers, reportProgress: true }).pipe(map(() => fileURL));
+    return this.http.put(signedURL, file, { headers, reportProgress: true });
   }
 }
