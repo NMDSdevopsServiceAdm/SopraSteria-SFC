@@ -32,7 +32,7 @@ export class FilesUploadComponent implements OnInit {
 
   private onFilesSelection($event: Event): void {
     const target = $event.target || $event.srcElement;
-    this.selectedFiles = target['files'];
+    this.selectedFiles = Array.from(target['files']);
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
   }
 
