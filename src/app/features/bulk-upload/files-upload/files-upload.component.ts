@@ -51,7 +51,7 @@ export class FilesUploadComponent implements OnInit {
     this.selectedFiles.forEach((file: File) => {
       this.getPresignedUrl(file.name)
         .pipe(take(1))
-        .subscribe((url: string) => this.uploadFile(url));
+        .subscribe((url: string) => this.uploadFile(file, url));
     });
   }
 
@@ -59,8 +59,16 @@ export class FilesUploadComponent implements OnInit {
     return this.bulkUploadService.getPresignedUrl(filename).pipe(map(data => data.urls));
   }
 
-  // TODO
-  private uploadFile(uploadPath: string): void {
-    console.log('uploadFile', uploadPath);
+  private uploadFile(file: File, signedURL: string) {
+    this.bulkUploadService.uploadFile(file, signedURL).subscribe(
+      data => {
+        console.log('FILE UPLOAD SUCCESS', data);
+        // this.downloadLink = data;
+        this.form.reset();
+      },
+      error => {
+        console.log('FILE UPLOAD ERROR', error);
+      }
+    );
   }
 }

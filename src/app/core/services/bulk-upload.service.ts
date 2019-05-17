@@ -1,8 +1,9 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { PresignedUrlResponse } from '@core/model/bulk-upload.model';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -21,5 +22,12 @@ export class BulkUploadService {
         params,
       }
     );
+  }
+
+  public uploadFile(file: File, signedURL: string): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': file.type });
+    const fileURL = signedURL.split('?')[0];
+
+    return this.http.put(signedURL, file, { headers, reportProgress: true }).pipe(map(() => fileURL));
   }
 }
