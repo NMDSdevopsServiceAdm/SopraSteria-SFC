@@ -35,7 +35,7 @@ export class CustomValidators extends Validators {
     }
   }
 
-  static checkFileCount(fileUpload: any, files: Array<File>): ValidatorFn {
+  static checkFiles(fileUpload, files: Array<File>): ValidatorFn {
     if (files.length !== 3) {
       return fileUpload.setErrors({ filecount: true });
     }

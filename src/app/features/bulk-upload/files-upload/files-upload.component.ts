@@ -2,7 +2,7 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnInit } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { forkJoin, Observable } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { mergeMap, take } from 'rxjs/operators';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
@@ -32,7 +32,7 @@ export class FilesUploadComponent implements OnInit {
     });
   }
 
-  get fileUpload() {
+  get fileUpload(): AbstractControl {
     return this.form.get('fileUpload');
   }
 
@@ -40,9 +40,7 @@ export class FilesUploadComponent implements OnInit {
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target['files']);
 
-    this.fileUpload.setValidators(CustomValidators.checkFileCount(this.fileUpload, this.selectedFiles));
-    // this.fileUpload.updateValueAndValidity();
-
+    this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
   }
 
@@ -88,6 +86,7 @@ export class FilesUploadComponent implements OnInit {
 
   public removeFiles(): void {
     this.form.reset();
+    this.submitted = false;
     this.selectedFiles = [];
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
   }
