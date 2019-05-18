@@ -4,6 +4,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { forkJoin, Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { mergeMap, take } from 'rxjs/operators';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-files-upload',
@@ -31,9 +32,17 @@ export class FilesUploadComponent implements OnInit {
     });
   }
 
+  get fileUpload() {
+    return this.form.get('fileUpload');
+  }
+
   private onFilesSelection($event: Event): void {
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target['files']);
+
+    this.fileUpload.setValidators(CustomValidators.checkFileCount(this.fileUpload, this.selectedFiles));
+    // this.fileUpload.updateValueAndValidity();
+
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
   }
 

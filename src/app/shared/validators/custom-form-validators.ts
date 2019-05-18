@@ -34,4 +34,12 @@ export class CustomValidators extends Validators {
       return confirmPasswordControl.setErrors({ notMatched: true });
     }
   }
+
+  static checkFileCount(fileUpload: any, files: Array<File>): ValidatorFn {
+    if (files.length !== 3) {
+      return fileUpload.setErrors({ filecount: true });
+    }
+
+    return null;
+  }
 }
