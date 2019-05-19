@@ -2,6 +2,8 @@
 <div>form invalid = {{ form.invalid }}</div>
 <div>is empty = {{ fileUpload.hasError('required') }}</div>
 <div>invalid fileLimit = {{ fileUpload.hasError('filecount') }}</div>
+<div>invalid filesize = {{ fileUpload.hasError('filesize') }}</div>
+<div>invalid filetype = {{ fileUpload.hasError('filetype') }}</div>
 <div>fileUpload.errors = {{ fileUpload.errors | json }}</div>
 
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
