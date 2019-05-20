@@ -1,9 +1,4 @@
 <div>submitted = {{ submitted }}</div>
-<div>form invalid = {{ form.invalid }}</div>
-<div>is empty = {{ fileUpload.hasError('required') }}</div>
-<div>invalid fileLimit = {{ fileUpload.hasError('filecount') }}</div>
-<div>invalid filesize = {{ fileUpload.hasError('filesize') }}</div>
-<div>invalid filetype = {{ fileUpload.hasError('filetype') }}</div>
 <div>fileUpload.errors = {{ fileUpload.errors | json }}</div>
 
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
@@ -11,8 +6,24 @@
     <label class="govuk-label govuk-visually-hidden" for="fileUpload">
       Choose files
     </label>
+    <span *ngIf="form.invalid && submitted" id="fileUpload-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span>
+      <ng-container *ngIf="fileUpload.hasError('required')">
+        {{ getFormErrorMessage('fileUpload', 'required') }}
+      </ng-container>
+      <ng-container *ngIf="fileUpload.hasError('filecount')">
+        {{ getFormErrorMessage('fileUpload', 'filecount') }}
+      </ng-container>
+      <ng-container *ngIf="fileUpload.hasError('filesize')">
+        {{ getFormErrorMessage('fileUpload', 'filesize') }}
+      </ng-container>
+      <ng-container *ngIf="fileUpload.hasError('filetype')">
+        {{ getFormErrorMessage('fileUpload', 'filetype') }}
+      </ng-container>
+    </span>
     <input
       class="govuk-file-upload"
+      [class.govuk-file-upload--error]="form.invalid && submitted"
       id="fileUpload"
       name="fileUpload"
       type="file"
@@ -42,11 +53,7 @@
   <div class="govuk-grid-column-full">
     <div class="govuk-util__normal govuk-!-font-size-19 govuk-util__inline-block">Files uploading</div>
     <progress max="100" class="govuk-!-margin-right-8 govuk-!-margin-left-8"></progress>
-    <button
-      type="button"
-      class="govuk-button govuk-button--link"
-      (click)="cancelUpload()"
-    >
+    <button type="button" class="govuk-button govuk-button--link" (click)="cancelUpload()">
       Cancel
     </button>
   </div>

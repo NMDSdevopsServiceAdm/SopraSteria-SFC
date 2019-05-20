@@ -1,5 +1,6 @@
-import { AbstractControl, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FILE_UPLOAD_TYPES } from '@core/constants/constants';
+import { isNull } from 'lodash';
 
 export class CustomValidators extends Validators {
   static maxWords(limit: number): ValidatorFn {
@@ -37,28 +38,28 @@ export class CustomValidators extends Validators {
   }
 
   static checkFiles(fileUpload, files: Array<File>): ValidatorFn {
-    const errors: Array<Object> = [];
+    const errors: ValidationErrors = {};
     const maxFileSize = 20971520;
 
     if (files.length !== 3) {
-      errors.push({ filecount: true });
+      errors['filecount'] = true;
     }
 
     files.forEach((file: File) => {
       if (file.size > maxFileSize) {
-        errors.push({ filesize: true });
+        errors['filesize'] = true;
         return;
       }
     });
 
     files.forEach((file: File) => {
       if (!FILE_UPLOAD_TYPES.includes(file.type)) {
-        errors.push({ filetype: true });
+        errors['filetype'] = true;
         return;
       }
     });
 
-    if (errors.length) {
+    if (!isNull(errors)) {
       return fileUpload.setErrors(errors);
     }
 

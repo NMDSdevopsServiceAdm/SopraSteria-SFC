@@ -2,7 +2,7 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnInit } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { forkJoin, Observable } from 'rxjs';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { mergeMap, take } from 'rxjs/operators';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
@@ -93,5 +93,15 @@ export class FilesUploadComponent implements OnInit {
 
   public cancelUpload(): void {
     console.log('cancel upload');
+  }
+
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.bulkUploadService.formErrorsMap());
   }
 }
