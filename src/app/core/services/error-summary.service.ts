@@ -37,7 +37,6 @@ export class ErrorSummaryService {
    * @param errorDetails
    */
   public getFormErrorMessage(item: string, errorType: string, formErrorsMap: Array<ErrorDetails>): string {
-    console.log(item, errorType, formErrorsMap);
     const getFormControl: Object = filter(formErrorsMap, ['item', item])[0];
     return filter(getFormControl['type'], ['name', errorType])[0].message;
   }

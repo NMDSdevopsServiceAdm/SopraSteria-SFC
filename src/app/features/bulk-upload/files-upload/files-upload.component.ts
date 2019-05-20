@@ -42,10 +42,13 @@ export class FilesUploadComponent implements OnInit {
 
     this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
+    this.bulkUploadService.exposeFormEvent$.next(this.form);
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
   }
 
   public onSubmit(): void {
     this.submitted = true;
+    this.bulkUploadService.exposeFormEvent$.next(this.form);
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
@@ -89,19 +92,16 @@ export class FilesUploadComponent implements OnInit {
     this.submitted = false;
     this.selectedFiles = [];
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
+    this.bulkUploadService.exposeFormEvent$.next(this.form);
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
   }
 
   public cancelUpload(): void {
     console.log('cancel upload');
   }
 
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.bulkUploadService.formErrorsMap());
   }
 }

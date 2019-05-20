@@ -31,14 +31,12 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
 
   public setupSubscription(): void {
     this.subscriptions.add(
-      this.bulkUploadService.exposeFormEvent$
-        .subscribe((form: FormGroup) => {
-          if (form) {
-            console.log('form.invalid', form.invalid);
-            this.showErrorSummary = form.invalid;
-            this.form = form;
-          }
-        })
+      this.bulkUploadService.exposeFormEvent$.subscribe((form: FormGroup) => {
+        if (form) {
+          this.showErrorSummary = form.invalid ? true : false;
+          this.form = form;
+        }
+      })
     );
   }
 
