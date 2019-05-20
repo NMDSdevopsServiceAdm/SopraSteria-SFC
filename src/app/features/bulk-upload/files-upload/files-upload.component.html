@@ -20,9 +20,6 @@
 
   <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
 
-  <div>filesUploading = {{ filesUploading }}</div>
-  <div>filesUploaded = {{ filesUploaded }}</div>
-
   <!-- show upload button when uploading = false or uploaded = false -->
   <div *ngIf="!filesUploading && !filesUploaded">
     <button type="submit" class="govuk-button">
@@ -51,5 +48,4 @@
 </div>
 
 
-<!--<app-uploaded-files-list *ngIf="filesUploaded"></app-uploaded-files-list>-->
-<app-uploaded-files-list></app-uploaded-files-list>
+<app-uploaded-files-list *ngIf="filesUploaded"></app-uploaded-files-list>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -7,7 +7,7 @@ import { distinctUntilChanged } from 'rxjs/operators';
   selector: 'app-selected-files-list',
   templateUrl: './selected-files-list.component.html',
 })
-export class SelectedFilesListComponent implements OnInit {
+export class SelectedFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private selectedFiles: Array<File>;
 
@@ -43,5 +43,9 @@ export class SelectedFilesListComponent implements OnInit {
         }
       })
     );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
