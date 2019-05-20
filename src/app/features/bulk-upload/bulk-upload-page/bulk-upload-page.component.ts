@@ -2,6 +2,7 @@ import { AuthService } from '@core/services/auth.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormGroup } from '@angular/forms';
 import { LoggedInEstablishment } from '@core/model/logged-in.model';
 import { Subscription } from 'rxjs';
@@ -17,7 +18,11 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   public showErrorSummary: boolean;
 
-  constructor(private authService: AuthService, private bulkUploadService: BulkUploadService) {}
+  constructor(
+    private authService: AuthService,
+    private bulkUploadService: BulkUploadService,
+    private errorSummaryService: ErrorSummaryService
+  ) {}
 
   ngOnInit() {
     this.establishment = this.authService.establishment;
@@ -31,10 +36,11 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
 
   public setupSubscription(): void {
     this.subscriptions.add(
-      this.bulkUploadService.exposeFormEvent$.subscribe((form: FormGroup) => {
+      this.bulkUploadService.exposeForm$.subscribe((form: FormGroup) => {
         if (form) {
-          this.showErrorSummary = form.invalid ? true : false;
           this.form = form;
+          this.showErrorSummary = form.invalid ? true : false;
+          this.errorSummaryService.syncFormErrorsEvent.next(true);
         }
       })
     );

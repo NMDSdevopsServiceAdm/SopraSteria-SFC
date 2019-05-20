@@ -42,14 +42,12 @@ export class FilesUploadComponent implements OnInit {
 
     this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
-    this.bulkUploadService.exposeFormEvent$.next(this.form);
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.bulkUploadService.exposeForm$.next(this.form);
   }
 
   public onSubmit(): void {
     this.submitted = true;
-    this.bulkUploadService.exposeFormEvent$.next(this.form);
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.bulkUploadService.exposeForm$.next(this.form);
 
     if (this.form.valid) {
       this.uploadFiles();
@@ -92,8 +90,7 @@ export class FilesUploadComponent implements OnInit {
     this.submitted = false;
     this.selectedFiles = [];
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
-    this.bulkUploadService.exposeFormEvent$.next(this.form);
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.bulkUploadService.exposeForm$.next(this.form);
   }
 
   public cancelUpload(): void {

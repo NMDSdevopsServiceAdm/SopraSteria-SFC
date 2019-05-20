@@ -12,7 +12,7 @@ import { PresignedUrlResponse } from '@core/model/bulk-upload.model';
 })
 export class BulkUploadService {
   public selectedFiles$: BehaviorSubject<Array<File>> = new BehaviorSubject(null);
-  public exposeFormEvent$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
+  public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
