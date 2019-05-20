@@ -35,6 +35,13 @@ export class BulkUploadService {
     return this.http.put(signedURL, file, { headers, reportProgress: true });
   }
 
+  public transformFileType(fileType: string): string {
+    return fileType
+      .split('/')
+      .pop()
+      .toUpperCase();
+  }
+
   public formErrorsMap(): Array<ErrorDetails> {
     return [{
       item: 'fileUpload',

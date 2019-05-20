@@ -31,11 +31,8 @@ export class SelectedFilesListComponent implements OnInit {
     }
   }
 
-  private transformFileType(fileType: string): string {
-    return fileType
-      .split('/')
-      .pop()
-      .toUpperCase();
+  public transformFileType(fileType: string): string {
+    return this.bulkUploadService.transformFileType(fileType);
   }
 
   private setupSubscription(): void {

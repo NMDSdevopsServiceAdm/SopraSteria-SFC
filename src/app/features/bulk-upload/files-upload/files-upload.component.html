@@ -20,18 +20,24 @@
 
   <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
 
-  <button type="submit" class="govuk-button" *ngIf="!filesUploading || !filesUploaded">
-    Upload files
-  </button>
+  <div>filesUploading = {{ filesUploading }}</div>
+  <div>filesUploaded = {{ filesUploaded }}</div>
 
-  <button
-    *ngIf="selectedFiles?.length && !filesUploading"
-    type="button"
-    class="govuk-button govuk-button--link govuk-!-margin-left-8"
-    (click)="removeFiles()"
-  >
-    Remove files
-  </button>
+  <!-- show upload button when uploading = false or uploaded = false -->
+  <div *ngIf="!filesUploading && !filesUploaded">
+    <button type="submit" class="govuk-button">
+      Upload files
+    </button>
+
+    <button
+      *ngIf="selectedFiles?.length"
+      type="button"
+      class="govuk-button govuk-button--link govuk-!-margin-left-8"
+      (click)="removeFiles()"
+    >
+      Remove files
+    </button>
+  </div>
 </form>
 
 <div class="govuk-grid-row" *ngIf="filesUploading">
@@ -43,3 +49,7 @@
     </button>
   </div>
 </div>
+
+
+<!--<app-uploaded-files-list *ngIf="filesUploaded"></app-uploaded-files-list>-->
+<app-uploaded-files-list></app-uploaded-files-list>

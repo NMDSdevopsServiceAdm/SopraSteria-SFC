@@ -14,8 +14,8 @@ export class FilesUploadComponent implements OnInit {
   private form: FormGroup;
   private selectedFiles: Array<File>;
   private submitted = false;
-  public filesUploaded = false;
   public filesUploading = false;
+  public filesUploaded = false;
 
   constructor(
     private bulkUploadService: BulkUploadService,
