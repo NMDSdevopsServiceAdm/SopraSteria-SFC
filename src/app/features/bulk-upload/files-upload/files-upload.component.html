@@ -1,4 +1,6 @@
 <div>submitted = {{ submitted }}</div>
+<div>form.invalid = {{ form.invalid }}</div>
+<div>fileUpload.invalid = {{ fileUpload.invalid }}</div>
 <div>fileUpload.errors = {{ fileUpload.errors | json }}</div>
 
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">

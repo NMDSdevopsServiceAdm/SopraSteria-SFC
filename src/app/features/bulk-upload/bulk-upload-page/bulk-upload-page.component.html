@@ -1,10 +1,9 @@
-<!--<app-error-summary-->
-<!--  *ngIf="form.invalid && submitted"-->
-<!--  [formErrorsMap]="formErrorsMap"-->
-<!--  [serverError]="serverError"-->
-<!--  [form]="form"-->
-<!--&gt;-->
-<!--</app-error-summary>-->
+<app-error-summary
+  *ngIf="showErrorSummary"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+>
+</app-error-summary>
 
 <app-dashboard-header></app-dashboard-header>
 

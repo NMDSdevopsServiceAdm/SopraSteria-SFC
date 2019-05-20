@@ -1,6 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FILE_UPLOAD_TYPES } from '@core/constants/constants';
-import { isNull } from 'lodash';
 
 export class CustomValidators extends Validators {
   static maxWords(limit: number): ValidatorFn {
@@ -59,7 +58,7 @@ export class CustomValidators extends Validators {
       }
     });
 
-    if (!isNull(errors)) {
+    if (Object.keys(errors).length) {
       return fileUpload.setErrors(errors);
     }
 
