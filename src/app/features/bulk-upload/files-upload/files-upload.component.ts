@@ -14,6 +14,7 @@ export class FilesUploadComponent implements OnInit {
   private form: FormGroup;
   private selectedFiles: Array<File>;
   private submitted = false;
+  public filesUploaded = false;
   public filesUploading = false;
 
   constructor(
@@ -69,7 +70,9 @@ export class FilesUploadComponent implements OnInit {
     .pipe(take(1))
     .subscribe(
       () => {
+        this.bulkUploadService.uploadedFiles$.next(this.selectedFiles);
         this.filesUploading = false;
+        this.filesUploaded = true;
       },
       () => {
         this.filesUploading = false;

@@ -11,8 +11,9 @@ import { PresignedUrlResponse } from '@core/model/bulk-upload.model';
   providedIn: 'root',
 })
 export class BulkUploadService {
-  public selectedFiles$: BehaviorSubject<Array<File>> = new BehaviorSubject(null);
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
+  public selectedFiles$: BehaviorSubject<Array<File>> = new BehaviorSubject(null);
+  public uploadedFiles$: BehaviorSubject<Array<File>> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 

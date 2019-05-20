@@ -18,9 +18,9 @@
     />
   </div>
 
-  <app-selected-files-list></app-selected-files-list>
+  <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
 
-  <button type="submit" class="govuk-button" *ngIf="!filesUploading">
+  <button type="submit" class="govuk-button" *ngIf="!filesUploading || !filesUploaded">
     Upload files
   </button>
 
