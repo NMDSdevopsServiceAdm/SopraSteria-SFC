@@ -13,6 +13,7 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
 import { UserService } from '@core/services/user.service';
+import { WorkplaceService } from '@core/model/workplace-service.model';
 
 @Component({
   selector: 'app-confirm-account-details',
@@ -29,6 +30,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private userDetails: UserDetails;
   private username: string;
+  private workplaceService: WorkplaceService;
 
   constructor(
     private backService: BackService,
@@ -55,26 +57,30 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
 
   private setupSubscriptions(): void {
     this.subscriptions.add(
-      this.userService.userDetails$.subscribe(
-        (userDetails: UserDetails) => this.userDetails = userDetails
-      )
+      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
     );
 
     this.subscriptions.add(
       this.registrationService.selectedLocationAddress$.subscribe(
-        (locationAddress: LocationAddress) => this.locationAddress = locationAddress
+        (locationAddress: LocationAddress) => (this.locationAddress = locationAddress)
+      )
+    );
+
+    this.subscriptions.add(
+      this.registrationService.selectedWorkplaceService$.subscribe(
+        (workplaceService: WorkplaceService) => (this.workplaceService = workplaceService)
       )
     );
 
     this.subscriptions.add(
       this.registrationService.loginCredentials$.subscribe(
-        (loginCredentials: LoginCredentials) => this.username = loginCredentials.username
+        (loginCredentials: LoginCredentials) => (this.username = loginCredentials.username)
       )
     );
 
     this.subscriptions.add(
       this.registrationService.securityDetails$.subscribe(
-        (securityDetails: SecurityDetails) => this.securityDetails = securityDetails
+        (securityDetails: SecurityDetails) => (this.securityDetails = securityDetails)
       )
     );
   }
@@ -112,6 +118,8 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
 
   private generatePayload(): Array<RegistrationPayload> {
     const payload: any = this.locationAddress;
+    payload.mainService = this.workplaceService.name;
+    payload.isRegulated = this.workplaceService.isCQC;
     payload.user = this.userDetails;
 
     return [payload];
