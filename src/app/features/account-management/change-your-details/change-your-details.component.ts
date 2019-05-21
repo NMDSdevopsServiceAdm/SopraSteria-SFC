@@ -80,10 +80,10 @@ export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
 
   protected setUserDetails(): UserDetails {
     return (this.userDetails = {
-      email: this.getEmail.value,
+      emailAddress: this.getEmail.value,
       fullname: this.getFullName.value,
       jobTitle: this.getJobTitle.value,
-      phone: this.getPhone.value,
+      contactNumber: this.getPhone.value,
       username: this.username,
     });
   }
@@ -178,19 +178,19 @@ export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
   private prefillForm(userDetails: UserDetails): void {
     if (userDetails) {
       this.form.setValue({
-        email: userDetails.email,
+        email: userDetails.emailAddress,
         fullName: userDetails.fullname,
         jobTitle: userDetails.jobTitle,
-        phone: userDetails.phone,
+        phone: userDetails.contactNumber,
       });
     }
   }
 
   protected updateUserDetails(): UserDetails {
-    this.userDetails.email = this.getEmail.value;
+    this.userDetails.emailAddress = this.getEmail.value;
     this.userDetails.fullname = this.getFullName.value;
     this.userDetails.jobTitle = this.getJobTitle.value;
-    this.userDetails.phone = this.getPhone.value;
+    this.userDetails.contactNumber = this.getPhone.value;
 
     return this.userDetails;
   }

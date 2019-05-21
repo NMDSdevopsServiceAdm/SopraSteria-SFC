@@ -1,12 +1,11 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
+import { Component } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { sortBy } from 'lodash';
-
+import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { Question } from '../question/question.component';
+import { Router } from '@angular/router';
+import { sortBy } from 'lodash';
 
 @Component({
   selector: 'app-services-capacity',
@@ -94,7 +93,8 @@ export class ServicesCapacityComponent extends Question {
     Object.keys(this.form.controls).map(groupKey => {
       Object.entries(this.form.get(groupKey).value).reduce((res, [key, value]) => {
         if (value) {
-          capacities.push({ questionId: parseInt(key, 10), answer: value });
+          const parsedValue = typeof value === 'string' ? parseInt(value, 10) : value;
+          capacities.push({ questionId: parseInt(key, 10), answer: parsedValue });
         }
         return res;
       }, []);
