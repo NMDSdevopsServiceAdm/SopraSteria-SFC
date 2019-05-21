@@ -23,13 +23,13 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
   private form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
   private locationAddress: LocationAddress;
+  private loginCredentials: LoginCredentials;
   private securityDetails: SecurityDetails;
   private serverError: string;
   private serverErrorsMap: Array<ErrorDefinition>;
   private submitted = false;
   private subscriptions: Subscription = new Subscription();
   private userDetails: UserDetails;
-  private username: string;
   private workplaceService: WorkplaceService;
 
   constructor(
@@ -74,7 +74,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.registrationService.loginCredentials$.subscribe(
-        (loginCredentials: LoginCredentials) => (this.username = loginCredentials.username)
+        (loginCredentials: LoginCredentials) => (this.loginCredentials = loginCredentials)
       )
     );
 
@@ -121,6 +121,10 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
     payload.mainService = this.workplaceService.name;
     payload.isRegulated = this.workplaceService.isCQC;
     payload.user = this.userDetails;
+    payload.user.username = this.loginCredentials.username;
+    payload.user.password = this.loginCredentials.password;
+    payload.user.securityQuestion = this.securityDetails.securityQuestion;
+    payload.user.securityAnswer = this.securityDetails.securityAnswer;
 
     return [payload];
   }
