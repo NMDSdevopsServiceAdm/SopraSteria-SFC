@@ -1,6 +1,6 @@
 export interface UserDetails {
   created?: string;
-  email: string;
+  emailAddress: string;
   fullname: string;
   jobTitle: string;
   phone: string;
