@@ -75,10 +75,10 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
 
   protected setUserDetails(): UserDetails {
     return this.userDetails = {
-      email: this.getEmail.value,
+      emailAddress: this.getEmail.value,
       fullname: this.getFullName.value,
       jobTitle: this.getJobTitle.value,
-      phone: this.getPhone.value,
+      contactNumber: this.getPhone.value,
     };
   }
 
