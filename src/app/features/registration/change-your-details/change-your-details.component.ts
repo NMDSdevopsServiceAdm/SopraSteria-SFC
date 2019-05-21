@@ -56,7 +56,7 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
         email: userDetails.emailAddress,
         fullName: userDetails.fullname,
         jobTitle: userDetails.jobTitle,
-        phone: userDetails.phone,
+        phone: userDetails.contactNumber,
       });
     }
   }
@@ -65,7 +65,7 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
     this.userDetails.emailAddress = this.getEmail.value;
     this.userDetails.fullname = this.getFullName.value;
     this.userDetails.jobTitle = this.getJobTitle.value;
-    this.userDetails.phone = this.getPhone.value;
+    this.userDetails.contactNumber = this.getPhone.value;
 
     return this.userDetails;
   }

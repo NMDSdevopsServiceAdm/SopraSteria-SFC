@@ -78,7 +78,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
       emailAddress: this.getEmail.value,
       fullname: this.getFullName.value,
       jobTitle: this.getJobTitle.value,
-      phone: this.getPhone.value,
+      contactNumber: this.getPhone.value,
     };
   }
 

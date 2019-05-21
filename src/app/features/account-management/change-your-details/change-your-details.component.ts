@@ -83,7 +83,7 @@ export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
       emailAddress: this.getEmail.value,
       fullname: this.getFullName.value,
       jobTitle: this.getJobTitle.value,
-      phone: this.getPhone.value,
+      contactNumber: this.getPhone.value,
       username: this.username,
     });
   }
@@ -181,7 +181,7 @@ export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
         email: userDetails.emailAddress,
         fullName: userDetails.fullname,
         jobTitle: userDetails.jobTitle,
-        phone: userDetails.phone,
+        phone: userDetails.contactNumber,
       });
     }
   }
@@ -190,7 +190,7 @@ export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
     this.userDetails.emailAddress = this.getEmail.value;
     this.userDetails.fullname = this.getFullName.value;
     this.userDetails.jobTitle = this.getJobTitle.value;
-    this.userDetails.phone = this.getPhone.value;
+    this.userDetails.contactNumber = this.getPhone.value;
 
     return this.userDetails;
   }

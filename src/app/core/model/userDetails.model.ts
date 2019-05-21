@@ -3,7 +3,7 @@ export interface UserDetails {
   emailAddress: string;
   fullname: string;
   jobTitle: string;
-  phone: string;
+  contactNumber: string;
   role?: string;
   securityQuestion?: string;
   securityAnswer?: string;

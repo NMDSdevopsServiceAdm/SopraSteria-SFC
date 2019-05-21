@@ -58,7 +58,7 @@
           Contact phone
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ userDetails?.phone }}
+          {{ userDetails?.contactNumber }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a [routerLink]="['/registration/change-your-details']" class="govuk-link">
@@ -72,7 +72,7 @@
           Username
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ username }}
+          {{ loginCredentials.username }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a [routerLink]="['/registration/create-username']" class="govuk-link">
