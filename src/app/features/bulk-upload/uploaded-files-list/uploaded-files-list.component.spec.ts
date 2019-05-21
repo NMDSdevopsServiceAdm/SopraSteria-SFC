@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ValidatedFilesListComponent } from './validated-files-list.component';
+import { UploadedFilesListComponent } from './uploaded-files-list.component';
 
 describe('ValidatedFilesListComponent', () => {
-  let component: ValidatedFilesListComponent;
-  let fixture: ComponentFixture<ValidatedFilesListComponent>;
+  let component: UploadedFilesListComponent;
+  let fixture: ComponentFixture<UploadedFilesListComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ValidatedFilesListComponent ]
+      declarations: [ UploadedFilesListComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ValidatedFilesListComponent);
+    fixture = TestBed.createComponent(UploadedFilesListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
