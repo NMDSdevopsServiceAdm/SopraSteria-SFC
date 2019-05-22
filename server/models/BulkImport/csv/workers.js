@@ -25,7 +25,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.CONTRACT_TYPE_ERROR,
         errType: 'CONTRACT_TYPE_ERROR',
-        error: "Contract Type must be an integer",
+        error: "Employment Status (EMPLSTATUS) must be an integer",
         source: this._currentLine.EMPLSTATUS,
       });
       return false;

@@ -161,6 +161,9 @@ router.route('/validate').get(async (req, res) => {
       });
     }
 
+    // TODO: we have still got to transform/load the establishments, workers/qualifications and training records through the API (model classes yet)
+    //       which may yet incur more validation errors - but that is a separate ticket.
+
     // handle parsing errors
     if (csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0) {
       // upload to `establishmentFileKey`.validation.json in S3 bucket
