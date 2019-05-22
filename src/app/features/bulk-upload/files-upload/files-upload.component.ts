@@ -94,6 +94,7 @@ export class FilesUploadComponent implements OnInit {
   }
 
   public removeFiles(): void {
+    this.fileUpload.clearValidators();
     this.form.reset();
     this.submitted = false;
     this.selectedFiles = [];
