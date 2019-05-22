@@ -60,7 +60,8 @@ export class CustomValidators extends Validators {
     });
 
     if (Object.keys(errors).length) {
-      return fileUpload.setErrors(errors);
+      // timeout needed for IE11
+      setTimeout(() => fileUpload.setErrors(errors));
     }
 
     return null;
