@@ -18,6 +18,7 @@ class Establishment {
 
 
     this._establishmentType = null;
+    this._establishmentTypeOther = null;
     this._mainService = null;
 
 
@@ -293,7 +294,7 @@ class Establishment {
   
   _validateEstablishmentType() {
     const myEstablishmentType = parseInt(this._currentLine.ESTTYPE);
-    const myOtherEstablishmentType = parseInt(this._currentLine.OTHERTYPE);
+    const myOtherEstablishmentType = this._currentLine.OTHERTYPE;
 
     if (Number.isNaN(myEstablishmentType)) {
       this._validationErrors.push({
@@ -321,7 +322,7 @@ class Establishment {
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: `Establishment Type (ESTTYPE) is 'Other (8)'; must define the Other (OTHERTYPE)`,
-        source: myEmail,
+        source: myOtherEstablishmentType,
       });
     } else if (myEstablishmentType == 8 && (myOtherEstablishmentType.length > MAX_LENGTH)) {
       this._validationErrors.push({
@@ -329,8 +330,10 @@ class Establishment {
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: `Establishment Type (ESTTYPE) is 'Other (8)', but OTHERTYPE must be no more than ${MAX_LENGTH} characters`,
-        source: myEmail,
+        source: myOtherEstablishmentType,
       });
+    } else if (myEstablishmentType == 8) {
+      this._establishmentTypeOther = myOtherEstablishmentType;
     }
 
     if (this._validationErrors.length > 0) {
@@ -364,21 +367,36 @@ class Establishment {
     }
   }
 
+  _transformEstablishmentType() {
+    // integer in source; enum in target
+    if (this._establishmentType) {
+      const mappedType = BUDI.establishmentType(BUDI.TO_ASC, this._establishmentType)
+      this._establishmentType = mappedType.type;
+
+      if (this._establishmentTypeOther === null && mappedType.type === 'Other' && mappedType.other) {
+        this._establishmentTypeOther = mappedType.other;
+      }
+    }
+  }
+
+
   // returns true on success, false is any attribute of Establishment fails
   validate() {
     let status = true;
 
-    status = status ? this._validateLocalisedId() : status;
-    status = status ? this._validateStatus() : status;
-    status = status ? this._validateEstablishmentName() : status;
+    status = !this._validateLocalisedId() ? false : status;
 
-    status = status ? this._validateAddress() : status;
+    status = !this._validateStatus() ? false : status;
+    status = !this._validateEstablishmentName() ? false : status;
+
+    status = !this._validateAddress() ? false : status;
 
     // validating email and phone even though these are no longer mapped to an establishment
-    status = status ? this._validateEmail() : status;
-    status = status ? this._validatePhone() : status;
+    status = !this._validateEmail() ? false : status;
+    status = !this._validatePhone() ? false : status;
 
-    status = status ? this._validateMainService() : status;
+    status = !this._validateEstablishmentType() ? false : status;
+    status = !this._validateMainService() ? false : status;
 
     return status;
   }
@@ -387,17 +405,23 @@ class Establishment {
   transform() {
     let status = true;
 
-    status = status ? this._transformMainService() : status;
+    status = !this._transformMainService() ? false : status;
+    status = !this._transformEstablishmentType() ? false : status;
 
     return status;
   }
 
   toJSON() {
-    return {
+    return JSON.stringify({
+      name: this._name,
+      address: this._address,
+      postcode: this._postcode,
       mainService: {
         id: this._mainService
-      }
-    };
+      },
+      employerType: this._establishmentType,
+      employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined
+    }, null, 4);
   };
 
   get validationErrors() {
