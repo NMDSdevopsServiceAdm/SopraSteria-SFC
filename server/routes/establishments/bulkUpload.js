@@ -112,7 +112,7 @@ router.route('/validate').get(async (req, res) => {
     // parse and process Establishments CSV
     if (Array.isArray(importedEstablishments)) {
       importedEstablishments.forEach((thisLine, currentLineNumber) => {
-        const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber);
+        const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
         // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
         lineValidator.validate();
@@ -124,13 +124,15 @@ router.route('/validate').get(async (req, res) => {
         }
 
         myEstablishments.push(lineValidator);
+
+        console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
       });
     }
 
     // parse and process Workers CSV
     if (Array.isArray(importedWorkers)) {
       importedWorkers.forEach((thisLine, currentLineNumber) => {
-        const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber);
+        const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
         // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
         lineValidator.validate();
@@ -147,7 +149,7 @@ router.route('/validate').get(async (req, res) => {
     // parse and process Training CSV
     if (Array.isArray(importedTraining)) {
       importedTraining.forEach((thisLine, currentLineNumber) => {
-        const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber);
+        const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
         // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
         lineValidator.validate();
