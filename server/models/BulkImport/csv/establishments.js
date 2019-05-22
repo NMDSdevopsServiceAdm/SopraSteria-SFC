@@ -25,6 +25,8 @@ class Establishment {
     this._shareWithLA = null;
     this._localAuthorities = null;
 
+    this._provID = null;
+    this._locationID = null;
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -39,8 +41,9 @@ class Establishment {
   static get ESTABLISHMENT_TYPE_ERROR() { return 1070; }
   static get SHARE_WITH_CQC_ERROR() { return 1070; }
   static get SHARE_WITH_LA_ERROR() { return 1080; }
-  static get LOCAL_AUTHORITIES_ERROR() { return 1080; }
-
+  static get LOCAL_AUTHORITIES_ERROR() { return 1090; }
+  static get PROV_ID_ERROR() { return 1100; }
+  static get LOCATION_ID_ERROR() { return 1110; }
 
   get localId() {
     return this._localId;
@@ -84,6 +87,13 @@ class Establishment {
   }
   get localAuthorities() {
     return this._localAuthorities;
+  }
+
+  get provId() {
+    return this._provID;
+  }
+  get locationId() {
+    return this._locationID;
   }
 
   _validateLocalisedId() {
@@ -463,6 +473,65 @@ class Establishment {
     }
   }
 
+  _validateProvID() {
+    // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
+    const provIDRegex = /^[0-9]{1}\-[0-9]{8}$/;
+    const myprovID = this._currentLine.PROVNUM;
+    if (this._shareWithCqc && (!myprovID || myprovID.length==0)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.PROV_ID_ERROR,
+        errType: `PROV_ID_ERROR`,
+        error: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
+        source: myprovID,
+      });
+      return false;
+    }
+    else if (this._shareWithCqc && !provIDRegex.test(myprovID)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.PROV_ID_ERROR,
+        errType: `PROV_ID_ERROR`,
+        error: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
+        source: myprovID,
+      });
+      return false;
+    } else if (this._shareWithCqc) {
+      this._provID = myprovID;
+      return true;
+    }
+  }
+
+  _validateLocationID() {
+    // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
+    const locationIDRegex = /^[0-9]{1}-[0-9]{8}$/;
+    const myLocationID = this._currentLine.PROVNUM;
+
+    if (this._shareWithCqc && (!myLocationID || myLocationID.length==0)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.LOCATION_ID_ERROR,
+        errType: `LOCATION_ID_ERROR`,
+        error: "Location ID (PROVNUM) must be given as this workplace is CQC regulated",
+        source: myLocationID,
+      });
+      return false;
+    }
+    else if (this._shareWithCqc && !locationIDRegex.test(myLocationID)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.LOCATION_ID_ERROR,
+        errType: `LOCATION_ID_ERROR`,
+        error: "Location ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
+        source: myLocationID,
+      });
+      return false;
+    } else if (this._shareWithCqc) {
+      this._locationID = myLocationID;
+      return true;
+    }
+  }
+
 
   _transformMainService() {
     if (this._mainService) {
@@ -531,6 +600,11 @@ class Establishment {
     status = !this._validateShareWithLA() ? false : status;
     status = !this._validateLocalAuthorities() ? false : status;
 
+    // ignoring REGTYPE
+
+    status = !this._validateProvID() ? false : status;
+    status = !this._validateLocationID() ? false : status;
+
     return status;
   }
 
@@ -558,6 +632,9 @@ class Establishment {
       shareWithCQC: this._shareWithCqc,
       shareWithLA: this._shareWithLA,
       localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
+      locationId: this._shareWithCqc ? this._locationID : undefined,
+      provId: this._shareWithCqc ? this._provID : undefined,
+
     }, null, 4);
   };
 
