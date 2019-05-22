@@ -12,7 +12,7 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let file of uploadedFiles">
       <td class="govuk-table__cell" scope="row">{{ file.name }}</td>
-      <td class="govuk-table__cell">{{ transformFileType(file.type) }}</td>
+      <td class="govuk-table__cell">{{ file.extension }}</td>
       <td class="govuk-table__cell">-</td>
       <td class="govuk-table__cell">-</td>
       <td class="govuk-table__cell">-</td>
