@@ -71,7 +71,45 @@ class BUDI {
       { "ASC": 15, "BUDI": 52},
       { "ASC": 16, "BUDI": 72},
       { "ASC": 36, "BUDI": 60},
-      { "ASC": 14, "BUDI": 75}
+      { "ASC": 14, "BUDI": 75},
+    ];
+
+    if (direction == BUDI.TO_ASC) {
+      const found = fixedMapping.find(thisService => thisService.BUDI == originalCode);
+      return found ? found.ASC : null;
+    } else {
+      const found = fixedMapping.find(thisService => thisService.ASC == originalCode)
+      return found ? found.BUDI : null;
+    }
+  }
+
+    // maps service users
+  // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
+  static serviceUsers(direction, originalCode) {
+    const fixedMapping = [
+      { "ASC":1, "BUDI":1},
+      { "ASC":2, "BUDI":2},
+      { "ASC":3, "BUDI":22},
+      { "ASC":4, "BUDI":23},
+      { "ASC":5, "BUDI":25},
+      { "ASC":6, "BUDI":26},
+      { "ASC":8, "BUDI":46},
+      { "ASC":7, "BUDI":27},
+      { "ASC":9, "BUDI":3},
+      { "ASC":10, "BUDI":28},
+      { "ASC":11, "BUDI":6},
+      { "ASC":12, "BUDI":26},
+      { "ASC":13, "BUDI":5},
+      { "ASC":14, "BUDI":4},
+      { "ASC":15, "BUDI":7},
+      { "ASC":16, "BUDI":8},
+      { "ASC":17, "BUDI":31},
+      { "ASC":18, "BUDI":9},
+      { "ASC":19, "BUDI":45},
+      { "ASC":20, "BUDI":18},
+      { "ASC":21, "BUDI":19},
+      { "ASC":22, "BUDI":20},
+      { "ASC":23, "BUDI":21},
     ];
 
     if (direction == BUDI.TO_ASC) {

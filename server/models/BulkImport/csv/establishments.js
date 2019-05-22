@@ -30,6 +30,8 @@ class Establishment {
     this._mainService = null;
     this._allServices = null;
     this._allServicesOther = null;
+    this._allServiceUsers = null;
+    this._allServiceUsersOther = null;
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -48,6 +50,7 @@ class Establishment {
   static get PROV_ID_ERROR() { return 1100; }
   static get LOCATION_ID_ERROR() { return 1110; }
   static get ALL_SERVICES_ERROR() { return 1120; }
+  static get SERVICE_USERS_ERROR() { return 1130; }
 
   get localId() {
     return this._localId;
@@ -81,6 +84,12 @@ class Establishment {
   }
   get alLServicesOther() {
     return this._allServicesOther;
+  }
+  get alLServiceUsers() {
+    return this._allServiceUsers;
+  }
+  get alLServiceUsersOther() {
+    return this._allServiceUsersOther;
   }
   get establishmentType() {
     return this._establishmentType;
@@ -590,20 +599,28 @@ class Establishment {
       this._allServices = listOfServices.map((thisService, index) => {
         const thisServiceIndex = parseInt(thisService, 10);
 
-        // if the main service is one of the many "other" type of services, then need to validate the "other description"
+        // if the service is one of the many "other" type of services, then need to validate the "other description"
         const otherServices = [5, 7, 12, 21, 52, 71, 72, 75];   // these are the original budi codes
+        const MAX_LENGTH = 120;
         if (otherServices.includes(thisServiceIndex)) {
-          console.log("WA DEBUG - matched on an other service")
-          const myMainServiceOther = listOfServiceDescriptions[index];
-          if (!myMainServiceOther || myMainServiceOther.length == 0) {
+          const myServiceOther = listOfServiceDescriptions[index];
+          if (!myServiceOther || myServiceOther.length == 0) {
             localValidationErrors.push({
               lineNumber: this._lineNumber,
               errCode: Establishment.ALL_SERVICES_ERROR,
               errType: `ALL_SERVICES_ERROR`,
-              error: `All Services (ALLSERVICES:${index+1}) is an other and consequently (SERVICEDESC:${index+1}) must be defined`,
+              error: `All Services (ALLSERVICES:${index+1}) is an 'other' service and consequently (SERVICEDESC:${index+1}) must be defined`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
             });
             myServiceDescriptions.push(null);
+          } else if (myServiceOther.length > MAX_LENGTH) {
+            localValidationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.ALL_SERVICES_ERROR,
+              errType: `ALL_SERVICES_ERROR`,
+              error: `All Services (ALLSERVICES:${index+1}) is an 'other' service and (SERVICEDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
+              source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
+            });
           } else {
             myServiceDescriptions.push(listOfServiceDescriptions[index]);
           }
@@ -613,6 +630,80 @@ class Establishment {
 
         return thisServiceIndex;
       });
+
+      this._allServicesOther = myServiceDescriptions;
+    }
+
+    if (localValidationErrors.length > 0) {
+      this._validationErrors.push(localValidationErrors);
+      return false;
+    }
+
+    return true;
+  }
+
+  _validateServiceUsers() {
+    // service user (optional) is a semi colon delimited list of integers
+
+    const listOfServiceUsers = this._currentLine.SERVICEUSERS.split(';');
+    const listOfServiceUsersDescriptions = this._currentLine.OTHERUSERDESC.split(';');
+
+    const localValidationErrors = [];
+    const isValid = listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService)));
+    if (!isValid) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.SERVICE_USERS_ERROR,
+        errType: `SERVICE_USERS_ERROR`,
+        error: "Service Users (SERVICEUSERS) must be a semi-colon delimited list of integers",
+        source: this._currentLine.SERVICEUSERS,
+      });
+    } else if (listOfServiceUsers.length != listOfServiceUsersDescriptions.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.SERVICE_USERS_ERROR,
+        errType: `SERVICE_USERS_ERROR`,
+        error: "Service Users (SERVICEUSERS) count and Service Users Description (OTHERUSERDESC) count must equal",
+        source: this._currentLine.OTHERUSERDESC,
+      });
+    } else {
+      const myServiceUsersDescriptions = [];
+      this._allServiceUsers = listOfServiceUsers.map((thisService, index) => {
+        const thisServiceIndex = parseInt(thisService, 10);
+
+        // if the service user is one of the many "other" type of services, then need to validate the "other description"
+        const otherServiceUsers = [9, 21, 45];   // these are the original budi codes
+        if (otherServiceUsers.includes(thisServiceIndex)) {
+          const myServiceUserOther = listOfServiceUsersDescriptions[index];
+          const MAX_LENGTH = 120;
+          if (!myServiceUserOther || myServiceUserOther.length == 0) {
+            localValidationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.SERVICE_USERS_ERROR,
+              errType: `SERVICE_USERS_ERROR`,
+              error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and consequently (OTHERUSERDESC:${index+1}) must be defined`,
+              source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+            });
+            myServiceUsersDescriptions.push(null);
+          } else if (myServiceUserOther.length > MAX_LENGTH) {
+            localValidationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.SERVICE_USERS_ERROR,
+              errType: `SERVICE_USERS_ERROR`,
+              error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and (OTHERUSERDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
+              source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+            });
+          } else {
+            myServiceUsersDescriptions.push(listOfServiceUsersDescriptions[index]);
+          }
+        } else {
+          myServiceUsersDescriptions.push(null);
+        }
+
+        return thisServiceIndex;
+      });
+
+      this._allServiceUsersOther = myServiceUsersDescriptions;
     }
 
     if (localValidationErrors.length > 0) {
@@ -646,6 +737,30 @@ class Establishment {
             errType: `ALL_SERVICES_ERROR`,
             error: `All Services (ALLSERVICES): ${thisService} is unknown`,
             source: this._currentLine.ALLSERVICES,
+          });
+        }
+      });
+
+      this._allServices = mappedServices;
+    }
+  }
+
+  _transformServiceUsers() {
+    if (this._allServiceUsers && Array.isArray(this._allServiceUsers)) {
+      const mappedServices = [];
+
+      this._allServiceUsers.forEach(thisService => {
+        const thisMappedService = BUDI.serviceUsers(BUDI.TO_ASC, thisService);
+
+        if (thisMappedService) {
+          mappedServices.push(thisMappedService);
+        } else {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.SERVICE_USERS_ERROR,
+            errType: `SERVICE_USERS_ERROR`,
+            error: `Service Users (SERVICEUSERS): ${thisService} is unknown`,
+            source: this._currentLine.SERVICEUSERS,
           });
         }
       });
@@ -724,6 +839,7 @@ class Establishment {
 
     status = !this._validateMainService() ? false : status;
     status = !this._validateAllServices() ? false : status;
+    status = !this._validateServiceUsers() ? false : status;
 
     return status;
   }
@@ -736,6 +852,7 @@ class Establishment {
     status = !this._transformEstablishmentType() ? false : status;
     status = !this._transformLocalAuthorities() ? false : status;
     status = !this._transformAllServices() ? false : status;
+    status = !this._transformServiceUsers() ? false : status;
 
     return status;
   }
@@ -760,9 +877,20 @@ class Establishment {
           id: thisService,
         };
 
-        // if (this._allServicesOther[index]) {
-        //   returnThis.other = this._allServicesOther[index];
-        // }
+        if (this._allServicesOther[index]) {
+          returnThis.other = this._allServicesOther[index];
+        }
+
+        return returnThis;
+      }),
+      serviceUsers: this._allServiceUsers.map((thisService, index) => {
+        const returnThis = {
+          id: thisService,
+        };
+
+        if (this._allServiceUsersOther[index]) {
+          returnThis.other = this._allServiceUsersOther[index];
+        }
 
         return returnThis;
       }),
