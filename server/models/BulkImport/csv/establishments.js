@@ -19,7 +19,6 @@ class Establishment {
 
     this._establishmentType = null;
     this._establishmentTypeOther = null;
-    this._mainService = null;
 
     this._shareWithCqc = null;
     this._shareWithLA = null;
@@ -27,6 +26,10 @@ class Establishment {
 
     this._provID = null;
     this._locationID = null;
+
+    this._mainService = null;
+    this._allServices = null;
+    this._allServicesOther = null;
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -44,6 +47,7 @@ class Establishment {
   static get LOCAL_AUTHORITIES_ERROR() { return 1090; }
   static get PROV_ID_ERROR() { return 1100; }
   static get LOCATION_ID_ERROR() { return 1110; }
+  static get ALL_SERVICES_ERROR() { return 1120; }
 
   get localId() {
     return this._localId;
@@ -71,6 +75,12 @@ class Establishment {
 
   get mainService() {
     return this._mainService;
+  }
+  get alLServices() {
+    return this._allServices;
+  }
+  get alLServicesOther() {
+    return this._allServicesOther;
   }
   get establishmentType() {
     return this._establishmentType;
@@ -189,8 +199,9 @@ class Establishment {
     // adddress 1 is mandatory and no more than 40 characters
     const MAX_LENGTH = 40;
 
+    const localValidationErrors = [];
     if (!myAddress1 || myAddress1.length == 0) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
@@ -198,7 +209,7 @@ class Establishment {
         source: myAddress1,
       });
     } else if (myAddress1.length > MAX_LENGTH) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
@@ -208,7 +219,7 @@ class Establishment {
     }
 
     if (myAddress2 && myAddress2.length > MAX_LENGTH) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
@@ -218,7 +229,7 @@ class Establishment {
     }
 
     if (myAddress3 && myAddress3.length > MAX_LENGTH) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
@@ -228,7 +239,7 @@ class Establishment {
     }
 
     if (myTown && myTown.length > MAX_LENGTH) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
@@ -241,7 +252,7 @@ class Establishment {
     const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
     const POSTCODE_MAX_LENGTH = 40;
     if (!myPostcode || myPostcode.length == 0) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
@@ -249,7 +260,7 @@ class Establishment {
         source: myPostcode,
       });
     } else if (myPostcode.length > POSTCODE_MAX_LENGTH) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
@@ -257,7 +268,7 @@ class Establishment {
         source: myPostcode,
       });
     } else if (!postcodeRegex.test(myPostcode)) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
@@ -266,7 +277,8 @@ class Establishment {
       });
     }
 
-    if (this._validationErrors.length > 0) {
+    if (localValidationErrors.length > 0) {
+      this._validationErrors.push(localValidationErrors);
       return false;
     }
 
@@ -329,8 +341,9 @@ class Establishment {
     const myEstablishmentType = parseInt(this._currentLine.ESTTYPE);
     const myOtherEstablishmentType = this._currentLine.OTHERTYPE;
 
+    const localValidationErrors = [];
     if (Number.isNaN(myEstablishmentType)) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
@@ -338,7 +351,7 @@ class Establishment {
         source: this._currentLine.ESTTYPE,
       });
     } else if (myEstablishmentType < 1 || myEstablishmentType > 8) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
@@ -350,7 +363,7 @@ class Establishment {
     // if the establishment type is "other" (8), then OTHERTYPE must be defined
     const MAX_LENGTH = 240;
     if (myEstablishmentType == 8 && (!myOtherEstablishmentType || myOtherEstablishmentType.length == 0)) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
@@ -358,7 +371,7 @@ class Establishment {
         source: myOtherEstablishmentType,
       });
     } else if (myEstablishmentType == 8 && (myOtherEstablishmentType.length > MAX_LENGTH)) {
-      this._validationErrors.push({
+      localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
@@ -369,29 +382,13 @@ class Establishment {
       this._establishmentTypeOther = myOtherEstablishmentType;
     }
 
-    if (this._validationErrors.length > 0) {
+    if (localValidationErrors.length > 0) {
+      this._validationErrors.push(localValidationErrors);
       return false;
     }
 
     this._establishmentType = myEstablishmentType;
     return true;
-  }
-
-  _validateMainService() {
-    const myMainService = parseInt(this._currentLine.MAINSERVICE);
-    if (Number.isNaN(myMainService)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.MAIN_SERVICE_ERROR,
-        errType: `MAIN_SERVICE_ERROR`,
-        error: "Main Service (MAINSERVICE) must be an integer",
-        source: this._currentLine.MAINSERVICE,
-      });
-      return false;
-    } else {
-      this._mainService = myMainService;
-      return true;
-    }
   }
 
   _validateShareWithCQC() {
@@ -532,12 +529,131 @@ class Establishment {
     }
   }
 
+  _validateMainService() {
+    const myMainService = parseInt(this._currentLine.MAINSERVICE);
+    if (Number.isNaN(myMainService)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.MAIN_SERVICE_ERROR,
+        errType: `MAIN_SERVICE_ERROR`,
+        error: "Main Service (MAINSERVICE) must be an integer",
+        source: this._currentLine.MAINSERVICE,
+      });
+      return false;
+    } else {
+      this._mainService = myMainService;
+      return true;
+    }
+  }
+
+  
+  _validateAllServices() {
+    // all services must have at least one value (main service) or a semi colon delimited list of integers; treat consistently as a list of
+    const myAllServices = this._currentLine.ALLSERVICES;
+    if (!myAllServices || myAllServices.length == 0) {    
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ALL_SERVICES_ERROR,
+        errType: `ALL_SERVICES_ERROR`,
+        error: "All Services (ALLSERVICES) must be defined and must include at least the main service (MAINSERVICE)",
+        source: this._currentLine.ALLSERVICES,
+      });
+
+      return false; // no point continuing validation because all services is empty
+    }
+
+    // all services and their service descriptions are semi-colon delimited
+
+    const listOfServices = this._currentLine.ALLSERVICES.split(';');
+    const listOfServiceDescriptions = this._currentLine.SERVICEDESC.split(';');
+
+    const localValidationErrors = [];
+    const isValid = listOfServices.every(thisService => !Number.isNaN(parseInt(thisService)));
+    if (!isValid) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ALL_SERVICES_ERROR,
+        errType: `ALL_SERVICES_ERROR`,
+        error: "All Services (ALLSERVICES) must be a semi-colon delimited list of integers",
+        source: this._currentLine.ALLSERVICES,
+      });
+    } else if (listOfServices.length != listOfServiceDescriptions.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ALL_SERVICES_ERROR,
+        errType: `ALL_SERVICES_ERROR`,
+        error: "All Services (ALLSERVICES) count and Service Description (SERVICEDESC) count must equal",
+        source: this._currentLine.SERVICEDESC,
+      });
+    } else {
+      const myServiceDescriptions = [];
+      this._allServices = listOfServices.map((thisService, index) => {
+        const thisServiceIndex = parseInt(thisService, 10);
+
+        // if the main service is one of the many "other" type of services, then need to validate the "other description"
+        const otherServices = [5, 7, 12, 21, 52, 71, 72, 75];   // these are the original budi codes
+        if (otherServices.includes(thisServiceIndex)) {
+          console.log("WA DEBUG - matched on an other service")
+          const myMainServiceOther = listOfServiceDescriptions[index];
+          if (!myMainServiceOther || myMainServiceOther.length == 0) {
+            localValidationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.ALL_SERVICES_ERROR,
+              errType: `ALL_SERVICES_ERROR`,
+              error: `All Services (ALLSERVICES:${index+1}) is an other and consequently (SERVICEDESC:${index+1}) must be defined`,
+              source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
+            });
+            myServiceDescriptions.push(null);
+          } else {
+            myServiceDescriptions.push(listOfServiceDescriptions[index]);
+          }
+        } else {
+          myServiceDescriptions.push(null);
+        }
+
+        return thisServiceIndex;
+      });
+    }
+
+    if (localValidationErrors.length > 0) {
+      this._validationErrors.push(localValidationErrors);
+      return false;
+    }
+
+    return true;
+  }
+
 
   _transformMainService() {
     if (this._mainService) {
       this._mainService = BUDI.services(BUDI.TO_ASC, this._mainService);
     }
   }
+
+  _transformAllServices() {
+    if (this._allServices && Array.isArray(this._allServices)) {
+      const mappedServices = [];
+
+      this._allServices.forEach(thisService => {
+        const thisMappedService = BUDI.services(BUDI.TO_ASC, thisService);
+
+        if (thisMappedService) {
+          mappedServices.push(thisMappedService);
+        } else {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.ALL_SERVICES_ERROR,
+            errType: `ALL_SERVICES_ERROR`,
+            error: `All Services (ALLSERVICES): ${thisService} is unknown`,
+            source: this._currentLine.ALLSERVICES,
+          });
+        }
+      });
+
+      this._allServices = mappedServices;
+    }
+  }
+
 
   _transformEstablishmentType() {
     // integer in source; enum in target
@@ -593,7 +709,7 @@ class Establishment {
     status = !this._validatePhone() ? false : status;
 
     status = !this._validateEstablishmentType() ? false : status;
-    status = !this._validateMainService() ? false : status;
+
 
     // ignoring IIPSTATUS and PERMNHSC
     status = !this._validateShareWithCQC() ? false : status;
@@ -605,6 +721,10 @@ class Establishment {
     status = !this._validateProvID() ? false : status;
     status = !this._validateLocationID() ? false : status;
 
+
+    status = !this._validateMainService() ? false : status;
+    status = !this._validateAllServices() ? false : status;
+
     return status;
   }
 
@@ -615,6 +735,7 @@ class Establishment {
     status = !this._transformMainService() ? false : status;
     status = !this._transformEstablishmentType() ? false : status;
     status = !this._transformLocalAuthorities() ? false : status;
+    status = !this._transformAllServices() ? false : status;
 
     return status;
   }
@@ -624,9 +745,6 @@ class Establishment {
       name: this._name,
       address: this._address,
       postcode: this._postcode,
-      mainService: {
-        id: this._mainService
-      },
       employerType: this._establishmentType,
       employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
       shareWithCQC: this._shareWithCqc,
@@ -634,6 +752,20 @@ class Establishment {
       localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
       locationId: this._shareWithCqc ? this._locationID : undefined,
       provId: this._shareWithCqc ? this._provID : undefined,
+      mainService: {
+        id: this._mainService
+      },
+      allServices: this._allServices.map((thisService, index) => {
+        const returnThis = {
+          id: thisService,
+        };
+
+        // if (this._allServicesOther[index]) {
+        //   returnThis.other = this._allServicesOther[index];
+        // }
+
+        return returnThis;
+      }),
 
     }, null, 4);
   };

@@ -125,7 +125,7 @@ router.route('/validate').get(async (req, res) => {
 
         myEstablishments.push(lineValidator);
 
-        //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
+        console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
       });
     }
 
