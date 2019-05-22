@@ -1,6 +1,32 @@
+// BUDI maps bulk imports and exports
+
+// uses Database Reference data - initialised within the singleton on startup
+const dbmodels = require('../../../models');
+
+let ALL_CSSRS = null;
+
 class BUDI {
   constructor() {
     // initialises with the BUDI
+  }
+
+  static async initialize() {
+    const cssrFetch = await dbmodels.cssr.findAll({
+      attributes: ['id', 'name'],
+      group: ['id', 'name' ],
+      order: [
+        ['id', 'ASC']
+      ]
+    });
+
+    if (Array.isArray(cssrFetch)) {
+      ALL_CSSRS = cssrFetch.map(thisCssr => {
+        return {
+          custodianCode: thisCssr.id,
+          name: thisCssr.name
+        };
+      });
+    }
   }
 
   static get TO_ASC() { return 100; }
@@ -91,8 +117,23 @@ class BUDI {
 
     return mappedEstType;
   }
-  
 
+  // maps Local Authority (CSSR)
+  static localAuthority(direction, originalCode) {
+    if (direction == BUDI.TO_ASC) {
+      // lookup against all known CSSRs using the given original code as index
+      return ALL_CSSRS.find(thisCssr => thisCssr.custodianCode === originalCode);;
+    } else {
+      // ASC WDS local authority is an object where "custodianCode" is the Local Authority integer
+      return originalCode.custodianCode;
+    }
+  }
 }
+
+BUDI.initialize()
+  .then()
+  .catch(err => {
+    console.error("Failed to initialise BUDI: ", err);
+  });
 
 exports.BUDI = BUDI;

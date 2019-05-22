@@ -21,6 +21,10 @@ class Establishment {
     this._establishmentTypeOther = null;
     this._mainService = null;
 
+    this._shareWithCqc = null;
+    this._shareWithLA = null;
+    this._localAuthorities = null;
+
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -32,7 +36,10 @@ class Establishment {
   static get ADDRESS_ERROR() { return 1040; }
   static get EMAIL_ERROR() { return 1050; }
   static get PHONE_ERROR() { return 1060; }
-  static get ESTABLISHMENT_TYPE_ERROR() { return 1000; }
+  static get ESTABLISHMENT_TYPE_ERROR() { return 1070; }
+  static get SHARE_WITH_CQC_ERROR() { return 1070; }
+  static get SHARE_WITH_LA_ERROR() { return 1080; }
+  static get LOCAL_AUTHORITIES_ERROR() { return 1080; }
 
 
   get localId() {
@@ -61,6 +68,22 @@ class Establishment {
 
   get mainService() {
     return this._mainService;
+  }
+  get establishmentType() {
+    return this._establishmentType;
+  }
+  get establishmentTypeOther() {
+    return this._establishmentTypeOther;
+  }
+
+  get shareWithCqc() {
+    return this._shareWithCqc;
+  }
+  get shareWithLa() {
+    return this._shareWithLA;
+  }
+  get localAuthorities() {
+    return this._localAuthorities;
   }
 
   _validateLocalisedId() {
@@ -361,6 +384,86 @@ class Establishment {
     }
   }
 
+  _validateShareWithCQC() {
+    const ALLOWED_VALUES = [0,1];
+    const myShareWithCqc = parseInt(this._currentLine.PERMCQC);
+    if (Number.isNaN(myShareWithCqc)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.SHARE_WITH_CQC_ERROR,
+        errType: `SHARE_WITH_CQC_ERROR`,
+        error: "Share with CQC (PERMCQC) must be an integer",
+        source: this._currentLine.PERMCQC,
+      });
+      return false;
+    } else if (!ALLOWED_VALUES.includes(myShareWithCqc)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.SHARE_WITH_CQC_ERROR,
+        errType: `SHARE_WITH_CQC_ERROR`,
+        error: "Share with CQC (PERMCQC) must be 0 or 1",
+        source: myShareWithCqc,
+      });
+      return false;
+    } else {
+      this._shareWithCqc = myShareWithCqc;
+      return true;
+    }
+  }
+
+  _validateShareWithLA() {
+    const ALLOWED_VALUES = [0,1];
+    const myShareWithLa = parseInt(this._currentLine.PERMLA);
+    if (Number.isNaN(myShareWithLa)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.SHARE_WITH_LA_ERROR,
+        errType: `SHARE_WITH_LA_ERROR`,
+        error: "Share with LA (PERMLA) must be an integer",
+        source: this._currentLine.PERMLA,
+      });
+      return false;
+    } else if (!ALLOWED_VALUES.includes(myShareWithLa)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.SHARE_WITH_LA_ERROR,
+        errType: `SHARE_WITH_LA_ERROR`,
+        error: "Share with LA (PERMLA) must be 0 or 1",
+        source: myShareWithLa,
+      });
+      return false;
+    } else {
+      this._shareWithLA = myShareWithLa;
+      return true;
+    }
+  }
+
+  _validateLocalAuthorities() {
+    // local authorities is optional or is a semi colon delimited list of integers
+    if (this._currentLine.SHARELA && this._currentLine.SHARELA.length > 0) {
+      const listOfLAs = this._currentLine.SHARELA.split(';');
+      const isValid = listOfLAs.every(thisLA => !Number.isNaN(parseInt(thisLA)));
+
+      if (!isValid) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.LOCAL_AUTHORITIES_ERROR,
+          errType: `LOCAL_AUTHORITIES_ERROR`,
+          error: "Local Authorities (SHARELA) must be a semi-colon delimited list of integers",
+          source: this._currentLine.SHARELA,
+        });
+        return false;
+      } else {
+        this._localAuthorities = listOfLAs.map(thisLA => parseInt(thisLA, 10));
+        return true;
+      }
+  
+    } else {
+      return true;
+    }
+  }
+
+
   _transformMainService() {
     if (this._mainService) {
       this._mainService = BUDI.services(BUDI.TO_ASC, this._mainService);
@@ -370,12 +473,37 @@ class Establishment {
   _transformEstablishmentType() {
     // integer in source; enum in target
     if (this._establishmentType) {
-      const mappedType = BUDI.establishmentType(BUDI.TO_ASC, this._establishmentType)
+      const mappedType = BUDI.establishmentType(BUDI.TO_ASC, this._establishmentType);
       this._establishmentType = mappedType.type;
 
       if (this._establishmentTypeOther === null && mappedType.type === 'Other' && mappedType.other) {
         this._establishmentTypeOther = mappedType.other;
       }
+    }
+  }
+
+  _transformLocalAuthorities() {
+    // integer in source; object in target comprised of CSSR ID and CSSR Name
+    if (this._localAuthorities && Array.isArray(this._localAuthorities)) {
+      const mappedAuthorities = [];
+
+      this._localAuthorities.forEach(thisLA => {
+        const mappedAuthority = BUDI.localAuthority(BUDI.TO_ASC, thisLA);
+
+        if (mappedAuthority) {
+          mappedAuthorities.push(mappedAuthority);
+        } else {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.LOCAL_AUTHORITIES_ERROR,
+            errType: `LOCAL_AUTHORITIES_ERROR`,
+            error: `Local Authorities (SHARELA): ${thisLA} is unknown`,
+            source: this._currentLine.SHARELA,
+          }); 
+        }
+      });
+
+      this._localAuthorities = mappedAuthorities;
     }
   }
 
@@ -398,6 +526,11 @@ class Establishment {
     status = !this._validateEstablishmentType() ? false : status;
     status = !this._validateMainService() ? false : status;
 
+    // ignoring IIPSTATUS and PERMNHSC
+    status = !this._validateShareWithCQC() ? false : status;
+    status = !this._validateShareWithLA() ? false : status;
+    status = !this._validateLocalAuthorities() ? false : status;
+
     return status;
   }
 
@@ -407,6 +540,7 @@ class Establishment {
 
     status = !this._transformMainService() ? false : status;
     status = !this._transformEstablishmentType() ? false : status;
+    status = !this._transformLocalAuthorities() ? false : status;
 
     return status;
   }
@@ -420,7 +554,10 @@ class Establishment {
         id: this._mainService
       },
       employerType: this._establishmentType,
-      employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined
+      employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
+      shareWithCQC: this._shareWithCqc,
+      shareWithLA: this._shareWithLA,
+      localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
     }, null, 4);
   };
 
