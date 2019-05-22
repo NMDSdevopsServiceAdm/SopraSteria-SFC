@@ -3,9 +3,9 @@ class BUDI {
     // initialises with the BUDI
   }
 
-  static TO_ASC = 1;
-  static FROM_ASC = 2;
- 
+  static get TO_ASC() { return 100; }
+  static get FROM_ASC() { return 200; }
+
   // maps services (main/other)
   static services(direction, originalCode) {
     if (direction == BUDI.TO_ASC) {
@@ -26,5 +26,4 @@ class BUDI {
 
 }
 
-const THE_BUDI = new BUDI();
-exports.BUDI = THE_BUDI;
+exports.BUDI = BUDI;

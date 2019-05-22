@@ -1,26 +1,37 @@
-class Workers {
+const BUDI = require('../BUDI').BUDI;
+
+class Worker {
   constructor(currentLine, lineNumber) {
-    this._currentLIne = currentLine;
+    this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
     this._contractType= null;
+
+    //console.log(`MN DEBUG - current worker (${this._lineNumber}:`, this._currentLine);
   };
+
+  static get CONTRACT_TYPE_ERROR() { return 1000; }
 
   get contractType() {
     return this._contractType;
   }
   
   _validateContractType() {
-    if (Number.isInteger(currentLine.contractType)) {
-      this._contractType = parseInt(this._currentLIne.contractType);
-      return true;
-    } else {
+    const myContractType = parseInt(this._currentLine.EMPLSTATUS);
+
+    //console.log("NM DEBUG: contract type (employment status): ", myContractType)
+    if (Number.isNaN(myContractType)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: 1000,
+        errCode: Worker.CONTRACT_TYPE_ERROR,
+        errType: 'CONTRACT_TYPE_ERROR',
         error: "Contract Type must be an integer",
+        source: this._currentLine.EMPLSTATUS,
       });
       return false;
+    } else {
+      this._contractType = myContractType;
+      return true;
     }
   }
 
@@ -31,7 +42,11 @@ class Workers {
   };
 
   validate() {
-    this._validateContractType();
+    let status = true;
+
+    status = status ? this._validateContractType() : status;
+
+    return status;
   };
 
   transform() {
@@ -47,7 +62,7 @@ class Workers {
   };
 
   get validationErrors() {
-    return thus._validationErrors;
+    return this._validationErrors;
   };
 };
 

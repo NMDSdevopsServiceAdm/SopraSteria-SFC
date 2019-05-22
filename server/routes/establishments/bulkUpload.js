@@ -71,35 +71,45 @@ router.route('/signedUrl').get(async function (req, res) {
 //Use case8 : make an api call
 //user case9: return list of error
 
+
+// FOR NASIR:
+//  1. Why a get?
+//  2. If using a POST or PATCH, can pass data as JSON BODY
+//  3. Bucker name should be config parameter. region should be config parameter
+//  4. Why is use accelerated endpoint true when creating S3 object?
+//  5. Downloading to file and then CSV from file is not efficient; should look to sharing a buffer/stream - but then again, these files are not going to be big (20MB is not a big file so load into memory!)
+//  6. As downloading to file, need to tidy up the local files.
 router.route('/validate').get(async (req, res) => {
 
   const bucketName = 'sfcbulkuploadfiles';
   const establishmentId = req.establishmentId;
 
+  const establishmentCsvFilePath = './' + req.query.establishment;
+  const workerCsvFilePath = './' + req.query.worker;
+  const trainingCsvFilePath = './' + req.query.training;
+
   const establishmentFileKey = establishmentId + '/' + FileStatusEnum.New + '/' + req.query.establishment;
   const workerFileKey = establishmentId + '/' + FileStatusEnum.New + '/' + req.query.worker;
   const trainingFileKey = establishmentId + '/' + FileStatusEnum.New + '/' + req.query.training;
 
-  await downloadFile(s3, req.query.establishment, bucketName, establishmentFileKey);
-
-  const establishmentCsvFilePath = './' + req.query.establishment;
-  const workerCsvFilePath = './' + req.query.establishment;
-  const trainingCsvFilePath = './' + req.query.establishment;
-
-  const csvEstablishmentSchemaErrors = [], csvWorkerSchemaErrors = [];
+  const csvEstablishmentSchemaErrors = [], csvWorkerSchemaErrors = [], csvTrainingSchemaErrors = [];;
   const myEstablishments = [];
   const myWorkers = [];
   const myTrainings = [];
 
   try {
+    // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
+    !fs.existsSync(establishmentCsvFilePath) ? await downloadFile(s3, establishmentCsvFilePath, bucketName, establishmentFileKey) : true;
+    !fs.existsSync(workerCsvFilePath) ? await downloadFile(s3, workerCsvFilePath, bucketName, workerFileKey) : true;
+    !fs.existsSync(trainingCsvFilePath) ? await downloadFile(s3, trainingCsvFilePath, bucketName, trainingFileKey) : true;
+  
     const importedEstablishments = await csv().fromFile(establishmentCsvFilePath);
     const importedWorkers = await csv().fromFile(workerCsvFilePath);
     const importedTraining = await csv().fromFile(trainingCsvFilePath);
 
-
+    // parse and process Establishments CSV
     if (Array.isArray(importedEstablishments)) {
       importedEstablishments.forEach((thisLine, currentLineNumber) => {
-        console.log(`MN DEBUG - current establishment (${currentLineNumber}: ${thisLine}`);
         const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber);
         if (!lineValidator.validate()) {
           csvEstablishmentSchemaErrors.push(lineValidator.validationErrors);
@@ -108,18 +118,12 @@ router.route('/validate').get(async (req, res) => {
         }
 
         myEstablishments.push(lineValidator);
-
       });
     }
 
-
-
-
-
-    //Worker
+    // parse and process Workers CSV
     if (Array.isArray(importedWorkers)) {
       importedWorkers.forEach((thisLine, currentLineNumber) => {
-        console.log(`MN DEBUG - current worker (${currentLineNumber}: ${thisLine}`);
         const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber);
         if (!lineValidator.validate()) {
           csvWorkerSchemaErrors.push(lineValidator.validationErrors);
@@ -132,12 +136,18 @@ router.route('/validate').get(async (req, res) => {
       });
     }
 
+    // handle parsing errors
     if (csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0) {
       // upload to `establishmentFileKey`.validation.json in S3 bucket
+      console.error('WA DEBUG Establishment validation errors: ', csvEstablishmentSchemaErrors)
+      console.error('NM DEBUG Worker validation errors: ', csvWorkerSchemaErrors)
+
+      return res.status(400).send({});
+
+    } else {
+      return res.status(200).send({});
     }
 
-
-    return res.status(200).send();
   } catch (err) {
     console.error(err);
     return res.status(503).send({});
@@ -147,23 +157,24 @@ router.route('/validate').get(async (req, res) => {
 async function downloadFile(s3, filePath, bucketName, key) {
     var params = {
       Bucket: bucketName,
-      Key: key
+      Key: key,
     };
 
-    await s3.getObject(params, (err, data) => {
-      if (err) { console.error(err); return res.status(503).send(err); }
-
-      fs.writeFileSync(filePath, data.Body.toString());
-
+    try {
+      const objData = await s3.getObject(params).promise();
+      fs.writeFileSync(filePath, objData.Body.toString());
       console.log(`${filePath} has been created!`);
-    });
-}
 
+    } catch (err) {
+      console.error('api/establishment/bulkupload/downloadFile: ', err);
+      throw new Error(`Failed to download S3 object: ${key}`);
+    }
+}
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
   console.log('ok - bulk', establishmentId);
-  return res.status(200).send();
+  return res.status(501).send({});
 });
 
 module.exports = router;
