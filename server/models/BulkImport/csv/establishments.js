@@ -9,11 +9,17 @@ class Establishment {
 
     // CSV properties
     this._localId = null;
-    this._mainService = null;
     this._status = null;
     this._name = null;
     this._address = null;
     this._postcode = null;
+    this._email = null;
+    this._phone = null;
+
+
+    this._establishmentType = null;
+    this._mainService = null;
+
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -23,6 +29,9 @@ class Establishment {
   static get STATUS_ERROR() { return 1020; }
   static get NAME_ERROR() { return 1030; }
   static get ADDRESS_ERROR() { return 1040; }
+  static get EMAIL_ERROR() { return 1050; }
+  static get PHONE_ERROR() { return 1060; }
+  static get ESTABLISHMENT_TYPE_ERROR() { return 1000; }
 
 
   get localId() {
@@ -40,6 +49,12 @@ class Establishment {
   }
   get poostcode() {
     return this._postcode;
+  }
+  get email() {
+    return this._email;
+  }
+  get phone() {
+    return this._phone;
   }
 
 
@@ -143,7 +158,7 @@ class Establishment {
     if (!myAddress1 || myAddress1.length == 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: 'First line of address (ADDRESS1) must be defined',
         source: myAddress1,
@@ -151,7 +166,7 @@ class Establishment {
     } else if (myAddress1.length > MAX_LENGTH) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress1,
@@ -161,7 +176,7 @@ class Establishment {
     if (myAddress2 && myAddress2.length > MAX_LENGTH) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: `Second line of address (ADDRESS2) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress2,
@@ -171,7 +186,7 @@ class Establishment {
     if (myAddress3 && myAddress3.length > MAX_LENGTH) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: `Third line of address (ADDRESS3) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress3,
@@ -181,7 +196,7 @@ class Establishment {
     if (myTown && myTown.length > MAX_LENGTH) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: `{Post town} (POSTTOWN) must be no more than ${MAX_LENGTH} characters`,
         source: myTown,
@@ -191,14 +206,10 @@ class Establishment {
     // TODO - registration/establishment APIs do not validate postcode (relies on the frontend - this must be fixed)
     const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
     const POSTCODE_MAX_LENGTH = 40;
-
-
-    console.log("WA DEBUG: postcode/regex match: ", myPostcode, postcodeRegex.test(myPostcode.toUpperCase()));
-
     if (!myPostcode || myPostcode.length == 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: 'Postcode (POSTCODE) must be defined',
         source: myPostcode,
@@ -206,7 +217,7 @@ class Establishment {
     } else if (myPostcode.length > POSTCODE_MAX_LENGTH) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: `Postcode (POSTCODE) must be no more than ${POSTCODE_MAX_LENGTH} characters`,
         source: myPostcode,
@@ -214,7 +225,7 @@ class Establishment {
     } else if (!postcodeRegex.test(myPostcode)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.NAME_ERROR,
+        errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: `Postcode (POSTCODE) unexpected format`,
         source: myPostcode,
@@ -235,7 +246,101 @@ class Establishment {
     return true;
   }
 
+
+  // NOTE - establishment does not have email address (a user has email address)
+  _validateEmail() {
+    const myEmail = this._currentLine.EMAIL;
+
+    // optional, but if present  no more than 240 characters
+    const MAX_LENGTH = 240;
+
+    // could validate the email address using a regux - but we're not using it anyway!!!
+
+    if (myEmail && myEmail.length > MAX_LENGTH) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.EMAIL_ERROR,
+        errType: `EMAIL_ERROR`,
+        error: `Email (EMAIL) must be no more than ${MAX_LENGTH} characters`,
+        source: myEmail,
+      });
+      return false;
+    } else {
+      this._email = myEmail;
+      return true;
+    }
+  }
+  _validatePhone() {
+    const myPhone = this._currentLine.PHONE;
+
+    // optional, but if present no more than 50 characters
+    const MAX_LENGTH = 50;
+
+    if (myPhone && myPhone.length > MAX_LENGTH) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.PHONE_ERROR,
+        errType: `PHONE_ERROR`,
+        error: `Phone (PHONE) must be no more than ${MAX_LENGTH} characters`,
+        source: myPhone,
+      });
+      return false;
+    } else {
+      this._phone = myPhone;
+      return true;
+    }
+  }
   
+  _validateEstablishmentType() {
+    const myEstablishmentType = parseInt(this._currentLine.ESTTYPE);
+    const myOtherEstablishmentType = parseInt(this._currentLine.OTHERTYPE);
+
+    if (Number.isNaN(myEstablishmentType)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+        errType: `ESTABLISHMENT_TYPE_ERROR`,
+        error: "Establishment Type (ESTTYPE) must be an integer",
+        source: this._currentLine.ESTTYPE,
+      });
+    } else if (myEstablishmentType < 1 || myEstablishmentType > 8) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+        errType: `ESTABLISHMENT_TYPE_ERROR`,
+        error: "Establishment Type (ESTTYPE) between 1 and 8 only",
+        source: this._currentLine.ESTTYPE,
+      });
+    }
+
+    // if the establishment type is "other" (8), then OTHERTYPE must be defined
+    const MAX_LENGTH = 240;
+    if (myEstablishmentType == 8 && (!myOtherEstablishmentType || myOtherEstablishmentType.length == 0)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+        errType: `ESTABLISHMENT_TYPE_ERROR`,
+        error: `Establishment Type (ESTTYPE) is 'Other (8)'; must define the Other (OTHERTYPE)`,
+        source: myEmail,
+      });
+    } else if (myEstablishmentType == 8 && (myOtherEstablishmentType.length > MAX_LENGTH)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+        errType: `ESTABLISHMENT_TYPE_ERROR`,
+        error: `Establishment Type (ESTTYPE) is 'Other (8)', but OTHERTYPE must be no more than ${MAX_LENGTH} characters`,
+        source: myEmail,
+      });
+    }
+
+    if (this._validationErrors.length > 0) {
+      return false;
+    }
+
+    this._establishmentType = myEstablishmentType;
+    return true;
+  }
+
   _validateMainService() {
     const myMainService = parseInt(this._currentLine.MAINSERVICE);
     if (Number.isNaN(myMainService)) {
@@ -268,7 +373,10 @@ class Establishment {
     status = status ? this._validateEstablishmentName() : status;
 
     status = status ? this._validateAddress() : status;
-  
+
+    // validating email and phone even though these are no longer mapped to an establishment
+    status = status ? this._validateEmail() : status;
+    status = status ? this._validatePhone() : status;
 
     status = status ? this._validateMainService() : status;
 
