@@ -49,8 +49,13 @@ class Establishment {
     return status;
   }
 
+  // returns true on success, false is any attribute of Establishment fails
   transform() {
-    this._transformMainService();
+    let status = true;
+
+    status = status ? this._transformMainService() : status;
+
+    return status;
   }
 
   toJSON() {

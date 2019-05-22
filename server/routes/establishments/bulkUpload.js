@@ -15,6 +15,7 @@ var s3 = new AWS.S3({
 
 const CsvEstablishmentValidator = require('../../models/BulkImport/csv/establishments').Establishment;
 const CsvWorkerValidator = require('../../models/BulkImport/csv/workers').Worker;
+const CsvTrainingValidator = require('../../models/BulkImport/csv/training').Training;
   
 var FileStatusEnum = { "New": "new", "Validated": "validated", "Imported": "imported" };
 var FileValidationStatusEnum = { "Pending": "pending", "Validating": "validating", "Pass": "pass", "PassWithWarnings": "pass with warnings", "Fail": "fail" };
@@ -79,6 +80,7 @@ router.route('/signedUrl').get(async function (req, res) {
 //  4. Why is use accelerated endpoint true when creating S3 object?
 //  5. Downloading to file and then CSV from file is not efficient; should look to sharing a buffer/stream - but then again, these files are not going to be big (20MB is not a big file so load into memory!)
 //  6. As downloading to file, need to tidy up the local files.
+//  7. This current approach to validation is "very synchronous"; there is lots we can do yet to optimise this - but we optimise later once we have the process working.
 router.route('/validate').get(async (req, res) => {
 
   const bucketName = 'sfcbulkuploadfiles';
@@ -111,10 +113,14 @@ router.route('/validate').get(async (req, res) => {
     if (Array.isArray(importedEstablishments)) {
       importedEstablishments.forEach((thisLine, currentLineNumber) => {
         const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber);
-        if (!lineValidator.validate()) {
+
+        // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+        lineValidator.validate();
+        lineValidator.transform();
+
+        // TODO - not sure this is necessary yet - we can just iterate the collection of Establishments at the end to create the validation JSON document
+        if (lineValidator.validationErrors.length > 0) {
           csvEstablishmentSchemaErrors.push(lineValidator.validationErrors);
-        } else {
-          lineValidator.transform();
         }
 
         myEstablishments.push(lineValidator);
@@ -125,14 +131,33 @@ router.route('/validate').get(async (req, res) => {
     if (Array.isArray(importedWorkers)) {
       importedWorkers.forEach((thisLine, currentLineNumber) => {
         const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber);
-        if (!lineValidator.validate()) {
+
+        // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+        lineValidator.validate();
+        lineValidator.transform();
+
+        if (lineValidator.validationErrors.length > 0) {
           csvWorkerSchemaErrors.push(lineValidator.validationErrors);
-        } else {
-          lineValidator.transform();
         }
 
         myWorkers.push(lineValidator);
+      });
+    }
 
+    // parse and process Training CSV
+    if (Array.isArray(importedTraining)) {
+      importedTraining.forEach((thisLine, currentLineNumber) => {
+        const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber);
+
+        // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+        lineValidator.validate();
+        lineValidator.transform();
+
+        if (lineValidator.validationErrors.length > 0) {
+          csvTrainingSchemaErrors.push(lineValidator.validationErrors);
+        }
+
+        myTrainings.push(lineValidator);
       });
     }
 

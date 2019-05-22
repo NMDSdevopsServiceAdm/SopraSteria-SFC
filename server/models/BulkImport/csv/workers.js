@@ -41,6 +41,7 @@ class Worker {
     }
   };
 
+  // returns true on success, false is any attribute of Worker fails
   validate() {
     let status = true;
 
@@ -49,8 +50,13 @@ class Worker {
     return status;
   };
 
+  // returns true on success, false is any attribute of Worker fails
   transform() {
-    this._transformContractType();
+    let status = true;
+
+    status = status ? this._transformContractType() : status;
+
+    return status;
   };
 
   toJSON() {
