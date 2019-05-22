@@ -5,15 +5,15 @@ import { FormGroup } from '@angular/forms';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { PresignedUrlResponse } from '@core/model/bulk-upload.model';
+import { PresignedUrlResponse, UploadFile } from '@core/model/bulk-upload.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BulkUploadService {
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
-  public selectedFiles$: BehaviorSubject<Array<File>> = new BehaviorSubject(null);
-  public uploadedFiles$: BehaviorSubject<Array<File>> = new BehaviorSubject(null);
+  public selectedFiles$: BehaviorSubject<Array<UploadFile>> = new BehaviorSubject(null);
+  public uploadedFiles$: BehaviorSubject<Array<UploadFile>> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
@@ -30,16 +30,14 @@ export class BulkUploadService {
       .pipe(map((data: PresignedUrlResponse) => data.urls));
   }
 
-  public uploadFile(file: File, signedURL: string): Observable<any> {
+  public uploadFile(file: UploadFile, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
     return this.http.put(signedURL, file, { headers, reportProgress: true });
   }
 
-  public transformFileType(fileType: string): string {
-    return fileType
-      .split('/')
-      .pop()
-      .toUpperCase();
+  public getFileType(fileName: string): string {
+    const parts: Array<string> = fileName.split('.');
+    return parts[parts.length - 1].toUpperCase();
   }
 
   public formErrorsMap(): Array<ErrorDetails> {

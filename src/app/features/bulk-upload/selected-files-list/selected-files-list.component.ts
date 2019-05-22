@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
+import { UploadFile } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-selected-files-list',
@@ -9,7 +10,7 @@ import { distinctUntilChanged } from 'rxjs/operators';
 })
 export class SelectedFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  private selectedFiles: Array<File>;
+  private selectedFiles: Array<UploadFile>;
 
   constructor(private bulkUploadService: BulkUploadService) {}
 
@@ -31,13 +32,9 @@ export class SelectedFilesListComponent implements OnInit, OnDestroy {
     }
   }
 
-  public transformFileType(fileType: string): string {
-    return this.bulkUploadService.transformFileType(fileType);
-  }
-
   private setupSubscription(): void {
     this.subscriptions.add(
-      this.bulkUploadService.selectedFiles$.pipe(distinctUntilChanged()).subscribe((selectedFiles: Array<File>) => {
+      this.bulkUploadService.selectedFiles$.pipe(distinctUntilChanged()).subscribe((selectedFiles: Array<UploadFile>) => {
         if (selectedFiles) {
           this.selectedFiles = selectedFiles;
         }

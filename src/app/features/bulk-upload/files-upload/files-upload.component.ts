@@ -5,6 +5,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { mergeMap, take } from 'rxjs/operators';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { UploadFile } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-files-upload',
@@ -12,7 +13,7 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 })
 export class FilesUploadComponent implements OnInit {
   private form: FormGroup;
-  private selectedFiles: Array<File>;
+  private selectedFiles: Array<UploadFile>;
   private submitted = false;
   public filesUploading = false;
   public filesUploaded = false;
@@ -40,10 +41,14 @@ export class FilesUploadComponent implements OnInit {
   private onFilesSelection($event: Event): void {
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target['files']);
+    this.selectedFiles.map((file: UploadFile) => (file.extension = this.bulkUploadService.getFileType(file.name)));
 
     this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
-    this.bulkUploadService.exposeForm$.next(this.form);
+
+    if (this.submitted) {
+      this.bulkUploadService.exposeForm$.next(this.form);
+    }
   }
 
   public onSubmit(): void {
@@ -61,30 +66,30 @@ export class FilesUploadComponent implements OnInit {
     this.filesUploading = true;
 
     forkJoin(
-      this.selectedFiles.map((file: File) =>
+      this.selectedFiles.map((file: UploadFile) =>
         this.getPresignedUrl(file)
           .pipe(take(1))
           .pipe(mergeMap((signedURL: string) => this.uploadFile(file, signedURL)))
       )
     )
-    .pipe(take(1))
-    .subscribe(
-      () => {
-        this.bulkUploadService.uploadedFiles$.next(this.selectedFiles);
-        this.filesUploading = false;
-        this.filesUploaded = true;
-      },
-      () => {
-        this.filesUploading = false;
-      }
-    );
+      .pipe(take(1))
+      .subscribe(
+        () => {
+          this.bulkUploadService.uploadedFiles$.next(this.selectedFiles);
+          this.filesUploading = false;
+          this.filesUploaded = true;
+        },
+        () => {
+          this.filesUploading = false;
+        }
+      );
   }
 
-  private getPresignedUrl(file: File): Observable<string> {
+  private getPresignedUrl(file: UploadFile): Observable<string> {
     return this.bulkUploadService.getPresignedUrl(file.name);
   }
 
-  private uploadFile(file: File, signedURL: string): Observable<string> {
+  private uploadFile(file: UploadFile, signedURL: string): Observable<string> {
     return this.bulkUploadService.uploadFile(file, signedURL);
   }
 
