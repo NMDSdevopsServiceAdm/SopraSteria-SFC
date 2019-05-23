@@ -28,7 +28,7 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
     this.form = this.formBuilder.group({
-      primaryAuthority: null,
+      primaryAuthority: false,
       localAuthorities: this.formBuilder.array([]),
     });
   }
@@ -56,12 +56,6 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
 
     this.primaryAuthority = this.establishment.primaryAuthority;
 
-    this.form.get('primaryAuthority').patchValue(
-      !!this.establishment.localAuthorities.findIndex(authority => {
-        return authority.isPrimaryAuthority;
-      })
-    );
-
     this.establishment.localAuthorities.forEach(authority => {
       if (!authority.isPrimaryAuthority) {
         this.localAuthoritiesArray.push(this.createLocalAuthorityItem(authority.custodianCode));
@@ -75,6 +69,20 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
         });
       })
     );
+  }
+
+  /**
+   * Check to see if primary authority exists in local authorities array
+   * In order for the checkbox on the ui to be checked
+   */
+  public isPrimaryAuthorityShared(): boolean {
+    const filteredArray = this.establishment.localAuthorities.filter(control => {
+      if (control.custodianCode === this.primaryAuthority.custodianCode) {
+        return control;
+      }
+    });
+
+    return filteredArray.length ? true : false;
   }
 
   private createLocalAuthorityItem(custodianCode: number = null): FormGroup {
@@ -94,11 +102,13 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
 
   protected generateUpdateProps() {
     const authorities = [];
-    this.localAuthoritiesArray.controls.forEach(control =>
-      authorities.push({ custodianCode: parseInt(control.value.custodianCode, 10) })
-    );
+    this.localAuthoritiesArray.controls.forEach(control => {
+      if (control.value.custodianCode) {
+        authorities.push({ custodianCode: parseInt(control.value.custodianCode, 10) });
+      }
+    });
 
-    if (this.primaryAuthority) {
+    if (this.form.get('primaryAuthority').value) {
       authorities.push(this.primaryAuthority);
     }
 
