@@ -48,6 +48,9 @@ class Establishment {
     this._vacancies = null;
     this._starters = null;
     this._leavers = null;
+    this._totalVacancies = null;
+    this._totalStarters = null;
+    this._totalLeavers = null;
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -78,9 +81,12 @@ class Establishment {
   static get VOLUNATRY_COUNT_ERROR() { return 1260; }
   static get OTHER_COUNT_ERROR() { return 1270; }
   static get ALL_JOBS_ERROR() { return 1280; }
-  static get VACANCIES_ERROR() { return 1380; }
+  static get VACANCIES_ERROR() { return 1300; }
   static get STARTERS_ERROR() { return 1310; }
   static get LEAVERS_ERROR() { return 1320; }
+  static get TOTAL_VACANCIES_ERROR() { return 1330; }
+  static get TOTAL_STARTERS_ERROR() { return 1340; }
+  static get TOTAL_LEAVERS_ERROR() { return 1350; }
 
   get localId() {
     return this._localId;
@@ -190,6 +196,15 @@ class Establishment {
   }
   get leavers() {
     return this._leavers;
+  }
+  get totalVacancies() {
+    return this._totalVacancies;
+  }
+  get totalStarters() {
+    return this._totalStarters;
+  }
+  get totalLeavers() {
+    return this._totalLeavers;
   }
 
   _validateLocalisedId() {
@@ -950,7 +965,7 @@ class Establishment {
   }
 
   // includes perm, temp, pool, agency, student, voluntary and other counts
-  // includes vacancies, starters and leavers
+  // includes vacancies, starters and leavers, total vacancies, total starters and total leavers
   _validateJobRoleTotals() {
     // mandatory
     const permCount = this._currentLine.PERMCOUNT.split(';');
@@ -965,6 +980,10 @@ class Establishment {
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
     const leavers = this._currentLine.LEAVERS.split(';');
+
+    const totalVacancies = this._currentLine.TOTALVACANCIES === 'NK' ? -1 : parseInt(this._currentLine.TOTALVACANCIES);
+    const totalStarters = this._currentLine.TOTALSTARTERS === 'NK' ? -1 : parseInt(this._currentLine.TOTALSTARTERS);
+    const totalLeavers = this._currentLine.TOTALLEAVERS === 'NK' ? -1 : parseInt(this._currentLine.TOTALLEAVERS);
 
     const localValidationErrors = [];
     const allJobsCount = this._alljobs.length;
@@ -1072,94 +1091,124 @@ class Establishment {
 
     // all counts must be integers and greater than/equal to zero
     const MIN_COUNT = 0;
-    if (!permCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!permCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.PERM_COUNT_ERROR,
         errType: `PERM_COUNT_ERROR`,
-        error: "Permanent Count (PERMCOUNT) values must be integers and zero or more",
+        error: `Permanent Count (PERMCOUNT) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.PERMCOUNT}`,
       });
     }
-    if (!tempCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!tempCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.TEMP_COUNT_ERROR,
         errType: `TEMP_COUNT_ERROR`,
-        error: "Temporary Count (TEMPCOUNT) values must be integers and zero or more",
+        error: `Temporary Count (TEMPCOUNT) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.TEMPCOUNT}`,
       });
     }
-    if (!poolCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!poolCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.POOL_COUNT_ERROR,
         errType: `POOL_COUNT_ERROR`,
-        error: "Pool Count (POOLCOUNT) values must be integers and zero or more",
+        error: `Pool Count (POOLCOUNT) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.POOLCOUNT}`,
       });
     }
-    if (!agencyCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!agencyCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.AGENCY_COUNT_ERROR,
         errType: `AGENCY_COUNT_ERROR`,
-        error: "Perm Count (AGENCYCOUNT) values must be integers and zero or more",
+        error: `Perm Count (AGENCYCOUNT) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.AGENCYCOUNT}`,
       });
     }
-    if (!studentCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!studentCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STUDENT_COUNT_ERROR,
         errType: `STUDENT_COUNT_ERROR`,
-        error: "Student Count (STUDENTCOUNT) values must be integers and zero or more",
+        error: `Student Count (STUDENTCOUNT) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.STUDENTCOUNT}`,
       });
     }
-    if (!voluntaryCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!voluntaryCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.VOLUNATRY_COUNT_ERROR,
         errType: `VOLUNATRY_COUNT_ERROR`,
-        error: "Voluntary Count (VOLUNTARYCOUNT) values must be integers and zero or more",
+        error: `Voluntary Count (VOLUNTARYCOUNT) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.VOLUNTARYCOUNT}`,
       });
     }
-    if (!otherCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!otherCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.OTHER_COUNT_ERROR,
         errType: `OTHER_COUNT_ERROR`,
-        error: "Other Count (OTHERCOUNT) values must be integers and zero or more",
+        error: `Other Count (OTHERCOUNT) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.OTHERCOUNT}`,
       });
     }
-    if (!vacancies.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!vacancies.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.VACANCIES_ERROR,
         errType: `VACANCIES_ERROR`,
-        error: "Vacancies (VACANCIES) values must be integers and zero or more",
+        error: `Vacancies (VACANCIES) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.VACANCIES}`,
       });
     }
-    if (!starters.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!starters.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STARTERS_ERROR,
         errType: `STARTERS_ERROR`,
-        error: "Starters (STARTERS) values must be integers and zero or more",
+        error: `Starters (STARTERS) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.STARTERS}`,
       });
     }
-    if (!leavers.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT)) {
+    if (!leavers.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.LEAVERS_ERROR,
         errType: `LEAVERS_ERROR`,
-        error: "Leavers (LEAVERS) values must be integers and zero or more",
+        error: `Leavers (LEAVERS) values must be integers and ${MIN_COUNT} or more`,
         source: `${this._currentLine.LEAVERS}`,
+      });
+    }
+
+    // totals - must be defined and must be an integer greater than/equal to -1 (-1 is don't know)
+    const TOTAL_MIN = -1;
+    if (Number.isNaN(totalVacancies) || totalVacancies < TOTAL_MIN) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_VACANCIES_ERROR,
+        errType: `TOTAL_VACANCIES_ERROR`,
+        error: `Total Vacancies (TOTALVACANCIES) must be an integer and ${TOTAL_MIN} or more`,
+        source: this._currentLine.TOTALVACANCIES,
+      });
+    }
+    if (Number.isNaN(totalStarters) || totalStarters < TOTAL_MIN) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_STARTERS_ERROR,
+        errType: `TOTAL_STARTERS_ERROR`,
+        error: `Total Starters (TOTALSTARTERS) must be an integer and ${TOTAL_MIN} or more`,
+        source: this._currentLine.TOTALSTARTERS,
+      });
+    }
+    if (Number.isNaN(totalLeavers) || totalLeavers < TOTAL_MIN) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_LEAVERS_ERROR,
+        errType: `TOTAL_LEAVERS_ERROR`,
+        error: `Total Leavers (TOTALLEAVERS) must be an integer and ${TOTAL_MIN} or more`,
+        source: this._currentLine.TOTALLEAVERS,
       });
     }
 
@@ -1180,6 +1229,47 @@ class Establishment {
     this._vacancies = vacancies.map(thisCount => parseInt(thisCount, 10));
     this._starters = starters.map(thisCount => parseInt(thisCount, 10));
     this._leavers = leavers.map(thisCount => parseInt(thisCount, 10));
+
+    // totals - must equal the sum on the per job role
+    const sumOfVacancies = this._vacancies.reduce((total, thisCount) => total+thisCount);
+    const sumOfStarters = this._starters.reduce((total, thisCount) => total+thisCount);
+    const sumOfLeavers = this._leavers.reduce((total, thisCount) => total+thisCount);
+    if (totalVacancies !== sumOfVacancies) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_VACANCIES_ERROR,
+        errType: `TOTAL_VACANCIES_ERROR`,
+        error: 'Total Vacancies (TOTALVACANCIES) is not equal to the sum of Vacancies by job role (VACANCIES)',
+        source: `${this._currentLine.VACANCIES} - ${this._currentLine.TOTALVACANCIES}`,
+      });
+    }
+    if (totalStarters !== sumOfStarters) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_STARTERS_ERROR,
+        errType: `TOTAL_STARTERS_ERROR`,
+        error: 'Total Starters (TOTALVACANCIES) is not equal to the sum of Starters by job role (STARTERS)',
+        source: `${this._currentLine.STARTERS} - ${this._currentLine.TOTALSTARTERS}`,
+      });
+    }
+    if (totalLeavers !== sumOfLeavers) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_LEAVERS_ERROR,
+        errType: `TOTAL_LEAVERS_ERROR`,
+        error: 'Total Leavers (TOTALVACANCIES) is not equal to the sum of Leavers by job role (LEAVERS)',
+        source: `${this._currentLine.LEAVERS} - ${this._currentLine.TOTALLEAVERS}`,
+      });
+    }
+
+    if (localValidationErrors.length > 0) {
+      this._validationErrors.push(localValidationErrors);
+      return false;
+    }    
+
+    this._totalVacancies = totalVacancies;
+    this._totalStarters = totalStarters;
+    this._totalLeavers = totalLeavers;
 
     return true;
   }
@@ -1408,7 +1498,10 @@ class Establishment {
         otherDescriptions: this._otherDescriptions,
         vacancies: this._vacancies,
         starters: this._starters,
-        leavers: this._leavers
+        leavers: this._leavers,
+        totalVacancies: this._totalVacancies,
+        totalStarters: this._totalStarters,
+        totalLeavers: this._totalLeavers
       },
 
     }, null, 4);
