@@ -94,12 +94,15 @@ export class FilesUploadComponent implements OnInit {
   }
 
   public removeFiles(): void {
-    this.fileUpload.clearValidators();
+    this.fileUpload.setValidators(Validators.required);
     this.form.reset();
     this.submitted = false;
     this.selectedFiles = [];
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
-    this.bulkUploadService.exposeForm$.next(this.form);
+
+    if (this.submitted) {
+      this.bulkUploadService.exposeForm$.next(this.form);
+    }
   }
 
   public cancelUpload(): void {
