@@ -1,14 +1,13 @@
-import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { BackService } from '@core/services/back.service';
+import { Component } from '@angular/core';
+import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { LocalAuthorityService } from '@core/services/localAuthority.service';
-import { uniqBy } from 'lodash';
-
 import { Question } from '../question/question.component';
+import { Router } from '@angular/router';
+import { uniqBy } from 'lodash';
 
 @Component({
   selector: 'app-data-sharing-with-local-authorities',
@@ -68,8 +67,6 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
         this.localAuthoritiesArray.push(this.createLocalAuthorityItem(authority.custodianCode));
       }
     });
-
-    this.addLocalAuthority();
 
     this.subscriptions.add(
       this.localAuthorityService.getAuthorities().subscribe(authorities => {
