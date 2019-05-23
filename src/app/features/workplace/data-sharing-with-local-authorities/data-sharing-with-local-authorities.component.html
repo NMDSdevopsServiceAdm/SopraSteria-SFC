@@ -21,6 +21,7 @@
         id="primaryAuthority"
         type="checkbox"
         aria-describedby="primaryAuthority-hint"
+        [checked]="isPrimaryAuthorityShared()"
       />
       <label class="govuk-label govuk-checkboxes__label" for="primaryAuthority">
         {{ primaryAuthority.name }}
