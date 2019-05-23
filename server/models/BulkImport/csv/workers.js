@@ -10,6 +10,7 @@ class Worker {
     //console.log(`MN DEBUG - current worker (${this._lineNumber}:`, this._currentLine);
     this._localId = null;
     this._workerLocalID = null;
+    this._gender = null;
   };
 
   //49 csv columns
@@ -87,6 +88,24 @@ class Worker {
   }
   get postCode() {
     return this._postCode;
+  }
+  get DOB() {
+    return this._DOB;
+  }
+  get gender() {
+    return this._gender;
+  }
+  get ethnicity() {
+    return this._ethnicity;
+  }
+  get britishNationality() {
+    return this._britishNationality;
+  }
+  get yearOfEntry() {
+    return this._yearOfEntry;
+  }
+  get disabled() {
+    return this._disabled;
   }
 
   _validateContractType() {
@@ -232,8 +251,6 @@ class Worker {
     const LENGTH = 9;
     const niRegex = /^\s*[a-zA-Z]{2}(?:\s*\d\s*){6}[a-zA-Z]?\s*$/;
 
-    console.log('reg ' + niRegex.test(myNINumber));
-
     if (myNINumber.length > 0 && myNINumber.length != LENGTH  ) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
@@ -260,16 +277,213 @@ class Worker {
     }
   }
 
-
   _validatePostCode() {
     const myPostcode = this._currentLine.POSTCODE;
-    const LENGTH = 10;
+    const MAX_LENGTH = 10;
     const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
 
+    if (myPostcode.length >= MAX_LENGTH) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.LOCAL_ID_ERROR,
+        errType: `POSTCODE_ERROR`,
+        error: `POSTCODE (POSTCODE) must be no more than ${MAX_LENGTH} characters`,
+        source: this._currentLine.POSTCODE,
+      });
+      return false;
+    } else if (myPostcode.length >= MAX_LENGTH && !postcodeRegex.test(myPostcode)) {
+       this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.POSTCODE_ERROR,
+        errType: `POSTCODE ERROR`,
+        error: `Postcode (POSTCODE) unexpected format`,
+        source: myPostcode,
+      });
+      return false;
+    }
+      else {
+        this._postCode = myPostcode;
+        return true;
+      }
+  }
+  
+  _validateDOB() {
+    const myDOB = this._currentLine.DOB;
+    const postcodeRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
+
+    if (myDOB.length > 0 && !postcodeRegex.test(myDOB)) {
+
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.DOB_ERROR,
+        errType: `DOB_ERROR`,
+        error: `Date of birth (DOB) Incorrect`,
+        source: this._currentLine.DOB,
+      });
+      return false;
+    } else if (myDOB.length > 0 && postcodeRegex.test(myDOB)) {
+
+      var dateParts = myDOB.split("/");
+      var birthDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]); 
+      var today = new Date();
+      var age = today.getFullYear() - birthDate.getFullYear();
+      var m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+
+      if (age <= 14 || age >= 100) {
+
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.DOB_ERROR,
+          errType: `DOB_ERROR`,
+          error: `Date of birth (DOB) Must be between 14 to 100 years`,
+          source: this._currentLine.DOB,
+        });
+        return false;
+      }
+      this._DOB = myDOB;
+      return false;
+    } else {
+      this._DOB = myDOB;
+      return true;
+    }
+  }
+
+  _validateGender() {
+    const genderValues = [1,2,3]; //[MALE=1, FEMALE=2, UNKNOWN=3];
+    const myGender = this._currentLine.GENDER;
+
+    if (isNaN(myGender)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.GENDER_ERROR,
+        errType: 'GENDER_ERROR',
+        error: "GENDER (GENDER) must be an integer",
+        source: this._currentLine.GENDER,
+      });
+      return false;
+    } else if (!genderValues.includes(parseInt(myGender))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.GENDER_ERROR,
+        errType: 'GENDER_ERROR',
+        error: "GENDER (GENDER) must have value 1 (MALE) or 2(FEMALE) or 3(UNKNOWN)",
+        source: this._currentLine.GENDER,
+      });
+      return false;
+    }
+    else {
+      this._gender = myGender;
+      return true;
+    }
+  }
+
+  //Mandatory for local Authority - need to check this conditional check
+  _validateEthnicity() {
+    const ethnicityValues = [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 98, 99];
+    const myEthnicity = this._currentLine.ETHNICITY;
+
+    if (isNaN(myEthnicity)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.ETHNICITY_ERROR,
+        errType: 'Ethnicity_ERROR',
+        error: "Ethnicity (Ethnicity) must be an integer",
+        source: this._currentLine.ETHNICITY,
+      });
+      return false;
+    } else if (myEthnicity && !ethnicityValues.includes(parseInt(myEthnicity))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.ETHNICITY_ERROR,
+        errType: 'Ethnicity_ERROR',
+        error: "Ethnicity (Ethnicity) must have value between 31 to 47,  98 or 99",
+        source: this._currentLine.ETHNICITY,
+      });
+      return false;
+    }
+    else {
+      this._ethnicity = myEthnicity;
+      return true;
+    }
+  }
+
+
+  _validateCitizenShip() {
+    const BritishCitizenshipValues = [1,2,999];
+    const myBritishCitizenship = this._currentLine.BRITISHCITIZENSHIP;
+
+    if (isNaN(myBritishCitizenship)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.ETHNICITY_ERROR,
+        errType: 'Ethnicity_ERROR',
+        error: "CitizenShip (BRITISHCITIZENSHIP) must be an integer",
+        source: this._currentLine.BRITISHCITIZENSHIP,
+      });
+      return false;
+    } else if (myBritishCitizenship && !BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.BRITISHCITIZENSHIP_ERROR,
+        errType: 'Ethnicity_ERROR',
+        error: "British Citizenship (BRITISHCITIZENSHIP) must have value 1(Yes) to 2(No),  999(Unknown) ",
+        source: this._currentLine.BRITISHCITIZENSHIP,
+      });
+      return false;
+    }
+    else {
+      this._britishNationality = myBritishCitizenship;
+      return true;
+    }
+  }
+
+  // this should 4 digit and less than date of birth;
+  // ignore countr of birth check
+  _validateYearOfEntry() {
+    const myBritishCitizenship = this._currentLine.BRITISHCITIZENSHIP;
+    
+    const myYearOfEntry = this._currentLine.YEAROFENTRY;
+    const myDOB = this._currentLine.DOB;
+    const yearRegex = /^\d{4}$/;
+
+    var dateParts = myDOB.split("/");
+    var birthDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+  
+    if (myYearOfEntry && !yearRegex.test(myYearOfEntry)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.YEAROFENTRY_ERROR,
+        errType: 'Ethnicity_ERROR',
+        error: "YEAROFENTRY (YEAROFENTRY) must be 4 number ",
+        source: this._currentLine.YEAROFENTRY,
+      });
+      return false;
+    }
+    else if (myYearOfEntry && !(myYearOfEntry > birthDate.getFullYear())) {
+
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.YEAROFENTRY_ERROR,
+        errType: 'Ethnicity_ERROR',
+        error: "Year of Entry (YEAROFENTRY) must not be before date of birth",
+        source: this._currentLine.YEAROFENTRY,
+      });
+      return false;
+    }
+    else {
+      this._validateYearOfEntry = myYearOfEntry;
+      return true;
+    }
 
   }
 
 
+  _validateDisabled() {
+
+  }
 
 
 
@@ -289,15 +503,21 @@ class Worker {
   validate() {
     let status = true;
 
-    status = status ? this._validateContractType() : status;
-    status = status ? this._validateLocalId() : status;
-    status = status ? this._validateUniqueWorkerId() : status;
-    status = status ? this._validateChangeUniqueWorkerId() : status;
-    status = status ? this._validateStatus() : status;
-    status = status ? this._validateDisplayId() : status;
-    status = status ? this._validateNINumber() : status;
+    status = !this._validateContractType() ? false : status;
+    status = !this._validateLocalId() ? false : status;
+    status = !this._validateUniqueWorkerId() ? false : status;
+    status = !this._validateChangeUniqueWorkerId() ? false : status;
+    status = !this._validateStatus() ? false : status;
+    status = !this._validateDisplayId() ? false : status;
+    status = !this._validateNINumber() ? false : status;
+    status = !this._validatePostCode() ? false : status;
+    status = !this._validateDOB() ? false : status;
+    status = !this._validateGender() ? false : status;
+    status = !this._validateEthnicity() ? false : status;
+    status = !this._validateCitizenShip() ? false : status;
+    status = !this._validateYearOfEntry() ? false : status;
 
-
+   
     return status;
   };
 
@@ -305,7 +525,8 @@ class Worker {
   transform() {
     let status = true;
 
-    status = status ? this._transformContractType() : status;
+   // status = !this._transformMainService() ? false : status;
+
 
     return status;
   };
