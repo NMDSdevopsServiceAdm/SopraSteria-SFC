@@ -16,6 +16,7 @@ import { StartersComponent } from './starters/starters.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
+import { WorkplaceComponent } from './workplace/workplace.component';
 import { WorkplaceResolver } from './workplace.resolver';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 
@@ -36,6 +37,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     TypeOfEmployerComponent,
     VacanciesComponent,
     ViewMyWorkplacesComponent,
+    WorkplaceComponent,
   ],
   providers: [WorkplaceResolver],
 })
