@@ -40,7 +40,9 @@ const routes: Routes = [
   {
     path: 'workplace',
     loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
-    canActivate: [AuthGuard],
+    // TODO rename exiting RoleGuard to PermissionsGuard
+    // TODO create new RoleGuard checking isParent
+    // canActivate: [AuthGuard],
     data: { title: 'Workplace' },
   },
   {

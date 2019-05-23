@@ -17,8 +17,14 @@ import { StartersComponent } from './starters/starters.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceResolver } from './workplace.resolver';
+import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 
 const routes: Routes = [
+  {
+    path: 'view-my-workplaces',
+    component: ViewMyWorkplacesComponent,
+    data: { title: 'View My Workplaces' },
+  },
   {
     path: 'start-screen',
     data: { title: 'Start' },
