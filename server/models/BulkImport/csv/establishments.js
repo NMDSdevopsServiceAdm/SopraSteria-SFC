@@ -32,6 +32,27 @@ class Establishment {
     this._allServicesOther = null;
     this._allServiceUsers = null;
     this._allServiceUsersOther = null;
+    this._capacities = null;
+    this._utilisations = null;
+
+    this._totalPermTemp = null;
+    this._permCount = null;
+    this._tempCount = null;
+    this._poolCount = null;
+    this._agencyCount = null;
+    this._studentCount = null;
+    this._voluntaryCount = null;
+    this._otherCount = null;
+    this._otherDescriptions = null;
+    this._alljobs = null;
+    this._vacancies = null;
+    this._starters = null;
+    this._leavers = null;
+    this._totalVacancies = null;
+    this._totalStarters = null;
+    this._totalLeavers = null;
+    this._reasonsForLeaving = null;
+    this._destinationOnLeaving = null;
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -51,6 +72,26 @@ class Establishment {
   static get LOCATION_ID_ERROR() { return 1110; }
   static get ALL_SERVICES_ERROR() { return 1120; }
   static get SERVICE_USERS_ERROR() { return 1130; }
+  static get CAPACITY_UTILISATION_USERS_ERROR() { return 1140; }
+
+  static get TOTAL_PERM_TEMP_ERROR() { return 1200; }
+  static get PERM_COUNT_ERROR() { return 1210; }
+  static get TEMP_COUNT_ERROR() { return 1220; }
+  static get POOL_COUNT_ERROR() { return 1230; }
+  static get AGENCY_COUNT_ERROR() { return 1240; }
+  static get STUDENT_COUNT_ERROR() { return 1250; }
+  static get VOLUNATRY_COUNT_ERROR() { return 1260; }
+  static get OTHER_COUNT_ERROR() { return 1270; }
+  static get ALL_JOBS_ERROR() { return 1280; }
+  static get VACANCIES_ERROR() { return 1300; }
+  static get STARTERS_ERROR() { return 1310; }
+  static get LEAVERS_ERROR() { return 1320; }
+  static get TOTAL_VACANCIES_ERROR() { return 1330; }
+  static get TOTAL_STARTERS_ERROR() { return 1340; }
+  static get TOTAL_LEAVERS_ERROR() { return 1350; }
+
+  static get REASONS_FOR_LEAVING_ERROR() { return 1360; }
+  static get DESTINATIONS_ON_LEAVING_ERROR() { return 1370; }
 
   get localId() {
     return this._localId;
@@ -75,6 +116,12 @@ class Establishment {
     return this._phone;
   }
 
+  get establishmentType() {
+    return this._establishmentType;
+  }
+  get establishmentTypeOther() {
+    return this._establishmentTypeOther;
+  }
 
   get mainService() {
     return this._mainService;
@@ -91,12 +138,13 @@ class Establishment {
   get alLServiceUsersOther() {
     return this._allServiceUsersOther;
   }
-  get establishmentType() {
-    return this._establishmentType;
+  get capacities() {
+    return this._capacities;
   }
-  get establishmentTypeOther() {
-    return this._establishmentTypeOther;
+  get utilisations() {
+    return this._utilisations;
   }
+
 
   get shareWithCqc() {
     return this._shareWithCqc;
@@ -113,6 +161,61 @@ class Establishment {
   }
   get locationId() {
     return this._locationID;
+  }
+
+  get totalPermTemp() {
+    return this._totalPermTemp;
+  }
+  get permCount() {
+    return this._permCount;
+  }
+  get tempCount() {
+    return this._tempCount;
+  }
+  get poolCount() {
+    return this._poolCount;
+  }
+  get agencyCount() {
+    return this._agencyCount;
+  }
+  get studentCount() {
+    return this._studentCount;
+  }
+  get voluntaryCount() {
+    return this._voluntaryCount;
+  }
+  get otherCount() {
+    return this._otherCount;
+  }
+  get otherDescriptions() {
+    return this._otherDescriptions;
+  }
+  get allJobs() {
+    return this._alljobs;
+  }
+  get vacancies() {
+    return this._vacancies;
+  }
+  get starters() {
+    return this._starters;
+  }
+  get leavers() {
+    return this._leavers;
+  }
+  get totalVacancies() {
+    return this._totalVacancies;
+  }
+  get totalStarters() {
+    return this._totalStarters;
+  }
+  get totalLeavers() {
+    return this._totalLeavers;
+  }
+  get reasonsForLeaving() {
+    return this._reasonsForLeaving;
+  }
+  get destinationOnLeaving() {
+    return this._destinationOnLeaving;
   }
 
   _validateLocalisedId() {
@@ -287,7 +390,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -392,7 +495,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -635,7 +738,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -707,13 +810,662 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
     return true;
   }
 
+  _validateCapacitiesAndUtilisations() {
+    // capacities/utilisations are a semi colon delimited list of integers
+
+    const listOfCapacities = this._currentLine.CAPACITY.split(';');
+    const listOfUtilisations = this._currentLine.UTILISATION.split(';');
+
+    const localValidationErrors = [];
+
+    // first - the number of capacities/utilisations must be non-zero and must be equal
+    if (listOfCapacities.length === 0) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "Capacities (CAPACITY) must be a semi-colon delimited list of integers",
+        source: this._currentLine.CAPACITY,
+      });
+    }
+    if (listOfUtilisations.length === 0) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "Utilisations (UTILISATION) must be a semi-colon delimited list of integers",
+        source: this._currentLine.UTILISATION,
+      });
+    }
+    if (listOfCapacities.length != listOfUtilisations.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "Number of Capacities (CAPACITY) and Utilisations (UTILISATION) must be equal",
+        source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`,
+      });
+    }
+
+    // and the number of utilisations/capacities must equal the number of all services
+    if (listOfCapacities.length !== this._allServices.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "Number of Capacities/Utilisations (CAPACITY/UTILISATION) must equal the number of all services (ALLSERVICES)",
+        source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION} - ${this._currentLine.ALLSERVICES}`,
+      });
+    }
+
+    // all capacities and all utilisations are integers (if given)
+    const areCapacitiesValid = listOfCapacities.every(thisCapacity => thisCapacity === null || thisCapacity.length==0 ? true : !Number.isNaN(parseInt(thisCapacity)));
+    if (!areCapacitiesValid) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "All capacities (CAPACITY) must be integers",
+        source: this._currentLine.CAPACITY,
+      });
+    }
+    const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => thisUtilisation === null || thisUtilisation.length==0 ? true : !Number.isNaN(parseInt(thisUtilisation)));
+    if (!areUtilisationsValid) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "All utilisations (UTILISATION) must be integers",
+        source: this._currentLine.UTILISATION,
+      });
+    }
+    
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+      return false;
+    }
+
+    this._capacities = listOfCapacities.map(thisCapacity => parseInt(thisCapacity, 10));
+    this._utilisations = listOfUtilisations.map(thisUtilisation => parseInt(thisUtilisation, 10));
+
+    return true;
+  }
+
+  _validateTotalPermTemp() {
+    // mandatory
+    const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP);
+
+    if (Number.isNaN(myTotalPermTemp)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
+        errType: `TOTAL_PERM_TEMP_ERROR`,
+        error: "Total Permanent and Temporary (TOTALPERMTEMP) must be an integer",
+        source: this._currentLine.PERMCQC,
+      });
+      return false;
+    } else if (myTotalPermTemp < 0) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
+        errType: `TOTAL_PERM_TEMP_ERROR`,
+        error: "Total Permanent and Temporary (TOTALPERMTEMP) must be 0 or more",
+        source: myShareWithCqc,
+      });
+      return false;
+    } else {
+      this._totalPermTemp = myTotalPermTemp;
+      return true;
+    }
+  }
+
+  _validateAllJobs() {
+    // mandatory
+    const allJobs = this._currentLine.ALLJOBROLES.split(';');
+
+    const localValidationErrors = [];
+
+    // allJobs can only be empty, if TOTALPERMTEMP is 0
+    if (this._totalPermTemp > 0 && this._currentLine.ALLJOBROLES.length === 0) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.ALL_JOBS_ERROR,
+        errType: `ALL_JOBS_ERROR`,
+        error: "All Job Roles (ALLJOBROLES) must be defined",
+        source: this._currentLine.ALLJOBROLES,
+      });
+    } else if (this._totalPermTemp > 0) {
+      // must have at least one job role
+      if (allJobs.length < 1) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.ALL_JOBS_ERROR,
+          errType: `ALL_JOBS_ERROR`,
+          error: "All Job Roles (ALLJOBROLES) must be defined",
+          source: this._currentLine.ALLJOBROLES,
+        });
+      }
+      // all jobs are integers
+      const isValid = allJobs.every(thisJob => !Number.isNaN(parseInt(thisJob)));
+      if (!isValid) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.ALL_JOBS_ERROR,
+          errType: `ALL_JOBS_ERROR`,
+          error: "All Job Roles (ALLJOBROLES)  must be integers",
+          source: this._currentLine.ALLJOBROLES,
+        });
+      }
+    }
+
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+      return false;
+    }
+
+    this._alljobs = allJobs.map(thisJob => parseInt(thisJob, 10));
+
+    return true;
+  }
+
+  // includes perm, temp, pool, agency, student, voluntary and other counts
+  // includes vacancies, starters and leavers, total vacancies, total starters and total leavers
+  _validateJobRoleTotals() {
+    // mandatory
+    const permCount = this._currentLine.PERMCOUNT.split(';');
+    const tempCount = this._currentLine.TEMPCOUNT.split(';');
+    const poolCount = this._currentLine.POOLCOUNT.split(';');
+    const agencyCount = this._currentLine.AGENCYCOUNT.split(';');
+    const studentCount = this._currentLine.STUDENTCOUNT.split(';');
+    const voluntaryCount = this._currentLine.VOLUNTARYCOUNT.split(';');
+    const otherCount = this._currentLine.OTHERCOUNT.split(';');
+    const otherDescriptions = this._currentLine.OTHERDESC.split(';');
+
+    const vacancies = this._currentLine.VACANCIES.split(';');
+    const starters = this._currentLine.STARTERS.split(';');
+    const leavers = this._currentLine.LEAVERS.split(';');
+
+    const totalVacancies = this._currentLine.TOTALVACANCIES === 'NK' ? -1 : parseInt(this._currentLine.TOTALVACANCIES);
+    const totalStarters = this._currentLine.TOTALSTARTERS === 'NK' ? -1 : parseInt(this._currentLine.TOTALSTARTERS);
+    const totalLeavers = this._currentLine.TOTALLEAVERS === 'NK' ? -1 : parseInt(this._currentLine.TOTALLEAVERS);
+
+    const localValidationErrors = [];
+    const allJobsCount = this._alljobs.length;
+
+    // all counts must have the same number of entries as all job roles
+    if (permCount.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.PERM_COUNT_ERROR,
+        errType: `PERM_COUNT_ERROR`,
+        error: "Permanent Count (PERMCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.PERMCOUNT} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (tempCount.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TEMP_COUNT_ERROR,
+        errType: `TEMP_COUNT_ERROR`,
+        error: "Temporary Count (TEMPCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.TEMPCOUNT} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (poolCount.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.POOL_COUNT_ERROR,
+        errType: `POOL_COUNT_ERROR`,
+        error: "Pool Count (POOLCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.POOLCOUNT} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (agencyCount.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.AGENCY_COUNT_ERROR,
+        errType: `AGENCY_COUNT_ERROR`,
+        error: "Agency Count (AGENCYCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.AGENCYCOUNT} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (studentCount.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.STUDENT_COUNT_ERROR,
+        errType: `STUDENT_COUNT_ERROR`,
+        error: "Student Count (STUDENTCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.STUDENTCOUNT} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (voluntaryCount.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.VOLUNATRY_COUNT_ERROR,
+        errType: `VOLUNATRY_COUNT_ERROR`,
+        error: "Voluntary Count (VOLUNTARYCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.VOLUNTARYCOUNT} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (otherCount.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.OTHER_COUNT_ERROR,
+        errType: `OTHER_COUNT_ERROR`,
+        error: "Other Count (OTHERCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.OTHERCOUNT} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (otherDescriptions.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.OTHER_COUNT_ERROR,
+        errType: `OTHER_COUNT_ERROR`,
+        error: "Other Descriptions (OTHERDESC) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.OTHERDESC} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (vacancies.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.VACANCIES_ERROR,
+        errType: `VACANCIES_ERROR`,
+        error: "Vacancies (VACANCIES) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (starters.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.STARTERS_ERROR,
+        errType: `STARTERS_ERROR`,
+        error: "Starters (STARTERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+    if (leavers.length !== allJobsCount) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.LEAVERS_ERROR,
+        errType: `LEAVERS_ERROR`,
+        error: "Leavers (LEAVERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
+        source: `${this._currentLine.LEAVERS} - ${this._currentLine.ALLJOBROLES}`,
+      });
+    }
+
+    // all counts must be integers and greater than/equal to zero
+    const MIN_COUNT = 0;
+    if (!permCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.PERM_COUNT_ERROR,
+        errType: `PERM_COUNT_ERROR`,
+        error: `Permanent Count (PERMCOUNT) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.PERMCOUNT}`,
+      });
+    }
+    if (!tempCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TEMP_COUNT_ERROR,
+        errType: `TEMP_COUNT_ERROR`,
+        error: `Temporary Count (TEMPCOUNT) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.TEMPCOUNT}`,
+      });
+    }
+    if (!poolCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.POOL_COUNT_ERROR,
+        errType: `POOL_COUNT_ERROR`,
+        error: `Pool Count (POOLCOUNT) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.POOLCOUNT}`,
+      });
+    }
+    if (!agencyCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.AGENCY_COUNT_ERROR,
+        errType: `AGENCY_COUNT_ERROR`,
+        error: `Perm Count (AGENCYCOUNT) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.AGENCYCOUNT}`,
+      });
+    }
+    if (!studentCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.STUDENT_COUNT_ERROR,
+        errType: `STUDENT_COUNT_ERROR`,
+        error: `Student Count (STUDENTCOUNT) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.STUDENTCOUNT}`,
+      });
+    }
+    if (!voluntaryCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.VOLUNATRY_COUNT_ERROR,
+        errType: `VOLUNATRY_COUNT_ERROR`,
+        error: `Voluntary Count (VOLUNTARYCOUNT) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.VOLUNTARYCOUNT}`,
+      });
+    }
+    if (!otherCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.OTHER_COUNT_ERROR,
+        errType: `OTHER_COUNT_ERROR`,
+        error: `Other Count (OTHERCOUNT) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.OTHERCOUNT}`,
+      });
+    }
+    if (!vacancies.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.VACANCIES_ERROR,
+        errType: `VACANCIES_ERROR`,
+        error: `Vacancies (VACANCIES) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.VACANCIES}`,
+      });
+    }
+    if (!starters.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.STARTERS_ERROR,
+        errType: `STARTERS_ERROR`,
+        error: `Starters (STARTERS) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.STARTERS}`,
+      });
+    }
+    if (!leavers.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.LEAVERS_ERROR,
+        errType: `LEAVERS_ERROR`,
+        error: `Leavers (LEAVERS) values must be integers and ${MIN_COUNT} or more`,
+        source: `${this._currentLine.LEAVERS}`,
+      });
+    }
+
+    // totals - must be defined and must be an integer greater than/equal to -1 (-1 is don't know)
+    const TOTAL_MIN = -1;
+    if (Number.isNaN(totalVacancies) || totalVacancies < TOTAL_MIN) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_VACANCIES_ERROR,
+        errType: `TOTAL_VACANCIES_ERROR`,
+        error: `Total Vacancies (TOTALVACANCIES) must be an integer and ${TOTAL_MIN} or more`,
+        source: this._currentLine.TOTALVACANCIES,
+      });
+    }
+    if (Number.isNaN(totalStarters) || totalStarters < TOTAL_MIN) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_STARTERS_ERROR,
+        errType: `TOTAL_STARTERS_ERROR`,
+        error: `Total Starters (TOTALSTARTERS) must be an integer and ${TOTAL_MIN} or more`,
+        source: this._currentLine.TOTALSTARTERS,
+      });
+    }
+    if (Number.isNaN(totalLeavers) || totalLeavers < TOTAL_MIN) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_LEAVERS_ERROR,
+        errType: `TOTAL_LEAVERS_ERROR`,
+        error: `Total Leavers (TOTALLEAVERS) must be an integer and ${TOTAL_MIN} or more`,
+        source: this._currentLine.TOTALLEAVERS,
+      });
+    }
+
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+      return false;
+    }
+
+    this._permCount = permCount.map(thisCount => parseInt(thisCount, 10));
+    this._tempCount = tempCount.map(thisCount => parseInt(thisCount, 10));
+    this._poolCount = poolCount.map(thisCount => parseInt(thisCount, 10));
+    this._agencyCount = agencyCount.map(thisCount => parseInt(thisCount, 10));
+    this._studentCount = studentCount.map(thisCount => parseInt(thisCount, 10));
+    this._voluntaryCount = voluntaryCount.map(thisCount => parseInt(thisCount, 10));
+    this._otherCount = otherCount.map(thisCount => parseInt(thisCount, 10));
+    this._otherDescriptions = otherDescriptions;
+
+    this._vacancies = vacancies.map(thisCount => parseInt(thisCount, 10));
+    this._starters = starters.map(thisCount => parseInt(thisCount, 10));
+    this._leavers = leavers.map(thisCount => parseInt(thisCount, 10));
+
+    // totals - must equal the sum on the per job role
+    const sumOfVacancies = this._vacancies.reduce((total, thisCount) => total+thisCount);
+    const sumOfStarters = this._starters.reduce((total, thisCount) => total+thisCount);
+    const sumOfLeavers = this._leavers.reduce((total, thisCount) => total+thisCount);
+    if (totalVacancies !== sumOfVacancies) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_VACANCIES_ERROR,
+        errType: `TOTAL_VACANCIES_ERROR`,
+        error: 'Total Vacancies (TOTALVACANCIES) is not equal to the sum of Vacancies by job role (VACANCIES)',
+        source: `${this._currentLine.VACANCIES} - ${this._currentLine.TOTALVACANCIES}`,
+      });
+    }
+    if (totalStarters !== sumOfStarters) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_STARTERS_ERROR,
+        errType: `TOTAL_STARTERS_ERROR`,
+        error: 'Total Starters (TOTALVACANCIES) is not equal to the sum of Starters by job role (STARTERS)',
+        source: `${this._currentLine.STARTERS} - ${this._currentLine.TOTALSTARTERS}`,
+      });
+    }
+    if (totalLeavers !== sumOfLeavers) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.TOTAL_LEAVERS_ERROR,
+        errType: `TOTAL_LEAVERS_ERROR`,
+        error: 'Total Leavers (TOTALVACANCIES) is not equal to the sum of Leavers by job role (LEAVERS)',
+        source: `${this._currentLine.LEAVERS} - ${this._currentLine.TOTALLEAVERS}`,
+      });
+    }
+
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
+      return false;
+    }    
+
+    this._totalVacancies = totalVacancies;
+    this._totalStarters = totalStarters;
+    this._totalLeavers = totalLeavers;
+
+    return true;
+  }
+
+  _validateReasonsForLeaving() {
+    // only if the sum of "LEAVERS" is greater than 0
+    const sumOfLeavers = this._leavers.reduce((total, thisCount) => total+thisCount);
+
+    if (sumOfLeavers > 0) {
+      const allReasons = this._currentLine.REASONS.split(';');
+      const allReasonsCounts = this._currentLine.REASONNOS.split(';');
+
+      const localValidationErrors = [];
+  
+      if (!allReasons || allReasons.length==0) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: "Reasons for Leaving (REASONS) must be defined as a semi-colon delimited set of reasons",
+          source: this._currentLine.REASONS,
+        });
+      }
+      if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: `Reasons for Leaving (REASONS) values must be integers`,
+          source: `${this._currentLine.REASONS}`,
+        });
+      }
+
+      if (!allReasonsCounts || allReasonsCounts.length==0) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: "Reasons for Leaving Counts (REASONNOS) must be defined as a semi-colon delimited set of reasons",
+          source: this._currentLine.REASONNOS,
+        });
+      }
+      const MIN_COUNT = 0;
+      if (!allReasonsCounts.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: `Reasons for Leaving Counts (REASONNOS) values must be integers and ${MIN_COUNT} or more`,
+          source: `${this._currentLine.REASONNOS}`,
+        });
+      }
+
+      // all reasons and all reasons counts must be equal in number
+      if (allReasons.length != allReasonsCounts.length) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: `Reasons for Leaving (REASON) and Reasons for Leaving Counts (REASONNOS) must have the same number of semi-colon delimited values`,
+          source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
+        });
+      }
+
+      // sum of  all reasons counts must equal the sum of leavers
+      const sumOfReasonsCounts = allReasonsCounts.reduce((total, thisCount) => parseInt(total,10) + parseInt(thisCount,10));
+      if (sumOfReasonsCounts != sumOfLeavers) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: `Sum of Reasons for Leaving Counts (REASONNOS) must equal the sum of leavers (LEAVERS)`,
+          source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
+        });
+      }
+  
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
+  
+      this._reasonsForLeaving = allReasons.map((thisReason, index) => {
+        return {
+          id: parseInt(thisReason, 10),
+          count: parseInt(allReasonsCounts[index])
+        };
+      });
+
+      return true;
+  
+    } else {
+      return true;
+    }
+  }
+
+  _validateDestinationsOnLeaving() {
+    // only if the sum of "LEAVERS" is greater than 0
+    const sumOfLeavers = this._leavers.reduce((total, thisCount) => total+thisCount);
+
+    if (sumOfLeavers > 0) {
+      const allDestinations = this._currentLine.DESTINATIONS.split(';');
+      const allDestinationsCounts = this._currentLine.DESTNOS.split(';');
+
+      const localValidationErrors = [];
+  
+      if (!allDestinations || allDestinations.length==0) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: "Destinations On Leaving (REASONS) must be defined as a semi-colon delimited set of reasons",
+          source: this._currentLine.REASONS,
+        });
+      }
+      if (!allDestinations.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: `Destinations On Leaving (REASONS) values must be integers`,
+          source: `${this._currentLine.REASONS}`,
+        });
+      }
+
+      if (!allDestinationsCounts || allDestinationsCounts.length==0) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: "Destinations On Leaving Counts (REASONNOS) must be defined as a semi-colon delimited set of reasons",
+          source: this._currentLine.REASONNOS,
+        });
+      }
+      const MIN_COUNT = 0;
+      if (!allDestinationsCounts.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: `Destinations On Leaving Counts (REASONNOS) values must be integers and ${MIN_COUNT} or more`,
+          source: `${this._currentLine.REASONNOS}`,
+        });
+      }
+
+      // all reasons and all reasons counts must be equal in number
+      if (allDestinations.length != allDestinationsCounts.length) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: `Destinations On Leaving (REASON) and Destinations On Leaving Counts (REASONNOS) must have the same number of semi-colon delimited values`,
+          source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
+        });
+      }
+
+      // sum of  all reasons counts must equal the sum of leavers
+      const sumOfReasonsCounts = allDestinationsCounts.reduce((total, thisCount) => parseInt(total,10) + parseInt(thisCount,10));
+      if (sumOfReasonsCounts != sumOfLeavers) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: `Sum of Destinations On Leaving Counts (REASONNOS) must equal the sum of leavers (LEAVERS)`,
+          source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
+        });
+      }
+  
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
+  
+      this._destinationOnLeaving = allDestinations.map((thisDestination, index) => {
+        return {
+          id: parseInt(thisDestination, 10),
+          count: parseInt(allDestinationsCounts[index])
+        };
+      });
+
+      return true;
+  
+    } else {
+      return true;
+    }
+  }
 
   _transformMainService() {
     if (this._mainService) {
@@ -807,6 +1559,83 @@ class Establishment {
     }
   }
 
+  _transformAllJobs() {
+    if (this._alljobs && Array.isArray(this._alljobs)) {
+      const mappedJobs = [];
+
+      this._alljobs.forEach(thisJob => {
+        const thisMappedJob = BUDI.jobRoles(BUDI.TO_ASC, thisJob);
+
+        if (thisMappedJob) {
+          mappedJobs.push(thisMappedJob);
+        } else {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.ALL_JOBS_ERROR,
+            errType: `ALL_JOBS_ERROR`,
+            error: `All Job Roles (ALLJOBROLES): ${thisJob} is unknown`,
+            source: this._currentLine.ALLJOBROLES,
+          });
+        }
+      });
+
+      this._alljobs = mappedJobs;
+    }
+  }
+
+  _transformReasonsForLeaving() {
+    if (this._reasonsForLeaving && Array.isArray(this._reasonsForLeaving)) {
+      const mappedReasons = [];
+
+      this._reasonsForLeaving.forEach(thisReason => {
+        const thisMappedReason = {
+          id: BUDI.reasonsForLeaving(BUDI.TO_ASC, thisReason.id),
+          count: thisReason.count
+        };
+
+        if (thisMappedReason.id) {
+          mappedReasons.push(thisMappedReason);
+        } else {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+            errType: `REASONS_FOR_LEAVING_ERROR`,
+            error: `Reason for Leaving (REASONS): ${thisReason.id} is unknown`,
+            source: this._currentLine.REASONS,
+          });
+        }
+      });
+
+      this._reasonsForLeaving = mappedReasons;
+    }
+  }
+
+  _transformDestinationsOnLeaving() {
+    if (this._destinationOnLeaving && Array.isArray(this._destinationOnLeaving)) {
+      const mappedDestinations = [];
+
+      this._destinationOnLeaving.forEach(thisDestination => {
+        const thisMappedDestination = {
+          id: BUDI.destinationOnLeaving(BUDI.TO_ASC, thisDestination.id),
+          count: thisDestination.count
+        };
+
+        if (thisMappedDestination.id) {
+          mappedDestinations.push(thisMappedDestination);
+        } else {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+            errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+            error: `Destination on Leaving (DESTINATIONS): ${thisDestination.id} is unknown`,
+            source: this._currentLine.REASONS,
+          });
+        }
+      });
+
+      this._destinationOnLeaving = mappedDestinations;
+    }
+  }
 
   // returns true on success, false is any attribute of Establishment fails
   validate() {
@@ -840,7 +1669,15 @@ class Establishment {
     status = !this._validateMainService() ? false : status;
     status = !this._validateAllServices() ? false : status;
     status = !this._validateServiceUsers() ? false : status;
+    status = !this._validateCapacitiesAndUtilisations() ? false : status;
 
+    status = !this._validateTotalPermTemp() ? false : status;
+    status = !this._validateAllJobs() ? false : status;
+    status = !this._validateJobRoleTotals() ? false : status;
+
+    status = !this._validateReasonsForLeaving() ? false : status;
+    status = !this._validateDestinationsOnLeaving() ? false : status;
+    
     return status;
   }
 
@@ -853,6 +1690,10 @@ class Establishment {
     status = !this._transformLocalAuthorities() ? false : status;
     status = !this._transformAllServices() ? false : status;
     status = !this._transformServiceUsers() ? false : status;
+    status = !this._transformAllJobs() ? false : status;
+
+    status = !this._transformReasonsForLeaving() ? false : status;
+    status = !this._transformDestinationsOnLeaving() ? false : status;
 
     return status;
   }
@@ -894,6 +1735,28 @@ class Establishment {
 
         return returnThis;
       }),
+      capacities: this._capacities,
+      utilisations: this._utilisations,
+      totalPermTemp: this._totalPermTemp,
+      allJobs: this._alljobs,
+      counts: {
+        perm: this._permCount,
+        temp: this._tempCount,
+        pool: this._poolCount,
+        agency: this._agencyCount,
+        student: this._studentCount,
+        voluntary: this._voluntaryCount,
+        other: this._otherCount,
+        otherDescriptions: this._otherDescriptions,
+        vacancies: this._vacancies,
+        starters: this._starters,
+        leavers: this._leavers,
+        totalVacancies: this._totalVacancies,
+        totalStarters: this._totalStarters,
+        totalLeavers: this._totalLeavers,
+        reasonsForLeaving: this._reasonsForLeaving ? this._reasonsForLeaving : undefined,
+        destinationsOnLeaving: this._destinationOnLeaving ? this._destinationOnLeaving : undefined,
+      },
 
     }, null, 4);
   };

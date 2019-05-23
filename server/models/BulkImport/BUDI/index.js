@@ -83,7 +83,7 @@ class BUDI {
     }
   }
 
-    // maps service users
+  // maps service users
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
   static serviceUsers(direction, originalCode) {
     const fixedMapping = [
@@ -117,6 +117,50 @@ class BUDI {
       return found ? found.ASC : null;
     } else {
       const found = fixedMapping.find(thisService => thisService.ASC == originalCode)
+      return found ? found.BUDI : null;
+    }
+  }
+
+  // maps job roles
+  // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
+  static jobRoles(direction, originalCode) {
+    const fixedMapping = [
+      { "ASC": 26, "BUDI": 1},
+      { "ASC": 15, "BUDI": 2},
+      { "ASC": 13, "BUDI": 3},
+      { "ASC": 22, "BUDI": 4},
+      { "ASC": 28, "BUDI": 5},
+      { "ASC": 27, "BUDI": 6},
+      { "ASC": 25, "BUDI": 7},
+      { "ASC": 10, "BUDI": 8},
+      { "ASC": 11, "BUDI": 9},
+      { "ASC": 12, "BUDI": 10},
+      { "ASC": 3, "BUDI": 11},
+      { "ASC": 18, "BUDI": 15},
+      { "ASC": 23, "BUDI": 16},
+      { "ASC": 4, "BUDI": 17},
+      { "ASC": 29, "BUDI": 22},
+      { "ASC": 20, "BUDI": 23},
+      { "ASC": 14, "BUDI": 24},
+      { "ASC": 2, "BUDI": 25},
+      { "ASC": 5, "BUDI": 26},
+      { "ASC": 21, "BUDI": 27},
+      { "ASC": 1, "BUDI": 34},
+      { "ASC": 24, "BUDI": 35},
+      { "ASC": 19, "BUDI": 36},
+      { "ASC": 17, "BUDI": 37},
+      { "ASC": 16, "BUDI": 38},
+      { "ASC": 7, "BUDI": 39},
+      { "ASC": 8, "BUDI": 40},
+      { "ASC": 9, "BUDI": 41},
+      { "ASC": 6, "BUDI": 42},
+    ];
+
+    if (direction == BUDI.TO_ASC) {
+      const found = fixedMapping.find(thisJob => thisJob.BUDI == originalCode);
+      return found ? found.ASC : null;
+    } else {
+      const found = fixedMapping.find(thisJob => thisJob.ASC == originalCode)
       return found ? found.BUDI : null;
     }
   }
@@ -206,6 +250,40 @@ class BUDI {
     } else {
       // ASC WDS local authority is an object where "custodianCode" is the Local Authority integer
       return originalCode.custodianCode;
+    }
+  }
+
+  // maps reasons for leaving - one to one mapping (no ASC WDS reasons for leaving)
+  static reasonsForLeaving(direction, originalCode) {
+    const fixedMapping = [
+      {"ASC": 1, "BUDI": 21},
+      {"ASC": 2, "BUDI": 22},
+      {"ASC": 3, "BUDI": 23},
+      {"ASC": 4, "BUDI": 24},
+      {"ASC": 5, "BUDI": 25},
+      {"ASC": 6, "BUDI": 26},
+      {"ASC": 7, "BUDI": 27},
+      {"ASC": 8, "BUDI": 28},
+      {"ASC": 9, "BUDI": 29},
+    ];
+
+    // TODO - the above mappings are incorrect; awaiting for Maria's/Jackie's return
+    // if (direction == BUDI.TO_ASC) {
+    //   const found = fixedMapping.find(thisReason => thisReason.BUDI == originalCode);
+    //   return found ? found.ASC : null;
+    // } else {
+    //   const found = fixedMapping.find(thisReason => thisReason.ASC == originalCode)
+    //   return found ? found.BUDI : null;
+    // }
+    return originalCode;
+  }
+
+  // destination on  leaving - one to one mapping (no ASC WDS destinations on leaving)
+  static destinationOnLeaving (direction, originalCode) {
+    if (direction == BUDI.TO_ASC) {
+      return originalCode;
+    } else {
+      return originalCode;
     }
   }
 }
