@@ -96,16 +96,13 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
   }
 
   protected generateUpdateProps() {
-    const { primaryAuthority, localAuthorities } = this.form.value;
+    const authorities = [];
+    this.localAuthoritiesArray.controls.forEach(control =>
+      authorities.push({ custodianCode: parseInt(control.value.custodianCode, 10) })
+    );
 
-    const authorities = localAuthorities
-      .filter(authority => !!authority.custodianCode)
-      .map(authority => {
-        return { custodianCode: parseInt(authority.custodianCode, 10) };
-      });
-
-    if (primaryAuthority) {
-      authorities.push({ custodianCode: this.establishment.primaryAuthority.custodianCode });
+    if (this.primaryAuthority) {
+      authorities.push(this.primaryAuthority);
     }
 
     return {
