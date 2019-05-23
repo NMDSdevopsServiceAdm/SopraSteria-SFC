@@ -107,6 +107,14 @@ class Worker {
   get disabled() {
     return this._disabled;
   }
+  get indStatus() {
+    return this._indStatus;
+  }
+  get indDate() {
+    return this._indDate;
+  }
+
+
 
   _validateContractType() {
     const myContractType = parseInt(this._currentLine.EMPLSTATUS);
@@ -482,12 +490,99 @@ class Worker {
 
 
   _validateDisabled() {
+    const disabledValues = [0,1]; 
+    const myDisabled = this._currentLine.DISABLED;
+
+    if (isNaN(myDisabled)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.DISABLED_ERROR,
+        errType: 'DISABLED_ERROR',
+        error: "Disabled (DISABLED) must be an integer",
+        source: this._currentLine.DISABLED,
+      });
+      return false;
+    } else if (myDisabled && !disabledValues.includes(parseInt(myDisabled))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.DISABLED_ERROR,
+        errType: 'DISABLED_ERROR',
+        error: "Disabled (DISABLED) must have value 0(No Disability) or 1(Has Disability)",
+        source: this._currentLine.DISABLED,
+      });
+      return false;
+    }
+    else {
+      this._disabled = myDisabled;
+      return true;
+    }
 
   }
 
+  _validateIndStatus() {
+    const indStatusValues = [1,3];
+    const myIndStatus = this._currentLine.INDSTATUS;
 
+    if (myIndStatus && isNaN(myIndStatus)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.INDSTATUS_ERROR,
+        errType: 'INDSTATUS_ERROR',
+        error: "IndStatus (INDSTATUS) must be an integer",
+        source: this._currentLine.INDSTATUS,
+      });
+      return false;
+    } else if (myIndStatus && !indStatusValues.includes(parseInt(myIndStatus))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.INDSTATUS_ERROR,
+        errType: 'INDSTATUS_ERROR',
+        error: "IndStatus (INDSTATUS) must have value 1(induction complete) or 3(not applicable)",
+        source: this._currentLine.INDSTATUS,
+      });
+      return false;
+    }
+    else {
+      this._indStatus = myIndStatus;
+      return true;
+    }
 
+  }
 
+  //date can not be in future,
+  //Question: only answer or if above is provided
+  _validateIndDate() {
+    const myIndDate = this._currentLine.INDDATE;
+    const myIndStatus = this._currentLine.INDSTATUS;
+
+    const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
+
+    var d1 = new Date();
+    var d2 = new Date(myIndDate);
+
+    if (myIndDate && !dateRegex.test(myIndDate)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.INDDATE_ERROR,
+        errType: 'INDSTATUS_ERROR',
+        error: "IndDate (INDDATE) should by in dd/mm/yyyy format",
+        source: this._currentLine.INDDATE,
+      });
+      return false;
+    } else if ((d2 > d1)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.INDDATE_ERROR,
+        errType: 'INDSTATUS_ERROR',
+        error: "Date can not be in future",
+        source: this._currentLine.INDDATE,
+      });
+      return false;
+    } else {
+      this._indDate = myIndDate;
+      return true;
+    }
+  }
 
 
 
@@ -516,8 +611,13 @@ class Worker {
     status = !this._validateEthnicity() ? false : status;
     status = !this._validateCitizenShip() ? false : status;
     status = !this._validateYearOfEntry() ? false : status;
+    status = !this._validateDisabled() ? false : status;
+    status = !this._validateIndStatus() ? false : status;
+    status = !this._validateIndDate() ? false : status;
+    
+    
 
-   
+
     return status;
   };
 
