@@ -113,6 +113,12 @@ class Worker {
   get indDate() {
     return this._indDate;
   }
+  get careCert() {
+    return this._careCert;
+  }
+  get careCertDate() {
+    return this._careCertDate;
+  }
 
 
 
@@ -584,6 +590,67 @@ class Worker {
     }
   }
 
+  _validateCareCert() {
+    const careCertValues = [1, 2, 3];
+    const myCareCert = this._currentLine.CARECERT;
+
+    if (myCareCert && isNaN(myCareCert)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.CARE_CERT_ERROR,
+        errType: 'CARECERT_ERROR',
+        error: "Care Certificate (CARECERT) must be an integer",
+        source: this._currentLine.CARECERT,
+      });
+      return false;
+    } else if (myCareCert && !careCertValues.includes(parseInt(myCareCert))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.CARE_CERT_ERROR,
+        errType: 'CARECERT_ERROR',
+        error: "Care Certificate (CARECERT)  must have value 1(YES) or 2(NO) or 3(IN PROGRESS)",
+        source: this._currentLine.CARECERT,
+      });
+      return false;
+    }
+    else {
+      this._careCert = myCareCert;
+      return true;
+    }
+
+  }
+
+  _validateCareCertDate() {
+    const myCareCertDate = this._currentLine.CARECERTDATE;
+    const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
+
+    var d1 = new Date();
+    var d2 = new Date(myCareCertDate);
+
+    if (myCareCertDate && !dateRegex.test(myCareCertDate)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.CARE_CERT_DATE_ERROR,
+        errType: 'CARECERTDATE_ERROR',
+        error: "Care Certificate Date (CARECERTDATE) should by in dd/mm/yyyy format",
+        source: this._currentLine.CARECERTDATE,
+      });
+      return false;
+    } else if (myCareCertDate && (d2 > d1)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.CARE_CERT_DATE_ERROR,
+        errType: 'CARECERTDATE_ERROR',
+        error: "Care Certificate (CARECERTDATE) Date can not be in future",
+        source: this._currentLine.CARECERTDATE,
+      });
+      return false;
+    } else {
+      this._careCertDate = myCareCertDate;
+      return true;
+    }
+  }
+
 
 
   //transform related
@@ -614,8 +681,8 @@ class Worker {
     status = !this._validateDisabled() ? false : status;
     status = !this._validateIndStatus() ? false : status;
     status = !this._validateIndDate() ? false : status;
-    
-    
+    status = !this._validateCareCert() ? false : status;
+    status = !this._validateCareCertDate() ? false : status;
 
 
     return status;
