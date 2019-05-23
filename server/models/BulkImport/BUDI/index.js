@@ -252,6 +252,40 @@ class BUDI {
       return originalCode.custodianCode;
     }
   }
+
+  // maps reasons for leaving - one to one mapping (no ASC WDS reasons for leaving)
+  static reasonsForLeaving(direction, originalCode) {
+    const fixedMapping = [
+      {"ASC": 1, "BUDI": 21},
+      {"ASC": 2, "BUDI": 22},
+      {"ASC": 3, "BUDI": 23},
+      {"ASC": 4, "BUDI": 24},
+      {"ASC": 5, "BUDI": 25},
+      {"ASC": 6, "BUDI": 26},
+      {"ASC": 7, "BUDI": 27},
+      {"ASC": 8, "BUDI": 28},
+      {"ASC": 9, "BUDI": 29},
+    ];
+
+    // TODO - the above mappings are incorrect; awaiting for Maria's/Jackie's return
+    // if (direction == BUDI.TO_ASC) {
+    //   const found = fixedMapping.find(thisReason => thisReason.BUDI == originalCode);
+    //   return found ? found.ASC : null;
+    // } else {
+    //   const found = fixedMapping.find(thisReason => thisReason.ASC == originalCode)
+    //   return found ? found.BUDI : null;
+    // }
+    return originalCode;
+  }
+
+  // destination on  leaving - one to one mapping (no ASC WDS destinations on leaving)
+  static destinationOnLeaving (direction, originalCode) {
+    if (direction == BUDI.TO_ASC) {
+      return originalCode;
+    } else {
+      return originalCode;
+    }
+  }
 }
 
 BUDI.initialize()

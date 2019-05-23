@@ -51,6 +51,8 @@ class Establishment {
     this._totalVacancies = null;
     this._totalStarters = null;
     this._totalLeavers = null;
+    this._reasonsForLeaving = null;
+    this._destinationOnLeaving = null;
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -87,6 +89,9 @@ class Establishment {
   static get TOTAL_VACANCIES_ERROR() { return 1330; }
   static get TOTAL_STARTERS_ERROR() { return 1340; }
   static get TOTAL_LEAVERS_ERROR() { return 1350; }
+
+  static get REASONS_FOR_LEAVING_ERROR() { return 1360; }
+  static get DESTINATIONS_ON_LEAVING_ERROR() { return 1370; }
 
   get localId() {
     return this._localId;
@@ -205,6 +210,12 @@ class Establishment {
   }
   get totalLeavers() {
     return this._totalLeavers;
+  }
+  get reasonsForLeaving() {
+    return this._reasonsForLeaving;
+  }
+  get destinationOnLeaving() {
+    return this._destinationOnLeaving;
   }
 
   _validateLocalisedId() {
@@ -379,7 +390,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -484,7 +495,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -727,7 +738,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -799,7 +810,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -854,8 +865,8 @@ class Establishment {
       });
     }
 
-    // all capacities and all utilisations are integers
-    const areCapacitiesValid = listOfCapacities.every(thisCapacity => !Number.isNaN(parseInt(thisCapacity)));
+    // all capacities and all utilisations are integers (if given)
+    const areCapacitiesValid = listOfCapacities.every(thisCapacity => thisCapacity === null || thisCapacity.length==0 ? true : !Number.isNaN(parseInt(thisCapacity)));
     if (!areCapacitiesValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -865,7 +876,7 @@ class Establishment {
         source: this._currentLine.CAPACITY,
       });
     }
-    const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => !Number.isNaN(parseInt(thisUtilisation)));
+    const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => thisUtilisation === null || thisUtilisation.length==0 ? true : !Number.isNaN(parseInt(thisUtilisation)));
     if (!areUtilisationsValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -877,7 +888,7 @@ class Establishment {
     }
     
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -955,7 +966,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -1213,7 +1224,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
@@ -1263,7 +1274,7 @@ class Establishment {
     }
 
     if (localValidationErrors.length > 0) {
-      this._validationErrors.push(localValidationErrors);
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
       return false;
     }    
 
@@ -1274,6 +1285,187 @@ class Establishment {
     return true;
   }
 
+  _validateReasonsForLeaving() {
+    // only if the sum of "LEAVERS" is greater than 0
+    const sumOfLeavers = this._leavers.reduce((total, thisCount) => total+thisCount);
+
+    if (sumOfLeavers > 0) {
+      const allReasons = this._currentLine.REASONS.split(';');
+      const allReasonsCounts = this._currentLine.REASONNOS.split(';');
+
+      const localValidationErrors = [];
+  
+      if (!allReasons || allReasons.length==0) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: "Reasons for Leaving (REASONS) must be defined as a semi-colon delimited set of reasons",
+          source: this._currentLine.REASONS,
+        });
+      }
+      if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: `Reasons for Leaving (REASONS) values must be integers`,
+          source: `${this._currentLine.REASONS}`,
+        });
+      }
+
+      if (!allReasonsCounts || allReasonsCounts.length==0) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: "Reasons for Leaving Counts (REASONNOS) must be defined as a semi-colon delimited set of reasons",
+          source: this._currentLine.REASONNOS,
+        });
+      }
+      const MIN_COUNT = 0;
+      if (!allReasonsCounts.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: `Reasons for Leaving Counts (REASONNOS) values must be integers and ${MIN_COUNT} or more`,
+          source: `${this._currentLine.REASONNOS}`,
+        });
+      }
+
+      // all reasons and all reasons counts must be equal in number
+      if (allReasons.length != allReasonsCounts.length) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: `Reasons for Leaving (REASON) and Reasons for Leaving Counts (REASONNOS) must have the same number of semi-colon delimited values`,
+          source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
+        });
+      }
+
+      // sum of  all reasons counts must equal the sum of leavers
+      const sumOfReasonsCounts = allReasonsCounts.reduce((total, thisCount) => parseInt(total,10) + parseInt(thisCount,10));
+      if (sumOfReasonsCounts != sumOfLeavers) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+          errType: `REASONS_FOR_LEAVING_ERROR`,
+          error: `Sum of Reasons for Leaving Counts (REASONNOS) must equal the sum of leavers (LEAVERS)`,
+          source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
+        });
+      }
+  
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
+  
+      this._reasonsForLeaving = allReasons.map((thisReason, index) => {
+        return {
+          id: parseInt(thisReason, 10),
+          count: parseInt(allReasonsCounts[index])
+        };
+      });
+
+      return true;
+  
+    } else {
+      return true;
+    }
+  }
+
+  _validateDestinationsOnLeaving() {
+    // only if the sum of "LEAVERS" is greater than 0
+    const sumOfLeavers = this._leavers.reduce((total, thisCount) => total+thisCount);
+
+    if (sumOfLeavers > 0) {
+      const allDestinations = this._currentLine.DESTINATIONS.split(';');
+      const allDestinationsCounts = this._currentLine.DESTNOS.split(';');
+
+      const localValidationErrors = [];
+  
+      if (!allDestinations || allDestinations.length==0) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: "Destinations On Leaving (REASONS) must be defined as a semi-colon delimited set of reasons",
+          source: this._currentLine.REASONS,
+        });
+      }
+      if (!allDestinations.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: `Destinations On Leaving (REASONS) values must be integers`,
+          source: `${this._currentLine.REASONS}`,
+        });
+      }
+
+      if (!allDestinationsCounts || allDestinationsCounts.length==0) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: "Destinations On Leaving Counts (REASONNOS) must be defined as a semi-colon delimited set of reasons",
+          source: this._currentLine.REASONNOS,
+        });
+      }
+      const MIN_COUNT = 0;
+      if (!allDestinationsCounts.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: `Destinations On Leaving Counts (REASONNOS) values must be integers and ${MIN_COUNT} or more`,
+          source: `${this._currentLine.REASONNOS}`,
+        });
+      }
+
+      // all reasons and all reasons counts must be equal in number
+      if (allDestinations.length != allDestinationsCounts.length) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: `Destinations On Leaving (REASON) and Destinations On Leaving Counts (REASONNOS) must have the same number of semi-colon delimited values`,
+          source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
+        });
+      }
+
+      // sum of  all reasons counts must equal the sum of leavers
+      const sumOfReasonsCounts = allDestinationsCounts.reduce((total, thisCount) => parseInt(total,10) + parseInt(thisCount,10));
+      if (sumOfReasonsCounts != sumOfLeavers) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+          error: `Sum of Destinations On Leaving Counts (REASONNOS) must equal the sum of leavers (LEAVERS)`,
+          source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
+        });
+      }
+  
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
+  
+      this._destinationOnLeaving = allDestinations.map((thisDestination, index) => {
+        return {
+          id: parseInt(thisDestination, 10),
+          count: parseInt(allDestinationsCounts[index])
+        };
+      });
+
+      return true;
+  
+    } else {
+      return true;
+    }
+  }
 
   _transformMainService() {
     if (this._mainService) {
@@ -1391,6 +1583,60 @@ class Establishment {
     }
   }
 
+  _transformReasonsForLeaving() {
+    if (this._reasonsForLeaving && Array.isArray(this._reasonsForLeaving)) {
+      const mappedReasons = [];
+
+      this._reasonsForLeaving.forEach(thisReason => {
+        const thisMappedReason = {
+          id: BUDI.reasonsForLeaving(BUDI.TO_ASC, thisReason.id),
+          count: thisReason.count
+        };
+
+        if (thisMappedReason.id) {
+          mappedReasons.push(thisMappedReason);
+        } else {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
+            errType: `REASONS_FOR_LEAVING_ERROR`,
+            error: `Reason for Leaving (REASONS): ${thisReason.id} is unknown`,
+            source: this._currentLine.REASONS,
+          });
+        }
+      });
+
+      this._reasonsForLeaving = mappedReasons;
+    }
+  }
+
+  _transformDestinationsOnLeaving() {
+    if (this._destinationOnLeaving && Array.isArray(this._destinationOnLeaving)) {
+      const mappedDestinations = [];
+
+      this._destinationOnLeaving.forEach(thisDestination => {
+        const thisMappedDestination = {
+          id: BUDI.destinationOnLeaving(BUDI.TO_ASC, thisDestination.id),
+          count: thisDestination.count
+        };
+
+        if (thisMappedDestination.id) {
+          mappedDestinations.push(thisMappedDestination);
+        } else {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
+            errType: `DESTINATIONS_ON_LEAVING_ERROR`,
+            error: `Destination on Leaving (DESTINATIONS): ${thisDestination.id} is unknown`,
+            source: this._currentLine.REASONS,
+          });
+        }
+      });
+
+      this._destinationOnLeaving = mappedDestinations;
+    }
+  }
+
   // returns true on success, false is any attribute of Establishment fails
   validate() {
     let status = true;
@@ -1428,6 +1674,9 @@ class Establishment {
     status = !this._validateTotalPermTemp() ? false : status;
     status = !this._validateAllJobs() ? false : status;
     status = !this._validateJobRoleTotals() ? false : status;
+
+    status = !this._validateReasonsForLeaving() ? false : status;
+    status = !this._validateDestinationsOnLeaving() ? false : status;
     
     return status;
   }
@@ -1442,6 +1691,9 @@ class Establishment {
     status = !this._transformAllServices() ? false : status;
     status = !this._transformServiceUsers() ? false : status;
     status = !this._transformAllJobs() ? false : status;
+
+    status = !this._transformReasonsForLeaving() ? false : status;
+    status = !this._transformDestinationsOnLeaving() ? false : status;
 
     return status;
   }
@@ -1501,7 +1753,9 @@ class Establishment {
         leavers: this._leavers,
         totalVacancies: this._totalVacancies,
         totalStarters: this._totalStarters,
-        totalLeavers: this._totalLeavers
+        totalLeavers: this._totalLeavers,
+        reasonsForLeaving: this._reasonsForLeaving ? this._reasonsForLeaving : undefined,
+        destinationsOnLeaving: this._destinationOnLeaving ? this._destinationOnLeaving : undefined,
       },
 
     }, null, 4);
