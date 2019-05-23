@@ -32,6 +32,8 @@ class Establishment {
     this._allServicesOther = null;
     this._allServiceUsers = null;
     this._allServiceUsersOther = null;
+    this._capacities = null;
+    this._utilisations = null;
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -51,6 +53,7 @@ class Establishment {
   static get LOCATION_ID_ERROR() { return 1110; }
   static get ALL_SERVICES_ERROR() { return 1120; }
   static get SERVICE_USERS_ERROR() { return 1130; }
+  static get CAPACITY_UTILISATION_USERS_ERROR() { return 1140; }
 
   get localId() {
     return this._localId;
@@ -75,6 +78,12 @@ class Establishment {
     return this._phone;
   }
 
+  get establishmentType() {
+    return this._establishmentType;
+  }
+  get establishmentTypeOther() {
+    return this._establishmentTypeOther;
+  }
 
   get mainService() {
     return this._mainService;
@@ -91,12 +100,13 @@ class Establishment {
   get alLServiceUsersOther() {
     return this._allServiceUsersOther;
   }
-  get establishmentType() {
-    return this._establishmentType;
+  get capacities() {
+    return this._capacities;
   }
-  get establishmentTypeOther() {
-    return this._establishmentTypeOther;
+  get utilisations() {
+    return this._utilisations;
   }
+
 
   get shareWithCqc() {
     return this._shareWithCqc;
@@ -714,6 +724,86 @@ class Establishment {
     return true;
   }
 
+  _validateCapacitiesAndUtilisations() {
+    // capacities/utilisations are a semi colon delimited list of integers
+
+    const listOfCapacities = this._currentLine.CAPACITY.split(';');
+    const listOfUtilisations = this._currentLine.UTILISATION.split(';');
+
+    const localValidationErrors = [];
+
+    // first - the number of capacities/utilisations must be non-zero and must be equal
+    if (listOfCapacities.length === 0) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "Capacities (CAPACITY) must be a semi-colon delimited list of integers",
+        source: this._currentLine.CAPACITY,
+      });
+    }
+    if (listOfUtilisations.length === 0) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "Utilisations (UTILISATION) must be a semi-colon delimited list of integers",
+        source: this._currentLine.UTILISATION,
+      });
+    }
+    if (listOfCapacities.length != listOfUtilisations.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "Number of Capacities (CAPACITY) and Utilisations (UTILISATION) must be equal",
+        source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`,
+      });
+    }
+
+    // and the number of utilisations/capacities must equal the number of all services
+    if (listOfCapacities.length !== this._allServices.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "Number of Capacities/Utilisations (CAPACITY/UTILISATION) must equal the number of all services (ALLSERVICES)",
+        source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION} - ${this._currentLine.ALLSERVICES}`,
+      });
+    }
+
+    // all capacities and all utilisations are integers
+    const areCapacitiesValid = listOfCapacities.every(thisCapacity => !Number.isNaN(parseInt(thisCapacity)));
+    if (!areCapacitiesValid) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "All capacities (CAPACITY) must be integers",
+        source: this._currentLine.CAPACITY,
+      });
+    }
+    const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => !Number.isNaN(parseInt(thisUtilisation)));
+    if (!areUtilisationsValid) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        error: "All utilisations (UTILISATION) must be integers",
+        source: this._currentLine.UTILISATION,
+      });
+    }
+    
+    if (localValidationErrors.length > 0) {
+      this._validationErrors.push(localValidationErrors);
+      return false;
+    }
+
+    this._capacities = listOfCapacities.map(thisCapacity => parseInt(thisCapacity, 10));
+    this._utilisations = listOfUtilisations.map(thisUtilisation => parseInt(thisUtilisation, 10));
+
+    return true;
+  }
 
   _transformMainService() {
     if (this._mainService) {
@@ -840,6 +930,7 @@ class Establishment {
     status = !this._validateMainService() ? false : status;
     status = !this._validateAllServices() ? false : status;
     status = !this._validateServiceUsers() ? false : status;
+    status = !this._validateCapacitiesAndUtilisations() ? false : status;
 
     return status;
   }
@@ -894,6 +985,8 @@ class Establishment {
 
         return returnThis;
       }),
+      capacities: this._capacities,
+      utilisations: this._utilisations
 
     }, null, 4);
   };
