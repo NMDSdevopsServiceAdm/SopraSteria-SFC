@@ -119,8 +119,30 @@ class Worker {
   get careCertDate() {
     return this._careCertDate;
   }
-
-
+  get recSource() {
+    return this._recSource;
+  }
+  get startDate() {
+    return this._startDate;
+  }
+  get startInsect() {
+    return this._startInsect;
+  }
+  get apprentice() {
+    return this._apprentice;
+  }
+  get fullTime() {
+    return this._fullTime;
+  }
+  get zeroHourContract() {
+    return this._zeroHourContract;
+  }
+  get daySick() {
+    return this._daySick;
+  }
+  get salaryInt() {
+    return this._salaryInt;
+  }
 
   _validateContractType() {
     const myContractType = parseInt(this._currentLine.EMPLSTATUS);
@@ -424,7 +446,6 @@ class Worker {
     }
   }
 
-
   _validateCitizenShip() {
     const BritishCitizenshipValues = [1,2,999];
     const myBritishCitizenship = this._currentLine.BRITISHCITIZENSHIP;
@@ -493,7 +514,6 @@ class Worker {
     }
 
   }
-
 
   _validateDisabled() {
     const disabledValues = [0,1]; 
@@ -651,6 +671,184 @@ class Worker {
     }
   }
 
+  _validateRecSource() {
+    const recSourceValues = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
+    const myRecSource = this._currentLine.RECSOURCE;
+
+    if (isNaN(myRecSource)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.RESOURCE_ERROR,
+        errType: 'RECSOURCE_ERROR',
+        error: "Recruitement Source (RECSOURCE) must be an integer",
+        source: this._currentLine.RECSOURCE,
+      });
+      return false;
+    } else if (myRecSource && !recSourceValues.includes(parseInt(myRecSource))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.RESOURCE_ERROR,
+        errType: 'RECSOURCE_ERROR',
+        error: "Recruitement Source (RECSOURCE) value is incorrect",
+        source: this._currentLine.RECSOURCE,
+      });
+      return false;
+    }
+    else {
+      this._recSource = myRecSource;
+      return true;
+    }
+  }
+
+  _validateStartDate() {
+    const myStartDate = this._currentLine.STARTDATE;
+   
+    const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
+
+    var d1 = new Date();
+    var d2 = new Date(myStartDate);
+
+    if (myStartDate && !dateRegex.test(myStartDate)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.START_DATE_ERROR,
+        errType: 'STARTDATE_ERROR',
+        error: "Start Date (STARTDATE) should by in dd/mm/yyyy format",
+        source: this._currentLine.STARTDATE,
+      });
+      return false;
+    } else if ((d2 > d1)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.START_DATE_ERROR,
+        errType: 'STARTDATE_ERROR',
+        error: "Start Date (STARTDATE) can not be in future",
+        source: this._currentLine.STARTDATE,
+      });
+      return false;
+    } else {
+      this._startDate = myStartDate;
+      return true;
+    }
+  }
+
+  //TODO This date will be ignored if less than year from DOB plus 16 years. It will also be ignored if later that INDDATE or STARTDATE years and must not be in future
+ // Currenly only validating 4 digit year
+  _validateStartInsect() {
+
+    const myStartInsect = this._currentLine.STARTINSECT;
+    const yearRegex = /^\d{4}$/;
+
+    if (myStartInsect && !yearRegex.test(myStartInsect)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.START_INSECT_ERROR,
+        errType: 'START_INSECT_ERROR',
+        error: "Start Insect (STARTINSECT) must be 4 number ",
+        source: this._currentLine.STARTINSECT,
+      });
+      return false;
+    }
+    else {
+      this._startInsect = myStartInsect;
+      return true;
+    }
+  }
+
+  _validateApprentice() {
+    const apprenticeValues = [1,2,999];
+    const myApprentice = this._currentLine.APPRENTICE;
+
+    if (isNaN(myApprentice)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.APPRENCTICE_ERROR,
+        errType: 'APPRENTICE_ERROR',
+        error: "Apprentice (APPRENTICE) must be an integer",
+        source: this._currentLine.APPRENTICE,
+      });
+      return false;
+    } else if (myApprentice && !apprenticeValues.includes(parseInt(myApprentice))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.APPRENCTICE_ERROR,
+        errType: 'APPRENTICE_ERROR',
+        error: "Apprentice (APPRENTICE) value must 1(Yes), 2(No) or 999(Unknown)",
+        source: this._currentLine.APPRENTICE,
+      });
+      return false;
+    }
+    else {
+      this._apprentice = myApprentice;
+      return true;
+    }
+  }
+
+  _validateFullTime() {
+    const fullTimeValues = [1, 2, 3];
+    const myfullTime = this._currentLine.FULLTIME;
+
+    if (isNaN(myfullTime)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.FULLTIME_ERROR,
+        errType: 'FULLTIME_ERROR',
+        error: "Full Time (FULLTIME) must be an integer",
+        source: this._currentLine.FULLTIME,
+      });
+      return false;
+    } else if (myfullTime && !fullTimeValues.includes(parseInt(myfullTime))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.FULLTIME_ERROR,
+        errType: 'FULLTIME_ERROR',
+        error: "Apprentice (FULLTIME) value must 1(FullTime), 2(PartTime) or 3(Neither)",
+        source: this._currentLine.FULLTIME,
+      });
+      return false;
+    }
+    else {
+      this._fullTime = myfullTime;
+      return true;
+    }
+  }
+
+  _validateZeroHourContract() {
+    const zeroHourContractValues = [1, 2, 999];
+    const myZeroHourContract = this._currentLine.ZEROHRCONT;
+
+    if (isNaN(myZeroHourContract)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.ZERO_HRCONT_ERROR,
+        errType: 'ZEROHRCONT_ERROR',
+        error: "Zero Hour Contract (ZEROHRCONT) must be an integer",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
+    } else if (myZeroHourContract && !zeroHourContractValues.includes(parseInt(myZeroHourContract))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.ZERO_HRCONT_ERROR,
+        errType: 'ZEROHRCONT_ERROR',
+        error: "Zero Hour Contract (ZEROHRCONT) value must 1(Yes), 2(No) or 999(Unknown)",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
+    }
+    else {
+      this._fullTime = myZeroHourContract;
+      return true;
+    }
+  }
+
+
+
+
+
+
+
+
 
 
   //transform related
@@ -683,6 +881,14 @@ class Worker {
     status = !this._validateIndDate() ? false : status;
     status = !this._validateCareCert() ? false : status;
     status = !this._validateCareCertDate() ? false : status;
+    status = !this._validateRecSource() ? false : status;
+    status = !this._validateStartDate() ? false : status;
+    status = !this._validateStartInsect() ? false : status;
+    status = !this._validateApprentice() ? false : status;
+    status = !this._validateFullTime() ? false : status;
+    status = !this._validateZeroHourContract() ? false : status;
+
+
 
 
     return status;
