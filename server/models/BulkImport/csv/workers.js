@@ -137,12 +137,25 @@ class Worker {
   get zeroHourContract() {
     return this._zeroHourContract;
   }
-  get daySick() {
-    return this._daySick;
+  get daysSick() {
+    return this._daysSick;
   }
   get salaryInt() {
     return this._salaryInt;
   }
+  get salary() {
+    return this._salary;
+  }
+  get hourlyRate() {
+    return this._hourlyRate;
+  }
+  get mainJobRole() {
+    return this._mainJobRole;
+  }
+  get mainJobDesc() {
+    return this._mainJobDesc;
+  }
+
 
   _validateContractType() {
     const myContractType = parseInt(this._currentLine.EMPLSTATUS);
@@ -492,7 +505,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.YEAROFENTRY_ERROR,
         errType: 'Ethnicity_ERROR',
-        error: "YEAROFENTRY (YEAROFENTRY) must be 4 number ",
+        error: "YEAR OF ENTRY (YEAROFENTRY) must be 4 number ",
         source: this._currentLine.YEAROFENTRY,
       });
       return false;
@@ -842,7 +855,121 @@ class Worker {
     }
   }
 
+  _validateDaysSick() {
+    const myDaysSick = this._currentLine.DAYSSICK;
 
+    if (isNaN(myDaysSick)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.DAYSICK_ERROR,
+        errType: 'DAYSSICK_ERROR',
+        error: "Day Sick (DAYSSICK) must be an integer or decimal",
+        source: this._currentLine.DAYSSICK,
+      });
+      return false;
+    } else if (myDaysSick && myDaysSick > 365 && myDaysSick != 999) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.DAYSICK_ERROR,
+        errType: 'DAYSSICK_ERROR',
+        error: "Day Sick (DAYSSICK) value must less than 365 otherwise 999",
+        source: this._currentLine.DAYSSICK,
+      });
+      return false;
+    }
+    else {
+      this._daysSick = myDaysSick;
+      return true;
+    }
+  }
+
+  _validateSalaryInt() {
+    const salaryIntValues = [1, 3, 4];
+    const mySalaryInt = this._currentLine.SALARYINT;
+
+    if (isNaN(mySalaryInt)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.SALARY_ERROR,
+        errType: 'SALARYINT_ERROR',
+        error: "Salary Int (SALARYINT) must be an integer",
+        source: this._currentLine.SALARYINT,
+      });
+      return false;
+    } else if (mySalaryInt && !salaryIntValues.includes(parseInt(mySalaryInt))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.SALARY_ERROR,
+        errType: 'SALARYINT_ERROR',
+        error: "Salary int (SALARYINT) value must 1(Annual Salary), 3(Hourly Rate) or 4(Unpaid)",
+        source: this._currentLine.SALARYINT,
+      });
+      return false;
+    }
+    else {
+      this._salaryInt = mySalaryInt;
+      return true;
+    }
+  }
+
+  _validateSalary() {
+    const mySalary = this._currentLine.SALARY;
+    const digitRegex = /^[0-9]{1,10}$/;
+
+    if (mySalary && !digitRegex.test(mySalary)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.SALARY_ERROR,
+        errType: 'Salary_ERROR',
+        error: "Salary (SALARY) are upto 12 digit ",
+        source: this._currentLine.SALARY,
+      });
+      return false;
+    }
+    else {
+      this._salary = mySalary;
+      return true;
+    }
+  }
+
+  _validateHourlyRate() {
+    const myHourlyRate = this._currentLine.HOURLYRATE;
+
+    if (myHourlyRate && !(myHourlyRate - Math.floor(myHourlyRate)) ) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.HOURLY_RATE_ERROR,
+        errType: 'Hourly_Rate_ERROR',
+        error: "Hourly Rate (HOURLYRATE) must be Decimal number like 12.0 or 5.3",
+        source: this._currentLine.HOURLYRATE,
+      });
+      return false;
+    }
+    else {
+      this._hourlyRate = myHourlyRate;
+      return true;
+    }
+  }
+
+  _validateMainJobRole() {
+    const mainJobRoleValues = [1, 2, 3, 4, 5, 6, 7,8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41];
+    const myMainJobRole = this._currentLine.MAINJOBROLE;
+
+    if (myMainJobRole && !mainJobRoleValues.includes(parseInt(myMainJobRole))) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.MAIN_JOB_ROLE_ERROR,
+        errType: 'Main_JobRole_ERROR',
+        error: "Main Job Role (MAINJOBROLE) must be between 1- 41",
+        source: this._currentLine.MAINJOBROLE,
+      });
+      return false;
+    }
+    else {
+      this._mainJobRole = myMainJobRole;
+      return true;
+    }
+  }
 
 
 
@@ -887,8 +1014,13 @@ class Worker {
     status = !this._validateApprentice() ? false : status;
     status = !this._validateFullTime() ? false : status;
     status = !this._validateZeroHourContract() ? false : status;
+    status = !this._validateDaysSick() ? false : status;
+    status = !this._validateSalaryInt() ? false : status;
+    status = !this._validateSalary() ? false : status;
+    status = !this._validateHourlyRate() ? false : status;
+    status = !this._validateMainJobRole() ? false : status;
 
-
+    
 
 
     return status;
