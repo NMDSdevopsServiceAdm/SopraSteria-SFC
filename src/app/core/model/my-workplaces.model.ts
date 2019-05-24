@@ -23,3 +23,8 @@ export interface MyWorkplace {
   uid: string;
   updated: string;
 }
+
+export enum ParentPermissions {
+  Workplace = 'Workplace',
+  WorkplaceAndStaff = 'Workplace and Staff',
+}

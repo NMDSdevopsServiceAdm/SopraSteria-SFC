@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LoggedInEstablishment } from '@core/model/logged-in.model';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
-import { MyWorkplace, MyWorkplacesResponse } from '@core/model/my-workplaces.model';
+import { MyWorkplace, MyWorkplacesResponse, ParentPermissions } from '@core/model/my-workplaces.model';
 
 @Component({
   selector: 'app-view-my-workplaces',
@@ -12,6 +12,8 @@ export class ViewMyWorkplacesComponent implements OnInit {
   public establishment: LoggedInEstablishment | null;
   public myWorkplaces: Array<MyWorkplace>;
   public myWorkplacesCount: number;
+  public workplacePermission: ParentPermissions = ParentPermissions.Workplace;
+  public workplaceAndStaffPermission: ParentPermissions = ParentPermissions.WorkplaceAndStaff;
 
   constructor(private authService: AuthService, private userService: UserService) {}
 
@@ -29,7 +31,6 @@ export class ViewMyWorkplacesComponent implements OnInit {
         this.myWorkplaces = [];
         this.myWorkplacesCount = 0;
       }
-      console.log(myWorkplaces, this.myWorkplaces);
     });
   }
 }
