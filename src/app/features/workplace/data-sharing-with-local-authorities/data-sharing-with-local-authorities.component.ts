@@ -8,6 +8,7 @@ import { LocalAuthorityService } from '@core/services/localAuthority.service';
 import { Question } from '../question/question.component';
 import { Router } from '@angular/router';
 import { uniqBy } from 'lodash';
+import { LocalAuthorityModel } from '@core/model/localAuthority.model';
 
 @Component({
   selector: 'app-data-sharing-with-local-authorities',
@@ -15,7 +16,7 @@ import { uniqBy } from 'lodash';
 })
 export class DataSharingWithLocalAuthoritiesComponent extends Question {
   public primaryAuthority;
-  public authorities;
+  public authorities: Array<LocalAuthorityModel>;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -59,30 +60,16 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
     this.establishment.localAuthorities.forEach(authority => {
       if (!authority.isPrimaryAuthority) {
         this.localAuthoritiesArray.push(this.createLocalAuthorityItem(authority.custodianCode));
+      } else {
+        this.form.get('primaryAuthority').patchValue(true);
       }
     });
 
     this.subscriptions.add(
-      this.localAuthorityService.getAuthorities().subscribe(authorities => {
-        this.authorities = authorities.filter(authority => {
-          return authority.custodianCode !== this.establishment.primaryAuthority.custodianCode;
-        });
-      })
+      this.localAuthorityService
+        .getAuthorities()
+        .subscribe((authorities: Array<LocalAuthorityModel>) => (this.authorities = authorities))
     );
-  }
-
-  /**
-   * Check to see if primary authority exists in local authorities array
-   * In order for the checkbox on the ui to be checked
-   */
-  public isPrimaryAuthorityShared(): boolean {
-    const filteredArray = this.establishment.localAuthorities.filter(control => {
-      if (control.custodianCode === this.primaryAuthority.custodianCode) {
-        return control;
-      }
-    });
-
-    return filteredArray.length ? true : false;
   }
 
   private createLocalAuthorityItem(custodianCode: number = null): FormGroup {
