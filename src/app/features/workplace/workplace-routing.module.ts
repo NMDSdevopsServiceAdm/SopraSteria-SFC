@@ -18,11 +18,13 @@ import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.com
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceResolver } from './workplace.resolver';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
+import { ParentGuard } from '@core/guards/parent/parent.guard';
 
 const routes: Routes = [
   {
     path: 'view-my-workplaces',
     component: ViewMyWorkplacesComponent,
+    canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
   },
   {
