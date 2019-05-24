@@ -11,6 +11,9 @@ class Worker {
     this._localId = null;
     this._workerLocalID = null;
     this._gender = null;
+
+
+    this._disabled = null;
   };
 
   //49 csv columns
@@ -404,7 +407,7 @@ class Worker {
 
   _validateGender() {
     const genderValues = [1,2,3]; //[MALE=1, FEMALE=2, UNKNOWN=3];
-    const myGender = this._currentLine.GENDER;
+    const myGender = parseInt(this._currentLine.GENDER);
 
     if (isNaN(myGender)) {
       this._validationErrors.push({
@@ -434,7 +437,7 @@ class Worker {
   //Mandatory for local Authority - need to check this conditional check
   _validateEthnicity() {
     const ethnicityValues = [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 98, 99];
-    const myEthnicity = this._currentLine.ETHNICITY;
+    const myEthnicity = parseInt(this._currentLine.ETHNICITY);
 
     if (isNaN(myEthnicity)) {
       this._validationErrors.push({
@@ -445,7 +448,7 @@ class Worker {
         source: this._currentLine.ETHNICITY,
       });
       return false;
-    } else if (myEthnicity && !ethnicityValues.includes(parseInt(myEthnicity))) {
+    } else if (myEthnicity && !ethnicityValues.includes(myEthnicity)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Worker.ETHNICITY_ERROR,
@@ -463,7 +466,7 @@ class Worker {
 
   _validateCitizenShip() {
     const BritishCitizenshipValues = [1,2,999];
-    const myBritishCitizenship = this._currentLine.BRITISHCITIZENSHIP;
+    const myBritishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP);
 
     if (isNaN(myBritishCitizenship)) {
       this._validationErrors.push({
@@ -493,8 +496,6 @@ class Worker {
   // this should 4 digit and less than date of birth;
   // ignore countr of birth check
   _validateYearOfEntry() {
-    const myBritishCitizenship = this._currentLine.BRITISHCITIZENSHIP;
-    
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
     const myDOB = this._currentLine.DOB;
     const yearRegex = /^\d{4}$/;
@@ -524,7 +525,7 @@ class Worker {
       return false;
     }
     else {
-      this._validateYearOfEntry = myYearOfEntry;
+      this._yearOfEntry = parseInt(myYearOfEntry, 10);
       return true;
     }
 
@@ -532,7 +533,7 @@ class Worker {
 
   _validateDisabled() {
     const disabledValues = [0,1]; 
-    const myDisabled = this._currentLine.DISABLED;
+    const myDisabled = parseInt(this._currentLine.DISABLED, 10);
 
     if (isNaN(myDisabled)) {
       this._validationErrors.push({
@@ -996,7 +997,7 @@ class Worker {
   _validateContHours() {
     const myContHours = this._currentLine.CONTHOURS;
 
-    if (myContHours && !(myContHours - Math.floor(myContHours))  {
+    if (myContHours && !(myContHours - Math.floor(myContHours)))  {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Worker.CONT_HOURS_ERROR,
@@ -1019,6 +1020,13 @@ class Worker {
   _transformContractType() {
     if (this._contractType) {
       this._contractType = BUDI.contractType(BUDI.TO_ASC, this._contractType);
+    }
+  };
+
+  //transform related
+  _transformEthnicity() {
+    if (this._ethnicity) {
+      this._ethnicity = BUDI.ethnicity(BUDI.TO_ASC, this._ethnicity);
     }
   };
 
@@ -1069,17 +1077,30 @@ class Worker {
   transform() {
     let status = true;
 
-   // status = !this._transformMainService() ? false : status;
-
+    // status = !this._transformMainService() ? false : status;
+    status = !this._transformContractType() ? false : status;
+    status = !this._transformEthnicity() ? false : status;
 
     return status;
   };
 
   toJSON() {
+    // force to undefined if not set, because 'undefined' when JSON stingified is not rendered
     return {
-      contractType: {
-        id: this._contractType
-      }
+      localId: this._localId,
+      uniqueWorkerId: this._uniqueWorkerId,
+      changeUniqueWorker: this._changeUniqueWorkerId ? this._changeUniqueWorkerId : undefined,
+      status: this._status,
+      displayId: this._displayId,
+      niNumber: this._NINumber ? this._NINumber : undefined,
+      postcode: this._postCode ? this._postCode : undefined,
+      dateOfBirth: this._DOB ? this._DOB : undefined,
+      gender: this._gender ? this._gender : undefined,
+      contractType: this._contractType,
+      ethnicity: this._ethnicity ? this._ethnicity : undefined,
+      britishCitizenship: this._britishNationality ? this._britishNationality : undefined,
+      yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
+      disabled: this._disabled !== null ? this._disabled : undefined,
     };
   };
 

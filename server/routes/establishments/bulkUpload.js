@@ -134,7 +134,6 @@ router.route('/validate').post(async (req, res) => {
       { imported: importedTraining, filename: req.body.training.filename })
 
     // handle parsing errors
-    console.log("WA DEBUG - response: ", validationResponse)
     if (!validationResponse.status) {
       return res.status(400).send({
         establishment: validationResponse.validation.establishments,
@@ -143,7 +142,11 @@ router.route('/validate').post(async (req, res) => {
       });
 
     } else {
-      return res.status(200).send({});
+      return res.status(200).send({
+        establishment: validationResponse.data.establishments,
+        workers: validationResponse.data.workers,
+        training: validationResponse.data.training,
+      });
     }
 
   } catch (err) {
@@ -235,6 +238,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         csvWorkerSchemaErrors.push(lineValidator.validationErrors);
       }
 
+      console.log("WA DEBUG - this worker: ", lineValidator.toJSON());
       myWorkers.push(lineValidator);
     });
   } else {
