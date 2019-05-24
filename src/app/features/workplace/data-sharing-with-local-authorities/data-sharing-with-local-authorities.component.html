@@ -21,7 +21,6 @@
         id="primaryAuthority"
         type="checkbox"
         aria-describedby="primaryAuthority-hint"
-        [checked]="isPrimaryAuthorityShared()"
       />
       <label class="govuk-label govuk-checkboxes__label" for="primaryAuthority">
         {{ primaryAuthority.name }}
@@ -48,7 +47,8 @@
         type="button"
         (click)="deleteLocalAuthority($event, i)"
       >
-        Remove <span class="govuk-visually-hidden"> local authority {{ localAuthorities.get('custodianCode').value }}</span>
+        Remove
+        <span class="govuk-visually-hidden"> local authority {{ localAuthorities.get('custodianCode').value }}</span>
       </button>
     </div>
   </ng-container>
