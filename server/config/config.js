@@ -224,8 +224,17 @@ const config = convict({
     bucketname: {
       doc: 'Bucket used to upload all client related csv files',
       format: '*',
-      default: '',
-      env: 'S3_BUCKET',
+      default: 'sfcbulkuploadfiles',
+    },
+    region: {
+      doc: 'AWS region',
+      format: '*',
+      default: 'eu-west-2',
+    },
+    uploadSignedUrlExpire: {
+      doc: 'The duration in seconds for the upload signed URL to expire',
+      format: 'int',
+      default: 300,
     },
   },
 });

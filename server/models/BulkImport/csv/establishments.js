@@ -1699,7 +1699,7 @@ class Establishment {
   }
 
   toJSON() {
-    return JSON.stringify({
+    return {
       name: this._name,
       address: this._address,
       postcode: this._postcode,
@@ -1757,8 +1757,7 @@ class Establishment {
         reasonsForLeaving: this._reasonsForLeaving ? this._reasonsForLeaving : undefined,
         destinationsOnLeaving: this._destinationOnLeaving ? this._destinationOnLeaving : undefined,
       },
-
-    }, null, 4);
+    };
   };
 
   get validationErrors() {
