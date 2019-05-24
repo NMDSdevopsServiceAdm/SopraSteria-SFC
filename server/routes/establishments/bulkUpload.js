@@ -92,11 +92,12 @@ router.route('/validate').get(async (req, res) => {
     const importedTraining = await csv().fromString(trainingCSV);
 
     const validationResponse = await validateBulkUploadFiles(
-        username,
-        establishmentId,
-        { imported: importedEstablishments, filename: req.query.establishment },
-        { imported: importedWorkers, filename: req.query.worker },
-        { imported: importedTraining, filename: req.query.training })
+      true,
+      username,
+      establishmentId,
+      { imported: importedEstablishments, filename: req.query.establishment },
+      { imported: importedWorkers, filename: req.query.worker },
+      { imported: importedTraining, filename: req.query.training })
 
     // handle parsing errors
     if (!validationResponse.status) {
@@ -125,11 +126,12 @@ router.route('/validate').post(async (req, res) => {
     const importedTraining = await csv().fromString(req.body.training.csv);
 
     const validationResponse = await validateBulkUploadFiles(
-        username,
-        establishmentId,
-        { imported: importedEstablishments, filename: req.body.establishments.filename },
-        { imported: importedWorkers, filename: req.body.workers.filename },
-        { imported: importedTraining, filename: req.body.training.filename })
+      false,
+      username,
+      establishmentId,
+      { imported: importedEstablishments, filename: req.body.establishments.filename },
+      { imported: importedWorkers, filename: req.body.workers.filename },
+      { imported: importedTraining, filename: req.body.training.filename })
 
     // handle parsing errors
     console.log("WA DEBUG - response: ", validationResponse)
@@ -191,8 +193,8 @@ async function uploadAsJSON(username, establishmentId, content, key) {
   }
 }
 
-
-const validateBulkUploadFiles = async (username , establishmentId, establishments, workers, training) => {
+// if commit is false, then the results of validation are not uploaded to S3
+const validateBulkUploadFiles = async (commit, username , establishmentId, establishments, workers, training) => {
   let status = true;
   const csvEstablishmentSchemaErrors = [], csvWorkerSchemaErrors = [], csvTrainingSchemaErrors = [];;
   const myEstablishments = [], myWorkers = [], myTrainings = [];
@@ -266,9 +268,9 @@ const validateBulkUploadFiles = async (username , establishmentId, establishment
 
 
   // upload the converted CSV as JSON to S3
-  myEstablishments.length > 0 ? await uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.filename}.validation.json`) : true;
-  myWorkers.length > 0 ? await uploadAsJSON(username, establishmentId, myWorkers.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${workers.filename}.validation.json`) : true;
-  myTrainings.length > 0 ? await uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.filename}.validation.json`) : true;
+  myEstablishments.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.filename}.validation.json`) : true;
+  myWorkers.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myWorkers.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${workers.filename}.validation.json`) : true;
+  myTrainings.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.filename}.validation.json`) : true;
   
 
   // handle parsing errors
@@ -278,9 +280,9 @@ const validateBulkUploadFiles = async (username , establishmentId, establishment
     //console.error('NM DEBUG Training validation errors: ', csvTrainingSchemaErrors)
 
     // upload the validation reports to S3
-    await uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/${establishments.filename}.validation.json`);
-    await uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/${workers.filename}.validation.json`);
-    await uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/${training.filename}.validation.json`);
+    commit ? await uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/${establishments.filename}.validation.json`) : true;
+    commit ? await uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/${workers.filename}.validation.json`) : true;
+    commit ? await uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/${training.filename}.validation.json`) : true;
 
     status = false;
   }
