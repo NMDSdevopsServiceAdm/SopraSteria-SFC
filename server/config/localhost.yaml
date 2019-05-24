@@ -15,3 +15,6 @@ db:
         # ca: 'E:/myca.crt'
 log:
     sequelize: false
+
+bulkuploaduser:
+    bucketname: sfcbulkuploadfiles
