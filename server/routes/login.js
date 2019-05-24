@@ -44,7 +44,7 @@ router.post('/',async function(req, res) {
           attributes: ['id', 'FullNameValue', 'EmailValue', 'isAdmin', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
           include: [{
             model: models.establishment,
-            attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid'],
+            attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId'],
             include: [{
               model: models.services,
               as: 'mainService',
@@ -82,6 +82,21 @@ router.post('/',async function(req, res) {
             const token = generateJWT.loginJWT(loginTokenTTL, login.user.establishment.id, login.user.establishment.uid, login.user.establishment.isParent, req.body.username.toLowerCase(), login.user.UserRoleValue);
             var date = new Date().getTime();
             date += (loginTokenTTL * 60  * 1000);
+
+
+            // dereference the parent establishment's name
+            if (Number.isInteger(login.user.establishment.parentId)) {
+              const parentEstablishment = await models.establishment.findOne({
+                attributes: ['NameValue'],
+                where: {
+                  id: login.user.establishment.parentId
+                }
+              });
+
+              if (parentEstablishment.NameValue) {
+                login.user.establishment.parentName = parentEstablishment.NameValue;
+              }
+            }
    
             const response = formatSuccessulLoginResponse(
               login.user.FullNameValue,
@@ -206,7 +221,8 @@ const formatSuccessulLoginResponse = (fullname, firstLoginDate, isPrimary, lastL
       isRegulated: establishment.isRegulated,
       nmdsId: establishment.nmdsId,
       isParent: establishment.isParent,
-      parentUid: establishment.parentUid ? establishment.parentUid : undefined
+      parentUid: establishment.parentUid ? establishment.parentUid : undefined,
+      parentName: establishment.parentName ? establishment.parentName : undefined,
     },
     mainService: {
       id: mainService ? mainService.id : null,
