@@ -1,13 +1,5 @@
 export interface MyWorkplacesResponse {
-  primary: {
-    dataOwner: string;
-    isParent: boolean,
-    mainService: string;
-    name: string;
-    parentUid: string,
-    uid: string;
-    updated: string;
-  };
+  primary: MyWorkplace;
   subsidaries?: {
     count: number;
     establishments: Array<MyWorkplace>;
