@@ -10,7 +10,7 @@ import { MyWorkplace, MyWorkplacesResponse } from '@core/model/my-workplaces.mod
 })
 export class ViewMyWorkplacesComponent implements OnInit {
   public establishment: LoggedInEstablishment | null;
-  public myWorkplaces: Array<MyWorkplace>;
+  public myWorkplaces: Array<MyWorkplace> = [];
   public myWorkplacesCount: number;
 
   constructor(private authService: AuthService, private userService: UserService) {}
