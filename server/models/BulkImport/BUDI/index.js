@@ -177,7 +177,6 @@ class BUDI {
       { "ASC": 'Other', "BUDI": 6},
     ];
 
-    console.log("WA DEBUG - contract type mapping: ", originalCode)
     if (direction == BUDI.TO_ASC) {
       const found = fixedMapping.find(thisType => thisType.BUDI == originalCode);
       return found ? found.ASC : null;
