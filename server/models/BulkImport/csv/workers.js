@@ -155,7 +155,9 @@ class Worker {
   get mainJobDesc() {
     return this._mainJobDesc;
   }
-
+  get contHours() {
+    return this._contHours;
+  }
 
   _validateContractType() {
     const myContractType = parseInt(this._currentLine.EMPLSTATUS);
@@ -971,9 +973,44 @@ class Worker {
     }
   }
 
+  _validateMainJobDesc() {
+    const myMainJobDesc = this._currentLine.MAINJRDESC;
+    const MAX_LENGTH = 120;
 
+    if (myMainJobDesc.length >= MAX_LENGTH) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.MAIN_JOB_DESC_ERROR,
+          errType: `MAINJRDESC_ERROR`,
+          error: `Main Job Description (MAINJRDESC) must be no more than ${MAX_LENGTH} characters`,
+          source: this._currentLine.MAINJRDESC,
+        });
+        return false;
+      } 
+      else {
+        this._mainJobDesc = myMainJobDesc;
+        return true;
+      }
+  }
 
+  _validateContHours() {
+    const myContHours = this._currentLine.CONTHOURS;
 
+    if (myContHours && !(myContHours - Math.floor(myContHours))  {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.CONT_HOURS_ERROR,
+        errType: 'CONTHOURS_ERROR',
+        error: "Contract Hours (CONTHOURS) Number with decimal point to nearest half hour i.e. 6.0, 27.5 and less than 65",
+        source: this._currentLine.CONTHOURS,
+      });
+      return false;
+    }
+    else {
+      this._contHours = myContHours;
+      return true;
+    }
+  }
 
 
 
@@ -1019,6 +1056,8 @@ class Worker {
     status = !this._validateSalary() ? false : status;
     status = !this._validateHourlyRate() ? false : status;
     status = !this._validateMainJobRole() ? false : status;
+    status = !this._validateMainJobDesc() ? false : status;
+    status = !this._validateContHours() ? false : status;
 
     
 
