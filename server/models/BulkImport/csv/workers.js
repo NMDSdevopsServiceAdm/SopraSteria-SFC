@@ -1309,6 +1309,31 @@ class Worker {
     }
   };
 
+  _transformOtherJobRoles() {
+    if (this._otherJobs) {
+      const mappedJobs = [];
+
+      this._otherJobs.forEach(thisJob => {
+        const myValidatedJobRole = BUDI.jobRoles(BUDI.TO_ASC, thisJob);
+
+        if (!myValidatedJobRole) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.MAIN_JOB_ROLE_ERROR,
+            errType: `OTHER_JOB_ROLE_ERROR`,
+            error: `Other Job Role (OTHERJOBROLE): ${thisJob} is unknown`,
+            source: this._currentLine.OTHERJOBROLE,
+          });
+        } else {
+          mappedJobs.push(myValidatedJobRole);
+        }
+      });
+
+      this._otherJobs = mappedJobs;
+    }
+  }
+   
+
 
   // returns true on success, false is any attribute of Worker fails
   validate() {
@@ -1361,6 +1386,7 @@ class Worker {
     status = !this._transformEthnicity() ? false : status;
     status = !this._transformRecruitment() ? false : status;
     status = !this._transformMainJobRole() ? false : status;
+    status = !this._transformOtherJobRoles() ? false : status;
 
     return status;
   };
