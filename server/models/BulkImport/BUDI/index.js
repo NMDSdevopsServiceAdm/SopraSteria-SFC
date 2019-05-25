@@ -897,7 +897,7 @@ class BUDI {
     }
   }
 
-    // maps recruitment source
+  // maps recruitment source
   // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
   static recruitment(direction, originalCode) {
     const fixedMapping = [
@@ -918,6 +918,28 @@ class BUDI {
       return found ? found.ASC : null;
     } else {
       const found = fixedMapping.find(thisSource => thisSource.ASC == originalCode)
+      return found ? found.BUDI : null;
+    }
+  }
+
+  // maps nursing specialist
+  // TODO - we have mapping table - but no agreed solution (in DB or in CMS???)
+  static nursingSpecialist(direction, originalCode) {
+    const fixedMapping = [
+      { "BUDI": 1, "ASC": 1},
+      { "BUDI": 2, "ASC": 2},
+      { "BUDI": 4, "ASC": 3},
+      { "BUDI": 5, "ASC": 5},
+      { "BUDI": 6, "ASC": 6},
+      { "BUDI": 7, "ASC": 7},
+      { "BUDI": 8, "ASC": 8},
+    ];
+
+    if (direction == BUDI.TO_ASC) {
+      const found = fixedMapping.find(thisSpecialist => thisSpecialist.BUDI == originalCode);
+      return found ? found.ASC : null;
+    } else {
+      const found = fixedMapping.find(thisSpecialist => thisSpecialist.ASC == originalCode)
       return found ? found.BUDI : null;
     }
   }

@@ -49,6 +49,9 @@ class Worker {
 
     this._otherJobs = null;
     this._otherJobsOther = null;
+
+    this._registeredNurse = null;
+    this._nursingSpecialist = null;
   };
 
   //49 csv columns
@@ -62,9 +65,13 @@ class Worker {
   static get DOB_ERROR() { return 1080; }
   static get GENDER_ERROR() { return 1090; }
   static get ETHNICITY_ERROR() { return 2000; }
+
   static get NATIONALITY_ERROR() { return 2010; }
+
   static get BRTITISH_CITIZENSHIP_ERROR() { return 2020; }
+
   static get COUNTRY_OF_BIRTH_ERROR() { return 2030; }
+
   static get YEAR_OF_ENTRY_ERROR() { return 2040; }
   static get DISABLED_ERROR() { return 2050; }
   static get INDSTATUS_ERROR() { return 2060; }
@@ -90,6 +97,7 @@ class Worker {
   static get OTHER_JR_DESC_ERROR() { return 4060; }
   static get NMCREG_ERROR() { return 4070; }
   static get NURSE_SPEC_ERROR() { return 4080; }
+
   static get SOCIALCARE_QUAL_ERROR() { return 4090; }
   static get NON_SOCIALCARE_QUAL_ERROR() { return 5000; }
   static get NO_QUAL_WT_ERROR() { return 5010; }
@@ -1135,7 +1143,6 @@ class Worker {
     const digitRegex = /^\d+(\.[0,5]{1})?$/;  // e.g. 15 or 0.5 or 1.0 or 100.5
 
     // optional
-    console.log("WA DEBUG - additional hours: ", myAddlHours)
     if (this._currentLine.ADDLHOURS && this._currentLine.ADDLHOURS.length > 0) {
       if (isNaN(myAddlHours) || !digitRegex.test(this._currentLine.ADDLHOURS)) {
         this._validationErrors.push({
@@ -1184,12 +1191,10 @@ class Worker {
         const myJobDescriptions = [];
         this._otherJobs = listOfotherJobs.map((thisJob, index) => {
           const thisJobIndex = parseInt(thisJob, 10);
-          console.log("WA DEBUG - other jobs: ", thisJobIndex)
   
           // if the job is one of the many "other" job roles, then need to validate the "other description"
           const otherJobs = [23, 27];   // these are the original budi codes
           if (otherJobs.includes(thisJobIndex)) {
-            console.log("WA DEBUG - other jobs - other detected: ", listOfotherJobsDescriptions)
             const myJobOther = listOfotherJobsDescriptions[index];
             const MAX_LENGTH = 120;
             if (!myJobOther || myJobOther.length == 0) {
@@ -1228,6 +1233,70 @@ class Worker {
       }
   
       return true;
+    } else {
+      return true;
+    }
+  }
+
+  _validateRegisteredNurse() {
+    const myRegisteredNurse = parseFloat(this._currentLine.NMCREG);
+
+    // optional
+    if (this._currentLine.NMCREG && this._currentLine.NMCREG.length > 0) {
+      // only check is main job or other job includes job role "16" (nurse)
+      const NURSING_ROLE = 16;
+
+      if ((this._mainJobRole && this._mainJobRole == NURSING_ROLE) ||
+          (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) {
+        if (isNaN(myRegisteredNurse)) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.NMCREG_ERROR,
+            errType: 'NMCREG_ERROR',
+            error: "Registered Nursing (NMCREG) must be an integer",
+            source: this._currentLine.NMCREG,
+          });
+          return false;
+        }
+        else {
+          this._registeredNurse = myRegisteredNurse;
+          return true;
+        }
+      } else {
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+
+  _validateNursingSpecialist() {
+    const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
+
+    // optional
+    if (this._currentLine.NURSESPEC && this._currentLine.NURSESPEC.length > 0) {
+      // only check is main job or other job includes job role "16" (nurse)
+      const NURSING_ROLE = 16;
+
+      if ((this._mainJobRole && this._mainJobRole == NURSING_ROLE) ||
+          (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) {
+        if (isNaN(myNursingSpecialist)) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.NURSE_SPEC_ERROR,
+            errType: 'NURSE_SPEC_ERROR',
+            error: "Nursing Specialist (NURSESPEC) must be an integer",
+            source: this._currentLine.NURSESPEC,
+          });
+          return false;
+        }
+        else {
+          this._nursingSpecialist = myNursingSpecialist;
+          return true;
+        }
+      } else {
+        return true;
+      }
     } else {
       return true;
     }
@@ -1332,7 +1401,55 @@ class Worker {
       this._otherJobs = mappedJobs;
     }
   }
-   
+
+
+  _transformRegisteredNurse() {
+    if (this._registeredNurse) {
+      switch (this._registeredNurse) {
+        case 1:
+          this._registeredNurse = 'Adult Nurse';
+          break;
+        case 2:
+          this._registeredNurse = 'Mental Health Nurse';
+          break;
+        case 3:
+          this._registeredNurse = 'Learning Disabilities Nurse';
+          break;
+        case 4:
+          this._registeredNurse = 'Children\'s Nurse';
+          break;
+        case 5:
+          this._registeredNurse = 'Enrolled Nurse';
+          break;
+        default:
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.NURSE_SPEC_ERROR,
+            errType: `NMCREG_ERROR`,
+            error: `Registered Nurse (NMCREG): ${this._registeredNurse} is unknown`,
+            source: this._currentLine.NMCREG,
+          });
+      }
+    }
+  }
+  
+  _transformNursingSpecialist() {
+    if (this._nursingSpecialist) {
+      const myValidatedSpecialist = BUDI.nursingSpecialist(BUDI.TO_ASC, this._nursingSpecialist);
+
+      if (!myValidatedSpecialist) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.NURSE_SPEC_ERROR,
+          errType: `NURSE_SPEC_ERROR`,
+          error: `Nursing Specialist (NURSESPEC): ${this._nursingSpecialist} is unknown`,
+          source: this._currentLine.NURSESPEC,
+        });
+      } else {
+        this._nursingSpecialist = myValidatedSpecialist;
+      }
+    }
+  };
 
 
   // returns true on success, false is any attribute of Worker fails
@@ -1372,8 +1489,9 @@ class Worker {
     status = !this._validateContHours() ? false : status;
     status = !this._validateAddlHours() ? false : status;
     status = !this._validateOtherJobs() ? false : status;
+    status = !this._validateRegisteredNurse() ? false : status;
+    status = !this._validateNursingSpecialist() ? false : status;
     
-
     return status;
   };
 
@@ -1387,6 +1505,8 @@ class Worker {
     status = !this._transformRecruitment() ? false : status;
     status = !this._transformMainJobRole() ? false : status;
     status = !this._transformOtherJobRoles() ? false : status;
+    status = !this._transformRegisteredNurse() ? false : status;
+    status = !this._transformNursingSpecialist() ? false : status;
 
     return status;
   };
@@ -1436,6 +1556,10 @@ class Worker {
           other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined
         };
       }) : undefined,
+      nursing: {
+        registered: this._registeredNurse ? this._registeredNurse : undefined,
+        specialist: this._nursingSpecialist ? this._nursingSpecialist : undefined
+      },
     };
   };
 
