@@ -46,6 +46,9 @@ class Worker {
 
     this._contHours = null;
     this._addlHours = null;
+
+    this._otherJobs = null;
+    this._otherJobsOther = null;
   };
 
   //49 csv columns
@@ -1153,6 +1156,83 @@ class Worker {
     }
   }
 
+  _validateOtherJobs() {
+    // other jobs (optional) is a semi colon delimited list of integers
+    if ( this._currentLine.OTHERJOBROLE &&  this._currentLine.OTHERJOBROLE.length > 0) {
+      const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
+      const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
+  
+      const localValidationErrors = [];
+      const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
+      if (!isValid) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errType: `OTHER_JOB_ROLE_ERROR`,
+          error: "Other Job Roles (OTHERJOBROLE) must be a semi-colon delimited list of integers",
+          source: this._currentLine.OTHERJOBROLE,
+        });
+      } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errType: `OTHER_JOB_ROLE_ERROR`,
+          error: "Other Job Roles (OTHERJOBROLE) count and Other Job Roles Descriptions (OTHERJRDESC) count must equal",
+          source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
+        });
+      } else {
+        const myJobDescriptions = [];
+        this._otherJobs = listOfotherJobs.map((thisJob, index) => {
+          const thisJobIndex = parseInt(thisJob, 10);
+          console.log("WA DEBUG - other jobs: ", thisJobIndex)
+  
+          // if the job is one of the many "other" job roles, then need to validate the "other description"
+          const otherJobs = [23, 27];   // these are the original budi codes
+          if (otherJobs.includes(thisJobIndex)) {
+            console.log("WA DEBUG - other jobs - other detected: ", listOfotherJobsDescriptions)
+            const myJobOther = listOfotherJobsDescriptions[index];
+            const MAX_LENGTH = 120;
+            if (!myJobOther || myJobOther.length == 0) {
+              localValidationErrors.push({
+                lineNumber: this._lineNumber,
+                errCode: Worker.OTHER_JR_DESC_ERROR,
+                errType: `OTHER_JR_DESC_ERROR`,
+                error: `Other Job Role (OTHERJOBROLE:${index+1}) is an 'other' job and consequently (OTHERJRDESC:${index+1}) must be defined`,
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+              });
+              myJobDescriptions.push(null);
+            } else if (myJobOther.length > MAX_LENGTH) {
+              localValidationErrors.push({
+                lineNumber: this._lineNumber,
+                errCode: Worker.OTHER_JR_DESC_ERROR,
+                errType: `OTHER_JR_DESC_ERROR`,
+                error: `Other Job Role (OTHERJOBROLE:${index+1}) is an 'other' job and (OTHERJRDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+              });
+            } else {
+              myJobDescriptions.push(listOfotherJobsDescriptions[index]);
+            }
+          } else {
+            myJobDescriptions.push(null);
+          }
+  
+          return thisJobIndex;
+        });
+  
+        this._otherJobsOther = myJobDescriptions;
+      }
+  
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
+  
+      return true;
+    } else {
+      return true;
+    }
+  }
+
 
   //transform related
   _transformContractType() {
@@ -1266,6 +1346,8 @@ class Worker {
     status = !this._validateMainJobDesc() ? false : status;
     status = !this._validateContHours() ? false : status;
     status = !this._validateAddlHours() ? false : status;
+    status = !this._validateOtherJobs() ? false : status;
+    
 
     return status;
   };
@@ -1321,7 +1403,13 @@ class Worker {
       hours: {
         contractedHours : this._contHours !== null ? this._contHours : undefined,
         additionalHours : this._addlHours !== null ? this._addlHours : undefined,
-      }
+      },
+      otherJobs: this._otherJobs ? this._otherJobs.map((thisJob, index) => {
+        return {
+          job: thisJob,
+          other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined
+        };
+      }) : undefined,
     };
   };
 
