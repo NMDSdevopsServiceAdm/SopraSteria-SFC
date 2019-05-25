@@ -238,7 +238,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         csvWorkerSchemaErrors.push(lineValidator.validationErrors);
       }
 
-      console.log("WA DEBUG - this worker: ", lineValidator.toJSON());
+      //console.log("WA DEBUG - this worker: ", lineValidator.toJSON());
       myWorkers.push(lineValidator);
     });
   } else {

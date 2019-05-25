@@ -968,6 +968,16 @@ class BUDI {
       return found ? found.BUDI : null;
     }
   }
+
+  // maps qualification types
+  // TODO - no BUDI mapping on quals yet!!!!!
+  static qualifications(direction, originalCode) {
+    if (direction == BUDI.TO_ASC) {
+      return originalCode+1;
+    } else {
+      return originalCode-1;
+    }
+  }
   
   // more to come
 }

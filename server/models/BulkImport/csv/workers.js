@@ -60,6 +60,9 @@ class Worker {
     this._socialCareQualificationlevel = null;
     this._nonSocialCareQualification = null;
     this._nonSocialCareQualificationlevel = null;
+
+    // array of qualification records for this worker
+    this._qualifications = null;
   };
 
   //49 csv columns
@@ -109,6 +112,7 @@ class Worker {
   static get NO_QUAL_WT_ERROR() { return 5010; }
   static get QUAL_WT_ERROR() { return 5020; }
   static get QUAL_WT_NOTES_ERROR() { return 5030; }
+  static get QUAL_ACH_ERROR() { return 5035; }
   static get QUAL_ACH01_ERROR() { return 5040; }
   static get QUAL_ACH01_NOTES_ERROR() { return 5050; }
   static get QUAL_ACH02_ERROR() { return 1060; }
@@ -1391,17 +1395,19 @@ class Worker {
       this._socialCareQualification = mySocialCareIndicator;
 
       // if the social care indicator is "1" (yes) - then get the next value which must be the level
-      const mySocialCareLevel = parseInt(mySocialCare[1]);
-      if (isNaN(mySocialCareLevel)) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.SOCIALCARE_QUAL_ERROR,
-          errType: 'SOCIALCARE_QUAL_ERROR',
-          error: "Social Care Qualification (SCQUAL) level (after semi colon) must be an integer",
-          source: this._currentLine.SCQUAL,
-        });
+      if (mySocialCareIndicator == 1) {
+        const mySocialCareLevel = parseInt(mySocialCare[1]);
+        if (isNaN(mySocialCareLevel)) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.SOCIALCARE_QUAL_ERROR,
+            errType: 'SOCIALCARE_QUAL_ERROR',
+            error: "Social Care Qualification (SCQUAL) level (after semi colon) must be an integer",
+            source: this._currentLine.SCQUAL,
+          });
+        }
+        this._socialCareQualificationlevel = mySocialCareLevel;  
       }
-      this._socialCareQualificationlevel = mySocialCareLevel;
 
       if (localValidationErrors.length > 0) {
         localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
@@ -1448,17 +1454,19 @@ class Worker {
       this._nonSocialCareQualification = myNonSocialCareIndicator;
 
       // if the social care indicator is "1" (yes) - then get the next value which must be the level
-      const myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
-      if (isNaN(myNonSocialCareLevel)) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-          errType: 'NON_SOCIALCARE_QUAL_ERROR',
-          error: "Non-Social Care Qualification (NONSCQUAL) level (after semi colon) must be an integer",
-          source: this._currentLine.NONSCQUAL,
-        });
+      if (myNonSocialCareIndicator == 1) {
+        const myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
+        if (isNaN(myNonSocialCareLevel)) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+            errType: 'NON_SOCIALCARE_QUAL_ERROR',
+            error: "Non-Social Care Qualification (NONSCQUAL) level (after semi colon) must be an integer",
+            source: this._currentLine.NONSCQUAL,
+          });
+        }
+        this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
       }
-      this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
 
       if (localValidationErrors.length > 0) {
         localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
@@ -1470,6 +1478,104 @@ class Worker {
     } else {
       return true;
     }
+  }
+
+  __validateQualification(qualificationName, qualificationError, qualificationErrorName, qualification,
+                          qualificationDescName, qualificationDescError, qualificationDescErrorName, qualificationDesc) {
+    const myQualification = qualification ? qualification.split(';') : null;
+
+    // optional
+    if (qualification && qualification.length > 0) {
+      const localValidationErrors = [];
+
+      const qualificationId = parseInt(myQualification[0]);
+
+      if (isNaN(qualificationId)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: qualificationError,
+          errType: qualificationErrorName,
+          error: `Qualification (${qualificationName}) index (before semi colon) must be an integer`,
+          source: qualification,
+        });
+      }
+
+      // if the social care indicator is "1" (yes) - then get the next value which must be the level
+      const qualificationYear = parseInt(myQualification[1]);
+      if (isNaN(qualificationYear)) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: qualificationError,
+          errType: qualificationErrorName,
+          error: `Qualification (${qualificationName}) year (after semi colon) must be an integer`,
+          source: qualification,
+        });
+      }
+
+      let myQualificationDesc = null;
+      // qualification description is optional
+      if (qualificationDesc && qualificationDesc.length > 0) {
+        const MAX_LENGTH=120;
+        if (qualificationDesc.length > MAX_LENGTH) {
+          localValidationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: qualificationDescError,
+            errType: qualificationDescErrorName,
+            error: `Qualification Description (${qualificationDescName}) must be no more than 120 characters`,
+            source: qualificationDesc,
+          });
+        } else {
+          myQualificationDesc = qualificationDesc; 
+        }
+      }
+
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
+
+      return {
+        id: qualificationId,
+        year: !isNaN(qualificationYear) ? qualificationYear : null,
+        desc: myQualificationDesc,
+      };
+
+    } else {
+      return null;  // not present
+    }
+  }
+
+  // this is a complex mapping across NOQUALWT, QUALWT, QUALWTNOTES, QUALACH01,QUALACH01NOTES, QUALACH02, QUALACH02NOTES, QUALACH03 and QUALACH03NOTES
+  // NOTE - the CSV format expects the user to create additional columns if a worker has more than three qualifications.
+  //        This approach (adding columns) differs to the approach of "semi colon" delimited data.
+  // https://trello.com/c/ttV4g8mZ. 
+  _validationQualificationRecords() {
+    // Note - ASC WDS does not support qualifications in progress (not yet achieved)
+    // Thus ignoring:
+    // NOQUALWT
+    // QUALWT
+
+    // process the first attained qualification (QUALACH01/QUALACH01NOTES)
+    const myProcessedQualifications = [];
+    myProcessedQualifications.push(this.__validateQualification(
+      'QUALACH01', Worker.QUAL_ACH01_ERROR, 'QUAL_ACH01_ERROR', this._currentLine.QUALACH01,
+      'QUALACH01NOTES', Worker.QUAL_ACH01_NOTES_ERROR, 'QUAL_ACH01_NOTES_ERROR', this._currentLine.QUALACH01NOTES
+    ));
+
+    // process the second attained qualification (QUALACH02/QUALACH02NOTES)
+    myProcessedQualifications.push(this.__validateQualification(
+      'QUALACH02', Worker.QUAL_ACH02_ERROR, 'QUAL_ACH02_ERROR', this._currentLine.QUALACH02,
+      'QUALACH02NOTES', Worker.QUAL_ACH02_NOTES_ERROR, 'QUAL_ACH02_NOTES_ERROR', this._currentLine.QUALACH02NOTES
+    ));
+
+    // process the third attained qualification (QUALACH03/QUALACH03NOTES)
+    myProcessedQualifications.push(this.__validateQualification(
+      'QUALACH03', Worker.QUAL_ACH03_ERROR, 'QUAL_ACH03_ERROR', this._currentLine.QUALACH03,
+      'QUALACH03NOTES', Worker.QUAL_ACH03_NOTES_ERROR, 'QUAL_ACH03_NOTES_ERROR', this._currentLine.QUALACH03NOTES
+    ));
+
+    // remove from the local set of qualifications any false/null entries
+    this._qualifications = myProcessedQualifications.filter(thisQualification => thisQualification !== null && thisQualification !== false);
   }
 
 
@@ -1713,6 +1819,34 @@ class Worker {
       }
     }
   };
+
+  _transformQualificationRecords() {
+    if (this._qualifications && Array.isArray(this._qualifications)) {
+      const mappedQualifications = [];
+
+      this._qualifications.forEach(thisQualification => {
+        const myValidatedQualification = BUDI.qualifications(BUDI.TO_ASC, thisQualification.id);
+
+        // TODO - WA REMOVE THE 72 test - for debugging only!!!!!
+        if (!myValidatedQualification) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.QUAL_ACH_ERROR,
+            errType: `QUAL_ACH_ERROR`,
+            error: `Qualification (QUALACH01/QUALACH02/QUALACH03): ${thisQualification.id} is unknown`,
+            source: `${this._currentLine.QUALACH01}:${this._currentLine.QUALACH02}:${this._currentLine.QUALACH03}`,
+          });
+        } else {
+          const newQual = thisQualification;
+          newQual.id = myValidatedQualification;
+          mappedQualifications.push(newQual);
+        }
+      });
+
+      this._qualifications = mappedQualifications;
+
+    }
+  }
   
 
 
@@ -1760,6 +1894,8 @@ class Worker {
 
     status = !this._validateSocialCareQualification() ? false : status;
     status = !this._validateNonSocialCareQualification() ? false : status;
+
+    status = !this._validationQualificationRecords() ? false : status;
     
     return status;
   };
@@ -1780,6 +1916,7 @@ class Worker {
     status = !this._transformCountryOfBirth() ? false : status;
     status = !this._transformSocialCareQualificationLevel() ? false : status;
     status = !this._transformNonSocialCareQualificationLevel() ? false : status;
+    status = !this._transformQualificationRecords() ? false : status;
 
     return status;
   };
@@ -1845,6 +1982,13 @@ class Worker {
           level: this._nonSocialCareQualificationlevel ? this._nonSocialCareQualificationlevel : undefined,
         } : undefined
       },
+      qualifications: this._qualifications ? this._qualifications.map(thisQual => {
+        return {
+          id: thisQual.id,
+          year: thisQual.year ? thisQual.year : undefined,
+          notes: thisQual.desc ? thisQual.desc : undefined,
+        };
+      }) : undefined,
     };
   };
 
