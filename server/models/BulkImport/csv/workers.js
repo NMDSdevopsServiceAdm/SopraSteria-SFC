@@ -1,4 +1,5 @@
 const BUDI = require('../BUDI').BUDI;
+const moment = require('moment');
 
 class Worker {
   constructor(currentLine, lineNumber) {
@@ -7,13 +8,43 @@ class Worker {
     this._validationErrors = [];
     this._contractType= null;
 
-    //console.log(`MN DEBUG - current worker (${this._lineNumber}:`, this._currentLine);
     this._localId = null;
     this._workerLocalID = null;
+    this._changeUniqueWorkerId = null;
+
+    this._NINumber = null;
+    this._postCode = null;
+    this._DOB = null;
     this._gender = null;
 
+    this._contractType = null;
+
+    this._ethnicity = null;
+    this._britishNationality = null;
+    this._yearOfEntry = null;
 
     this._disabled = null;
+    this._careCertDate = null;
+    this._careCert = null;
+
+    this._recSource = null;
+    this._startDate = null;
+    this._startInsect = null;
+
+    this._apprentice = null;
+    this._fullTime = null;
+    this._zeroHourContract = null;
+
+    this._daysSick = null;
+
+    this._salaryInt = null;
+    this._salary = null;
+    this._hourlyRate = null;
+
+    this._mainJobRole = null;
+    this._mainJobDesc = null;
+
+    this._contHours = null;
   };
 
   //49 csv columns
@@ -36,7 +67,7 @@ class Worker {
   static get INDDATE_ERROR() { return 2070; }
   static get CARE_CERT_ERROR() { return 2080; }
   static get CARE_CERT_DATE_ERROR() { return 2090; }
-  static get RESOURCE_ERROR() { return 3000; }
+  static get RECSOURCE_ERROR() { return 3000; }
   static get START_DATE_ERROR() { return 3010; }
   static get START_INSECT_ERROR() { return 3020; }
   static get APPRENCTICE_ERROR() { return 3030; }
@@ -439,27 +470,32 @@ class Worker {
     const ethnicityValues = [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 98, 99];
     const myEthnicity = parseInt(this._currentLine.ETHNICITY);
 
-    if (isNaN(myEthnicity)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.ETHNICITY_ERROR,
-        errType: 'Ethnicity_ERROR',
-        error: "Ethnicity (Ethnicity) must be an integer",
-        source: this._currentLine.ETHNICITY,
-      });
-      return false;
-    } else if (myEthnicity && !ethnicityValues.includes(myEthnicity)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.ETHNICITY_ERROR,
-        errType: 'Ethnicity_ERROR',
-        error: "Ethnicity (Ethnicity) must have value between 31 to 47,  98 or 99",
-        source: this._currentLine.ETHNICITY,
-      });
-      return false;
-    }
-    else {
-      this._ethnicity = myEthnicity;
+    // optional
+    if (this._currentLine.ETHNICITY && this._currentLine.ETHNICITY.length > 0) {
+      if (isNaN(myEthnicity)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.ETHNICITY_ERROR,
+          errType: 'ETHNICITY_ERROR',
+          error: "Ethnicity (ETHNICITY) must be an integer",
+          source: this._currentLine.ETHNICITY,
+        });
+        return false;
+      } else if (!ethnicityValues.includes(myEthnicity)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.ETHNICITY_ERROR,
+          errType: 'ETHNICITY_ERROR',
+          error: "Ethnicity (ETHNICITY) must have value between 31 to 47,  98 or 99",
+          source: this._currentLine.ETHNICITY,
+        });
+        return false;
+      }
+      else {
+        this._ethnicity = myEthnicity;
+        return true;
+      }
+    } else {
       return true;
     }
   }
@@ -468,27 +504,32 @@ class Worker {
     const BritishCitizenshipValues = [1,2,999];
     const myBritishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP);
 
-    if (isNaN(myBritishCitizenship)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.ETHNICITY_ERROR,
-        errType: 'Ethnicity_ERROR',
-        error: "CitizenShip (BRITISHCITIZENSHIP) must be an integer",
-        source: this._currentLine.BRITISHCITIZENSHIP,
-      });
-      return false;
-    } else if (myBritishCitizenship && !BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.BRITISHCITIZENSHIP_ERROR,
-        errType: 'Ethnicity_ERROR',
-        error: "British Citizenship (BRITISHCITIZENSHIP) must have value 1(Yes) to 2(No),  999(Unknown) ",
-        source: this._currentLine.BRITISHCITIZENSHIP,
-      });
-      return false;
-    }
-    else {
-      this._britishNationality = myBritishCitizenship;
+    // optional
+    if (this._currentLine.BRITISHCITIZENSHIP && this._currentLine.BRITISHCITIZENSHIP.length > 0) {
+      if (isNaN(myBritishCitizenship)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.BRTITISH_CITIZENSHIP_ERROR,
+          errType: 'BRTITISH_CITIZENSHIP_ERROR',
+          error: "CitizenShip (BRITISHCITIZENSHIP) must be an integer",
+          source: this._currentLine.BRITISHCITIZENSHIP,
+        });
+        return false;
+      } else if (!BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.BRITISHCITIZENSHIP_ERROR,
+          errType: 'BRTITISH_CITIZENSHIP_ERROR',
+          error: "British Citizenship (BRITISHCITIZENSHIP) must have value 1(Yes) to 2(No),  999(Unknown) ",
+          source: this._currentLine.BRITISHCITIZENSHIP,
+        });
+        return false;
+      }
+      else {
+        this._britishNationality = myBritishCitizenship;
+        return true;
+      }
+    } else {
       return true;
     }
   }
@@ -535,30 +576,34 @@ class Worker {
     const disabledValues = [0,1]; 
     const myDisabled = parseInt(this._currentLine.DISABLED, 10);
 
-    if (isNaN(myDisabled)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.DISABLED_ERROR,
-        errType: 'DISABLED_ERROR',
-        error: "Disabled (DISABLED) must be an integer",
-        source: this._currentLine.DISABLED,
-      });
-      return false;
-    } else if (myDisabled && !disabledValues.includes(parseInt(myDisabled))) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.DISABLED_ERROR,
-        errType: 'DISABLED_ERROR',
-        error: "Disabled (DISABLED) must have value 0(No Disability) or 1(Has Disability)",
-        source: this._currentLine.DISABLED,
-      });
-      return false;
-    }
-    else {
-      this._disabled = myDisabled;
+    // optional
+    if (this._currentLine.DISABLED && this._currentLine.DISABLED.length > 0) {
+      if (isNaN(myDisabled)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.DISABLED_ERROR,
+          errType: 'DISABLED_ERROR',
+          error: "Disabled (DISABLED) must be an integer",
+          source: this._currentLine.DISABLED,
+        });
+        return false;
+      } else if (!disabledValues.includes(parseInt(myDisabled))) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.DISABLED_ERROR,
+          errType: 'DISABLED_ERROR',
+          error: "Disabled (DISABLED) must have value 0(No Disability) or 1(Has Disability)",
+          source: this._currentLine.DISABLED,
+        });
+        return false;
+      }
+      else {
+        this._disabled = myDisabled;
+        return true;
+      }
+    } else {
       return true;
     }
-
   }
 
   _validateIndStatus() {
@@ -628,342 +673,392 @@ class Worker {
 
   _validateCareCert() {
     const careCertValues = [1, 2, 3];
-    const myCareCert = this._currentLine.CARECERT;
+    const myCareCert = parseInt(this._currentLine.CARECERT);
 
-    if (myCareCert && isNaN(myCareCert)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.CARE_CERT_ERROR,
-        errType: 'CARECERT_ERROR',
-        error: "Care Certificate (CARECERT) must be an integer",
-        source: this._currentLine.CARECERT,
-      });
-      return false;
-    } else if (myCareCert && !careCertValues.includes(parseInt(myCareCert))) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.CARE_CERT_ERROR,
-        errType: 'CARECERT_ERROR',
-        error: "Care Certificate (CARECERT)  must have value 1(YES) or 2(NO) or 3(IN PROGRESS)",
-        source: this._currentLine.CARECERT,
-      });
-      return false;
-    }
-    else {
-      this._careCert = myCareCert;
+    if (myCareCert && this._currentLine.CARECERT.length > 0) {
+      if (isNaN(myCareCert)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CARE_CERT_ERROR,
+          errType: 'CARECERT_ERROR',
+          error: "Care Certificate (CARECERT) must be an integer",
+          source: this._currentLine.CARECERT,
+        });
+        return false;
+      } else if (!careCertValues.includes(parseInt(myCareCert))) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CARE_CERT_ERROR,
+          errType: 'CARECERT_ERROR',
+          error: "Care Certificate (CARECERT) must have value 1(YES) or 2(NO) or 3(IN PROGRESS)",
+          source: this._currentLine.CARECERT,
+        });
+        return false;
+      }
+      else {
+        this._careCert = myCareCert;
+        return true;
+      }
+    } else {
       return true;
     }
-
   }
 
   _validateCareCertDate() {
     const myCareCertDate = this._currentLine.CARECERTDATE;
     const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
 
-    var d1 = new Date();
-    var d2 = new Date(myCareCertDate);
-
-    if (myCareCertDate && !dateRegex.test(myCareCertDate)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.CARE_CERT_DATE_ERROR,
-        errType: 'CARECERTDATE_ERROR',
-        error: "Care Certificate Date (CARECERTDATE) should by in dd/mm/yyyy format",
-        source: this._currentLine.CARECERTDATE,
-      });
-      return false;
-    } else if (myCareCertDate && (d2 > d1)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.CARE_CERT_DATE_ERROR,
-        errType: 'CARECERTDATE_ERROR',
-        error: "Care Certificate (CARECERTDATE) Date can not be in future",
-        source: this._currentLine.CARECERTDATE,
-      });
-      return false;
+    if (this._careCert) {
+      const today = moment(new Date());
+      const myCareCertRealDate = moment.utc(myCareCertDate, "DD/MM/YYYY");
+  
+      // optional
+      if (myCareCertDate && !dateRegex.test(myCareCertDate)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CARE_CERT_DATE_ERROR,
+          errType: 'CARECERTDATE_ERROR',
+          error: "Care Certificate Date (CARECERTDATE) should by in dd/mm/yyyy format",
+          source: this._currentLine.CARECERTDATE,
+        });
+        return false;
+      } else if (myCareCertDate && (myCareCertRealDate.isAfter(today))) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CARE_CERT_DATE_ERROR,
+          errType: 'CARECERTDATE_ERROR',
+          error: "Care Certificate (CARECERTDATE) Date can not be in future",
+          source: this._currentLine.CARECERTDATE,
+        });
+        return false;
+      } else if (myCareCertDate) {
+        this._careCertDate = myCareCertRealDate;
+        return true;
+      }
     } else {
-      this._careCertDate = myCareCertDate;
       return true;
     }
   }
 
   _validateRecSource() {
-    const recSourceValues = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16];
-    const myRecSource = this._currentLine.RECSOURCE;
+    const myRecSource = parseInt(this._currentLine.RECSOURCE);
 
-    if (isNaN(myRecSource)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.RESOURCE_ERROR,
-        errType: 'RECSOURCE_ERROR',
-        error: "Recruitement Source (RECSOURCE) must be an integer",
-        source: this._currentLine.RECSOURCE,
-      });
-      return false;
-    } else if (myRecSource && !recSourceValues.includes(parseInt(myRecSource))) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.RESOURCE_ERROR,
-        errType: 'RECSOURCE_ERROR',
-        error: "Recruitement Source (RECSOURCE) value is incorrect",
-        source: this._currentLine.RECSOURCE,
-      });
-      return false;
-    }
-    else {
-      this._recSource = myRecSource;
+    // optional
+    if (this._currentLine.RECSOURCE && this._currentLine.RECSOURCE.length > 0) {
+      if (isNaN(myRecSource)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.RESOURCE_ERROR,
+          errType: 'RECSOURCE_ERROR',
+          error: "Recruitement Source (RECSOURCE) must be an integer",
+          source: this._currentLine.RECSOURCE,
+        });
+        return false;
+      } else {
+        this._recSource = myRecSource;
+        return true;
+      }
+    } else {
       return true;
     }
   }
 
   _validateStartDate() {
     const myStartDate = this._currentLine.STARTDATE;
-   
-    const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
 
-    var d1 = new Date();
-    var d2 = new Date(myStartDate);
+    // optional
+    if (myStartDate && myStartDate.length > 0) {
+      const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
 
-    if (myStartDate && !dateRegex.test(myStartDate)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.START_DATE_ERROR,
-        errType: 'STARTDATE_ERROR',
-        error: "Start Date (STARTDATE) should by in dd/mm/yyyy format",
-        source: this._currentLine.STARTDATE,
-      });
-      return false;
-    } else if ((d2 > d1)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.START_DATE_ERROR,
-        errType: 'STARTDATE_ERROR',
-        error: "Start Date (STARTDATE) can not be in future",
-        source: this._currentLine.STARTDATE,
-      });
-      return false;
+      const today = moment(new Date());
+      const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
+  
+      if (!dateRegex.test(myStartDate)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.START_DATE_ERROR,
+          errType: 'STARTDATE_ERROR',
+          error: "Start Date (STARTDATE) should by in dd/mm/yyyy format",
+          source: this._currentLine.STARTDATE,
+        });
+        return false;
+      } else if (myRealStartDate.isAfter(today)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.START_DATE_ERROR,
+          errType: 'STARTDATE_ERROR',
+          error: "Start Date (STARTDATE) can not be in future",
+          source: this._currentLine.STARTDATE,
+        });
+        return false;
+      } else {
+        this._startDate = myRealStartDate;
+        return true;
+      }
     } else {
-      this._startDate = myStartDate;
       return true;
     }
   }
 
-  //TODO This date will be ignored if less than year from DOB plus 16 years. It will also be ignored if later that INDDATE or STARTDATE years and must not be in future
- // Currenly only validating 4 digit year
   _validateStartInsect() {
 
     const myStartInsect = this._currentLine.STARTINSECT;
-    const yearRegex = /^\d{4}$/;
 
-    if (myStartInsect && !yearRegex.test(myStartInsect)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.START_INSECT_ERROR,
-        errType: 'START_INSECT_ERROR',
-        error: "Start Insect (STARTINSECT) must be 4 number ",
-        source: this._currentLine.STARTINSECT,
-      });
-      return false;
-    }
-    else {
-      this._startInsect = myStartInsect;
+    // optional
+    if (myStartInsect && myStartInsect.length > 0) {
+      const yearRegex = /^\d{4}$/;
+
+      if (!yearRegex.test(myStartInsect)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.START_INSECT_ERROR,
+          errType: 'START_INSECT_ERROR',
+          error: "Start Insect (STARTINSECT) must be 4 number ",
+          source: this._currentLine.STARTINSECT,
+        });
+        return false;
+      }
+      else {
+        this._startInsect = parseInt(myStartInsect, 10);
+        return true;
+      }
+    } else {
       return true;
     }
   }
 
   _validateApprentice() {
     const apprenticeValues = [1,2,999];
-    const myApprentice = this._currentLine.APPRENTICE;
+    const myApprentice = parseInt(this._currentLine.APPRENTICE, 10);
 
-    if (isNaN(myApprentice)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.APPRENCTICE_ERROR,
-        errType: 'APPRENTICE_ERROR',
-        error: "Apprentice (APPRENTICE) must be an integer",
-        source: this._currentLine.APPRENTICE,
-      });
-      return false;
-    } else if (myApprentice && !apprenticeValues.includes(parseInt(myApprentice))) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.APPRENCTICE_ERROR,
-        errType: 'APPRENTICE_ERROR',
-        error: "Apprentice (APPRENTICE) value must 1(Yes), 2(No) or 999(Unknown)",
-        source: this._currentLine.APPRENTICE,
-      });
-      return false;
-    }
-    else {
-      this._apprentice = myApprentice;
+    // optional
+    if (myApprentice && myApprentice.length > 0) {
+      if (isNaN(myApprentice)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.APPRENCTICE_ERROR,
+          errType: 'APPRENTICE_ERROR',
+          error: "Apprentice (APPRENTICE) must be an integer",
+          source: this._currentLine.APPRENTICE,
+        });
+        return false;
+      } else if (!apprenticeValues.includes(myApprentice)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.APPRENCTICE_ERROR,
+          errType: 'APPRENTICE_ERROR',
+          error: "Apprentice (APPRENTICE) value must 1(Yes), 2(No) or 999(Unknown)",
+          source: this._currentLine.APPRENTICE,
+        });
+        return false;
+      }
+      else {
+        this._apprentice = myApprentice;
+        return true;
+      }  
+    } else {
       return true;
     }
   }
 
   _validateFullTime() {
     const fullTimeValues = [1, 2, 3];
-    const myfullTime = this._currentLine.FULLTIME;
+    const myfullTime = parseInt(this._currentLine.FULLTIME,10);
 
-    if (isNaN(myfullTime)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.FULLTIME_ERROR,
-        errType: 'FULLTIME_ERROR',
-        error: "Full Time (FULLTIME) must be an integer",
-        source: this._currentLine.FULLTIME,
-      });
-      return false;
-    } else if (myfullTime && !fullTimeValues.includes(parseInt(myfullTime))) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.FULLTIME_ERROR,
-        errType: 'FULLTIME_ERROR',
-        error: "Apprentice (FULLTIME) value must 1(FullTime), 2(PartTime) or 3(Neither)",
-        source: this._currentLine.FULLTIME,
-      });
-      return false;
-    }
-    else {
-      this._fullTime = myfullTime;
+    // optional
+    if (this._currentLine.FULLTIME && this._currentLine.FULLTIME.length > 0)
+    {
+      if (isNaN(myfullTime)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.FULLTIME_ERROR,
+          errType: 'FULLTIME_ERROR',
+          error: "Full Time (FULLTIME) must be an integer",
+          source: this._currentLine.FULLTIME,
+        });
+        return false;
+      } else if (!fullTimeValues.includes(myfullTime)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.FULLTIME_ERROR,
+          errType: 'FULLTIME_ERROR',
+          error: "Apprentice (FULLTIME) value must 1(FullTime), 2(PartTime) or 3(Neither)",
+          source: this._currentLine.FULLTIME,
+        });
+        return false;
+      }
+      else {
+        this._fullTime = myfullTime;
+        return true;
+      }
+    } else {
       return true;
     }
   }
 
   _validateZeroHourContract() {
     const zeroHourContractValues = [1, 2, 999];
-    const myZeroHourContract = this._currentLine.ZEROHRCONT;
+    const myZeroHourContract = parseInt(this._currentLine.ZEROHRCONT, 10);
 
-    if (isNaN(myZeroHourContract)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.ZERO_HRCONT_ERROR,
-        errType: 'ZEROHRCONT_ERROR',
-        error: "Zero Hour Contract (ZEROHRCONT) must be an integer",
-        source: this._currentLine.ZEROHRCONT,
-      });
-      return false;
-    } else if (myZeroHourContract && !zeroHourContractValues.includes(parseInt(myZeroHourContract))) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.ZERO_HRCONT_ERROR,
-        errType: 'ZEROHRCONT_ERROR',
-        error: "Zero Hour Contract (ZEROHRCONT) value must 1(Yes), 2(No) or 999(Unknown)",
-        source: this._currentLine.ZEROHRCONT,
-      });
-      return false;
-    }
-    else {
-      this._fullTime = myZeroHourContract;
+    // optional
+    if (this._currentLine.ZEROHRCONT && this._currentLine.ZEROHRCONT.length > 0) {
+      if (isNaN(myZeroHourContract)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.ZERO_HRCONT_ERROR,
+          errType: 'ZEROHRCONT_ERROR',
+          error: "Zero Hour Contract (ZEROHRCONT) must be an integer",
+          source: this._currentLine.ZEROHRCONT,
+        });
+        return false;
+      } else if (!zeroHourContractValues.includes(myZeroHourContract)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.ZERO_HRCONT_ERROR,
+          errType: 'ZEROHRCONT_ERROR',
+          error: "Zero Hour Contract (ZEROHRCONT) value must 1(Yes), 2(No) or 999(Unknown)",
+          source: this._currentLine.ZEROHRCONT,
+        });
+        return false;
+      }
+      else {
+        this._zeroHourContract = myZeroHourContract;
+        return true;
+      }
+    } else {
       return true;
     }
   }
 
   _validateDaysSick() {
-    const myDaysSick = this._currentLine.DAYSSICK;
+    const myDaysSick = parseFloat(this._currentLine.DAYSSICK);
 
-    if (isNaN(myDaysSick)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.DAYSICK_ERROR,
-        errType: 'DAYSSICK_ERROR',
-        error: "Day Sick (DAYSSICK) must be an integer or decimal",
-        source: this._currentLine.DAYSSICK,
-      });
-      return false;
-    } else if (myDaysSick && myDaysSick > 365 && myDaysSick != 999) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.DAYSICK_ERROR,
-        errType: 'DAYSSICK_ERROR',
-        error: "Day Sick (DAYSSICK) value must less than 365 otherwise 999",
-        source: this._currentLine.DAYSSICK,
-      });
-      return false;
-    }
-    else {
-      this._daysSick = myDaysSick;
+    // optional
+    if (this._currentLine.DAYSSICK && this._currentLine.DAYSSICK.length > 0) {
+      const MAX_VALUE = 365.0;
+      const DONT_KNOW_VALUE = 999;
+      if (isNaN(myDaysSick)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.DAYSICK_ERROR,
+          errType: 'DAYSSICK_ERROR',
+          error: "Day Sick (DAYSSICK) must be an integer or decimal",
+          source: this._currentLine.DAYSSICK,
+        });
+        return false;
+      } else if (myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.DAYSICK_ERROR,
+          errType: 'DAYSSICK_ERROR',
+          error: `Day Sick (DAYSSICK) value must less than ${parseInt(MAX_VALUE,10)} otherwise ${DONT_KNOW_VALUE}`,
+          source: this._currentLine.DAYSSICK,
+        });
+        return false;
+      }
+      else {
+        this._daysSick = myDaysSick;
+        return true;
+      }
+    } else {
       return true;
     }
   }
 
   _validateSalaryInt() {
     const salaryIntValues = [1, 3, 4];
-    const mySalaryInt = this._currentLine.SALARYINT;
+    const mySalaryInt = parseInt(this._currentLine.SALARYINT, 10);
 
-    if (isNaN(mySalaryInt)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.SALARY_ERROR,
-        errType: 'SALARYINT_ERROR',
-        error: "Salary Int (SALARYINT) must be an integer",
-        source: this._currentLine.SALARYINT,
-      });
-      return false;
-    } else if (mySalaryInt && !salaryIntValues.includes(parseInt(mySalaryInt))) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.SALARY_ERROR,
-        errType: 'SALARYINT_ERROR',
-        error: "Salary int (SALARYINT) value must 1(Annual Salary), 3(Hourly Rate) or 4(Unpaid)",
-        source: this._currentLine.SALARYINT,
-      });
-      return false;
-    }
-    else {
-      this._salaryInt = mySalaryInt;
+    // optional
+    if (this._currentLine.SALARYINT && this._currentLine.SALARYINT.length > 0) {
+      if (isNaN(mySalaryInt)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.SALARY_ERROR,
+          errType: 'SALARYINT_ERROR',
+          error: "Salary Int (SALARYINT) must be an integer",
+          source: this._currentLine.SALARYINT,
+        });
+        return false;
+      } else if (mySalaryInt && !salaryIntValues.includes(parseInt(mySalaryInt))) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.SALARY_ERROR,
+          errType: 'SALARYINT_ERROR',
+          error: "Salary int (SALARYINT) value must 1(Annual Salary), 3(Hourly Rate) or 4(Unpaid)",
+          source: this._currentLine.SALARYINT,
+        });
+        return false;
+      }
+      else {
+        this._salaryInt = mySalaryInt;
+        return true;
+      }  
+    } else {
       return true;
     }
   }
 
   _validateSalary() {
-    const mySalary = this._currentLine.SALARY;
-    const digitRegex = /^[0-9]{1,10}$/;
+    const mySalary = parseInt(this._currentLine.SALARY);
+    const digitRegex = /^[0-9]{1,9}$/;
 
-    if (mySalary && !digitRegex.test(mySalary)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.SALARY_ERROR,
-        errType: 'Salary_ERROR',
-        error: "Salary (SALARY) are upto 12 digit ",
-        source: this._currentLine.SALARY,
-      });
-      return false;
-    }
-    else {
-      this._salary = mySalary;
+    // optional
+    if (this._currentLine.SALARY.length > 0) {
+      if (isNaN(mySalary) || !digitRegex.test(this._currentLine.SALARY)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.SALARY_ERROR,
+          errType: 'Salary_ERROR',
+          error: "Salary (SALARY) must be an integer an upto 9 digits",
+          source: this._currentLine.SALARY,
+        });
+        return false;
+      }
+      else {
+        this._salary = mySalary;
+        return true;
+      }
+    } else {
       return true;
     }
   }
 
   _validateHourlyRate() {
-    const myHourlyRate = this._currentLine.HOURLYRATE;
+    const myHourlyRate = parseFloat(this._currentLine.HOURLYRATE);
+    const digitRegex = /^\d+(\.\d{1,2})?$/;  // e.g. 15.53 or 0.53 or 1.53 or 100.53
 
-    if (myHourlyRate && !(myHourlyRate - Math.floor(myHourlyRate)) ) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.HOURLY_RATE_ERROR,
-        errType: 'Hourly_Rate_ERROR',
-        error: "Hourly Rate (HOURLYRATE) must be Decimal number like 12.0 or 5.3",
-        source: this._currentLine.HOURLYRATE,
-      });
-      return false;
-    }
-    else {
-      this._hourlyRate = myHourlyRate;
+    // optional
+    if (this._currentLine.HOURLYRATE && this._currentLine.HOURLYRATE.length > 0) {
+      if (isNaN(myHourlyRate) || !digitRegex.test(this._currentLine.HOURLYRATE)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.HOURLY_RATE_ERROR,
+          errType: 'HOURLY_RATE_ERROR',
+          error: "Hourly Rate (HOURLYRATE) must be decimal with upto two decimal points e.g. 12.0 or 5.31",
+          source: this._currentLine.HOURLYRATE,
+        });
+        return false;
+      }
+      else {
+        this._hourlyRate = myHourlyRate;
+        return true;
+      }  
+    } else {
       return true;
     }
   }
 
   _validateMainJobRole() {
-    const mainJobRoleValues = [1, 2, 3, 4, 5, 6, 7,8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41];
-    const myMainJobRole = this._currentLine.MAINJOBROLE;
+    const myMainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
 
-    if (myMainJobRole && !mainJobRoleValues.includes(parseInt(myMainJobRole))) {
+    // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
+    if (isNaN(myMainJobRole)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Worker.MAIN_JOB_ROLE_ERROR,
-        errType: 'Main_JobRole_ERROR',
-        error: "Main Job Role (MAINJOBROLE) must be between 1- 41",
+        errType: 'MAIN_JOB_ROLE_ERROR',
+        error: "Main Job Role (MAINJOBROLE) must be an integer",
         source: this._currentLine.MAINJOBROLE,
       });
       return false;
@@ -978,55 +1073,131 @@ class Worker {
     const myMainJobDesc = this._currentLine.MAINJRDESC;
     const MAX_LENGTH = 120;
 
-    if (myMainJobDesc.length >= MAX_LENGTH) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.MAIN_JOB_DESC_ERROR,
-          errType: `MAINJRDESC_ERROR`,
-          error: `Main Job Description (MAINJRDESC) must be no more than ${MAX_LENGTH} characters`,
-          source: this._currentLine.MAINJRDESC,
-        });
-        return false;
-      } 
-      else {
-        this._mainJobDesc = myMainJobDesc;
+    // main job description is optional, but even then, only relevant if main job is 23 or 27
+    const ALLOWED_JOBS = [23, 27];
+
+    if (ALLOWED_JOBS.includes(this._mainJobRole)) {
+      if (this._currentLine.MAINJRDESC && this._currentLine.MAINJRDESC.length > 0) {
+        if (myMainJobDesc.length >= MAX_LENGTH) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.MAIN_JOB_DESC_ERROR,
+            errType: 'MAIN_JOB_DESC_ERROR',
+            error: `Main Job Description (MAINJRDESC) must be no more than ${MAX_LENGTH} characters`,
+            source: this._currentLine.MAINJRDESC,
+          });
+          return false;
+        } 
+        else {
+          this._mainJobDesc = myMainJobDesc;
+          return true;
+        }
+  
+      } else {
         return true;
       }
-  }
-
-  _validateContHours() {
-    const myContHours = this._currentLine.CONTHOURS;
-
-    if (myContHours && !(myContHours - Math.floor(myContHours)))  {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.CONT_HOURS_ERROR,
-        errType: 'CONTHOURS_ERROR',
-        error: "Contract Hours (CONTHOURS) Number with decimal point to nearest half hour i.e. 6.0, 27.5 and less than 65",
-        source: this._currentLine.CONTHOURS,
-      });
-      return false;
-    }
-    else {
-      this._contHours = myContHours;
+    } else {
       return true;
     }
   }
 
+  _validateContHours() {
+    const myContHours = parseFloat(this._currentLine.CONTHOURS);
+    const digitRegex = /^\d+(\.[0,5]{1})?$/;  // e.g. 15 or 0.5 or 1.0 or 100.5
 
-
+    // optional
+    if (this._currentLine.CONTHOURS && this._currentLine.CONTHOURS.length > 0) {
+      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CONT_HOURS_ERROR,
+          errType: 'CONT_HOURS_ERROR',
+          error: "Contract Hours (CONTHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5",
+          source: this._currentLine.CONTHOURS,
+        });
+        return false;
+      }
+      else {
+        this._contHours = myContHours;
+        return true;
+      }  
+    } else {
+      return true;
+    }
+  }
 
   //transform related
   _transformContractType() {
     if (this._contractType) {
-      this._contractType = BUDI.contractType(BUDI.TO_ASC, this._contractType);
+      const myValidatedContractType = BUDI.contractType(BUDI.TO_ASC, this._contractType);
+
+      if (!myValidatedContractType) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CONTRACT_TYPE_ERROR,
+          errType: `CONTRACT_TYPE_ERROR`,
+          error: `Employment Status (EMPLSTATUS): ${this._contractType} is unknown`,
+          source: this._currentLine.EMPLSTATUS,
+        });
+      } else {
+        this._contractType = myValidatedContractType;
+      }
     }
   };
 
   //transform related
   _transformEthnicity() {
     if (this._ethnicity) {
-      this._ethnicity = BUDI.ethnicity(BUDI.TO_ASC, this._ethnicity);
+      const myValidatedEthnicity = BUDI.ethnicity(BUDI.TO_ASC, this._ethnicity);
+
+      if (!myValidatedEthnicity) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.ETHNICITY_ERROR,
+          errType: `ETHNICITY_ERROR`,
+          error: `Ethnicity (ETHNICITY): ${this._ethnicity} is unknown`,
+          source: this._currentLine.ETHNICITY,
+        });
+      } else {
+        this._ethnicity = myValidatedEthnicity;
+      }
+    }
+  };
+
+  //transform related
+  _transformRecruitment() {
+    if (this._recSource) {
+      const myValidatedRecruitment = BUDI.recruitment(BUDI.TO_ASC, this._recSource);
+
+      if (!myValidatedRecruitment) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.RECSOURCE_ERROR,
+          errType: `RECSOURCE_ERROR`,
+          error: `Recruitement Source (RECSOURCE): ${this._recSource} is unknown`,
+          source: this._currentLine.RECSOURCE,
+        });
+      } else {
+        this._recSource = myValidatedRecruitment;
+      }
+    }
+  };
+
+  _transformMainJobRole() {
+    if (this._mainJobRole) {
+      const myValidatedJobRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
+
+      if (!myValidatedJobRole) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.MAIN_JOB_ROLE_ERROR,
+          errType: `MAIN_JOB_ROLE_ERROR`,
+          error: `Main Job Role (MAINJOBROLE): ${this._mainJobRole} is unknown`,
+          source: this._currentLine.MAINJOBROLE,
+        });
+      } else {
+        this._mainJobRole = myValidatedJobRole;
+      }
     }
   };
 
@@ -1067,9 +1238,6 @@ class Worker {
     status = !this._validateMainJobDesc() ? false : status;
     status = !this._validateContHours() ? false : status;
 
-    
-
-
     return status;
   };
 
@@ -1080,6 +1248,8 @@ class Worker {
     // status = !this._transformMainService() ? false : status;
     status = !this._transformContractType() ? false : status;
     status = !this._transformEthnicity() ? false : status;
+    status = !this._transformRecruitment() ? false : status;
+    status = !this._transformMainJobRole() ? false : status;
 
     return status;
   };
@@ -1101,6 +1271,25 @@ class Worker {
       britishCitizenship: this._britishNationality ? this._britishNationality : undefined,
       yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
       disabled: this._disabled !== null ? this._disabled : undefined,
+      careCertificate: this._careCert ? {
+        value: this._careCert,
+        date: this._careCertDate ? this._careCertDate.format('DD/MM/YYYY') : this._careCertDate
+      } : undefined,
+      recruitmentSource : this._recSource ? this._recSource : undefined,
+      startDate: this._startDate ? this._startDate.format('DD/MM/YYYY') : undefined,
+      startedInSector : this._startInsect ? this._startInsect : undefined,
+      apprenticeship: this._apprentice ? this._apprentice : undefined,
+      fullTime: this._fullTime ? this._fullTime : undefined,
+      zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
+      daysSick: this._daysSick ? this._daysSick : undefined,
+      salaryInterval: this._salaryInt ? this._salaryInt : undefined,
+      salary: this._salary ? this._salary : undefined,
+      hourlyRate: this._hourlyRate ? this._hourlyRate : undefined,
+      mainJob: {
+        role: this._mainJobRole,
+        other: this._mainJobDesc ? this._mainJobDesc : undefined
+      },
+      contractedHours : this._contHours !== null ? this._contHours : undefined,
     };
   };
 
