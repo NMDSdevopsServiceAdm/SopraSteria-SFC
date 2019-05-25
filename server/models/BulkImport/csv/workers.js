@@ -55,6 +55,11 @@ class Worker {
 
     this._nationality = null;
     this._countryOfBirth = null;
+
+    this._socialCareQualification = null;
+    this._socialCareQualificationlevel = null;
+    this._nonSocialCareQualification = null;
+    this._nonSocialCareQualificationlevel = null;
   };
 
   //49 csv columns
@@ -68,13 +73,9 @@ class Worker {
   static get DOB_ERROR() { return 1080; }
   static get GENDER_ERROR() { return 1090; }
   static get ETHNICITY_ERROR() { return 2000; }
-
   static get NATIONALITY_ERROR() { return 2010; }
-
   static get BRTITISH_CITIZENSHIP_ERROR() { return 2020; }
-
   static get COUNTRY_OF_BIRTH_ERROR() { return 2030; }
-
   static get YEAR_OF_ENTRY_ERROR() { return 2040; }
   static get DISABLED_ERROR() { return 2050; }
   static get INDSTATUS_ERROR() { return 2060; }
@@ -103,6 +104,8 @@ class Worker {
 
   static get SOCIALCARE_QUAL_ERROR() { return 4090; }
   static get NON_SOCIALCARE_QUAL_ERROR() { return 5000; }
+
+
   static get NO_QUAL_WT_ERROR() { return 5010; }
   static get QUAL_WT_ERROR() { return 5020; }
   static get QUAL_WT_NOTES_ERROR() { return 5030; }
@@ -1355,6 +1358,120 @@ class Worker {
     }
   }
 
+  _validateSocialCareQualification() {
+    const mySocialCare = this._currentLine.SCQUAL ? this._currentLine.SCQUAL.split(';') : null;
+
+    // optional
+    if (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) {
+      const localValidationErrors = [];
+
+      const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
+      const mySocialCareIndicator = parseInt(mySocialCare[0]);
+
+      if (isNaN(mySocialCareIndicator)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.SOCIALCARE_QUAL_ERROR,
+          errType: 'SOCIALCARE_QUAL_ERROR',
+          error: "Social Care Qualification (SCQUAL) indicator (before semi colon) must be an integer",
+          source: this._currentLine.SCQUAL,
+        });
+      }
+
+      if (!ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.SOCIALCARE_QUAL_ERROR,
+          errType: 'SOCIALCARE_QUAL_ERROR',
+          error: `Social Care Qualification (SCQUAL) indicator (before semi colon) must be one of: ${ALLOWED_SOCIAL_CARE_VALUES}`,
+          source: this._currentLine.SCQUAL,
+        });
+      }
+
+      this._socialCareQualification = mySocialCareIndicator;
+
+      // if the social care indicator is "1" (yes) - then get the next value which must be the level
+      const mySocialCareLevel = parseInt(mySocialCare[1]);
+      if (isNaN(mySocialCareLevel)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.SOCIALCARE_QUAL_ERROR,
+          errType: 'SOCIALCARE_QUAL_ERROR',
+          error: "Social Care Qualification (SCQUAL) level (after semi colon) must be an integer",
+          source: this._currentLine.SCQUAL,
+        });
+      }
+      this._socialCareQualificationlevel = mySocialCareLevel;
+
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
+
+      return true;
+
+    } else {
+      return true;
+    }
+  }
+
+  _validateNonSocialCareQualification() {
+    const myNonSocialCare = this._currentLine.NONSCQUAL ? this._currentLine.NONSCQUAL.split(';') : null;
+
+    // optional
+    if (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) {
+      const localValidationErrors = [];
+
+      const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
+      const myNonSocialCareIndicator = parseInt(myNonSocialCare[0]);
+
+      if (isNaN(myNonSocialCareIndicator)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          errType: 'NON_SOCIALCARE_QUAL_ERROR',
+          error: "Non-Social Care Qualification (NONSCQUAL) indicator (before semi colon) must be an integer",
+          source: this._currentLine.NONSCQUAL,
+        });
+      }
+
+      if (!ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          errType: 'NON_SOCIALCARE_QUAL_ERROR',
+          error: `Non-Social Care Qualification (NONSCQUAL) indicator (before semi colon) must be one of: ${ALLOWED_SOCIAL_CARE_VALUES}`,
+          source: this._currentLine.NONSCQUAL,
+        });
+      }
+
+      this._nonSocialCareQualification = myNonSocialCareIndicator;
+
+      // if the social care indicator is "1" (yes) - then get the next value which must be the level
+      const myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
+      if (isNaN(myNonSocialCareLevel)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          errType: 'NON_SOCIALCARE_QUAL_ERROR',
+          error: "Non-Social Care Qualification (NONSCQUAL) level (after semi colon) must be an integer",
+          source: this._currentLine.NONSCQUAL,
+        });
+      }
+      this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
+
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
+
+      return true;
+
+    } else {
+      return true;
+    }
+  }
+
 
   //transform related
   _transformContractType() {
@@ -1559,6 +1676,45 @@ class Worker {
     }
   };
 
+  _transformSocialCareQualificationLevel() {
+    if (this._socialCareQualificationlevel) {
+      // ASC WDS country of birth is a split enum/index
+      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._socialCareQualificationlevel);
+
+      if (!myValidatedQualificationLevel) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.SOCIALCARE_QUAL_ERROR,
+          errType: `SOCIALCARE_QUAL_ERROR`,
+          error: `Social Care Qualiifcation (SCQUAL): Level ${this._socialCareQualificationlevel} is unknown`,
+          source: this._currentLine.SCQUAL,
+        });
+      } else {
+        this._socialCareQualificationlevel = myValidatedQualificationLevel;
+      }
+    }
+  };
+
+  _transformNonSocialCareQualificationLevel() {
+    if (this._nonSocialCareQualificationlevel) {
+      // ASC WDS country of birth is a split enum/index
+      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._nonSocialCareQualificationlevel);
+
+      if (!myValidatedQualificationLevel) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          errType: `NON_SOCIALCARE_QUAL_ERROR`,
+          error: `Non Social Care Qualiifcation (NONSCQUAL): Level ${this._nonSocialCareQualificationlevel} is unknown`,
+          source: this._currentLine.NONSCQUAL,
+        });
+      } else {
+        this._nonSocialCareQualificationlevel = myValidatedQualificationLevel;
+      }
+    }
+  };
+  
+
 
   // returns true on success, false is any attribute of Worker fails
   validate() {
@@ -1601,6 +1757,9 @@ class Worker {
     status = !this._validateOtherJobs() ? false : status;
     status = !this._validateRegisteredNurse() ? false : status;
     status = !this._validateNursingSpecialist() ? false : status;
+
+    status = !this._validateSocialCareQualification() ? false : status;
+    status = !this._validateNonSocialCareQualification() ? false : status;
     
     return status;
   };
@@ -1619,6 +1778,8 @@ class Worker {
     status = !this._transformNursingSpecialist() ? false : status;
     status = !this._transformNationality() ? false : status;
     status = !this._transformCountryOfBirth() ? false : status;
+    status = !this._transformSocialCareQualificationLevel() ? false : status;
+    status = !this._transformNonSocialCareQualificationLevel() ? false : status;
 
     return status;
   };
@@ -1673,6 +1834,16 @@ class Worker {
       nursing: {
         registered: this._registeredNurse ? this._registeredNurse : undefined,
         specialist: this._nursingSpecialist ? this._nursingSpecialist : undefined
+      },
+      highestQualifications: {
+        social: this._socialCareQualification ? {
+          value: this._socialCareQualification,
+          level: this._socialCareQualificationlevel ? this._socialCareQualificationlevel : undefined,
+        } : undefined,
+        nonSocial: this._nonSocialCareQualification ? {
+          value: this._nonSocialCareQualification,
+          level: this._nonSocialCareQualificationlevel ? this._nonSocialCareQualificationlevel : undefined,
+        } : undefined
       },
     };
   };
