@@ -45,6 +45,7 @@ class Worker {
     this._mainJobDesc = null;
 
     this._contHours = null;
+    this._addlHours = null;
   };
 
   //49 csv columns
@@ -1126,6 +1127,33 @@ class Worker {
     }
   }
 
+  _validateAddlHours() {
+    const myAddlHours = parseFloat(this._currentLine.ADDLHOURS);
+    const digitRegex = /^\d+(\.[0,5]{1})?$/;  // e.g. 15 or 0.5 or 1.0 or 100.5
+
+    // optional
+    console.log("WA DEBUG - additional hours: ", myAddlHours)
+    if (this._currentLine.ADDLHOURS && this._currentLine.ADDLHOURS.length > 0) {
+      if (isNaN(myAddlHours) || !digitRegex.test(this._currentLine.ADDLHOURS)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.ADDL_HOURS_ERROR,
+          errType: 'ADDL_HOURS_ERROR',
+          error: "Additional Hours (ADDLHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5",
+          source: this._currentLine.ADDLHOURS,
+        });
+        return false;
+      }
+      else {
+        this._addlHours = myAddlHours;
+        return true;
+      }  
+    } else {
+      return true;
+    }
+  }
+
+
   //transform related
   _transformContractType() {
     if (this._contractType) {
@@ -1237,6 +1265,7 @@ class Worker {
     status = !this._validateMainJobRole() ? false : status;
     status = !this._validateMainJobDesc() ? false : status;
     status = !this._validateContHours() ? false : status;
+    status = !this._validateAddlHours() ? false : status;
 
     return status;
   };
@@ -1289,7 +1318,10 @@ class Worker {
         role: this._mainJobRole,
         other: this._mainJobDesc ? this._mainJobDesc : undefined
       },
-      contractedHours : this._contHours !== null ? this._contHours : undefined,
+      hours: {
+        contractedHours : this._contHours !== null ? this._contHours : undefined,
+        additionalHours : this._addlHours !== null ? this._addlHours : undefined,
+      }
     };
   };
 
