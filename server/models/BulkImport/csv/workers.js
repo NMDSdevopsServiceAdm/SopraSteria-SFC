@@ -52,6 +52,9 @@ class Worker {
 
     this._registeredNurse = null;
     this._nursingSpecialist = null;
+
+    this._nationality = null;
+    this._countryOfBirth = null;
   };
 
   //49 csv columns
@@ -1302,6 +1305,56 @@ class Worker {
     }
   }
 
+  _validateNationality() {
+    const myNationality = parseInt(this._currentLine.NATIONALITY, 10);
+
+    // optional
+    if (this._currentLine.NATIONALITY && this._currentLine.NATIONALITY.length > 0) {
+      if (isNaN(myNationality)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.NATIONALITY_ERROR,
+          errType: 'NATIONALITY_ERROR',
+          error: "Nationality (NATIONALITY) must be an integer",
+          source: this._currentLine.NATIONALITY,
+        });
+        return false;
+      }
+      else {
+        this._nationality = myNationality;
+        return true;
+      }
+
+    } else {
+      return true;
+    }
+  }
+
+  _validateCountryOfBirth() {
+    const myCountry = parseInt(this._currentLine.COUNTRYOFBIRTH, 10);
+
+    // optional
+    if (this._currentLine.COUNTRYOFBIRTH && this._currentLine.COUNTRYOFBIRTH.length > 0) {
+      if (isNaN(myCountry)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
+          errType: 'COUNTRY_OF_BIRTH_ERROR',
+          error: "Country of Birth (COUNTRYOFBIRTH) must be an integer",
+          source: this._currentLine.COUNTRYOFBIRTH,
+        });
+        return false;
+      }
+      else {
+        this._countryOfBirth = myCountry;
+        return true;
+      }
+
+    } else {
+      return true;
+    }
+  }
+
 
   //transform related
   _transformContractType() {
@@ -1451,6 +1504,61 @@ class Worker {
     }
   };
 
+  _transformNationality() {
+    if (this._nationality) {
+      // ASC WDS nationality is a split enum/index
+      if (this._nationality == 826) {
+        this._nationality = 'British';
+      } else if (this._nationality == 998) {
+        this._nationality = 'Don\'t know';
+      } else if (this._nationality == 999) {
+        this._nationality = 'Other';
+      } else {
+        const myValidatedNationality = BUDI.nationality(BUDI.TO_ASC, this._nationality);
+
+        if (!myValidatedNationality) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.NATIONALITY_ERROR,
+            errType: `NATIONALITY_ERROR`,
+            error: `Nationality (NATIONALITY): ${this._nationality} is unknown`,
+            source: this._currentLine.NURSESPEC,
+          });
+        } else {
+          this._nationality = myValidatedNationality;
+        }  
+      }
+    }
+  };
+
+
+  _transformCountryOfBirth() {
+    if (this._countryOfBirth) {
+      // ASC WDS country of birth is a split enum/index
+      if (this._countryOfBirth == 826) {
+        this._countryOfBirth = 'United Kingdom';
+      } else if (this._countryOfBirth == 998) {
+        this._countryOfBirth = 'Don\'t know';
+      } else if (this._countryOfBirth == 999) {
+        this._countryOfBirth = 'Other';
+      } else {
+        const myValidatedCountry = BUDI.country(BUDI.TO_ASC, this._countryOfBirth);
+
+        if (!myValidatedCountry) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
+            errType: `COUNTRY_OF_BIRTH_ERROR`,
+            error: `Country of Birth (COUNTRYOFBIRTH): ${this._countryOfBirth} is unknown`,
+            source: this._currentLine.COUNTRYOFBIRTH,
+          });
+        } else {
+          this._countryOfBirth = myValidatedCountry;
+        }
+      }
+    }
+  };
+
 
   // returns true on success, false is any attribute of Worker fails
   validate() {
@@ -1467,7 +1575,9 @@ class Worker {
     status = !this._validateDOB() ? false : status;
     status = !this._validateGender() ? false : status;
     status = !this._validateEthnicity() ? false : status;
+    status = !this._validateNationality() ? false : status;
     status = !this._validateCitizenShip() ? false : status;
+    status = !this._validateCountryOfBirth() ? false : status;
     status = !this._validateYearOfEntry() ? false : status;
     status = !this._validateDisabled() ? false : status;
     status = !this._validateIndStatus() ? false : status;
@@ -1507,6 +1617,8 @@ class Worker {
     status = !this._transformOtherJobRoles() ? false : status;
     status = !this._transformRegisteredNurse() ? false : status;
     status = !this._transformNursingSpecialist() ? false : status;
+    status = !this._transformNationality() ? false : status;
+    status = !this._transformCountryOfBirth() ? false : status;
 
     return status;
   };
@@ -1525,7 +1637,9 @@ class Worker {
       gender: this._gender ? this._gender : undefined,
       contractType: this._contractType,
       ethnicity: this._ethnicity ? this._ethnicity : undefined,
+      nationality: this._nationality ? this._nationality : undefined,
       britishCitizenship: this._britishNationality ? this._britishNationality : undefined,
+      countryofBirth: this._countryOfBirth ? this._countryOfBirth : undefined,
       yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
       disabled: this._disabled !== null ? this._disabled : undefined,
       careCertificate: this._careCert ? {

@@ -628,10 +628,10 @@ class BUDI {
     ];
 
     if (direction == BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisNatoinality => thisNatoinality.BUDI == originalCode);
+      const found = fixedMapping.find(thisNationality => thisNationality.BUDI == originalCode);
       return found ? found.ASC : null;
     } else {
-      const found = fixedMapping.find(thisNatoinality => thisNatoinality.ASC == originalCode)
+      const found = fixedMapping.find(thisNationality => thisNationality.ASC == originalCode)
       return found ? found.BUDI : null;
     }
   }
@@ -889,10 +889,10 @@ class BUDI {
     ];
 
     if (direction == BUDI.TO_ASC) {
-      const found = fixedMapping.find(thisCountry => thisEthnicity.BUDI == originalCode);
+      const found = fixedMapping.find(thisCountry => thisCountry.BUDI == originalCode);
       return found ? found.ASC : null;
     } else {
-      const found = fixedMapping.find(thisCountry => thisEthnicity.ASC == originalCode)
+      const found = fixedMapping.find(thisCountry => thisCountry.ASC == originalCode)
       return found ? found.BUDI : null;
     }
   }
