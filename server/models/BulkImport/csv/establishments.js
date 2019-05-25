@@ -767,7 +767,7 @@ class Establishment {
         errCode: Establishment.SERVICE_USERS_ERROR,
         errType: `SERVICE_USERS_ERROR`,
         error: "Service Users (SERVICEUSERS) count and Service Users Description (OTHERUSERDESC) count must equal",
-        source: this._currentLine.OTHERUSERDESC,
+        source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
       });
     } else {
       const myServiceUsersDescriptions = [];
