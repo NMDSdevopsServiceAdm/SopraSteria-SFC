@@ -1,9 +1,11 @@
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnInit } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { Observable } from 'rxjs';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { map, take } from 'rxjs/operators';
+import { forkJoin, Observable } from 'rxjs';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { mergeMap, take } from 'rxjs/operators';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { UploadFile } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-files-upload',
@@ -11,8 +13,10 @@ import { map, take } from 'rxjs/operators';
 })
 export class FilesUploadComponent implements OnInit {
   private form: FormGroup;
-  private selectedFiles: Array<File>;
+  private selectedFiles: Array<UploadFile>;
   private submitted = false;
+  public filesUploading = false;
+  public filesUploaded = false;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -30,37 +34,83 @@ export class FilesUploadComponent implements OnInit {
     });
   }
 
+  get fileUpload(): AbstractControl {
+    return this.form.get('fileUpload');
+  }
+
   private onFilesSelection($event: Event): void {
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target['files']);
+    this.selectedFiles.map((file: UploadFile) => (file.extension = this.bulkUploadService.getFileType(file.name)));
+
+    this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
+
+    if (this.submitted) {
+      this.bulkUploadService.exposeForm$.next(this.form);
+    }
   }
 
   public onSubmit(): void {
     this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.bulkUploadService.exposeForm$.next(this.form);
 
     if (this.form.valid) {
-      this.getAllPresignedUrls();
+      this.uploadFiles();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  private getAllPresignedUrls(): void {
-    this.selectedFiles.forEach((file: File) => {
-      this.getPresignedUrl(file.name)
-        .pipe(take(1))
-        .subscribe((url: string) => this.uploadFile(url));
-    });
+  private uploadFiles(): void {
+    this.filesUploading = true;
+
+    forkJoin(
+      this.selectedFiles.map((file: UploadFile) =>
+        this.getPresignedUrl(file)
+          .pipe(take(1))
+          .pipe(mergeMap((signedURL: string) => this.uploadFile(file, signedURL)))
+      )
+    )
+      .pipe(take(1))
+      .subscribe(
+        () => {
+          this.bulkUploadService.uploadedFiles$.next(this.selectedFiles);
+          this.filesUploading = false;
+          this.filesUploaded = true;
+        },
+        () => {
+          this.filesUploading = false;
+        }
+      );
   }
 
-  private getPresignedUrl(filename: string): Observable<string> {
-    return this.bulkUploadService.getPresignedUrl(filename).pipe(map(data => data.urls));
+  private getPresignedUrl(file: UploadFile): Observable<string> {
+    return this.bulkUploadService.getPresignedUrl(file.name);
   }
 
-  // TODO
-  private uploadFile(uploadPath: string): void {
-    console.log('uploadFile', uploadPath);
+  private uploadFile(file: UploadFile, signedURL: string): Observable<string> {
+    return this.bulkUploadService.uploadFile(file, signedURL);
+  }
+
+  public removeFiles(): void {
+    this.fileUpload.setValidators(Validators.required);
+    this.form.reset();
+    this.submitted = false;
+    this.selectedFiles = [];
+    this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
+
+    if (this.submitted) {
+      this.bulkUploadService.exposeForm$.next(this.form);
+    }
+  }
+
+  public cancelUpload(): void {
+    console.log('cancel upload');
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.bulkUploadService.formErrorsMap());
   }
 }

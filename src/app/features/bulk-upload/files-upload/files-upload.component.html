@@ -3,8 +3,12 @@
     <label class="govuk-label govuk-visually-hidden" for="fileUpload">
       Choose files
     </label>
+    <span *ngIf="form.invalid && submitted" id="fileUpload-error" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('fileUpload') }}
+    </span>
     <input
       class="govuk-file-upload"
+      [class.govuk-file-upload--error]="form.invalid && submitted"
       id="fileUpload"
       name="fileUpload"
       type="file"
@@ -14,9 +18,33 @@
     />
   </div>
 
-  <app-selected-files-list></app-selected-files-list>
+  <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
 
-  <button type="submit" class="govuk-button">
-    Upload files
-  </button>
+  <div *ngIf="!filesUploading && !filesUploaded">
+    <button type="submit" class="govuk-button">
+      Upload files
+    </button>
+
+    <button
+      *ngIf="selectedFiles?.length"
+      type="button"
+      class="govuk-button govuk-button--link govuk-!-margin-left-8"
+      (click)="removeFiles()"
+    >
+      Remove files
+    </button>
+  </div>
 </form>
+
+<div class="govuk-grid-row" *ngIf="filesUploading">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-util__normal govuk-!-font-size-19 govuk-util__inline-block">Files uploading</div>
+    <progress max="100" class="govuk-!-margin-right-8 govuk-!-margin-left-8"></progress>
+    <button type="button" class="govuk-button govuk-button--link" (click)="cancelUpload()">
+      Cancel
+    </button>
+  </div>
+</div>
+
+
+<app-uploaded-files-list *ngIf="filesUploaded"></app-uploaded-files-list>

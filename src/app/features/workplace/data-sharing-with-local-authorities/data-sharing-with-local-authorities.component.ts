@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { BackService } from '@core/services/back.service';
+import { Component } from '@angular/core';
+import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { LocalAuthorityService } from '@core/services/localAuthority.service';
-import { uniqBy } from 'lodash';
-
 import { Question } from '../question/question.component';
+import { Router } from '@angular/router';
+import { uniqBy } from 'lodash';
+import { LocalAuthorityModel } from '@core/model/localAuthority.model';
 
 @Component({
   selector: 'app-data-sharing-with-local-authorities',
@@ -16,7 +16,7 @@ import { Question } from '../question/question.component';
 })
 export class DataSharingWithLocalAuthoritiesComponent extends Question {
   public primaryAuthority;
-  public authorities;
+  public authorities: Array<LocalAuthorityModel>;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -29,7 +29,7 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
     this.form = this.formBuilder.group({
-      primaryAuthority: null,
+      primaryAuthority: false,
       localAuthorities: this.formBuilder.array([]),
     });
   }
@@ -57,26 +57,18 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
 
     this.primaryAuthority = this.establishment.primaryAuthority;
 
-    this.form.get('primaryAuthority').patchValue(
-      !!this.establishment.localAuthorities.findIndex(authority => {
-        return authority.isPrimaryAuthority;
-      })
-    );
-
     this.establishment.localAuthorities.forEach(authority => {
       if (!authority.isPrimaryAuthority) {
         this.localAuthoritiesArray.push(this.createLocalAuthorityItem(authority.custodianCode));
+      } else {
+        this.form.get('primaryAuthority').patchValue(true);
       }
     });
 
-    this.addLocalAuthority();
-
     this.subscriptions.add(
-      this.localAuthorityService.getAuthorities().subscribe(authorities => {
-        this.authorities = authorities.filter(authority => {
-          return authority.custodianCode !== this.establishment.primaryAuthority.custodianCode;
-        });
-      })
+      this.localAuthorityService
+        .getAuthorities()
+        .subscribe((authorities: Array<LocalAuthorityModel>) => (this.authorities = authorities))
     );
   }
 
@@ -96,16 +88,15 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
   }
 
   protected generateUpdateProps() {
-    const { primaryAuthority, localAuthorities } = this.form.value;
+    const authorities = [];
+    this.localAuthoritiesArray.controls.forEach(control => {
+      if (control.value.custodianCode) {
+        authorities.push({ custodianCode: parseInt(control.value.custodianCode, 10) });
+      }
+    });
 
-    const authorities = localAuthorities
-      .filter(authority => !!authority.custodianCode)
-      .map(authority => {
-        return { custodianCode: parseInt(authority.custodianCode, 10) };
-      });
-
-    if (primaryAuthority) {
-      authorities.push({ custodianCode: this.establishment.primaryAuthority.custodianCode });
+    if (this.form.get('primaryAuthority').value) {
+      authorities.push(this.primaryAuthority);
     }
 
     return {

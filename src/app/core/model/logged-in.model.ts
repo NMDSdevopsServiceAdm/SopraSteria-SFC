@@ -10,6 +10,8 @@ export interface LoggedInEstablishment {
   name: string;
   isRegulated: boolean;
   nmdsId: string;
+  isParent: boolean;
+  parentName: string;
 }
 
 export interface LoggedInSession {

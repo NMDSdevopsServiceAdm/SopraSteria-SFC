@@ -1,6 +1,8 @@
 <app-dashboard-header></app-dashboard-header>
 
-<h1 class="govuk-heading-l govuk-!-margin-bottom-4">{{ establishment?.name }}</h1>
+<p *ngIf="establishment?.parentName" class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment.parentName }}</p>
+<p *ngIf="establishment?.isParent" class="govuk-caption-l govuk-!-margin-bottom-2">Parent</p>
+<h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-4">{{ establishment?.name }}</h1>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">

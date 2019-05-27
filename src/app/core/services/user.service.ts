@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { EstablishmentService } from './establishment.service';
 import { UserDetails } from '@core/model/userDetails.model';
+import { MyWorkplacesResponse } from '@core/model/my-workplaces.model';
 
 @Injectable({
   providedIn: 'root',
@@ -40,5 +41,9 @@ export class UserService {
 
   public updateState(userDetails: UserDetails) {
     this._userDetails$.next(userDetails);
+  }
+
+  public getMyEstablishments(): Observable<MyWorkplacesResponse> {
+    return this.http.get<MyWorkplacesResponse>(`/api/user/my/establishments`);
   }
 }

@@ -47,7 +47,8 @@
         type="button"
         (click)="deleteLocalAuthority($event, i)"
       >
-        Remove <span class="govuk-visually-hidden"> local authority {{ localAuthorities.get('custodianCode').value }}</span>
+        Remove
+        <span class="govuk-visually-hidden"> local authority {{ localAuthorities.get('custodianCode').value }}</span>
       </button>
     </div>
   </ng-container>
