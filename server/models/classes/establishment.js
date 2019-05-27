@@ -455,61 +455,6 @@ class Establishment {
                 ]
             };
 
-            // now join across the other dependent tables
-            fetchQuery.include = fetchQuery.include.concat([
-                {
-                  model: models.services,
-                  as: 'otherServices',
-                  attributes: ['id', 'name', 'category'],
-                  order: [
-                    ['category', 'ASC'],
-                    ['name', 'ASC']
-                  ]
-                },{
-                  model: models.serviceUsers,
-                  as: 'serviceUsers',
-                  attributes: ['id', 'service', 'group', 'seq'],
-                  order: [
-                    ['seq', 'ASC']
-                  ]
-                },{
-                  model: models.services,
-                  as: 'mainService',
-                  attributes: ['id', 'name']
-                },{
-                  model: models.establishmentCapacity,
-                  as: 'capacity',
-                  attributes: ['id', 'answer'],
-                  include: [{
-                    model: models.serviceCapacity,
-                    as: 'reference',
-                    attributes: ['id', 'question']
-                  }]
-                },
-                {
-                  model: models.establishmentJobs,
-                  as: 'jobs',
-                  attributes: ['id', 'type', 'total'],
-                  order: [
-                    ['type', 'ASC']
-                  ],
-                  include: [{
-                    model: models.job,
-                    as: 'reference',
-                    attributes: ['id', 'title'],
-                    order: [
-                      ['title', 'ASC']
-                    ]
-                  }]
-                },
-                {
-                  model: models.establishmentLocalAuthority,
-                  as: 'localAuthorities',
-                  attributes: ['id', 'cssrId', 'cssr'],
-                }
-              ]
-            );
-
             const fetchResults = await models.establishment.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
@@ -525,10 +470,7 @@ class Establishment {
                 this._locationId = fetchResults.locationId;
                 this._postcode = fetchResults.postcode;
                 this._isRegulated = fetchResults.isRegulated;
-                this._mainService = {
-                    id: fetchResults.mainService.id,
-                    name: fetchResults.mainService.name
-                };
+
                 this._nmdsId = fetchResults.nmdsId;
                 this._lastWdfEligibility = fetchResults.lastWdfEligibility;
                 this._overallWdfEligibility = fetchResults.overallWdfEligibility;
@@ -556,6 +498,93 @@ class Establishment {
                     });
                 }
 
+                // Individual fetches for extended information in associations
+                
+                const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
+                    models.services.findAll({
+                        include: [{
+                            model: models.establishment,
+                            as: 'establishments',
+                            through: {
+                            where: { establishmentId: this._id}
+                            },
+                            required: true
+                        }],
+                        attributes: ['id', 'name', 'category'],
+                        order: [
+                            ['category', 'ASC'],
+                            ['name', 'ASC']
+                        ]    
+                    }),
+                    models.services.findAll({
+                        where: {
+                            id : fetchResults.establishmentFk
+                        },                    
+                        attributes: ['id', 'name']   
+                    }),
+                    models.serviceUsers.findAll({
+                        include: [{
+                            model: models.establishment,
+                            as: 'establishments',
+                            through: {
+                                where: { establishmentId: this._id}
+                            },
+                            required: true
+                        }],
+                        attributes: ['id', 'service', 'group', 'seq'],
+                        order: [
+                            ['seq', 'ASC']
+                        ]  
+                    }),
+                    models.establishmentCapacity.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        include: [{
+                            model: models.serviceCapacity,
+                            as: 'reference',
+                            attributes: ['id', 'question']
+                        }],
+                        attributes: ['id', 'answer']
+                    }),
+                    models.establishmentJobs.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        include: [{
+                            model: models.job,
+                            as: 'reference',
+                            attributes: ['id', 'title'],
+                            order: [
+                              ['title', 'ASC']
+                            ]
+                        }],
+                        attributes: ['id', 'type', 'total'],
+                        order: [
+                          ['type', 'ASC']
+                        ]
+                    }),
+                    models.establishmentLocalAuthority.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        attributes: ['id', 'cssrId', 'cssr']
+                    })
+                ]);
+
+                fetchResults.otherServices = otherServices;
+                fetchResults.mainService = mainService;
+                fetchResults.serviceUsers = serviceUsers;
+                fetchResults.capacity = capacity;
+                fetchResults.jobs = jobs;
+                fetchResults.localAuthorities = localAuthorities;
+
+                // Moved this code from the section after the findOne, to here, now that mainService is pulled in seperately
+                this._mainService = {
+                    id: fetchResults.mainService.id,
+                    name: fetchResults.mainService.name
+                };
+
                 // other services output requires a list of ALL services available to
                 //  the Establishment
                 if (fetchResults.isRegulated) {
@@ -577,6 +606,7 @@ class Establishment {
                         ]
                     });  
                 }
+
 
                 // service capacities output requires a list of ALL service capacities available to
                 //  the Establishment

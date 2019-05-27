@@ -31,5 +31,14 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: false
   });
 
+  ServiceUsers.associate = (models) => {
+    ServiceUsers.belongsToMany(models.establishment, {
+      through: 'establishmentServiceUsers',
+      foreignKey: 'ServiceUserID',
+      targetKey: 'id',
+      as: 'establishments'
+    });
+  };
+    
   return ServiceUsers;
 };
