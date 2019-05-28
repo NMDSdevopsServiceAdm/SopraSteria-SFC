@@ -499,7 +499,7 @@ class Establishment {
                 }
 
                 // Individual fetches for extended information in associations
-                
+
                 const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
                     models.services.findAll({
                         include: [{
@@ -514,11 +514,11 @@ class Establishment {
                         order: [
                             ['category', 'ASC'],
                             ['name', 'ASC']
-                        ]    
+                        ]  
                     }),
-                    models.services.findAll({
+                    models.services.findOne({
                         where: {
-                            id : fetchResults.establishmentFk
+                            id : fetchResults.MainServiceFKValue
                         },                    
                         attributes: ['id', 'name']   
                     }),
