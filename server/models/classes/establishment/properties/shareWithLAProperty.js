@@ -85,7 +85,7 @@ exports.ShareWithLAProperty = class ShareWithLAProperty extends ChangePropertyPr
             //  current value, and confirm it is in the the new data set.
             //  Array.every will drop out on the first iteration to return false
             arraysEqual = currentValue.every(thisAuthority => {
-                return newValue.find(thatAuthority => thatAuthority.custodianCode === thisAuthority.custodianCode);
+                return newValue.find(thatAuthority => thatAuthority.cssrId === thisAuthority.cssrId);
             });
         } else {
             // if the arrays are lengths are not equal, then we know they're not equal
