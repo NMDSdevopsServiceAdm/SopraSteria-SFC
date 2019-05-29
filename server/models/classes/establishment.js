@@ -499,6 +499,11 @@ class Establishment {
                 }
 
                 // Individual fetches for extended information in associations
+                const establishmentServiceUserResults = await models.establishmentServiceUsers.findAll({
+                    where: {
+                        EstablishmentID : this._id
+                    }
+                });
 
                 const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
                     models.services.findAll({
@@ -523,14 +528,9 @@ class Establishment {
                         attributes: ['id', 'name']   
                     }),
                     models.serviceUsers.findAll({
-                        include: [{
-                            model: models.establishment,
-                            as: 'establishments',
-                            through: {
-                                where: { establishmentId: this._id}
-                            },
-                            required: true
-                        }],
+                        where: {
+                            id: establishmentServiceUserResults.map(su => su.serviceUserId)
+                        },
                         attributes: ['id', 'service', 'group', 'seq'],
                         order: [
                             ['seq', 'ASC']

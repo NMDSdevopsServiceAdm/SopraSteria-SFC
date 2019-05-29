@@ -30,7 +30,7 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
-
+/*
   ServiceUsers.associate = (models) => {
     ServiceUsers.belongsToMany(models.establishment, {
       through: 'establishmentServiceUsers',
@@ -39,6 +39,6 @@ module.exports = function(sequelize, DataTypes) {
       as: 'establishments'
     });
   };
-    
+*/    
   return ServiceUsers;
 };
