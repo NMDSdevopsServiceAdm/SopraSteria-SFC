@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { filter } from 'lodash';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
@@ -21,16 +21,18 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   public categories: Array<WorkplaceCategory>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
-  public submitted = false;
-  public serverErrorsMap: Array<ErrorDefinition>;
+  public selectedWorkplaceService: WorkplaceService;
   public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public submitted = false;
+  private otherServiceMaxLength = 120;
 
   constructor(
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private fb: FormBuilder,
     private registrationService: RegistrationService,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -38,6 +40,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.getSelectedLocation();
+    this.subscribeToUserSelection();
     this.setBackLink();
   }
 
@@ -55,6 +58,15 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
           {
             name: 'required',
             message: 'Please select a main service.',
+          },
+        ],
+      },
+      {
+        item: 'otherWorkplaceService',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Notes must be ${this.otherServiceMaxLength} characters or less`,
           },
         ],
       },
@@ -78,32 +90,68 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     ];
   }
 
+  private subscribeToUserSelection(): void {
+    this.subscriptions.add(
+      this.form
+        .get('workplaceService')
+        .valueChanges.subscribe(() => this.selectedWorkplaceService = this.getSelectedWorkPlaceService())
+      );
+  }
+
   private getSelectedLocation(): void {
     this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe(
-        (location: LocationAddress) => this.getServicesByCategory(location)
+      this.registrationService.selectedLocationAddress$.subscribe((location: LocationAddress) =>
+        this.getServicesByCategory(location)
       )
     );
   }
 
   private getServicesByCategory(location: LocationAddress): void {
+    // TODO remove me
+    location = {
+      addressLine1: '141 Sunderland Road',
+      addressLine2: 'Forest Hill',
+      county: null,
+      locationId: '1-5370939456',
+      locationName: 'Aster House',
+      mainService: 'Residential homes',
+      postalCode: 'SE23 2PX',
+      townCity: 'London',
+    };
     const isRegulated: boolean = this.registrationService.isRegulated(location);
-
 
     this.subscriptions.add(
       this.registrationService.getServicesByCategory(isRegulated).subscribe(
-        (categories: Array<WorkplaceCategory>) => this.categories = categories,
+        (categories: Array<WorkplaceCategory>) => (this.categories = categories),
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
-        }
+        },
+        () => this.updateForm()
+      )
+    );
+  }
+
+  /**
+   * Based on number of categories returned from api
+   * Create additional optional text fields in the form
+   * To capture other workplace service
+   */
+  private updateForm(): void {
+    this.categories.forEach((value, index) =>
+      this.form.addControl(
+        `otherWorkplaceService${index}`,
+        new FormControl(null, [Validators.maxLength(this.otherServiceMaxLength)])
       )
     );
   }
 
   private getSelectedWorkPlaceService(): WorkplaceService {
     const selectedWorkPlaceServiceId: number = parseInt(this.form.get('workplaceService').value, 10);
-    return filter(this.categories, { services: [{ id: selectedWorkPlaceServiceId }] })[0].services[0];
+    const allServices: Array<WorkplaceService> = [];
+
+    this.categories.forEach((data: WorkplaceCategory) => allServices.push(...data.services));
+    return filter(allServices, { id: selectedWorkPlaceServiceId })[0];
   }
 
   public onSubmit(): void {
