@@ -31,6 +31,7 @@ export class TypeOfEmployerComponent extends Question {
 
     this.form = this.formBuilder.group({
       employerType: ['', Validators.required],
+      other: [null, Validators.maxLength(120)],
     });
   }
 
@@ -60,11 +61,14 @@ export class TypeOfEmployerComponent extends Question {
   }
 
   generateUpdateProps() {
-    const { employerType } = this.form.value;
+    const { employerType, other } = this.form.value;
 
     return employerType
       ? {
           employerType,
+          ...(employerType === 'Other' && {
+            other,
+          }),
         }
       : null;
   }

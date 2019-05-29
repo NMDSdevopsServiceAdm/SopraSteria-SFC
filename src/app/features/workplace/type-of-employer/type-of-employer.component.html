@@ -10,20 +10,39 @@
     <span *ngIf="submitted && form.get('employerType').invalid" id="employerType-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('employerType') }}
     </span>
-    <div class="govuk-radios">
-      <div *ngFor="let answer of options; let idx = index" class="govuk-radios__item">
-        <input
-          class="govuk-radios__input"
-          formControlName="employerType"
-          id="employerType-{{ idx }}"
-          name="employerType"
-          type="radio"
-          [value]="answer"
-        />
-        <label class="govuk-label govuk-radios__label" for="employerType-{{ idx }}">
-          {{ answer }}
-        </label>
-      </div>
+    <div class="govuk-radios govuk-radios--conditional">
+      <ng-container *ngFor="let answer of options; let idx = index">
+        <div class="govuk-radios__item">
+          <input
+            class="govuk-radios__input"
+            formControlName="employerType"
+            id="employerType-{{ idx }}"
+            name="employerType"
+            type="radio"
+            [value]="answer"
+          />
+          <label class="govuk-label govuk-radios__label" for="employerType-{{ idx }}">
+            {{ answer }}
+          </label>
+        </div>
+
+        <div
+          *ngIf="answer === 'Other'"
+          class="govuk-radios__conditional"
+          [class.govuk-radios__conditional--hidden]="form.get('employerType').value !== 'Other'"
+          id="conditional-employerType-conditional-1"
+        >
+          <div class="govuk-form-group">
+            <label class="govuk-label" for="other">
+              Other Employer Type
+            </label>
+            <span id="employerType-hint" class="govuk-hint">
+              Optional
+            </span>
+            <input class="govuk-input govuk-input--width-20" id="other" formControlName="other" name="other" type="text" />
+          </div>
+        </div>
+      </ng-container>
     </div>
   </div>
   <div class="govuk-button-group">
