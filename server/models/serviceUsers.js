@@ -30,6 +30,6 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: false,
     updatedAt: false
   });
-
+  
   return ServiceUsers;
 };
