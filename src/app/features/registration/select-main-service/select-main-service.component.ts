@@ -21,7 +21,6 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   public categories: Array<WorkplaceCategory>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
-  public selectedWorkplaceService: WorkplaceService;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
@@ -47,6 +46,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private setupForm(): void {
     this.form = this.fb.group({
       workplaceService: ['', Validators.required],
+      otherWorkplaceService: ['', Validators.maxLength(this.otherServiceMaxLength)]
     });
   }
 
@@ -94,7 +94,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.form
         .get('workplaceService')
-        .valueChanges.subscribe(() => this.selectedWorkplaceService = this.getSelectedWorkPlaceService())
+        .valueChanges.subscribe(() => this.form.get('otherWorkplaceService').patchValue(''))
       );
   }
 
@@ -127,21 +127,6 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
         },
-        () => this.updateForm()
-      )
-    );
-  }
-
-  /**
-   * Based on number of categories returned from api
-   * Create additional optional text fields in the form
-   * To capture other workplace service
-   */
-  private updateForm(): void {
-    this.categories.forEach((value, index) =>
-      this.form.addControl(
-        `otherWorkplaceService${index}`,
-        new FormControl(null, [Validators.maxLength(this.otherServiceMaxLength)])
       )
     );
   }
@@ -151,7 +136,14 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     const allServices: Array<WorkplaceService> = [];
 
     this.categories.forEach((data: WorkplaceCategory) => allServices.push(...data.services));
-    return filter(allServices, { id: selectedWorkPlaceServiceId })[0];
+
+    const workplaceService: WorkplaceService = filter(allServices, { id: selectedWorkPlaceServiceId })[0];
+
+    if (workplaceService.other) {
+      workplaceService.otherWorkplaceService = this.form.get('otherWorkplaceService').value;
+    }
+
+    return workplaceService;
   }
 
   public onSubmit(): void {
