@@ -33,6 +33,9 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
     }
 
     restorePropertyFromSequelize(document) {
+        console.log('DB - DEBUG');
+        console.log(document.serviceUsers);
+        
         if (document.ServiceUsersSavedAt !== null && document.serviceUsers) {
             const restoredRecords = document.serviceUsers.map(thisService => {
                 return {

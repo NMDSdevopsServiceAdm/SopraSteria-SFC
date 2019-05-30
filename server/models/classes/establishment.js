@@ -578,6 +578,8 @@ class Establishment {
                 fetchResults.capacity = capacity;
                 fetchResults.jobs = jobs;
                 fetchResults.localAuthorities = localAuthorities;
+                
+                // Merge other data from Other
 
                 // Moved this code from the section after the findOne, to here, now that mainService is pulled in seperately
                 this._mainService = {

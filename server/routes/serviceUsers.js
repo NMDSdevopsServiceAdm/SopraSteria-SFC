@@ -4,6 +4,7 @@ const models = require('../models/index');
 
 /* GET ALL Service Users*/
 router.route('/').get(async function (req, res) {
+  console.log('DB - DEBUG');
   try {
     let results = await models.serviceUsers.findAll({
         order: [
@@ -21,7 +22,8 @@ router.route('/').get(async function (req, res) {
 function localFormat(givenService) {
   const theService = {
     id: givenService.id,
-    service: givenService.service
+    service: givenService.service,
+    other: givenService.other ? true : undefined
   };
 
   return theService;
