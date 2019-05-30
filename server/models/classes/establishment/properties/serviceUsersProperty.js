@@ -20,7 +20,8 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
                 const validatedServices = await this._validateServices(document.serviceUsers);
 
                 if (validatedServices) {
-                    this.property = validatedServices;
+                    this.property = validatedServices
+                     console.log("DB - valdiated set of service users: ", this._property)
 
                 } else {
                     this.property = null;
@@ -59,7 +60,8 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
             servicesDocument.additionalModels = {
                 establishmentServiceUsers: this.property.map(thisService => {
                     return {
-                        serviceUserId: thisService.id
+                        serviceUserId: thisService.id,
+                        other: thisService.other ? thisService.other : null,
                     };
                 })
             };
@@ -72,6 +74,7 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
         // need to compare arrays
         let arraysEqual = true;
 
+        // DB - have a look at server\models\classes\worker\properties
         if (currentValue && newValue && currentValue.length == newValue.length) {
             // the preconditions are sets are equal in length; compare the array values themselves
 
@@ -164,14 +167,20 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
                 });
             }
 
+            const OTHER_MAX_LENGTH=120;
             if (referenceService && referenceService.id) {
                 // found a service match - prevent duplicates by checking if the reference service already exists
                 if (!setOfValidatedServices.find(thisService => thisService.id === referenceService.id)) {
-                    setOfValidatedServices.push({
-                        id: referenceService.id,
-                        service: referenceService.service,
-                        group: referenceService.group
-                    });
+                    if (referenceService.other && thisService.other && thisService.other.length && thisService.other.length > OTHER_MAX_LENGTH) {
+                        setOfValidatedServicesInvalid = true;
+                    } else {
+                        setOfValidatedServices.push({
+                            id: referenceService.id,
+                            service: referenceService.service,
+                            group: referenceService.group,
+                            other: thisService.other ? thisService.other : undefined,
+                        });
+                    }
                 }
             } else {
                 setOfValidatedServicesInvalid = true;
