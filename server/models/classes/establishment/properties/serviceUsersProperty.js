@@ -21,8 +21,6 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
 
                 if (validatedServices) {
                     this.property = validatedServices
-                     console.log("DB - valdiated set of service users: ", this._property)
-
                 } else {
                     this.property = null;
                 }
