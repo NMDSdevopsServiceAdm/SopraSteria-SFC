@@ -54,10 +54,8 @@ export class OtherQualificationsComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    const { otherQualification } = this.form.value;
-
     this.next =
-      otherQualification === 'Yes'
+      this.worker.otherQualification === 'Yes'
         ? ['/worker', this.worker.uid, 'other-qualifications-level']
         : ['/worker', this.worker.uid, 'summary'];
   }

@@ -104,10 +104,10 @@ export class WorkerService {
     return this.http.get<LeaveReasonsResponse>('/api/worker/leaveReasons').pipe(map(r => r.reasons));
   }
 
-  createWorker(worker: Worker) {
+  createWorker(props) {
     return this.http.post<WorkerEditResponse>(
       `/api/establishment/${this.establishmentService.establishmentId}/worker`,
-      worker
+      props
     );
   }
 

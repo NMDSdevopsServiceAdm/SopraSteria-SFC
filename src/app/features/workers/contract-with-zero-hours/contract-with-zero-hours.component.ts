@@ -54,10 +54,8 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    const { zeroHoursContract } = this.form.value;
-
     this.next =
-      zeroHoursContract === 'Yes' ||
+      this.worker.zeroHoursContract === 'Yes' ||
       [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
         ? ['/worker', this.worker.uid, 'average-weekly-hours']
         : ['/worker', this.worker.uid, 'weekly-contracted-hours'];

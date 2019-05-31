@@ -33,8 +33,8 @@ export class CheckStaffRecordComponent implements OnInit {
           this.workerService.setState({ ...this.worker, ...data });
           this.router.navigate(['/worker/save-success']);
         },
-        err => {
-          console.log(err);
+        error => {
+          console.log(error);
         }
       )
     );

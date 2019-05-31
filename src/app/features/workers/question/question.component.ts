@@ -7,7 +7,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { isNull } from 'util';
 
 export class QuestionComponent implements OnInit, OnDestroy {
@@ -23,6 +22,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   public serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
+  protected initiated = false;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -36,13 +36,15 @@ export class QuestionComponent implements OnInit, OnDestroy {
     this.return = this.workerService.returnTo;
 
     this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe(worker => {
+      this.workerService.worker$.subscribe(worker => {
         this.worker = worker;
 
-        this.init();
+        if (!this.initiated) {
+          this._init();
 
-        this.back = this.return ? this.return : this.previous;
-        this.backService.setBackLink({ url: this.back });
+          this.back = this.return ? this.return : this.previous;
+          this.backService.setBackLink({ url: this.back });
+        }
       })
     );
 
@@ -57,6 +59,11 @@ export class QuestionComponent implements OnInit, OnDestroy {
 
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  protected _init() {
+    this.initiated = true;
+    this.init();
   }
 
   protected init() {}
@@ -107,11 +114,19 @@ export class QuestionComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.subscriptions.add(
-      this.workerService
-        .updateWorker(this.worker.uid, props)
-        .subscribe(data => this._onSuccess(data, payload.action), error => this.onError(error))
-    );
+    if (!this.worker) {
+      this.subscriptions.add(
+        this.workerService
+          .createWorker(props)
+          .subscribe(data => this._onSuccess(data, payload.action), error => this.onError(error))
+      );
+    } else {
+      this.subscriptions.add(
+        this.workerService
+          .updateWorker(this.worker.uid, props)
+          .subscribe(data => this._onSuccess(data, payload.action), error => this.onError(error))
+      );
+    }
   }
 
   _onSuccess(data, action) {

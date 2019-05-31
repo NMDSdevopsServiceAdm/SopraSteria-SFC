@@ -57,7 +57,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    this.next = this.form.value.selectedJobRoles.some(j => j.checked && j.jobId === 27)
+    this.next = this.worker.otherJobs.some(j => j.jobId === 27)
       ? ['/worker', this.worker.uid, 'mental-health-professional']
       : ['/worker', this.worker.uid, 'national-insurance-number'];
   }
