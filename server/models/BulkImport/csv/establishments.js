@@ -1526,10 +1526,17 @@ class Establishment {
     // integer in source; enum in target
     if (this._establishmentType) {
       const mappedType = BUDI.establishmentType(BUDI.TO_ASC, this._establishmentType);
-      this._establishmentType = mappedType.type;
 
-      if (this._establishmentTypeOther === null && mappedType.type === 'Other' && mappedType.other) {
-        this._establishmentTypeOther = mappedType.other;
+      if (mappedType === null) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
+          errType: `ESTABLISHMENT_TYPE_ERROR`,
+          error: `Establishment Type (ESTTYPE): ${this._establishmentType} is unknown`,
+          source: this._currentLine.ESTTYPE,
+        });
+      } else {
+        this._establishmentType = mappedType.type;
       }
     }
   }
