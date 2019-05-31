@@ -34,18 +34,15 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
     }
 
     restorePropertyFromSequelize(document) {
-        console.log('DB - DEBUG');
-        console.log(document.serviceUsers);
-        
         if (document.ServiceUsersSavedAt !== null && document.serviceUsers) {
             const restoredRecords = document.serviceUsers.map(thisService => {
                 return {
                     id: thisService.id,
                     service: thisService.service,
-                    group: thisService.group
+                    group: thisService.group,
+                    other: thisService.other ? thisService.other : undefined
                 };
             });
-
             return restoredRecords;
         }
     }
@@ -74,7 +71,6 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
         // need to compare arrays
         let arraysEqual = true;
 
-        // DB - have a look at server\models\classes\worker\properties
         if (currentValue && newValue && currentValue.length == newValue.length) {
             // the preconditions are sets are equal in length; compare the array values themselves
 
@@ -82,7 +78,13 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
             //  current value, and confirm it is in the the new data set.
             //  Array.every will drop out on the first iteration to return false
             arraysEqual = currentValue.every(thisService => {
-                return newValue.find(newService => newService.id === thisService.id);
+                return newValue.find(newService => 
+                    newService.id === thisService.id && (
+                        (thisService.other && newService.other && thisService.other === newService.other) ||
+                        (!thisService.other && !newService.other)
+                    )
+                );
+
             });
         } else {
             // if the arrays are lengths are not equal, then we know they're not equal
@@ -97,7 +99,8 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
             return {
                 id: thisService.id,
                 group: thisService.group,
-                service: thisService.service
+                service: thisService.service,
+                other: thisService.other ? thisService.other : undefined
             };
         });
     }

@@ -4,7 +4,6 @@ const models = require('../models/index');
 
 /* GET ALL Service Users*/
 router.route('/').get(async function (req, res) {
-  console.log('DB - DEBUG');
   try {
     let results = await models.serviceUsers.findAll({
         order: [

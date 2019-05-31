@@ -502,9 +502,10 @@ class Establishment {
                 const establishmentServiceUserResults = await models.establishmentServiceUsers.findAll({
                     where: {
                         EstablishmentID : this._id
-                    }
+                    },
+                    raw: true
                 });
-
+                
                 const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
                     models.services.findAll({
                         include: [{
@@ -534,7 +535,8 @@ class Establishment {
                         attributes: ['id', 'service', 'group', 'seq'],
                         order: [
                             ['seq', 'ASC']
-                        ]  
+                        ],
+                        raw: true
                     }),
                     models.establishmentCapacity.findAll({
                         where: {
@@ -572,14 +574,24 @@ class Establishment {
                     })
                 ]);
 
+                // For serviceUsers merge any other data into resultset 
+                fetchResults.serviceUsers = establishmentServiceUserResults.map((suResult)=>{
+                    const serviceUser = serviceUsers.find(element => { return suResult.serviceUserId === element.id});
+                    if(suResult.other) {
+                        return {
+                            ...serviceUser,
+                            other: suResult.other
+                        }
+                    } else {
+                        return serviceUser;
+                    }
+                });
+
                 fetchResults.otherServices = otherServices;
                 fetchResults.mainService = mainService;
-                fetchResults.serviceUsers = serviceUsers;
                 fetchResults.capacity = capacity;
                 fetchResults.jobs = jobs;
                 fetchResults.localAuthorities = localAuthorities;
-                
-                // Merge other data from Other
 
                 // Moved this code from the section after the findOne, to here, now that mainService is pulled in seperately
                 this._mainService = {
