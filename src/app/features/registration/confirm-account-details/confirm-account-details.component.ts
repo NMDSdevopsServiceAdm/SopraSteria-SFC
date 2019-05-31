@@ -120,7 +120,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
     const payload: any = this.locationAddress;
     payload.locationId = this.workplaceService.isCQC ? this.locationAddress.locationId : null;
     payload.mainService = this.workplaceService.name;
-    payload.mainServiceOther = this.workplaceService.otherWorkplaceService ? this.workplaceService.otherWorkplaceService : null;
+    payload.mainServiceOther = this.workplaceService.otherName ? this.workplaceService.otherName : null;
     payload.isRegulated = this.workplaceService.isCQC;
     payload.user = this.userDetails;
     payload.user.username = this.loginCredentials.username;

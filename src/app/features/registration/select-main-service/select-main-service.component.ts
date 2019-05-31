@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { filter } from 'lodash';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
@@ -140,7 +140,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     const workplaceService: WorkplaceService = filter(allServices, { id: selectedWorkPlaceServiceId })[0];
 
     if (workplaceService.other) {
-      workplaceService.otherWorkplaceService = this.form.get('otherWorkplaceService').value;
+      workplaceService.otherName = this.form.get('otherWorkplaceService').value;
     }
 
     return workplaceService;

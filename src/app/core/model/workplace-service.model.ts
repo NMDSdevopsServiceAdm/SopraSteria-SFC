@@ -3,5 +3,5 @@ export interface WorkplaceService {
   isCQC: boolean;
   name: string;
   other?: boolean;
-  otherWorkplaceService?: string;
+  otherName?: string;
 }
