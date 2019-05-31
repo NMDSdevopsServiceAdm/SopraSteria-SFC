@@ -58,18 +58,18 @@
                     <span
                       id="otherWorkplaceService-error"
                       class="govuk-error-message"
-                      *ngIf="submitted && form.get('otherWorkplaceService').errors"
+                      *ngIf="submitted && form.get('otherWorkplaceService'+service.id).errors"
                     >
                       <span class="govuk-visually-hidden">Error:</span>
-                      {{ getFormErrorMessage('otherWorkplaceService', 'maxlength') }}
+                      {{ getFormErrorMessage('otherWorkplaceService'+service.id, 'maxlength') }}
                     </span>
                     <input
                       class="govuk-input govuk-!-width-one-third"
                       id="otherWorkplaceService"
                       name="otherWorkplaceService"
                       type="text"
-                      formControlName="otherWorkplaceService"
-                      [class.govuk-input--error]="submitted && form.get('otherWorkplaceService').errors"
+                      formControlName="otherWorkplaceService{{service.id}}"
+                      [class.govuk-input--error]="submitted && form.get('otherWorkplaceService'+service.id).errors"
                       spellcheck="false"
                     />
                   </div>

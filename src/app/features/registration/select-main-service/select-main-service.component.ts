@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { filter } from 'lodash';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
@@ -17,14 +17,15 @@ import { WorkplaceService } from '@core/model/workplace-service.model';
   templateUrl: './select-main-service.component.html',
 })
 export class SelectMainServiceComponent implements OnInit, OnDestroy {
+  private otherServiceMaxLength = 120;
   private subscriptions: Subscription = new Subscription();
+  public allServices: Array<WorkplaceService> = [];
   public categories: Array<WorkplaceCategory>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
-  private otherServiceMaxLength = 120;
 
   constructor(
     private backService: BackService,
@@ -39,14 +40,12 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.getSelectedLocation();
-    this.subscribeToUserSelection();
     this.setBackLink();
   }
 
   private setupForm(): void {
     this.form = this.fb.group({
       workplaceService: ['', Validators.required],
-      otherWorkplaceService: ['', Validators.maxLength(this.otherServiceMaxLength)]
     });
   }
 
@@ -58,15 +57,6 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
           {
             name: 'required',
             message: 'Please select a main service.',
-          },
-        ],
-      },
-      {
-        item: 'otherWorkplaceService',
-        type: [
-          {
-            name: 'maxlength',
-            message: `Other service must be ${this.otherServiceMaxLength} characters or less`,
           },
         ],
       },
@@ -90,14 +80,6 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private subscribeToUserSelection(): void {
-    this.subscriptions.add(
-      this.form
-        .get('workplaceService')
-        .valueChanges.subscribe(() => this.form.get('otherWorkplaceService').patchValue(''))
-      );
-  }
-
   private getSelectedLocation(): void {
     this.subscriptions.add(
       this.registrationService.selectedLocationAddress$.subscribe((location: LocationAddress) =>
@@ -111,22 +93,47 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.registrationService.getServicesByCategory(isRegulated).subscribe(
-        (categories: Array<WorkplaceCategory>) => (this.categories = categories),
+        (categories: Array<WorkplaceCategory>) => {
+          this.categories = categories;
+          this.categories.forEach((data: WorkplaceCategory) => this.allServices.push(...data.services));
+        },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
         },
+        () => this.updateForm()
       )
     );
   }
 
+  /**
+   * If workplace services have an other flag create additional optional text fields in the form
+   * Also update formErrorsMap in order to add maxlength validation
+   */
+  private updateForm(): void {
+    this.allServices.forEach((service: WorkplaceService) => {
+      if (service.other) {
+        this.form.addControl(
+          `otherWorkplaceService${service.id}`,
+          new FormControl(null, [Validators.maxLength(this.otherServiceMaxLength)])
+        );
+
+        this.formErrorsMap.push({
+          item: `otherWorkplaceService${service.id}`,
+          type: [
+            {
+              name: 'maxlength',
+              message: `Other service must be ${this.otherServiceMaxLength} characters or less`,
+            },
+          ],
+        });
+      }
+    });
+  }
+
   private getSelectedWorkPlaceService(): WorkplaceService {
     const selectedWorkPlaceServiceId: number = parseInt(this.form.get('workplaceService').value, 10);
-    const allServices: Array<WorkplaceService> = [];
-
-    this.categories.forEach((data: WorkplaceCategory) => allServices.push(...data.services));
-
-    const workplaceService: WorkplaceService = filter(allServices, { id: selectedWorkPlaceServiceId })[0];
+    const workplaceService: WorkplaceService = filter(this.allServices, { id: selectedWorkPlaceServiceId })[0];
 
     if (workplaceService.other) {
       workplaceService.otherName = this.form.get('otherWorkplaceService').value;
