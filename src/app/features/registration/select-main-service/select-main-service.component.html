@@ -15,7 +15,11 @@
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-        <span *ngIf="submitted && form.invalid" id="workplaceService-error" class="govuk-error-message">
+        <span
+          *ngIf="submitted && form.get('workplaceService').errors"
+          id="workplaceService-error"
+          class="govuk-error-message"
+        >
           <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplaceService', 'required') }}
         </span>
         <div *ngFor="let item of categories; let last = last" [class.govuk-!-padding-bottom-6]="!last">
@@ -55,7 +59,7 @@
                     <span
                       id="otherWorkplaceService-error"
                       class="govuk-error-message"
-                      *ngIf="submitted && form.errors"
+                      *ngIf="submitted && form.get('otherWorkplaceService').errors"
                     >
                       <span class="govuk-visually-hidden">Error:</span>
                       {{ getFormErrorMessage('otherWorkplaceService', 'maxlength') }}
@@ -66,7 +70,7 @@
                       name="otherWorkplaceService"
                       type="text"
                       formControlName="otherWorkplaceService"
-                      [class.govuk-input--error]="submitted && form.errors"
+                      [class.govuk-input--error]="submitted && form.get('otherWorkplaceService').errors"
                       spellcheck="false"
                     />
                   </div>
