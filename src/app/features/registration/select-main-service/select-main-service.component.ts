@@ -66,7 +66,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'maxlength',
-            message: `Notes must be ${this.otherServiceMaxLength} characters or less`,
+            message: `Other service must be ${this.otherServiceMaxLength} characters or less`,
           },
         ],
       },
