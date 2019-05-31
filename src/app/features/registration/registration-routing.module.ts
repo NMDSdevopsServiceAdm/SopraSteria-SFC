@@ -98,7 +98,7 @@ const routes: Routes = [
   {
     path: 'select-main-service',
     component: SelectMainServiceComponent,
-    // canActivate: [RegisterGuard],
+    canActivate: [RegisterGuard],
     data: { title: 'Select Main Service' },
   },
 ];
