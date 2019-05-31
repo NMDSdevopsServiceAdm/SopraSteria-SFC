@@ -15,8 +15,11 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './staff-details.component.html',
 })
 export class StaffDetailsComponent extends QuestionComponent implements OnInit, OnDestroy {
+  private jobRoleCharacterLimit = 120;
+
   public contractsAvailable: Array<string> = [];
   public jobsAvailable: Job[] = [];
+  public showInputTextforOtherRole: boolean;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -31,6 +34,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.form = this.formBuilder.group({
       nameOrId: [null, Validators.required],
       mainJob: [null, Validators.required],
+      jobRole: [null, [Validators.maxLength(this.jobRoleCharacterLimit)]],
       contract: [null, Validators.required],
     });
   }
@@ -38,13 +42,13 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   init(): void {
     this.contractsAvailable = Object.values(Contracts);
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
-
     this.previous = ['/worker', 'start-screen'];
 
     if (this.worker) {
       this.form.patchValue({
         nameOrId: this.worker.nameOrId,
         mainJob: this.worker.mainJob.jobId,
+        jobRole: this.worker.mainJob.other,
         contract: this.worker.contract,
       });
 
@@ -73,6 +77,15 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         ],
       },
       {
+        item: 'jobRole',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Character limit of ${this.jobRoleCharacterLimit} exceeded.`,
+          },
+        ],
+      },
+      {
         item: 'contract',
         type: [
           {
@@ -85,13 +98,14 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   generateUpdateProps() {
-    const { nameOrId, contract, mainJob } = this.form.controls;
+    const { nameOrId, contract, mainJob, jobRole } = this.form.controls;
 
     const props = {
       nameOrId: nameOrId.value,
       contract: contract.value,
       mainJob: {
         jobId: parseInt(mainJob.value, 10),
+        ...(jobRole.value && { other: jobRole.value }),
       },
     };
 
@@ -105,9 +119,26 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   onSuccess() {
+    const { mainJob } = this.form.value;
+
+    // TODO: Use returned Worker Object once API has been updated to respond
+    //       with all properties
     this.next =
-      this.worker.mainJob.jobId === 27
+      parseInt(mainJob, 10) === 27
         ? ['/worker', this.worker.uid, 'mental-health-professional']
         : ['/worker', this.worker.uid, 'main-job-start-date'];
+  }
+
+  onChangeJobRole(id: number) {
+    this.showInputTextforOtherRole = false;
+    const job = this.getJob({ jobs: this.jobsAvailable, jobId: id });
+    if (job.other) {
+      this.showInputTextforOtherRole = true;
+    }
+  }
+
+  getJob(params) {
+    const { jobs, jobId } = params;
+    return jobs.find(job => job.id === +jobId);
   }
 }

@@ -16,12 +16,15 @@ import { isNull } from 'util';
   templateUrl: './create-basic-records.component.html',
 })
 export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
+  private jobRoleCharacterLimit = 120;
+
   public contracts: Array<string> = [];
   public jobs: Job[] = [];
   public totalStaff: number;
   public totalWorkers = 0;
   public form: FormGroup;
   public submitted = false;
+  public showInputTextforOtherRole: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -109,6 +112,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     return this.formBuilder.group({
       nameOrId: [null, Validators.required],
       mainJobRole: [null, Validators.required],
+      jobRole: [null, [Validators.maxLength(this.jobRoleCharacterLimit)]],
       contract: [null, Validators.required],
       uid: null,
       active: true,
@@ -127,6 +131,14 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.staffRecordsControl.controls.forEach(control => {
       control.patchValue({ active: false });
     });
+  }
+
+  onChangeJobRole(id: number) {
+    this.showInputTextforOtherRole = false;
+    const selectedjob = this.jobs.find(job => job.id === +id);
+    if (selectedjob.other) {
+      this.showInputTextforOtherRole = true;
+    }
   }
 
   submitHandler() {
@@ -162,14 +174,15 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     });
 
     if (staffRecord.valid) {
-      const { nameOrId, contract, mainJobRole, uid } = staffRecord.controls;
+      const { nameOrId, contract, mainJobRole, jobRole, uid } = staffRecord.controls;
 
       const props = {
         nameOrId: nameOrId.value,
         contract: contract.value,
         mainJob: {
           jobId: parseInt(mainJobRole.value, 10),
-        },
+          ...(jobRole.value && { other: jobRole.value })
+        }
       };
 
       if (!isNull(uid.value)) {
