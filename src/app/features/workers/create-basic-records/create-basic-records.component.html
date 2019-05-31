@@ -82,13 +82,41 @@
               "
               formControlName="mainJobRole"
               id="mainJobRole-{{ i }}"
-            >
+              (change)="onChangeJobRole($event.target.value)">
               <option [ngValue]="null">Select Main Job Role</option>
               <option *ngFor="let job of jobs" [value]="job.id">
                 {{ job.title }}
               </option>
             </select>
           </div>
+
+          <div
+            class="govuk-form-group"
+            [class.govuk-form-group--error]="staffRecord.get('jobRole').invalid && staffRecord.get('jobRole').touched"
+            *ngIf="showInputTextforOtherRole">
+            <label class="govuk-label" for="jobRole">
+              Enter your job role
+            </label>
+            <span
+              *ngIf="staffRecord.get('jobRole').invalid && staffRecord.get('jobRole').touched"
+              class="govuk-error-message"
+              id="jobRole-{{ i }}-error">
+              <span class="govuk-visually-hidden">Error:</span>
+              Character limit of {{jobRoleCharacterLimit}} exceeded.
+            </span>
+            <span id="jobRole-hint" class="govuk-hint">
+              Optional
+            </span>
+            <input
+              class="govuk-input govuk-input--width-20"
+              formControlName="jobRole"
+              id="jobRole-conditional"
+              name="jobRole"
+              type="text"
+              aria-describedby="jobRole-hint"
+            />
+          </div>
+
           <div
             class="govuk-form-group"
             [class.govuk-form-group--error]="staffRecord.get('contract').invalid && staffRecord.get('contract').touched"
