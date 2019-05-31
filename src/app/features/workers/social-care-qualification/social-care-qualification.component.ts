@@ -51,10 +51,8 @@ export class SocialCareQualificationComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    const { qualificationInSocialCare } = this.form.value;
-
     this.next =
-      qualificationInSocialCare === 'Yes'
+      this.worker.qualificationInSocialCare === 'Yes'
         ? ['/worker', this.worker.uid, 'social-care-qualification-level']
         : ['/worker', this.worker.uid, 'other-qualifications'];
   }

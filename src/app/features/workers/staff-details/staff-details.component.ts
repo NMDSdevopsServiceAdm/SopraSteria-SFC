@@ -39,15 +39,17 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.contractsAvailable = Object.values(Contracts);
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
 
+    this.previous = ['/worker', 'start-screen'];
+
     if (this.worker) {
       this.form.patchValue({
         nameOrId: this.worker.nameOrId,
         mainJob: this.worker.mainJob.jobId,
         contract: this.worker.contract,
       });
-    }
 
-    this.previous = ['/worker', this.worker.uid, 'start-screen'];
+      this.previous = ['/dashboard'];
+    }
   }
 
   public setupFormErrorsMap(): void {
@@ -95,7 +97,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
     // TODO: Removing Other Jobs should be handled by the Server
     // https://trello.com/c/x3N7dQJP
-    if (this.worker.otherJobs) {
+    if (this.worker && this.worker.otherJobs) {
       (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
     }
 
@@ -104,7 +106,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   onSuccess() {
     this.next =
-      parseInt(this.form.get('mainJob').value, 10) === 27
+      this.worker.mainJob.jobId === 27
         ? ['/worker', this.worker.uid, 'mental-health-professional']
         : ['/worker', this.worker.uid, 'main-job-start-date'];
   }

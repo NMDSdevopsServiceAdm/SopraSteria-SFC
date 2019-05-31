@@ -41,7 +41,7 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
 
     this.previous = this.isOtherJobsSocialWorker()
       ? ['/worker', this.worker.uid, 'other-job-roles']
-      : ['/worker', this.worker.uid, 'main-job-start-date'];
+      : ['/worker', this.worker.uid, 'staff-details'];
   }
 
   generateUpdateProps() {
