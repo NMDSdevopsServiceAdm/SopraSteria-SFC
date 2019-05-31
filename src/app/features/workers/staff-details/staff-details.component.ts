@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { Contracts } from '@core/model/contracts.enum';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
-
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
@@ -41,34 +41,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.contractsAvailable = Object.values(Contracts);
-    // this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
-
-    // TOD0: rough mock...
-    this.subscriptions.add(
-      this.jobService.getJobs().subscribe(jobs => {
-        this.jobsAvailable = [
-          {
-            id: 18,
-            title: 'Occupational Therapist',
-          },
-          {
-            id: 19,
-            title: 'Occupational Therapist Assistant',
-          },
-          {
-            id: 20,
-            title: 'Other job roles directly involved in providing care',
-            other: true,
-          },
-          {
-            id: 21,
-            title: 'Other job roles not directly involved in providing care',
-            other: true,
-          },
-        ] as Job[];
-      })
-    );
-
+    this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
     this.previous = ['/worker', 'start-screen'];
 
     if (this.worker) {
