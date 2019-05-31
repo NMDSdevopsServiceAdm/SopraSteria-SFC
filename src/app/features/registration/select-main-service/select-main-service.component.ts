@@ -107,17 +107,6 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   }
 
   private getServicesByCategory(location: LocationAddress): void {
-    // TODO remove me
-    location = {
-      addressLine1: '141 Sunderland Road',
-      addressLine2: 'Forest Hill',
-      county: null,
-      locationId: '1-5370939456',
-      locationName: 'Aster House',
-      mainService: 'Residential homes',
-      postalCode: 'SE23 2PX',
-      townCity: 'London',
-    };
     const isRegulated: boolean = this.registrationService.isRegulated(location);
 
     this.subscriptions.add(

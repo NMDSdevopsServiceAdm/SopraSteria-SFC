@@ -44,7 +44,7 @@
 
                 <!-- conditional content -->
                 <div
-                  *ngIf="form.get('workplaceService').value === service.id.toString()"
+                  *ngIf="service.other && form.get('workplaceService').value === service.id.toString()"
                   class="govuk-radios__conditional"
                   id="workplaceService-conditional-{{ i }}"
                 >
