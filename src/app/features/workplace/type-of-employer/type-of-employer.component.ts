@@ -19,6 +19,7 @@ export class TypeOfEmployerComponent extends Question {
     'Voluntary / Charity',
     'Other',
   ];
+  public maxLength = 120;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -31,7 +32,7 @@ export class TypeOfEmployerComponent extends Question {
 
     this.form = this.formBuilder.group({
       employerType: ['', Validators.required],
-      other: [null, Validators.maxLength(120)],
+      other: [null, Validators.maxLength(this.maxLength)],
     });
   }
 
@@ -55,6 +56,15 @@ export class TypeOfEmployerComponent extends Question {
           {
             name: 'required',
             message: 'Please select an Employer type',
+          },
+        ],
+      },
+      {
+        item: 'other',
+        type: [
+          {
+            name: 'maxlength',
+            message: 'MAX LENGTH',
           },
         ],
       },
