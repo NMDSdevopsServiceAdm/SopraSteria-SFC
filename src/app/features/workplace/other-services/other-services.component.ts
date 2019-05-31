@@ -96,9 +96,10 @@ export class OtherServicesComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
         response => {
-          this.next = response.capacities.length
-            ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
-            : ['/workplace', `${this.establishment.id}`, 'service-users'];
+          this.next =
+            response.capacities && response.capacities.length
+              ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
+              : ['/workplace', `${this.establishment.id}`, 'service-users'];
           this.navigate();
         },
         error => this.onError(error)
