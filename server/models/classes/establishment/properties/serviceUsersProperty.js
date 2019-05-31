@@ -181,7 +181,7 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
                             id: referenceService.id,
                             service: referenceService.service,
                             group: referenceService.group,
-                            other: thisService.other ? thisService.other : undefined,
+                            other: (thisService.other && referenceService.other) ? thisService.other : undefined,
                         });
                     }
                 }
