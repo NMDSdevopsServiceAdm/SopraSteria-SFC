@@ -136,7 +136,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     const workplaceService: WorkplaceService = filter(this.allServices, { id: selectedWorkPlaceServiceId })[0];
 
     if (workplaceService.other) {
-      workplaceService.otherName = this.form.get('otherWorkplaceService').value;
+      workplaceService.otherName = this.form.get(`otherWorkplaceService${selectedWorkPlaceServiceId}`).value;
     }
 
     return workplaceService;

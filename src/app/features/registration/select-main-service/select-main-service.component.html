@@ -47,7 +47,10 @@
                 </div>
 
                 <div
-                  *ngIf="service.other && form.get('workplaceService').value === service.id.toString()"
+                  *ngIf="service.other"
+                  [class.govuk-radios__conditional--hidden]="
+                    form.get('workplaceService').value !== service.id.toString()
+                  "
                   class="govuk-radios__conditional"
                   id="workplaceService-conditional-{{ i }}"
                 >
@@ -58,18 +61,18 @@
                     <span
                       id="otherWorkplaceService-error"
                       class="govuk-error-message"
-                      *ngIf="submitted && form.get('otherWorkplaceService'+service.id).errors"
+                      *ngIf="submitted && form.get('otherWorkplaceService' + service.id).errors"
                     >
                       <span class="govuk-visually-hidden">Error:</span>
-                      {{ getFormErrorMessage('otherWorkplaceService'+service.id, 'maxlength') }}
+                      {{ getFormErrorMessage('otherWorkplaceService' + service.id, 'maxlength') }}
                     </span>
                     <input
                       class="govuk-input govuk-!-width-one-third"
                       id="otherWorkplaceService"
                       name="otherWorkplaceService"
                       type="text"
-                      formControlName="otherWorkplaceService{{service.id}}"
-                      [class.govuk-input--error]="submitted && form.get('otherWorkplaceService'+service.id).errors"
+                      formControlName="otherWorkplaceService{{ service.id }}"
+                      [class.govuk-input--error]="submitted && form.get('otherWorkplaceService' + service.id).errors"
                       spellcheck="false"
                     />
                   </div>
