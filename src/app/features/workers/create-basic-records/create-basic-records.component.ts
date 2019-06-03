@@ -119,7 +119,9 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.closeStaffRecords();
     this.staffRecordsControl.controls[index].patchValue({ active: true });
     setTimeout(() => {
-      this.elementRef.nativeElement.querySelector(`.staff-record:nth-of-type(${index + 1})`).scrollIntoView(true);
+      this.elementRef.nativeElement
+        .querySelector(`.govuk-summary-list__row:nth-of-type(${index + 1})`)
+        .scrollIntoView(true);
     });
   }
 
@@ -138,7 +140,9 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     });
 
     if (this.form.valid || this.staffRecordsControl.length === 0) {
-      this.workerService.setCreateStaffResponse(this.staffRecordsControl.length);
+      this.workerService.setCreateStaffResponse(
+        this.staffRecordsControl.controls.filter(record => record.get('uid').value).length
+      );
       this.router.navigate(['/worker', 'basic-records-save-success']);
     } else {
       const unsavedIndex = this.staffRecordsControl.controls.findIndex(control => {
