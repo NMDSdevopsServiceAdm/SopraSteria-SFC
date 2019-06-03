@@ -29,7 +29,7 @@
                 {{ item.category }}
               </h2>
             </legend>
-            <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios">
               <ng-container *ngFor="let service of item.services; let i = index">
                 <div class="govuk-radios__item">
                   <input
@@ -55,7 +55,7 @@
                   id="workplaceService-conditional-{{ i }}"
                 >
                   <div class="govuk-form-group govuk-!-margin-bottom-2">
-                    <label class="govuk-label" for="otherWorkplaceService">
+                    <label class="govuk-label" for="otherWorkplaceService-{{ service.id }}">
                       Enter your other service
                     </label>
                     <span
@@ -68,7 +68,7 @@
                     </span>
                     <input
                       class="govuk-input govuk-!-width-one-third"
-                      id="otherWorkplaceService"
+                      id="otherWorkplaceService-{{ service.id }}"
                       name="otherWorkplaceService"
                       type="text"
                       formControlName="otherWorkplaceService{{ service.id }}"
