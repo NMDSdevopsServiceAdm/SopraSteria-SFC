@@ -6,6 +6,7 @@ export interface LocationAddress {
   locationId?: string;
   locationName: string;
   mainService?: string;
+  mainServiceOther?: string;
   postalCode: string;
   townCity: string;
 }
