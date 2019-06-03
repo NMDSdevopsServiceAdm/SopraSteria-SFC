@@ -24,7 +24,7 @@ const routes: Routes = [
   {
     path: 'view-my-workplaces',
     component: ViewMyWorkplacesComponent,
-    //canActivate: [ParentGuard],
+    canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
   },
   {

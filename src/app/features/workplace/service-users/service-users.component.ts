@@ -51,7 +51,6 @@ export class ServiceUsersComponent extends Question {
             response.capacities && response.capacities.length
               ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
               : ['/workplace', `${this.establishment.id}`, 'other-services'];
-          this.navigate();
         },
         error => this.onError(error)
       )
