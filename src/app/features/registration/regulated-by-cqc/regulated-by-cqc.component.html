@@ -42,6 +42,7 @@
             <div
               *ngIf="regulatedByCQC.value === 'yes'"
               class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="regulatedByCQC.value !== 'yes'"
               id="regulatedByCQC-conditional-1"
               formGroupName="group"
             >
@@ -117,8 +118,8 @@
 
             <!-- conditional content -->
             <div
-              *ngIf="regulatedByCQC.value === 'no'"
               class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="regulatedByCQC.value !== 'no'"
               id="regulatedByCQC-conditional-2"
             >
               <!-- non regulated postcode -->
