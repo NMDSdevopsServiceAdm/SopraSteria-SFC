@@ -105,8 +105,8 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       contract: contract.value,
       mainJob: {
         jobId: parseInt(mainJob.value, 10),
-        ...((jobRole.value) && {other: jobRole.value})
-      }
+        ...(jobRole.value && { other: jobRole.value }),
+      },
     };
 
     // TODO: Removing Other Jobs should be handled by the Server
@@ -119,8 +119,12 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   onSuccess() {
+    const { mainJob } = this.form.value;
+
+    // TODO: Use returned Worker Object once API has been updated to respond
+    //       with all properties
     this.next =
-      this.worker.mainJob.jobId === 27
+      parseInt(mainJob, 10) === 27
         ? ['/worker', this.worker.uid, 'mental-health-professional']
         : ['/worker', this.worker.uid, 'main-job-start-date'];
   }
