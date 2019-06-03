@@ -47,14 +47,19 @@ export class ServiceUsersComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
         response => {
-          this.previous =
-            response.capacities && response.capacities.length
-              ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
-              : ['/workplace', `${this.establishment.id}`, 'other-services'];
+          this.getBackLink(response);
         },
         error => this.onError(error)
       )
     );
+  }
+
+  getBackLink(response) {
+    this.previous =
+      response.capacities && response.capacities.length
+        ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
+        : ['/workplace', `${this.establishment.id}`, 'other-services'];
+    this.backService.setBackLink({ url: this.previous });
   }
 
   public toggle(target: HTMLInputElement) {
