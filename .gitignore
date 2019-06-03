@@ -46,4 +46,9 @@ Thumbs.db
 /coverage
 
 package-lock.json
-/*.csv
+./package-lock.json
+*/package-lock.json
+
+# localhost config variations
+/server/config/localhost.*.yaml
+/server/config/localhost-*.yaml
