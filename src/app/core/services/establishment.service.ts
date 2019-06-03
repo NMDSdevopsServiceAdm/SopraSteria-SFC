@@ -148,10 +148,6 @@ export class EstablishmentService {
     return this.http.get<ServicesModel>(`/api/establishment/${this.establishmentId}/services?all=false`);
   }
 
-  getAllServiceUsers(establishmentId) {
-    return this.http.get<any>('/api/serviceUsers');
-  }
-
   getServiceUsersChecked(establishmentId) {
     return this.http.get<any>(`/api/establishment/${establishmentId}/serviceUsers`);
   }

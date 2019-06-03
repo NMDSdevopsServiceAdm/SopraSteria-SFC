@@ -1,17 +1,17 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { ServiceUsersService } from '@core/services/service-users.service';
 import { Question } from '@features/workplace/question/question.component';
 
 @Component({
   selector: 'app-service-users',
   templateUrl: './service-users.component.html',
 })
-
 export class ServiceUsersComponent extends Question {
   public serviceUsersGroups: ServiceGroup[];
 
@@ -20,7 +20,8 @@ export class ServiceUsersComponent extends Question {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService
+    protected establishmentService: EstablishmentService,
+    private serviceUsersService: ServiceUsersService
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -31,7 +32,7 @@ export class ServiceUsersComponent extends Question {
 
   protected init() {
     this.subscriptions.add(
-      this.establishmentService.getAllServiceUsers(this.establishment.id).subscribe( (serviceUsersGroups: ServiceGroup[]) => {
+      this.serviceUsersService.getServiceUsers().subscribe((serviceUsersGroups: ServiceGroup[]) => {
         this.serviceUsersGroups = serviceUsersGroups;
         this.serviceUsersGroups.map((group: ServiceGroup) => {
           group.services.map((service: Service) => {
@@ -102,5 +103,4 @@ export class ServiceUsersComponent extends Question {
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
-
 }
