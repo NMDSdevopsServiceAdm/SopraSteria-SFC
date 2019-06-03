@@ -1,15 +1,15 @@
-import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { skip } from 'rxjs/operators';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
+import { skip } from 'rxjs/operators';
 
 @Component({
   selector: 'app-regulated-by-cqc',
@@ -168,11 +168,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
    * then remove server side error
    */
   private setupSubscription(): void {
-    this.subscriptions.add(
-      this.regulatedByCQC.valueChanges
-        .pipe(skip(1))
-        .subscribe(() => (this.serverError = null))
-    );
+    this.subscriptions.add(this.regulatedByCQC.valueChanges.pipe(skip(1)).subscribe(() => (this.serverError = null)));
   }
 
   public onSubmit(): void {
@@ -197,33 +193,37 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
   }
 
   private save(): void {
-    if (this.regulatedPostcode.value.length) {
-      this.subscriptions.add(
-        this.registrationService
-          .getLocationByPostCode(this.regulatedPostcode.value)
-          .subscribe(
-            (data: LocationSearchResponse) => this.onSuccess(data),
-            (error: HttpErrorResponse) => this.onError(error)
-          )
-      );
-    } else if (this.locationId.value.length) {
-      this.subscriptions.add(
-        this.registrationService
-          .getLocationByLocationId(this.locationId.value)
-          .subscribe(
-            (data: LocationSearchResponse) => this.onSuccess(data),
-            (error: HttpErrorResponse) => this.onError(error)
-          )
-      );
-    } else if (this.nonRegulatedPostcode.value.length) {
-      this.subscriptions.add(
-        this.registrationService
-          .getAddressesByPostCode(this.nonRegulatedPostcode.value)
-          .subscribe(
-            (data: LocationSearchResponse) => this.onSuccess(data),
-            (error: HttpErrorResponse) => this.onError(error)
-          )
-      );
+    if (this.regulatedByCQC.value === 'yes') {
+      if (this.regulatedPostcode.value.length) {
+        this.subscriptions.add(
+          this.registrationService
+            .getLocationByPostCode(this.regulatedPostcode.value)
+            .subscribe(
+              (data: LocationSearchResponse) => this.onSuccess(data),
+              (error: HttpErrorResponse) => this.onError(error)
+            )
+        );
+      } else if (this.locationId.value.length) {
+        this.subscriptions.add(
+          this.registrationService
+            .getLocationByLocationId(this.locationId.value)
+            .subscribe(
+              (data: LocationSearchResponse) => this.onSuccess(data),
+              (error: HttpErrorResponse) => this.onError(error)
+            )
+        );
+      }
+    } else if (this.regulatedByCQC.value === 'no') {
+      if (this.nonRegulatedPostcode.value.length) {
+        this.subscriptions.add(
+          this.registrationService
+            .getAddressesByPostCode(this.nonRegulatedPostcode.value)
+            .subscribe(
+              (data: LocationSearchResponse) => this.onSuccess(data),
+              (error: HttpErrorResponse) => this.onError(error)
+            )
+        );
+      }
     }
   }
 

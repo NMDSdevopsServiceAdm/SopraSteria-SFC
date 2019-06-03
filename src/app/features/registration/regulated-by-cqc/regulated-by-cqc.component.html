@@ -40,8 +40,8 @@
 
             <!-- group & conditional content -->
             <div
-              *ngIf="regulatedByCQC.value === 'yes'"
               class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="regulatedByCQC.value !== 'yes'"
               id="regulatedByCQC-conditional-1"
               formGroupName="group"
             >
@@ -78,11 +78,7 @@
                   <label class="govuk-label" for="locationId">
                     Enter your location ID number
                   </label>
-                  <span
-                    id="locationId-error"
-                    class="govuk-error-message"
-                    *ngIf="submitted && locationId.errors"
-                  >
+                  <span id="locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFormErrorMessage('locationId', 'maxlength') }}
                   </span>
@@ -117,8 +113,8 @@
 
             <!-- conditional content -->
             <div
-              *ngIf="regulatedByCQC.value === 'no'"
               class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="regulatedByCQC.value !== 'no'"
               id="regulatedByCQC-conditional-2"
             >
               <!-- non regulated postcode -->

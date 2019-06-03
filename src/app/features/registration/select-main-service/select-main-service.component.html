@@ -48,10 +48,10 @@
 
                 <div
                   *ngIf="service.other"
+                  class="govuk-radios__conditional"
                   [class.govuk-radios__conditional--hidden]="
                     form.get('workplaceService').value !== service.id.toString()
                   "
-                  class="govuk-radios__conditional"
                   id="workplaceService-conditional-{{ i }}"
                 >
                   <div class="govuk-form-group govuk-!-margin-bottom-2">
