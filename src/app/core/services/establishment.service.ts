@@ -28,7 +28,10 @@ interface ShareWithLocalAuthorityResponse extends EstablishmentApiResponse {
 interface EmployerTypeResponse {
   id: number;
   name: string;
-  employerType: string;
+  employerType: {
+    value: string;
+    other: string;
+  };
 }
 
 @Injectable({
@@ -157,7 +160,7 @@ export class EstablishmentService {
   }
 
   updateTypeOfEmployer(establishmentId, data) {
-    return this.http.post<EmployerTypeResponse>(`/api/establishment/${establishmentId}/employerType`, data);
+    return this.http.post<any>(`/api/establishment/${establishmentId}/employerType`, data);
   }
 
   updateOtherServices(establishmentId, data: PostServicesModel) {
