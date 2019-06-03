@@ -40,7 +40,7 @@
       formControlName="mainJob"
       id="mainJob"
       name="mainJob"
-      (change)="onChangeJobRole($event.target.value)">
+      (change)="selectedJobRole($event.target.value)">
       <option [ngValue]="null">Select Main Job Role</option>
       <option *ngFor="let job of jobsAvailable" [value]="job.id">
         {{ job.title }}

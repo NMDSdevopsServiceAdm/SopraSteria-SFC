@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+
 import { Contracts } from '@core/model/contracts.enum';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
-
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
@@ -41,19 +41,25 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.contractsAvailable = Object.values(Contracts);
-    this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
+    this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => {
+      this.jobsAvailable = jobs;
+      if (this.worker) {
+        this.renderInEditMode();
+      }
+    }));
     this.previous = ['/worker', 'start-screen'];
+  }
 
-    if (this.worker) {
-      this.form.patchValue({
-        nameOrId: this.worker.nameOrId,
-        mainJob: this.worker.mainJob.jobId,
-        jobRole: this.worker.mainJob.other,
-        contract: this.worker.contract,
-      });
+  renderInEditMode() {
+    this.form.patchValue({
+      nameOrId: this.worker.nameOrId,
+      mainJob: this.worker.mainJob.jobId,
+      jobRole: this.worker.mainJob.other,
+      contract: this.worker.contract,
+    });
 
-      this.previous = ['/dashboard'];
-    }
+    this.selectedJobRole(this.worker.mainJob.jobId);
+    this.previous = ['/dashboard'];
   }
 
   public setupFormErrorsMap(): void {
@@ -109,7 +115,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       },
     };
 
-    // TODO: Removing Other Jobs should be handled by the Server
+    // TODO:Removing Other Jobs should be handled by the Server
     // https://trello.com/c/x3N7dQJP
     if (this.worker && this.worker.otherJobs) {
       (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
@@ -129,10 +135,10 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         : ['/worker', this.worker.uid, 'main-job-start-date'];
   }
 
-  onChangeJobRole(id: number) {
+  selectedJobRole(id: number) {
     this.showInputTextforOtherRole = false;
     const job = this.getJob({ jobs: this.jobsAvailable, jobId: id });
-    if (job.other) {
+    if (job && job.other) {
       this.showInputTextforOtherRole = true;
     }
   }

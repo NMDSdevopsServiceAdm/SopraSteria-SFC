@@ -12,11 +12,10 @@
         Select all that apply.
       </span>
       <div class="govuk-checkboxes" formArrayName="selectedJobRoles">
-        <div
+        <!-- <div
           *ngFor="let job of form.get('selectedJobRoles').controls; let idx = index"
           class="govuk-checkboxes__item"
-          [formGroupName]="idx"
-        >
+          [formGroupName]="idx">
           <input
             class="govuk-checkboxes__input"
             id="selectedJobRole-{{ idx }}"
@@ -24,14 +23,51 @@
             type="checkbox"
             (change)="onChange(job)"
             [checked]="job.value.checked"
-            [value]="job.value.id"
-          />
+            [value]="job.value.id"/>
           <label class="govuk-label govuk-checkboxes__label" for="selectedJobRole-{{ idx }}">
             {{ job.value.title }}
           </label>
-        </div>
+        </div> -->
+
+        <ng-container *ngFor="let job of form.get('selectedJobRoles').controls; let idx = index">
+          <div
+            class="govuk-checkboxes__item"
+            [formGroupName]="idx">
+            <input
+              class="govuk-checkboxes__input"
+              id="selectedJobRole-{{ idx }}"
+              name="jobRole"
+              type="checkbox"
+              (change)="onChange(job)"
+              [checked]="job.value.checked"
+              [value]="job.value.id"/>
+            <label class="govuk-label govuk-checkboxes__label" for="selectedJobRole-{{ idx }}">
+              {{ job.value.title }}
+            </label>
+          </div>
+          <!-- && allowForOtherJobRole() -->
+          <div
+            class="govuk-checkboxes__conditional"
+            [class.govuk-checkboxes__conditional--hidden]="!job.value.checked"
+            *ngIf="showforOtherJobRole"
+            id="conditional-selectedJobRole-{{ idx }}">
+            <div class="govuk-form-group">
+              <label class="govuk-label" for="other-selectedJobRole-{{ idx }}">
+                Enter your job role
+              </label>
+              <input
+                class="govuk-input govuk-!-width-one-third"
+                id="other-selectedJobRole-{{ idx }}"
+                type="text">
+            </div>
+          </div>
+        </ng-container>
       </div>
     </fieldset>
   </div>
-  <app-submit-button [return]="!!return" (click)="onSubmit($event)"></app-submit-button>
+
+  <app-submit-button
+    [return]="!!return"
+    (click)="onSubmit($event)">
+  </app-submit-button>
 </form>

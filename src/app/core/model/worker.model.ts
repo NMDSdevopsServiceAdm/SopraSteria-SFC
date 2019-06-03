@@ -1,5 +1,5 @@
 import { Contracts } from './contracts.enum';
-import { Job, JobRole } from './job.model';
+import { JobRole } from './job.model';
 
 export interface Worker {
   uid?: string;

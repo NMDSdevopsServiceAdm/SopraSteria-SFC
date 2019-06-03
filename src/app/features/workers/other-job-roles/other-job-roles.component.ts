@@ -5,6 +5,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
+import { Job } from '@core/model/job.model';
 
 import { QuestionComponent } from '../question/question.component';
 
@@ -13,6 +14,9 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './other-job-roles.component.html',
 })
 export class OtherJobRolesComponent extends QuestionComponent {
+
+  showforOtherJobRole: boolean;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -31,14 +35,15 @@ export class OtherJobRolesComponent extends QuestionComponent {
   init() {
     this.subscriptions.add(
       this.jobService.getJobs().subscribe(jobRoles => {
-        const availableJobRoles = jobRoles.filter(j => j.id !== this.worker.mainJob.jobId);
+        const availableJobRoles: Job[] = jobRoles.filter(j => j.id !== this.worker.mainJob.jobId);
 
         // TODO: This does not really allow fall back for non-javascript form submissions
-        availableJobRoles.map(j => {
+        availableJobRoles.map(job => {
           const control = this.formBuilder.control({
-            jobId: j.id,
-            title: j.title,
-            checked: this.worker.otherJobs ? this.worker.otherJobs.some(o => o.jobId === j.id) : false,
+            jobId: job.id,
+            title: job.title,
+            other: this.worker.mainJob.other,
+            checked: this.worker.otherJobs ? this.worker.otherJobs.some(o => o.jobId === job.id) : false
           });
           (this.form.controls.selectedJobRoles as FormArray).push(control);
         });
@@ -64,5 +69,8 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
   onChange(control) {
     control.value.checked = !control.value.checked;
+    this.showforOtherJobRole = control.value.jobId === 19;
+
+
   }
 }
