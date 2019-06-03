@@ -117,7 +117,7 @@ export class OtherServicesComponent extends Question {
         const otherService: Service = filter(this.allServices, { id: id })[0];
 
         if (otherService.other) {
-          service['additionalOtherService'] = this.form.get(`additionalOtherService${id}`).value;
+          service['other'] = this.form.get(`additionalOtherService${id}`).value;
         }
 
         return service;
