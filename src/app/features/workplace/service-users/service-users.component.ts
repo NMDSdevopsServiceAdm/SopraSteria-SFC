@@ -84,20 +84,15 @@ export class ServiceUsersComponent extends Question {
   }
 
   protected updateEstablishment(props) {
-    console.log('updateEstablishment', props);
     this.subscriptions.add(
       this.establishmentService
-       .getAllServiceUsers()
-      //  .postServiceUsers(serviceUsersSelected)
-        .subscribe((data: any) => this.router.navigate(['/workplace', 'sharing-data']))
-       // .subscribe(data => this._onSuccess(data), error => this.onError(error))
+        .postServiceUsers(this.form.get('serviceUsers').value)
+        .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
   protected _onSuccess(data) {
-    console.log('Success', data);
     this.establishmentService.setState({ ...this.establishment, ...data });
-
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
         response => {
