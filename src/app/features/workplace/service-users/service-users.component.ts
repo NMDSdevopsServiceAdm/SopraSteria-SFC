@@ -3,10 +3,9 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { ServiceGroup } from '@core/model/services.model';
+import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { Question } from '@features/workplace/question/question.component';
-import { logging } from 'selenium-webdriver';
 
 @Component({
   selector: 'app-service-users',
@@ -26,18 +25,18 @@ export class ServiceUsersComponent extends Question {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
     this.form = this.formBuilder.group({
-      serviceUsersForm: [[], null],
+      serviceUsers: [[], null],
     });
   }
 
   protected init() {
     this.subscriptions.add(
-      this.establishmentService.getAllServiceUsers().subscribe(serviceGroups => {
+      this.establishmentService.getAllServiceUsers().subscribe( (serviceGroups: ServiceGroup[]) => {
         this.serviceGroups = serviceGroups;
-        this.serviceGroups.map(group => {
-          group.services.map(service => {
+        this.serviceGroups.map((group: ServiceGroup) => {
+          group.services.map((service: Service) => {
             if (service.isMyService) {
-              this.form.get('serviceUsersForm').value.push(service.id);
+              this.form.get('serviceUsers').value.push(service.id);
             }
           });
         });
@@ -49,7 +48,7 @@ export class ServiceUsersComponent extends Question {
 
   public toggle(target: HTMLInputElement) {
     const value = parseInt(target.value, 10);
-    const selected = this.form.get('serviceUsersForm').value;
+    const selected = this.form.get('serviceUsers').value;
 
     if (target.checked) {
       if (!selected.includes(value)) {
@@ -62,44 +61,49 @@ export class ServiceUsersComponent extends Question {
       }
     }
 
-    this.form.get('serviceUsersForm').setValue(selected);
+    this.form.get('serviceUsers').setValue(selected);
   }
 
   protected setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
         name: 400,
-        message: 'Other Services could not be updated.',
+        message: 'Services Users could not be updated.',
       },
     ];
   }
 
   protected generateUpdateProps() {
-    const { serviceUsersForm } = this.form.value;
+    const { serviceUsers } = this.form.value;
 
     return {
-      services: serviceUsersForm.map(id => {
+      services: serviceUsers.map(id => {
         return { id };
       }),
     };
   }
 
   protected updateEstablishment(props) {
+    console.log('updateEstablishment', props);
     this.subscriptions.add(
       this.establishmentService
-        .getAllServiceUsers()
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+       .getAllServiceUsers()
+      //  .postServiceUsers(serviceUsersSelected)
+        .subscribe((data: any) => this.router.navigate(['/workplace', 'sharing-data']))
+       // .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
   protected _onSuccess(data) {
+    console.log('Success', data);
     this.establishmentService.setState({ ...this.establishment, ...data });
+
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
         response => {
-          this.next = response.capacities.length
+          this.next = response.capacities && response.capacities.length
             ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
-            : ['/workplace', `${this.establishment.id}`, 'service-users'];
+            : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
           this.navigate();
         },
         error => this.onError(error)
@@ -107,101 +111,3 @@ export class ServiceUsersComponent extends Question {
     );
   }
 }
-
-
-// export class ServiceUsersComponent implements OnInit, OnDestroy {
-//   public serviceUsersForm: FormGroup;
-//   public isInvalid: boolean;
-//   public serviceUsersData = [];
-//   public checkboxesSelected;
-//   private subscriptions: Subscription = new Subscription();
-//
-//   constructor(private fb: FormBuilder, private router: Router, private establishmentService: EstablishmentService) {}
-//
-//   get getServiceChecked() {
-//     return this.serviceUsersForm.get('serviceUserSelected');
-//   }
-//
-//   ngOnInit() {
-//     this.serviceUsersForm = this.fb.group({
-//       serviceUserSelected: [''],
-//     });
-//
-//     this.getAllServices();
-//     this.getCheckedUsers();
-//   }
-//
-//   getAllServices() {
-//     this.subscriptions.add(
-//       this.establishmentService.getAllServiceUsers().subscribe((data: any) => {
-//         this.serviceUsersData = data;
-//       })
-//     );
-//   }
-//
-//   getCheckedUsers() {
-//     this.checkboxesSelected = [];
-//
-//     this.subscriptions.add(
-//       this.establishmentService.getServiceUsersChecked().subscribe((data: any) => {
-//         if (data.serviceUsers) {
-//           data.serviceUsers.forEach(thisServiceUser => {
-//             this.checkboxesSelected.push(thisServiceUser.id);
-//           });
-//         }
-//       })
-//     );
-//   }
-//
-//   toggleCheckbox($event: any) {
-//     const serviceUserId = $event.value;
-//
-//     if ($event.checked) {
-//       // add the serviceId to the known set of selected checkbox; but opnly if it
-//       //  doesn't already exist
-//       if (!this.checkboxesSelected.includes(serviceUserId)) {
-//         this.checkboxesSelected.push(parseInt(serviceUserId, 10));
-//       }
-//     } else {
-//       // remove the given service id
-//       const foundServiceIdIndex = this.checkboxesSelected.indexOf(parseInt(serviceUserId, 10));
-//       if (foundServiceIdIndex !== -1) {
-//         this.checkboxesSelected.splice(foundServiceIdIndex, 1);
-//       }
-//     }
-//   }
-//
-//   async onSubmit() {
-//     const serviceUsersSelected = {
-//       serviceUsers: this.checkboxesSelected.map(thisValue => {
-//         return {
-//           id: parseInt(thisValue, 10),
-//         };
-//       }),
-//     };
-//
-//     // always save back to backend API, even if there are (now) no other services
-//     this.subscriptions.add(
-//       this.establishmentService
-//         .postServiceUsers(serviceUsersSelected)
-//         .subscribe((data: any) => this.router.navigate(['/workplace', 'sharing-data']))
-//     );
-//   }
-//
-//   goBack(event) {
-//     event.preventDefault();
-//     this.subscriptions.add(
-//       this.establishmentService.getCapacity(true).subscribe(res => {
-//         if (res.allServiceCapacities.length) {
-//           this.router.navigate(['/workplace', 'capacity-of-services']);
-//         } else {
-//           this.router.navigate(['/workplace', 'other-services']);
-//         }
-//       })
-//     );
-//   }
-//
-//   ngOnDestroy() {
-//     this.subscriptions.unsubscribe();
-//   }
-// }
