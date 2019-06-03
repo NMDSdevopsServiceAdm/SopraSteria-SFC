@@ -43,7 +43,19 @@ export class ServiceUsersComponent extends Question {
       })
     );
 
-    this.previous = ['/workplace', `${this.establishment.id}`, 'other-services'];
+    this.next = ['/workplace', `${this.establishment.id}`, 'sharing-data'];
+    this.subscriptions.add(
+      this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
+        response => {
+          this.previous =
+            response.capacities && response.capacities.length
+              ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
+              : ['/workplace', `${this.establishment.id}`, 'other-services'];
+          this.navigate();
+        },
+        error => this.onError(error)
+      )
+    );
   }
 
   public toggle(target: HTMLInputElement) {
@@ -86,23 +98,9 @@ export class ServiceUsersComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .postServiceUsers(this.form.get('serviceUsers').value)
+        .postServiceUsers(this.establishment.id, this.form.get('serviceUsers').value)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
-  protected _onSuccess(data) {
-    this.establishmentService.setState({ ...this.establishment, ...data });
-    this.subscriptions.add(
-      this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
-        response => {
-          this.next = response.capacities && response.capacities.length
-            ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
-            : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
-          this.navigate();
-        },
-        error => this.onError(error)
-      )
-    );
-  }
 }

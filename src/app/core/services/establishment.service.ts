@@ -152,12 +152,12 @@ export class EstablishmentService {
     return this.http.get<any>('/api/serviceUsers');
   }
 
-  getServiceUsersChecked() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/serviceUsers`);
+  getServiceUsersChecked(establishmentId) {
+    return this.http.get<any>(`/api/establishment/${establishmentId}/serviceUsers`);
   }
 
-  postServiceUsers(data) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/serviceUsers`, data);
+  postServiceUsers(establishmentId, data) {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/serviceUsers`, data);
   }
 
   updateTypeOfEmployer(establishmentId, data) {
