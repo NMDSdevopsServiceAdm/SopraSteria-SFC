@@ -125,6 +125,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"MainServiceFKChangedBy"'
     },
+    MainServiceFkOther: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      primaryKey: false,
+      field: '"MainServiceFkOther"'
+    },
     EmployerTypeValue: {
       type: DataTypes.ENUM,
       allowNull: true,

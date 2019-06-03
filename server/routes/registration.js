@@ -8,6 +8,8 @@ const slack = require('../utils/slack/slack-logger');
 
 const models = require('../models');
 
+const OTHER_MAX_LENGTH=120;
+
 // extended change properties
 const EstablishmentModel = require('../models/classes/establishment').Establishment;
 const EstablishmentSaveException = require('../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
@@ -261,7 +263,11 @@ const responseErrors = {
   invalidUser: {
     errCode: -800,
     errMessage: 'User data is invalid'
-  }
+  },
+  invalidMainServiceOther: {
+    errCode: -900,
+    errMessage: 'Invalid main service other'
+  },  
 };
 
 router.route('/')
@@ -309,6 +315,7 @@ router.route('/')
         PostCode: req.body[0].postalCode,
         MainService: req.body[0].mainService,
         MainServiceId : null,
+        MainServiceOther: req.body[0].mainServiceOther,
         IsRegulated: req.body[0].isRegulated
       };
       const Userdata = {
@@ -360,13 +367,23 @@ router.route('/')
           }
 
           if (serviceResults && serviceResults.id && (Estblistmentdata.MainService === serviceResults.name)) {
-            Estblistmentdata.MainServiceId = serviceResults.id
+            Estblistmentdata.MainServiceId = serviceResults.id;
           } else {
             throw new RegistrationException(
               `Lookup on services for '${Estblistmentdata.MainService}' being cqc registered (${Estblistmentdata.IsRegulated}) resulted with zero records`,
               responseErrors.unexpectedMainServiceId.errCode,
               responseErrors.unexpectedMainServiceId.errMessage
             );
+          }
+          
+          Estblistmentdata.MainServiceOther = "T".repeat(100);
+
+          if (serviceResults.other && Estblistmentdata.MainServiceOther && Estblistmentdata.MainServiceOther.length > OTHER_MAX_LENGTH){
+            throw new RegistrationException(
+              `Other field value of '${Estblistmentdata.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
+              responseErrors.invalidMainServiceOther.errCode,
+              responseErrors.invalidMainServiceOther.errMessage
+            );            
           }
 
           // need to create an NMDS ID - which is a combination of the CSSR nmds letter and a unique sequence number
@@ -440,7 +457,8 @@ router.route('/')
           await newEstablishment.load({
             name: Estblistmentdata.Name,
             mainService: {
-              id: Estblistmentdata.MainServiceId
+              id: Estblistmentdata.MainServiceId,
+              other : Estblistmentdata.MainServiceOther
             }
           });    // no Establishment properties on registration
           if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {

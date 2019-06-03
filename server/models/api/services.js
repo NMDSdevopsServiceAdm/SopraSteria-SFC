@@ -5,7 +5,8 @@ const localformatService = (thisService, showCategory=true, showCQC=true, showMy
   const myService = {
     id: thisService.id,
     //key: thisService.name.replace(/\W/g, '_').toUpperCase(),  // any non-alphanumeric to underscore
-    name: thisService.name
+    name: thisService.name,
+    other: thisService.other ? thisService.other : undefined
   };
 
   if (showCategory) {
