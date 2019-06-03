@@ -103,7 +103,10 @@
           <ng-container *ngIf="workplace.wdf.otherService === 'Yes'">
             <ul class="govuk-list">
               <ng-container *ngFor="let categories of workplace.otherServices">
-                <li *ngFor="let service of categories.services">{{ service.name }}</li>
+                <li *ngFor="let service of categories.services">
+                  {{ service.name }}
+                  <ng-container *ngIf="service.other">[{{ service.other }}]</ng-container>
+                </li>
               </ng-container>
             </ul>
           </ng-container>
@@ -112,7 +115,10 @@
         <ng-container *ngIf="!displayWDFReport">
           <ul class="govuk-list">
             <ng-container *ngFor="let categories of workplace.otherServices">
-              <li *ngFor="let service of categories.services">{{ service.name }}</li>
+              <li *ngFor="let service of categories.services">
+                {{ service.name }}
+                <ng-container *ngIf="service.other">[{{ service.other }}]</ng-container>
+              </li>
             </ng-container>
           </ul>
         </ng-container>
