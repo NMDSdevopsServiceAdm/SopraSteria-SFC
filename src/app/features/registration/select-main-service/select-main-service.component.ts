@@ -23,6 +23,8 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   public categories: Array<WorkplaceCategory>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
+  public renderForm = false;
+  public selectedWorkplace: WorkplaceService;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
@@ -40,6 +42,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.getSelectedLocation();
+    this.getSelectedWorkplace();
     this.setBackLink();
   }
 
@@ -88,6 +91,16 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     );
   }
 
+  private getSelectedWorkplace(): void {
+    this.subscriptions.add(
+      this.registrationService.selectedWorkplaceService$.subscribe((workplace: WorkplaceService) => {
+        if (workplace) {
+          this.selectedWorkplace = workplace;
+        }
+      })
+    );
+  }
+
   private getServicesByCategory(location: LocationAddress): void {
     const isRegulated: boolean = this.registrationService.isRegulated(location);
 
@@ -129,6 +142,24 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
         });
       }
     });
+
+    this.preFillForm();
+  }
+
+  /**
+   * Pre fill form iff user has previously selected a workplace
+   * Then set boolean flag for ui to render the form
+   */
+  private preFillForm(): void {
+    if (this.selectedWorkplace) {
+      this.form.get('workplaceService').patchValue(this.selectedWorkplace.id);
+
+      if (this.selectedWorkplace.other) {
+        this.form.get(`otherWorkplaceService${this.selectedWorkplace.id}`).patchValue(this.selectedWorkplace.otherName);
+      }
+    }
+
+    this.renderForm = true;
   }
 
   private getSelectedWorkPlaceService(): WorkplaceService {

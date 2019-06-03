@@ -13,7 +13,7 @@
       We need some details about where you work. You need to answer these questions before we can create your account.
     </p>
 
-    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error" *ngIf="renderForm">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <span
           *ngIf="submitted && form.get('workplaceService').errors"
@@ -36,7 +36,7 @@
                     [attr.data-aria-controls]="'workplaceService-conditional-' + i"
                     class="govuk-radios__input"
                     id="workplaceService-{{ service.id }}"
-                    value="{{ service.id }}"
+                    [value]="service.id"
                     name="workplaceService"
                     type="radio"
                     formControlName="workplaceService"
@@ -49,7 +49,7 @@
                 <div
                   *ngIf="service.other"
                   [class.govuk-radios__conditional--hidden]="
-                    form.get('workplaceService').value !== service.id.toString()
+                    form.get('workplaceService').value !== service.id
                   "
                   class="govuk-radios__conditional"
                   id="workplaceService-conditional-{{ i }}"
