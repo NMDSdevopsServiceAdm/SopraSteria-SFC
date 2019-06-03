@@ -39,7 +39,7 @@ export class TypeOfEmployerComponent extends Question {
   protected init(): void {
     if (this.establishment.employerType) {
       this.form.patchValue({
-        employerType: this.establishment.employerType,
+        employerType: this.establishment.employerType.value,
         other: this.establishment.employerType.other,
       });
     }
