@@ -148,7 +148,7 @@ export class EstablishmentService {
     return this.http.get<ServicesModel>(`/api/establishment/${this.establishmentId}/services?all=false`);
   }
 
-  getAllServiceUsers() {
+  getAllServiceUsers(establishmentId) {
     return this.http.get<any>('/api/serviceUsers');
   }
 
@@ -156,7 +156,7 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${establishmentId}/serviceUsers`);
   }
 
-  postServiceUsers(establishmentId, data) {
+  updateServiceUsers(establishmentId, data) {
     return this.http.post<any>(`/api/establishment/${establishmentId}/serviceUsers`, data);
   }
 

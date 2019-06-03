@@ -13,7 +13,7 @@ import { Question } from '@features/workplace/question/question.component';
 })
 
 export class ServiceUsersComponent extends Question {
-  public serviceGroups: ServiceGroup[];
+  public serviceUsersGroups: ServiceGroup[];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -31,9 +31,9 @@ export class ServiceUsersComponent extends Question {
 
   protected init() {
     this.subscriptions.add(
-      this.establishmentService.getAllServiceUsers().subscribe( (serviceGroups: ServiceGroup[]) => {
-        this.serviceGroups = serviceGroups;
-        this.serviceGroups.map((group: ServiceGroup) => {
+      this.establishmentService.getAllServiceUsers(this.establishment.id).subscribe( (serviceUsersGroups: ServiceGroup[]) => {
+        this.serviceUsersGroups = serviceUsersGroups;
+        this.serviceUsersGroups.map((group: ServiceGroup) => {
           group.services.map((service: Service) => {
             if (service.isMyService) {
               this.form.get('serviceUsers').value.push(service.id);
@@ -47,19 +47,15 @@ export class ServiceUsersComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
         response => {
-          this.getBackLink(response);
+          this.previous =
+            response.capacities && response.capacities.length
+              ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
+              : ['/workplace', `${this.establishment.id}`, 'other-services'];
+          this.setBackLink();
         },
         error => this.onError(error)
       )
     );
-  }
-
-  getBackLink(response) {
-    this.previous =
-      response.capacities && response.capacities.length
-        ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
-        : ['/workplace', `${this.establishment.id}`, 'other-services'];
-    this.backService.setBackLink({ url: this.previous });
   }
 
   public toggle(target: HTMLInputElement) {
@@ -102,7 +98,7 @@ export class ServiceUsersComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .postServiceUsers(this.establishment.id, this.form.get('serviceUsers').value)
+        .updateServiceUsers(this.establishment.id, this.form.get('serviceUsers').value)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
