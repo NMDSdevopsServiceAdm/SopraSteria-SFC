@@ -21,23 +21,42 @@
         </h2>
       </legend>
       <div class="govuk-checkboxes">
-        <div class="govuk-checkboxes__item" *ngFor="let service of group.services">
-          <input
-            class="govuk-checkboxes__input"
-            id="serviceUsers-{{ service.id }}"
-            name="serviceUsers"
-            type="checkbox"
-            [value]="service.id"
-            [checked]="service.isMyService"
-            (change)="toggle($event.target)"
-          />
-          <label class="govuk-label govuk-checkboxes__label" for="serviceUsers-{{ service.id }}">
-            {{ service.service }}
-          </label>
-        </div>
+        <ng-container *ngFor="let service of group.services">
+          <div class="govuk-checkboxes__item">
+            <input
+              class="govuk-checkboxes__input"
+              id="serviceUsers-{{ service.id }}"
+              name="serviceUsers"
+              type="checkbox"
+              [value]="service.id"
+              [checked]="service.isMyService"
+              (change)="toggle($event.target)"
+            />
+            <label class="govuk-label govuk-checkboxes__label" for="serviceUsers-{{ service.id }}">
+              {{ service.service }}
+            </label>
+          </div>
+          <ng-container *ngFor="let ticked of form.controls.serviceUsers.value">
+            <div class="govuk-checkboxes__conditional" id="conditional-citizenship-conditional-{{ service.id }}" *ngIf="service.other === true && ticked === service.id">
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="serviceUsers-other-{{ service.id }}">
+                  Please enter
+                </label>
+                <input
+                  class="govuk-input govuk-!-width-one-third"
+                  formControlName="serviceUsers-other-{{ service.id }}"
+                  id="serviceUsers-other-{{ service.id }}"
+                  type="text"
+                >
+              </div>
+            </div>
+          </ng-container>
+        </ng-container>
       </div>
     </fieldset>
   </div>
+  dsfs
+  {{ form.controls.serviceUsers.value | json }}
   <div class="govuk-button-group">
     <button type="submit" class="govuk-button">Save and continue</button>
   </div>
