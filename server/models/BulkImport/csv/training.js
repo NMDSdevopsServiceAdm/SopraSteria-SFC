@@ -13,6 +13,7 @@ class Training {
     this._expiry = null;
     this._description = null;
     this._category = null;
+    this._accredited = null;
   };
 
   static get LOCALESTID_ERROR() { return 1000; }
@@ -21,6 +22,7 @@ class Training {
   static get EXPIRY_DATE_ERROR() { return 1030; }
   static get DESCRIPTION_ERROR() { return 1040; }
   static get CATEGORY_ERROR() { return 1050; }
+  static get ACCREDITED_ERROR() { return 1060; }
 
 
   get localeStId() {
@@ -40,6 +42,9 @@ class Training {
   }
   get category() {
     return _category;
+  }
+  get accredited() {
+    return this._accredited;
   }
   
   _validateLocaleStId() {
@@ -101,7 +106,7 @@ class Training {
   _validateDateCompleted() {
     // optional
     const myDateCompleted = this._currentLine.DATECOMPLETED;
-    const dateFormatRegex = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
+    const dateFormatRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/;
 
     const actualDate = moment.utc(myDateCompleted, "DD/MM/YYYY");
 
@@ -137,7 +142,7 @@ class Training {
   _validateExpiry() {
     // optional
     const myDateExpiry = this._currentLine.EXPIRYDATE;
-    const dateFormatRegex = /^(0?[1-9]|[12][0-9]|3[01])[\/\-](0?[1-9]|1[012])[\/\-]\d{4}$/;
+    const dateFormatRegex =  /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/;
 
     const actualDate = moment.utc(myDateExpiry, "DD/MM/YYYY");
 
@@ -203,7 +208,7 @@ class Training {
     if (Number.isNaN(myCategory)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CATEGORY_ERROR,
+        errCode: Training.CATEGORY_ERROR,
         errType: `CATEGORY_ERROR`,
         error: "Category (CATEGORY) must be an integer",
         source: this._currentLine.CATEGORY,
@@ -215,6 +220,34 @@ class Training {
     }
   }
 
+  _validateAccredited() {
+    const myAccredited = parseInt(this._currentLine.ACCREDITED);
+    const ALLOWED_VALUES = [0,1];
+    if (Number.isNaN(myAccredited)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Training.ACCREDITED_ERROR,
+        errType: `ACCREDITED_ERROR`,
+        error: "Accredited (ACCREDITED) must be an integer",
+        source: this._currentLine.ACCREDITED,
+      });
+      return false;
+    } else if (!ALLOWED_VALUES.includes(myAccredited)) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Training.ACCREDITED_ERROR,
+        errType: `ACCREDITED_ERROR`,
+        error: `Accredited (ACCREDITED) must be one of: ${ALLOWED_VALUES}`,
+        source: this._currentLine.ACCREDITED,
+      });
+      return false;
+    } else {
+      this._accredited = myAccredited;
+      return true;
+    }
+  }
+
+
 
   _transformTrainingCategory() {
     if (this._category) {
@@ -224,7 +257,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.CATEGORY_ERROR,
           errType: `CATEGORY_ERROR`,
-          error: `Destination on Leaving (CATEGORY): ${this._category} is unknown`,
+          error: `Training Category (CATEGORY): ${this._category} is unknown`,
           source: this._currentLine.CATEGORY,
         });
       } else {
@@ -243,6 +276,7 @@ class Training {
     status = !this._validateExpiry() ? false : status;
     status = !this._validateDescription() ? false : status;
     status = !this._validateCategory() ? false : status;
+    status = !this._validateAccredited() ? false : status;
   
     return status;
   }
@@ -263,6 +297,7 @@ class Training {
       expiry: this._expiry ? this._expiry : undefined,
       description: this._description,
       category: this._category,
+      accredited: this._accredited,
     };
   };
 
