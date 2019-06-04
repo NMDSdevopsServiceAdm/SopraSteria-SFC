@@ -1699,10 +1699,7 @@ class Establishment {
   }
 
   _transformAllVacanciesStartersLeavers() {
-    console.log("WA DEBUG - vacancies: ", this._vacancies)
     if (this._vacancies && Array.isArray(this._vacancies)) {
-      console.log("WA DEBUG - transforming vacancies: ", this._vacancies)
-
       this._vacancies = this._vacancies.map((thisJob, index) => {
         return {
           jobId: this._alljobs[index],
@@ -1711,10 +1708,7 @@ class Establishment {
       });
     }
 
-    console.log("WA DEBUG - starters: ", this._starters)
     if (this._starters && Array.isArray(this._starters)) {
-      console.log("WA DEBUG - transforming starters: ", this._starters)
-
       this._starters = this._starters.map((thisJob, index) => {
         return {
           jobId: this._alljobs[index],
@@ -1723,10 +1717,7 @@ class Establishment {
       });
     }
 
-    console.log("WA DEBUG - leavers: ", this._leavers)
     if (this._leavers && Array.isArray(this._leavers)) {
-      console.log("WA DEBUG - transforming leavers: ", this._leavers)
-
       this._leavers = this._leavers.map((thisJob, index) => {
         return {
           jobId: this._alljobs[index],
