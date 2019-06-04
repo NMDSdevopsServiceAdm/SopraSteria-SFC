@@ -1,11 +1,12 @@
-import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { Question } from '../question/question.component';
-import { Router } from '@angular/router';
 import { sortBy } from 'lodash';
+
+import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-services-capacity',
@@ -35,6 +36,10 @@ export class ServicesCapacityComponent extends Question {
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(capacities => {
         this.capacities = capacities.allServiceCapacities;
+
+        if (this.capacities.length === 0) {
+          this.router.navigate(['/workplace', this.establishment.id, 'other-services'], { replaceUrl: true });
+        }
 
         capacities.allServiceCapacities.forEach((service, i) => {
           const group = this.formBuilder.group({});

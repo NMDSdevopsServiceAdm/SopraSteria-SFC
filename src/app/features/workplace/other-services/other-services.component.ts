@@ -1,18 +1,22 @@
-import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
+import { Component } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Question } from '../question/question.component';
+import { Router } from '@angular/router';
+import { ServiceGroup, Service } from '@core/model/services.model';
+import { HttpErrorResponse } from '@angular/common/http';
+import { filter } from 'lodash';
 
 @Component({
   selector: 'app-other-services',
   templateUrl: './other-services.component.html',
 })
 export class OtherServicesComponent extends Question {
+  private additionalOtherServiceMaxLength = 120;
+  private allServices: Array<Service> = [];
+  public renderForm = false;
   public serviceGroups: ServiceGroup[];
 
   constructor(
@@ -31,19 +35,50 @@ export class OtherServicesComponent extends Question {
 
   protected init() {
     this.subscriptions.add(
-      this.establishmentService.getAllServices(this.establishment.id).subscribe(serviceGroups => {
-        this.serviceGroups = serviceGroups;
-        this.serviceGroups.map(group => {
-          group.services.map(service => {
-            if (service.isMyService) {
-              this.form.get('otherServices').value.push(service.id);
-            }
+      this.establishmentService.getAllServices(this.establishment.id).subscribe(
+        serviceGroups => {
+          this.serviceGroups = serviceGroups;
+          this.serviceGroups.map(group => {
+            group.services.map(service => {
+              if (service.isMyService) {
+                this.form.get('otherServices').value.push(service.id);
+              }
+            });
           });
-        });
-      })
+          this.serviceGroups.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
+        },
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.errorSummaryService.scrollToErrorSummary();
+        },
+        () => this.updateForm()
+      )
     );
 
     this.previous = ['/workplace', `${this.establishment.id}`, 'type-of-employer'];
+  }
+
+  private updateForm(): void {
+    this.allServices.forEach((service: Service) => {
+      if (service.other) {
+        this.form.addControl(
+          `additionalOtherService${service.id}`,
+          new FormControl(null, [Validators.maxLength(this.additionalOtherServiceMaxLength)])
+        );
+
+        this.formErrorsMap.push({
+          item: `additionalOtherService${service.id}`,
+          type: [
+            {
+              name: 'maxlength',
+              message: `Other service must be ${this.additionalOtherServiceMaxLength} characters or less`,
+            },
+          ],
+        });
+      }
+
+      this.renderForm = true;
+    });
   }
 
   public toggle(target: HTMLInputElement) {
@@ -78,7 +113,14 @@ export class OtherServicesComponent extends Question {
 
     return {
       services: otherServices.map(id => {
-        return { id };
+        const service = { id };
+        const otherService: Service = filter(this.allServices, { id: id })[0];
+
+        if (otherService.other) {
+          service['other'] = this.form.get(`additionalOtherService${id}`).value;
+        }
+
+        return service;
       }),
     };
   }
@@ -97,7 +139,7 @@ export class OtherServicesComponent extends Question {
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
         response => {
           this.next =
-            response.capacities && response.capacities.length
+            response.allServiceCapacities && response.allServiceCapacities.length
               ? ['/workplace', `${this.establishment.id}`, 'capacity-of-services']
               : ['/workplace', `${this.establishment.id}`, 'service-users'];
           this.navigate();
