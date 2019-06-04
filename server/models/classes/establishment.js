@@ -505,28 +505,32 @@ class Establishment {
                     },
                     raw: true
                 });
-                
+
+                const establishmentServices = await models.establishmentServices.findAll({
+                    where: {
+                        EstablishmentID : this._id
+                    },
+                    raw: true
+                });
+
                 const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
                     models.services.findAll({
-                        include: [{
-                            model: models.establishment,
-                            as: 'establishments',
-                            through: {
-                            where: { establishmentId: this._id}
-                            },
-                            required: true
-                        }],
+                        where: {
+                            id: establishmentServices.map(su => su.serviceId)
+                        },
                         attributes: ['id', 'name', 'category'],
                         order: [
                             ['category', 'ASC'],
                             ['name', 'ASC']
-                        ]  
+                        ],
+                        raw: true,
                     }),
                     models.services.findOne({
                         where: {
                             id : fetchResults.MainServiceFKValue
                         },                    
-                        attributes: ['id', 'name']   
+                        attributes: ['id', 'name'],
+                        raw: true   
                     }),
                     models.serviceUsers.findAll({
                         where: {
@@ -574,7 +578,7 @@ class Establishment {
                     })
                 ]);
 
-                // For serviceUsers merge any other data into resultset 
+                // For services merge any other data into resultset 
                 fetchResults.serviceUsers = establishmentServiceUserResults.map((suResult)=>{
                     const serviceUser = serviceUsers.find(element => { return suResult.serviceUserId === element.id});
                     if(suResult.other) {
@@ -587,11 +591,23 @@ class Establishment {
                     }
                 });
 
-                fetchResults.otherServices = otherServices;
-                fetchResults.mainService = mainService;
+                fetchResults.otherServices = establishmentServices.map((suResult)=>{
+                    const otherService = otherServices.find(element => { return suResult.serviceId === element.id});
+                    if(suResult.other) {
+                        return {
+                            ...otherService,
+                            other: suResult.other
+                        }
+                    } else {
+                        return otherService;
+                    }
+                });                
+
                 fetchResults.capacity = capacity;
                 fetchResults.jobs = jobs;
                 fetchResults.localAuthorities = localAuthorities;
+
+                fetchResults.mainService = { ...mainService, other: fetchResults.MainServiceFkOther };
 
                 // Moved this code from the section after the findOne, to here, now that mainService is pulled in seperately
                 this._mainService = {
