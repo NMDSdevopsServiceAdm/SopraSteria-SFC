@@ -137,6 +137,8 @@ router.route('/').post(async (req, res) => {
             //  hasAuthorisedEstablishment middleware which runs on all establishment routes
             await newWorker.save(req.username);
 
+            const exceptionalOverrideHeader = req.headers['x-override-put-return-all'];
+            const showModifiedOnly = exceptionalOverrideHeader ? false : true;
             return res.status(201).json(newWorker.toJSON(false, false, false, showModifiedOnly));
 
         } else {
