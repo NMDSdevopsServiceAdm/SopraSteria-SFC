@@ -34,7 +34,7 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
             return {
                 id: document.mainService.id,
                 name: document.mainService.name,
-                other: document.mainService.other,
+                other: document.mainService.other ? document.mainService.other : undefined,
             }
         }
     }
