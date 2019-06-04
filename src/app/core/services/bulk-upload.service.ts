@@ -5,7 +5,7 @@ import { FormGroup } from '@angular/forms';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { PresignedUrlResponse, UploadFile } from '@core/model/bulk-upload.model';
+import { PresignedUrlResponse, UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 
 @Injectable({
   providedIn: 'root',
@@ -40,27 +40,41 @@ export class BulkUploadService {
     return parts[parts.length - 1].toUpperCase();
   }
 
+  public validateFiles(): Observable<ValidatedFilesResponse> {
+    // TODO mock api - swap out with below once BE is ready
+    return this.http.put<ValidatedFilesResponse>(
+      `http://www.mocky.io/v2/5cf66a70320000cf8c8cd282`,
+      null
+    );
+    // return this.http.put<ValidatedFilesResponse>(
+    //   `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/validate`,
+    //   null
+    // );
+  }
+
   public formErrorsMap(): Array<ErrorDetails> {
-    return [{
-      item: 'fileUpload',
-      type: [
-        {
-          name: 'required',
-          message: 'No files selected',
-        },
-        {
-          name: 'filecount',
-          message: 'Please select a total of 3 files.',
-        },
-        {
-          name: 'filesize',
-          message: 'The selected files must be smaller than 20MB.',
-        },
-        {
-          name: 'filetype',
-          message: 'The selected files must be a CSV or ZIP.',
-        },
-      ],
-    }];
+    return [
+      {
+        item: 'fileUpload',
+        type: [
+          {
+            name: 'required',
+            message: 'No files selected',
+          },
+          {
+            name: 'filecount',
+            message: 'Please select a total of 3 files.',
+          },
+          {
+            name: 'filesize',
+            message: 'The selected files must be smaller than 20MB.',
+          },
+          {
+            name: 'filetype',
+            message: 'The selected files must be a CSV or ZIP.',
+          },
+        ],
+      },
+    ];
   }
 }
