@@ -15,6 +15,12 @@ const s3 = new AWS.S3({
 const CsvEstablishmentValidator = require('../../models/BulkImport/csv/establishments').Establishment;
 const CsvWorkerValidator = require('../../models/BulkImport/csv/workers').Worker;
 const CsvTrainingValidator = require('../../models/BulkImport/csv/training').Training;
+
+
+const EstablishmentEntity = require('../../models/classes/establishment').Establishment;
+const WorkerEntity = require('../../models/classes/worker').Worker;
+const QualificationEntity = require('../../models/classes/qualification').Qualification;
+const TrainingEntity = require('../../models/classes/training').Training;
   
 var FileStatusEnum = { "New": "new", "Validated": "validated", "Imported": "imported" };
 var FileValidationStatusEnum = { "Pending": "pending", "Validating": "validating", "Pass": "pass", "PassWithWarnings": "pass with warnings", "Fail": "fail" };
@@ -139,6 +145,7 @@ router.route('/validate').post(async (req, res) => {
         establishment: validationResponse.validation.establishments,
         workers: validationResponse.validation.workers,
         training: validationResponse.validation.training,
+        data: validationResponse.data
       });
 
     } else {
@@ -201,6 +208,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   let status = true;
   const csvEstablishmentSchemaErrors = [], csvWorkerSchemaErrors = [], csvTrainingSchemaErrors = [];;
   const myEstablishments = [], myWorkers = [], myTrainings = [];
+  const myAPIEstablishments = [], myAPIWorkers = [], myAPITrainings = [], myAPIQualifications = [];
 
   // parse and process Establishments CSV
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0) {
@@ -216,10 +224,20 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         csvEstablishmentSchemaErrors.push(lineValidator.validationErrors);
       }
 
-      myEstablishments.push(lineValidator);
+      // console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
+      //  console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
+      // myEstablishments.push(lineValidator);
 
-      console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
-      console.log("WA DEBUG - this establishment: ", lineValidator.toAPI());
+      const thisEstablishmentAsAPI = lineValidator.toAPI();
+      const thisApiEstablishment = new EstablishmentEntity();
+
+      thisApiEstablishment.initialise(thisEstablishmentAsAPI.Address,
+        thisEstablishmentAsAPI.LocationId, thisEstablishmentAsAPI.Postcode,
+        thisEstablishmentAsAPI.IsCQCRegulated, 'A0000000000');
+
+      thisApiEstablishment.load(thisEstablishmentAsAPI);
+      myAPIEstablishments.push(thisApiEstablishment);
+
     });
   } else {
     console.error("No establishments");
@@ -276,8 +294,13 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   myEstablishments.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.filename}.validation.json`) : true;
   myWorkers.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myWorkers.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${workers.filename}.validation.json`) : true;
   myTrainings.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.filename}.validation.json`) : true;
-  
 
+  // upload the intermediary entities as JSON to S3
+  myAPIEstablishments.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/establishment.entities.json`) : true;
+  myAPIWorkers.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myAPIWorkers.map(thisWorker => thisWorker.toJSON()), `${establishmentId}/intermediary/worker.entities.json`) : true;
+  myAPITrainings.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myAPITrainings.map(thisTraining => thisTraining.toJSON()), `${establishmentId}/intermediary/training.entities.json`) : true;
+  myAPIQualifications.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myAPIQualifications.map(thisQualification => thisQualification.toJSON()), `${establishmentId}/intermediary/qualification.entities.json`) : true;
+  
   // handle parsing errors
   if (csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0 || csvTrainingSchemaErrors.length > 0) {
     //console.error('WA DEBUG Establishment validation errors: ', csvEstablishmentSchemaErrors)
@@ -300,9 +323,17 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
       training: csvTrainingSchemaErrors,
     },
     data: {
-      establishments: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
-      workers: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
-      training: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
+      csv: {
+        establishments: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
+        workers: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
+        training: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
+      },
+      entities: {
+        establishments: myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
+        workers: myAPIWorkers.map(thisWorker => thisWorker.toJSON()),
+        training: myAPITrainings.map(thisTraining => thisTraining.toJSON()),
+        qualifications: myAPIQualifications.map(thisQualification => thisQualification.toJSON()),
+      }
     }
   }
 };

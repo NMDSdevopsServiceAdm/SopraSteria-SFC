@@ -1919,42 +1919,42 @@ class Establishment {
       Postcode: this._postcode,
       LocationId: this._shareWithCqc ? this._locationID : undefined,
       ProvId: this._shareWithCqc ? this._provID : undefined,        // this will be ignored by Establishment entity
+      IsCQCRegulated: this._regType !== null & this._regType === 2 ? true : false,
     };
 
     const changeProperties = {
       name: this._name,
       employerType: this._establishmentType,
       employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
-      localAuthorities: this._localAuthorities ? this._localAuthorities.map(thisAuthority => {
-        return {
-          custodianCode: thisAuthority
-        };
-      }) : undefined,
+      localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
       mainService: {
         id: this._mainService     // during BUDI lookup, it returns the main service as an id
       },
-      services: this._allServices.map((thisService, index) => {
-        const returnThis = {
-          id: thisService,
-        };
+      services: this._allServices
+        .filter(thisService => thisService !== this._mainService)   // main service cannot appear in otherServices
+        .map((thisService, index) => {
+          const returnThis = {
+            id: thisService,
+          };
 
-        if (this._allServicesOther[index]) {
-          returnThis.other = this._allServicesOther[index];
-        }
+          if (this._allServicesOther[index]) {
+            returnThis.other = this._allServicesOther[index];
+          }
 
-        return returnThis;
-      }),
-      serviceUsers: this._allServiceUsers.map((thisService, index) => {
-        const returnThis = {
-          id: thisService,
-        };
+          return returnThis;
+        }),
+      serviceUsers: this._allServiceUsers
+        .map((thisService, index) => {
+          const returnThis = {
+            id: thisService,
+          };
 
-        if (this._allServiceUsersOther[index]) {
-          returnThis.other = this._allServiceUsersOther[index];
-        }
+          if (this._allServiceUsersOther[index]) {
+            returnThis.other = this._allServiceUsersOther[index];
+          }
 
-        return returnThis;
-      }),
+          return returnThis;
+        }),
       numberOfStaff: this._totalPermTemp,
       jobs: {
         vacancies: this._vacancies ? this._vacancies : undefined,
@@ -1963,16 +1963,15 @@ class Establishment {
       }
     };
 
-
     // share options
     if (this._shareWithCqc || this._shareWithLA) {
       const shareWith = [];
 
       if (this._shareWithCqc) {
-        shareWith.push['CQC'];
+        shareWith.push('CQC');
       }
       if (this._shareWithLA) {
-        shareWith.push['Local Authority'];
+        shareWith.push('Local Authority');
       }
 
       changeProperties.share = {
@@ -1991,7 +1990,13 @@ class Establishment {
     this._capacities.forEach(thisCapacity => changeProperties.capacities.push(thisCapacity));
     this._utilisations.forEach(thisUtilisation => changeProperties.capacities.push(thisUtilisation));
 
-    // jobs
+    // clean up empty properties
+    if (changeProperties.capacities.length == 0) {
+      changeProperties.capacities = undefined;
+    }
+    if (changeProperties.services.length == 0) {
+      changeProperties.services = undefined;
+    }
 
     return {
       ...fixedProperties,

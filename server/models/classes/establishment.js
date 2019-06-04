@@ -812,9 +812,9 @@ class Establishment {
                 myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
             }
 
-            myDefaultJSON.created = this.created.toJSON();
-            myDefaultJSON.updated = this.updated.toJSON();
-            myDefaultJSON.updatedBy = this.updatedBy;
+            myDefaultJSON.created = myDefaultJSON.created ? this.created.toJSON() : null;
+            myDefaultJSON.updated = myDefaultJSON.updated ? this.updated.toJSON() : null;
+            myDefaultJSON.updatedBy = this.updatedBy ? myDefaultJSON.updatedBy : null;
 
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {
