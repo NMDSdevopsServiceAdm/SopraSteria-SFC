@@ -142,10 +142,39 @@ router.route('/validate').post(async (req, res) => {
     // handle parsing errors
     if (!validationResponse.status) {
       return res.status(400).send({
-        establishment: validationResponse.validation.establishments,
-        workers: validationResponse.validation.workers,
-        training: validationResponse.validation.training,
-        data: validationResponse.data
+        establishments: {
+          filename: null,
+          errors: validationResponse.validation.establishments,
+          warnings: [],
+          records: 0,
+          data: {
+            csv: validationResponse.data.csv.establishments,
+            entities: validationResponse.data.entities.establishments,
+          },
+        },
+        workers: {
+          filename: null,
+          errors: validationResponse.validation.workers,
+          warnings: [],
+          records: 0,
+          data: {
+            csv: validationResponse.data.csv.workers,
+            entities: {
+              workers: validationResponse.data.entities.workers,
+              qualifications: validationResponse.data.entities.qualifications,
+            }
+          },
+        },
+        training: {
+          filename: null,
+          errors: validationResponse.validation.training,
+          warnings: [],
+          records: 0,
+          data: {
+            csv: validationResponse.data.csv.training,
+            entities: validationResponse.data.entities.training,
+          },
+        },
       });
 
     } else {
@@ -224,8 +253,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         csvEstablishmentSchemaErrors.push(lineValidator.validationErrors);
       }
 
-      // console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
-      //  console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
+      //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
+      console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
       // myEstablishments.push(lineValidator);
 
       const thisEstablishmentAsAPI = lineValidator.toAPI();
