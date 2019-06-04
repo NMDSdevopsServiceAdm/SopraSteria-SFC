@@ -1697,6 +1697,36 @@ class Establishment {
     }
   }
 
+  _transformAllVacanciesStartersLeavers() {
+    if (this._vacancies && Array.isArray(this._vacancies)) {
+      this._vacancies = this._vacancies.map((thisJob, index) => {
+        return {
+          jobId: this._alljobs[index],
+          total: thisJob  
+        };
+      });
+    }
+
+    if (this._starters && Array.isArray(this._starters)) {
+      this._starters = this._starters.map((thisJob, index) => {
+        return {
+          jobId: this._alljobs[index],
+          total: thisJob  
+        };
+      });
+    }
+
+    if (this._leavers && Array.isArray(this._leavers)) {
+      this._leavers = this._leavers.map((thisJob, index) => {
+        return {
+          jobId: this._alljobs[index],
+          total: thisJob  
+        };
+      });
+    }
+
+  }
+
   _transformReasonsForLeaving() {
     if (this._reasonsForLeaving && Array.isArray(this._reasonsForLeaving)) {
       const mappedReasons = [];
@@ -1809,6 +1839,8 @@ class Establishment {
 
     status = !this._transformAllCapacities() ? false : status;
     status = !this._transformAllUtilisation() ? false : status;
+
+    status = !this._transformAllVacanciesStartersLeavers() ? false : status;
 
     return status;
   }
@@ -1924,6 +1956,11 @@ class Establishment {
         return returnThis;
       }),
       numberOfStaff: this._totalPermTemp,
+      jobs: {
+        vacancies: this._vacancies ? this._vacancies : undefined,
+        starters: this._starters ? this._starters : undefined,
+        leavers: this._leavers ? this._leavers : undefined,
+      }
     };
 
 
