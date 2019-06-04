@@ -136,9 +136,9 @@ router.route('/').post(async (req, res) => {
             // note - req.username is assured, vecause it is provided through the
             //  hasAuthorisedEstablishment middleware which runs on all establishment routes
             await newWorker.save(req.username);
-            return res.status(201).json({
-                uid: newWorker.uid
-            });
+
+            return res.status(201).json(newWorker.toJSON(false, false, false, showModifiedOnly));
+
         } else {
             return res.status(400).send('Unexpected Input.');
         }
