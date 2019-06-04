@@ -19,7 +19,7 @@ import { WorkplaceService } from '@core/model/workplace-service.model';
 export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private otherServiceMaxLength = 120;
   private subscriptions: Subscription = new Subscription();
-  public allServices: Array<WorkplaceService> = [];
+  private allServices: Array<WorkplaceService> = [];
   public categories: Array<WorkplaceCategory>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;

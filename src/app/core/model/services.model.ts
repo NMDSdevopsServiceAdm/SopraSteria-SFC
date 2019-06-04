@@ -1,7 +1,8 @@
 export interface Service {
   id: number;
-  name: string;
   isMyService?: boolean;
+  name: string;
+  other?: boolean;
 }
 
 export interface ServiceGroup {
