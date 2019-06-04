@@ -232,7 +232,7 @@ async function uploadAsJSON(username, establishmentId, content, key) {
   }
 }
 
-const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myAPIEstablishments) => {
+const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments) => {
   const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
@@ -246,7 +246,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
   //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
   //console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
-  // myEstablishments.push(lineValidator);
+  myEstablishments.push(lineValidator);
 
   const thisEstablishmentAsAPI = lineValidator.toAPI();
   const thisApiEstablishment = new EstablishmentEntity();
@@ -264,6 +264,30 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
   myAPIEstablishments.push(thisApiEstablishment);
 };
 
+const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers) => {
+  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
+
+  // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+  lineValidator.validate();
+  lineValidator.transform();
+
+  // TODO - not sure this is necessary yet - we can just iterate the collection of Establishments at the end to create the validation JSON document
+  if (lineValidator.validationErrors.length > 0) {
+    csvWorkerSchemaErrors.push(lineValidator.validationErrors);
+  }
+
+  //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
+  //console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
+  myWorkers.push(lineValidator);
+
+  const thisWorkerAsAPI = lineValidator.toAPI();
+  const thisApiWorker = new WorkerEntity();
+
+  const isValid = await thisApiWorker.load(thisWorkerAsAPI);
+  console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON()), null, 4);
+  myAPIWorkers.push(thisApiWorker);
+};
+
 // if commit is false, then the results of validation are not uploaded to S3
 const validateBulkUploadFiles = async (commit, username , establishmentId, establishments, workers, training) => {
   let status = true;
@@ -275,7 +299,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0) {
     await Promise.all(
       establishments.imported.map((thisLine, currentLineNumber) => {
-        return _validateEstablishmentCsv(thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myAPIEstablishments);
+        return _validateEstablishmentCsv(thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments);
       }) 
     );
   } else {
@@ -285,20 +309,11 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
 
   // parse and process Workers CSV
   if (Array.isArray(workers.imported) && workers.imported.length > 0) {
-    workers.imported.forEach((thisLine, currentLineNumber) => {
-      const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
-
-      // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
-      lineValidator.validate();
-      lineValidator.transform();
-
-      if (lineValidator.validationErrors.length > 0) {
-        csvWorkerSchemaErrors.push(lineValidator.validationErrors);
-      }
-
-      //console.log("WA DEBUG - this worker: ", lineValidator.toJSON());
-      myWorkers.push(lineValidator);
-    });
+    await Promise.all(
+      workers.imported.map((thisLine, currentLineNumber) => {
+        return _validateWorkerCsv(thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers);
+      }) 
+    );
   } else {
     console.error("No Workers");
     status = false;

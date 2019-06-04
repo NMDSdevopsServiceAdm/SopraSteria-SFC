@@ -268,6 +268,8 @@ class Worker {
   _validateUniqueWorkerId() {
     const myUniqueWorkerId = this._currentLine.UNIQUEWORKERID;
 
+    console.log("WA DEBUG - unique worker id: ", myUniqueWorkerId)
+
     // must be present and n more than 50 characters
     const MAX_LENGTH = 50;
 
@@ -1990,6 +1992,25 @@ class Worker {
         };
       }) : undefined,
     };
+  };
+
+  toAPI() {
+    const changeProperties = {
+    // the minimum to create a new worker
+      nameOrId : this._uniqueWorkerId,
+      contract : this._contractType,
+      mainJob : {
+        jobId: this._mainJobRole,
+        other: this._mainJobDesc,
+      }
+    };
+
+    console.log("WA DEBUG - toAPI response: ", changeProperties)
+
+    return {
+      ...changeProperties
+    };
+
   };
 
   get validationErrors() {
