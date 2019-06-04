@@ -1109,8 +1109,7 @@ class Establishment {
       });
     }
 
-    const DONTKNOW = 999;
-    if (!(vacancies.length === 1 && vacancies[0] === DONTKNOW) && vacancies.length !== allJobsCount) {
+    if (vacancies.length !== allJobsCount) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.VACANCIES_ERROR,
@@ -1119,7 +1118,7 @@ class Establishment {
         source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
       });
     }
-    if (!(starters.length === 1 && starters[0] === DONTKNOW) && starters.length !== allJobsCount) {
+    if (starters.length !== allJobsCount) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STARTERS_ERROR,
@@ -1128,7 +1127,7 @@ class Establishment {
         source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
       });
     }
-    if (!(leavers.length === 1 && leavers[0] === DONTKNOW) && leavers.length !== allJobsCount) {
+    if (leavers.length !== allJobsCount) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.LEAVERS_ERROR,
@@ -1325,7 +1324,7 @@ class Establishment {
 
   _validateReasonsForLeaving() {
     // only if the sum of "LEAVERS" is greater than 0
-    const sumOfLeavers = this._leavers && this._leavers.length > 0 && this._leavers[0] !== 999 ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
+    const sumOfLeavers = this._leavers ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
 
     if (sumOfLeavers > 0) {
       const allReasons = this._currentLine.REASONS.split(';');
@@ -1416,7 +1415,7 @@ class Establishment {
 
   _validateDestinationsOnLeaving() {
     // only if the sum of "LEAVERS" is greater than 0
-    const sumOfLeavers = this._leavers && this._leavers.length > 0 && this._leavers[0] !== 999 ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
+    const sumOfLeavers = this._leavers ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
 
     if (sumOfLeavers > 0) {
       const allDestinations = this._currentLine.DESTINATIONS.split(';');
@@ -1700,9 +1699,8 @@ class Establishment {
   }
 
   _transformAllVacanciesStartersLeavers() {
-    // don't map the 999 (don't knows)
     console.log("WA DEBUG - vacancies: ", this._vacancies)
-    if (this._vacancies && Array.isArray(this._vacancies) && !(this._vacancies.length === 1 && this._vacancies[0] === 999 )) {
+    if (this._vacancies && Array.isArray(this._vacancies)) {
       console.log("WA DEBUG - transforming vacancies: ", this._vacancies)
 
       this._vacancies = this._vacancies.map((thisJob, index) => {
@@ -1714,7 +1712,7 @@ class Establishment {
     }
 
     console.log("WA DEBUG - starters: ", this._starters)
-    if (this._starters && Array.isArray(this._starters) && !(this._starters.length === 1 && this._starters[0] === 999 )) {
+    if (this._starters && Array.isArray(this._starters)) {
       console.log("WA DEBUG - transforming starters: ", this._starters)
 
       this._starters = this._starters.map((thisJob, index) => {
@@ -1726,7 +1724,7 @@ class Establishment {
     }
 
     console.log("WA DEBUG - leavers: ", this._leavers)
-    if (this._leavers && Array.isArray(this._leavers) && !(this._leavers.length === 1 && this._leavers[0] === 999 )) {
+    if (this._leavers && Array.isArray(this._leavers)) {
       console.log("WA DEBUG - transforming leavers: ", this._leavers)
 
       this._leavers = this._leavers.map((thisJob, index) => {
@@ -1968,7 +1966,11 @@ class Establishment {
           return returnThis;
         }),
       numberOfStaff: this._totalPermTemp,
-      jobs: {}
+      jobs: {
+        vacancies: this._vacancies ? this._vacancies : undefined,
+        starters: this._starters ? this._starters : undefined,
+        leavers: this.leavers ? this.leavers : undefined,
+      }
     };
 
     // share options
@@ -1997,51 +1999,6 @@ class Establishment {
     changeProperties.capacities = [];
     this._capacities.forEach(thisCapacity => changeProperties.capacities.push(thisCapacity));
     this._utilisations.forEach(thisUtilisation => changeProperties.capacities.push(thisUtilisation));
-
-
-    // with jobs:
-    //   if the sum of jobs roles for given type (vacancies, starter or leaver) is 0, then upload as "None"
-    //   if there is a single value and it is simply "999", then upload as "Don't know"
-    const DONTKNOW = 999;
-    if (this._vacancies) {
-      
-      if (this._vacancies.length === 1 && this._vacancies[0] === DONTKNOW) {
-        changeProperties.jobs.vacancies = 'Don\'t know';
-      } else if (this._vacancies.reduce((total,current) => total += current.total) === 0) {
-        changeProperties.jobs.vacancies = 'None';
-      } else {
-        changeProperties.jobs.vacancies = this._vacancies;
-      }
-    } else {
-      changeProperties.jobs.vacancies = undefined;
-    }
-
-    if (this._starters) {
-      
-      if (this._starters.length === 1 && this._starters[0] === DONTKNOW) {
-        changeProperties.jobs.starters = 'Don\'t know';
-      } else if (this._starters.reduce((total,current) => total += current.total) === 0) {
-        changeProperties.jobs.starters = 'None';
-      } else {
-        changeProperties.jobs.starters = this._starters;
-      }
-    } else {
-      changeProperties.jobs.starters = undefined;
-    }
-
-    if (this._leavers) {
-      
-      if (this._leavers.length === 1 && this._leavers[0] === DONTKNOW) {
-        changeProperties.jobs.leavers = 'Don\'t know';
-      } else if (this._leavers.reduce((total,current) => total += current.total) === 0) {
-        changeProperties.jobs.leavers = 'None';
-      } else {
-        changeProperties.jobs.leavers = this._leavers;
-      }
-    } else {
-      changeProperties.jobs.leavers = undefined;
-    }
-
 
     // clean up empty properties
     if (changeProperties.capacities.length == 0) {
