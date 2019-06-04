@@ -32,7 +32,7 @@ export class ServiceUsersComponent extends Question {
 
   protected init() {
     this.subscriptions.add(
-      this.serviceUsersService.getServiceUsers().subscribe((serviceUsersGroups: ServiceGroup[]) => {
+      this.serviceUsersService.getServiceUsers(this.establishment.id).subscribe((serviceUsersGroups: ServiceGroup[]) => {
         this.serviceUsersGroups = serviceUsersGroups;
         this.serviceUsersGroups.map((group: ServiceGroup) => {
           group.services.map((service: Service) => {
@@ -100,9 +100,8 @@ export class ServiceUsersComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .updateServiceUsers(this.establishment.id, this.form.get('serviceUsers').value)
+        .updateServiceUsers(this.establishment.id, this.form.value)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
-    console.log(this.form.controls);
   }
 }

@@ -7,7 +7,7 @@ import { Injectable } from '@angular/core';
 export class ServiceUsersService {
   constructor(private http: HttpClient) {}
 
-  getServiceUsers() {
+  getServiceUsers(establishment) {
     return this.http.get<any>('/api/serviceUsers');
   }
 }
