@@ -40,13 +40,17 @@ export class Question implements OnInit, OnDestroy {
 
         this.init();
 
-        this.back = this.return ? this.return : this.previous;
-        this.backService.setBackLink({ url: this.back });
+        this.setBackLink();
       })
     );
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+  }
+
+  setBackLink() {
+    this.back = this.return ? this.return : this.previous;
+    this.backService.setBackLink({ url: this.back });
   }
 
   ngOnDestroy() {

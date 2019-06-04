@@ -10,6 +10,12 @@ export interface ServiceGroup {
   services: Service[];
 }
 
+export interface Services {
+  value: Service;
+  index: number;
+  array: Service[];
+}
+
 export interface AllServicesResponse {
   allOtherServices: ServiceGroup[];
 }
