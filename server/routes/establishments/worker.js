@@ -136,10 +136,7 @@ router.route('/').post(async (req, res) => {
             // note - req.username is assured, vecause it is provided through the
             //  hasAuthorisedEstablishment middleware which runs on all establishment routes
             await newWorker.save(req.username);
-
-            const exceptionalOverrideHeader = req.headers['x-override-put-return-all'];
-            const showModifiedOnly = exceptionalOverrideHeader ? false : true;
-            return res.status(201).json(newWorker.toJSON(false, false, false, showModifiedOnly));
+            return res.status(201).json(newWorker.toJSON(false, false, false, false));
 
         } else {
             return res.status(400).send('Unexpected Input.');
