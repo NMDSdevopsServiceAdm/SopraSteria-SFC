@@ -232,6 +232,38 @@ async function uploadAsJSON(username, establishmentId, content, key) {
   }
 }
 
+const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myAPIEstablishments) => {
+  const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
+
+  // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+  lineValidator.validate();
+  lineValidator.transform();
+
+  // TODO - not sure this is necessary yet - we can just iterate the collection of Establishments at the end to create the validation JSON document
+  if (lineValidator.validationErrors.length > 0) {
+    csvEstablishmentSchemaErrors.push(lineValidator.validationErrors);
+  }
+
+  //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
+  //console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
+  // myEstablishments.push(lineValidator);
+
+  const thisEstablishmentAsAPI = lineValidator.toAPI();
+  const thisApiEstablishment = new EstablishmentEntity();
+
+  thisApiEstablishment.initialise(
+    thisEstablishmentAsAPI.Address,
+    thisEstablishmentAsAPI.LocationId,
+    thisEstablishmentAsAPI.Postcode,
+    thisEstablishmentAsAPI.IsCQCRegulated,
+    'A0000000000'       // TODO: remove this once Establishment::initialise is resolving NDMS ID based on given postcode
+    );
+
+  const isValid = await thisApiEstablishment.load(thisEstablishmentAsAPI);
+  //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON()), null, 4);
+  myAPIEstablishments.push(thisApiEstablishment);
+};
+
 // if commit is false, then the results of validation are not uploaded to S3
 const validateBulkUploadFiles = async (commit, username , establishmentId, establishments, workers, training) => {
   let status = true;
@@ -241,33 +273,11 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
 
   // parse and process Establishments CSV
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0) {
-    establishments.imported.forEach((thisLine, currentLineNumber) => {
-      const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
-
-      // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
-      lineValidator.validate();
-      lineValidator.transform();
-
-      // TODO - not sure this is necessary yet - we can just iterate the collection of Establishments at the end to create the validation JSON document
-      if (lineValidator.validationErrors.length > 0) {
-        csvEstablishmentSchemaErrors.push(lineValidator.validationErrors);
-      }
-
-      //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
-      console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
-      // myEstablishments.push(lineValidator);
-
-      const thisEstablishmentAsAPI = lineValidator.toAPI();
-      const thisApiEstablishment = new EstablishmentEntity();
-
-      thisApiEstablishment.initialise(thisEstablishmentAsAPI.Address,
-        thisEstablishmentAsAPI.LocationId, thisEstablishmentAsAPI.Postcode,
-        thisEstablishmentAsAPI.IsCQCRegulated, 'A0000000000');
-
-      thisApiEstablishment.load(thisEstablishmentAsAPI);
-      myAPIEstablishments.push(thisApiEstablishment);
-
-    });
+    await Promise.all(
+      establishments.imported.map((thisLine, currentLineNumber) => {
+        return _validateEstablishmentCsv(thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myAPIEstablishments);
+      }) 
+    );
   } else {
     console.error("No establishments");
     status = false;
