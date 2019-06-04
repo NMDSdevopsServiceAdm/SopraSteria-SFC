@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
@@ -36,6 +36,9 @@ export class ServiceUsersComponent extends Question {
         this.serviceUsersGroups = serviceUsersGroups;
         this.serviceUsersGroups.map((group: ServiceGroup) => {
           group.services.map((service: Service) => {
+            if (service.other === true) {
+              this.form.addControl('serviceUsers-other-' + service.id, new FormControl(''));
+            }
             if (service.isMyService) {
               this.form.get('serviceUsers').value.push(service.id);
             }
@@ -62,7 +65,6 @@ export class ServiceUsersComponent extends Question {
   public toggle(target: HTMLInputElement) {
     const value = parseInt(target.value, 10);
     const selected = this.form.get('serviceUsers').value;
-
     if (target.checked) {
       if (!selected.includes(value)) {
         selected.push(value);
@@ -73,7 +75,6 @@ export class ServiceUsersComponent extends Question {
         selected.splice(index, 1);
       }
     }
-
     this.form.get('serviceUsers').setValue(selected);
   }
 
@@ -102,5 +103,6 @@ export class ServiceUsersComponent extends Question {
         .updateServiceUsers(this.establishment.id, this.form.get('serviceUsers').value)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
+    console.log(this.form.controls);
   }
 }
