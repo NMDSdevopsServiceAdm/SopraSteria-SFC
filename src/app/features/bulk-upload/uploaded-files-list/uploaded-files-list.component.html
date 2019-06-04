@@ -14,13 +14,20 @@
       <td class="govuk-table__cell">{{ file.extension }}</td>
       <td class="govuk-table__cell">-</td>
       <td class="govuk-table__cell">-</td>
-      <td class="govuk-table__cell">-</td>
+      <td class="govuk-table__cell">
+        <ng-template [ngIf]="isValidating" [ngIfElse]="idle">
+          Validating...
+        </ng-template>
+        <ng-template #idle>
+          -
+        </ng-template>
+      </td>
     </tr>
   </tbody>
 </table>
 
 <p>The files must be validated before completing the upload.</p>
 
-<button type="button" class="govuk-button govuk-button--tertiary govuk-!-margin-top-2" (click)="validateeFiles()">
+<button type="button" class="govuk-button govuk-button--tertiary govuk-!-margin-top-2" (click)="validateFiles()">
   Validate files
 </button>

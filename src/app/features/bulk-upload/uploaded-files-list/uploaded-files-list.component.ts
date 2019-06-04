@@ -10,6 +10,7 @@ import { UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.mode
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private uploadedFiles: Array<UploadFile>;
+  public isValidating = false;
 
   constructor(private bulkUploadService: BulkUploadService) {}
 
@@ -27,10 +28,13 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     );
   }
 
-  public validateeFiles(): void {
+  public validateFiles(): void {
+    this.isValidating = true;
+
     this.subscriptions.add(
-      this.bulkUploadService.validateFiles().subscribe((data: ValidatedFilesResponse) => {
-        console.log(data);
+      this.bulkUploadService.validateFiles().subscribe((response: ValidatedFilesResponse) => {
+        this.isValidating = false;
+        console.log(response);
       })
     );
   }

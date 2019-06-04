@@ -43,7 +43,7 @@ export class BulkUploadService {
   public validateFiles(): Observable<ValidatedFilesResponse> {
     // TODO mock api - swap out with below once BE is ready
     return this.http.put<ValidatedFilesResponse>(
-      `http://www.mocky.io/v2/5cf66a70320000cf8c8cd282`,
+      `http://www.mocky.io/v2/5cf66a70320000cf8c8cd282?mocky-delay=2000ms`,
       null
     );
     // return this.http.put<ValidatedFilesResponse>(
