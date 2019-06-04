@@ -218,7 +218,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
 
       myEstablishments.push(lineValidator);
 
-      //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
+      console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
+      console.log("WA DEBUG - this establishment: ", lineValidator.toAPI());
     });
   } else {
     console.error("No establishments");
