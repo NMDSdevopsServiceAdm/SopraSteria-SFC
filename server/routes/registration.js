@@ -376,8 +376,6 @@ router.route('/')
             );
           }
           
-          Estblistmentdata.MainServiceOther = "T".repeat(100);
-
           if (serviceResults.other && Estblistmentdata.MainServiceOther && Estblistmentdata.MainServiceOther.length > OTHER_MAX_LENGTH){
             throw new RegistrationException(
               `Other field value of '${Estblistmentdata.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
