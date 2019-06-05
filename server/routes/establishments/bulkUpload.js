@@ -89,8 +89,8 @@ router.route('/validate').put(async (req, res) => {
     const trainingRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
     const createModelPromises = [];
 
-    data.Contents.forEach(a => {
-      createModelPromises.push(  downloadContent(a.Key) );
+    data.Contents.forEach(myFile => {
+      createModelPromises.push(  downloadContent(myFile.Key) );
     });
     
     await Promise.all(createModelPromises).then(function(values){
@@ -158,19 +158,49 @@ router.route('/validate').put(async (req, res) => {
 router.route('/validate').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
+  const establishmentMetadata = new metaData();
+  const workerMetadata = new metaData();
+  const trainingMetadata = new metaData();
+
+  const establishmentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
+  const workerRegex = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
+  const trainingRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
+  const filenameRegex=/^(.+\/)*(.+)\.(.+)$/;
 
   try {
     const importedEstablishments = await csv().fromString(req.body.establishments.csv);
     const importedWorkers = await csv().fromString(req.body.workers.csv);
     const importedTraining = await csv().fromString(req.body.training.csv);
 
+    if (establishmentRegex.test(req.body.establishments.csv.substring(0,50))) {
+      let key = req.body.establishments.filename;
+      establishmentMetadata.filename = key.match(filenameRegex)[2];
+      establishmentMetadata.filenameAndExtension = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
+      establishmentMetadata.fileType = 'Establishment';
+                   
+    } 
+    if (workerRegex.test(req.body.workers.csv.substring(0,50))) {
+      let key = req.body.workers.filename;
+      workerMetadata.filename = key.match(filenameRegex)[2];
+      workerMetadata.filenameAndExtension = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
+      workerMetadata.fileType = 'Worker';    
+
+    } 
+    
+    if (trainingRegex.test(req.body.training.csv.substring(0,50))) {
+      let key = req.body.training.filename;
+      trainingMetadata.filename = key.match(filenameRegex)[2];
+      trainingMetadata.filenameAndExtension = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
+      trainingMetadata.fileType = 'Training';
+    }        
+
     const validationResponse = await validateBulkUploadFiles(
       false,
       username,
       establishmentId,
-      { imported: importedEstablishments, filename: req.body.establishments.filename },
-      { imported: importedWorkers, filename: req.body.workers.filename },
-      { imported: importedTraining, filename: req.body.training.filename })
+      { imported: importedEstablishments, establishmentMetadata: establishmentMetadata  },
+      { imported: importedWorkers, workerMetadata: workerMetadata },
+      { imported: importedTraining, trainingMetadata: trainingMetadata })
 
     // handle parsing errors
     if (!validationResponse.status) {
