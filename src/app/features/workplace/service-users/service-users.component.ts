@@ -65,6 +65,10 @@ export class ServiceUsersComponent extends Question {
         error => this.onError(error)
       )
     );
+    this.establishmentService.getServiceUsersChecked(this.establishment.id).subscribe( (data) => {
+        console.log('establishmentService.data =>>',data);
+      }
+    );
   }
 
   private setFormErrorsMap(itemId: string): number {
