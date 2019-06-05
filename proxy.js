@@ -10,6 +10,23 @@ var app = express();
 
 const apiEndpoint = process.env.API_PROXY || 'https://sfcdev.cloudapps.digital';
 
+app.get('/api/jobs', function(req, res) {
+  res.send({
+    jobs: [
+      { "id": 15, "title": "Middle Management" },
+      { "id": 16, "title": "Nursing Assistant" },
+      { "id": 17, "title": "Nursing Associate" },
+      { "id": 18, "title": "Occupational Therapist" },
+      { "id": 19, "title": "Occupational Therapist Assistant", other: true },
+      {
+        "id": 20,
+        "title": "Other job roles directly involved in providing care",
+        other: true,
+      },
+    ]
+  })
+});
+
 app.get('/api/mock', function(req, res) {
     console.log("Hitting endpoint /api/mock")
     res.send({

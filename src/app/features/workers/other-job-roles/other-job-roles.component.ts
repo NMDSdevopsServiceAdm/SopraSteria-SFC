@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, AfterViewInit, DoCheck } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, Validators  } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -7,7 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
-import { Job } from '@core/model/job.model';
+import { Job, JobRole } from '@core/model/job.model';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
@@ -18,6 +18,8 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
   public availableJobRoles: Job[];
   public serverError: string;
+  public jobsWithOtherRole: JobRole[] = [];
+  public renderForm = false;
   private otherJobRoleCharacterLimit = 120;
 
   constructor(
@@ -44,45 +46,75 @@ export class OtherJobRolesComponent extends QuestionComponent {
           // TODO: This does not really allow fall back for non-javascript form submissions
           this.availableJobRoles.map(job => {
             const otherJob = this.worker.otherJobs && this.worker.otherJobs.find(o => o.jobId === job.id);
+
+            if (job.other) {
+              this.jobsWithOtherRole.push({
+                jobId: job.id,
+                other: otherJob ? otherJob.other: ''
+              });
+            }
+
             const control = this.formBuilder.control({
               jobId: job.id,
               title: job.title,
               checked: otherJob ? true : false,
             });
-
             (this.form.controls.selectedJobRoles as FormArray).push(control);
-
-            if (job.other) {
-              this.form.addControl(
-                `otherSelectedJobRole${job.id}`,
-                new FormControl(
-                  otherJob ? otherJob.other : '',
-                  [Validators.maxLength(this.otherJobRoleCharacterLimit)]
-                )
-              );
-            }
           });
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           this.errorSummaryService.scrollToErrorSummary();
-        }
+        },
+       () => this.updateForm()
       )
     );
 
     this.previous = ['/worker', this.worker.uid, 'main-job-start-date'];
   }
 
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [];
+  }
+
+  private updateForm(): void {
+    this.jobsWithOtherRole.forEach((job: JobRole) => {
+      this.form.addControl(
+        `otherSelectedJobRole${job.jobId}`,
+        new FormControl(
+          job.other,
+          [Validators.maxLength(this.otherJobRoleCharacterLimit)]
+        )
+      );
+
+      this.formErrorsMap.push({
+        item: `otherSelectedJobRole${job.jobId}`,
+        type: [
+          {
+            name: 'maxlength',
+            message: `Enter your job role must be ${this.otherJobRoleCharacterLimit} characters or less`,
+          },
+        ]
+      });
+    });
+
+    this.renderForm = true;
+  }
+
   generateUpdateProps() {
     const { selectedJobRoles } = this.form.value;
     return {
       otherJobs: selectedJobRoles.filter(j => j.checked).map(j => {
-        const otherValue = this.form.get(`otherSelectedJobRole${j.jobId}`).value;
-        return {
-          jobId: j.jobId,
-          title: j.title,
-          other: otherValue
-        };
+        const isJobWithRole = this.jobsWithOtherRole.some(jbRole => jbRole.jobId === j.jobId);
+        if (isJobWithRole) {
+          const otherValue = this.form.get(`otherSelectedJobRole${j.jobId}`).value;
+          return {
+            jobId: j.jobId,
+            ...(otherValue && {  other: otherValue })
+          };
+        }
+
+        return { jobId: j.jobId }
       })
     };
   }
