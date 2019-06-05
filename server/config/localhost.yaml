@@ -6,13 +6,13 @@ jwt:
         login: 60
 db:
     pool: 5
-    ssl: true
+    ssl: false
 
     client_ssl:
-        status: true
-        certificate: '/home/aylingw/Documents/work/wozitech/steria/s4c/db-ssh-keys/dev/pgDevClient.crt'
-        key: '/home/aylingw/Documents/work/wozitech/steria/s4c/db-ssh-keys/dev/pgDevclientkey.key'
-        ca: '/home/aylingw/Documents/work/wozitech/steria/s4c/db-ssh-keys/dev/root.crt'
+        status: false
+        # certificate: 'E:/mycert.crt'
+        # key: 'E:/mykey.key'
+        # ca: 'E:/myca.crt'
 log:
     sequelize: false
 
