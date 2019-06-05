@@ -1,12 +1,11 @@
+import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { LocationAddress, LocationSearchResponse } from '@core/model/location.model';
-import { RegistrationPayload } from '@core/model/registration.model';
-import { WorkplaceService } from '@core/model/workplace-service.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
+import { RegistrationPayload } from '@core/model/registration.model';
 import { SecurityDetails } from '@core/model/security-details.model';
-import { WorkplaceCategory } from '@core/model/workplace-category.model';
+import { WorkplaceCategory, WorkplaceService } from '@core/model/workplace.model';
 
 @Injectable({
   providedIn: 'root',

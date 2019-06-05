@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Subscription } from 'rxjs';
-import { WorkplaceService } from '@core/model/workplace-service.model';
+import { WorkplaceService } from '@core/model/workplace.model';
 
 @Component({
   selector: 'app-confirm-workplace-details',

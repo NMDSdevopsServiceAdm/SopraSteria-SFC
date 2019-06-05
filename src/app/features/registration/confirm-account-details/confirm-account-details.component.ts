@@ -13,7 +13,7 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
 import { UserService } from '@core/services/user.service';
-import { WorkplaceService } from '@core/model/workplace-service.model';
+import { WorkplaceService } from '@core/model/workplace.model';
 
 @Component({
   selector: 'app-confirm-account-details',

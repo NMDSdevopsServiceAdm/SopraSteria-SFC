@@ -9,8 +9,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { WorkplaceCategory } from '@core/model/workplace-category.model';
-import { WorkplaceService } from '@core/model/workplace-service.model';
+import { WorkplaceCategory, WorkplaceService } from '@core/model/workplace.model';
 
 @Component({
   selector: 'app-select-main-service',

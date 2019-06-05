@@ -5,3 +5,8 @@ export interface WorkplaceService {
   other?: boolean;
   otherName?: string;
 }
+
+export interface WorkplaceCategory {
+  category: string;
+  services: Array<WorkplaceService>;
+}
