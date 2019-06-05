@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { FormGroup } from '@angular/forms';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
@@ -74,6 +74,19 @@ export class BulkUploadService {
             message: 'The selected files must be a CSV or ZIP.',
           },
         ],
+      },
+    ];
+  }
+
+  public serverErrorsMap(): Array<ErrorDefinition> {
+    return [
+      {
+        name: 400,
+        message: 'Validation failed.',
+      },
+      {
+        name: 503,
+        message: 'There is a problem with the service.',
       },
     ];
   }
