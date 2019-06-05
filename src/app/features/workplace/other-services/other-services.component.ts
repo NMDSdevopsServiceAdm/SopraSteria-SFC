@@ -42,7 +42,6 @@ export class OtherServicesComponent extends Question {
             group.services.map(service => {
               if (service.isMyService) {
                 this.form.get('otherServices').value.push(service.id);
-                this.form.get(`additionalOtherService${service.id}`).setValue(service.otherName);
               }
             });
           });
@@ -66,6 +65,10 @@ export class OtherServicesComponent extends Question {
           `additionalOtherService${service.id}`,
           new FormControl(null, [Validators.maxLength(this.additionalOtherServiceMaxLength)])
         );
+
+        if (service.otherName) {
+          this.form.get(`additionalOtherService${service.id}`).setValue(service.otherName);
+        }
 
         this.formErrorsMap.push({
           item: `additionalOtherService${service.id}`,
