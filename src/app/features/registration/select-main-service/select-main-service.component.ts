@@ -104,7 +104,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
 
   private getServicesByCategory(location: LocationAddress): void {
     this.subscriptions.add(
-      this.workplaceService.getServicesByCategory(location).subscribe(
+      this.workplaceService.getServicesByCategory(this.workplaceService.isRegulated(location)).subscribe(
         (categories: Array<WorkplaceCategory>) => {
           this.categories = categories;
           this.categories.forEach((data: WorkplaceCategory) => this.allServices.push(...data.services));
