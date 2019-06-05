@@ -267,7 +267,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 const _loadWorkerQualifications = async (thisQual, myAPIQualifications) => {
   const thisApiQualification = new QualificationEntity();
   const isValid = await thisApiQualification.load(thisQual);
-  console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
+  // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
   myAPIQualifications.push(thisApiQualification);
 };
 

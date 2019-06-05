@@ -2268,8 +2268,6 @@ class Worker {
     const myMappedQuals = [];
 
     this._qualifications ? this._qualifications.forEach(thisQual => {
-      console.log("WA DEBUG - this qualification: ", thisQual)
-
       const changeProperties = {
         type: undefined,        // the qualification type does not come from bulk upload
         qualification : {
