@@ -1,4 +1,4 @@
-export interface WorkplaceService {
+export interface Workplace {
   id: number;
   isCQC: boolean;
   name: string;
@@ -8,5 +8,5 @@ export interface WorkplaceService {
 
 export interface WorkplaceCategory {
   category: string;
-  services: Array<WorkplaceService>;
+  services: Array<Workplace>;
 }
