@@ -260,7 +260,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
     );
 
   const isValid = await thisApiEstablishment.load(thisEstablishmentAsAPI);
-  //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON()), null, 4);
+  //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
   myAPIEstablishments.push(thisApiEstablishment);
 };
 
@@ -284,7 +284,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
   const thisApiWorker = new WorkerEntity();
 
   const isValid = await thisApiWorker.load(thisWorkerAsAPI);
-  console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON()), null, 4);
+  console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
   myAPIWorkers.push(thisApiWorker);
 };
 
