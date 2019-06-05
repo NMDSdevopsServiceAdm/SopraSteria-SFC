@@ -10,6 +10,7 @@ import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { WorkplaceCategory, Workplace } from '@core/model/workplace.model';
+import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
   selector: 'app-select-main-service',
@@ -33,7 +34,8 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private fb: FormBuilder,
     private registrationService: RegistrationService,
-    private router: Router
+    private router: Router,
+    private workplaceService: WorkplaceService,
   ) {}
 
   ngOnInit() {
@@ -101,10 +103,8 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   }
 
   private getServicesByCategory(location: LocationAddress): void {
-    const isRegulated: boolean = this.registrationService.isRegulated(location);
-
     this.subscriptions.add(
-      this.registrationService.getServicesByCategory(isRegulated).subscribe(
+      this.workplaceService.getServicesByCategory(location).subscribe(
         (categories: Array<WorkplaceCategory>) => {
           this.categories = categories;
           this.categories.forEach((data: WorkplaceCategory) => this.allServices.push(...data.services));

@@ -36,15 +36,7 @@ export class RegistrationService {
     return this.http.get<LocationSearchResponse>(`/api/postcodes/${postcode}`);
   }
 
-  public getServicesByCategory(isRegulated: boolean): Observable<Array<WorkplaceCategory>> {
-    return this.http.get<Array<WorkplaceCategory>>(`/api/services/byCategory?cqc=${isRegulated}`);
-  }
-
   public getUsernameDuplicate(id: string): Observable<any> {
     return this.http.get(`/api/registration/username/${id}`);
-  }
-
-  public isRegulated(location: LocationAddress): boolean {
-    return location.isRegulated === true || location.locationId ? true : false;
   }
 }
