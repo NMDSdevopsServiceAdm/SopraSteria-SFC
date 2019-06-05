@@ -159,9 +159,9 @@ router.route('/validate').put(async (req, res) => {
 router.route('/validate').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
-  const establishmentMetadata = new metaData();
-  const workerMetadata = new metaData();
-  const trainingMetadata = new metaData();
+  const establishmentMetadata = new MetaData();
+  const workerMetadata = new MetaData();
+  const trainingMetadata = new MetaData();
 
   const establishmentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
   const workerRegex = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
