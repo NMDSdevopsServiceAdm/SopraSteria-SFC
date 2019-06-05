@@ -284,7 +284,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
   const thisApiWorker = new WorkerEntity();
 
   const isValid = await thisApiWorker.load(thisWorkerAsAPI);
-  console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
+  //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
   myAPIWorkers.push(thisApiWorker);
 };
 

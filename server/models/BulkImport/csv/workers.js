@@ -895,7 +895,6 @@ class Worker {
   _validateApprentice() {
     const apprenticeValues = [1,2,999];
     const myApprentice = parseInt(this._currentLine.APPRENTICE, 10);
-    console.log("WA DEBUG - apprenticeship: ", myApprentice)
 
     // optional
     if (myApprentice) {
@@ -930,8 +929,6 @@ class Worker {
             this._apprentice = 'Don\'t know';
             break;
         }
-
-        console.log("WA DEBUG - apprenticeship: ", this._apprentice)
         return true;
       }  
     } else {
@@ -1085,7 +1082,18 @@ class Worker {
         return false;
       }
       else {
-        this._salaryInt = mySalaryInt;
+        switch (mySalaryInt) {
+          case 1:
+            this._salaryInt = 'Annually';
+            break;
+          case 3:
+            this._salaryInt = 'Hourly';
+            break;
+          default:
+            // not doing anything with unpaid
+            this._salaryInt = null;
+        }
+
         return true;
       }  
     } else {
@@ -1212,7 +1220,11 @@ class Worker {
         return false;
       }
       else {
-        this._contHours = myContHours;
+        if (Math.floor(myContHours) === 999) {
+          this._contHours = 'No';
+        } else {
+          this._contHours = myContHours;
+        }
         return true;
       }  
     } else {
@@ -1237,7 +1249,11 @@ class Worker {
         return false;
       }
       else {
-        this._addlHours = myAddlHours;
+        if (Math.floor(myAddlHours) === 999) {
+          this._addlHours = 'No';
+        } else {
+          this._addlHours = myAddlHours;
+        }
         return true;
       }  
     } else {
@@ -1321,7 +1337,7 @@ class Worker {
   }
 
   _validateRegisteredNurse() {
-    const myRegisteredNurse = parseFloat(this._currentLine.NMCREG);
+    const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
 
     // optional
     if (this._currentLine.NMCREG && this._currentLine.NMCREG.length > 0) {
@@ -1759,19 +1775,19 @@ class Worker {
     if (this._registeredNurse) {
       switch (this._registeredNurse) {
         case 1:
-          this._registeredNurse = 'Adult Nurse';
+          this._registeredNurse = 'Adult nurse';
           break;
         case 2:
-          this._registeredNurse = 'Mental Health Nurse';
+          this._registeredNurse = 'Mental health nurse';
           break;
         case 3:
-          this._registeredNurse = 'Learning Disabilities Nurse';
+          this._registeredNurse = 'Learning disabilities nurse';
           break;
         case 4:
-          this._registeredNurse = 'Children\'s Nurse';
+          this._registeredNurse = 'Children\'s nurse';
           break;
         case 5:
-          this._registeredNurse = 'Enrolled Nurse';
+          this._registeredNurse = 'Enrolled nurse';
           break;
         default:
           this._validationErrors.push({
@@ -2007,7 +2023,7 @@ class Worker {
       displayId: this._displayId,
       niNumber: this._NINumber ? this._NINumber : undefined,
       postcode: this._postCode ? this._postCode : undefined,
-      dateOfBirth: this._DOB ? this._DOB.format('DD/MM/YYYY') : undefine,
+      dateOfBirth: this._DOB ? this._DOB.format('DD/MM/YYYY') : undefined,
       gender: this._gender ? this._gender : undefined,
       contractType: this._contractType,
       ethnicity: this._ethnicity ? this._ethnicity : undefined,
@@ -2077,7 +2093,11 @@ class Worker {
         jobId: this._mainJobRole,
         other: this._mainJobDesc,
       },
-      otherJobs: this._otherJobs ? this._otherJobs : undefined,
+      otherJobs: this._otherJobs ? this._otherJobs.map(thisJob => {
+          return {
+            jobId: thisJob
+          };
+        }) : undefined,
       mainJobStartDate: this._startDate ? this._startDate.format('YYYY-MM-DD') : undefined,
       nationalInsuranceNumber: this._NINumber ? this._NINumber : undefined,
       dateOfBirth: this._DOB ? this._DOB.format('YYYY-MM-DD') : undefined,
@@ -2099,10 +2119,12 @@ class Worker {
         } : undefined,
       apprenticeshipTraining: this._apprentice ? this._apprentice : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
-
+      registeredNurse: this._registeredNurse ? this._registeredNurse : undefined,
+      nurseSpecialism: this._nursingSpecialist ? {
+          id: this._nursingSpecialist
+        } : undefined,
     };
 
-    /* TODO - uncomment these
     if (this._nationality) {
       if (Number.isInteger(this._nationality)) {
         changeProperties.nationality = {
@@ -2146,7 +2168,7 @@ class Worker {
           value: this._recSource
         };
       }
-    }*/
+    }
 
     if (this._daysSick) {
       if (Number.isInteger(this._daysSick)) {
@@ -2160,13 +2182,84 @@ class Worker {
         };
       }
     }
+    
+    if (this._salaryInt) {
+      changeProperties.annualHourlyPay = {
+        value: this._salaryInt
+      };
 
-    console.log("WA DEBUG - toAPI response: ", changeProperties)
+      if (this._salaryInt === 'Annually') {
+        changeProperties.annualHourlyPay.rate = this._salary ? this._salary : undefined;
+      }
+      if (this._salaryInt === 'Hourly') {
+        changeProperties.annualHourlyPay.rate = this._hourlyRate ? this._hourlyRate : undefined;
+      }
+    }
 
-    return {
-      ...changeProperties
-    };
+    if (this._contHours) {
+      if (Number.isInteger(this._contHours)) {
+        changeProperties.weeklyHoursContracted = {
+          value: 'Yes',
+          hours: this._contHours,
+        };
+      } else {
+        changeProperties.weeklyHoursContracted = {
+          value: this._contHours,
+        };
+      }
+    }
+    if (this._addlHours) {
+      if (Number.isInteger(this._addlHours)) {
+        changeProperties.weeklyHoursAverage = {
+          value: 'Yes',
+          hours: this._addlHours,
+        };
+      } else {
+        changeProperties.weeklyHoursAverage = {
+          value: this._addlHours,
+        };
+      }
+    }
 
+    if (this._socialCareQualification) {
+      switch (this._socialCareQualification) {
+        case 1:
+          changeProperties.qualificationInSocialCare = 'Yes';
+          if (this._socialCareQualificationlevel) {
+            changeProperties.socialCareQualification = {
+              qualificationId: this._socialCareQualificationlevel,
+            };
+          }
+          break;
+        case 2:
+          changeProperties.qualificationInSocialCare = 'No';
+          break;
+        case 999:
+          changeProperties.qualificationInSocialCare = 'Don\'t know';
+          break;
+      }
+    }
+
+    if (this._nonSocialCareQualification) {
+      switch (this._nonSocialCareQualification) {
+        case 1:
+          changeProperties.otherQualification = 'Yes';
+          if (this._nonSocialCareQualificationlevel) {
+            changeProperties.highestQualification = {
+              qualificationId: this._nonSocialCareQualificationlevel,
+            };
+          }
+          break;
+        case 2:
+          changeProperties.otherQualification = 'No';
+          break;
+        case 999:
+          changeProperties.otherQualification = 'Don\'t know';
+          break;
+      }
+    }
+
+    return changeProperties;
   };
 
   get validationErrors() {
