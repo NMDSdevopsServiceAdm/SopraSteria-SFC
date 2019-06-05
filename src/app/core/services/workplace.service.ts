@@ -15,7 +15,7 @@ export class WorkplaceService {
     return location.isRegulated === true || location.locationId ? true : false;
   }
 
-  public getServicesByCategory(location: LocationAddress): Observable<Array<WorkplaceCategory>> {
-    return this.http.get<Array<WorkplaceCategory>>(`/api/services/byCategory?cqc=${this.isRegulated(location)}`);
+  public getServicesByCategory(isRegulated: boolean): Observable<Array<WorkplaceCategory>> {
+    return this.http.get<Array<WorkplaceCategory>>(`/api/services/byCategory?cqc=${isRegulated}`);
   }
 }
