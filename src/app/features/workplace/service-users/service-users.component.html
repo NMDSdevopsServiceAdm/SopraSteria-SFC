@@ -37,13 +37,17 @@
             </label>
           </div>
           <ng-container *ngFor="let ticked of form.controls.serviceUsers.value">
-            <div class="govuk-checkboxes__conditional" id="conditional-citizenship-conditional-{{ service.id }}" *ngIf="service.other === true && ticked === service.id">
+            <div class="govuk-checkboxes__conditional" id="conditional-serviceUsers-{{ service.id }}" *ngIf="service.other === true && ticked === service.id">
               <div class="govuk-form-group">
                 <label class="govuk-label" for="serviceUsers-other-{{ service.id }}">
                   Please enter
                 </label>
+                <span *ngIf="submitted && form.get('serviceUsers-other-'+service.id).invalid" id="title-error" class="govuk-error-message">
+                  <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('serviceUsers-other-'+service.id) }}
+                </span>
                 <input
                   class="govuk-input govuk-!-width-one-third"
+                  [class.govuk-input--error]="submitted && form.get('serviceUsers-other-'+service.id).invalid"
                   formControlName="serviceUsers-other-{{ service.id }}"
                   id="serviceUsers-other-{{ service.id }}"
                   type="text"

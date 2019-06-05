@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
@@ -7,13 +7,16 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ServiceUsersService } from '@core/services/service-users.service';
 import { Question } from '@features/workplace/question/question.component';
+import { Object } from 'aws-sdk/clients/s3';
 
 @Component({
   selector: 'app-service-users',
   templateUrl: './service-users.component.html',
 })
+
 export class ServiceUsersComponent extends Question {
   public serviceUsersGroups: ServiceGroup[];
+  private otherMaxLength = 120;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -37,7 +40,9 @@ export class ServiceUsersComponent extends Question {
         this.serviceUsersGroups.map((group: ServiceGroup) => {
           group.services.map((service: Service) => {
             if (service.other === true) {
-              this.form.addControl('serviceUsers-other-' + service.id, new FormControl(''));
+              const itemId = `serviceUsers-other-${service.id}`;
+              this.setFormErrorsMap(itemId);
+              this.form.addControl(itemId, new FormControl('', Validators.maxLength(this.otherMaxLength)));
             }
             if (service.isMyService) {
               this.form.get('serviceUsers').value.push(service.id);
@@ -60,6 +65,18 @@ export class ServiceUsersComponent extends Question {
         error => this.onError(error)
       )
     );
+  }
+
+  private setFormErrorsMap(itemId: string): number {
+    return this.formErrorsMap.push({
+      item: itemId,
+      type: [
+        {
+          name: 'maxlength',
+          message: `max length is ${this.otherMaxLength}`,
+        },
+      ],
+    });
   }
 
   public toggle(target: HTMLInputElement) {
@@ -87,20 +104,29 @@ export class ServiceUsersComponent extends Question {
     ];
   }
 
-  protected generateUpdateProps() {
-    const { serviceUsers } = this.form.value;
-
-    return {
-      services: serviceUsers.map(id => {
-        return { id };
-      }),
-    };
+  createDataForRequest() {
+    const data = Object.entries(this.form.value);
+    const serviceUsers = [];
+    for (const { otherId, index } of this.form.value.serviceUsers.map(( otherId, index ) => ({ otherId, index }))) {
+      serviceUsers.push({
+        id: otherId
+      });
+      for (const controls of data) {
+        if (serviceUsers[index].id === Number(controls[0].substr(19))) {
+          serviceUsers[index] = ({
+            id: otherId,
+            other: controls[1]
+          });
+        }
+      }
+    }
+    return serviceUsers;
   }
 
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .updateServiceUsers(this.establishment.id, this.form.value)
+        .updateServiceUsers(this.establishment.id, this.createDataForRequest())
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
