@@ -1,4 +1,4 @@
-class metaData {
+class MetaData {
   constructor() {
     this._username = null;
     this._id = null;
@@ -7,7 +7,6 @@ class metaData {
     this._warnings = null;
     this._errors = null;
     this._records = null;
-    this._filenameAndExtension = null;
   };
 
   get userName() {
@@ -21,9 +20,6 @@ class metaData {
   }
   get filename() {
     return this._filename;
-  }
-  get filenameAndExtension() {
-    return this._filenameAndExtension;
   }
   get warnings() {
     return this._warnings;
@@ -51,10 +47,6 @@ class metaData {
     return this._filename = filename;
   }
 
-  set filenameAndExtension(filenameAndExtension) {
-    return this._filenameAndExtension = filenameAndExtension;
-  }
-
   set warnings(warnings) {
     return this._warnings = warnings;
   }
@@ -69,7 +61,7 @@ class metaData {
 
   toJSON() {
     return {
-      filename:this._filenameAndExtension ? this._filenameAndExtension : null ,
+      filename:this._filename ? this._filename : null ,
       records:this._records ? this._records : 0,
       errors:this._errors ? this._errors : 0,
       warnings:this._warnings ? this._warnings : 0
@@ -77,4 +69,4 @@ class metaData {
   }
 };
 
-module.exports.metaData = metaData;
+module.exports.MetaData = MetaData;

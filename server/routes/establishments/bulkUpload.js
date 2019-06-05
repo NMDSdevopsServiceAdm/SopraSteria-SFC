@@ -14,7 +14,7 @@ const s3 = new AWS.S3({
 const CsvEstablishmentValidator = require('../../models/BulkImport/csv/establishments').Establishment;
 const CsvWorkerValidator = require('../../models/BulkImport/csv/workers').Worker;
 const CsvTrainingValidator = require('../../models/BulkImport/csv/training').Training;
-const metaData = require('../../models/BulkImport/csv/metaData').metaData;
+const MetaData = require('../../models/BulkImport/csv/metaData').MetaData;
 
 var FileStatusEnum = { "Latest": "latest", "Validated": "validated", "Imported": "imported" };
 var FileValidationStatusEnum = { "Pending": "pending", "Validating": "validating", "Pass": "pass", "PassWithWarnings": "pass with warnings", "Fail": "fail" };
@@ -46,8 +46,6 @@ router.route('/signedUrl').get(async function (req, res) {
   }
 });
 
-//TODO: from front end it has to be 3 file names, i have to build the path
-
 // Happy path
 //Concern in download files to local folder; if many user download, or we stream 
 //User case0; create 3 files with known sample data for establishment, worker
@@ -70,18 +68,17 @@ router.route('/validate').put(async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
   const myDownloads = {};
-  const establishmentMetadata = new metaData();
-  const workerMetadata = new metaData();
-  const trainingMetadata = new metaData();
+  const establishmentMetadata = new MetaData();
+  const workerMetadata = new MetaData();
+  const trainingMetadata = new MetaData();
   
   try {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
-
     const params = {
-    Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
-    Prefix: `${req.establishmentId}/latest/`
+      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Prefix: `${req.establishmentId}/latest/`
     };
-    var data = await s3.listObjects(params).promise();
+    const data = await s3.listObjects(params).promise();
     //  const establishmentsCSV = null;
 
     const establishmentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
@@ -98,20 +95,17 @@ router.route('/validate').put(async (req, res) => {
           if (establishmentRegex.test(myfile.data.substring(0,50))) {
             myDownloads.establishments = myfile.data;
             establishmentMetadata.filename = myfile.filename;
-            establishmentMetadata.filenameAndExtension = myfile.filenameAndExt;
             establishmentMetadata.fileType = 'Establishment';
             
                           
           } else if (workerRegex.test(myfile.data.substring(0,50))) {
             myDownloads.workers = myfile.data;
             workerMetadata.filename = myfile.filename;
-            workerMetadata.filenameAndExtension = myfile.filenameAndExt;
             workerMetadata.fileType = 'Worker';    
 
           } else if (trainingRegex.test(myfile.data.substring(0,50))) {
             myDownloads.trainings = myfile.data;
             trainingMetadata.filename = myfile.filename;
-            trainingMetadata.filenameAndExtension = myfile.filenameAndExt;
             trainingMetadata.fileType = 'Training';
           }        
         })
@@ -148,8 +142,8 @@ router.route('/validate').put(async (req, res) => {
       }
 
   } catch (err) {
-    console.error(err);
-    return res.status(503).send({});
+      console.error(err);
+      return res.status(503).send({});
   }
 });
 
@@ -174,23 +168,20 @@ router.route('/validate').post(async (req, res) => {
 
     if (establishmentRegex.test(req.body.establishments.csv.substring(0,50))) {
       let key = req.body.establishments.filename;
-      establishmentMetadata.filename = key.match(filenameRegex)[2];
-      establishmentMetadata.filenameAndExtension = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
+      establishmentMetadata.filename = key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3];
       establishmentMetadata.fileType = 'Establishment';
                    
     } 
     if (workerRegex.test(req.body.workers.csv.substring(0,50))) {
       let key = req.body.workers.filename;
-      workerMetadata.filename = key.match(filenameRegex)[2];
-      workerMetadata.filenameAndExtension = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
+      workerMetadata.filename = key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3];
       workerMetadata.fileType = 'Worker';    
 
     } 
     
     if (trainingRegex.test(req.body.training.csv.substring(0,50))) {
       let key = req.body.training.filename;
-      trainingMetadata.filename = key.match(filenameRegex)[2];
-      trainingMetadata.filenameAndExtension = key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3];
+      trainingMetadata.filename = key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3];
       trainingMetadata.fileType = 'Training';
     }        
 
@@ -219,8 +210,8 @@ router.route('/validate').post(async (req, res) => {
     }
 
   } catch (err) {
-    console.error(err);
-    return res.status(503).send({});
+      console.error(err);
+      return res.status(503).send({});
   }
 });
 
@@ -236,8 +227,7 @@ async function downloadContent(key) {
       const objData = await s3.getObject(params).promise();      
       return {
         data: objData.Body.toString(), 
-        filename: key.match(filenameRegex)[2],
-        filenameAndExt:key.match(filenameRegex)[2] + '.' + key.match(filenameRegex)[3], 
+        filename: key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3],
      };
 
     } catch (err) {
@@ -351,8 +341,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
       myTrainings.push(lineValidator);
     });
   } else {
-    console.error("No training records");
-    status = false;
+      console.error("No training records");
+      status = false;
   }
   training.trainingMetadata.records = trainingRecords;
 
@@ -370,7 +360,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
     //console.error('NM DEBUG Worker validation errors: ', csvWorkerSchemaErrors)
     //console.error('NM DEBUG Training validation errors: ', csvTrainingSchemaErrors)
 
-    // upload the validation reports to S3
+    // upload the validation to S3
     commit ? await uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/${establishments.establishmentMetadata.filename}.validation.json`) : true;
     commit ? await uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/${workers.workerMetadata.filename}.validation.json`) : true;
     commit ? await uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/${training.trainingMetadata.filename}.validation.json`) : true;
