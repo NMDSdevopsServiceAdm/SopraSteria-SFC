@@ -15,11 +15,11 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './staff-details.component.html',
 })
 export class StaffDetailsComponent extends QuestionComponent implements OnInit, OnDestroy {
-  private jobRoleCharacterLimit = 120;
-
   public contractsAvailable: Array<string> = [];
   public jobsAvailable: Job[] = [];
   public showInputTextforOtherRole: boolean;
+
+  private otherJobRoleCharacterLimit = 120;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -34,7 +34,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.form = this.formBuilder.group({
       nameOrId: [null, Validators.required],
       mainJob: [null, Validators.required],
-      jobRole: [null, [Validators.maxLength(this.jobRoleCharacterLimit)]],
+      otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
       contract: [null, Validators.required],
     });
   }
@@ -54,7 +54,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.form.patchValue({
       nameOrId: this.worker.nameOrId,
       mainJob: this.worker.mainJob.jobId,
-      jobRole: this.worker.mainJob.other,
+      otherJobRole: this.worker.mainJob.other,
       contract: this.worker.contract,
     });
 
@@ -83,11 +83,11 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         ],
       },
       {
-        item: 'jobRole',
+        item: 'otherJobRole',
         type: [
           {
             name: 'maxlength',
-            message: `Character limit of ${this.jobRoleCharacterLimit} exceeded.`,
+            message: `Enter your job role must be ${this.otherJobRoleCharacterLimit} characters or less.`
           },
         ],
       },
@@ -104,14 +104,14 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   generateUpdateProps() {
-    const { nameOrId, contract, mainJob, jobRole } = this.form.controls;
+    const { nameOrId, contract, mainJob, otherJobRole } = this.form.controls;
 
     const props = {
       nameOrId: nameOrId.value,
       contract: contract.value,
       mainJob: {
         jobId: parseInt(mainJob.value, 10),
-        ...(jobRole.value && { other: jobRole.value }),
+        ...(otherJobRole.value && { other: otherJobRole.value }),
       },
     };
 
@@ -137,14 +137,9 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   selectedJobRole(id: number) {
     this.showInputTextforOtherRole = false;
-    const job = this.getJob({ jobs: this.jobsAvailable, jobId: id });
-    if (job && job.other) {
+    const otherJob = this.jobsAvailable.find(job => job.id === +id);
+    if (otherJob && otherJob.other) {
       this.showInputTextforOtherRole = true;
     }
-  }
-
-  getJob(params) {
-    const { jobs, jobId } = params;
-    return jobs.find(job => job.id === +jobId);
   }
 }

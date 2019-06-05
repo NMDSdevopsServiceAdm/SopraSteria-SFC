@@ -11,54 +11,47 @@
       <span id="otherJobRoles-hint" class="govuk-hint">
         Select all that apply.
       </span>
-      <div class="govuk-checkboxes" formArrayName="selectedJobRoles">
-        <!-- <div
-          *ngFor="let job of form.get('selectedJobRoles').controls; let idx = index"
-          class="govuk-checkboxes__item"
-          [formGroupName]="idx">
-          <input
-            class="govuk-checkboxes__input"
-            id="selectedJobRole-{{ idx }}"
-            name="jobRole"
-            type="checkbox"
-            (change)="onChange(job)"
-            [checked]="job.value.checked"
-            [value]="job.value.id"/>
-          <label class="govuk-label govuk-checkboxes__label" for="selectedJobRole-{{ idx }}">
-            {{ job.value.title }}
-          </label>
-        </div> -->
-
+      <div class="govuk-checkboxes">
         <ng-container *ngFor="let job of form.get('selectedJobRoles').controls; let idx = index">
           <div
-            class="govuk-checkboxes__item"
-            [formGroupName]="idx">
+            class="govuk-checkboxes__item">
             <input
               class="govuk-checkboxes__input"
-              id="selectedJobRole-{{ idx }}"
+              id="selectedJobRole-{{ job.value.jobId }}"
               name="jobRole"
               type="checkbox"
               (change)="onChange(job)"
               [checked]="job.value.checked"
-              [value]="job.value.id"/>
-            <label class="govuk-label govuk-checkboxes__label" for="selectedJobRole-{{ idx }}">
+              [value]="job.value.jobId"/>
+            <label class="govuk-label govuk-checkboxes__label" for="selectedJobRole-{{ job.value.jobId }}">
               {{ job.value.title }}
             </label>
           </div>
-          <!-- && allowForOtherJobRole() -->
           <div
             class="govuk-checkboxes__conditional"
             [class.govuk-checkboxes__conditional--hidden]="!job.value.checked"
-            *ngIf="showforOtherJobRole"
-            id="conditional-selectedJobRole-{{ idx }}">
+            *ngIf="showforOtherJobRole(job)"
+            id="otherSelectedJobRole-conditional-{{ idx }}">
             <div class="govuk-form-group">
-              <label class="govuk-label" for="other-selectedJobRole-{{ idx }}">
+              <label class="govuk-label" for="otherSelectedJobRole-{{ job.value.jobId }}">
                 Enter your job role
               </label>
+              <span
+                id="otherSelectedJobRole-error"
+                class="govuk-error-message"
+                *ngIf="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid"
+              >
+              <span class="govuk-visually-hidden">Error:</span>
+                {{ getFormErrorMessage('otherSelectedJobRole' + job.value.jobId, 'maxlength') }}
+              </span>
               <input
                 class="govuk-input govuk-!-width-one-third"
-                id="other-selectedJobRole-{{ idx }}"
-                type="text">
+                id="otherSelectedJobRole-{{ job.value.jobId }}"
+                name="otherSelectedJobRole{{ job.value.jobId }}"
+                type="text"
+                formControlName="otherSelectedJobRole{{ job.value.jobId }}"
+                [class.govuk-input--error]="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid"
+                spellcheck="false">
             </div>
           </div>
         </ng-container>

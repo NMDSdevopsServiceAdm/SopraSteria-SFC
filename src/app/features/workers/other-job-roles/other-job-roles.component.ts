@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
-import { FormArray, FormBuilder } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, Validators  } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Job } from '@core/model/job.model';
-
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
@@ -15,7 +16,9 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class OtherJobRolesComponent extends QuestionComponent {
 
-  showforOtherJobRole: boolean;
+  public availableJobRoles: Job[];
+  public serverError: string;
+  private otherJobRoleCharacterLimit = 120;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -34,20 +37,37 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
   init() {
     this.subscriptions.add(
-      this.jobService.getJobs().subscribe(jobRoles => {
-        const availableJobRoles: Job[] = jobRoles.filter(j => j.id !== this.worker.mainJob.jobId);
+      this.jobService.getJobs().subscribe(
+        jobRoles => {
+          this.availableJobRoles = jobRoles.filter(j => j.id !== this.worker.mainJob.jobId);
 
-        // TODO: This does not really allow fall back for non-javascript form submissions
-        availableJobRoles.map(job => {
-          const control = this.formBuilder.control({
-            jobId: job.id,
-            title: job.title,
-            other: this.worker.mainJob.other,
-            checked: this.worker.otherJobs ? this.worker.otherJobs.some(o => o.jobId === job.id) : false
+          // TODO: This does not really allow fall back for non-javascript form submissions
+          this.availableJobRoles.map(job => {
+            const otherJob = this.worker.otherJobs && this.worker.otherJobs.find(o => o.jobId === job.id);
+            const control = this.formBuilder.control({
+              jobId: job.id,
+              title: job.title,
+              checked: otherJob ? true : false,
+            });
+
+            (this.form.controls.selectedJobRoles as FormArray).push(control);
+
+            if (job.other) {
+              this.form.addControl(
+                `otherSelectedJobRole${job.id}`,
+                new FormControl(
+                  otherJob ? otherJob.other : '',
+                  [Validators.maxLength(this.otherJobRoleCharacterLimit)]
+                )
+              );
+            }
           });
-          (this.form.controls.selectedJobRoles as FormArray).push(control);
-        });
-      })
+        },
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.errorSummaryService.scrollToErrorSummary();
+        }
+      )
     );
 
     this.previous = ['/worker', this.worker.uid, 'main-job-start-date'];
@@ -55,9 +75,15 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
   generateUpdateProps() {
     const { selectedJobRoles } = this.form.value;
-
     return {
-      otherJobs: selectedJobRoles.filter(j => j.checked).map(j => ({ jobId: j.jobId, title: j.title })),
+      otherJobs: selectedJobRoles.filter(j => j.checked).map(j => {
+        const otherValue = this.form.get(`otherSelectedJobRole${j.jobId}`).value;
+        return {
+          jobId: j.jobId,
+          title: j.title,
+          other: otherValue
+        };
+      })
     };
   }
 
@@ -69,8 +95,12 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
   onChange(control) {
     control.value.checked = !control.value.checked;
-    this.showforOtherJobRole = control.value.jobId === 19;
+  }
 
-
+  showforOtherJobRole(control): boolean {
+    const selectedJobRole = this.availableJobRoles.find(
+      job => job.id === control.value.jobId
+    );
+    return selectedJobRole && selectedJobRole.other;
   }
 }

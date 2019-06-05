@@ -1,6 +1,5 @@
 export interface Job {
-  jobId: number;
-  id?: number;
+  id: number;
   title?: string;
   other?: boolean;
 }
