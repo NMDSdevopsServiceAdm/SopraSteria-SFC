@@ -92,28 +92,28 @@
 
           <div
             class="govuk-form-group"
-            [class.govuk-form-group--error]="staffRecord.get('jobRole').invalid && staffRecord.get('jobRole').touched"
+            [class.govuk-form-group--error]="staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched"
             *ngIf="showInputTextforOtherRole">
-            <label class="govuk-label" for="jobRole">
+            <label class="govuk-label" for="otherJobRole">
               Enter your job role
             </label>
             <span
-              *ngIf="staffRecord.get('jobRole').invalid && staffRecord.get('jobRole').touched"
+              *ngIf="staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched"
               class="govuk-error-message"
-              id="jobRole-{{ i }}-error">
+              id="otherJobRole-{{ i }}-error">
               <span class="govuk-visually-hidden">Error:</span>
-              Character limit of {{jobRoleCharacterLimit}} exceeded.
+              Enter your job role must be {{this.otherJobRoleCharacterLimit}} characters or less.
             </span>
-            <span id="jobRole-hint" class="govuk-hint">
+            <span id="otherJobRole-hint" class="govuk-hint">
               Optional
             </span>
             <input
               class="govuk-input govuk-input--width-20"
-              formControlName="jobRole"
-              id="jobRole-conditional"
-              name="jobRole"
+              formControlName="otherJobRole"
+              id="otherJobRole-conditional"
+              name="otherJobRole"
               type="text"
-              aria-describedby="jobRole-hint"
+              aria-describedby="otherJobRole-hint"
             />
           </div>
 
