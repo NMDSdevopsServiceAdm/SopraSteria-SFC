@@ -94,7 +94,11 @@ router.route('/validate').put(async (req, res) => {
     const createModelPromises = [];
 
     data.Contents.forEach(myFile => {
-      createModelPromises.push(  downloadContent(myFile.Key) );
+      const ignoreMetaDataObjects = /.*metadata.json$/;
+      const ignoreRoot = /.*\/$/;
+      if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
+        createModelPromises.push(  downloadContent(myFile.Key) );
+      }
     });
     
     await Promise.all(createModelPromises).then(function(values){
