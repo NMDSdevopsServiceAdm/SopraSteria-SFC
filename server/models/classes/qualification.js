@@ -611,8 +611,8 @@ class Qualification {
         const myDefaultJSON = {
             uid:  this.uid,
             workerUid: this._workerUid,
-            created: this.created.toJSON(),
-            updated: this.updated.toJSON(),
+            created: this.created ? this.created.toJSON() : null,
+            updated: this.updated ? this.updated.toJSON() : null,
             updatedBy: this.updatedBy,
             qualification: this.qualification,
             year: this.year !== null ? this.year : undefined,

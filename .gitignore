@@ -45,5 +45,9 @@ Thumbs.db
 # node v10+ c8 coverage reporting
 /coverage
 
-package-lock.json
-/*.csv
+./package-lock.json
+*/package-lock.json
+
+# localhost config variations
+/server/config/localhost.*.yaml
+/server/config/localhost-*.yaml
