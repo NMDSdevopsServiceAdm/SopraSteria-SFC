@@ -151,6 +151,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"EmployerTypeChangedBy"'
     },
+    EmployerTypeOther: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      primaryKey: false,
+      field: '"EmployerTypeOther"'
+    },
     NumberOfStaffValue: {
       type: DataTypes.INTEGER,
       allowNull: true,
