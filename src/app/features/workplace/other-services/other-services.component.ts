@@ -66,6 +66,10 @@ export class OtherServicesComponent extends Question {
           new FormControl(null, [Validators.maxLength(this.additionalOtherServiceMaxLength)])
         );
 
+        if (service.otherName) {
+          this.form.get(`additionalOtherService${service.id}`).setValue(service.otherName);
+        }
+
         this.formErrorsMap.push({
           item: `additionalOtherService${service.id}`,
           type: [

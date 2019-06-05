@@ -3,6 +3,7 @@ export interface Service {
   isMyService?: boolean;
   name: string;
   other?: boolean;
+  otherName?: string;
 }
 
 export interface ServiceGroup {

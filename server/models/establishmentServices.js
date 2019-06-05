@@ -13,6 +13,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true,
       field: '"ServiceID"'
+    },
+    other: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      primaryKey: false,
+      field: '"Other"'
     }
   }, {
     tableName: '"EstablishmentServices"',
