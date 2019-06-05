@@ -42,6 +42,7 @@ export class OtherServicesComponent extends Question {
             group.services.map(service => {
               if (service.isMyService) {
                 this.form.get('otherServices').value.push(service.id);
+                this.form.get(`additionalOtherService${service.id}`).setValue(service.otherName);
               }
             });
           });
