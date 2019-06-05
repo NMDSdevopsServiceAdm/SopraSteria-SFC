@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, DoCheck } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, Validators  } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -19,7 +19,6 @@ export class OtherJobRolesComponent extends QuestionComponent {
   public availableJobRoles: Job[];
   public serverError: string;
   public jobsWithOtherRole: JobRole[] = [];
-  public renderForm = false;
   private otherJobRoleCharacterLimit = 120;
 
   constructor(
@@ -50,7 +49,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
             if (job.other) {
               this.jobsWithOtherRole.push({
                 jobId: job.id,
-                other: otherJob ? otherJob.other: ''
+                other: otherJob ? otherJob.other : '',
               });
             }
 
@@ -81,10 +80,10 @@ export class OtherJobRolesComponent extends QuestionComponent {
     this.jobsWithOtherRole.forEach((job: JobRole) => {
       this.form.addControl(
         `otherSelectedJobRole${job.jobId}`,
-        new FormControl(
-          job.other,
-          [Validators.maxLength(this.otherJobRoleCharacterLimit)]
-        )
+        new FormControl(job.other, {
+          validators: Validators.maxLength(this.otherJobRoleCharacterLimit),
+          updateOn: 'blur'
+        })
       );
 
       this.formErrorsMap.push({
@@ -94,11 +93,9 @@ export class OtherJobRolesComponent extends QuestionComponent {
             name: 'maxlength',
             message: `Enter your job role must be ${this.otherJobRoleCharacterLimit} characters or less`,
           },
-        ]
+        ],
       });
     });
-
-    this.renderForm = true;
   }
 
   generateUpdateProps() {
@@ -114,7 +111,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
           };
         }
 
-        return { jobId: j.jobId }
+        return { jobId: j.jobId };
       })
     };
   }
