@@ -176,6 +176,7 @@ class Training {
         // training category
         const validatedTrainingRecord = {};
         if (document.trainingCategory) {
+
             // validate category
             if (!(document.trainingCategory.id || document.trainingCategory.category)) {
                 this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
@@ -195,7 +196,8 @@ class Training {
                     return thisCategory.category === document.trainingCategory.category
                 });
             }
-            if (foundCategory === null) {
+
+            if (foundCategory === null || foundCategory === undefined) {
                 this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
                 return false;
             } else {
@@ -311,7 +313,7 @@ class Training {
                 throw new Error('Failed Validation');
             }
         } catch (err) {
-            this._log(Training.LOG_ERROR, `Training::load - failed: ${err}`);
+            this._log(Training.LOG_ERROR, `Training::load - error: ${err}`);
             throw new Error('Failed Validation');
         }
         return this.isValid();
@@ -661,8 +663,8 @@ class Training {
         const myDefaultJSON = {
             uid:  this.uid,
             workerUid: this._workerUid,
-            created: this.created.toJSON(),
-            updated: this.updated.toJSON(),
+            created: this.created ? this.created.toJSON() : undefined,
+            updated: this.updated ? this.updated.toJSON() : undefined,
             updatedBy: this.updatedBy,
             trainingCategory: this.category,
             title: this.title ? this.title : undefined,

@@ -24,6 +24,7 @@ class Establishment {
     this._shareWithLA = null;
     this._localAuthorities = null;
 
+    this._regType = null;
     this._provID = null;
     this._locationID = null;
 
@@ -68,7 +69,8 @@ class Establishment {
   static get SHARE_WITH_CQC_ERROR() { return 1070; }
   static get SHARE_WITH_LA_ERROR() { return 1080; }
   static get LOCAL_AUTHORITIES_ERROR() { return 1090; }
-  static get PROV_ID_ERROR() { return 1100; }
+  static get REGTYPE_ERROR() { return 1100; }
+  static get PROV_ID_ERROR() { return 1105; }
   static get LOCATION_ID_ERROR() { return 1110; }
   static get ALL_SERVICES_ERROR() { return 1120; }
   static get SERVICE_USERS_ERROR() { return 1130; }
@@ -156,6 +158,9 @@ class Establishment {
     return this._localAuthorities;
   }
 
+  get regType() {
+    return this._regType;
+  }
   get provId() {
     return this._provID;
   }
@@ -582,11 +587,28 @@ class Establishment {
     }
   }
 
+  _validateRegType() {
+    const myRegType = parseInt(this._currentLine.REGTYPE, 10);
+    if (Number.isNaN(myRegType) || myRegType < 0 || myRegType > 2) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Establishment.REGTYPE_ERROR,
+        errType: `REGTYPE_ERROR`,
+        error: "Registration Type (REGTYPE) must be given and must be either 0, 1 or 2",
+        source: myprovID,
+      });
+      return false;
+    } else {
+      this._regType = myRegType;
+      return true;
+    }
+  }
+
   _validateProvID() {
-    // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
+    // must be given if "REGTYPE" is 2 - but if given must be in the format "n-nnnnnnnnn"
     const provIDRegex = /^[0-9]{1}\-[0-9]{8}$/;
     const myprovID = this._currentLine.PROVNUM;
-    if (this._shareWithCqc && (!myprovID || myprovID.length==0)) {
+    if (this._regType && this._regType == 2 && (!myprovID || myprovID.length==0)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.PROV_ID_ERROR,
@@ -596,7 +618,7 @@ class Establishment {
       });
       return false;
     }
-    else if (this._shareWithCqc && !provIDRegex.test(myprovID)) {
+    else if (this._regType  && this._regType == 2 && !provIDRegex.test(myprovID)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.PROV_ID_ERROR,
@@ -605,7 +627,7 @@ class Establishment {
         source: myprovID,
       });
       return false;
-    } else if (this._shareWithCqc) {
+    } else if (this._regType) {
       this._provID = myprovID;
       return true;
     }
@@ -616,7 +638,7 @@ class Establishment {
     const locationIDRegex = /^[0-9]{1}-[0-9]{8}$/;
     const myLocationID = this._currentLine.PROVNUM;
 
-    if (this._shareWithCqc && (!myLocationID || myLocationID.length==0)) {
+    if (this._regType  && this._regType == 2 && (!myLocationID || myLocationID.length==0)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.LOCATION_ID_ERROR,
@@ -626,7 +648,7 @@ class Establishment {
       });
       return false;
     }
-    else if (this._shareWithCqc && !locationIDRegex.test(myLocationID)) {
+    else if (this._regType && this._regType == 2 && !locationIDRegex.test(myLocationID)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.LOCATION_ID_ERROR,
@@ -635,7 +657,7 @@ class Establishment {
         source: myLocationID,
       });
       return false;
-    } else if (this._shareWithCqc) {
+    } else if (this._regType) {
       this._locationID = myLocationID;
       return true;
     }
@@ -892,8 +914,22 @@ class Establishment {
       return false;
     }
 
-    this._capacities = listOfCapacities.map(thisCapacity => parseInt(thisCapacity, 10));
-    this._utilisations = listOfUtilisations.map(thisUtilisation => parseInt(thisUtilisation, 10));
+    this._capacities = listOfCapacities.map(thisCapacity => {
+      const intCapacity = parseInt(thisCapacity, 10);
+      if (isNaN(intCapacity)) {
+        return null;
+      } else {
+        return intCapacity;
+      }
+    });
+    this._utilisations = listOfUtilisations.map(thisUtilisation => {
+      const intUtilisation = parseInt(thisUtilisation, 10);
+      if (isNaN(intUtilisation)) {
+        return null;
+      } else {
+        return intUtilisation;
+      }
+    });
 
     return true;
   }
@@ -1072,6 +1108,7 @@ class Establishment {
         source: `${this._currentLine.OTHERDESC} - ${this._currentLine.ALLJOBROLES}`,
       });
     }
+
     if (vacancies.length !== allJobsCount) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -1287,7 +1324,7 @@ class Establishment {
 
   _validateReasonsForLeaving() {
     // only if the sum of "LEAVERS" is greater than 0
-    const sumOfLeavers = this._leavers.reduce((total, thisCount) => total+thisCount);
+    const sumOfLeavers = this._leavers ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
 
     if (sumOfLeavers > 0) {
       const allReasons = this._currentLine.REASONS.split(';');
@@ -1378,7 +1415,7 @@ class Establishment {
 
   _validateDestinationsOnLeaving() {
     // only if the sum of "LEAVERS" is greater than 0
-    const sumOfLeavers = this._leavers.reduce((total, thisCount) => total+thisCount);
+    const sumOfLeavers = this._leavers ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
 
     if (sumOfLeavers > 0) {
       const allDestinations = this._currentLine.DESTINATIONS.split(';');
@@ -1517,7 +1554,7 @@ class Establishment {
         }
       });
 
-      this._allServices = mappedServices;
+      this._allServiceUsers = mappedServices;
     }
   }
 
@@ -1566,6 +1603,77 @@ class Establishment {
     }
   }
 
+  _transformAllCapacities() {
+    if (this._capacities && Array.isArray(this._capacities)) {
+      const mappedCapacities = [];
+
+      // capacities start out as a positional array including nulls
+      //  where the position of the capacity correlates to the service (id) in the same
+      //  position in _allServices
+      this._capacities.forEach((thisCapacity, index) => {
+
+        // we're only interested in non null capacities to map
+        if (thisCapacity !== null) {
+          // we need to map from service id to service capacity id
+          const thisMappedCapacity = BUDI.capacity(BUDI.TO_ASC, this._allServices[index]);
+
+          if (thisMappedCapacity) {
+            mappedCapacities.push({
+              questionId: thisMappedCapacity,
+              answer: thisCapacity
+            });
+          } else {
+            this._validationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+              errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+              error: `Capacities (CAPACITY): position ${index+1} is unknown capacity`,
+              source: this._currentLine.CAPACITY,
+            });
+          }
+            
+        }
+      });
+
+      this._capacities = mappedCapacities;
+    }
+  }
+
+  _transformAllUtilisation() {
+    if (this._utilisations && Array.isArray(this._utilisations)) {
+      const mappedUtilisations = [];
+
+      // utilsiations start out as a positional array including nulls
+      //  where the position of the capacity correlates to the service (id) in the same
+      //  position in _allServices
+      this._utilisations.forEach((thisUtilisation, index) => {
+
+        // we're only interested in non null utilisations to map
+        if (thisUtilisation !== null) {
+          // we need to map from service id to service capacity id
+          const thisMappedUtilisation = BUDI.utilisation(BUDI.TO_ASC, this._allServices[index]);
+
+          if (thisMappedUtilisation) {
+            mappedUtilisations.push({
+              questionId: thisMappedUtilisation,
+              answer: thisUtilisation
+            });
+          } else {
+            this._validationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
+              errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+              error: `Utilisations (UTILISATION): position ${index+1} is unknown utilisation`,
+              source: this._currentLine.UTILISATION,
+            });
+          }
+        }
+      });
+
+      this._utilisations = mappedUtilisations;
+    }
+  }
+
   _transformAllJobs() {
     if (this._alljobs && Array.isArray(this._alljobs)) {
       const mappedJobs = [];
@@ -1588,6 +1696,36 @@ class Establishment {
 
       this._alljobs = mappedJobs;
     }
+  }
+
+  _transformAllVacanciesStartersLeavers() {
+    if (this._vacancies && Array.isArray(this._vacancies)) {
+      this._vacancies = this._vacancies.map((thisJob, index) => {
+        return {
+          jobId: this._alljobs[index],
+          total: thisJob  
+        };
+      });
+    }
+
+    if (this._starters && Array.isArray(this._starters)) {
+      this._starters = this._starters.map((thisJob, index) => {
+        return {
+          jobId: this._alljobs[index],
+          total: thisJob  
+        };
+      });
+    }
+
+    if (this._leavers && Array.isArray(this._leavers)) {
+      this._leavers = this._leavers.map((thisJob, index) => {
+        return {
+          jobId: this._alljobs[index],
+          total: thisJob  
+        };
+      });
+    }
+
   }
 
   _transformReasonsForLeaving() {
@@ -1667,11 +1805,9 @@ class Establishment {
     status = !this._validateShareWithLA() ? false : status;
     status = !this._validateLocalAuthorities() ? false : status;
 
-    // ignoring REGTYPE
-
+    status = !this._validateRegType() ? false : status;
     status = !this._validateProvID() ? false : status;
     status = !this._validateLocationID() ? false : status;
-
 
     status = !this._validateMainService() ? false : status;
     status = !this._validateAllServices() ? false : status;
@@ -1702,6 +1838,11 @@ class Establishment {
     status = !this._transformReasonsForLeaving() ? false : status;
     status = !this._transformDestinationsOnLeaving() ? false : status;
 
+    status = !this._transformAllCapacities() ? false : status;
+    status = !this._transformAllUtilisation() ? false : status;
+
+    status = !this._transformAllVacanciesStartersLeavers() ? false : status;
+
     return status;
   }
 
@@ -1715,8 +1856,9 @@ class Establishment {
       shareWithCQC: this._shareWithCqc,
       shareWithLA: this._shareWithLA,
       localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
-      locationId: this._shareWithCqc ? this._locationID : undefined,
-      provId: this._shareWithCqc ? this._provID : undefined,
+      regType: this._regType,
+      locationId: this._regType ? this._locationID : undefined,
+      provId: this._regType ? this._provID : undefined,
       mainService: {
         id: this._mainService
       },
@@ -1770,6 +1912,98 @@ class Establishment {
   get validationErrors() {
     return this._validationErrors;
   };
+
+  // returns an API representation of this Establishment
+  toAPI() {
+    const fixedProperties = {
+      Address: this._address,
+      Postcode: this._postcode,
+      LocationId: this._shareWithCqc ? this._locationID : undefined,
+      ProvId: this._shareWithCqc ? this._provID : undefined,        // this will be ignored by Establishment entity
+      IsCQCRegulated: this._regType !== null & this._regType === 2 ? true : false,
+    };
+
+    const changeProperties = {
+      name: this._name,
+      employerType: this._establishmentType,
+      employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
+      localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
+      mainService: {
+        id: this._mainService     // during BUDI lookup, it returns the main service as an id
+      },
+      services: this._allServices
+        .filter(thisService => thisService !== this._mainService)   // main service cannot appear in otherServices
+        .map((thisService, index) => {
+          const returnThis = {
+            id: thisService,
+          };
+
+          if (this._allServicesOther[index]) {
+            returnThis.other = this._allServicesOther[index];
+          }
+
+          return returnThis;
+        }),
+      serviceUsers: this._allServiceUsers
+        .map((thisService, index) => {
+          const returnThis = {
+            id: thisService,
+          };
+
+          if (this._allServiceUsersOther[index]) {
+            returnThis.other = this._allServiceUsersOther[index];
+          }
+
+          return returnThis;
+        }),
+      numberOfStaff: this._totalPermTemp,
+      jobs: {
+        vacancies: this._vacancies ? this._vacancies : undefined,
+        starters: this._starters ? this._starters : undefined,
+        leavers: this.leavers ? this.leavers : undefined,
+      }
+    };
+
+    // share options
+    if (this._shareWithCqc || this._shareWithLA) {
+      const shareWith = [];
+
+      if (this._shareWithCqc) {
+        shareWith.push('CQC');
+      }
+      if (this._shareWithLA) {
+        shareWith.push('Local Authority');
+      }
+
+      changeProperties.share = {
+        enabled: true,
+        with: shareWith
+      };
+
+    } else {
+      changeProperties.share = {
+        enabled: false
+      };
+    }
+
+    // capacities - we combine both capacities and utilisations
+    changeProperties.capacities = [];
+    this._capacities.forEach(thisCapacity => changeProperties.capacities.push(thisCapacity));
+    this._utilisations.forEach(thisUtilisation => changeProperties.capacities.push(thisUtilisation));
+
+    // clean up empty properties
+    if (changeProperties.capacities.length == 0) {
+      changeProperties.capacities = undefined;
+    }
+    if (changeProperties.services.length == 0) {
+      changeProperties.services = undefined;
+    }
+
+    return {
+      ...fixedProperties,
+      ...changeProperties,
+    };
+  }
 };
 
 module.exports.Establishment = Establishment;

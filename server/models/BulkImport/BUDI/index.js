@@ -4,6 +4,8 @@
 const dbmodels = require('../../../models');
 
 let ALL_CSSRS = null;
+let ALL_CAPACITIES = null;
+let ALL_UTILISATIONS = null;
 
 class BUDI {
   constructor() {
@@ -26,6 +28,34 @@ class BUDI {
           name: thisCssr.name
         };
       });
+    }
+
+
+    const capacitiesFetch = await dbmodels.serviceCapacity.findAll({
+      order: [
+        ['id', 'ASC']
+      ]
+    });
+
+    if (Array.isArray(capacitiesFetch)) {
+      ALL_CAPACITIES = capacitiesFetch
+        .filter(thisCapacity => thisCapacity.type === 'Capacity')
+        .map(thisCapacity => {
+          return {
+            serviceCapacityId: thisCapacity.id,
+            serviceId: thisCapacity.serviceId,
+          };
+        });
+
+      ALL_UTILISATIONS = capacitiesFetch
+        .filter(thisCapacity => thisCapacity.type === 'Utilisation')
+        .map(thisCapacity => {
+          return {
+            serviceCapacityId: thisCapacity.id,
+            serviceId: thisCapacity.serviceId,
+          };
+        });
+
     }
   }
 
@@ -609,6 +639,7 @@ class BUDI {
       { "ASC": 60, "BUDI": 534},
       { "ASC": 60, "BUDI": 535},
       { "ASC": 109, "BUDI": 897},
+      { "ASC": 60, "BUDI": 531},
     ];
 
     if (direction == BUDI.TO_ASC) {
@@ -873,6 +904,7 @@ class BUDI {
       { "ASC": 262, "BUDI" : 535},
       { "ASC": 263, "BUDI" : 897},
       { "ASC": 264, "BUDI" : 534},
+      { "ASC": 265, "BUDI" : 531},
     ];
 
     if (direction == BUDI.TO_ASC) {
@@ -1081,6 +1113,44 @@ class BUDI {
     } else {
       const found = fixedMapping.find(thisQualification => thisSpecialist.ASC == originalCode)
       return found ? found.BUDI : null;
+    }
+  }
+
+
+  static capacity(direction, originalCode) {
+    if (ALL_CAPACITIES) {
+      // capacities are assumed to be the first question for a given service id (originalCode)
+      const foundCapacity = ALL_CAPACITIES.find(thisCapacity => {
+        if (thisCapacity.serviceId === originalCode) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      // foundCapacity will be undefined if not found
+      return foundCapacity ? foundCapacity.serviceCapacityId : foundCapacity;
+
+    } else {
+      return null;
+    }
+  }
+
+  static utilisation(direction, originalCode) {
+    if (ALL_UTILISATIONS) {
+      const foundUtilisation = ALL_UTILISATIONS.find(thisCapacity => {
+        if (thisCapacity.serviceId === originalCode) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      // foundUtilisation will be undefined if not found
+      return foundUtilisation ? foundUtilisation.serviceCapacityId : foundUtilisation;
+
+    } else {
+      return null;
     }
   }
   

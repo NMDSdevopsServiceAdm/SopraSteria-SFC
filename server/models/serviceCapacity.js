@@ -22,7 +22,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false,
       field: '"Question"'
-    }
+    },
+    type: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ['Capacity', 'Utilisation'],
+      default: 'Capacity',
+      field: '"Type"'
+    },
   }, {
     tableName: '"ServicesCapacity"',
     schema: 'cqc',
