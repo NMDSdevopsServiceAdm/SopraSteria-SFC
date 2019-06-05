@@ -13,15 +13,15 @@
 </div>
 
 <form (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="renderForm">
-  <div class="govuk-form-group" *ngFor="let group of serviceGroups">
+  <div class="govuk-form-group" *ngFor="let workplace of workplaceCategories">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
         <h2 class="govuk-fieldset__heading">
-          {{ group.category }}
+          {{ workplace.category }}
         </h2>
       </legend>
       <div class="govuk-checkboxes">
-        <ng-container *ngFor="let service of group.services; let i = index">
+        <ng-container *ngFor="let service of workplace.services; let i = index">
           <div class="govuk-checkboxes__item">
             <input
               [attr.data-aria-controls]="'otherServices-conditional-' + i"
@@ -30,7 +30,7 @@
               name="otherServices"
               type="checkbox"
               [value]="service.id"
-              [checked]="service.isMyService"
+              [checked]="service.other"
               (change)="toggle($event.target)"
             />
             <label class="govuk-label govuk-checkboxes__label" for="otherServices-{{ service.id }}">
