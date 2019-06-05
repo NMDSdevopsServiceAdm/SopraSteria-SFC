@@ -264,7 +264,14 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
   myAPIEstablishments.push(thisApiEstablishment);
 };
 
-const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers) => {
+const _loadWorkerQualifications = async (thisQual, myAPIQualifications) => {
+  const thisApiQualification = new QualificationEntity();
+  const isValid = await thisApiQualification.load(thisQual);
+  console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
+  myAPIQualifications.push(thisApiQualification);
+};
+
+const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications) => {
   const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
@@ -281,11 +288,20 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
   myWorkers.push(lineValidator);
 
   const thisWorkerAsAPI = lineValidator.toAPI();
-  const thisApiWorker = new WorkerEntity();
 
+  // construct Worker entity
+  const thisApiWorker = new WorkerEntity();
   const isValid = await thisApiWorker.load(thisWorkerAsAPI);
   //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
   myAPIWorkers.push(thisApiWorker);
+
+  // construct Qualification entities (can be multiple of a single Worker record)
+  const thisQualificationAsAPI = lineValidator.toQualificationAPI();
+  await Promise.all(
+    thisQualificationAsAPI.map((thisQual) => {
+      return _loadWorkerQualifications(thisQual, myAPIQualifications);
+    }) 
+  );
 };
 
 // if commit is false, then the results of validation are not uploaded to S3
@@ -311,7 +327,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   if (Array.isArray(workers.imported) && workers.imported.length > 0) {
     await Promise.all(
       workers.imported.map((thisLine, currentLineNumber) => {
-        return _validateWorkerCsv(thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers);
+        return _validateWorkerCsv(thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications);
       }) 
     );
   } else {

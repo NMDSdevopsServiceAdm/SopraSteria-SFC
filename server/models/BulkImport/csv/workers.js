@@ -2093,9 +2093,10 @@ class Worker {
         jobId: this._mainJobRole,
         other: this._mainJobDesc,
       },
-      otherJobs: this._otherJobs ? this._otherJobs.map(thisJob => {
+      otherJobs: this._otherJobs ? this._otherJobs.map((thisJob, index) => {
           return {
-            jobId: thisJob
+            jobId: thisJob,
+            other: this._otherJobsOther && this._otherJobsOther[index] ? this._otherJobsOther[index] : undefined,
           };
         }) : undefined,
       mainJobStartDate: this._startDate ? this._startDate.format('YYYY-MM-DD') : undefined,
@@ -2261,6 +2262,29 @@ class Worker {
 
     return changeProperties;
   };
+
+  // returns an array of Qualification mapped API entities - can be an array array if no qualifications
+  toQualificationAPI() {
+    const myMappedQuals = [];
+
+    this._qualifications ? this._qualifications.forEach(thisQual => {
+      console.log("WA DEBUG - this qualification: ", thisQual)
+
+      const changeProperties = {
+        type: undefined,        // the qualification type does not come from bulk upload
+        qualification : {
+          id: thisQual.id,
+        },
+        year: thisQual.year ? thisQual.year : undefined,
+        other: undefined,     // "other" qualifier does not come from bulk import
+        notes: thisQual.desc ? thisQual.desc : undefined,
+      };
+
+      myMappedQuals.push(changeProperties);  
+    }) : true;
+
+    return myMappedQuals;
+  }
 
   get validationErrors() {
     return this._validationErrors;
