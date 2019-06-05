@@ -131,7 +131,7 @@ class Training {
         return false;
       } else {
 
-        this._dateCompleted = myDateCompleted;
+        this._dateCompleted = actualDate;
         return true;
       }
     } else {
@@ -167,7 +167,7 @@ class Training {
         return false;
       } else {
 
-        this._expiry = myDateExpiry;
+        this._expiry = actualDate;
         return true;
       }
     } else {
@@ -242,12 +242,17 @@ class Training {
       });
       return false;
     } else {
-      this._accredited = myAccredited;
+      switch (myAccredited) {
+        case 0:
+          this._accredited = 'No';
+          break;
+        case 1:
+          this._accredited = 'Yes';
+          break;
+      }
       return true;
     }
   }
-
-
 
   _transformTrainingCategory() {
     if (this._category) {
@@ -293,12 +298,31 @@ class Training {
     return {
       localeStId: this._localeStId,
       uniqueWorkerId: this._uniqueWorkerId,
-      compeleted: this._dateCompleted ? this._dateCompleted : undefined,
-      expiry: this._expiry ? this._expiry : undefined,
+      completed: this._dateCompleted ? this._dateCompleted.format('DD/MM/YYYY') : undefined,
+      expiry: this._expiry ? this._expiry.format('DD/MM/YYYY') : undefined,
       description: this._description,
       category: this._category,
       accredited: this._accredited,
     };
+  };
+
+  toAPI() {
+    const TITLE_MAX_LENGTH=120;
+
+    // split the description between ASCWDS `title` and `notes`.
+
+    const changeProperties = {
+      trainingCategory: {
+        id: this._category
+      },
+      completed: this._dateCompleted ? this._dateCompleted.format('YYYY-MM-DD') : undefined,
+      expires: this._expiry ? this._expiry.format('YYYY-MM-DD') : undefined,
+      title: this._description ? this._description.substring(0,TITLE_MAX_LENGTH) : undefined,
+      notes: this._description && this._description.length > TITLE_MAX_LENGTH ? this._description.substring(TITLE_MAX_LENGTH-1) : undefined,
+      accredited: this._accredited ? this._accredited : undefined,
+    };
+
+    return changeProperties;
   };
 
   get validationErrors() {

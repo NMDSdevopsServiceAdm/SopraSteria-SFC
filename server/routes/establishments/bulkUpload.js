@@ -251,17 +251,21 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
   const thisEstablishmentAsAPI = lineValidator.toAPI();
   const thisApiEstablishment = new EstablishmentEntity();
 
-  thisApiEstablishment.initialise(
-    thisEstablishmentAsAPI.Address,
-    thisEstablishmentAsAPI.LocationId,
-    thisEstablishmentAsAPI.Postcode,
-    thisEstablishmentAsAPI.IsCQCRegulated,
-    'A0000000000'       // TODO: remove this once Establishment::initialise is resolving NDMS ID based on given postcode
-    );
-
-  const isValid = await thisApiEstablishment.load(thisEstablishmentAsAPI);
-  //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
-  myAPIEstablishments.push(thisApiEstablishment);
+  try {
+    thisApiEstablishment.initialise(
+      thisEstablishmentAsAPI.Address,
+      thisEstablishmentAsAPI.LocationId,
+      thisEstablishmentAsAPI.Postcode,
+      thisEstablishmentAsAPI.IsCQCRegulated,
+      'A0000000000'       // TODO: remove this once Establishment::initialise is resolving NDMS ID based on given postcode
+      );
+  
+    const isValid = await thisApiEstablishment.load(thisEstablishmentAsAPI);
+    //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
+    myAPIEstablishments.push(thisApiEstablishment);
+  } catch (err) {
+    console.error("WA - localised error until validation card");
+  }
 };
 
 const _loadWorkerQualifications = async (thisQual, myAPIQualifications) => {
@@ -278,7 +282,6 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
   lineValidator.validate();
   lineValidator.transform();
 
-  // TODO - not sure this is necessary yet - we can just iterate the collection of Establishments at the end to create the validation JSON document
   if (lineValidator.validationErrors.length > 0) {
     csvWorkerSchemaErrors.push(lineValidator.validationErrors);
   }
@@ -291,17 +294,48 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
 
   // construct Worker entity
   const thisApiWorker = new WorkerEntity();
-  const isValid = await thisApiWorker.load(thisWorkerAsAPI);
-  //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
-  myAPIWorkers.push(thisApiWorker);
 
-  // construct Qualification entities (can be multiple of a single Worker record)
-  const thisQualificationAsAPI = lineValidator.toQualificationAPI();
-  await Promise.all(
-    thisQualificationAsAPI.map((thisQual) => {
-      return _loadWorkerQualifications(thisQual, myAPIQualifications);
-    }) 
-  );
+  try {
+    const isValid = await thisApiWorker.load(thisWorkerAsAPI);
+    //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
+    myAPIWorkers.push(thisApiWorker);
+  
+    // construct Qualification entities (can be multiple of a single Worker record)
+    const thisQualificationAsAPI = lineValidator.toQualificationAPI();
+    await Promise.all(
+      thisQualificationAsAPI.map((thisQual) => {
+        return _loadWorkerQualifications(thisQual, myAPIQualifications);
+      }) 
+    );  
+  } catch (err) {
+    console.error("WA - localised error until validation card");
+  }
+};
+
+const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings) => {
+  const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
+
+  // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
+  lineValidator.validate();
+  lineValidator.transform();
+
+  if (lineValidator.validationErrors.length > 0) {
+    csvTrainingSchemaErrors.push(lineValidator.validationErrors);
+  }
+
+  //console.log("WA DEBUG - this training csv record: ", lineValidator.toJSON());
+  // console.log("WA DEBUG - this training API record: ", JSON.stringify(lineValidator.toAPI(), null, 4));
+  myTrainings.push(lineValidator);
+
+  const thisTrainingAsAPI = lineValidator.toAPI();
+  const thisApiTraining = new TrainingEntity();
+  try {
+    const isValid = await thisApiTraining.load(thisTrainingAsAPI);
+    // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
+    myAPITrainings.push(thisApiTraining);  
+  } catch (err) {
+    console.error("WA - localised error until validation card");
+  }
 };
 
 // if commit is false, then the results of validation are not uploaded to S3
@@ -337,20 +371,11 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
 
   // parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0) {
-    training.imported.forEach((thisLine, currentLineNumber) => {
-      const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
-
-      // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
-      lineValidator.validate();
-      lineValidator.transform();
-
-      if (lineValidator.validationErrors.length > 0) {
-        csvTrainingSchemaErrors.push(lineValidator.validationErrors);
-      }
-
-      myTrainings.push(lineValidator);
-      //console.log("WA DEBUG - this training: ", lineValidator.toJSON());
-    });
+    await Promise.all(
+      training.imported.map((thisLine, currentLineNumber) => {
+        return _validateTrainingCsv(thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
+      }) 
+    );
   } else {
     console.error("No training records");
     status = false;
