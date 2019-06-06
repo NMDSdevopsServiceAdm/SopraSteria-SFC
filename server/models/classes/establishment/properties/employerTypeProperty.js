@@ -23,10 +23,7 @@ exports.EmployerTypeProperty = class EmployerTypeProperty extends ChangeProperty
                     other: (ALLOWED_EMPLOYER_OTHER_TYPES.includes(document.employerType.value) && document.employerType.other && document.employerType.other.length <= OTHER_MAX_LENGTH) ? document.employerType.other : null
                 }
             } else {
-               this.property = {
-                   value: null,
-                   other: null
-               };
+               this.property = null;
             }
         }
 
