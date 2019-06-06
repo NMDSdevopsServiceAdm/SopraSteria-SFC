@@ -17,16 +17,16 @@ exports.EmployerTypeProperty = class EmployerTypeProperty extends ChangeProperty
     // concrete implementations
     async restoreFromJson(document) {
         if (document.employerType) {
-            if (ALLOWED_EMPLOYER_TYPES.includes(document.employerType.value)) {
+            if (ALLOWED_EMPLOYER_TYPES.includes(document.employerType.value) &&
+                (!document.employerType.other || (ALLOWED_EMPLOYER_OTHER_TYPES.includes(document.employerType.value) && document.employerType.other && document.employerType.other.length <= OTHER_MAX_LENGTH))) {
                 this.property = {
                     value: document.employerType.value,
-                    other: (ALLOWED_EMPLOYER_OTHER_TYPES.includes(document.employerType.value) && document.employerType.other && document.employerType.other.length <= OTHER_MAX_LENGTH) ? document.employerType.other : null
+                    other: document.employerType.other ? document.employerType.other : null
                 }
             } else {
                this.property = null;
             }
         }
-
     }
 
     restorePropertyFromSequelize(document) {
