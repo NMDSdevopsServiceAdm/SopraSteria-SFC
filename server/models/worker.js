@@ -870,6 +870,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: 'LeaveReasonOther'
     },
+    MainJobFkOther: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: 'MainJobFkOther'
+    }
   }, {
     tableName: '"Worker"',
     schema: 'cqc',
@@ -878,7 +883,7 @@ module.exports = function(sequelize, DataTypes) {
   });
 
   Worker.associate = (models) => {
-    Worker.belongsTo(models.establishment, {
+    Worker.belongsTo(models.establishment, {  
       foreignKey: 'establishmentFk',
       targetKey: 'id',
       as: 'establishment'

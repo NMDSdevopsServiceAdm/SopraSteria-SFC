@@ -50,7 +50,8 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
             otherJobsDocument.otherJobs = document.otherJobs.map(thisJob => {
                 return {
                     jobId: thisJob.workerJobs.jobFk,
-                    title: thisJob.title
+                    title: thisJob.title,
+                    other: thisJob.workerJobs.other ? thisJob.workerJobs.other : undefined
                 };
             });
         }
@@ -67,7 +68,8 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
             otherJobsDocument.additionalModels = {
                 workerJobs : this.property.otherJobs.map(thisJob => {
                     return {
-                        jobFk : thisJob.jobId
+                        jobFk : thisJob.jobId,
+                        other: thisJob.other ? thisJob.other : null
                     };
                 })
             };
@@ -95,7 +97,8 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                     //  current value, and confirm it is in the the new data set.
                     //  Array.every will drop out on the first iteration to return false
                     arraysEqual = currentValue.otherJobs.every(thisJob => {
-                        return newValue.otherJobs.find(newJob => newJob.jobId === thisJob.jobId);
+                        return newValue.otherJobs.find(newJob => newJob.jobId === thisJob.jobId 
+                            && ((newJob.other === thisJob.other) || (!newJob.other && !thisJob.other)) );
                     });
                 } else {
                     // if the arrays are lengths are not equal, then we know they're not equal
@@ -158,14 +161,14 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                     where: {
                         id: thisJob.jobId
                     },
-                    attributes: ['id', 'title'],
+                    attributes: ['id', 'title', 'other'],
                 });
             } else {
                 referenceJob = await models.job.findOne({
                     where: {
                         title: thisJob.title
                     },
-                    attributes: ['id', 'title'],
+                    attributes: ['id', 'title', 'other'],
                 });
             }
 
@@ -174,7 +177,8 @@ exports.WorkerOtherJobsProperty = class WorkerOtherJobsProperty extends ChangePr
                 if (!setOfValidatedJobs.find(thisJob => thisJob.jobId === referenceJob.id)) {
                     setOfValidatedJobs.push({
                         jobId: referenceJob.id,
-                        title: referenceJob.title
+                        title: referenceJob.title,
+                        other: (referenceJob.other && thisJob.other) ? thisJob.other : undefined
                     });    
                 }
             } else {
