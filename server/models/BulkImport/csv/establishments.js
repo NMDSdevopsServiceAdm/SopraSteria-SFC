@@ -595,7 +595,7 @@ class Establishment {
         errCode: Establishment.REGTYPE_ERROR,
         errType: `REGTYPE_ERROR`,
         error: "Registration Type (REGTYPE) must be given and must be either 0, 1 or 2",
-        source: myprovID,
+        source: this._currentLine.REGTYPE,
       });
       return false;
     } else {
@@ -606,7 +606,7 @@ class Establishment {
 
   _validateProvID() {
     // must be given if "REGTYPE" is 2 - but if given must be in the format "n-nnnnnnnnn"
-    const provIDRegex = /^[0-9]{1}\-[0-9]{8}$/;
+    const provIDRegex = /^[0-9]{1}\-[0-9]{8,10}$/;
     const myprovID = this._currentLine.PROVNUM;
     if (this._regType && this._regType == 2 && (!myprovID || myprovID.length==0)) {
       this._validationErrors.push({
@@ -635,7 +635,7 @@ class Establishment {
 
   _validateLocationID() {
     // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
-    const locationIDRegex = /^[0-9]{1}-[0-9]{8}$/;
+    const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
     const myLocationID = this._currentLine.PROVNUM;
 
     if (this._regType  && this._regType == 2 && (!myLocationID || myLocationID.length==0)) {
@@ -888,23 +888,31 @@ class Establishment {
     }
 
     // all capacities and all utilisations are integers (if given)
-    const areCapacitiesValid = listOfCapacities.every(thisCapacity => thisCapacity === null || thisCapacity.length==0 ? true : !Number.isNaN(parseInt(thisCapacity)));
+    // capacities and utilisations must be less than 999999999
+    const MAX_CAP_UTIL=999999999;
+    const areCapacitiesValid = listOfCapacities.every(thisCapacity => {
+      return thisCapacity === null ||
+             thisCapacity.length==0 ? true : !Number.isNaN(parseInt(thisCapacity)) &&  parseInt(thisCapacity) < MAX_CAP_UTIL
+    });
     if (!areCapacitiesValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
         errType: `CAPACITY_UTILISATION_USERS_ERROR`,
-        error: "All capacities (CAPACITY) must be integers",
+        error: `All capacities (CAPACITY) must be integers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.CAPACITY,
       });
     }
-    const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => thisUtilisation === null || thisUtilisation.length==0 ? true : !Number.isNaN(parseInt(thisUtilisation)));
+    const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => {
+      thisUtilisation === null ||
+      thisUtilisation.length==0 ? true : !Number.isNaN(parseInt(thisUtilisation) || parseInt(thisUtilisation) < MAX_CAP_UTIL)
+    });
     if (!areUtilisationsValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
         errType: `CAPACITY_UTILISATION_USERS_ERROR`,
-        error: "All utilisations (UTILISATION) must be integers",
+        error: `All utilisations (UTILISATION) must be integers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.UTILISATION,
       });
     }
@@ -936,6 +944,7 @@ class Establishment {
 
   _validateTotalPermTemp() {
     // mandatory
+    const MAX_TOTAL = 999;
     const myTotalPermTemp = parseInt(this._currentLine.TOTALPERMTEMP);
 
     if (Number.isNaN(myTotalPermTemp)) {
@@ -947,13 +956,13 @@ class Establishment {
         source: this._currentLine.PERMCQC,
       });
       return false;
-    } else if (myTotalPermTemp < 0) {
+    } else if (myTotalPermTemp < 0 || myTotalPermTemp > MAX_TOTAL) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.TOTAL_PERM_TEMP_ERROR,
         errType: `TOTAL_PERM_TEMP_ERROR`,
-        error: "Total Permanent and Temporary (TOTALPERMTEMP) must be 0 or more",
-        source: myShareWithCqc,
+        error: `Total Permanent and Temporary (TOTALPERMTEMP) must be 0 or more, but less than ${MAX_TOTAL}`,
+        source: myTotalPermTemp,
       });
       return false;
     } else {
@@ -1506,7 +1515,18 @@ class Establishment {
 
   _transformMainService() {
     if (this._mainService) {
-      this._mainService = BUDI.services(BUDI.TO_ASC, this._mainService);
+      const mappedService = BUDI.services(BUDI.TO_ASC, this._mainService);
+      if (mappedService) {
+        this._mainService = mappedService;
+      } else {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.MAIN_SERVICE_ERROR,
+          errType: `MAIN_SERVICE_ERROR`,
+          error: `Main Service (MAINSERVICE): ${this._mainService} is unknown`,
+          source: this._currentLine.MAINSERVICE,
+        });
+      }
     }
   }
 
@@ -1988,8 +2008,8 @@ class Establishment {
 
     // capacities - we combine both capacities and utilisations
     changeProperties.capacities = [];
-    this._capacities.forEach(thisCapacity => changeProperties.capacities.push(thisCapacity));
-    this._utilisations.forEach(thisUtilisation => changeProperties.capacities.push(thisUtilisation));
+    this._capacities &&Array.isArray(this._capacities) ? this._capacities.forEach(thisCapacity => changeProperties.capacities.push(thisCapacity)) : true;
+    this._utilisations && Array.isArray(this._utilisations) ? this._utilisations.forEach(thisUtilisation => changeProperties.capacities.push(thisUtilisation)) : true;
 
     // clean up empty properties
     if (changeProperties.capacities.length == 0) {
