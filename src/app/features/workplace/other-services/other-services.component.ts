@@ -9,7 +9,7 @@ import { Service } from '@core/model/services.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { filter } from 'lodash';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { Service, WorkplaceCategory } from '@core/model/workplace.model';
+import { Service, ServiceGroup } from '@core/model/workplace.model';
 
 @Component({
   selector: 'app-other-services',
@@ -20,7 +20,7 @@ export class OtherServicesComponent extends Question {
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];
   public renderForm = false;
-  public workplaceCategories: Array<WorkplaceCategory>;
+  public workplaceCategories: Array<ServiceGroup>;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -40,9 +40,9 @@ export class OtherServicesComponent extends Question {
   protected init() {
     this.subscriptions.add(
       this.workplaceService.getServicesByCategory(this.establishment.isRegulated).subscribe(
-        (workplaceCategories: Array<WorkplaceCategory>) => {
+        (workplaceCategories: Array<ServiceGroup>) => {
           this.workplaceCategories = workplaceCategories;
-          this.workplaceCategories.forEach((data: WorkplaceCategory) => this.allServices.push(...data.services));
+          this.workplaceCategories.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
           this.updateForm();
         },
         (error: HttpErrorResponse) => {
@@ -79,7 +79,7 @@ export class OtherServicesComponent extends Question {
 
   private preFillForm(): void {
     const allOtherServices = this.establishmentService.establishment.otherServices;
-    allOtherServices.forEach((data: WorkplaceCategory) => this.allOtherServices.push(...data.services));
+    allOtherServices.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
 
     this.allOtherServices.forEach((workplace: Service) => {
       if (workplace.other) {

@@ -5,7 +5,7 @@ import { LocationAddress, LocationSearchResponse } from '@core/model/location.mo
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
 import { SecurityDetails } from '@core/model/security-details.model';
-import { WorkplaceCategory, Service } from '@core/model/workplace.model';
+import { ServiceGroup, Service } from '@core/model/workplace.model';
 
 @Injectable({
   providedIn: 'root',

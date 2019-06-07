@@ -9,7 +9,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { WorkplaceCategory, Service } from '@core/model/workplace.model';
+import { ServiceGroup, Service } from '@core/model/workplace.model';
 import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
@@ -20,7 +20,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private otherServiceMaxLength = 120;
   private subscriptions: Subscription = new Subscription();
   private allServices: Array<Service> = [];
-  public categories: Array<WorkplaceCategory>;
+  public categories: Array<ServiceGroup>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public renderForm = false;
@@ -105,9 +105,9 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private getServicesByCategory(location: LocationAddress): void {
     this.subscriptions.add(
       this.workplaceService.getServicesByCategory(this.workplaceService.isRegulated(location)).subscribe(
-        (categories: Array<WorkplaceCategory>) => {
+        (categories: Array<ServiceGroup>) => {
           this.categories = categories;
-          this.categories.forEach((data: WorkplaceCategory) => this.allServices.push(...data.services));
+          this.categories.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
