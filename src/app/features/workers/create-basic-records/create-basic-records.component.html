@@ -93,7 +93,7 @@
           <div
             class="govuk-form-group"
             [class.govuk-form-group--error]="staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched"
-            *ngIf="showInputTextforOtherRole">
+            [class.govuk-select__conditional--hidden]="!showInputTextforOtherRole">
             <label class="govuk-label" for="otherJobRole">
               Enter your job role
             </label>
