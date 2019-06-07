@@ -19,6 +19,7 @@ export class TypeOfEmployerComponent extends Question {
     'Voluntary / Charity',
     'Other',
   ];
+  public maxLength = 120;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -31,13 +32,15 @@ export class TypeOfEmployerComponent extends Question {
 
     this.form = this.formBuilder.group({
       employerType: ['', Validators.required],
+      other: [null, Validators.maxLength(this.maxLength)],
     });
   }
 
   protected init(): void {
     if (this.establishment.employerType) {
       this.form.patchValue({
-        employerType: this.establishment.employerType,
+        employerType: this.establishment.employerType.value,
+        other: this.establishment.employerType.other,
       });
     }
 
@@ -56,15 +59,29 @@ export class TypeOfEmployerComponent extends Question {
           },
         ],
       },
+      {
+        item: 'other',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Other Employer type must be ${this.maxLength} characters or less`,
+          },
+        ],
+      },
     ];
   }
 
   generateUpdateProps() {
-    const { employerType } = this.form.value;
+    const { employerType, other } = this.form.value;
 
     return employerType
       ? {
-          employerType,
+          employerType: {
+            value: employerType,
+            ...(employerType === 'Other' && {
+              other,
+            }),
+          },
         }
       : null;
   }

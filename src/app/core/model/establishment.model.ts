@@ -80,7 +80,10 @@ export interface Establishment {
   updated: Date;
   updatedBy: string;
   mainService: MainService;
-  employerType: string;
+  employerType: {
+    value: string;
+    other: string;
+  };
   numberOfStaff: number;
   otherServices: any[];
   serviceUsers: ServiceUser[];
