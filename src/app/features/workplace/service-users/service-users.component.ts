@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Service, ServiceGroup } from '@core/model/services.model';
+import { getServiceUsersChecked, Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -17,6 +17,8 @@ import { Object } from 'aws-sdk/clients/s3';
 export class ServiceUsersComponent extends Question {
   public serviceUsersGroups: ServiceGroup[];
   private otherMaxLength = 120;
+  private ServiceUsersChecked: Array<Service> = [];
+  private itemId;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -34,23 +36,34 @@ export class ServiceUsersComponent extends Question {
   }
 
   protected init() {
-    this.subscriptions.add(
-      this.serviceUsersService.getServiceUsers(this.establishment.id).subscribe((serviceUsersGroups: ServiceGroup[]) => {
-        this.serviceUsersGroups = serviceUsersGroups;
-        this.serviceUsersGroups.map((group: ServiceGroup) => {
-          group.services.map((service: Service) => {
-            if (service.other === true) {
-              const itemId = `serviceUsers-other-${service.id}`;
-              this.setFormErrorsMap(itemId);
-              this.form.addControl(itemId, new FormControl('', Validators.maxLength(this.otherMaxLength)));
-            }
-            if (service.isMyService) {
-              this.form.get('serviceUsers').value.push(service.id);
-            }
+    this.establishmentService.getServiceUsersChecked(this.establishment.id).subscribe( (data: getServiceUsersChecked) => {
+      this.ServiceUsersChecked = data.serviceUsers;
+      this.subscriptions.add(
+        this.serviceUsersService.getServiceUsers(this.establishment.id).subscribe((serviceUsersGroups: ServiceGroup[]) => {
+          this.serviceUsersGroups = serviceUsersGroups;
+          this.serviceUsersGroups.map((group: ServiceGroup) => {
+            group.services.map((service: Service) => {
+              if (service.other === true) {
+                this.itemId = `serviceUsers-other-${service.id}`;
+                this.setFormErrorsMap(this.itemId);
+                this.form.addControl(this.itemId, new FormControl('', Validators.maxLength(this.otherMaxLength)));
+              }
+              this.ServiceUsersChecked.forEach((checked: Service) => {
+                if (service.id === checked.id) {
+                 this.form.get('serviceUsers').value.push(service.id);
+                 service.isMyService = true;
+                 if (service.other !== null) {
+                   if (this.form.controls[this.itemId]) {
+                     this.form.controls[this.itemId].setValue(checked.other);
+                   }
+                 }
+                }
+              });
+            });
           });
-        });
-      })
-    );
+        })
+      );
+    });
 
     this.next = ['/workplace', `${this.establishment.id}`, 'sharing-data'];
     this.subscriptions.add(
@@ -64,10 +77,6 @@ export class ServiceUsersComponent extends Question {
         },
         error => this.onError(error)
       )
-    );
-    this.establishmentService.getServiceUsersChecked(this.establishment.id).subscribe( (data) => {
-        console.log('establishmentService.data =>>',data);
-      }
     );
   }
 
@@ -124,7 +133,7 @@ export class ServiceUsersComponent extends Question {
         }
       }
     }
-    return serviceUsers;
+    return {serviceUsers: serviceUsers};
   }
 
   protected updateEstablishment(props) {

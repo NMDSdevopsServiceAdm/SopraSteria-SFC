@@ -11,6 +11,15 @@ export interface ServiceGroup {
   services: Service[];
 }
 
+export interface getServiceUsersChecked {
+  created: boolean;
+  id: number;
+  name: string;
+  serviceUsers: Service[];
+  uid: string;
+  updated: boolean;
+}
+
 export interface Services {
   value: Service;
   index: number;
