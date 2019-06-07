@@ -64,7 +64,7 @@ export class TypeOfEmployerComponent extends Question {
         type: [
           {
             name: 'maxlength',
-            message: 'MAX LENGTH',
+            message: `Other Employer type must be ${this.maxLength} characters or less`,
           },
         ],
       },
