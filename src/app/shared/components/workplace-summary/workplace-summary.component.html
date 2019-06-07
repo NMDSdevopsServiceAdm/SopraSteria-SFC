@@ -33,20 +33,12 @@
           <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.employerType === 'Yes'">
-          {{
-            workplace.employerType?.other !== null
-              ? worker.employerType.other
-              : worker.employerType.value || '-'
-          }}
+          {{ !!workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value || '-' }}
         </ng-container>
       </ng-container>
 
       <ng-container *ngIf="!displayWDFReport">
-        {{
-          workplace.employerType?.other !== null
-            ? worker.employerType.other
-            : worker.employerType.value || '-'
-        }}
+        {{ !!workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value || '-' }}
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
