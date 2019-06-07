@@ -18,6 +18,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false,
       field: '"JobFK"'
+    },
+    other: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Other"'
     }
   }, {
     tableName: 'WorkerJobs',
