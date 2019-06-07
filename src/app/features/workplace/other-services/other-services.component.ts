@@ -2,14 +2,13 @@ import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { filter } from 'lodash';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Question } from '../question/question.component';
 import { Router } from '@angular/router';
-import { Service } from '@core/model/services.model';
-import { HttpErrorResponse } from '@angular/common/http';
-import { filter } from 'lodash';
+import { Service, ServiceGroup } from '@core/model/services.model';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { Service, ServiceGroup } from '@core/model/workplace.model';
 
 @Component({
   selector: 'app-other-services',

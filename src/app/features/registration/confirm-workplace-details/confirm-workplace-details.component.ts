@@ -2,8 +2,8 @@ import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
+import { Service } from '@core/model/services.model';
 import { Subscription } from 'rxjs';
-import { Service } from '@core/model/workplace.model';
 
 @Component({
   selector: 'app-confirm-workplace-details',

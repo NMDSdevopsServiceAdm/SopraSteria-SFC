@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { ServiceGroup } from '@core/model/workplace.model';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
+import { Observable } from 'rxjs';
+import { ServiceGroup } from '@core/model/services.model';
 
 @Injectable({
   providedIn: 'root'

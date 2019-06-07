@@ -8,8 +8,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
+import { Service, ServiceGroup } from '@core/model/services.model';
 import { Subscription } from 'rxjs';
-import { ServiceGroup, Service } from '@core/model/workplace.model';
 import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
