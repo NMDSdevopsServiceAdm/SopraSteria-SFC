@@ -30,7 +30,14 @@ interface EmployerTypeResponse {
   name: string;
   employerType: {
     value: string;
-    other: string;
+    other?: string;
+  };
+}
+
+interface EmployerTypeRequest {
+  employerType: {
+    value: string;
+    other?: string;
   };
 }
 
@@ -159,8 +166,8 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/establishment/${establishmentId}/serviceUsers`, data);
   }
 
-  updateTypeOfEmployer(establishmentId, data) {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/employerType`, data);
+  updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest) {
+    return this.http.post<EmployerTypeResponse>(`/api/establishment/${establishmentId}/employerType`, data);
   }
 
   updateOtherServices(establishmentId, data: PostServicesModel) {
