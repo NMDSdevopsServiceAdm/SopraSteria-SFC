@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Subscription } from 'rxjs';
-import { Workplace } from '@core/model/workplace.model';
+import { Service } from '@core/model/workplace.model';
 
 @Component({
   selector: 'app-confirm-workplace-details',
@@ -12,7 +12,7 @@ import { Workplace } from '@core/model/workplace.model';
 export class ConfirmWorkplaceDetailsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   protected locationAddress: LocationAddress;
-  protected workplaceService: Workplace;
+  protected workplaceService: Service;
 
   constructor(
     private backService: BackService,
@@ -33,7 +33,7 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.registrationService.selectedWorkplaceService$.subscribe(
-        (workplaceService: Workplace) => this.workplaceService = workplaceService
+        (workplaceService: Service) => this.workplaceService = workplaceService
       )
     );
   }

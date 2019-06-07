@@ -9,7 +9,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { WorkplaceCategory, Workplace } from '@core/model/workplace.model';
+import { WorkplaceCategory, Service } from '@core/model/workplace.model';
 import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
@@ -19,12 +19,12 @@ import { WorkplaceService } from '@core/services/workplace.service';
 export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private otherServiceMaxLength = 120;
   private subscriptions: Subscription = new Subscription();
-  private allServices: Array<Workplace> = [];
+  private allServices: Array<Service> = [];
   public categories: Array<WorkplaceCategory>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public renderForm = false;
-  public selectedWorkplace: Workplace;
+  public selectedWorkplace: Service;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
@@ -94,7 +94,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
 
   private getSelectedWorkplace(): void {
     this.subscriptions.add(
-      this.registrationService.selectedWorkplaceService$.subscribe((workplace: Workplace) => {
+      this.registrationService.selectedWorkplaceService$.subscribe((workplace: Service) => {
         if (workplace) {
           this.selectedWorkplace = workplace;
         }
@@ -123,7 +123,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
    * Also update formErrorsMap in order to add maxlength validation
    */
   private updateForm(): void {
-    this.allServices.forEach((service: Workplace) => {
+    this.allServices.forEach((service: Service) => {
       if (service.other) {
         this.form.addControl(
           `otherWorkplaceService${service.id}`,
@@ -161,9 +161,9 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     this.renderForm = true;
   }
 
-  private getSelectedWorkPlaceService(): Workplace {
+  private getSelectedWorkPlaceService(): Service {
     const selectedWorkPlaceServiceId: number = parseInt(this.form.get('workplaceService').value, 10);
-    const workplaceService: Workplace = filter(this.allServices, { id: selectedWorkPlaceServiceId })[0];
+    const workplaceService: Service = filter(this.allServices, { id: selectedWorkPlaceServiceId })[0];
 
     if (workplaceService.other) {
       workplaceService.otherName = this.form.get(`otherWorkplaceService${selectedWorkPlaceServiceId}`).value;

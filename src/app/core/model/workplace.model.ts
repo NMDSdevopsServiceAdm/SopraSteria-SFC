@@ -1,12 +1,6 @@
-export interface Workplace {
-  id: number;
-  isCQC: boolean;
-  name: string;
-  other?: boolean;
-  otherName?: string;
-}
+import { Service } from '@core/model/services.model';
 
 export interface WorkplaceCategory {
   category: string;
-  services: Array<Workplace>;
+  services: Array<Service>;
 }

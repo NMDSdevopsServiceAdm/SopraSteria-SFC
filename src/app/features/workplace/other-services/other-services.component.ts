@@ -9,7 +9,7 @@ import { Service } from '@core/model/services.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { filter } from 'lodash';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { Workplace, WorkplaceCategory } from '@core/model/workplace.model';
+import { Service, WorkplaceCategory } from '@core/model/workplace.model';
 
 @Component({
   selector: 'app-other-services',
@@ -17,8 +17,8 @@ import { Workplace, WorkplaceCategory } from '@core/model/workplace.model';
 })
 export class OtherServicesComponent extends Question {
   private additionalOtherServiceMaxLength = 120;
-  private allServices: Array<Workplace> = [];
-  private allOtherServices: Array<Workplace> = [];
+  private allServices: Array<Service> = [];
+  private allOtherServices: Array<Service> = [];
   public renderForm = false;
   public workplaceCategories: Array<WorkplaceCategory>;
 
@@ -57,7 +57,7 @@ export class OtherServicesComponent extends Question {
   }
 
   private updateForm(): void {
-    this.allServices.forEach((workplace: Workplace) => {
+    this.allServices.forEach((workplace: Service) => {
       if (workplace.other) {
         this.form.addControl(
           `additionalOtherService${workplace.id}`,
@@ -81,7 +81,7 @@ export class OtherServicesComponent extends Question {
     const allOtherServices = this.establishmentService.establishment.otherServices;
     allOtherServices.forEach((data: WorkplaceCategory) => this.allOtherServices.push(...data.services));
 
-    this.allOtherServices.forEach((workplace: Workplace) => {
+    this.allOtherServices.forEach((workplace: Service) => {
       if (workplace.other) {
         this.form.get('otherServices').value.push(workplace.id);
         this.form.get(`additionalOtherService${workplace.id}`).setValue(workplace.other);
