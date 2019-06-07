@@ -45,26 +45,17 @@
           Main service provided
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ workplaceService.name }}
+          <ng-template [ngIf]="workplaceService.otherName" [ngIfElse]="showName">
+            {{ workplaceService.otherName }}
+          </ng-template>>
+          <ng-template #showName>
+            {{ workplaceService.name }}
+          </ng-template>
         </dd>
         <dd class="govuk-summary-list__actions">
           <a [routerLink]="['/registration/select-main-service']" class="govuk-link">
             Change
             <span class="govuk-visually-hidden"> main service</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row" *ngIf="workplaceService.otherName">
-        <dt class="govuk-summary-list__key">
-          Other service provided
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ workplaceService.otherName }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/select-main-service']" class="govuk-link">
-            Change
-            <span class="govuk-visually-hidden"> other service</span>
           </a>
         </dd>
       </div>
