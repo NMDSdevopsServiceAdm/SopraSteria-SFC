@@ -1,9 +1,8 @@
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { UploadFile, ValidatedFilesResponse, ValidateStatus } from '@core/model/bulk-upload.model';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -14,7 +13,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private uploadedFiles: Array<UploadFile>;
   public isValidating = false;
 
-  constructor(private bulkUploadService: BulkUploadService, private errorSummaryService: ErrorSummaryService) {}
+  constructor(private bulkUploadService: BulkUploadService) {}
 
   ngOnInit() {
     this.setupSubscription();
@@ -32,28 +31,31 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   public validateFiles(): void {
     this.isValidating = true;
-    this.uploadedFiles.map((file: UploadFile) => file.status = ValidateStatus.In_Progress);
+    this.uploadedFiles.map((file: UploadFile) => file.status = ValidateStatus.Validating);
 
     this.subscriptions.add(
       this.bulkUploadService.validateFiles().subscribe(
         (response: ValidatedFilesResponse) => {
-          this.isValidating = false;
+          this.finishValidating(response);
         },
         (response: HttpErrorResponse) => {
-          this.isValidating = false;
-          console.clear();
-          console.log(response.error);
-          // TODO
-          // this.serverError = this.errorSummaryService.getServerErrorMessage(
-          //   error.status,
-          //   this.bulkUploadService.serverErrorsMap()
-          // );
-          // this.errorSummaryService.scrollToErrorSummary();
+          this.finishValidating(response);
         }, () => {
-          this.isValidating = false;
+          this.finishValidating();
         }
       )
     );
+  }
+
+  /**
+   * TODO update once BE api is able to return a 200 response on successful validate
+   * as well as once BE api is able to provide erros back on a file
+   * @param response
+   */
+  private finishValidating(response?: ValidatedFilesResponse | HttpErrorResponse): void {
+    this.isValidating = false;
+    console.clear();
+    console.log(response);
   }
 
   ngOnDestroy() {
