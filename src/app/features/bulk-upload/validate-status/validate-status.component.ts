@@ -7,6 +7,6 @@ import { ValidateStatus } from '@core/model/bulk-upload.model';
   styleUrls: ['./validate-status.component.scss']
 })
 export class ValidateStatusComponent {
-  public statusEnums = ValidateStatus;
+  public statusEnum = ValidateStatus;
   @Input() public status: ValidateStatus;
 }

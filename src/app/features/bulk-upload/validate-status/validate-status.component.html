@@ -1,8 +1,8 @@
 <p
   class="govuk-!-margin-0 govuk-!-padding-top-1 govuk-!-padding-right-2 govuk-!-padding-bottom-1 govuk-!-padding-left-2"
-  [class.govuk-validate-status--validating]="status === statusEnums.Validating"
-  [class.govuk-validate-status--pass]="status === statusEnums.Pass"
-  [class.govuk-validate-status--fail]="status === statusEnums.Fail"
+  [class.govuk-validate-status--validating]="status === statusEnum.Validating"
+  [class.govuk-validate-status--pass]="status === statusEnum.Pass"
+  [class.govuk-validate-status--fail]="status === statusEnum.Fail"
 >
   <ng-template [ngIf]="status" [ngIfElse]="idle">
     {{ status }}
