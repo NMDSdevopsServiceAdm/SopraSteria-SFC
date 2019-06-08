@@ -4,6 +4,11 @@
   background: $jaffa;
 }
 
+.govuk-validate-status--pass,
+.govuk-validate-status--fail {
+  color: $white;
+}
+
 .govuk-validate-status--pass {
   background: $funGreen;
 }
