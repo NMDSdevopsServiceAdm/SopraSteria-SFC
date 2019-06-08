@@ -1,14 +1,13 @@
-$alert: #f47738;
-$success: #00823b;
+@import '../partials/colors';
 
 .govuk-inset-text {
   &.todo {
     border-color: $alert;
-    background-color: rgba($alert, 0.25);
+    background-color: rgba($jaffa, 0.25);
   }
 
   &.success {
     border-color: $success;
-    background-color: rgba($success, 0.25);
+    background-color: rgba($funGreen, 0.25);
   }
 }
