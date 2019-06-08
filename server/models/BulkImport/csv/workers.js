@@ -115,11 +115,10 @@ class Worker {
   static get QUAL_ACH_ERROR() { return 5035; }
   static get QUAL_ACH01_ERROR() { return 5040; }
   static get QUAL_ACH01_NOTES_ERROR() { return 5050; }
-  static get QUAL_ACH02_ERROR() { return 1060; }
+  static get QUAL_ACH02_ERROR() { return 5060; }
   static get QUAL_ACH02_NOTES_ERROR() { return 5070; }
   static get QUAL_ACH03_ERROR() { return 5080; }
   static get QUAL_ACH03_NOTES_ERROR() { return 5090; }
-
       
   get local() {
     return this._localId;
@@ -730,7 +729,7 @@ class Worker {
     const careCertValues = [1, 2, 3];
     const myCareCert = parseInt(this._currentLine.CARECERT);
 
-    if (myCareCert && this._currentLine.CARECERT.length > 0) {
+    if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
       if (isNaN(myCareCert)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
@@ -897,7 +896,7 @@ class Worker {
     const myApprentice = parseInt(this._currentLine.APPRENTICE, 10);
 
     // optional
-    if (myApprentice) {
+    if (this._currentLine.APPRENTICE && this._currentLine.APPRENTICE.length) {
       if (isNaN(myApprentice)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
@@ -1057,7 +1056,7 @@ class Worker {
   }
 
   _validateSalaryInt() {
-    const salaryIntValues = [1, 3, 4];
+    const salaryIntValues = [1, 3];
     const mySalaryInt = parseInt(this._currentLine.SALARYINT, 10);
 
     // optional
@@ -1076,7 +1075,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
           errType: 'SALARYINT_ERROR',
-          error: "Salary int (SALARYINT) value must 1(Annual Salary), 3(Hourly Rate) or 4(Unpaid)",
+          error: "Salary int (SALARYINT) value must 1(Annual Salary) or 3(Hourly Rate)",
           source: this._currentLine.SALARYINT,
         });
         return false;
@@ -1107,11 +1106,21 @@ class Worker {
 
     // optional
     if (this._currentLine.SALARY.length > 0) {
-      if (isNaN(mySalary) || !digitRegex.test(this._currentLine.SALARY)) {
+      // can only give (annual) salary if salary interval (SALARYINT) is annual
+      if (this._salaryInt === null || this._salaryInt !== 'Annually') {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
-          errType: 'Salary_ERROR',
+          errType: 'SALARY_ERROR',
+          error: "Salary (SALARY) only relevant if salary intervakl (SALARYINT) is Annual (1)",
+          source: `SALARYINT (${this._currentLine.SALARYINT}) - SALARY (${this._currentLine.SALARY})`,
+        });
+        return false;
+      } else if (isNaN(mySalary) || !digitRegex.test(this._currentLine.SALARY)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.SALARY_ERROR,
+          errType: 'SALARY_ERROR',
           error: "Salary (SALARY) must be an integer an upto 9 digits",
           source: this._currentLine.SALARY,
         });
@@ -1132,7 +1141,18 @@ class Worker {
 
     // optional
     if (this._currentLine.HOURLYRATE && this._currentLine.HOURLYRATE.length > 0) {
-      if (isNaN(myHourlyRate) || !digitRegex.test(this._currentLine.HOURLYRATE)) {
+      // can only give (annual) salary if salary interval (SALARYINT) is hourly
+      console.log("WA DEBUG - salary: ", this._salaryInt, Number.isInteger(this._salaryInt))
+      if (this._salaryInt === null || this._salaryInt !== 'Hourly') {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.HOURLY_RATE_ERROR,
+          errType: 'HOURLY_RATE_ERROR',
+          error: "Salary (HOURLYRATE) only relevant if salary intervakl (SALARYINT) is Hourly (3)",
+          source: `SALARYINT(${this._currentLine.SALARYINT}) - HOURLYRATE (${this._currentLine.HOURLYRATE})`,
+        });
+        return false;
+      } else if (isNaN(myHourlyRate) || !digitRegex.test(this._currentLine.HOURLYRATE)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.HOURLY_RATE_ERROR,
