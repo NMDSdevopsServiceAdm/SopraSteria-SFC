@@ -39,14 +39,20 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
       this.bulkUploadService.exposeForm$.subscribe((form: FormGroup) => {
         if (form) {
           this.form = form;
-          this.showErrorSummary = form.invalid ? true : false;
+          this.showErrorSummary = form.invalid;
           this.errorSummaryService.syncFormErrorsEvent.next(true);
         }
       })
     );
   }
 
+  /**
+   * Unsubscribe to ensure no memory leaks
+   * And set selected files to none otherwise
+   * on route revisit the selected files are cached
+   */
   ngOnDestroy() {
+    this.bulkUploadService.selectedFiles$.next(null);
     this.subscriptions.unsubscribe();
   }
 }
