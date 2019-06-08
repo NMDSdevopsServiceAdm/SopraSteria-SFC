@@ -1,7 +1,7 @@
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { UploadFile, ValidatedFilesResponse, ValidateStatus } from '@core/model/bulk-upload.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 
@@ -32,20 +32,25 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   public validateFiles(): void {
     this.isValidating = true;
+    this.uploadedFiles.map((file: UploadFile) => file.status = ValidateStatus.In_Progress);
 
     this.subscriptions.add(
       this.bulkUploadService.validateFiles().subscribe(
         (response: ValidatedFilesResponse) => {
           this.isValidating = false;
-          console.log(response);
         },
-        (error: HttpErrorResponse) => {
+        (response: HttpErrorResponse) => {
+          this.isValidating = false;
+          console.clear();
+          console.log(response.error);
           // TODO
           // this.serverError = this.errorSummaryService.getServerErrorMessage(
           //   error.status,
           //   this.bulkUploadService.serverErrorsMap()
           // );
           // this.errorSummaryService.scrollToErrorSummary();
+        }, () => {
+          this.isValidating = false;
         }
       )
     );

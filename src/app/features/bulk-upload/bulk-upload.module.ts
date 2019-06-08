@@ -12,6 +12,7 @@ import { SelectedFilesListComponent } from './selected-files-list/selected-files
 import { SharedModule } from '@shared/shared.module';
 import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.component';
 import { UploadedFilesListComponent } from './uploaded-files-list/uploaded-files-list.component';
+import { ValidateStatusComponent } from './validate-status/validate-status.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, BulkUploadRoutingModule],
@@ -24,6 +25,7 @@ import { UploadedFilesListComponent } from './uploaded-files-list/uploaded-files
     SelectedFilesListComponent,
     UploadDataFilesComponent,
     UploadedFilesListComponent,
+    ValidateStatusComponent,
   ],
   providers: [BulkUploadService]
 })

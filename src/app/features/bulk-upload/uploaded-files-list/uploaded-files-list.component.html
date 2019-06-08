@@ -15,12 +15,14 @@
       <td class="govuk-table__cell">-</td>
       <td class="govuk-table__cell">-</td>
       <td class="govuk-table__cell">
-        <ng-template [ngIf]="isValidating" [ngIfElse]="idle">
-          Validating...
-        </ng-template>
-        <ng-template #idle>
-          -
-        </ng-template>
+        {{ file.status }}
+
+<!--        <ng-template [ngIf]="isValidating" [ngIfElse]="idle">-->
+<!--          Validating...-->
+<!--        </ng-template>-->
+<!--        <ng-template #idle>-->
+<!--          - -->
+<!--        </ng-template>-->
       </td>
     </tr>
   </tbody>

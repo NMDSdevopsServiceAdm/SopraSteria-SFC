@@ -1,7 +1,7 @@
 export enum ValidateStatus {
-  Passed = 'Passed',
   Failed = 'Failed',
   In_Progress = 'In progress',
+  Passed = 'Passed',
 }
 
 
