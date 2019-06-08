@@ -53,6 +53,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
    * @param response
    */
   private finishValidating(response?: ValidatedFilesResponse | HttpErrorResponse): void {
+    this.uploadedFiles.map((file: UploadFile) => file.status = null);
     this.isValidating = false;
     console.clear();
     console.log(response);

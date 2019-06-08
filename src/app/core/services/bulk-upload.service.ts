@@ -41,15 +41,10 @@ export class BulkUploadService {
   }
 
   public validateFiles(): Observable<ValidatedFilesResponse> {
-    // TODO mock api - swap out with below once BE is ready
-    const errorMock = `http://www.mocky.io/v2/5cfb65d33000007f100a8b3d?mocky-delay=2000ms`;
-    const successMock = `http://www.mocky.io/v2/5cf66a70320000cf8c8cd282?mocky-delay=2000ms`;
-
-    return this.http.put<ValidatedFilesResponse>(errorMock, null);
-    // return this.http.put<ValidatedFilesResponse>(
-    //   `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/validate`,
-    //   null
-    // );
+    return this.http.put<ValidatedFilesResponse>(
+      `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/validate`,
+      null
+    );
   }
 
   public formErrorsMap(): Array<ErrorDetails> {
