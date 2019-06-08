@@ -2,9 +2,21 @@
   class="govuk-!-margin-0 govuk-!-padding-top-1 govuk-!-padding-right-2 govuk-!-padding-bottom-1 govuk-!-padding-left-2"
   [class.govuk-validate-status--validating]="status === statusEnum.Validating"
   [class.govuk-validate-status--pass]="status === statusEnum.Pass"
+  [class.govuk-util__align-center]="status === statusEnum.Pass"
   [class.govuk-validate-status--fail]="status === statusEnum.Fail"
+  [class.govuk-util__align-center]="status === statusEnum.Pass"
 >
   <ng-template [ngIf]="status" [ngIfElse]="idle">
+    <img
+      *ngIf="status === statusEnum.Pass"
+      class="govuk-!-padding-right-1"
+      src="/assets/images/tick-icon-white.svg"
+    />
+    <img
+      *ngIf="status === statusEnum.Fail"
+      class="govuk-!-padding-right-1"
+      src="/assets/images/cross-icon-white.svg"
+    />
     {{ status }}
   </ng-template>
   <ng-template #idle>
