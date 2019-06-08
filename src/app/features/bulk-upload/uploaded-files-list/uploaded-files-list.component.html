@@ -15,14 +15,7 @@
       <td class="govuk-table__cell">-</td>
       <td class="govuk-table__cell">-</td>
       <td class="govuk-table__cell">
-        {{ file.status }}
-
-<!--        <ng-template [ngIf]="isValidating" [ngIfElse]="idle">-->
-<!--          Validating...-->
-<!--        </ng-template>-->
-<!--        <ng-template #idle>-->
-<!--          - -->
-<!--        </ng-template>-->
+        <app-validate-status [status]="file.status"></app-validate-status>
       </td>
     </tr>
   </tbody>
