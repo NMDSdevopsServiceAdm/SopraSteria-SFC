@@ -1,13 +1,10 @@
+import { BehaviorSubject, Observable } from 'rxjs';
+import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
+import { Establishment } from '@core/model/establishment.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
-import { LocalAuthorityModel } from '../model/localAuthority.model';
 import { PostServicesModel } from '../model/postServices.model';
-import { AllServicesResponse, ServiceGroup, ServicesModel } from '../model/services.model';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -16,13 +13,6 @@ interface EstablishmentApiResponse {
 
 interface ShareOptionsResponse extends EstablishmentApiResponse {
   share: SharingOptionsModel;
-}
-interface ShareWithLocalAuthorityRequest {
-  localAuthorities: LocalAuthorityModel[];
-}
-interface ShareWithLocalAuthorityResponse extends EstablishmentApiResponse {
-  primaryAuthority: LocalAuthorityModel;
-  localAuthorities: LocalAuthorityModel[];
 }
 
 interface EmployerTypeResponse {
@@ -137,29 +127,8 @@ export class EstablishmentService {
     return this.http.get<ShareOptionsResponse>(`/api/establishment/${this.establishmentId}/share`);
   }
 
-  getLocalAuthorities() {
-    return this.http.get<ShareWithLocalAuthorityResponse>(
-      `/api/establishment/${this.establishmentId}/localAuthorities`
-    );
-  }
-
   getEmployerType() {
     return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`);
-  }
-
-  getAllServices(establishmentId): Observable<ServiceGroup[]> {
-    const params = new HttpParams().set('all', 'true');
-    return this.http
-      .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
-      .pipe(map(res => res.allOtherServices));
-  }
-
-  getCurrentServices() {
-    return this.http.get<ServicesModel>(`/api/establishment/${this.establishmentId}/services?all=false`);
-  }
-
-  getServiceUsersChecked(establishmentId) {
-    return this.http.get<any>(`/api/establishment/${establishmentId}/serviceUsers`);
   }
 
   updateServiceUsers(establishmentId, data) {

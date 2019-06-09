@@ -8,9 +8,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { LocationAddress } from '@core/model/location.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
+import { Service, ServiceGroup } from '@core/model/services.model';
 import { Subscription } from 'rxjs';
-import { WorkplaceCategory } from '@core/model/workplace-category.model';
-import { WorkplaceService } from '@core/model/workplace-service.model';
+import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
   selector: 'app-select-main-service',
@@ -19,12 +19,12 @@ import { WorkplaceService } from '@core/model/workplace-service.model';
 export class SelectMainServiceComponent implements OnInit, OnDestroy {
   private otherServiceMaxLength = 120;
   private subscriptions: Subscription = new Subscription();
-  private allServices: Array<WorkplaceService> = [];
-  public categories: Array<WorkplaceCategory>;
+  private allServices: Array<Service> = [];
+  public categories: Array<ServiceGroup>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public renderForm = false;
-  public selectedWorkplace: WorkplaceService;
+  public selectedWorkplace: Service;
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
@@ -34,7 +34,8 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private fb: FormBuilder,
     private registrationService: RegistrationService,
-    private router: Router
+    private router: Router,
+    private workplaceService: WorkplaceService,
   ) {}
 
   ngOnInit() {
@@ -93,7 +94,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
 
   private getSelectedWorkplace(): void {
     this.subscriptions.add(
-      this.registrationService.selectedWorkplaceService$.subscribe((workplace: WorkplaceService) => {
+      this.registrationService.selectedWorkplaceService$.subscribe((workplace: Service) => {
         if (workplace) {
           this.selectedWorkplace = workplace;
         }
@@ -102,13 +103,11 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   }
 
   private getServicesByCategory(location: LocationAddress): void {
-    const isRegulated: boolean = this.registrationService.isRegulated(location);
-
     this.subscriptions.add(
-      this.registrationService.getServicesByCategory(isRegulated).subscribe(
-        (categories: Array<WorkplaceCategory>) => {
+      this.workplaceService.getServicesByCategory(this.workplaceService.isRegulated(location)).subscribe(
+        (categories: Array<ServiceGroup>) => {
           this.categories = categories;
-          this.categories.forEach((data: WorkplaceCategory) => this.allServices.push(...data.services));
+          this.categories.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
@@ -124,7 +123,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
    * Also update formErrorsMap in order to add maxlength validation
    */
   private updateForm(): void {
-    this.allServices.forEach((service: WorkplaceService) => {
+    this.allServices.forEach((service: Service) => {
       if (service.other) {
         this.form.addControl(
           `otherWorkplaceService${service.id}`,
@@ -162,9 +161,9 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     this.renderForm = true;
   }
 
-  private getSelectedWorkPlaceService(): WorkplaceService {
+  private getSelectedWorkPlaceService(): Service {
     const selectedWorkPlaceServiceId: number = parseInt(this.form.get('workplaceService').value, 10);
-    const workplaceService: WorkplaceService = filter(this.allServices, { id: selectedWorkPlaceServiceId })[0];
+    const workplaceService: Service = filter(this.allServices, { id: selectedWorkPlaceServiceId })[0];
 
     if (workplaceService.other) {
       workplaceService.otherName = this.form.get(`otherWorkplaceService${selectedWorkPlaceServiceId}`).value;

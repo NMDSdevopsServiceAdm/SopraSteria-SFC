@@ -10,10 +10,10 @@ import { RegistrationPayload } from '@core/model/registration.model';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { SecurityDetails } from '@core/model/security-details.model';
+import { Service } from '@core/model/services.model';
 import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
 import { UserService } from '@core/services/user.service';
-import { WorkplaceService } from '@core/model/workplace-service.model';
 
 @Component({
   selector: 'app-confirm-account-details',
@@ -30,7 +30,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
   private submitted = false;
   private subscriptions: Subscription = new Subscription();
   private userDetails: UserDetails;
-  private workplaceService: WorkplaceService;
+  private workplaceService: Service;
 
   constructor(
     private backService: BackService,
@@ -68,7 +68,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.registrationService.selectedWorkplaceService$.subscribe(
-        (workplaceService: WorkplaceService) => (this.workplaceService = workplaceService)
+        (workplaceService: Service) => (this.workplaceService = workplaceService)
       )
     );
 
