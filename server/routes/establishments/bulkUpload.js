@@ -94,7 +94,11 @@ router.route('/validate').put(async (req, res) => {
     const createModelPromises = [];
 
     data.Contents.forEach(myFile => {
-      createModelPromises.push(  downloadContent(myFile.Key) );
+      const ignoreMetaDataObjects = /.*metadata.json$/;
+      const ignoreRoot = /.*\/$/;
+      if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
+        createModelPromises.push(  downloadContent(myFile.Key) );
+      }
     });
     
     await Promise.all(createModelPromises).then(function(values){
@@ -306,7 +310,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
   // TODO - not sure this is necessary yet - we can just iterate the collection of Establishments at the end to create the validation JSON document
   if (lineValidator.validationErrors.length > 0) {
-    csvEstablishmentSchemaErrors.push(lineValidator.validationErrors);
+    lineValidator.validationErrors.forEach(thisError => csvEstablishmentSchemaErrors.push(thisError));
   }
 
   //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
@@ -329,7 +333,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
     //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
     myAPIEstablishments.push(thisApiEstablishment);
   } catch (err) {
-    console.error("WA - localised error until validation card");
+    console.error("WA - localised validate establishment error until validation card");
   }
 };
 
@@ -348,7 +352,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
   lineValidator.transform();
 
   if (lineValidator.validationErrors.length > 0) {
-    csvWorkerSchemaErrors.push(lineValidator.validationErrors);
+    lineValidator.validationErrors.forEach(thisError => csvWorkerSchemaErrors.push(thisError));
   }
 
   //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
@@ -373,7 +377,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
       }) 
     );  
   } catch (err) {
-    console.error("WA - localised error until validation card");
+    console.error("WA - localised validate workers error until validation card");
   }
 };
 
@@ -385,7 +389,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
   lineValidator.transform();
 
   if (lineValidator.validationErrors.length > 0) {
-    csvTrainingSchemaErrors.push(lineValidator.validationErrors);
+    lineValidator.validationErrors.forEach(thisError => csvTrainingSchemaErrors.push(thisError));
   }
 
   //console.log("WA DEBUG - this training csv record: ", lineValidator.toJSON());
@@ -399,7 +403,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
     // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
     myAPITrainings.push(thisApiTraining);  
   } catch (err) {
-    console.error("WA - localised error until validation card");
+    console.error("WA - localised validate training error until validation card");
   }
 };
 
@@ -420,10 +424,12 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
       }) 
     );
   } else {
-    console.error("No establishments");
+    console.info("API bulkupload - validateBulkUploadFiles: no establishment records");
     status = false;
   }
-  establishments.establishmentMetadata.records = establishmentRecords;
+  establishments.establishmentMetadata.records = myEstablishments.length;
+  establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
+  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warningCode' in thisError).length;
 
   // parse and process Workers CSV
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType == "Worker") {
@@ -433,10 +439,12 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
       }) 
     );
   } else {
-    console.error("No Workers");
+    console.info("API bulkupload - validateBulkUploadFiles: no workers records");
     status = false;
   }
-  workers.workerMetadata.records = workerRecords;
+  workers.workerMetadata.records = myWorkers.length;
+  workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
+  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warningCode' in thisError).length;
 
   // parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == "Training") {
@@ -446,20 +454,23 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
       }) 
     );
   } else {
-      console.error("No training records");
+      console.info("API bulkupload - validateBulkUploadFiles: no training records");
       status = false;
   }
-  training.trainingMetadata.records = trainingRecords;
+  training.trainingMetadata.records = myTrainings.length;
+  training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
+  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warningCode' in thisError).length;
+
 
   // upload the validated metadata as JSON to S3
-  myEstablishments.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.validation.json`) : true;
-  myWorkers.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myWorkers.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${workers.workerMetadata.filename}.validation.json`) : true;
-  myTrainings.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.trainingMetadata.filename}.validation.json`) : true;
+  establishments.imported && commit ? await uploadAsJSON(username, establishmentId, establishments.establishmentMetadata, `${establishmentId}/latest/${establishments.establishmentMetadata.filename}.metadata.json`) : true;
+  workers.imported && commit ? await uploadAsJSON(username, establishmentId, workers.workerMetadata, `${establishmentId}/latest/${workers.workerMetadata.filename}.metadata.json`) : true;
+  training.imported && commit ? await uploadAsJSON(username, establishmentId, training.trainingMetadata, `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`) : true;
 
   // upload the converted CSV as JSON to S3
-  myEstablishments.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.filename}.validation.json`) : true;
-  myWorkers.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myWorkers.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${workers.filename}.validation.json`) : true;
-  myTrainings.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.filename}.validation.json`) : true;
+  myEstablishments.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`) : true;
+  myWorkers.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myWorkers.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${workers.workerMetadata.filename}.csv.json`) : true;
+  myTrainings.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`) : true;
 
   // upload the intermediary entities as JSON to S3
   myAPIEstablishments.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/establishment.entities.json`) : true;
@@ -482,9 +493,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   }
 
    //upload metadata as json, by filename+metadata.json
-   commit ? await uploadAsJSON(username, establishmentId, establishments.establishmentMetadata, `${establishmentId}/latest/${establishments.establishmentMetadata.filename}.metadata.json`) : true;
-   commit ? await uploadAsJSON(username, establishmentId, workers.workerMetadata, `${establishmentId}/latest/${workers.workerMetadata.filename}.metadata.json`) : true;
-   commit ? await uploadAsJSON(username, establishmentId, training.trainingMetadata, `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`) : true;
 
   return {
     status,
