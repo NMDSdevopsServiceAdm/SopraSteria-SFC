@@ -1,9 +1,8 @@
-export enum ValidateStatus {
+export enum FileValidateStatus {
   Fail = 'Fail',
   Validating = 'Validating...',
   Pass = 'Pass',
 }
-
 
 export interface PresignedUrlResponse {
   urls: string;
@@ -11,7 +10,7 @@ export interface PresignedUrlResponse {
 
 export interface UploadFile extends File {
   extension: string;
-  status?: ValidateStatus;
+  status?: FileValidateStatus;
 }
 
 export interface ValidatedFilesResponse {

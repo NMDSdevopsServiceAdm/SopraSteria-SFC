@@ -1,20 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FileValidateStatusComponent } from './file-validate-status.component';
 
-import { ValidateStatusComponent } from './validate-status.component';
-
-describe('ValidateStatusComponent', () => {
-  let component: ValidateStatusComponent;
-  let fixture: ComponentFixture<ValidateStatusComponent>;
+describe('FileValidateStatusComponent', () => {
+  let component: FileValidateStatusComponent;
+  let fixture: ComponentFixture<FileValidateStatusComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ValidateStatusComponent ]
+      declarations: [ FileValidateStatusComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ValidateStatusComponent);
+    fixture = TestBed.createComponent(FileValidateStatusComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

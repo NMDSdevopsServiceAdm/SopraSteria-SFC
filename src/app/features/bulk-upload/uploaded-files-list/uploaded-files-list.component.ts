@@ -2,7 +2,7 @@ import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
-import { UploadFile, ValidatedFilesResponse, ValidateStatus } from '@core/model/bulk-upload.model';
+import { UploadFile, ValidatedFilesResponse, FileValidateStatus } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -31,7 +31,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   public validateFiles(): void {
     this.isValidating = true;
-    this.uploadedFiles.map((file: UploadFile) => file.status = ValidateStatus.Validating);
+    this.uploadedFiles.map((file: UploadFile) => file.status = FileValidateStatus.Validating);
 
     this.subscriptions.add(
       this.bulkUploadService.validateFiles().subscribe(
