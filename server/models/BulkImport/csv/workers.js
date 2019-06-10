@@ -1663,29 +1663,28 @@ class Worker {
     // NOQUALWT
     // QUALWT
 
-    // process the first attained qualification (QUALACH01/QUALACH01NOTES)
-    const myProcessedQualifications = [];
-    myProcessedQualifications.push(this.__validateQualification(
-      'QUALACH01', Worker.QUAL_ACH01_ERROR, 'QUAL_ACH01_ERROR', this._currentLine.QUALACH01,
-      'QUALACH01NOTES', Worker.QUAL_ACH01_NOTES_ERROR, 'QUAL_ACH01_NOTES_ERROR', this._currentLine.QUALACH01NOTES
-    ));
+    const NO_QUALIFICATIONS = 20;
+    const padNumber = (number) => (number < 10) ? `0${number}` : number;
 
-    // process the second attained qualification (QUALACH02/QUALACH02NOTES)
-    myProcessedQualifications.push(this.__validateQualification(
-      'QUALACH02', Worker.QUAL_ACH02_ERROR, 'QUAL_ACH02_ERROR', this._currentLine.QUALACH02,
-      'QUALACH02NOTES', Worker.QUAL_ACH02_NOTES_ERROR, 'QUAL_ACH02_NOTES_ERROR', this._currentLine.QUALACH02NOTES
-    ));
+    // process all attained qualifications, (QUALACH{n}/QUALACH{n}NOTES)
+    const myProcessedQualifications = Array(NO_QUALIFICATIONS).fill().map((x, i) => {
+      const index = padNumber(i+1);
 
-    // process the third attained qualification (QUALACH03/QUALACH03NOTES)
-    myProcessedQualifications.push(this.__validateQualification(
-      'QUALACH03', Worker.QUAL_ACH03_ERROR, 'QUAL_ACH03_ERROR', this._currentLine.QUALACH03,
-      'QUALACH03NOTES', Worker.QUAL_ACH03_NOTES_ERROR, 'QUAL_ACH03_NOTES_ERROR', this._currentLine.QUALACH03NOTES
-    ));
+      return this.__validateQualification(
+        `QUALACH${index}`,
+        Worker[`QUAL_ACH${index}_ERROR`],
+        `QUAL_ACH${index}_ERROR`,
+        this._currentLine[`QUALACH${index}`],
+        `QUALACH${index}NOTES`,
+        Worker[`QUAL_ACH${index}_NOTES_ERROR`],
+        `QUAL_ACH${index}_NOTES_ERROR`,
+        this._currentLine[`QUALACH${index}NOTES`]
+      );
+    });
 
     // remove from the local set of qualifications any false/null entries
     this._qualifications = myProcessedQualifications.filter(thisQualification => thisQualification !== null && thisQualification !== false);
   }
-
 
   //transform related
   _transformContractType() {
@@ -2095,6 +2094,7 @@ class Worker {
         } : undefined
       },
       qualifications: this._qualifications ? this._qualifications.map(thisQual => {
+        if (!thisQual) return undefined;
         return {
           id: thisQual.id,
           year: thisQual.year ? thisQual.year : undefined,
@@ -2288,6 +2288,8 @@ class Worker {
     const myMappedQuals = [];
 
     this._qualifications ? this._qualifications.forEach(thisQual => {
+      if (!thisQual) return undefined;
+
       const changeProperties = {
         type: undefined,        // the qualification type does not come from bulk upload
         qualification : {
