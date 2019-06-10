@@ -72,22 +72,21 @@ router.route('/uploaded').post(async function (req, res) {
       }
     });
 
-    // TO BE DECIDED IF WE'RE DELETING THE intermdiary and validation files - just yet
-    // listParams.Prefix = `${myEstablishmentId}/intermediary/`;
-    // const intermediaryObjects = await s3.listObjects(listParams).promise();
-    // intermediaryObjects.Contents.forEach(myFile => {
-    //   deleteKeys.push({
-    //     Key: myFile.Key
-    //   });
-    // });
+    listParams.Prefix = `${myEstablishmentId}/intermediary/`;
+    const intermediaryObjects = await s3.listObjects(listParams).promise();
+    intermediaryObjects.Contents.forEach(myFile => {
+      deleteKeys.push({
+        Key: myFile.Key
+      });
+    });
 
-    // listParams.Prefix = `${myEstablishmentId}/validation/`;
-    // const validationObjects = await s3.listObjects(listParams).promise();
-    // validationObjects.Contents.forEach(myFile => {
-    //   deleteKeys.push({
-    //     Key: myFile.Key
-    //   });
-    // });
+    listParams.Prefix = `${myEstablishmentId}/validation/`;
+    const validationObjects = await s3.listObjects(listParams).promise();
+    validationObjects.Contents.forEach(myFile => {
+      deleteKeys.push({
+        Key: myFile.Key
+      });
+    });
 
     // now delete the objects in one go
     const deleteParams = {
