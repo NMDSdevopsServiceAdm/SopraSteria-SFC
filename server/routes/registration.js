@@ -239,9 +239,9 @@ const responseErrors = {
     errMessage: 'Duplicate Username',
     db_constraint: 'uc_Login_Username'
   },
-  unexpectedMainServiceId: {
+  unexpectedMainService: {
     errCode: -300,
-    errMessage: 'Unexpected main service id'
+    errMessage: 'Unexpected main service'
   },
   unknownLocation: {
     errCode: -400,
@@ -263,11 +263,7 @@ const responseErrors = {
   invalidUser: {
     errCode: -800,
     errMessage: 'User data is invalid'
-  },
-  invalidMainServiceOther: {
-    errCode: -900,
-    errMessage: 'Invalid main service other'
-  },  
+  }
 };
 
 router.route('/')
@@ -379,8 +375,8 @@ router.route('/')
           if (serviceResults.other && Estblistmentdata.MainServiceOther && Estblistmentdata.MainServiceOther.length > OTHER_MAX_LENGTH){
             throw new RegistrationException(
               `Other field value of '${Estblistmentdata.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
-              responseErrors.invalidMainServiceOther.errCode,
-              responseErrors.invalidMainServiceOther.errMessage
+              responseErrors.unexpectedMainServiceId.errCode,
+              responseErrors.unexpectedMainServiceId.errMessage
             );            
           }
 

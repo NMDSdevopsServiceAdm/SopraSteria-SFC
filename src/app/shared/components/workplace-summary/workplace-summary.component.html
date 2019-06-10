@@ -33,21 +33,21 @@
           <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.employerType === 'Yes'">
-          {{ workplace.employerType || '-' }}
+          {{ !!workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value || '-' }}
         </ng-container>
       </ng-container>
 
       <ng-container *ngIf="!displayWDFReport">
-        {{ workplace.employerType || '-' }}
+        {{ !!workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value || '-' }}
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'type-of-employer']">
-        <ng-container *ngIf="!workplace.employerType">
+        <ng-container *ngIf="!workplace.employerType?.value">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="workplace.employerType">
+        <ng-container *ngIf="workplace.employerType?.value">
           Change
         </ng-container>
         <span class="govuk-visually-hidden"> employer type</span>
@@ -199,7 +199,10 @@
           </ng-template>
           <ng-template #serviceUsers>
             <ul class="govuk-list">
-              <li *ngFor="let users of workplace.serviceUsers">{{ users.service }}</li>
+              <li *ngFor="let users of workplace.serviceUsers">
+                <ng-container *ngIf="users.other">{{ users.other }}</ng-container>
+                <ng-container *ngIf="!users.other">{{ users.service }}</ng-container>
+              </li>
             </ul>
           </ng-template>
         </ng-container>
@@ -211,7 +214,10 @@
         </ng-template>
         <ng-template #serviceUsers>
           <ul class="govuk-list">
-            <li *ngFor="let users of workplace.serviceUsers">{{ users.service }}</li>
+            <li *ngFor="let users of workplace.serviceUsers">
+              <ng-container *ngIf="users.other">{{ users.other }}</ng-container>
+              <ng-container *ngIf="!users.other">{{ users.service }}</ng-container>
+            </li>
           </ul>
         </ng-template>
       </ng-container>
