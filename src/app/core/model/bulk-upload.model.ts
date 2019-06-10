@@ -9,8 +9,12 @@ export interface PresignedUrlResponse {
 }
 
 export interface UploadFile extends File {
+  errors?: number;
   extension: string;
+  fileType?: string;
+  records?: number;
   status?: FileValidateStatus;
+  warnings?: number;
 }
 
 export interface ValidatedFilesResponse {
@@ -22,6 +26,7 @@ export interface ValidatedFilesResponse {
 export interface ValidatedFile {
   errors: number;
   filename: string;
+  fileType?: string;
   records: number;
   warnings: number;
 }
