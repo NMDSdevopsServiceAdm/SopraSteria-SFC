@@ -1,7 +1,9 @@
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
-import { UploadFile } from '@core/model/bulk-upload.model';
+import { UploadFile, ValidatedFilesResponse, FileValidateStatus } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -10,8 +12,9 @@ import { UploadFile } from '@core/model/bulk-upload.model';
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private uploadedFiles: Array<UploadFile>;
+  public isValidating = false;
 
-  constructor(private bulkUploadService: BulkUploadService) {}
+  constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
     this.setupSubscription();
@@ -25,6 +28,37 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  public validateFiles(): void {
+    this.isValidating = true;
+    this.uploadedFiles.map((file: UploadFile) => (file.status = FileValidateStatus.Validating));
+
+    this.subscriptions.add(
+      this.bulkUploadService.validateFiles(this.establishmentService.establishmentId).subscribe(
+        (response: ValidatedFilesResponse) => {
+          this.finishValidating(response);
+        },
+        (response: HttpErrorResponse) => {
+          this.finishValidating(response);
+        },
+        () => {
+          this.finishValidating();
+        }
+      )
+    );
+  }
+
+  /**
+   * TODO update once BE api is able to return a 200 response on successful validate
+   * as well as once BE api is able to provide erros back on a file
+   * @param response
+   */
+  private finishValidating(response?: ValidatedFilesResponse | HttpErrorResponse): void {
+    this.uploadedFiles.map((file: UploadFile) => (file.status = null));
+    this.isValidating = false;
+    console.clear();
+    console.log(response);
   }
 
   ngOnDestroy() {

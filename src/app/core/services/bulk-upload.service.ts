@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { PresignedUrlResponse, UploadFile } from '@core/model/bulk-upload.model';
-import { ErrorDetails } from '@core/model/errorSummary.model';
+import { PresignedUrlResponse, UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { ErrorDetails, ErrorDefinition } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -40,6 +40,10 @@ export class BulkUploadService {
     return parts[parts.length - 1].toUpperCase();
   }
 
+  public validateFiles(establishmentId: number): Observable<ValidatedFilesResponse> {
+    return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
+  }
+
   public formErrorsMap(): Array<ErrorDetails> {
     return [
       {
@@ -62,6 +66,19 @@ export class BulkUploadService {
             message: 'The selected files must be a CSV or ZIP.',
           },
         ],
+      },
+    ];
+  }
+
+  public serverErrorsMap(): Array<ErrorDefinition> {
+    return [
+      {
+        name: 400,
+        message: 'Validation failed.',
+      },
+      {
+        name: 503,
+        message: 'There is a problem with the service.',
       },
     ];
   }

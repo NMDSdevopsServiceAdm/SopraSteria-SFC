@@ -203,8 +203,6 @@ class BUDI {
       { "ASC": 'Pool/Bank', "BUDI": 3},
       { "ASC": 'Agency', "BUDI": 4},
       { "ASC": 'Other', "BUDI": 7},       // multiple values mapping to Other; 7 needs to be first in list for the export
-      { "ASC": 'Other', "BUDI": 5},
-      { "ASC": 'Other', "BUDI": 6},
     ];
 
     if (direction == BUDI.TO_ASC) {

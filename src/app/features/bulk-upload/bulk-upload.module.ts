@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { DownloadDataFilesComponent } from './download-data-files/download-data-files.component';
 import { FilesUploadComponent } from './files-upload/files-upload.component';
 import { FilesUploadProgressComponent } from './files-upload-progress/files-upload-progress.component';
+import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SelectedFilesListComponent } from './selected-files-list/selected-files-list.component';
@@ -21,6 +22,7 @@ import { UploadedFilesListComponent } from './uploaded-files-list/uploaded-files
     DownloadDataFilesComponent,
     FilesUploadComponent,
     FilesUploadProgressComponent,
+    FileValidateStatusComponent,
     SelectedFilesListComponent,
     UploadDataFilesComponent,
     UploadedFilesListComponent,
