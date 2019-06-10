@@ -12,11 +12,11 @@
     }
 
     /* IE10 */
-    color: #00823b;
+    color: $funGreen;
 
     &::-webkit-progress-value,
     &::-moz-progress-bar {
-      background: #00823b;
+      background: $funGreen;
     }
   }
 }
