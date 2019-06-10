@@ -636,14 +636,14 @@ class Establishment {
   _validateLocationID() {
     // must be given if "share with CQC" - but if given must be in the format "n-nnnnnnnnn"
     const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
-    const myLocationID = this._currentLine.PROVNUM;
+    const myLocationID = this._currentLine.LOCATIONID;
 
     if (this._regType  && this._regType == 2 && (!myLocationID || myLocationID.length==0)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.LOCATION_ID_ERROR,
         errType: `LOCATION_ID_ERROR`,
-        error: "Location ID (PROVNUM) must be given as this workplace is CQC regulated",
+        error: "Location ID (LOCATIONID) must be given as this workplace is CQC regulated",
         source: myLocationID,
       });
       return false;
@@ -653,7 +653,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.LOCATION_ID_ERROR,
         errType: `LOCATION_ID_ERROR`,
-        error: "Location ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
+        error: "Location ID (LOCATIONID) must be in the format 'n-nnnnnnnnn'",
         source: myLocationID,
       });
       return false;
@@ -877,7 +877,7 @@ class Establishment {
     }
 
     // and the number of utilisations/capacities must equal the number of all services
-    if (listOfCapacities.length !== this._allServices.length) {
+    if (listOfCapacities.length !== (this._allServices ? this._allServices.length : 0)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
@@ -892,7 +892,7 @@ class Establishment {
     const MAX_CAP_UTIL=999999999;
     const areCapacitiesValid = listOfCapacities.every(thisCapacity => {
       return thisCapacity === null ||
-             thisCapacity.length==0 ? true : !Number.isNaN(parseInt(thisCapacity)) &&  parseInt(thisCapacity) < MAX_CAP_UTIL
+             thisCapacity.length==0 ? true : !Number.isNaN(parseInt(thisCapacity)) &&  parseInt(thisCapacity) < MAX_CAP_UTIL;
     });
     if (!areCapacitiesValid) {
       localValidationErrors.push({
@@ -904,8 +904,9 @@ class Establishment {
       });
     }
     const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => {
-      thisUtilisation === null ||
-      thisUtilisation.length==0 ? true : !Number.isNaN(parseInt(thisUtilisation) || parseInt(thisUtilisation) < MAX_CAP_UTIL)
+      console.log("WA DEBUG - this utilisation: ", thisUtilisation, parseInt(thisUtilisation), Number.isNaN(parseInt(thisUtilisation)))
+      return thisUtilisation === null ||
+            thisUtilisation.length==0 ? true : !Number.isNaN(parseInt(thisUtilisation)) && parseInt(thisUtilisation) < MAX_CAP_UTIL;
     });
     if (!areUtilisationsValid) {
       localValidationErrors.push({
@@ -1647,7 +1648,7 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
               errType: `CAPACITY_UTILISATION_USERS_ERROR`,
-              error: `Capacities (CAPACITY): position ${index+1} is unknown capacity`,
+              error: `Capacities (CAPACITY): position ${index+1} is unexpected capacity (no expected capacity for given service: ${this._allServices[index]})`,
               source: this._currentLine.CAPACITY,
             });
           }
@@ -1882,7 +1883,7 @@ class Establishment {
       mainService: {
         id: this._mainService
       },
-      allServices: this._allServices.map((thisService, index) => {
+      allServices: this._allServices ? this._allServices.map((thisService, index) => {
         const returnThis = {
           id: thisService,
         };
@@ -1892,7 +1893,7 @@ class Establishment {
         }
 
         return returnThis;
-      }),
+      }) : undefined,
       serviceUsers: this._allServiceUsers.map((thisService, index) => {
         const returnThis = {
           id: thisService,
@@ -1951,7 +1952,7 @@ class Establishment {
       mainService: {
         id: this._mainService     // during BUDI lookup, it returns the main service as an id
       },
-      services: this._allServices
+      services: this._allServices ? this._allServices
         .filter(thisService => thisService !== this._mainService)   // main service cannot appear in otherServices
         .map((thisService, index) => {
           const returnThis = {
@@ -1963,7 +1964,7 @@ class Establishment {
           }
 
           return returnThis;
-        }),
+        }) : undefined,
       serviceUsers: this._allServiceUsers
         .map((thisService, index) => {
           const returnThis = {
@@ -2015,7 +2016,7 @@ class Establishment {
     if (changeProperties.capacities.length == 0) {
       changeProperties.capacities = undefined;
     }
-    if (changeProperties.services.length == 0) {
+    if (changeProperties.services && changeProperties.services.length == 0) {
       changeProperties.services = undefined;
     }
 
