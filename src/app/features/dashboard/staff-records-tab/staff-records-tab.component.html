@@ -3,10 +3,10 @@
     <h2 class="govuk-heading-m">Staff records ({{ workers?.length }})</h2>
   </div>
   <div *ngIf="!displayWDFReport" class="govuk-grid-column-one-half govuk-util__align-right">
-    <a class="govuk-button govuk-button--secondary" role="button" routerLink="/worker/basic-records-start-screen">
+    <a class="govuk-button govuk-button--secondary" role="button" [routerLink]="['/worker/basic-records-start-screen']">
       Add a basic record
     </a>
-    <a class="govuk-button govuk-!-margin-left-8" role="button" routerLink="/worker/start-screen">
+    <a class="govuk-button govuk-!-margin-left-8" role="button" [routerLink]="['/worker/start-screen']">
       Add a full record
     </a>
   </div>
@@ -43,7 +43,7 @@
   </thead>
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let worker of workers">
-      <td class="govuk-table__cell" scope="row">
+      <td class="govuk-table__cell">
         <a [routerLink]="['/worker', worker.uid]">{{ worker.nameOrId }}</a>
       </td>
       <td class="govuk-table__cell">{{ worker.mainJob.title }}</td>

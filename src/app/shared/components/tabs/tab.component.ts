@@ -7,7 +7,7 @@ import * as slugify from 'slugify';
     <section class="govuk-tabs__panel" [hidden]="!active">
       <ng-content></ng-content>
     </section>
-  `,
+  `
 })
 export class TabComponent implements OnInit {
   @Input() title;

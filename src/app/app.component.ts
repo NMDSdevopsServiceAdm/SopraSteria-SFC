@@ -1,14 +1,16 @@
 import 'core-js';
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, enableProdMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TitleService } from '@core/services/title.service';
 import { Angulartics2GoogleGlobalSiteTag } from 'angulartics2/gst';
 import { filter } from 'rxjs/operators';
 
+enableProdMode();
+
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
+  templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit {
   title = 'ng-sfc-v2';
