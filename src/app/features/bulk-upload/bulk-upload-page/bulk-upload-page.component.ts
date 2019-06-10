@@ -46,13 +46,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * Unsubscribe to ensure no memory leaks
-   * And set selected files to none otherwise
-   * on route revisit the selected files are cached
-   */
   ngOnDestroy() {
-    this.bulkUploadService.selectedFiles$.next(null);
     this.subscriptions.unsubscribe();
   }
 }
