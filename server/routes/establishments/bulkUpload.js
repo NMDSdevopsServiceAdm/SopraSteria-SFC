@@ -24,7 +24,105 @@ const WorkerEntity = require('../../models/classes/worker').Worker;
 const QualificationEntity = require('../../models/classes/qualification').Qualification;
 const TrainingEntity = require('../../models/classes/training').Training;
   
-var FileValidationStatusEnum = { "Pending": "pending", "Validating": "validating", "Pass": "pass", "PassWithWarnings": "pass with warnings", "Fail": "fail" };
+const FileValidationStatusEnum = { "Pending": "pending", "Validating": "validating", "Pass": "pass", "PassWithWarnings": "pass with warnings", "Fail": "fail" };
+
+
+/*
+ * input:
+ * "files": [
+ *  {
+ *    "filename": "blah-csv"
+ *  }
+ * ]
+ * 
+ * output:
+ * "files": [
+ *  {
+ *    "filename": "blah-csv",
+ *    "signedUrl": "....."
+ *  }
+ * ]
+ */
+router.route('/uploaded').post(async function (req, res) {
+  const myEstablishmentId = Number.isInteger(req.establishmentId) ? req.establishmentId.toString() : req.establishmentId;
+  const username = req.username;
+  const uploadedFiles = req.body.files;
+
+  const EXPECTED_NUMBHER_OF_FILES = 3;
+  if (!uploadedFiles || !Array.isArray(uploadedFiles) || uploadedFiles.length != EXPECTED_NUMBHER_OF_FILES) {
+    return res.status(400).send({});
+  }
+
+  const signedUrls = [];
+  try {
+    // drop all in latest
+    let listParams = {
+      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Prefix: `${myEstablishmentId}/latest/`
+    };
+    const latestObjects = await s3.listObjects(listParams).promise();
+    
+    const deleteKeys = [];
+    latestObjects.Contents.forEach(myFile => {
+      const ignoreRoot = /.*\/$/;
+      if (!ignoreRoot.test(myFile.Key)) {
+        deleteKeys.push({
+          Key: myFile.Key
+        });
+      }
+    });
+
+    listParams.Prefix = `${myEstablishmentId}/intermediary/`;
+    const intermediaryObjects = await s3.listObjects(listParams).promise();
+    intermediaryObjects.Contents.forEach(myFile => {
+      deleteKeys.push({
+        Key: myFile.Key
+      });
+    });
+
+    listParams.Prefix = `${myEstablishmentId}/validation/`;
+    const validationObjects = await s3.listObjects(listParams).promise();
+    validationObjects.Contents.forEach(myFile => {
+      deleteKeys.push({
+        Key: myFile.Key
+      });
+    });
+
+    // now delete the objects in one go
+    const deleteParams = {
+      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Delete: {
+        Objects: deleteKeys,
+        Quiet: true,
+      },
+    };
+    await s3.deleteObjects(deleteParams).promise();
+
+    uploadedFiles.forEach(thisFile => {
+      if (thisFile.filename) {
+        thisFile.signedUrl = s3.getSignedUrl('putObject', {
+          Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
+          Key: myEstablishmentId + '/' + FileStatusEnum.Latest + '/' + thisFile.filename,
+          // ACL: 'public-read',
+          ContentType: req.query.type,
+          Metadata: {
+            username,
+            establishmentId: myEstablishmentId,
+            validationstatus: FileValidationStatusEnum.Pending,
+          },
+          Expires: appConfig.get('bulkuploaduser.uploadSignedUrlExpire'),
+        });
+        signedUrls.push(thisFile);
+      }
+    });
+  
+    return res.status(200).send(signedUrls);  
+
+  } catch (err) {
+    console.error("API POST bulkupload/uploaded: ", err);
+    return res.status(503).send({});
+  }
+});
 
 router.route('/signedUrl').get(async function (req, res) {
   const establishmentId = req.establishmentId;
