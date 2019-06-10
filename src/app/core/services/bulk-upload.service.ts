@@ -1,11 +1,11 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { FormGroup } from '@angular/forms';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { FormGroup } from '@angular/forms';
 import { PresignedUrlResponse, UploadFile } from '@core/model/bulk-upload.model';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +32,7 @@ export class BulkUploadService {
 
   public uploadFile(file: UploadFile, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
-    return this.http.put(signedURL, file, { headers, reportProgress: true });
+    return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
 
   public getFileType(fileName: string): string {
@@ -41,26 +41,28 @@ export class BulkUploadService {
   }
 
   public formErrorsMap(): Array<ErrorDetails> {
-    return [{
-      item: 'fileUpload',
-      type: [
-        {
-          name: 'required',
-          message: 'No files selected',
-        },
-        {
-          name: 'filecount',
-          message: 'Please select a total of 3 files.',
-        },
-        {
-          name: 'filesize',
-          message: 'The selected files must be smaller than 20MB.',
-        },
-        {
-          name: 'filetype',
-          message: 'The selected files must be a CSV or ZIP.',
-        },
-      ],
-    }];
+    return [
+      {
+        item: 'fileUpload',
+        type: [
+          {
+            name: 'required',
+            message: 'No files selected',
+          },
+          {
+            name: 'filecount',
+            message: 'Please select a total of 3 files.',
+          },
+          {
+            name: 'filesize',
+            message: 'The selected files must be smaller than 20MB.',
+          },
+          {
+            name: 'filetype',
+            message: 'The selected files must be a CSV or ZIP.',
+          },
+        ],
+      },
+    ];
   }
 }

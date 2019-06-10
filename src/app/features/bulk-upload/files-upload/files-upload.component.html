@@ -20,7 +20,7 @@
 
   <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
 
-  <div *ngIf="!filesUploading && !filesUploaded">
+  <div *ngIf="!filesUploading">
     <button type="submit" class="govuk-button">
       Upload files
     </button>
@@ -36,10 +36,10 @@
   </div>
 </form>
 
-<div class="govuk-grid-row" *ngIf="!filesUploading">
+<div class="govuk-grid-row" *ngIf="filesUploading">
   <div class="govuk-grid-column-full">
     <div class="govuk-util__normal govuk-!-font-size-19 govuk-util__inline-block">Files uploading</div>
-    <app-progress value="30" max="100" class="govuk-!-margin-right-8 govuk-!-margin-left-8"></app-progress>
+    <app-progress [value]="progress" max="100" class="govuk-!-margin-right-8 govuk-!-margin-left-8"></app-progress>
     <button type="button" class="govuk-button govuk-button--link" (click)="cancelUpload()">
       Cancel
     </button>
