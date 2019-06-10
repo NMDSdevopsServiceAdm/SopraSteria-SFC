@@ -7,14 +7,10 @@
 >
   <ng-template [ngIf]="status" [ngIfElse]="idle">
     <img
-      *ngIf="status === statusEnum.Pass"
+      *ngIf="status !== statusEnum.Validating"
+      [attr.src]="status === statusEnum.Pass ? '/assets/images/tick-icon-white.svg' : null"
+      [attr.src]="status === statusEnum.Fail ? '/assets/images/cross-icon-white.svg' : null"
       class="govuk-!-padding-right-1"
-      src="/assets/images/tick-icon-white.svg"
-    />
-    <img
-      *ngIf="status === statusEnum.Fail"
-      class="govuk-!-padding-right-1"
-      src="/assets/images/cross-icon-white.svg"
     />
     {{ status }}
   </ng-template>
