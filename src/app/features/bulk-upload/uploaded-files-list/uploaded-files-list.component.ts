@@ -55,11 +55,11 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private onValidateSuccess(response: ValidatedFilesResponse): void {
     this.validateSuccess = true;
 
-    response.establishments.fileType = 'Workplace';
+    response.establishment.fileType = 'Workplace';
     response.training.fileType = 'Training';
     response.workers.fileType = 'Staff';
 
-    const validatedFiles: Array<ValidatedFile> = [response.establishments, response.training, response.workers];
+    const validatedFiles: Array<ValidatedFile> = [response.establishment, response.training, response.workers];
     console.log(validatedFiles);
 
     this.uploadedFiles.forEach((file: UploadFile) => {

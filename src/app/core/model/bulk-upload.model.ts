@@ -18,7 +18,7 @@ export interface UploadFile extends File {
 }
 
 export interface ValidatedFilesResponse {
-  establishments: ValidatedFile;
+  establishment: ValidatedFile;
   training: ValidatedFile;
   workers: ValidatedFile;
 }
