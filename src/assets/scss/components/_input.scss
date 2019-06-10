@@ -18,3 +18,16 @@
     @include govuk-font($size: 19, $weight: normal, $line-height: 26px);
   }
 }
+
+input.govukuk-input__readonly {
+    &:focus,
+    &:active {
+
+    }
+}
+
+.change-link {
+    margin-top: 33px;
+    line-height: 40px;
+    display: inline-block;
+}

@@ -45,7 +45,7 @@
     <div class="govuk-grid-column-one-third">
       <ng-container *ngIf="!reportDetails?.displayWDFReport">
         <a class="govuk-button govuk-button--link" role="button" href="#" (click)="deleteWorker($event)">
-          <img src="/assets/images/bin.svg" />Delete staff record
+          <img src="/assets/images/bin.svg" alt="" />Delete staff record
         </a>
         <a
           *ngIf="!worker.completed"
@@ -66,10 +66,10 @@
 
   <div class="row m-0" *ngIf="reportDetails?.displayWDFReport">
     <p class="main-body-text col-12 m-0 p-0 tick-icon" *ngIf="worker.wdf.isEligible">
-      <img src="/assets/images/tick-icon.svg" /> Meeting criteria
+      <img src="/assets/images/tick-icon.svg" alt="" /> Meeting criteria
     </p>
     <p class="main-body-text col-12 m-0 p-0 cross-icon" *ngIf="!worker.wdf.isEligible">
-      <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+      <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
     </p>
   </div>
   <div class="row m-0" *ngIf="reportDetails?.displayWDFReport">
@@ -84,7 +84,7 @@
   </div>
 
   <app-tabs>
-    <app-tab title="Staff Record">
+    <app-tab [title]="'Staff record'">
       <app-basic-record
         [worker]="worker"
         [return]="['/worker', worker.uid]"
@@ -101,13 +101,13 @@
         [reportDetails]="reportDetails"
       ></app-employment>
     </app-tab>
-    <app-tab title="Qualifications and training">
+    <app-tab [title]="'Qualifications and training'">
       <app-qualifications-and-training
         [worker]="worker"
         [return]="['/worker', worker.uid]"
         [reportDetails]="reportDetails"
       ></app-qualifications-and-training>
-      <p><img src="/assets/images/icon-information.svg" /> Adding additional qualifications or training is optional.</p>
+      <p><img src="/assets/images/icon-information.svg" alt="" /> Adding additional qualifications or training is optional.</p>
       <p>
         <a
           [routerLink]="['/worker', worker.uid, 'add-qualification']"

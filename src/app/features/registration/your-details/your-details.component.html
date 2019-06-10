@@ -13,7 +13,7 @@
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getFullName.errors">
-        <label class="govuk-label" for="fullName">
+        <label class="govuk-!-margin-bottom-2 govuk-label" for="fullName">
           Your full name
         </label>
         <span *ngIf="submitted && getFullName.errors" id="fullName-error" class="govuk-error-message">
@@ -36,7 +36,7 @@
       </div>
 
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getJobTitle.errors">
-        <label class="govuk-label" for="jobTitle">
+        <label class="govuk-!-margin-bottom-2 govuk-label" for="jobTitle">
           Your job title
         </label>
         <span *ngIf="submitted && getJobTitle.errors" id="jobTitle-error" class="govuk-error-message">
@@ -59,7 +59,7 @@
       </div>
 
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getEmail.errors">
-        <label class="govuk-label" for="email">
+        <label class="govuk-!-margin-bottom-2 govuk-label" for="email">
           Your email address
         </label>
         <span *ngIf="submitted && getEmail.errors" id="email-error" class="govuk-error-message">
@@ -85,7 +85,7 @@
       </div>
 
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPhone.errors">
-        <label class="govuk-label" for="phone">
+        <label class="govuk-!-margin-bottom-2 govuk-label" for="phone">
           Contact phone number
         </label>
         <span *ngIf="submitted && getPhone.errors" id="phone-error" class="govuk-error-message">

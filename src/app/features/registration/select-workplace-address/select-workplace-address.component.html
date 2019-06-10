@@ -9,17 +9,25 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">What is your workplace address?</h1>
 
-    <p class="govuk-!-margin-bottom-2">
-      <strong>Postcode</strong>
-    </p>
-    <p class="govuk-!-margin-bottom-6">
-      <strong>{{ enteredPostcode }}</strong>
-      <a [routerLink]="['/registration/find-workplace-address']" class="govuk-!-margin-left-6">Change</a>
-    </p>
+    <div class="govuk-grid-row">
+  
+      <div class="govuk-grid-column-one-third">
+        <div class="govuk-form-group">
+          <label class="govuk-!-margin-bottom-2 govuk-label" for="chosenPostcode">Postcode</label>
+          <input class="govuk-input govukuk-input__readonly" type="text" value="{{ enteredPostcode }}" id="chosenPostcode" aria-readonly readonly/>
+        </div>
+      </div>
+
+      <div class="govuk-grid-column-one-third">
+        <a [routerLink]="['/registration/find-workplace-address']" class="change-link" aria-labelledby="chosenPostcode">Change</a>
+      </div>
+
+
+    </div>
 
     <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress.errors">
-        <label class="govuk-label" for="address">
+        <label class="govuk-!-margin-bottom-2 govuk-label" for="address">
           Select an address
         </label>
         <span *ngIf="submitted && getAddress.errors" id="address-error" class="govuk-error-message">

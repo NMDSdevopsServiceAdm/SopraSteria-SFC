@@ -12,7 +12,7 @@
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
-        <fieldset class="govuk-fieldset" aria-describedby="regulatedByCQC-error">
+        <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
             <h2 class="govuk-fieldset__heading">
               Are you regulated by the Care Quality Commission (CQC)?
@@ -48,7 +48,7 @@
               <div id="group-error">
                 <!-- regulated postcode -->
                 <div class="govuk-form-group govuk-!-margin-bottom-2">
-                  <label class="govuk-label" for="regulatedPostcode">
+                  <label class="govuk-!-margin-bottom-2 govuk-label" for="regulatedPostcode">
                     Enter your postcode
                   </label>
                   <span
@@ -75,7 +75,7 @@
 
                 <!-- location Id -->
                 <div class="govuk-form-group">
-                  <label class="govuk-label" for="locationId">
+                  <label class="govuk-!-margin-bottom-2 govuk-label" for="locationId">
                     Enter your location ID number
                   </label>
                   <span id="locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
@@ -119,7 +119,7 @@
             >
               <!-- non regulated postcode -->
               <div class="govuk-form-group govuk-!-margin-bottom-2">
-                <label class="govuk-label" for="nonRegulatedPostcode">
+                <label class="govuk-!-margin-bottom-2 govuk-label" for="nonRegulatedPostcode">
                   What is your postcode
                 </label>
                 <span

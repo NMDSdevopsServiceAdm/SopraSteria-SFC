@@ -21,7 +21,7 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport"  class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.mainJob === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.mainJob != 'No'">
         {{ worker.mainJob.title }}
@@ -39,7 +39,7 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
         <ng-container *ngIf="worker.wdf.contract === 'No'">
-          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="worker.wdf.contract != 'No'">
           {{ worker.contract }}

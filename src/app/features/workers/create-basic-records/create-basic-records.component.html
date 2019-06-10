@@ -41,7 +41,7 @@
             class="govuk-form-group"
             [class.govuk-form-group--error]="staffRecord.get('nameOrId').invalid && staffRecord.get('nameOrId').touched"
           >
-            <label class="govuk-label" for="nameOrId-{{ i }}">
+            <label class="govuk-!-margin-bottom-2 govuk-label" for="nameOrId-{{ i }}">
               Full name or ID number?
             </label>
             <span
@@ -65,7 +65,7 @@
               staffRecord.get('mainJobRole').invalid && staffRecord.get('mainJobRole').touched
             "
           >
-            <label class="govuk-label" for="mainJobRole-{{ i }}">
+            <label class="govuk-!-margin-bottom-2 govuk-label" for="mainJobRole-{{ i }}">
               What is their main job role?
             </label>
             <span

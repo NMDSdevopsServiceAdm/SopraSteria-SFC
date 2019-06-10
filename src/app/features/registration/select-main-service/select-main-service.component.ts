@@ -195,7 +195,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   }
 
   private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
+    this.backService.setBackLink({ url: ['/registration/select-workplace-address'] });
   }
 
   ngOnDestroy() {

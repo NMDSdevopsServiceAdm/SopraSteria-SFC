@@ -12,7 +12,7 @@
 
     <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPostcode.errors">
-        <label class="govuk-label" for="postcode">
+        <label class="govuk-!-margin-bottom-2 govuk-label" for="postcode">
           Postcode
         </label>
         <span *ngIf="submitted && getPostcode.errors" id="postcode-error" class="govuk-error-message">

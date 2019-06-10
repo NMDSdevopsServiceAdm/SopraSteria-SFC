@@ -14,7 +14,7 @@
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getSecurityQuestionInput.errors">
-        <label class="govuk-label" for="securityQuestionInput">
+        <label class="govuk-!-margin-bottom-2 govuk-label" for="securityQuestionInput">
           Enter a security question
         </label>
         <span
@@ -41,7 +41,7 @@
       </div>
 
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getSecurityAnswerInput.errors">
-        <label class="govuk-label" for="securityAnswerInput">
+        <label class="govuk-!-margin-bottom-2 govuk-label" for="securityAnswerInput">
           Enter the answer to the security question
         </label>
         <span

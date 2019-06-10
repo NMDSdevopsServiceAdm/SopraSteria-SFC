@@ -8,7 +8,7 @@
 
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
-    <label class="govuk-label" for="category">
+    <label class="govuk-!-margin-bottom-2 govuk-label" for="category">
       Training Category
     </label>
     <span *ngIf="submitted && form.get('category').invalid" id="category-error" class="govuk-error-message">
@@ -29,7 +29,7 @@
   </div>
 
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
-    <label class="govuk-label" for="title">
+    <label class="govuk-!-margin-bottom-2 govuk-label" for="title">
       Training name
     </label>
     <span *ngIf="submitted && form.get('title').invalid" id="title-error" class="govuk-error-message">
@@ -83,7 +83,7 @@
   </div>
 
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('completed').invalid">
-    <fieldset class="govuk-fieldset" aria-describedby="completed-hint" role="group">
+    <fieldset class="govuk-fieldset" role="group">
       <legend class="govuk-fieldset__legend">
         Date completed
       </legend>
@@ -98,7 +98,7 @@
   </div>
 
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('expires').invalid">
-    <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
+    <fieldset class="govuk-fieldset" role="group">
       <legend class="govuk-fieldset__legend">
         Expiry date
       </legend>
@@ -114,7 +114,7 @@
 
   <div class="govuk-character-count">
     <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
-      <label class="govuk-label" for="notes">
+      <label class="govuk-!-margin-bottom-2 govuk-label" for="notes">
         Add notes
       </label>
       <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">

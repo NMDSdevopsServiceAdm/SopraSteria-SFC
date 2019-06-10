@@ -1,6 +1,6 @@
 <ng-container [formGroup]="group">
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('qualification').invalid">
-    <label class="govuk-label" for="{{ type.key }}-qualification"> {{ type.value }} name </label>
+    <label class="govuk-!-margin-bottom-2 govuk-label" for="{{ type.key }}-qualification"> {{ type.value }} name </label>
     <span
       *ngIf="submitted && group.get('qualification').invalid"
       id="{{ type.key }}-qualification-error"
@@ -26,7 +26,7 @@
   </div>
 
   <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('year').invalid">
-    <label class="govuk-label" for="{{ type.key }}-year">
+    <label class="govuk-!-margin-bottom-2 govuk-label" for="{{ type.key }}-year">
       Year achieved
     </label>
     <span *ngIf="submitted && group.get('year').invalid" id="{{ type.key }}-year-error" class="govuk-error-message">
@@ -45,7 +45,7 @@
 
   <div class="govuk-character-count">
     <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('notes').invalid">
-      <label class="govuk-label" for="{{ type.key }}-notes">
+      <label class="govuk-!-margin-bottom-2 govuk-label" for="{{ type.key }}-notes">
         Notes
       </label>
       <span *ngIf="submitted && group.get('notes').invalid" id="{{ type.key }}-notes-error" class="govuk-error-message">

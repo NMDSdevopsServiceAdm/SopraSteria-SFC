@@ -37,6 +37,9 @@ export class Dialog<T, R = any> {
     this.overlayRef.attach(componentPortal);
     this.focusTrap = this.focusTrapFactory.create(this.overlayRef.overlayElement);
     this.overlayRef.overlayElement.setAttribute('tabindex', '-1');
+    this.overlayRef.overlayElement.setAttribute('aria-modal', 'true');
+    this.overlayRef.overlayElement.setAttribute('aria-labelledby', 'deleteHeading');
+    this.overlayRef.overlayElement.setAttribute('role', 'dialog');
     this.overlayRef.overlayElement.focus();
   }
 

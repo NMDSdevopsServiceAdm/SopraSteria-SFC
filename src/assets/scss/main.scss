@@ -12,9 +12,10 @@ body {
 @import 'modules/overlay';
 @import 'modules/sticky-footer';
 @import 'modules/utils';
+@import 'modules/responsive';
 
 // Custom Partials
-@import 'partials/lists';
+// @import 'partials/lists';
 
 // Custom Components
 @import 'components/auto-suggest';

@@ -12,7 +12,7 @@
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
   <div formGroupName="passwordGroup">
     <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPasswordInput.errors">
-      <label class="govuk-label" for="createPasswordInput">
+      <label class="govuk-!-margin-bottom-2 govuk-label" for="createPasswordInput">
         Password
       </label>
       <span id="createPasswordInput-hint" class="govuk-hint">
@@ -42,7 +42,7 @@
       class="govuk-form-group govuk-!-margin-bottom-8"
       [class.govuk-form-group--error]="submitted && getConfirmPasswordInput.errors"
     >
-      <label class="govuk-label" for="confirmPasswordInput">
+      <label class="govuk-!-margin-bottom-2 govuk-label" for="confirmPasswordInput">
         Confirm password
       </label>
       <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
