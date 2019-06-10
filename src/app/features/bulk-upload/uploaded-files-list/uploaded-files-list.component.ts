@@ -1,5 +1,6 @@
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { UploadFile, ValidatedFilesResponse, FileValidateStatus } from '@core/model/bulk-upload.model';
@@ -13,7 +14,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private uploadedFiles: Array<UploadFile>;
   public isValidating = false;
 
-  constructor(private bulkUploadService: BulkUploadService) {}
+  constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
     this.setupSubscription();
@@ -31,16 +32,17 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   public validateFiles(): void {
     this.isValidating = true;
-    this.uploadedFiles.map((file: UploadFile) => file.status = FileValidateStatus.Validating);
+    this.uploadedFiles.map((file: UploadFile) => (file.status = FileValidateStatus.Validating));
 
     this.subscriptions.add(
-      this.bulkUploadService.validateFiles().subscribe(
+      this.bulkUploadService.validateFiles(this.establishmentService.establishmentId).subscribe(
         (response: ValidatedFilesResponse) => {
           this.finishValidating(response);
         },
         (response: HttpErrorResponse) => {
           this.finishValidating(response);
-        }, () => {
+        },
+        () => {
           this.finishValidating();
         }
       )
@@ -53,7 +55,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
    * @param response
    */
   private finishValidating(response?: ValidatedFilesResponse | HttpErrorResponse): void {
-    this.uploadedFiles.map((file: UploadFile) => file.status = null);
+    this.uploadedFiles.map((file: UploadFile) => (file.status = null));
     this.isValidating = false;
     console.clear();
     console.log(response);

@@ -40,11 +40,8 @@ export class BulkUploadService {
     return parts[parts.length - 1].toUpperCase();
   }
 
-  public validateFiles(): Observable<ValidatedFilesResponse> {
-    return this.http.put<ValidatedFilesResponse>(
-      `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/validate`,
-      null
-    );
+  public validateFiles(establishmentId: number): Observable<ValidatedFilesResponse> {
+    return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
   }
 
   public formErrorsMap(): Array<ErrorDetails> {
