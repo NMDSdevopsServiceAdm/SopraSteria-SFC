@@ -2,6 +2,7 @@
 
 .govuk-width-container {
   max-width: 960px;
+  outline: 0 !important;
 }
 
 @include govuk-media-query($from: mobile, $until: tablet) {
