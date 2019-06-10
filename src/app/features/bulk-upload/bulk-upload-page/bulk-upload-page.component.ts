@@ -39,7 +39,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
       this.bulkUploadService.exposeForm$.subscribe((form: FormGroup) => {
         if (form) {
           this.form = form;
-          this.showErrorSummary = form.invalid ? true : false;
+          this.showErrorSummary = form.invalid;
           this.errorSummaryService.syncFormErrorsEvent.next(true);
         }
       })
