@@ -10,7 +10,7 @@
 
 class ValidationMessage {
   static get ERROR() { return 'Error' };
-  static get WARNING() { return 'Error' };
+  static get WARNING() { return 'Warning' };
 
   constructor(type, code, message, properties) {
     this._type = type;
