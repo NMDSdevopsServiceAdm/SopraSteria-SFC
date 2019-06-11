@@ -61,6 +61,7 @@ class Worker {
 
     // array of qualification records for this worker
     this._qualifications = null;
+    this._amhp = null;
   };
 
   //49 csv columns
@@ -114,6 +115,7 @@ class Worker {
   static get QUAL_ACH02_NOTES_ERROR() { return 5070; }
   static get QUAL_ACH03_ERROR() { return 5080; }
   static get QUAL_ACH03_NOTES_ERROR() { return 5090; }
+  static get AMHP_ERROR() { return 6000; }
       
   get local() {
     return this._localId;
@@ -195,6 +197,9 @@ class Worker {
   }
   get contHours() {
     return this._contHours;
+  }
+  get amhp() {
+    return this._amhp;
   }
 
   _validateContractType() {
@@ -1530,6 +1535,59 @@ class Worker {
     this._qualifications = myProcessedQualifications.filter(thisQualification => thisQualification !== null && thisQualification !== false);
   }
 
+  _validateAmhp() {
+    const amhpValues = [1,2,999];
+    const myAmhp = parseInt(this._currentLine.AMHP);
+    const socialWorkerJobRole = 6;
+
+    if (this._currentLine.AMHP && this._currentLine.AMHP.length > 0) {
+      if (this._mainJobRole === socialWorkerJobRole ) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.AMHP_ERROR,
+          errType: 'AMHP_ERROR',
+          error: "AMHP (AMHP) Main Job Role must be Social Worker 06",
+          source: this._currentLine.AMHP,
+        });
+        return false;
+      } else if (isNaN(myAmhp)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.AMHP_ERROR,
+          errType: 'AMHP_ERROR',
+          error: "AMHP (AMHP) must be an integer",
+          source: this._currentLine.AMHP,
+        });
+        return false;
+      } else if (!amhpValues.includes(parseInt(myAmhp))) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.AMHP_ERROR,
+          errType: 'AMHP_ERROR',
+          error: "AMHP (AMHP) must have value 1(Yes) to 2(No),  999(Unknown) ",
+          source: this._currentLine.AMHP,
+        });
+        return false;
+      }
+      else {
+        switch (myAmhp) {
+          case 1:
+            this._amhp = 'Yes';
+            break;
+          case 2:
+            this._amhp = 'No';
+            break;
+          case 999:
+            this._amhp = 'Not known';
+            break;
+        }
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+
   //transform related
   _transformContractType() {
     if (this._contractType) {
@@ -1842,11 +1900,10 @@ class Worker {
     status = !this._validateOtherJobs() ? false : status;
     status = !this._validateRegisteredNurse() ? false : status;
     status = !this._validateNursingSpecialist() ? false : status;
-
     status = !this._validateSocialCareQualification() ? false : status;
     status = !this._validateNonSocialCareQualification() ? false : status;
-
     status = !this._validationQualificationRecords() ? false : status;
+    status = !this._validateAmhp() ? false : status;
     
     return status;
   };
@@ -1939,6 +1996,7 @@ class Worker {
           notes: thisQual.desc ? thisQual.desc : undefined,
         };
       }) : undefined,
+      amhp: this._amhp ? this._amhp : undefined,
     };
   };
 
@@ -1978,15 +2036,16 @@ class Worker {
       nurseSpecialism: this._nursingSpecialist ? {
           id: this._nursingSpecialist
         } : undefined,
+      amhp: this._amhp ? this._amhp : undefined,
     };
 
     if (this._startInsect) {
       if (this._startInsect === 999) {
-        changeProperties.socialCareStartDate : {
+        changeProperties.socialCareStartDate = {
           value : 'No'
         } 
       } else {
-        changeProperties.socialCareStartDate : {
+        changeProperties.socialCareStartDate = {
           value : 'Yes',
           year : this._startInsect
         } 
