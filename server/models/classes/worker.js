@@ -108,6 +108,8 @@ class Worker extends EntityValidator {
     // Returns true if the resulting Worker is valid; otherwise false
     async load(document) {
         try {
+            this.resetValidations();
+
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
             // reason is not a managed property, load it specifically

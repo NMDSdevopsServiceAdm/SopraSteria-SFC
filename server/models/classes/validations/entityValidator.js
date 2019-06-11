@@ -33,7 +33,7 @@ class EntityValidator {
 
 
   // resets the current set of validations
-  reset() {
+  resetValidations() {
     this._validations = [];
   }
 
@@ -49,17 +49,11 @@ class EntityValidator {
 
   // validates the given set properties; returns true is all is valid, else false
   validate(properties) {
-    console.log("WA DEBUG - calling EntityValidator::validate")
-
-    this.reset();
-
     // first, validation is performed on the mandatory properties
     const isMandatoryValid = this.hasMandatoryProperties;
 
     // then each individual property - including any entity local attributes
     const arePropertiesValid = this.isValid();
-
-    console.log("WA DEBUG - returning from  EntityValidator::validate")
 
     return isMandatoryValid && arePropertiesValid;
   }

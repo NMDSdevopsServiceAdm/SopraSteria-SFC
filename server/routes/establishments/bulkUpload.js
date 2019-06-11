@@ -456,11 +456,13 @@ const _loadWorkerQualifications = async (thisQual, myAPIQualifications) => {
   // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
 
   const isValid = thisApiQualification.validate();
+
+console.log("WA DEBUG - _loadWorkerQualifications validate returns: ", isValid)
+
   if (isValid) {
     // no validation errors in the entity itself, so add it ready for completion
     // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
     myAPIQualifications.push(thisApiQualification);
-    console.log("WA DEBUG - qualification validations: ", thisApiQualification.validations);
   } else {
     const errors = thisApiQualification.errors;
     const warnings = thisApiQualification.warnings;
@@ -504,7 +506,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
     } else {
       const errors = thisApiWorker.errors;
       const warnings = thisApiWorker.warnings;
-      console.log("WA DEBUG - qualification validations: ", thisApiWorker.validations);
+      console.log("WA DEBUG - worker validations: ", thisApiWorker.validations);
   
       if (errors.length === 0) {
         //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
@@ -553,7 +555,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
     } else {
       const errors = thisApiTraining.errors;
       const warnings = thisApiTraining.warnings;
-      console.log("WA DEBUG - qualification validations: ", thisApiTraining.validations);
+      console.log("WA DEBUG - training validations: ", thisApiTraining.validations);
   
       if (errors.length === 0) {
         // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));

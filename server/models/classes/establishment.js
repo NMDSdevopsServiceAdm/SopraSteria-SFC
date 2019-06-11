@@ -174,6 +174,8 @@ class Establishment extends EntityValidator {
     // Returns true if the resulting Establishment is valid; otherwise false
     async load(document) {
         try {
+            this.resetValidations();
+
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
         } catch (err) {

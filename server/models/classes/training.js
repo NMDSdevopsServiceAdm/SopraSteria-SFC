@@ -303,6 +303,8 @@ class Training extends EntityValidator {
     // Thows "Error" on error.
     async load(document) {
         try {
+            this.resetValidations();
+
             const validatedTrainingRecord = await this.validateTrainingRecord(document);
 
             if (validatedTrainingRecord !== false) {

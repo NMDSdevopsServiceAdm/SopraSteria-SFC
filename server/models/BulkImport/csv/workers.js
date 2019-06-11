@@ -1142,7 +1142,6 @@ class Worker {
     // optional
     if (this._currentLine.HOURLYRATE && this._currentLine.HOURLYRATE.length > 0) {
       // can only give (annual) salary if salary interval (SALARYINT) is hourly
-      console.log("WA DEBUG - salary: ", this._salaryInt, Number.isInteger(this._salaryInt))
       if (this._salaryInt === null || this._salaryInt !== 'Hourly') {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
@@ -2295,7 +2294,7 @@ class Worker {
         qualification : {
           id: thisQual.id,
         },
-        year: thisQual.year ? thisQual.year : undefined,
+        year: 2020,//thisQual.year ? thisQual.year : undefined,
         other: undefined,     // "other" qualifier does not come from bulk import
         notes: thisQual.desc ? thisQual.desc : undefined,
       };
