@@ -1,11 +1,12 @@
-import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { HttpEventType } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { forkJoin, Observable } from 'rxjs';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { mergeMap, take } from 'rxjs/operators';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { UploadFile } from '@core/model/bulk-upload.model';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { combineLatest, forkJoin, Observable, Subscription } from 'rxjs';
+import { map, take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-files-upload',
@@ -15,6 +16,9 @@ export class FilesUploadComponent implements OnInit {
   private form: FormGroup;
   private selectedFiles: Array<UploadFile>;
   private submitted = false;
+  private bytesTotal = 0;
+  private bytesUploaded: number[] = [];
+  private uploadSubscription$: Subscription;
   public filesUploading = false;
   public filesUploaded = false;
 
@@ -28,6 +32,12 @@ export class FilesUploadComponent implements OnInit {
     this.setupForm();
   }
 
+  public get progress(): number {
+    const uploaded = this.bytesUploaded.reduce((sum, val) => (sum += val));
+    const progress = Math.round((100 * uploaded) / this.bytesTotal);
+    return progress;
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
       fileUpload: [null, Validators.required],
@@ -38,7 +48,7 @@ export class FilesUploadComponent implements OnInit {
     return this.form.get('fileUpload');
   }
 
-  private onFilesSelection($event: Event): void {
+  public onFilesSelection($event: Event): void {
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target['files']);
     this.selectedFiles.map((file: UploadFile) => (file.extension = this.bulkUploadService.getFileType(file.name)));
@@ -56,41 +66,56 @@ export class FilesUploadComponent implements OnInit {
     this.bulkUploadService.exposeForm$.next(this.form);
 
     if (this.form.valid) {
-      this.uploadFiles();
+      this.uploadFiles(this.selectedFiles);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  private uploadFiles(): void {
+  private uploadFiles(files: UploadFile[]): void {
+    this.bytesUploaded = [];
     this.filesUploading = true;
 
     forkJoin(
-      this.selectedFiles.map((file: UploadFile) =>
-        this.getPresignedUrl(file)
-          .pipe(take(1))
-          .pipe(mergeMap((signedURL: string) => this.uploadFile(file, signedURL)))
+      files.map((file: UploadFile) => {
+        this.bytesTotal += file.size;
+        this.bytesUploaded.push(0);
+        return this.getPresignedUrl(file).pipe(
+          take(1),
+          map(signedUrl => {
+            return { file, signedUrl };
+          })
+        );
+      })
+    ).subscribe(signedUrls => {
+      this.uploadSubscription$ = combineLatest(
+        signedUrls.map(data => this.bulkUploadService.uploadFile(data.file, data.signedUrl))
       )
-    )
-      .pipe(take(1))
-      .subscribe(
-        () => {
-          this.bulkUploadService.uploadedFiles$.next(this.selectedFiles);
-          this.filesUploading = false;
-          this.filesUploaded = true;
-        },
-        () => {
-          this.filesUploading = false;
-        }
-      );
+        .pipe(
+          tap(events => {
+            events.map((event, index: number) => {
+              switch (event.type) {
+                case HttpEventType.UploadProgress:
+                  this.bytesUploaded[index] = event.loaded;
+                  break;
+              }
+            });
+          })
+        )
+        .subscribe(
+          null,
+          () => this.cancelUpload(),
+          () => {
+            this.bulkUploadService.uploadedFiles$.next(this.selectedFiles);
+            this.filesUploading = false;
+            this.filesUploaded = true;
+          }
+        );
+    });
   }
 
   private getPresignedUrl(file: UploadFile): Observable<string> {
     return this.bulkUploadService.getPresignedUrl(file.name);
-  }
-
-  private uploadFile(file: UploadFile, signedURL: string): Observable<string> {
-    return this.bulkUploadService.uploadFile(file, signedURL);
   }
 
   public removeFiles(): void {
@@ -106,7 +131,8 @@ export class FilesUploadComponent implements OnInit {
   }
 
   public cancelUpload(): void {
-    console.log('cancel upload');
+    this.filesUploading = false;
+    this.uploadSubscription$.unsubscribe();
   }
 
   public getFirstErrorMessage(item: string): string {
