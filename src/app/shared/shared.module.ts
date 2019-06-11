@@ -14,6 +14,7 @@ import { InsetTextComponent } from './components/inset-text/inset-text.component
 import { MessagesComponent } from './components/messages/messages.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
+import { ProgressComponent } from './components/progress/progress.component';
 import { SkipLinkComponent } from './components/skip-link/skip-link.component';
 import { StartButtonComponent } from './components/start-button/start-button.component';
 import { StatusComponent } from './components/status/status.component';
@@ -49,6 +50,8 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     NumberPositiveOnly,
     PanelComponent,
     PhaseBannerComponent,
+    ProgressComponent,
+    SkipLinkComponent,
     StartButtonComponent,
     StatusComponent,
     SubmitButtonComponent,
@@ -56,7 +59,6 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
-    SkipLinkComponent,
   ],
   exports: [
     AutoSuggestComponent,
@@ -75,6 +77,8 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     NumberPositiveOnly,
     PanelComponent,
     PhaseBannerComponent,
+    ProgressComponent,
+    SkipLinkComponent,
     StartButtonComponent,
     StatusComponent,
     SubmitButtonComponent,
@@ -82,7 +86,6 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
-    SkipLinkComponent,
   ],
 })
 export class SharedModule {}
