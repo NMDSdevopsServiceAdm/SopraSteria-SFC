@@ -13,9 +13,6 @@ class Establishment {
     this._name = null;
     this._address = null;
     this._postcode = null;
-    this._email = null;
-    this._phone = null;
-
 
     this._establishmentType = null;
     this._establishmentTypeOther = null;
@@ -37,23 +34,13 @@ class Establishment {
     this._utilisations = null;
 
     this._totalPermTemp = null;
-    this._permCount = null;
-    this._tempCount = null;
-    this._poolCount = null;
-    this._agencyCount = null;
     this._studentCount = null;
-    this._voluntaryCount = null;
-    this._otherCount = null;
-    this._otherDescriptions = null;
+  
     this._alljobs = null;
     this._vacancies = null;
     this._starters = null;
     this._leavers = null;
-    this._totalVacancies = null;
-    this._totalStarters = null;
-    this._totalLeavers = null;
     this._reasonsForLeaving = null;
-    this._destinationOnLeaving = null;
 
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
@@ -63,8 +50,6 @@ class Establishment {
   static get STATUS_ERROR() { return 1020; }
   static get NAME_ERROR() { return 1030; }
   static get ADDRESS_ERROR() { return 1040; }
-  static get EMAIL_ERROR() { return 1050; }
-  static get PHONE_ERROR() { return 1060; }
   static get ESTABLISHMENT_TYPE_ERROR() { return 1070; }
   static get SHARE_WITH_CQC_ERROR() { return 1070; }
   static get SHARE_WITH_LA_ERROR() { return 1080; }
@@ -110,12 +95,6 @@ class Establishment {
   }
   get poostcode() {
     return this._postcode;
-  }
-  get email() {
-    return this._email;
-  }
-  get phone() {
-    return this._phone;
   }
 
   get establishmentType() {
@@ -167,33 +146,11 @@ class Establishment {
   get locationId() {
     return this._locationID;
   }
-
   get totalPermTemp() {
     return this._totalPermTemp;
   }
-  get permCount() {
-    return this._permCount;
-  }
-  get tempCount() {
-    return this._tempCount;
-  }
-  get poolCount() {
-    return this._poolCount;
-  }
-  get agencyCount() {
-    return this._agencyCount;
-  }
   get studentCount() {
     return this._studentCount;
-  }
-  get voluntaryCount() {
-    return this._voluntaryCount;
-  }
-  get otherCount() {
-    return this._otherCount;
-  }
-  get otherDescriptions() {
-    return this._otherDescriptions;
   }
   get allJobs() {
     return this._alljobs;
@@ -207,20 +164,8 @@ class Establishment {
   get leavers() {
     return this._leavers;
   }
-  get totalVacancies() {
-    return this._totalVacancies;
-  }
-  get totalStarters() {
-    return this._totalStarters;
-  }
-  get totalLeavers() {
-    return this._totalLeavers;
-  }
   get reasonsForLeaving() {
     return this._reasonsForLeaving;
-  }
-  get destinationOnLeaving() {
-    return this._destinationOnLeaving;
   }
 
   _validateLocalisedId() {
@@ -409,51 +354,6 @@ class Establishment {
     return true;
   }
 
-
-  // NOTE - establishment does not have email address (a user has email address)
-  _validateEmail() {
-    const myEmail = this._currentLine.EMAIL;
-
-    // optional, but if present  no more than 240 characters
-    const MAX_LENGTH = 240;
-
-    // could validate the email address using a regux - but we're not using it anyway!!!
-
-    if (myEmail && myEmail.length > MAX_LENGTH) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.EMAIL_ERROR,
-        errType: `EMAIL_ERROR`,
-        error: `Email (EMAIL) must be no more than ${MAX_LENGTH} characters`,
-        source: myEmail,
-      });
-      return false;
-    } else {
-      this._email = myEmail;
-      return true;
-    }
-  }
-  _validatePhone() {
-    const myPhone = this._currentLine.PHONE;
-
-    // optional, but if present no more than 50 characters
-    const MAX_LENGTH = 50;
-
-    if (myPhone && myPhone.length > MAX_LENGTH) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.PHONE_ERROR,
-        errType: `PHONE_ERROR`,
-        error: `Phone (PHONE) must be no more than ${MAX_LENGTH} characters`,
-        source: myPhone,
-      });
-      return false;
-    } else {
-      this._phone = myPhone;
-      return true;
-    }
-  }
-  
   _validateEstablishmentType() {
     const myEstablishmentType = parseInt(this._currentLine.ESTTYPE);
     const myOtherEstablishmentType = this._currentLine.OTHERTYPE;
@@ -679,7 +579,6 @@ class Establishment {
       return true;
     }
   }
-
   
   _validateAllServices() {
     // all services must have at least one value (main service) or a semi colon delimited list of integers; treat consistently as a list of
@@ -1025,63 +924,15 @@ class Establishment {
   // includes vacancies, starters and leavers, total vacancies, total starters and total leavers
   _validateJobRoleTotals() {
     // mandatory
-    const permCount = this._currentLine.PERMCOUNT.split(';');
-    const tempCount = this._currentLine.TEMPCOUNT.split(';');
-    const poolCount = this._currentLine.POOLCOUNT.split(';');
-    const agencyCount = this._currentLine.AGENCYCOUNT.split(';');
     const studentCount = this._currentLine.STUDENTCOUNT.split(';');
-    const voluntaryCount = this._currentLine.VOLUNTARYCOUNT.split(';');
-    const otherCount = this._currentLine.OTHERCOUNT.split(';');
-    const otherDescriptions = this._currentLine.OTHERDESC.split(';');
-
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
     const leavers = this._currentLine.LEAVERS.split(';');
-
-    const totalVacancies = this._currentLine.TOTALVACANCIES === 'NK' ? -1 : parseInt(this._currentLine.TOTALVACANCIES);
-    const totalStarters = this._currentLine.TOTALSTARTERS === 'NK' ? -1 : parseInt(this._currentLine.TOTALSTARTERS);
-    const totalLeavers = this._currentLine.TOTALLEAVERS === 'NK' ? -1 : parseInt(this._currentLine.TOTALLEAVERS);
 
     const localValidationErrors = [];
     const allJobsCount = this._alljobs.length;
 
     // all counts must have the same number of entries as all job roles
-    if (permCount.length !== allJobsCount) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.PERM_COUNT_ERROR,
-        errType: `PERM_COUNT_ERROR`,
-        error: "Permanent Count (PERMCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
-        source: `${this._currentLine.PERMCOUNT} - ${this._currentLine.ALLJOBROLES}`,
-      });
-    }
-    if (tempCount.length !== allJobsCount) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.TEMP_COUNT_ERROR,
-        errType: `TEMP_COUNT_ERROR`,
-        error: "Temporary Count (TEMPCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
-        source: `${this._currentLine.TEMPCOUNT} - ${this._currentLine.ALLJOBROLES}`,
-      });
-    }
-    if (poolCount.length !== allJobsCount) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.POOL_COUNT_ERROR,
-        errType: `POOL_COUNT_ERROR`,
-        error: "Pool Count (POOLCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
-        source: `${this._currentLine.POOLCOUNT} - ${this._currentLine.ALLJOBROLES}`,
-      });
-    }
-    if (agencyCount.length !== allJobsCount) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.AGENCY_COUNT_ERROR,
-        errType: `AGENCY_COUNT_ERROR`,
-        error: "Agency Count (AGENCYCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
-        source: `${this._currentLine.AGENCYCOUNT} - ${this._currentLine.ALLJOBROLES}`,
-      });
-    }
     if (studentCount.length !== allJobsCount) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -1089,33 +940,6 @@ class Establishment {
         errType: `STUDENT_COUNT_ERROR`,
         error: "Student Count (STUDENTCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
         source: `${this._currentLine.STUDENTCOUNT} - ${this._currentLine.ALLJOBROLES}`,
-      });
-    }
-    if (voluntaryCount.length !== allJobsCount) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.VOLUNATRY_COUNT_ERROR,
-        errType: `VOLUNATRY_COUNT_ERROR`,
-        error: "Voluntary Count (VOLUNTARYCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
-        source: `${this._currentLine.VOLUNTARYCOUNT} - ${this._currentLine.ALLJOBROLES}`,
-      });
-    }
-    if (otherCount.length !== allJobsCount) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.OTHER_COUNT_ERROR,
-        errType: `OTHER_COUNT_ERROR`,
-        error: "Other Count (OTHERCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
-        source: `${this._currentLine.OTHERCOUNT} - ${this._currentLine.ALLJOBROLES}`,
-      });
-    }
-    if (otherDescriptions.length !== allJobsCount) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.OTHER_COUNT_ERROR,
-        errType: `OTHER_COUNT_ERROR`,
-        error: "Other Descriptions (OTHERDESC) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
-        source: `${this._currentLine.OTHERDESC} - ${this._currentLine.ALLJOBROLES}`,
       });
     }
 
@@ -1149,42 +973,6 @@ class Establishment {
 
     // all counts must be integers and greater than/equal to zero
     const MIN_COUNT = 0;
-    if (!permCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.PERM_COUNT_ERROR,
-        errType: `PERM_COUNT_ERROR`,
-        error: `Permanent Count (PERMCOUNT) values must be integers and ${MIN_COUNT} or more`,
-        source: `${this._currentLine.PERMCOUNT}`,
-      });
-    }
-    if (!tempCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.TEMP_COUNT_ERROR,
-        errType: `TEMP_COUNT_ERROR`,
-        error: `Temporary Count (TEMPCOUNT) values must be integers and ${MIN_COUNT} or more`,
-        source: `${this._currentLine.TEMPCOUNT}`,
-      });
-    }
-    if (!poolCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.POOL_COUNT_ERROR,
-        errType: `POOL_COUNT_ERROR`,
-        error: `Pool Count (POOLCOUNT) values must be integers and ${MIN_COUNT} or more`,
-        source: `${this._currentLine.POOLCOUNT}`,
-      });
-    }
-    if (!agencyCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.AGENCY_COUNT_ERROR,
-        errType: `AGENCY_COUNT_ERROR`,
-        error: `Perm Count (AGENCYCOUNT) values must be integers and ${MIN_COUNT} or more`,
-        source: `${this._currentLine.AGENCYCOUNT}`,
-      });
-    }
     if (!studentCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -1194,24 +982,7 @@ class Establishment {
         source: `${this._currentLine.STUDENTCOUNT}`,
       });
     }
-    if (!voluntaryCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.VOLUNATRY_COUNT_ERROR,
-        errType: `VOLUNATRY_COUNT_ERROR`,
-        error: `Voluntary Count (VOLUNTARYCOUNT) values must be integers and ${MIN_COUNT} or more`,
-        source: `${this._currentLine.VOLUNTARYCOUNT}`,
-      });
-    }
-    if (!otherCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.OTHER_COUNT_ERROR,
-        errType: `OTHER_COUNT_ERROR`,
-        error: `Other Count (OTHERCOUNT) values must be integers and ${MIN_COUNT} or more`,
-        source: `${this._currentLine.OTHERCOUNT}`,
-      });
-    }
+
     if (!vacancies.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -1240,94 +1011,20 @@ class Establishment {
       });
     }
 
-    // totals - must be defined and must be an integer greater than/equal to -1 (-1 is don't know)
-    const TOTAL_MIN = -1;
-    if (Number.isNaN(totalVacancies) || totalVacancies < TOTAL_MIN) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.TOTAL_VACANCIES_ERROR,
-        errType: `TOTAL_VACANCIES_ERROR`,
-        error: `Total Vacancies (TOTALVACANCIES) must be an integer and ${TOTAL_MIN} or more`,
-        source: this._currentLine.TOTALVACANCIES,
-      });
-    }
-    if (Number.isNaN(totalStarters) || totalStarters < TOTAL_MIN) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.TOTAL_STARTERS_ERROR,
-        errType: `TOTAL_STARTERS_ERROR`,
-        error: `Total Starters (TOTALSTARTERS) must be an integer and ${TOTAL_MIN} or more`,
-        source: this._currentLine.TOTALSTARTERS,
-      });
-    }
-    if (Number.isNaN(totalLeavers) || totalLeavers < TOTAL_MIN) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.TOTAL_LEAVERS_ERROR,
-        errType: `TOTAL_LEAVERS_ERROR`,
-        error: `Total Leavers (TOTALLEAVERS) must be an integer and ${TOTAL_MIN} or more`,
-        source: this._currentLine.TOTALLEAVERS,
-      });
-    }
-
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
     }
 
-    this._permCount = permCount.map(thisCount => parseInt(thisCount, 10));
-    this._tempCount = tempCount.map(thisCount => parseInt(thisCount, 10));
-    this._poolCount = poolCount.map(thisCount => parseInt(thisCount, 10));
-    this._agencyCount = agencyCount.map(thisCount => parseInt(thisCount, 10));
     this._studentCount = studentCount.map(thisCount => parseInt(thisCount, 10));
-    this._voluntaryCount = voluntaryCount.map(thisCount => parseInt(thisCount, 10));
-    this._otherCount = otherCount.map(thisCount => parseInt(thisCount, 10));
-    this._otherDescriptions = otherDescriptions;
-
     this._vacancies = vacancies.map(thisCount => parseInt(thisCount, 10));
     this._starters = starters.map(thisCount => parseInt(thisCount, 10));
     this._leavers = leavers.map(thisCount => parseInt(thisCount, 10));
 
-    // totals - must equal the sum on the per job role
-    const sumOfVacancies = this._vacancies.reduce((total, thisCount) => total+thisCount);
-    const sumOfStarters = this._starters.reduce((total, thisCount) => total+thisCount);
-    const sumOfLeavers = this._leavers.reduce((total, thisCount) => total+thisCount);
-    if (totalVacancies !== sumOfVacancies) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.TOTAL_VACANCIES_ERROR,
-        errType: `TOTAL_VACANCIES_ERROR`,
-        error: 'Total Vacancies (TOTALVACANCIES) is not equal to the sum of Vacancies by job role (VACANCIES)',
-        source: `${this._currentLine.VACANCIES} - ${this._currentLine.TOTALVACANCIES}`,
-      });
-    }
-    if (totalStarters !== sumOfStarters) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.TOTAL_STARTERS_ERROR,
-        errType: `TOTAL_STARTERS_ERROR`,
-        error: 'Total Starters (TOTALVACANCIES) is not equal to the sum of Starters by job role (STARTERS)',
-        source: `${this._currentLine.STARTERS} - ${this._currentLine.TOTALSTARTERS}`,
-      });
-    }
-    if (totalLeavers !== sumOfLeavers) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.TOTAL_LEAVERS_ERROR,
-        errType: `TOTAL_LEAVERS_ERROR`,
-        error: 'Total Leavers (TOTALVACANCIES) is not equal to the sum of Leavers by job role (LEAVERS)',
-        source: `${this._currentLine.LEAVERS} - ${this._currentLine.TOTALLEAVERS}`,
-      });
-    }
-
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));
       return false;
-    }    
-
-    this._totalVacancies = totalVacancies;
-    this._totalStarters = totalStarters;
-    this._totalLeavers = totalLeavers;
+    }
 
     return true;
   }
@@ -1500,13 +1197,6 @@ class Establishment {
         return false;
       }
   
-      this._destinationOnLeaving = allDestinations.map((thisDestination, index) => {
-        return {
-          id: parseInt(thisDestination, 10),
-          count: parseInt(allDestinationsCounts[index])
-        };
-      });
-
       return true;
   
     } else {
@@ -1578,7 +1268,6 @@ class Establishment {
       this._allServiceUsers = mappedServices;
     }
   }
-
 
   _transformEstablishmentType() {
     // integer in source; enum in target
@@ -1776,50 +1465,15 @@ class Establishment {
     }
   }
 
-  _transformDestinationsOnLeaving() {
-    if (this._destinationOnLeaving && Array.isArray(this._destinationOnLeaving)) {
-      const mappedDestinations = [];
-
-      this._destinationOnLeaving.forEach(thisDestination => {
-        const thisMappedDestination = {
-          id: BUDI.destinationOnLeaving(BUDI.TO_ASC, thisDestination.id),
-          count: thisDestination.count
-        };
-
-        if (thisMappedDestination.id) {
-          mappedDestinations.push(thisMappedDestination);
-        } else {
-          this._validationErrors.push({
-            lineNumber: this._lineNumber,
-            errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
-            errType: `DESTINATIONS_ON_LEAVING_ERROR`,
-            error: `Destination on Leaving (DESTINATIONS): ${thisDestination.id} is unknown`,
-            source: this._currentLine.REASONS,
-          });
-        }
-      });
-
-      this._destinationOnLeaving = mappedDestinations;
-    }
-  }
-
   // returns true on success, false is any attribute of Establishment fails
   validate() {
     let status = true;
 
     status = !this._validateLocalisedId() ? false : status;
-
     status = !this._validateStatus() ? false : status;
     status = !this._validateEstablishmentName() ? false : status;
-
     status = !this._validateAddress() ? false : status;
-
-    // validating email and phone even though these are no longer mapped to an establishment
-    status = !this._validateEmail() ? false : status;
-    status = !this._validatePhone() ? false : status;
-
     status = !this._validateEstablishmentType() ? false : status;
-
 
     // ignoring IIPSTATUS and PERMNHSC
     status = !this._validateShareWithCQC() ? false : status;
@@ -1855,13 +1509,10 @@ class Establishment {
     status = !this._transformAllServices() ? false : status;
     status = !this._transformServiceUsers() ? false : status;
     status = !this._transformAllJobs() ? false : status;
-
     status = !this._transformReasonsForLeaving() ? false : status;
     status = !this._transformDestinationsOnLeaving() ? false : status;
-
     status = !this._transformAllCapacities() ? false : status;
     status = !this._transformAllUtilisation() ? false : status;
-
     status = !this._transformAllVacanciesStartersLeavers() ? false : status;
 
     return status;
@@ -1910,22 +1561,11 @@ class Establishment {
       totalPermTemp: this._totalPermTemp,
       allJobs: this._alljobs,
       counts: {
-        perm: this._permCount,
-        temp: this._tempCount,
-        pool: this._poolCount,
-        agency: this._agencyCount,
         student: this._studentCount,
-        voluntary: this._voluntaryCount,
-        other: this._otherCount,
-        otherDescriptions: this._otherDescriptions,
         vacancies: this._vacancies,
         starters: this._starters,
         leavers: this._leavers,
-        totalVacancies: this._totalVacancies,
-        totalStarters: this._totalStarters,
-        totalLeavers: this._totalLeavers,
         reasonsForLeaving: this._reasonsForLeaving ? this._reasonsForLeaving : undefined,
-        destinationsOnLeaving: this._destinationOnLeaving ? this._destinationOnLeaving : undefined,
       },
     };
   };
