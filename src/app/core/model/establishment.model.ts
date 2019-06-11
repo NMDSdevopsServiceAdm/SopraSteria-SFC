@@ -7,6 +7,7 @@ export interface ServiceUser {
   id: number;
   group: string;
   service: string;
+  other?: string;
 }
 
 export interface Capacity {
