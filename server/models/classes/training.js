@@ -314,7 +314,7 @@ class Training extends EntityValidator {
                 this.notes = validatedTrainingRecord.notes;
             } else {
                 this._log(Training.LOG_ERROR, `Training::load - failed`);
-                throw new Error('Failed Validation');
+                return false
             }
         } catch (err) {
             this._log(Training.LOG_ERROR, `Training::load - error: ${err}`);
@@ -688,7 +688,7 @@ class Training extends EntityValidator {
         let allExistAndValid = true;    // assume all exist until proven otherwise
         
         // category must exist
-        if (this.category === null) allExistAndValid = true
+        if (this.category === null) allExistAndValid = false
 
         return allExistAndValid;
     }
