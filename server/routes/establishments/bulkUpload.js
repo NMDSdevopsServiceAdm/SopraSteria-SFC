@@ -40,7 +40,7 @@ router.route('/uploaded').get(async (req, res) => {
     const returnData = await Promise.all(data.Contents.filter(myFile => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key))
         .map(async(file) => {
           const elements = file.Key.split("/"); 
-          const objData = await s3.getObject({ Bucket: params.Bucket, Key: file.Key}).promise(); 
+          const objData = await s3.headObject({ Bucket: params.Bucket, Key: file.Key}).promise(); 
           const returnData = {
             filename: elements[elements.length - 1],
             uploaded: file.LastModified,

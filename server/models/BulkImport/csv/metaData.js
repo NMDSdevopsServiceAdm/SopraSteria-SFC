@@ -58,7 +58,7 @@ class MetaData {
   set records(records) {
     return this._records = records;
   }
-
+  
   toJSON() {
     return {
       filename:this._filename ? this._filename : null ,
