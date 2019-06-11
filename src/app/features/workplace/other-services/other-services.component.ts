@@ -81,8 +81,9 @@ export class OtherServicesComponent extends Question {
     allOtherServices.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
 
     this.allOtherServices.forEach((service: Service) => {
+      this.form.get('otherServices').value.push(service.id);
+
       if (service.other) {
-        this.form.get('otherServices').value.push(service.id);
         this.form.get(`additionalOtherService${service.id}`).setValue(service.other);
       }
     });
