@@ -1,7 +1,11 @@
 @import '~govuk-frontend/settings/all';
 
 $govuk-global-styles: true;
-$govuk-font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
+$govuk-font-family: 'Helvetica Neue',
+Helvetica,
+Arial,
+'Lucida Grande',
+sans-serif;
 
 @import '~govuk-frontend/all';
 
@@ -49,11 +53,29 @@ ul.total-list {
     position: relative;
 
     .total {
-    	position: absolute;
-    	left: 20px;
-    	bottom: 24px;
-    	font-size: 24px;
-    	font-weight: bold;
+      position: absolute;
+      left: 20px;
+      bottom: 24px;
+      font-size: 24px;
+      font-weight: bold;
     }
+  }
+}
+
+.ext-link {
+  position: relative;
+  padding-right: 23px;
+
+  &:before {
+    content: '';
+    width: 13px;
+    height: 13px;
+    background: url('/assets/images/window.svg') no-repeat center;
+    background-size: 13px auto;
+    display: block;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    margin-top: -5px;
   }
 }
