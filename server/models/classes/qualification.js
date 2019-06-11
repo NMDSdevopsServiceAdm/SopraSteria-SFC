@@ -180,6 +180,8 @@ class Qualification extends EntityValidator {
             this._log(Qualification.LOG_ERROR, 'Failed to get all training categories');
             return false;
         }
+
+        let returnStatus = true;
         
         const validatedQualificationRecord = {};
         // qualification category
@@ -194,7 +196,7 @@ class Qualification extends EntityValidator {
                 ));
     
                 this._log(Qualification.LOG_ERROR, 'qualification failed validation: qualification.id or qualification.title and qualification.level must exist');
-                return false;
+                returnStatus = false;
             }
 
             if (document.qualification.id && !Number.isInteger(document.qualification.id)) {
@@ -205,7 +207,7 @@ class Qualification extends EntityValidator {
                     ['Qualification']
                 ));
                 this._log(Qualification.LOG_ERROR, `qualification failed validation: qualification.id (${document.qualification.id}) must be an integer`);
-                return false;
+                returnStatus = false;
             }
             if (document.qualification.level && !Number.isInteger(document.qualification.level)) {
                 this._validations.push(new ValidationMessage(
@@ -215,7 +217,7 @@ class Qualification extends EntityValidator {
                     ['Qualification']
                 ));
                 this._log(Qualification.LOG_ERROR, `qualification failed validation: qualification.level (${document.qualification.level}) must be an integer`);
-                return false;
+                returnStatus = false;
             }
             let foundQualification = null;
             if (document.qualification.id) {
@@ -229,7 +231,7 @@ class Qualification extends EntityValidator {
                     ['Qualification']
                 ));
                 this._log(Qualification.LOG_ERROR, `qualification failed validation: qualification.id(${document.qualification.id}) or qualification.title (${document.qualification.title}) and qualification.level (${document.qualification.level}) must exist`);
-                return false;
+                returnStatus = false;
             } else {
                 validatedQualificationRecord.qualification = {
                     id: foundQualification.id,
@@ -255,11 +257,11 @@ class Qualification extends EntityValidator {
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.WARNING,
                     110,
-                    `year (${document.year}) must be an integer, must be <= this year and not more than ${MAX_AGE} years ago`,
+                    `(${document.year}) must be an integer, must be <= this year (${CURRENT_YEAR}) and not more than ${MAX_AGE} years ago`,
                     ['Year']
                 ));
-                this._log(Qualification.LOG_ERROR, `year failed validation: year (${document.year}) must be an integer, must be <= this year and not more than ${MAX_AGE} years ago`);
-                return false;
+                this._log(Qualification.LOG_ERROR, `year failed validation: year (${document.year}) must be an integer, must be <= this year (${CURRENT_YEAR}) and not more than ${MAX_AGE} years ago`);
+                returnStatus = false;
             }
 
             validatedQualificationRecord.year = document.year;
@@ -275,11 +277,11 @@ class Qualification extends EntityValidator {
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.WARNING,
                     120,
-                    `notes failed validation: MAX length (${MAX_LENGTH} characters)`,
+                    `validation: MAX length (${MAX_LENGTH} characters)`,
                     ['Notes']
                 ));
                 this._log(Qualification.LOG_ERROR, 'notes failed validation: MAX length (${MAX_LENGTH} characters)');
-                return false;
+                returnStatus = false;
             }
 
             validatedQualificationRecord.notes = document.notes;
@@ -288,8 +290,12 @@ class Qualification extends EntityValidator {
             validatedQualificationRecord.notes = null;
         }
 
-        return validatedQualificationRecord;
-    }
+
+        if (returnStatus === false) {
+            return false;
+        } else {
+            return validatedQualificationRecord;
+        }    }
 
     // takes the given JSON document and updates self (internal properties)
     // Thows "Error" on error.
