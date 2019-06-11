@@ -32,7 +32,7 @@ class MetaData {
   }
 
   set userName(userName) {
-    this._UserName = userName;
+    this._username = userName;
   }
 
   set id(id) {
@@ -61,10 +61,12 @@ class MetaData {
 
   toJSON() {
     return {
-      filename:this._filename ? this._filename : null ,
-      records:this._records ? this._records : 0,
-      errors:this._errors ? this._errors : 0,
-      warnings:this._warnings ? this._warnings : 0
+      username: this._username ? this._username : null,
+      filename: this._filename ? this._filename : null,
+      fileType: this._fileType ? this._fileType : null,
+      records: this._records ? this._records : 0,
+      errors: this._errors ? this._errors : 0,
+      warnings: this._warnings ? this._warnings : 0
     }
   }
 };
