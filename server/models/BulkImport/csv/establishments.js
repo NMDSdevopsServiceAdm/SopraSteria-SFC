@@ -1120,90 +1120,6 @@ class Establishment {
     }
   }
 
-  _validateDestinationsOnLeaving() {
-    // only if the sum of "LEAVERS" is greater than 0
-    const sumOfLeavers = this._leavers ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
-
-    if (sumOfLeavers > 0) {
-      const allDestinations = this._currentLine.DESTINATIONS.split(';');
-      const allDestinationsCounts = this._currentLine.DESTNOS.split(';');
-
-      const localValidationErrors = [];
-  
-      if (!allDestinations || allDestinations.length==0) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
-          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
-          error: "Destinations On Leaving (REASONS) must be defined as a semi-colon delimited set of reasons",
-          source: this._currentLine.REASONS,
-        });
-      }
-      if (!allDestinations.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
-          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
-          error: `Destinations On Leaving (REASONS) values must be integers`,
-          source: `${this._currentLine.REASONS}`,
-        });
-      }
-
-      if (!allDestinationsCounts || allDestinationsCounts.length==0) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
-          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
-          error: "Destinations On Leaving Counts (REASONNOS) must be defined as a semi-colon delimited set of reasons",
-          source: this._currentLine.REASONNOS,
-        });
-      }
-      const MIN_COUNT = 0;
-      if (!allDestinationsCounts.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
-          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
-          error: `Destinations On Leaving Counts (REASONNOS) values must be integers and ${MIN_COUNT} or more`,
-          source: `${this._currentLine.REASONNOS}`,
-        });
-      }
-
-      // all reasons and all reasons counts must be equal in number
-      if (allDestinations.length != allDestinationsCounts.length) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
-          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
-          error: `Destinations On Leaving (REASON) and Destinations On Leaving Counts (REASONNOS) must have the same number of semi-colon delimited values`,
-          source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
-        });
-      }
-
-      // sum of  all reasons counts must equal the sum of leavers
-      const sumOfReasonsCounts = allDestinationsCounts.reduce((total, thisCount) => parseInt(total,10) + parseInt(thisCount,10));
-      if (sumOfReasonsCounts != sumOfLeavers) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.DESTINATIONS_ON_LEAVING_ERROR,
-          errType: `DESTINATIONS_ON_LEAVING_ERROR`,
-          error: `Sum of Destinations On Leaving Counts (REASONNOS) must equal the sum of leavers (LEAVERS)`,
-          source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
-        });
-      }
-  
-      if (localValidationErrors.length > 0) {
-        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
-        return false;
-      }
-  
-      return true;
-  
-    } else {
-      return true;
-    }
-  }
-
   _transformMainService() {
     if (this._mainService) {
       const mappedService = BUDI.services(BUDI.TO_ASC, this._mainService);
@@ -1494,7 +1410,6 @@ class Establishment {
     status = !this._validateJobRoleTotals() ? false : status;
 
     status = !this._validateReasonsForLeaving() ? false : status;
-    status = !this._validateDestinationsOnLeaving() ? false : status;
     
     return status;
   }
@@ -1510,7 +1425,6 @@ class Establishment {
     status = !this._transformServiceUsers() ? false : status;
     status = !this._transformAllJobs() ? false : status;
     status = !this._transformReasonsForLeaving() ? false : status;
-    status = !this._transformDestinationsOnLeaving() ? false : status;
     status = !this._transformAllCapacities() ? false : status;
     status = !this._transformAllUtilisation() ? false : status;
     status = !this._transformAllVacanciesStartersLeavers() ? false : status;
