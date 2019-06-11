@@ -489,7 +489,8 @@ class Establishment {
 
   _validateRegType() {
     const myRegType = parseInt(this._currentLine.REGTYPE, 10);
-    if (Number.isNaN(myRegType) || myRegType !== 0 || myRegType !== 2) {
+
+    if (Number.isNaN(myRegType) || (myRegType !== 0 && myRegType !== 2)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.REGTYPE_ERROR,
