@@ -904,7 +904,6 @@ class Establishment {
       });
     }
     const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => {
-      console.log("WA DEBUG - this utilisation: ", thisUtilisation, parseInt(thisUtilisation), Number.isNaN(parseInt(thisUtilisation)))
       return thisUtilisation === null ||
             thisUtilisation.length==0 ? true : !Number.isNaN(parseInt(thisUtilisation)) && parseInt(thisUtilisation) < MAX_CAP_UTIL;
     });
