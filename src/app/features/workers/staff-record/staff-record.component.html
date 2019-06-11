@@ -44,7 +44,7 @@
 
     <div class="govuk-grid-column-one-third govuk-util__align-right">
       <ng-container *ngIf="!reportDetails?.displayWDFReport">
-        <button type="button" class="govuk-button govuk-button--secondary with-icon" (click)="deleteWorker($event)">
+        <button type="button" class="govuk-button govuk-button--link with-icon" (click)="deleteWorker($event)">
           <img src="/assets/images/bin.svg" alt="" />Delete staff record
         </button>
         <button type="button"
@@ -110,7 +110,7 @@
       <p>
         <button type="button" 
           [routerLink]="['/worker', worker.uid, 'add-qualification']"
-          class="govuk-button govuk-button--secondary govuk-!-margin-right-8"
+          class="govuk-button govuk-button--secondary govuk-!-margin-right-6"
         >
           Add a qualification
         </button>

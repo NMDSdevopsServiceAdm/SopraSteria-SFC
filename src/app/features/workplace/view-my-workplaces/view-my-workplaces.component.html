@@ -1,12 +1,13 @@
-<app-dashboard-header></app-dashboard-header>
-
-<p *ngIf="establishment?.name" class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment?.name }}</p>
-<h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-7">My workplaces ({{ myWorkplacesCount }})</h1>
-
-<ul class="govuk-list" *ngIf="myWorkplaces.length">
-  <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let myWorkplace of myWorkplaces">
-    <app-my-workplace [myWorkplace]="myWorkplace"></app-my-workplace>
-  </li>
-</ul>
-
-<p *ngIf="!myWorkplaces.length">There are no workplaces.</p>
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
+  <div class="govuk-grid-column-two-thirds">
+    <p *ngIf="establishment?.name" class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment?.name }}</p>
+    <h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-7">My workplaces ({{ myWorkplacesCount }})</h1>
+    <ul class="govuk-list" *ngIf="myWorkplaces.length">
+      <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let myWorkplace of myWorkplaces">
+        <app-my-workplace [myWorkplace]="myWorkplace"></app-my-workplace>
+      </li>
+    </ul>
+    <p *ngIf="!myWorkplaces.length">There are no workplaces.</p>
+  </div>
+  <app-dashboard-header></app-dashboard-header>
+</div>
