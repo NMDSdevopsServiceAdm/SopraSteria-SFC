@@ -14,6 +14,8 @@ const moment = require('moment');
 // database models
 const models = require('../index');
 
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+
 // known qualification types
 const QUALIFICATION_TYPE = [
     'NVQ',
@@ -26,9 +28,9 @@ const QUALIFICATION_TYPE = [
     'Apprenticeship'
 ];
 
-class QualificationDuplicateException {
+class QualificationDuplicateException extends EntityValidator {
     // TODO: parse the sequelize error on create failure
-    constructor() {  };
+    constructor() { super(); };
 
     get message()  {
         return 'Duplicate';

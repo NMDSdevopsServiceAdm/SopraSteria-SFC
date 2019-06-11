@@ -12,6 +12,8 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+
 const WorkerExceptions = require('./worker/workerExceptions');
 
 // Worker properties
@@ -22,8 +24,10 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_D
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
-class Worker {
+class Worker extends EntityValidator {
     constructor(establishmentId) {
+        super();
+        
         this._establishmentId = establishmentId;
         this._id = null;
         this._uid = null;

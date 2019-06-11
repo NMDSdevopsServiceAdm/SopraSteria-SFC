@@ -427,11 +427,26 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
       'A0000000000'       // TODO: remove this once Establishment::initialise is resolving NDMS ID based on given postcode
       );
   
-    const isValid = await thisApiEstablishment.load(thisEstablishmentAsAPI);
-    //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
-    myAPIEstablishments.push(thisApiEstablishment);
+    await thisApiEstablishment.load(thisEstablishmentAsAPI);
+
+    const isValid = thisApiEstablishment.validate();
+    if (isValid) {
+      // no validation errors in the entity itself, so add it ready for completion
+      //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
+      myAPIEstablishments.push(thisApiEstablishment);
+    } else {
+      const errors = thisApiEstablishment.errors;
+      const warnings = thisApiEstablishment.warnings;
+      console.log("WA DEBUG - establishment validations: ", thisApiEstablishment.validations);
+
+      if (errors.length === 0) {
+        //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
+        myAPIEstablishments.push(thisApiEstablishment);
+      }
+    }
+
   } catch (err) {
-    console.error("WA - localised validate establishment error until validation card");
+    console.error("WA - localised validate establishment error until validation card", err);
   }
 };
 
@@ -475,7 +490,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
       }) 
     );  
   } catch (err) {
-    console.error("WA - localised validate workers error until validation card");
+    console.error("WA - localised validate workers error until validation card", err);
   }
 };
 
@@ -501,7 +516,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
     // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
     myAPITrainings.push(thisApiTraining);  
   } catch (err) {
-    console.error("WA - localised validate training error until validation card");
+    console.error("WA - localised validate training error until validation card", err);
   }
 };
 

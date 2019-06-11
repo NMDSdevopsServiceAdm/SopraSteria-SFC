@@ -11,6 +11,8 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+
 // notifications
 
 // temp formatters
@@ -27,8 +29,10 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
-class Establishment {
+class Establishment extends EntityValidator {
     constructor(username) {
+        super();
+
         this._username = username;
         this._id = null;
         this._uid = null;
@@ -842,8 +846,8 @@ class Establishment {
                 myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
             }
 
-            myDefaultJSON.created = this.created.toJSON() ? this.created.toJSON() : null;
-            myDefaultJSON.updated = this.updated.toJSON() ? this.updated.toJSON() : null;
+            myDefaultJSON.created = this.created ? this.created.toJSON() : null;
+            myDefaultJSON.updated = this.updated ? this.updated.toJSON() : null;
             myDefaultJSON.updatedBy = this.updatedBy ? this.updatedBy : null;
 
             // TODO: JSON schema validation
@@ -879,6 +883,14 @@ class Establishment {
     // returns true if all mandatory properties for an Establishment exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
+
+        this._validations.push({
+            type: 'ERROR',
+            code: 123,
+            message: 'Debug message - missing NMDS ID',
+            properties: ['NMDSID']
+        });
+
         try {
             const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
             if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {

@@ -14,8 +14,12 @@ const moment = require('moment');
 // database models
 const models = require('../index');
 
-class Training {
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+
+class Training extends EntityValidator {
     constructor(establishmentId, workerUid) {
+        super();
+        
         this._establishmentId = establishmentId;
         this._workerUid = workerUid;
         this._id = null;
