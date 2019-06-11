@@ -28,17 +28,19 @@ const QUALIFICATION_TYPE = [
     'Apprenticeship'
 ];
 
-class QualificationDuplicateException extends EntityValidator {
+class QualificationDuplicateException {
     // TODO: parse the sequelize error on create failure
-    constructor() { super(); };
+    constructor() { };
 
     get message()  {
         return 'Duplicate';
     };
 };
 
-class Qualification {
+class Qualification extends EntityValidator {
     constructor(establishmentId, workerUid) {
+        super();
+
         this._establishmentId = establishmentId;
         this._workerUid = workerUid;
         this._id = null;
@@ -629,6 +631,13 @@ class Qualification {
     // returns true if all mandatory properties for a Training Record exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
+
+        this._validations.push({
+            type: 'ERROR',
+            code: 123,
+            message: 'Debug message - unknown qualification',
+            properties: ['QUALIFICATION_CATEGORY']
+        });
         
         // qualification must exist
         if (this.qualification === null) allExistAndValid = true

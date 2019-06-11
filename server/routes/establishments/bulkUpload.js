@@ -452,9 +452,25 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
 const _loadWorkerQualifications = async (thisQual, myAPIQualifications) => {
   const thisApiQualification = new QualificationEntity();
-  const isValid = await thisApiQualification.load(thisQual);
+  await thisApiQualification.load(thisQual);
   // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
-  myAPIQualifications.push(thisApiQualification);
+
+  const isValid = thisApiQualification.validate();
+  if (isValid) {
+    // no validation errors in the entity itself, so add it ready for completion
+    // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
+    myAPIQualifications.push(thisApiQualification);
+    console.log("WA DEBUG - qualification validations: ", thisApiQualification.validations);
+  } else {
+    const errors = thisApiQualification.errors;
+    const warnings = thisApiQualification.warnings;
+    console.log("WA DEBUG - qualification validations: ", thisApiQualification.validations);
+
+    if (errors.length === 0) {
+      // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
+      myAPIQualifications.push(thisApiQualification);
+    }
+  }
 };
 
 const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications) => {
@@ -478,11 +494,26 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
   const thisApiWorker = new WorkerEntity();
 
   try {
-    const isValid = await thisApiWorker.load(thisWorkerAsAPI);
-    //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
-    myAPIWorkers.push(thisApiWorker);
+    await thisApiWorker.load(thisWorkerAsAPI);
+
+    const isValid = thisApiWorker.validate();
+    if (isValid) {
+      // no validation errors in the entity itself, so add it ready for completion
+      //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
+      myAPIWorkers.push(thisApiWorker);
+    } else {
+      const errors = thisApiWorker.errors;
+      const warnings = thisApiWorker.warnings;
+      console.log("WA DEBUG - qualification validations: ", thisApiWorker.validations);
   
-    // construct Qualification entities (can be multiple of a single Worker record)
+      if (errors.length === 0) {
+        //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
+        myAPIWorkers.push(thisApiWorker);
+      }
+    }
+
+    // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
+    //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
     const thisQualificationAsAPI = lineValidator.toQualificationAPI();
     await Promise.all(
       thisQualificationAsAPI.map((thisQual) => {
@@ -512,9 +543,24 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
   const thisTrainingAsAPI = lineValidator.toAPI();
   const thisApiTraining = new TrainingEntity();
   try {
-    const isValid = await thisApiTraining.load(thisTrainingAsAPI);
-    // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
-    myAPITrainings.push(thisApiTraining);  
+    await thisApiTraining.load(thisTrainingAsAPI);
+
+    const isValid = thisApiTraining.validate();
+    if (isValid) {
+      // no validation errors in the entity itself, so add it ready for completion
+      // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
+      myAPITrainings.push(thisApiTraining);
+    } else {
+      const errors = thisApiTraining.errors;
+      const warnings = thisApiTraining.warnings;
+      console.log("WA DEBUG - qualification validations: ", thisApiTraining.validations);
+  
+      if (errors.length === 0) {
+        // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
+        myAPITrainings.push(thisApiTraining);
+      }
+    }
+
   } catch (err) {
     console.error("WA - localised validate training error until validation card", err);
   }

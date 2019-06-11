@@ -743,6 +743,14 @@ class Worker extends EntityValidator {
     // returns true if all mandatory properties for a Worker exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
+
+        this._validations.push({
+            type: 'ERROR',
+            code: 123,
+            message: 'Debug message - missing contract type',
+            properties: ['CONTRACT_TYPE']
+        });
+
         try {
             const nameIdProperty = this._properties.get('NameOrId');
             if (!(nameIdProperty && nameIdProperty.isInitialised && nameIdProperty.valid)) {

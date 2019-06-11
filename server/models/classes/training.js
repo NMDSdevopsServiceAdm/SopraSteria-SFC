@@ -686,6 +686,13 @@ class Training extends EntityValidator {
     // returns true if all mandatory properties for a Training Record exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
+
+        this._validations.push({
+            type: 'ERROR',
+            code: 123,
+            message: 'Debug message - unknown Training category',
+            properties: ['CATEGORY']
+        });
         
         // category must exist
         if (this.category === null) allExistAndValid = false
