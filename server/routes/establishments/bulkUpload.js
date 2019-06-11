@@ -73,43 +73,39 @@ router.route('/uploaded').get(async (req, res) => {
   }
 });
 
-router.route('/uploaded/:etag').get(async (req, res) => {
+router.route('/uploaded/*').get(async (req, res) => {
+  const requestedKey = req.params['0'];
+
+  const params = {
+    Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+    Prefix: `${req.establishmentId}/latest/`
+  };
+
   try {
-    const requestedETag = req.params.etag;
-    const params = {
-      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
-      Prefix: `${req.establishmentId}/latest/`
-    };
     
-    const data = await s3.listObjects(params).promise();
+    const objHeadData = await s3.headObject({ Bucket: params.Bucket, Key: requestedKey}).promise();
 
-    const fileData = data.Contents.filter(myFile => myFile.ETag == '"'+requestedETag+'"' && !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key));
+    const elements = requestedKey.split("/"); 
 
-    if(fileData.length == 1){
-      const objHeadData = await s3.headObject({ Bucket: params.Bucket, Key: fileData[0].Key}).promise();    
-      const elements = fileData[0].Key.split("/"); 
+    const returnData = { 
+      filename: elements[elements.length - 1],
+      uploaded: objHeadData.LastModified,
+      uploadedBy: objHeadData.Metadata.username,
+      size: objHeadData.ContentLength,
+      etag: objHeadData.ETag,
+      key: requestedKey,
+      signedUrl : s3.getSignedUrl('getObject', {
+        Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
+        Key: requestedKey,
+        Expires: appConfig.get('bulkuploaduser.uploadSignedUrlExpire')
+      })       
+    };
 
-      const returnData = { 
-        filename: elements[elements.length - 1],
-        uploaded: fileData[0].LastModified,
-        uploadedBy: objHeadData.Metadata.username,
-        size: fileData[0].Size,
-        etag: objHeadData.ETag,
-        key: fileData[0].Key,
-        signedUrl : s3.getSignedUrl('getObject', {
-          Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
-          Key: fileData[0].Key,
-          Expires: appConfig.get('bulkuploaduser.uploadSignedUrlExpire')
-        })       
-      };
-
-      return res.status(200).send({file: returnData});
-    } else {
-      return res.status(404).send({});
-    }
+    return res.status(200).send({file: returnData});
     
   } catch (err) {
-    console.error(err);
+    if(err.code && err.code == "NotFound") return res.status(404).send({});
+    console.log(err);
     return res.status(503).send({});
   }
 });
