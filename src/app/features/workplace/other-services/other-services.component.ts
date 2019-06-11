@@ -19,7 +19,7 @@ export class OtherServicesComponent extends Question {
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];
   public renderForm = false;
-  public workplaceCategories: Array<ServiceGroup>;
+  public serviceGroups: Array<ServiceGroup>;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -39,9 +39,8 @@ export class OtherServicesComponent extends Question {
   protected init() {
     this.subscriptions.add(
       this.workplaceService.getServicesByCategory(this.establishment.isRegulated).subscribe(
-        (workplaceCategories: Array<ServiceGroup>) => {
-          this.workplaceCategories = workplaceCategories;
-          this.workplaceCategories.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
+        (serviceGroups: Array<ServiceGroup>) => {
+          this.filterAndSetData(serviceGroups);
           this.updateForm();
         },
         (error: HttpErrorResponse) => {
@@ -53,6 +52,19 @@ export class OtherServicesComponent extends Question {
     );
 
     this.previous = ['/workplace', `${this.establishment.id}`, 'type-of-employer'];
+  }
+
+  /**
+   * Remove main service from service groups list
+   * Then set all services list
+   * @param serviceGroups
+   */
+  private filterAndSetData(serviceGroups: Array<ServiceGroup>): void {
+    serviceGroups.map((serviceGroup: ServiceGroup) => {
+      serviceGroup.services = serviceGroup.services.filter((service: Service) => service.id !== this.establishment.mainService.id);
+    });
+    this.serviceGroups = serviceGroups;
+    this.serviceGroups.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
   }
 
   private updateForm(): void {
