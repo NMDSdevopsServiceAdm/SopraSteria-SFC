@@ -29,6 +29,7 @@ import { NumberMax } from './directives/number-max.directive';
 import { NumberPositiveOnly } from './directives/number-positive-only.directive';
 import { Number } from './directives/number.directive';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
+import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
@@ -41,6 +42,7 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     DatePickerComponent,
     DetailsComponent,
     ErrorSummaryComponent,
+    FileValueAccessorDirective,
     InsetTextComponent,
     MessagesComponent,
     Number,
@@ -68,6 +70,7 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     DatePickerComponent,
     DetailsComponent,
     ErrorSummaryComponent,
+    FileValueAccessorDirective,
     InsetTextComponent,
     MessagesComponent,
     Number,
