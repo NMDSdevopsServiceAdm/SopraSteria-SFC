@@ -9,3 +9,27 @@
     }
   }
 }
+
+.govuk-list--definition {
+  display: flex;
+  flex-flow: column-reverse wrap;
+  margin: 0;
+  @include govuk-responsive-margin(4, 'bottom');
+  width: govuk-grid-width('one-third');
+  background-color: govuk-colour('grey-3');
+
+  dt {
+    @include govuk-responsive-margin(3, 'left');
+    @include govuk-responsive-margin(3, 'right');
+    @include govuk-responsive-margin(3, 'bottom');
+    margin-top: 0;
+    @include govuk-font(24, 'bold');
+  }
+  dd {
+    @include govuk-responsive-margin(3, 'top');
+    @include govuk-responsive-margin(3, 'left');
+    @include govuk-responsive-margin(3, 'right');
+    margin-bottom: 0;
+    @include govuk-font(80, 'bold');
+  }
+}
