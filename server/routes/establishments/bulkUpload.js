@@ -26,7 +26,98 @@ const TrainingEntity = require('../../models/classes/training').Training;
   
 const FileValidationStatusEnum = { "Pending": "pending", "Validating": "validating", "Pass": "pass", "PassWithWarnings": "pass with warnings", "Fail": "fail" };
 
+const ignoreMetaDataObjects = /.*metadata.json$/;
+const ignoreRoot = /.*\/$/;
 
+router.route('/uploaded').get(async (req, res) => {
+  try {
+    const params = {
+      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Prefix: `${req.establishmentId}/latest/`
+    };
+
+    const data = await s3.listObjects(params).promise();
+    const returnData = await Promise.all(data.Contents.filter(myFile => !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key))
+        .map(async(file) => {
+          const elements = file.Key.split("/"); 
+          const objData = await s3.getObject({ Bucket: params.Bucket, Key: file.Key}).promise(); 
+          const returnData = {
+            filename: elements[elements.length - 1],
+            uploaded: file.LastModified,
+            uploadedBy: objData.Metadata.username,
+            records: 0,
+            errors: 0,
+            warnings: 0,
+            type: null,
+            size: file.Size,
+            etag: file.ETag,
+            key: file.Key,
+            signedUrl : s3.getSignedUrl('getObject', {
+              Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
+              Key: file.Key,
+              Expires: appConfig.get('bulkuploaduser.uploadSignedUrlExpire')
+            })              
+          };          
+
+          const fileMetaData = data.Contents.filter(myFile => myFile.Key == file.Key+".metadata.json");
+          if(fileMetaData.length == 1){
+            const metaData = await downloadContent(fileMetaData[0].Key);
+            const metadataJSON = JSON.parse(metaData.data);
+            returnData.records = metadataJSON.records ? metadataJSON.records : 0;
+            returnData.errors = metadataJSON.errors ? metadataJSON.errors : 0;
+            returnData.warnings = metadataJSON.warnings ? metadataJSON.warnings : 0;
+            returnData.type = metadataJSON.type ? metadataJSON.type : null;
+          }
+
+          return returnData;
+        }));
+    return res.status(200).send({establishment: {uid: req.establishmentId},files: returnData});
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send({});
+  }
+});
+
+router.route('/uploaded/:etag').get(async (req, res) => {
+  try {
+    const requestedETag = req.params.etag;
+    const params = {
+      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Prefix: `${req.establishmentId}/latest/`
+    };
+    
+    const data = await s3.listObjects(params).promise();
+
+    const fileData = data.Contents.filter(myFile => myFile.ETag == '"'+requestedETag+'"' && !ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key));
+
+    if(fileData.length == 1){
+      const objHeadData = await s3.headObject({ Bucket: params.Bucket, Key: fileData[0].Key}).promise();    
+      const elements = fileData[0].Key.split("/"); 
+
+      const returnData = { 
+        filename: elements[elements.length - 1],
+        uploaded: fileData[0].LastModified,
+        uploadedBy: objHeadData.Metadata.username,
+        size: fileData[0].Size,
+        etag: objHeadData.ETag,
+        key: fileData[0].Key,
+        signedUrl : s3.getSignedUrl('getObject', {
+          Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
+          Key: fileData[0].Key,
+          Expires: appConfig.get('bulkuploaduser.uploadSignedUrlExpire')
+        })       
+      };
+
+      return res.status(200).send({file: returnData});
+    } else {
+      return res.status(404).send({});
+    }
+    
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send({});
+  }
+});
 /*
  * input:
  * "files": [
