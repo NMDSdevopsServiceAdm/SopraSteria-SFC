@@ -17,9 +17,6 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
         if (document.mainService) {
             console.log("WA restoring from JSON: ", document.mainService)
             const validatedService = await this._validateService(document.mainService);
-
-            console.log("WA DEBUG - validated main service: ", validatedService)
-
             if (validatedService) {
                 this.property = validatedService;
             } else {
