@@ -39,11 +39,7 @@ export class AppComponent implements OnInit {
   skipLink() {
     this.renderer.invokeElementMethod(this.main.nativeElement, 'focus');
   }
-
-  goTo(page){
-    this.router.navigate([page]);
-  }
-
+  
   ngOnInit() {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       window.scrollTo(0, 0);
