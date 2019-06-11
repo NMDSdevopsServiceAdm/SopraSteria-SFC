@@ -58,7 +58,7 @@ class MetaData {
   set records(records) {
     return this._records = records;
   }
-
+  
   toJSON() {
     return {
       username: this._username ? this._username : null,
