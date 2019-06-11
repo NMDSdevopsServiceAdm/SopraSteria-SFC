@@ -41,13 +41,6 @@ export class OtherServicesComponent extends Question {
       this.workplaceService.getAllServices(this.establishment.id).subscribe(
         (serviceGroups: Array<ServiceGroup>) => {
           this.serviceGroups = serviceGroups;
-          this.serviceGroups.map((group: ServiceGroup) => {
-            group.services.map((service: Service) => {
-              if (service.isMyService) {
-                this.form.get('otherServices').value.push(service.id);
-              }
-            });
-          });
           this.serviceGroups.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
           this.updateForm();
         },
