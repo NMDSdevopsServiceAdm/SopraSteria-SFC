@@ -1501,15 +1501,11 @@ class Worker {
     }
   }
 
-  // this is a complex mapping across NOQUALWT, QUALWT, QUALWTNOTES, QUALACH01,QUALACH01NOTES, QUALACH02, QUALACH02NOTES, QUALACH03 and QUALACH03NOTES
   // NOTE - the CSV format expects the user to create additional columns if a worker has more than three qualifications.
   //        This approach (adding columns) differs to the approach of "semi colon" delimited data.
   // https://trello.com/c/ttV4g8mZ. 
   _validationQualificationRecords() {
     // Note - ASC WDS does not support qualifications in progress (not yet achieved)
-    // Thus ignoring:
-    // NOQUALWT
-    // QUALWT
 
     const NO_QUALIFICATIONS = 20;
     const padNumber = (number) => (number < 10) ? `0${number}` : number;
@@ -1896,8 +1892,7 @@ class Worker {
       yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
       disabled: this._disabled !== null ? this._disabled : undefined,
       careCertificate: this._careCert ? {
-        value: this._careCert,
-        date: this._careCertDate ? this._careCertDate.format('DD/MM/YYYY') : this._careCertDate
+        value: this._careCert
       } : undefined,
       recruitmentSource : this._recSource ? this._recSource : undefined,
       startDate: this._startDate ? this._startDate.format('DD/MM/YYYY') : undefined,
