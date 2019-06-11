@@ -201,7 +201,6 @@ router.route('/validate').put(async (req, res) => {
     
     await Promise.all(createModelPromises).then(function(values){
        values.forEach(myfile=>{
-         console.log("WA DEBUG - my file: ", myfile)
           if (establishmentRegex.test(myfile.data.substring(0,50))) {
             myDownloads.establishments = myfile.data;
             establishmentMetadata.filename = myfile.filename;
@@ -365,7 +364,6 @@ async function downloadContent(key) {
     
     try {
       const objData = await s3.getObject(params).promise();
-      console.log("WA DEBUG - objData: ", objData)
       return {
         data: objData.Body.toString(), 
         filename: key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3],
