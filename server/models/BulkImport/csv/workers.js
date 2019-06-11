@@ -24,7 +24,6 @@ class Worker {
     this._yearOfEntry = null;
 
     this._disabled = null;
-    this._careCertDate = null;
     this._careCert = null;
 
     this._recSource = null;
@@ -32,7 +31,6 @@ class Worker {
     this._startInsect = null;
 
     this._apprentice = null;
-    this._fullTime = null;
     this._zeroHourContract = null;
 
     this._daysSick = null;
@@ -45,7 +43,7 @@ class Worker {
     this._mainJobDesc = null;
 
     this._contHours = null;
-    this._addlHours = null;
+    this._avgHours = null;
 
     this._otherJobs = null;
     this._otherJobsOther = null;
@@ -81,8 +79,6 @@ class Worker {
   static get COUNTRY_OF_BIRTH_ERROR() { return 2030; }
   static get YEAR_OF_ENTRY_ERROR() { return 2040; }
   static get DISABLED_ERROR() { return 2050; }
-  static get INDSTATUS_ERROR() { return 2060; }
-  static get INDDATE_ERROR() { return 2070; }
   static get CARE_CERT_ERROR() { return 2080; }
   static get CARE_CERT_DATE_ERROR() { return 2090; }
   static get RECSOURCE_ERROR() { return 3000; }
@@ -90,7 +86,6 @@ class Worker {
   static get START_INSECT_ERROR() { return 3020; }
   static get APPRENCTICE_ERROR() { return 3030; }
   static get CONTRACT_TYPE_ERROR() { return 3040; } //EMPL STATUS
-  static get FULLTIME_ERROR() { return 3050; }
   static get ZERO_HRCONT_ERROR() { return 3060; }
   static get DAYSICK_ERROR() { return 3070; }
   static get SALARY_INT_ERROR() { return 3080; }
@@ -99,7 +94,7 @@ class Worker {
   static get MAIN_JOB_ROLE_ERROR() { return 4010; }
   static get MAIN_JOB_DESC_ERROR() { return 4020; }
   static get CONT_HOURS_ERROR() { return 4030; }
-  static get ADDL_HOURS_ERROR() { return 4040; }
+  static get AVG_HOURS_ERROR() { return 4040; }
   static get OTHER_JOB_ROLE_ERROR() { return 4050; }
   static get OTHER_JR_DESC_ERROR() { return 4060; }
   static get NMCREG_ERROR() { return 4070; }
@@ -162,17 +157,8 @@ class Worker {
   get disabled() {
     return this._disabled;
   }
-  get indStatus() {
-    return this._indStatus;
-  }
-  get indDate() {
-    return this._indDate;
-  }
   get careCert() {
     return this._careCert;
-  }
-  get careCertDate() {
-    return this._careCertDate;
   }
   get recSource() {
     return this._recSource;
@@ -185,9 +171,6 @@ class Worker {
   }
   get apprentice() {
     return this._apprentice;
-  }
-  get fullTime() {
-    return this._fullTime;
   }
   get zeroHourContract() {
     return this._zeroHourContract;
@@ -462,7 +445,7 @@ class Worker {
   }
 
   _validateGender() {
-    const genderValues = [1,2,3]; //[MALE=1, FEMALE=2, UNKNOWN=3];
+    const genderValues = [1,2,3,4]; //[MALE=1, FEMALE=2, UNKNOWN=3, OTHER=4];
     const myGender = parseInt(this._currentLine.GENDER);
 
     if (this._currentLine.GENDER.length > 0) {
@@ -480,7 +463,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.GENDER_ERROR,
           errType: 'GENDER_ERROR',
-          error: "GENDER (GENDER) must have value 1 (MALE) or 2(FEMALE) or 3(UNKNOWN)",
+          error: "GENDER (GENDER) must have value 1 (MALE) or 2(FEMALE) or 4(OTHER)",
           source: this._currentLine.GENDER,
         });
         return false;
@@ -620,7 +603,7 @@ class Worker {
   }
 
   _validateDisabled() {
-    const disabledValues = [0,1]; 
+    const disabledValues = [0,1,2,3]; 
     const myDisabled = parseInt(this._currentLine.DISABLED, 10);
 
     // optional
@@ -639,7 +622,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.DISABLED_ERROR,
           errType: 'DISABLED_ERROR',
-          error: "Disabled (DISABLED) must have value 0(No Disability) or 1(Has Disability)",
+          error: "Disabled (DISABLED) must have value 0(No Disability) or 1(Has Disability) or 2(Undisclosed) or 3(Dont know)",
           source: this._currentLine.DISABLED,
         });
         return false;
@@ -656,71 +639,6 @@ class Worker {
         return true;
       }
     } else {
-      return true;
-    }
-  }
-
-  _validateIndStatus() {
-    const indStatusValues = [1,3];
-    const myIndStatus = this._currentLine.INDSTATUS;
-
-    if (myIndStatus && isNaN(myIndStatus)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.INDSTATUS_ERROR,
-        errType: 'INDSTATUS_ERROR',
-        error: "IndStatus (INDSTATUS) must be an integer",
-        source: this._currentLine.INDSTATUS,
-      });
-      return false;
-    } else if (myIndStatus && !indStatusValues.includes(parseInt(myIndStatus))) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.INDSTATUS_ERROR,
-        errType: 'INDSTATUS_ERROR',
-        error: "IndStatus (INDSTATUS) must have value 1(induction complete) or 3(not applicable)",
-        source: this._currentLine.INDSTATUS,
-      });
-      return false;
-    }
-    else {
-      this._indStatus = myIndStatus;
-      return true;
-    }
-
-  }
-
-  //date can not be in future,
-  //Question: only answer or if above is provided
-  _validateIndDate() {
-    const myIndDate = this._currentLine.INDDATE;
-    const myIndStatus = this._currentLine.INDSTATUS;
-
-    const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
-
-    var d1 = new Date();
-    var d2 = new Date(myIndDate);
-
-    if (myIndDate && !dateRegex.test(myIndDate)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.INDDATE_ERROR,
-        errType: 'INDSTATUS_ERROR',
-        error: "IndDate (INDDATE) should by in dd/mm/yyyy format",
-        source: this._currentLine.INDDATE,
-      });
-      return false;
-    } else if ((d2 > d1)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.INDDATE_ERROR,
-        errType: 'INDSTATUS_ERROR',
-        error: "Date can not be in future",
-        source: this._currentLine.INDDATE,
-      });
-      return false;
-    } else {
-      this._indDate = myIndDate;
       return true;
     }
   }
@@ -761,42 +679,6 @@ class Worker {
             this._careCert = 'Yes, in progress or partially completed';
             break;
         }
-        return true;
-      }
-    } else {
-      return true;
-    }
-  }
-
-  _validateCareCertDate() {
-    const myCareCertDate = this._currentLine.CARECERTDATE;
-    const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
-
-    if (this._careCert) {
-      const today = moment(new Date());
-      const myCareCertRealDate = moment.utc(myCareCertDate, "DD/MM/YYYY");
-  
-      // optional
-      if (myCareCertDate && !dateRegex.test(myCareCertDate)) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.CARE_CERT_DATE_ERROR,
-          errType: 'CARECERTDATE_ERROR',
-          error: "Care Certificate Date (CARECERTDATE) should by in dd/mm/yyyy format",
-          source: this._currentLine.CARECERTDATE,
-        });
-        return false;
-      } else if (myCareCertDate && (myCareCertRealDate.isAfter(today))) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.CARE_CERT_DATE_ERROR,
-          errType: 'CARECERTDATE_ERROR',
-          error: "Care Certificate (CARECERTDATE) Date can not be in future",
-          source: this._currentLine.CARECERTDATE,
-        });
-        return false;
-      } else if (myCareCertDate) {
-        this._careCertDate = myCareCertRealDate;
         return true;
       }
     } else {
@@ -930,41 +812,6 @@ class Worker {
         }
         return true;
       }  
-    } else {
-      return true;
-    }
-  }
-
-  _validateFullTime() {
-    const fullTimeValues = [1, 2, 3];
-    const myfullTime = parseInt(this._currentLine.FULLTIME,10);
-
-    // optional
-    if (this._currentLine.FULLTIME && this._currentLine.FULLTIME.length > 0)
-    {
-      if (isNaN(myfullTime)) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.FULLTIME_ERROR,
-          errType: 'FULLTIME_ERROR',
-          error: "Full Time (FULLTIME) must be an integer",
-          source: this._currentLine.FULLTIME,
-        });
-        return false;
-      } else if (!fullTimeValues.includes(myfullTime)) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.FULLTIME_ERROR,
-          errType: 'FULLTIME_ERROR',
-          error: "Apprentice (FULLTIME) value must 1(FullTime), 2(PartTime) or 3(Neither)",
-          source: this._currentLine.FULLTIME,
-        });
-        return false;
-      }
-      else {
-        this._fullTime = myfullTime;
-        return true;
-      }
     } else {
       return true;
     }
@@ -1252,27 +1099,27 @@ class Worker {
     }
   }
 
-  _validateAddlHours() {
-    const myAddlHours = parseFloat(this._currentLine.ADDLHOURS);
+  _validateAvgHours() {
+    const myAvgHours = parseFloat(this._currentLine.AVGHOURS);
     const digitRegex = /^\d+(\.[0,5]{1})?$/;  // e.g. 15 or 0.5 or 1.0 or 100.5
 
     // optional
-    if (this._currentLine.ADDLHOURS && this._currentLine.ADDLHOURS.length > 0) {
-      if (isNaN(myAddlHours) || !digitRegex.test(this._currentLine.ADDLHOURS)) {
+    if (this._currentLine.AVGHOURS && this._currentLine.AVGHOURS.length > 0) {
+      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
-          errCode: Worker.ADDL_HOURS_ERROR,
-          errType: 'ADDL_HOURS_ERROR',
-          error: "Additional Hours (ADDLHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5",
-          source: this._currentLine.ADDLHOURS,
+          errCode: Worker.AVG_HOURS_ERROR,
+          errType: 'AVG_HOURS_ERROR',
+          error: "Additional Hours (AVGHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5",
+          source: this._currentLine.AVGHOURS,
         });
         return false;
       }
       else {
-        if (Math.floor(myAddlHours) === 999) {
-          this._addlHours = 'No';
+        if (Math.floor(myAvgHours) === 999) {
+          this._avgHours = 'No';
         } else {
-          this._addlHours = myAddlHours;
+          this._avgHours = myAvgHours;
         }
         return true;
       }  
@@ -1981,15 +1828,11 @@ class Worker {
     status = !this._validateCountryOfBirth() ? false : status;
     status = !this._validateYearOfEntry() ? false : status;
     status = !this._validateDisabled() ? false : status;
-    status = !this._validateIndStatus() ? false : status;
-    status = !this._validateIndDate() ? false : status;
     status = !this._validateCareCert() ? false : status;
-    status = !this._validateCareCertDate() ? false : status;
     status = !this._validateRecSource() ? false : status;
     status = !this._validateStartDate() ? false : status;
     status = !this._validateStartInsect() ? false : status;
     status = !this._validateApprentice() ? false : status;
-    status = !this._validateFullTime() ? false : status;
     status = !this._validateZeroHourContract() ? false : status;
     status = !this._validateDaysSick() ? false : status;
     status = !this._validateSalaryInt() ? false : status;
@@ -1998,7 +1841,7 @@ class Worker {
     status = !this._validateMainJobRole() ? false : status;
     status = !this._validateMainJobDesc() ? false : status;
     status = !this._validateContHours() ? false : status;
-    status = !this._validateAddlHours() ? false : status;
+    status = !this._validateAvgHours() ? false : status;
     status = !this._validateOtherJobs() ? false : status;
     status = !this._validateRegisteredNurse() ? false : status;
     status = !this._validateNursingSpecialist() ? false : status;
@@ -2059,7 +1902,6 @@ class Worker {
       startDate: this._startDate ? this._startDate.format('DD/MM/YYYY') : undefined,
       startedInSector : this._startInsect ? this._startInsect : undefined,
       apprenticeship: this._apprentice ? this._apprentice : undefined,
-      fullTime: this._fullTime ? this._fullTime : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
       daysSick: this._daysSick ? this._daysSick : undefined,
       salaryInterval: this._salaryInt ? this._salaryInt : undefined,
@@ -2071,7 +1913,7 @@ class Worker {
       },
       hours: {
         contractedHours : this._contHours !== null ? this._contHours : undefined,
-        additionalHours : this._addlHours !== null ? this._addlHours : undefined,
+        additionalHours : this._avgHours !== null ? this._avgHours : undefined,
       },
       otherJobs: this._otherJobs ? this._otherJobs.map((thisJob, index) => {
         return {
@@ -2229,15 +2071,15 @@ class Worker {
         };
       }
     }
-    if (this._addlHours) {
-      if (Number.isInteger(this._addlHours)) {
+    if (this._avgHours) {
+      if (Number.isInteger(this._avgHours)) {
         changeProperties.weeklyHoursAverage = {
           value: 'Yes',
-          hours: this._addlHours,
+          hours: this._avgHours,
         };
       } else {
         changeProperties.weeklyHoursAverage = {
-          value: this._addlHours,
+          value: this._avgHours,
         };
       }
     }
