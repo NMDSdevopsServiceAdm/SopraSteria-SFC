@@ -15,6 +15,7 @@ const moment = require('moment');
 const models = require('../index');
 
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
+const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
 
 class Training extends EntityValidator {
     constructor(establishmentId, workerUid) {
@@ -173,9 +174,18 @@ class Training extends EntityValidator {
         });
 
         if (!trainingCategories || !Array.isArray(trainingCategories)) {
+            this._validations.push(new ValidationMessage(
+                ValidationMessage.ERROR,
+                100,
+                'Failed to get all training categories',
+                ['TrainingCategory']
+            ));
+
             this._log(Training.LOG_ERROR, 'Failed to get all training categories');
             return false;
         }
+
+        let returnStatus = true;
 
         // training category
         const validatedTrainingRecord = {};
@@ -183,13 +193,26 @@ class Training extends EntityValidator {
 
             // validate category
             if (!(document.trainingCategory.id || document.trainingCategory.category)) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    101,
+                    'trainingCategory.id or trainingCategory.category must exist',
+                    ['TrainingCategory']
+                ));
+    
                 this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
-                return false;
+                returnStatus = false;
             }
 
             if (document.trainingCategory.id && !Number.isInteger(document.trainingCategory.id)) {
-                this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id must be an integer');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    102,
+                    `trainingCategory.id (${document.trainingCategory.id}) must be an integer`,
+                    ['TrainingCategory']
+                ));
+                this._log(Training.LOG_ERROR, `category failed validation: trainingCategory.id (${document.trainingCategory.id}) must be an integer`);
+                returnStatus = false;
             }
 
             let foundCategory = null;
@@ -202,8 +225,14 @@ class Training extends EntityValidator {
             }
 
             if (foundCategory === null || foundCategory === undefined) {
-                this._log(Training.LOG_ERROR, 'category failed validation: trainingCategory.id or trainingCategory.category must exist');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    103,
+                    `trainingCategory.id (${document.trainingCategory.id}) or trainingCategory.category (${document.trainingCategory.category}) must exist`,
+                    ['TrainingCategory']
+                ));
+                this._log(Training.LOG_ERROR, `category failed validation: trainingCategory.id (${document.trainingCategory.id}) or trainingCategory.category (${document.trainingCategory.category}) must exist`);
+                returnStatus = false;
             } else {
                 validatedTrainingRecord.trainingCategory = {
                     id: foundCategory.id,
@@ -219,8 +248,14 @@ class Training extends EntityValidator {
             const MIN_LENGTH=3;
             if (document.title.length < MIN_LENGTH ||
                 document.title.length > MAX_LENGTH) {
-                this._log(Training.LOG_ERROR, 'title failed validation: MIN/MAX length');
-                return false;
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.ERROR,
+                        110,
+                        `validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`,
+                        ['Title']
+                    ));
+                    this._log(Training.LOG_ERROR, `title failed validation: title failed validation: MIN(${MIN_LENGTH})/MAX(${MAX_LENGTH}) length`);
+                returnStatus = false;
             }
 
             validatedTrainingRecord.title = document.title;
@@ -233,8 +268,14 @@ class Training extends EntityValidator {
             // validate accredited - JSON only allows true/false
             const ALLOWED_VALUES = ['Yes', 'No', 'Don\'t know'];
             if (!(ALLOWED_VALUES.includes(document.accredited))) {
-                this._log(Training.LOG_ERROR, 'accredited failed validation: wrong type');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.WARNING,
+                    120,
+                    `unexpected value - ${document.accredited}`,
+                    ['Accredited']
+                ));
+                this._log(Training.LOG_ERROR, `accredited failed validation: accredited failed validation: unexpected value - ${document.accredited}`);
+                returnStatus = false;
             }
 
             validatedTrainingRecord.accredited = document.accredited;
@@ -248,12 +289,24 @@ class Training extends EntityValidator {
             // validate completed - must be a valid date
             const expectedDate = moment.utc(document.completed);
             if (!expectedDate.isValid()) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    130,
+                    `unexpected date - ${document.completed}`,
+                    ['Completed']
+                ));
                 this._log(Training.LOG_ERROR, 'completed failed validation: incorrect date');
-                return false;
+                returnStatus = false;
             }
             if (!expectedDate.isBefore(moment(), 'day')) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    131,
+                    `must be in the past - ${document.completed}`,
+                    ['Completed']
+                ));
                 this._log(Training.LOG_ERROR, 'completed failed validation: must be before today');
-                return false;
+                returnStatus = false;
             }
 
             validatedTrainingRecord.completed = expectedDate;
@@ -265,14 +318,28 @@ class Training extends EntityValidator {
         if (document.expires) {
             const expectedDate = moment.utc(document.expires);
             if (!expectedDate.isValid()) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    140,
+                    `unexpected date - ${document.expires}`,
+                    ['Expires']
+                ));
+
                 this._log(Training.LOG_ERROR, 'expires failed validation: incorrect date');
-                return false;
+                returnStatus = false;
             }
 
             // validation against completed is only relevant if completed has been given
             if (validatedTrainingRecord.completed && !expectedDate.isAfter(validatedTrainingRecord.completed, 'day')) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    141,
+                    `must be in the past - ${document.expires}`,
+                    ['Expires']
+                ));
+
                 this._log(Training.LOG_ERROR, 'expires failed validation: must expire after completed');
-                return false;
+                returnStatus = false;
             }
 
             validatedTrainingRecord.expires = expectedDate;
@@ -286,8 +353,15 @@ class Training extends EntityValidator {
             // validate title
             const MAX_LENGTH=1000;
             if (document.notes.length > MAX_LENGTH) {
-                this._log(Training.LOG_ERROR, 'notes failed validation: MAX length');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.WARNING,
+                    150,
+                    `validation: MAX (${MAX_LENGTH}) length`,
+                    ['Notes']
+                ));
+
+                this._log(Training.LOG_ERROR, `notes failed validation: MAX (${MAX_LENGTH}) length`);
+                returnStatus = false;
             }
 
             validatedTrainingRecord.notes = document.notes;
@@ -296,7 +370,11 @@ class Training extends EntityValidator {
             validatedTrainingRecord.notes = null;
         }
 
-        return validatedTrainingRecord;
+        if (returnStatus === false) {
+            return false;
+        } else {
+            return validatedTrainingRecord;
+        }
     }
 
     // takes the given JSON document and updates self (internal properties)
@@ -689,13 +767,6 @@ class Training extends EntityValidator {
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
 
-        this._validations.push({
-            type: 'ERROR',
-            code: 123,
-            message: 'Debug message - unknown Training category',
-            properties: ['CATEGORY']
-        });
-        
         // category must exist
         if (this.category === null) allExistAndValid = false
 
