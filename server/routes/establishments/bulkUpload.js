@@ -50,8 +50,7 @@ router.route('/uploaded').get(async (req, res) => {
             warnings: 0,
             type: null,
             size: file.Size,
-            etag: file.ETag,
-            key: file.Key         
+            key: encodeURI(file.Key)         
           };          
 
           const fileMetaData = data.Contents.filter(myFile => myFile.Key == file.Key+".metadata.json");
@@ -92,7 +91,6 @@ router.route('/uploaded/*').get(async (req, res) => {
       uploaded: objHeadData.LastModified,
       uploadedBy: objHeadData.Metadata.username,
       size: objHeadData.ContentLength,
-      etag: objHeadData.ETag,
       key: requestedKey,
       signedUrl : s3.getSignedUrl('getObject', {
         Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
