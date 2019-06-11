@@ -51,12 +51,7 @@ router.route('/uploaded').get(async (req, res) => {
             type: null,
             size: file.Size,
             etag: file.ETag,
-            key: file.Key,
-            signedUrl : s3.getSignedUrl('getObject', {
-              Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
-              Key: file.Key,
-              Expires: appConfig.get('bulkuploaduser.uploadSignedUrlExpire')
-            })              
+            key: file.Key         
           };          
 
           const fileMetaData = data.Contents.filter(myFile => myFile.Key == file.Key+".metadata.json");
