@@ -7,17 +7,16 @@
     <h2 class="govuk-heading-m">What you can do next?</h2>
     <p>You can add more staff records, or return to your homepage</p>
     <div class="govuk-button-group">
-      <a class="govuk-button" role="button" [routerLink]="['/worker/create-staff-record']">
+      <button type="button" class="govuk-button" [routerLink]="['/worker/create-staff-record']">
         Add another staff record
-      </a>
-      <a
+      </button>
+      <button type="button" 
         class="govuk-button govuk-button--link govuk-!-margin-left-8"
-        role="button"
         [routerLink]="['/dashboard']"
         data-fragment="staff-records"
       >
         Return to dashboard
-      </a>
+      </button>
     </div>
   </div>
 </div>

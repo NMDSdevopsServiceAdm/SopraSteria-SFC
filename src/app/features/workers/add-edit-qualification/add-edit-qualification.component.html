@@ -28,9 +28,9 @@
       <button type="submit" class="govuk-button">
         {{ qualificationId ? 'Update qualification' : 'Add qualification' }}
       </button>
-      <a class="govuk-button govuk-button--secondary govuk-!-margin-left-8" role="button" [routerLink]="['/worker', worker.uid]" data-fragment="qualifications-and-training">
+      <button type="button" class="govuk-button govuk-button--secondary govuk-!-margin-left-6" [routerLink]="['/worker', worker.uid]" data-fragment="qualifications-and-training">
         Cancel
-      </a>
+      </button>
     </div>
   </fieldset>
 </form>

@@ -44,13 +44,12 @@
 
     <div class="govuk-grid-column-one-third govuk-util__align-right">
       <ng-container *ngIf="!reportDetails?.displayWDFReport">
-        <a class="govuk-button govuk-button--secondary with-icon" role="button" href="#" (click)="deleteWorker($event)">
+        <button type="button" class="govuk-button govuk-button--secondary with-icon" (click)="deleteWorker($event)">
           <img src="/assets/images/bin.svg" alt="" />Delete staff record
-        </a>
-        <a
+        </button>
+        <button type="button"
           *ngIf="!worker.completed"
           class="govuk-button remove-mb"
-          role="button"
           [routerLink]="[
             '/worker',
             worker.uid,
@@ -58,7 +57,7 @@
           ]"
         >
           Complete Full Record
-        </a>
+        </button>
       </ng-container>
       <p *ngIf="reportDetails?.displayWDFReport">Last updated on {{ updatedDate }}</p>
     </div>
@@ -109,22 +108,18 @@
       ></app-qualifications-and-training>
       <p class="info-strip"><img src="/assets/images/icon-information.svg" alt="" />Adding additional qualifications or training is optional.</p>
       <p>
-        <a
+        <button type="button" 
           [routerLink]="['/worker', worker.uid, 'add-qualification']"
-          role="button"
-          draggable="false"
           class="govuk-button govuk-button--secondary govuk-!-margin-right-8"
         >
           Add a qualification
-        </a>
-        <a
+        </button>
+        <button type="button" 
           [routerLink]="['/worker', worker.uid, 'add-training']"
-          role="button"
-          draggable="false"
           class="govuk-button govuk-button--secondary"
         >
           Add training
-        </a>
+        </button>
       </p>
       <app-qualifications [worker]="worker"></app-qualifications>
       <app-training [worker]="worker"></app-training>

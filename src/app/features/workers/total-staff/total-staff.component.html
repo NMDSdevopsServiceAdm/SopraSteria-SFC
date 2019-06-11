@@ -36,14 +36,13 @@
           <button type="submit" class="govuk-button">
             {{ returnToDash ? 'Save and return' : 'Save and continue' }}
           </button>
-          <a
-            class="govuk-button govuk-button--secondary govuk-!-margin-left-8"
-            role="button"
+          <button type="button" 
+            class="govuk-button govuk-button--secondary govuk-!-margin-left-6"
             [routerLink]="['/dashboard']"
             data-fragment="staff-records"
           >
             Cancel
-          </a>
+          </button>
         </div>
       </fieldset>
     </form>
