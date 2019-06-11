@@ -32,3 +32,28 @@ body {
 @import 'components/tabs';
 @import 'components/tag';
 @import 'components/info';
+
+
+// TO BE EXTRACTED INTO OWN COMPONENT
+
+ul.total-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    margin: 0;
+    list-style: none;
+    font-size: 19px;
+    padding-top: 35px;
+    position: relative;
+
+    .total {
+    	position: absolute;
+    	left: 20px;
+    	bottom: 24px;
+    	font-size: 24px;
+    	font-weight: bold;
+    }
+  }
+}

@@ -1,30 +1,17 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
     <div class="govuk-grid-row govuk-!-padding-top-3 govuk-!-padding-bottom-3 govuk-util__light-bg">
-      <div class="govuk-grid-column-one-third has-divider">
-        <h3 class="govuk-heading-m govuk-!-margin-bottom-1">{{ totalStaff }}</h3>
-        <p class="govuk-!-margin-0">Total number of staff <a class="govuk-util__float-right" [routerLink]="['/worker/total-staff']" (click)="setReturn()">Change <span class="govuk-visually-hidden"> total number of staff</span></a></p>
-      </div>
-      <ng-container *ngIf="totalStaff !== totalWorkers">
-        <div class="govuk-grid-column-one-third has-divider">
-          <h3
-            class="govuk-heading-m govuk-!-margin-bottom-1"
-            [ngClass]="{ 'icon-link icon-flag': totalStaff < totalWorkers }"
-          >
-            {{ totalWorkers }}
-          </h3>
-          <p class="govuk-!-margin-0">Staff records added</p>
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <h3
-            class="govuk-heading-m govuk-!-margin-bottom-1"
-            [ngClass]="{ 'icon-link icon-flag': totalStaff > totalWorkers }"
-          >
-            {{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}
-          </h3>
-          <p class="govuk-!-margin-0">Staff records missing</p>
-        </div>
-      </ng-container>
+      <ul class="total-list">
+        <li class="govuk-grid-column-one-third has-divider">
+          Total number of staff <span class="total">{{ totalStaff }}</span><a class="govuk-util__float-right" [routerLink]="['/worker/total-staff']" (click)="setReturn()">Change <span class="govuk-visually-hidden"> total number of staff</span></a>
+        </li>
+        <li class="govuk-grid-column-one-third has-divider" *ngIf="totalStaff !== totalWorkers">
+          Staff records added <span class="total" [ngClass]="{ 'icon-link icon-flag': totalStaff < totalWorkers }">{{ totalWorkers }}</span>
+        </li>
+        <li class="govuk-grid-column-one-third" *ngIf="totalStaff !== totalWorkers">
+          Staff records missing <span class="total" [ngClass]="{ 'icon-link icon-flag': totalStaff > totalWorkers }">{{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}</span>
+        </li>
+      </ul>
     </div>
   </div>
 </div>
