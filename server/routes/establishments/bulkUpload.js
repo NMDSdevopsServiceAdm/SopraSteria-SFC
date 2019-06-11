@@ -88,15 +88,17 @@ router.route('/uploaded').post(async function (req, res) {
       });
     });
 
-    // now delete the objects in one go
-    const deleteParams = {
-      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
-      Delete: {
-        Objects: deleteKeys,
-        Quiet: true,
-      },
-    };
-    await s3.deleteObjects(deleteParams).promise();
+    if (deleteKeys.length > 0) {
+      // now delete the objects in one go
+      const deleteParams = {
+        Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+        Delete: {
+          Objects: deleteKeys,
+          Quiet: true,
+        },
+      };
+      await s3.deleteObjects(deleteParams).promise();
+    }
 
     uploadedFiles.forEach(thisFile => {
       if (thisFile.filename) {
