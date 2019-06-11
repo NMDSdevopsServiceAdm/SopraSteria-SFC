@@ -1,13 +1,13 @@
 import { Contracts } from './contracts.enum';
-import { Job } from './job.model';
+import { JobRole } from './job.model';
 
 export interface Worker {
   uid?: string;
   nameOrId: string;
   contract: Contracts;
-  mainJob: Job;
+  mainJob: JobRole;
   approvedMentalHealthWorker?: string;
-  otherJobs?: Job[];
+  otherJobs?: JobRole[];
   mainJobStartDate?: string;
   nationalInsuranceNumber?: string;
   dateOfBirth?: string;
