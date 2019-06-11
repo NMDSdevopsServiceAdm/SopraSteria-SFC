@@ -222,7 +222,7 @@ class Training {
 
   _validateAccredited() {
     const myAccredited = parseInt(this._currentLine.ACCREDITED);
-    const ALLOWED_VALUES = [0,1];
+    const ALLOWED_VALUES = [0,1,999];
     if (Number.isNaN(myAccredited)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,

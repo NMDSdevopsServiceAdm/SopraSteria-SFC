@@ -1102,15 +1102,16 @@ class Worker {
   _validateAvgHours() {
     const myAvgHours = parseFloat(this._currentLine.AVGHOURS);
     const digitRegex = /^\d+(\.[0,5]{1})?$/;  // e.g. 15 or 0.5 or 1.0 or 100.5
+    const MAX_VALUE = 75;
 
     // optional
     if (this._currentLine.AVGHOURS && this._currentLine.AVGHOURS.length > 0) {
-      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS)) {
+      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) || myAvgHours > MAX_VALUE) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.AVG_HOURS_ERROR,
           errType: 'AVG_HOURS_ERROR',
-          error: "Additional Hours (AVGHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5",
+          error: `Additional Hours (AVGHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5 and less than or equal to ${MAX_VALUE}`,
           source: this._currentLine.AVGHOURS,
         });
         return false;
@@ -1976,10 +1977,6 @@ class Worker {
         } : undefined,
       disability: this._disabled ? this._disabled : undefined,
       careCertificate: this._careCert ? this._careCert : undefined,
-      socialCareStartDate : this._startInsect ? {
-          value : 'Yes',
-          year : this._startInsect
-        } : undefined,
       apprenticeshipTraining: this._apprentice ? this._apprentice : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
       registeredNurse: this._registeredNurse ? this._registeredNurse : undefined,
@@ -1987,6 +1984,19 @@ class Worker {
           id: this._nursingSpecialist
         } : undefined,
     };
+
+    if (this._startInsect) {
+      if (this._startInsect === 999) {
+        changeProperties.socialCareStartDate : {
+          value : 'No'
+        } 
+      } else {
+        changeProperties.socialCareStartDate : {
+          value : 'Yes',
+          year : this._startInsect
+        } 
+      }
+    }
 
     if (this._nationality) {
       if (Number.isInteger(this._nationality)) {
