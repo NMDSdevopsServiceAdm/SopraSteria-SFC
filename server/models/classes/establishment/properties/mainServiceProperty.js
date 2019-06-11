@@ -15,7 +15,6 @@ exports.MainServiceProperty = class MainServiceProperty extends ChangePropertyPr
     // concrete implementations
     async restoreFromJson(document) {
         if (document.mainService) {
-            console.log("WA restoring from JSON: ", document.mainService)
             const validatedService = await this._validateService(document.mainService);
             if (validatedService) {
                 this.property = validatedService;
