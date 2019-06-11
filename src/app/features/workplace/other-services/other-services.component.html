@@ -30,7 +30,7 @@
               name="otherServices"
               type="checkbox"
               [value]="service.id"
-              [checked]="service.isMyService"
+              [checked]="form.get('otherServices').value.includes(service.id)"
               (change)="toggle($event.target)"
             />
             <label class="govuk-label govuk-checkboxes__label" for="otherServices-{{ service.id }}">

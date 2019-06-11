@@ -38,7 +38,7 @@ export class OtherServicesComponent extends Question {
 
   protected init() {
     this.subscriptions.add(
-      this.workplaceService.getAllServices(this.establishment.id).subscribe(
+      this.establishmentService.getAllServices(this.establishment.id).subscribe(
         (serviceGroups: Array<ServiceGroup>) => {
           this.serviceGroups = serviceGroups;
           this.serviceGroups.forEach((data: ServiceGroup) => this.allServices.push(...data.services));

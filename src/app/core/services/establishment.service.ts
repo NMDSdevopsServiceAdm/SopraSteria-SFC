@@ -5,6 +5,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { PostServicesModel } from '../model/postServices.model';
+import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -53,6 +54,13 @@ export class EstablishmentService {
   public set establishmentId(value: number) {
     this._establishmentId = value;
     localStorage.setItem('establishmentId', value.toString());
+  }
+
+  public getAllServices(establishmentId): Observable<ServiceGroup[]> {
+    const params = new HttpParams().set('all', 'true');
+    return this.http
+      .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
+      .pipe(map(res => res.allOtherServices));
   }
 
   public get establishmentId() {
