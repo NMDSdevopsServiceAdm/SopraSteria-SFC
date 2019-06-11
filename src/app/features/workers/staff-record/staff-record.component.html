@@ -106,21 +106,6 @@
         [return]="['/worker', worker.uid]"
         [reportDetails]="reportDetails"
       ></app-qualifications-and-training>
-      <p class="info-strip"><img src="/assets/images/icon-information.svg" alt="" />Adding additional qualifications or training is optional.</p>
-      <p>
-        <button type="button" 
-          [routerLink]="['/worker', worker.uid, 'add-qualification']"
-          class="govuk-button govuk-button--secondary govuk-!-margin-right-6"
-        >
-          Add a qualification
-        </button>
-        <button type="button" 
-          [routerLink]="['/worker', worker.uid, 'add-training']"
-          class="govuk-button govuk-button--secondary"
-        >
-          Add training
-        </button>
-      </p>
       <app-qualifications [worker]="worker"></app-qualifications>
       <app-training [worker]="worker"></app-training>
     </app-tab>

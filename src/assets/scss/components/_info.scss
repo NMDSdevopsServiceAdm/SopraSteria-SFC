@@ -1,16 +1,18 @@
 .info-strip {
-	background: #fff;
 	position: relative;
-	padding: 20px 10px 20px 60px;
+	padding: 0 0 0 20px;
     border-radius: 4px;
     line-height: 18px;
+    font-size: 15px;
+    color: #4a4a4a;
 
     img {
     	position: absolute;
-    	left: 20px;
+    	left: 0;
     	top: 0;
     	bottom: 0;
     	margin: auto;
+        width: 15px;
     }
 }
 
