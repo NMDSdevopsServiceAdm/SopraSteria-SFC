@@ -82,13 +82,41 @@
               "
               formControlName="mainJobRole"
               id="mainJobRole-{{ i }}"
-            >
+              (change)="onChangeJobRole($event.target.value)">
               <option [ngValue]="null">Select Main Job Role</option>
               <option *ngFor="let job of jobs" [value]="job.id">
                 {{ job.title }}
               </option>
             </select>
           </div>
+
+          <div
+            class="govuk-form-group"
+            [class.govuk-form-group--error]="staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched"
+            [class.govuk-select__conditional--hidden]="!showInputTextforOtherRole">
+            <label class="govuk-label" for="otherJobRole">
+              Enter your job role
+            </label>
+            <span
+              *ngIf="staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched"
+              class="govuk-error-message"
+              id="otherJobRole-{{ i }}-error">
+              <span class="govuk-visually-hidden">Error:</span>
+              Enter your job role must be {{this.otherJobRoleCharacterLimit}} characters or less.
+            </span>
+            <span id="otherJobRole-hint" class="govuk-hint">
+              Optional
+            </span>
+            <input
+              class="govuk-input govuk-input--width-20"
+              formControlName="otherJobRole"
+              id="otherJobRole-conditional"
+              name="otherJobRole"
+              type="text"
+              aria-describedby="otherJobRole-hint"
+            />
+          </div>
+
           <div
             class="govuk-form-group"
             [class.govuk-form-group--error]="staffRecord.get('contract').invalid && staffRecord.get('contract').touched"
