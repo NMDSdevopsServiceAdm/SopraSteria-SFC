@@ -1,4 +1,4 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -54,6 +54,12 @@ export class DeleteWorkerDialogComponent implements OnInit, OnDestroy {
 
   public close() {
     this.dialog.close();
+  }
+
+  @HostListener('document:keydown', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+      if (event.keyCode === 27) {
+          this.dialog.close();
+      }
   }
 
   public onSubmit() {

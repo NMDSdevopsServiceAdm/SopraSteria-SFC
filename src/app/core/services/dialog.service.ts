@@ -19,12 +19,12 @@ export class Dialog<T, R = any> {
     private data: any
   ) {
     const config = new OverlayConfig({
+      hasBackdrop: true,
       positionStrategy: this.overlay
         .position()
         .global()
         .centerHorizontally()
         .centerVertically(),
-      hasBackdrop: true,
       scrollStrategy: this.overlay.scrollStrategies.block(),
       disposeOnNavigation: true,
     });
@@ -32,6 +32,12 @@ export class Dialog<T, R = any> {
     const customInjector = this.createInjector(this.data);
 
     this.overlayRef = this.overlay.create(config);
+
+    let sub = this.overlayRef.backdropClick().subscribe(() => {
+      this.close();
+      sub.unsubscribe();
+    });
+
     const componentPortal = new ComponentPortal(this.componentType, null, customInjector);
 
     this.overlayRef.attach(componentPortal);
