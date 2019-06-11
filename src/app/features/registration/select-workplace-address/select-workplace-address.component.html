@@ -7,56 +7,64 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">What is your workplace address?</h1>
 
-    <div class="govuk-grid-row">
-  
-      <div class="govuk-grid-column-one-third">
-        <div class="govuk-form-group">
-          <label class="govuk-!-margin-bottom-2 govuk-label" for="chosenPostcode">Postcode</label>
-          <input class="govuk-input govukuk-input__readonly" type="text" value="{{ enteredPostcode }}" id="chosenPostcode" aria-readonly readonly/>
-        </div>
-      </div>
-
-      <div class="govuk-grid-column-one-third">
-        <a [routerLink]="['/registration/find-workplace-address']" class="change-link" aria-labelledby="chosenPostcode">Change</a>
-      </div>
-
-
-    </div>
+    
 
     <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress.errors">
-        <label class="govuk-!-margin-bottom-2 govuk-label" for="address">
-          Select an address
-        </label>
-        <span *ngIf="submitted && getAddress.errors" id="address-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          {{ getFormErrorMessage('address', 'required') }}
-        </span>
-        <select
-          class="govuk-select"
-          [class.govuk-select--error]="submitted && getAddress.errors"
-          formControlName="address"
-          id="address"
-          name="address"
-          (change)="onLocationChange($event.target.value)"
-        >
-          <option [value]="">{{ locationAddresses.length }} addresses found</option>
-          <option
-            *ngFor="let location of locationAddresses"
-            [value]="location.addressLine1"
+
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-heading-l">What is your workplace address?</h1>
+        </legend>
+
+        <div class="govuk-grid-row">
+    
+          <div class="govuk-grid-column-one-third">
+            <div class="govuk-form-group">
+              <label class="govuk-!-margin-bottom-2 govuk-label" for="chosenPostcode">Postcode</label>
+              <input class="govuk-input govukuk-input__readonly" type="text" value="{{ enteredPostcode }}" id="chosenPostcode" aria-readonly readonly/>
+            </div>
+          </div>
+
+          <div class="govuk-grid-column-one-third">
+            <a [routerLink]="['/registration/find-workplace-address']" class="change-link" aria-labelledby="chosenPostcode">Change</a>
+          </div>
+
+
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress.errors">
+          <label class="govuk-!-margin-bottom-2 govuk-label" for="address">
+            Select an address
+          </label>
+          <span *ngIf="submitted && getAddress.errors" id="address-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('address', 'required') }}
+          </span>
+          <select
+            class="govuk-select"
+            [class.govuk-select--error]="submitted && getAddress.errors"
+            formControlName="address"
+            id="address"
+            name="address"
+            (change)="onLocationChange($event.target.value)"
           >
-            {{ getLocationName(location) }}
-          </option>
-        </select>
-      </div>
+            <option [value]="">{{ locationAddresses.length }} addresses found</option>
+            <option
+              *ngFor="let location of locationAddresses"
+              [value]="location.addressLine1"
+            >
+              {{ getLocationName(location) }}
+            </option>
+          </select>
+        </div>
 
-      <p>
-        <a [routerLink]="['/registration/enter-workplace-address']">I can't find my address</a>
-      </p>
+        <p>
+          <a [routerLink]="['/registration/enter-workplace-address']">I can't find my address</a>
+        </p>
 
-      <button class="govuk-button govuk-!-margin-top-6" type="submit">Continue</button>
+        <button class="govuk-button govuk-!-margin-top-6" type="submit">Continue</button>
+      </fieldset>
     </form>
   </div>
 </div>

@@ -1,34 +1,36 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-label-wrapper">
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+      <h1 class="govuk-label-wrapper">
       <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="nationalInsuranceNumber">
         What is their ethnicity?
       </label>
     </h1>
-  </div>
-</div>
-<form (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('ethnicity').invalid">
-    <select
-      class="govuk-select"
-      [class.govuk-select--error]="submitted && form.get('ethnicity').invalid"
-      formControlName="ethnicity"
-      id="ethnicity"
-      name="ethnicity"
-    >
-      <option class="form-control" [ngValue]="null">Select ethnicity</option>
-      <option *ngFor="let ethnicity of ethnicitiesUngrouped()" [value]="ethnicity.id">
-        {{ ethnicity.ethnicity }}
-      </option>
-      <optgroup *ngFor="let groupName of ethnicityGroups()" label="{{ groupName }}">
-        <option *ngFor="let ethnicity of ethnicities[groupName]" [value]="ethnicity.id">
+    </legend>
+
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('ethnicity').invalid">
+      <select
+        class="govuk-select"
+        [class.govuk-select--error]="submitted && form.get('ethnicity').invalid"
+        formControlName="ethnicity"
+        id="ethnicity"
+        name="ethnicity"
+      >
+        <option class="form-control" [ngValue]="null">Select ethnicity</option>
+        <option *ngFor="let ethnicity of ethnicitiesUngrouped()" [value]="ethnicity.id">
           {{ ethnicity.ethnicity }}
         </option>
-      </optgroup>
-    </select>
-  </div>
+        <optgroup *ngFor="let groupName of ethnicityGroups()" label="{{ groupName }}">
+          <option *ngFor="let ethnicity of ethnicities[groupName]" [value]="ethnicity.id">
+            {{ ethnicity.ethnicity }}
+          </option>
+        </optgroup>
+      </select>
+    </div>
 
-  <app-submit-button [return]="!!return" (click)="onSubmit($event)"></app-submit-button>
+    <app-submit-button [return]="!!return" (click)="onSubmit($event)"></app-submit-button>
+  </fieldset>
 </form>

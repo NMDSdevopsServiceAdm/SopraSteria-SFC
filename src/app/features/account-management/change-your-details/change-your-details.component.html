@@ -8,106 +8,113 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
-    <span class="govuk-caption-m govuk-!-margin-bottom-2">User account</span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Your details</h1>
+    
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getFullName.errors">
-        <label class="govuk-!-margin-bottom-2 govuk-label" for="fullName">
-          Your full name
-        </label>
-        <span *ngIf="submitted && getFullName.errors" id="fullName-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getFullName.hasError('required')">
-            {{ getFormErrorMessage('fullName', 'required') }}
-          </span>
-          <span *ngIf="getFullName.hasError('maxlength')">
-            {{ getFormErrorMessage('fullName', 'maxlength') }}
-          </span>
-        </span>
-        <input
-          class="govuk-input"
-          formControlName="fullName"
-          id="fullName"
-          name="fullName"
-          [class.govuk-input--error]="submitted && getFullName.errors"
-          type="text"
-        />
-      </div>
 
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getJobTitle.errors">
-        <label class="govuk-!-margin-bottom-2 govuk-label" for="jobTitle">
-          Your job title
-        </label>
-        <span *ngIf="submitted && getJobTitle.errors" id="jobTitle-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getJobTitle.hasError('required')">
-            {{ getFormErrorMessage('jobTitle', 'required') }}
-          </span>
-          <span *ngIf="getJobTitle.hasError('maxlength')">
-            {{ getFormErrorMessage('jobTitle', 'maxlength') }}
-          </span>
-        </span>
-        <input
-          class="govuk-input"
-          formControlName="jobTitle"
-          id="jobTitle"
-          name="jobTitle"
-          [class.govuk-input--error]="submitted && getJobTitle.errors"
-          type="text"
-        />
-      </div>
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <span class="govuk-caption-m govuk-!-margin-bottom-2">User account</span>
+          <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Your details</h1>
+        </legend>
 
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getEmail.errors">
-        <label class="govuk-!-margin-bottom-2 govuk-label" for="email">
-          Your email address
-        </label>
-        <span *ngIf="submitted && getEmail.errors" id="email-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getEmail.hasError('required')">
-            {{ getFormErrorMessage('email', 'required') }}
+          <label class="govuk-!-margin-bottom-2 govuk-label" for="fullName">
+            Your full name
+          </label>
+          <span *ngIf="submitted && getFullName.errors" id="fullName-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            <span *ngIf="getFullName.hasError('required')">
+              {{ getFormErrorMessage('fullName', 'required') }}
+            </span>
+            <span *ngIf="getFullName.hasError('maxlength')">
+              {{ getFormErrorMessage('fullName', 'maxlength') }}
+            </span>
           </span>
-          <span *ngIf="getEmail.hasError('maxlength')">
-            {{ getFormErrorMessage('email', 'maxlength') }}
-          </span>
-          <span *ngIf="getEmail.hasError('pattern')">
-            {{ getFormErrorMessage('email', 'pattern') }}
-          </span>
-        </span>
-        <input
-          class="govuk-input"
-          formControlName="email"
-          id="email"
-          name="email"
-          [class.govuk-input--error]="submitted && getEmail.errors"
-          type="text"
-        />
-      </div>
+          <input
+            class="govuk-input"
+            formControlName="fullName"
+            id="fullName"
+            name="fullName"
+            [class.govuk-input--error]="submitted && getFullName.errors"
+            type="text"
+          />
+        </div>
 
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPhone.errors">
-        <label class="govuk-!-margin-bottom-2 govuk-label" for="phone">
-          Contact phone number
-        </label>
-        <span *ngIf="submitted && getPhone.errors" id="phone-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getPhone.hasError('required')">
-            {{ getFormErrorMessage('phone', 'required') }}
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getJobTitle.errors">
+          <label class="govuk-!-margin-bottom-2 govuk-label" for="jobTitle">
+            Your job title
+          </label>
+          <span *ngIf="submitted && getJobTitle.errors" id="jobTitle-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            <span *ngIf="getJobTitle.hasError('required')">
+              {{ getFormErrorMessage('jobTitle', 'required') }}
+            </span>
+            <span *ngIf="getJobTitle.hasError('maxlength')">
+              {{ getFormErrorMessage('jobTitle', 'maxlength') }}
+            </span>
           </span>
-          <span *ngIf="getPhone.hasError('pattern')">
-            {{ getFormErrorMessage('phone', 'pattern') }}
-          </span>
-         </span>
-        <input
-          class="govuk-input"
-          formControlName="phone"
-          id="phone"
-          name="phone"
-          [class.govuk-input--error]="submitted && getPhone.errors"
-          type="text"
-        />
-      </div>
+          <input
+            class="govuk-input"
+            formControlName="jobTitle"
+            id="jobTitle"
+            name="jobTitle"
+            [class.govuk-input--error]="submitted && getJobTitle.errors"
+            type="text"
+          />
+        </div>
 
-      <button class="govuk-button govuk-!-margin-top-2" type="submit">{{ callToActionLabel }}</button>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getEmail.errors">
+          <label class="govuk-!-margin-bottom-2 govuk-label" for="email">
+            Your email address
+          </label>
+          <span *ngIf="submitted && getEmail.errors" id="email-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            <span *ngIf="getEmail.hasError('required')">
+              {{ getFormErrorMessage('email', 'required') }}
+            </span>
+            <span *ngIf="getEmail.hasError('maxlength')">
+              {{ getFormErrorMessage('email', 'maxlength') }}
+            </span>
+            <span *ngIf="getEmail.hasError('pattern')">
+              {{ getFormErrorMessage('email', 'pattern') }}
+            </span>
+          </span>
+          <input
+            class="govuk-input"
+            formControlName="email"
+            id="email"
+            name="email"
+            [class.govuk-input--error]="submitted && getEmail.errors"
+            type="text"
+          />
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPhone.errors">
+          <label class="govuk-!-margin-bottom-2 govuk-label" for="phone">
+            Contact phone number
+          </label>
+          <span *ngIf="submitted && getPhone.errors" id="phone-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            <span *ngIf="getPhone.hasError('required')">
+              {{ getFormErrorMessage('phone', 'required') }}
+            </span>
+            <span *ngIf="getPhone.hasError('pattern')">
+              {{ getFormErrorMessage('phone', 'pattern') }}
+            </span>
+           </span>
+          <input
+            class="govuk-input"
+            formControlName="phone"
+            id="phone"
+            name="phone"
+            [class.govuk-input--error]="submitted && getPhone.errors"
+            type="text"
+          />
+        </div>
+
+        <button class="govuk-button govuk-!-margin-top-2" type="submit">{{ callToActionLabel }}</button>
+      </fieldset>
     </form>
   </div>
 </div>

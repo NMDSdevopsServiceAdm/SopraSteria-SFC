@@ -1,0 +1,15 @@
+.info-strip {
+	background: #dce9f3;
+	position: relative;
+	padding: 20px 10px 20px 60px;
+    border-radius: 4px;
+    line-height: 18px;
+
+    img {
+    	position: absolute;
+    	left: 20px;
+    	top: 0;
+    	bottom: 0;
+    	margin: auto;
+    }
+}

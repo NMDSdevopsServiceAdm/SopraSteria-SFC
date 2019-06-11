@@ -1,14 +1,11 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
-
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-xl">{{ qualificationId ? 'Edit qualification details' : 'Add qualification details' }}</h1>
-  </div>
-</div>
-
 <form *ngIf="!qualificationId || (qualificationId && record)" (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-    <fieldset class="govuk-fieldset">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+      <span class="govuk-caption-m govuk-!-margin-bottom-2">User account</span>
+      <h1 class="govuk-heading-xl">{{ qualificationId ? 'Edit qualification details' : 'Add qualification details' }}</h1>
+    </legend>
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
       <span id="qualification-conditional-hint" class="govuk-hint">Select the type of qualification</span>
       <span *ngIf="submitted && form.get('type').invalid" id="type-error" class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('type') }}
@@ -16,50 +13,24 @@
       <div class="govuk-radios govuk-radios--conditional">
         <ng-container *ngFor="let item of qualificationTypes | keyvalue">
           <div class="govuk-radios__item">
-            <input
-              class="govuk-radios__input"
-              formControlName="type"
-              id="type-{{ item.key }}"
-              name="type"
-              type="radio"
-              [value]="item.value"
-            />
+            <input class="govuk-radios__input" formControlName="type" id="type-{{ item.key }}" name="type" type="radio" [value]="item.value" />
             <label class="govuk-label govuk-radios__label" for="type-{{ item.key }}">
               {{ item.value }}
             </label>
           </div>
-          <div
-            class="govuk-radios__conditional"
-            [class.govuk-radios__conditional--hidden]="form.get('type').value !== item.value"
-            id="conditional-terms-conditional-{{ item.key }}"
-          >
-            <app-qualification-form
-              [form]="form"
-              [worker]="worker"
-              [type]="item"
-              [yearValidators]="yearValidators"
-              [notesMaxLength]="notesMaxLength"
-              [submitted]="submitted"
-              [formErrorsMap]="formErrorsMap"
-              [preselectedQualification]="record?.qualification?.group === item.value ? record.qualification : null"
-            ></app-qualification-form>
+          <div class="govuk-radios__conditional" [class.govuk-radios__conditional--hidden]="form.get('type').value !== item.value" id="conditional-terms-conditional-{{ item.key }}">
+            <app-qualification-form [form]="form" [worker]="worker" [type]="item" [yearValidators]="yearValidators" [notesMaxLength]="notesMaxLength" [submitted]="submitted" [formErrorsMap]="formErrorsMap" [preselectedQualification]="record?.qualification?.group === item.value ? record.qualification : null"></app-qualification-form>
           </div>
         </ng-container>
       </div>
-    </fieldset>
-  </div>
-
-  <div class="govuk-button-group">
-    <button type="submit" class="govuk-button">
-      {{ qualificationId ? 'Update qualification' : 'Add qualification' }}
-    </button>
-    <a
-      class="govuk-button govuk-button__link govuk-util__float-right"
-      role="button"
-      [routerLink]="['/worker', worker.uid]"
-      data-fragment="qualifications-and-training"
-    >
-      Cancel
-    </a>
-  </div>
+    </div>
+    <div class="govuk-button-group">
+      <button type="submit" class="govuk-button">
+        {{ qualificationId ? 'Update qualification' : 'Add qualification' }}
+      </button>
+      <a class="govuk-button govuk-button--secondary govuk-!-margin-left-8" role="button" [routerLink]="['/worker', worker.uid]" data-fragment="qualifications-and-training">
+        Cancel
+      </a>
+    </div>
+  </fieldset>
 </form>

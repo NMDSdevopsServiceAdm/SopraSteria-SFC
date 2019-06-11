@@ -8,64 +8,70 @@
     >
     </app-error-summary>
 
-    <h1 class="govuk-heading-xl">Sign in</h1>
+    
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-      <div
-        class="govuk-form-group"
-        [class.govuk-form-group--error]="(form.get('username').errors || serverError) && submitted"
-      >
-        <label class="govuk-!-margin-bottom-2 govuk-label" for="username">
-          Username
-        </label>
-        <span
-          id="username-error"
-          class="govuk-error-message"
-          *ngIf="form.get('username').errors && submitted"
-        >
-          <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('username', 'required') }}
-        </span>
-        <input
-          class="govuk-input"
-          [class.govuk-input--error]="(form.get('username').errors || serverError) && submitted"
-          id="username"
-          name="username"
-          type="text"
-          formControlName="username"
-        />
-      </div>
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+          <h1 class="govuk-heading-xl">Sign in</h1>
+        </legend>
 
-      <div
-        class="govuk-form-group"
-        [class.govuk-form-group--error]="(form.get('password').errors || serverError) && submitted"
-      >
-        <label class="govuk-!-margin-bottom-2 govuk-label" for="password">
-          Password
-        </label>
-        <span
-          id="password-error"
-          class="govuk-error-message"
-          *ngIf="form.get('password').errors && submitted"
+        <div
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="(form.get('username').errors || serverError) && submitted"
         >
-          <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('password', 'required') }}
-        </span>
-        <input
-          class="govuk-input"
-          [class.govuk-input--error]="(form.get('password').errors || serverError) && submitted"
-          id="password"
-          name="password"
-          type="password"
-          formControlName="password"
-        />
-      </div>
+          <label class="govuk-!-margin-bottom-2 govuk-label" for="username">
+            Username
+          </label>
+          <span
+            id="username-error"
+            class="govuk-error-message"
+            *ngIf="form.get('username').errors && submitted"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('username', 'required') }}
+          </span>
+          <input
+            class="govuk-input"
+            [class.govuk-input--error]="(form.get('username').errors || serverError) && submitted"
+            id="username"
+            name="username"
+            type="text"
+            formControlName="username"
+          />
+        </div>
 
-      <button type="submit" class="govuk-button">
-        Sign In
-      </button>
+        <div
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="(form.get('password').errors || serverError) && submitted"
+        >
+          <label class="govuk-!-margin-bottom-2 govuk-label" for="password">
+            Password
+          </label>
+          <span
+            id="password-error"
+            class="govuk-error-message"
+            *ngIf="form.get('password').errors && submitted"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('password', 'required') }}
+          </span>
+          <input
+            class="govuk-input"
+            [class.govuk-input--error]="(form.get('password').errors || serverError) && submitted"
+            id="password"
+            name="password"
+            type="password"
+            formControlName="password"
+          />
+        </div>
+
+        <button type="submit" class="govuk-button">
+          Sign In
+        </button>
+      </fieldset>
     </form>
 
     <ul class="govuk-list">
-      <li><a [routerLink]="['/forgot-your-password']">Forgot your password?</a></li>
+      <li class="govuk-!-margin-bottom-4"><a [routerLink]="['/forgot-your-password']">Forgot your password?</a></li>
       <li><a [routerLink]="['/registration/regulated-by-cqc']">Create an account</a></li>
     </ul>
   </div>

@@ -45,4 +45,21 @@
     box-shadow: none;
     color: $govuk-link-colour;
   }
+
+  &.with-icon {
+    position: relative;
+    padding-left: 45px;
+    img {
+      position: absolute;
+      left: 15px;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      width: 15px;
+      height: auto;
+    }
+  }
+  &.remove-mb {
+    margin-bottom: 0;
+  }
 }

@@ -51,8 +51,8 @@
       </ul>
     </app-details>
     <form (ngSubmit)="onSubmit()" [formGroup]="form">
-      <div class="govuk-form-group">
-        <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
+      <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
+        <div class="govuk-form-group">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
             <h2 class="govuk-fieldset__heading">Do you agree to us sharing data with:</h2>
           </legend>
@@ -75,11 +75,10 @@
               </label>
             </div>
           </div>
-        </fieldset>
-      </div>
-      <div class="govuk-button-group">
-        <button type="submit" class="govuk-button">Save and continue</button>
-      </div>
+
+          <button type="submit" class="govuk-button">Save and continue</button>
+        </div>
+      </fieldset>
     </form>
   </div>
 </div>

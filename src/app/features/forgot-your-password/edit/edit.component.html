@@ -6,36 +6,42 @@
 >
 </app-error-summary>
 
-<h1 class="govuk-heading-xl">Forgot your password?</h1>
-<p>Enter your username or email address and we will send you a link to reset your password.</p>
+
 
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-  <div
-    class="govuk-form-group"
-    [ngClass]="{ 'govuk-form-group--error': form.get('usernameOrEmail').errors && submitted }"
-  >
-    <label class="govuk-!-margin-bottom-2 govuk-label" for="usernameOrEmail">
-      Username or email address
-    </label>
-    <span
-      id="username-issued-error"
-      class="govuk-error-message"
-      *ngIf="form.get('usernameOrEmail').errors?.required && submitted"
-    >
-      <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('usernameOrEmail', 'required') }}
-    </span>
-    <input
-      class="govuk-input govuk-!-width-full"
-      [ngClass]="{ 'govuk-input--error': form.get('usernameOrEmail').errors && submitted }"
-      id="usernameOrEmail"
-      name="usernameOrEmail"
-      type="text"
-      formControlName="usernameOrEmail"
-    />
-  </div>
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+      <h1 class="govuk-heading-xl">Forgot your password?</h1>
+      <p>Enter your username or email address and we will send you a link to reset your password.</p>
+    </legend>
 
-  <button type="submit" class="govuk-button">
-    Send reset link
-  </button>
+    <div
+      class="govuk-form-group"
+      [ngClass]="{ 'govuk-form-group--error': form.get('usernameOrEmail').errors && submitted }"
+    >
+      <label class="govuk-!-margin-bottom-2 govuk-label" for="usernameOrEmail">
+        Username or email address
+      </label>
+      <span
+        id="username-issued-error"
+        class="govuk-error-message"
+        *ngIf="form.get('usernameOrEmail').errors?.required && submitted"
+      >
+        <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('usernameOrEmail', 'required') }}
+      </span>
+      <input
+        class="govuk-input govuk-!-width-full"
+        [ngClass]="{ 'govuk-input--error': form.get('usernameOrEmail').errors && submitted }"
+        id="usernameOrEmail"
+        name="usernameOrEmail"
+        type="text"
+        formControlName="usernameOrEmail"
+      />
+    </div>
+
+    <button type="submit" class="govuk-button">
+      Send reset link
+    </button>
+  </fieldset>
 </form>
 <p><a [routerLink]="['/login']">Back to sign in</a></p>

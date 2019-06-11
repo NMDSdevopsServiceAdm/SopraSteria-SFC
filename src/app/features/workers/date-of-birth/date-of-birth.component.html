@@ -1,28 +1,28 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-xl">What is their date of birth?</h1>
-  </div>
-</div>
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
-    <fieldset class="govuk-fieldset" role="group">
-      <span id="dob-hint" class="govuk-hint">
-        For example, 31 3 1980
-      </span>
-      <span *ngIf="submitted && form.get('dob').errors" id="dob-error" class="govuk-error-message">
-        <ng-container *ngIf="form.get('dob').hasError('dateValid')">
-          <span class="govuk-visually-hidden">Error:</span>
-          {{ getFormErrorMessage('dob', 'dateValid') }}
-        </ng-container>
-        <ng-container *ngIf="form.get('dob').hasError('dateBetween')">
-          <span class="govuk-visually-hidden">Error:</span>
-          {{ getFormErrorMessage('dob', 'dateBetween') }}
-        </ng-container>
-      </span>
-      <app-date-picker [formGroup]="form" formGroupName="dob" autocomplete="bday" [submitted]="submitted"></app-date-picker>
-    </fieldset>
-  </div>
-  <app-submit-button [return]="!!return" (click)="onSubmit($event)"></app-submit-button>
+
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+      <h1 class="govuk-heading-xl">What is their date of birth?</h1>
+    </legend>
+
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <span id="dob-hint" class="govuk-hint">
+          For example, 31 3 1980
+        </span>
+        <span *ngIf="submitted && form.get('dob').errors" id="dob-error" class="govuk-error-message">
+          <ng-container *ngIf="form.get('dob').hasError('dateValid')">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('dob', 'dateValid') }}
+          </ng-container>
+          <ng-container *ngIf="form.get('dob').hasError('dateBetween')">
+            <span class="govuk-visually-hidden">Error:</span>
+            {{ getFormErrorMessage('dob', 'dateBetween') }}
+          </ng-container>
+        </span>
+        <app-date-picker [formGroup]="form" formGroupName="dob" autocomplete="bday" [submitted]="submitted"></app-date-picker>
+    </div>
+    <app-submit-button [return]="!!return" (click)="onSubmit($event)"></app-submit-button>
+  </fieldset>
 </form>
