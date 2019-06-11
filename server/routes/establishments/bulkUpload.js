@@ -201,22 +201,23 @@ router.route('/validate').put(async (req, res) => {
     
     await Promise.all(createModelPromises).then(function(values){
        values.forEach(myfile=>{
+         console.log("WA DEBUG - my file: ", myfile)
           if (establishmentRegex.test(myfile.data.substring(0,50))) {
             myDownloads.establishments = myfile.data;
             establishmentMetadata.filename = myfile.filename;
             establishmentMetadata.fileType = 'Establishment';
-            
-                          
+            establishmentMetadata.userName = myfile.username;
           } else if (workerRegex.test(myfile.data.substring(0,50))) {
             myDownloads.workers = myfile.data;
             workerMetadata.filename = myfile.filename;
-            workerMetadata.fileType = 'Worker';    
-
+            workerMetadata.fileType = 'Worker';
+            workerMetadata.userName = myfile.username;
           } else if (trainingRegex.test(myfile.data.substring(0,50))) {
             myDownloads.trainings = myfile.data;
             trainingMetadata.filename = myfile.filename;
             trainingMetadata.fileType = 'Training';
-          }        
+            trainingMetadata.userName = myfile.username;
+          }
         })
     }).catch(err => {
         console.error("NM: validate.put", err);
@@ -363,10 +364,12 @@ async function downloadContent(key) {
     const filenameRegex=/^(.+\/)*(.+)\.(.+)$/; 
     
     try {
-      const objData = await s3.getObject(params).promise();      
+      const objData = await s3.getObject(params).promise();
+      console.log("WA DEBUG - objData: ", objData)
       return {
         data: objData.Body.toString(), 
         filename: key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3],
+        username: objData.Metadata.username,
      };
 
     } catch (err) {
