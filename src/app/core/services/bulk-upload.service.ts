@@ -1,11 +1,11 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { FormGroup } from '@angular/forms';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
-import { PresignedUrlResponse, UploadFile } from '@core/model/bulk-upload.model';
+import { PresignedUrlResponse, UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 
 @Injectable({
   providedIn: 'root',
@@ -40,27 +40,46 @@ export class BulkUploadService {
     return parts[parts.length - 1].toUpperCase();
   }
 
+  public validateFiles(establishmentId: number): Observable<ValidatedFilesResponse> {
+    return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
+  }
+
   public formErrorsMap(): Array<ErrorDetails> {
-    return [{
-      item: 'fileUpload',
-      type: [
-        {
-          name: 'required',
-          message: 'No files selected',
-        },
-        {
-          name: 'filecount',
-          message: 'Please select a total of 3 files.',
-        },
-        {
-          name: 'filesize',
-          message: 'The selected files must be smaller than 20MB.',
-        },
-        {
-          name: 'filetype',
-          message: 'The selected files must be a CSV or ZIP.',
-        },
-      ],
-    }];
+    return [
+      {
+        item: 'fileUpload',
+        type: [
+          {
+            name: 'required',
+            message: 'No files selected',
+          },
+          {
+            name: 'filecount',
+            message: 'Please select a total of 3 files.',
+          },
+          {
+            name: 'filesize',
+            message: 'The selected files must be smaller than 20MB.',
+          },
+          {
+            name: 'filetype',
+            message: 'The selected files must be a CSV or ZIP.',
+          },
+        ],
+      },
+    ];
+  }
+
+  public serverErrorsMap(): Array<ErrorDefinition> {
+    return [
+      {
+        name: 400,
+        message: 'Validation failed.',
+      },
+      {
+        name: 503,
+        message: 'There is a problem with the service.',
+      },
+    ];
   }
 }
