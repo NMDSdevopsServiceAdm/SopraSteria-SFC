@@ -6,6 +6,7 @@ class Training {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
+    this._headers_v1 = ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"];
 
     this._localeStId = null;
     this._uniqueWorkerId = null;
@@ -25,7 +26,7 @@ class Training {
   static get CATEGORY_ERROR() { return 1050; }
   static get ACCREDITED_ERROR() { return 1060; }
   static get NOTES_ERROR() { return 1070; }
-
+  static get HEADERS_ERROR() { return 1080; }
 
   get localeStId() {
     return this._localeStId;
@@ -300,10 +301,26 @@ class Training {
     }
   }
 
+  _validateHeaders() {
+    const headers = Object.keys(this._currentLine);
+    // only run once for first line, so check _lineNumber
+    if (this._lineNumber === 2 && JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+      this._validationErrors.push({
+        lineNumber: 1,
+        errCode: Training.HEADERS_ERROR,
+        errType: `HEADERS_ERROR`,
+        error: `Training headers (HEADERS) can contain, ${this._headers_v1}`,
+        source: headers
+      });
+    }
+    return true;
+  }
+
   // returns true on success, false is any attribute of Training fails
   validate() {
     let status = true;
 
+    status = !this._validateHeaders() ? false : status;
     status = !this._validateLocaleStId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateDateCompleted() ? false : status;

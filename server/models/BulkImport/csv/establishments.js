@@ -5,6 +5,7 @@ class Establishment {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
+    this._headers_v1 = ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","IIPSTATUS","PERMCQC","PERMNHSC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STUDENTCOUNT","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS","DESTNOS"];
 
 
     // CSV properties
@@ -68,6 +69,8 @@ class Establishment {
 
   static get REASONS_FOR_LEAVING_ERROR() { return 1360; }
   static get DESTINATIONS_ON_LEAVING_ERROR() { return 1370; }
+
+  static get HEADERS_ERROR() { return 1380; }
 
   get localId() {
     return this._localId;
@@ -1400,10 +1403,26 @@ class Establishment {
     }
   }
 
+  _validateHeaders() {
+    const headers = Object.keys(this._currentLine);
+    // only run once for first line, so check _lineNumber
+    if (this._lineNumber === 2 && JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+      this._validationErrors.push({
+        lineNumber: 1,
+        errCode: Establishment.HEADERS_ERROR,
+        errType: `HEADERS_ERROR`,
+        error: `Establishment headers (HEADERS) can contain, ${this._headers_v1}`,
+        source: headers
+      });
+    }
+    return true;
+  }
+
   // returns true on success, false is any attribute of Establishment fails
   validate() {
     let status = true;
 
+    status = !this._validateHeaders() ? false : status;
     status = !this._validateLocalisedId() ? false : status;
     status = !this._validateStatus() ? false : status;
     status = !this._validateEstablishmentName() ? false : status;
