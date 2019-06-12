@@ -63,7 +63,7 @@ export class ServiceUsersComponent extends Question {
     filter(this.allUserServices, { other: true }).forEach((service: ServiceForUser) => {
       this.form.addControl(
         `serviceUsers-${service.id}-otherService`,
-        new FormControl(null, { validators: [Validators.maxLength(this.otherMaxLength)], updateOn: 'submit' })
+        new FormControl(null, [Validators.maxLength(this.otherMaxLength)])
       );
 
       this.formErrorsMap.push({
