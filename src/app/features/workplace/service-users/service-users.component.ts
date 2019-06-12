@@ -1,19 +1,24 @@
 import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Service, ServiceGroup } from '@core/model/services.model';
+import { ServiceUser } from '@core/model/establishment.model';
+import { ServiceForUser, ServiceUserGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ServiceUsersService } from '@core/services/service-users.service';
 import { Question } from '@features/workplace/question/question.component';
+import { filter, find } from 'lodash';
 
 @Component({
   selector: 'app-service-users',
   templateUrl: './service-users.component.html',
 })
 export class ServiceUsersComponent extends Question {
-  public serviceUsersGroups: ServiceGroup[];
+  public serviceUserGroups: ServiceUserGroup[];
+  public allUserServices: ServiceForUser[] = [];
+  public renderForm = false;
+  private otherMaxLength = 120;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -30,17 +35,12 @@ export class ServiceUsersComponent extends Question {
     });
   }
 
-  protected init() {
+  protected init(): void {
     this.subscriptions.add(
-      this.serviceUsersService.getServiceUsers().subscribe((serviceUsersGroups: ServiceGroup[]) => {
-        this.serviceUsersGroups = serviceUsersGroups;
-        this.serviceUsersGroups.map((group: ServiceGroup) => {
-          group.services.map((service: Service) => {
-            if (service.isMyService) {
-              this.form.get('serviceUsers').value.push(service.id);
-            }
-          });
-        });
+      this.serviceUsersService.getServiceUsers().subscribe((serviceUserGroups: ServiceUserGroup[]) => {
+        this.serviceUserGroups = serviceUserGroups;
+        this.serviceUserGroups.forEach((group: ServiceUserGroup) => this.allUserServices.push(...group.services));
+        this.addFormControls();
       })
     );
 
@@ -57,6 +57,34 @@ export class ServiceUsersComponent extends Question {
         error => this.onError(error)
       )
     );
+  }
+
+  private addFormControls(): void {
+    filter(this.allUserServices, { other: true }).forEach((service: ServiceForUser) => {
+      this.form.addControl(
+        `serviceUsers-${service.id}-otherService`,
+        new FormControl(null, [Validators.maxLength(this.otherMaxLength)])
+      );
+
+      this.formErrorsMap.push({
+        item: `serviceUsers-${service.id}-otherService`,
+        type: [
+          {
+            name: 'maxlength',
+            message: `Other service users must be ${this.otherMaxLength} characters or less`,
+          },
+        ],
+      });
+    });
+
+    this.establishment.serviceUsers.forEach((service: ServiceUser) => {
+      this.form.get('serviceUsers').value.push(service.id);
+      if (service.other) {
+        this.form.get(`serviceUsers-${service.id}-otherService`).setValue(service.other);
+      }
+    });
+
+    this.renderForm = true;
   }
 
   public toggle(target: HTMLInputElement) {
@@ -81,7 +109,7 @@ export class ServiceUsersComponent extends Question {
     this.serverErrorsMap = [
       {
         name: 400,
-        message: 'Services Users could not be updated.',
+        message: 'Service Users could not be updated.',
       },
     ];
   }
@@ -90,8 +118,14 @@ export class ServiceUsersComponent extends Question {
     const { serviceUsers } = this.form.value;
 
     return {
-      services: serviceUsers.map(id => {
-        return { id };
+      serviceUsers: serviceUsers.map(id => {
+        const otherAllowed = !!find(this.allUserServices, { id: id, other: true });
+        return {
+          id: id,
+          ...(otherAllowed && {
+            other: this.form.get(`serviceUsers-${id}-otherService`).value,
+          }),
+        };
       }),
     };
   }
@@ -99,7 +133,7 @@ export class ServiceUsersComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .updateServiceUsers(this.establishment.id, this.form.get('serviceUsers').value)
+        .updateServiceUsers(this.establishment.id, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }

@@ -18,6 +18,17 @@ export interface Services {
   array: Service[];
 }
 
+export interface ServiceUserGroup {
+  group: string;
+  services: ServiceForUser[];
+}
+
+export interface ServiceForUser {
+  id: number;
+  service: string;
+  other: boolean;
+}
+
 export interface AllServicesResponse {
   allOtherServices: ServiceGroup[];
 }
