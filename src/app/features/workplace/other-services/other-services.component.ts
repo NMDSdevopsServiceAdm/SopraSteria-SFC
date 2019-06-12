@@ -78,15 +78,19 @@ export class OtherServicesComponent extends Question {
 
   private preFillForm(): void {
     const allOtherServices = this.establishmentService.establishment.otherServices;
-    allOtherServices.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
 
-    this.allOtherServices.forEach((service: Service) => {
-      this.form.get('otherServices').value.push(service.id);
+    if (allOtherServices) {
+      allOtherServices.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
 
-      if (service.other) {
-        this.form.get(`additionalOtherService${service.id}`).setValue(service.other);
-      }
-    });
+      this.allOtherServices.forEach((service: Service) => {
+        this.form.get('otherServices').value.push(service.id);
+
+        if (service.other) {
+          this.form.get(`additionalOtherService${service.id}`).setValue(service.other);
+        }
+      });
+    }
+
     this.renderForm = true;
   }
 
