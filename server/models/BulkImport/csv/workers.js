@@ -6,7 +6,7 @@ class Worker {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
-    this._headers_v1 = ["LOCALESTID","UNIQUEWORKERID","CHGUNIQUEWRKID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED","CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS","OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES","QUALACH04","QUALACH04NOTES","QUALACH05","QUALACH05NOTES","QUALACH06","QUALACH06NOTES","QUALACH07","QUALACH07NOTES","QUALACH08","QUALACH08NOTES","QUALACH09","QUALACH09NOTES","QUALACH10","QUALACH10NOTES","QUALACH11","QUALACH11NOTES","QUALACH12","QUALACH12NOTES","QUALACH13","QUALACH13NOTES","QUALACH14","QUALACH14NOTES","QUALACH15","QUALACH15NOTES","QUALACH16","QUALACH16NOTES","QUALACH17","QUALACH17NOTES","QUALACH18","QUALACH18NOTES","QUALACH19","QUALACH19NOTES","QUALACH20","QUALACH20NOTES","AMHP"];
+    this._headers_v1 = ["LOCALESTID","UNIQUEWORKERID","CHGUNIQUEWRKID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED","CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS","OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     this._contractType= null;
 
     this._localId = null;
@@ -768,14 +768,14 @@ class Worker {
 
     // optional
     if (myStartInsect && myStartInsect.length > 0) {
-      const yearRegex = /^\d{4}$/;
+      const yearRegex = /^\d{4}|999$/;
 
       if (!yearRegex.test(myStartInsect)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.START_INSECT_ERROR,
           errType: 'START_INSECT_ERROR',
-          error: "Start Insect (STARTINSECT) must be 4 number ",
+          error: "Start Insect (STARTINSECT) must be 4 digit number representing the year or 999 if unknown",
           source: this._currentLine.STARTINSECT,
         });
         return false;
@@ -2012,7 +2012,7 @@ class Worker {
           notes: thisQual.desc ? thisQual.desc : undefined,
         };
       }) : undefined,
-      amhp: this._amhp ? this._amhp : undefined,
+      approvedMentalHealthWorker: this._amhp ? this._amhp : undefined,
     };
   };
 
@@ -2057,6 +2057,9 @@ class Worker {
 
     if (this._startInsect) {
       if (this._startInsect === 999) {
+
+console.log("WA DEBUG !!!!!!!!!!!!!! start in sector: ", this._startInsect)
+
         changeProperties.socialCareStartDate = {
           value : 'No'
         } 
