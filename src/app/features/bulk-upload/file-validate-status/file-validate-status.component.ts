@@ -9,4 +9,16 @@ import { FileValidateStatus } from '@core/model/bulk-upload.model';
 export class FileValidateStatusComponent {
   public statusEnum = FileValidateStatus;
   @Input() public status: FileValidateStatus;
+
+  public getIconByStatus(status: string): string {
+    let icon: string;
+
+    if (status === this.statusEnum.Pass) {
+      icon = 'tick';
+    } else if (status === this.statusEnum.Fail) {
+      icon = 'cross';
+    }
+
+    return icon;
+  }
 }

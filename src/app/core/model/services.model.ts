@@ -27,4 +27,7 @@ export interface ServiceForUser {
   id: number;
   service: string;
   other: boolean;
+
+export interface AllServicesResponse {
+  allOtherServices: ServiceGroup[];
 }

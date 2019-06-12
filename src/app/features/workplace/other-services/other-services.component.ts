@@ -19,7 +19,7 @@ export class OtherServicesComponent extends Question {
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];
   public renderForm = false;
-  public workplaceCategories: Array<ServiceGroup>;
+  public serviceGroups: Array<ServiceGroup>;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -38,10 +38,10 @@ export class OtherServicesComponent extends Question {
 
   protected init() {
     this.subscriptions.add(
-      this.workplaceService.getServicesByCategory(this.establishment.isRegulated).subscribe(
-        (workplaceCategories: Array<ServiceGroup>) => {
-          this.workplaceCategories = workplaceCategories;
-          this.workplaceCategories.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
+      this.establishmentService.getAllServices(this.establishment.id).subscribe(
+        (serviceGroups: Array<ServiceGroup>) => {
+          this.serviceGroups = serviceGroups;
+          this.serviceGroups.forEach((data: ServiceGroup) => this.allServices.push(...data.services));
           this.updateForm();
         },
         (error: HttpErrorResponse) => {
@@ -56,15 +56,15 @@ export class OtherServicesComponent extends Question {
   }
 
   private updateForm(): void {
-    this.allServices.forEach((workplace: Service) => {
-      if (workplace.other) {
+    this.allServices.forEach((service: Service) => {
+      if (service.other) {
         this.form.addControl(
-          `additionalOtherService${workplace.id}`,
+          `additionalOtherService${service.id}`,
           new FormControl(null, [Validators.maxLength(this.additionalOtherServiceMaxLength)])
         );
 
         this.formErrorsMap.push({
-          item: `additionalOtherService${workplace.id}`,
+          item: `additionalOtherService${service.id}`,
           type: [
             {
               name: 'maxlength',
@@ -80,10 +80,11 @@ export class OtherServicesComponent extends Question {
     const allOtherServices = this.establishmentService.establishment.otherServices;
     allOtherServices.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
 
-    this.allOtherServices.forEach((workplace: Service) => {
-      if (workplace.other) {
-        this.form.get('otherServices').value.push(workplace.id);
-        this.form.get(`additionalOtherService${workplace.id}`).setValue(workplace.other);
+    this.allOtherServices.forEach((service: Service) => {
+      this.form.get('otherServices').value.push(service.id);
+
+      if (service.other) {
+        this.form.get(`additionalOtherService${service.id}`).setValue(service.other);
       }
     });
     this.renderForm = true;

@@ -1,9 +1,10 @@
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { FileValidateStatus, UploadFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { filter } from 'lodash';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
-import { UploadFile, ValidatedFilesResponse, FileValidateStatus } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -12,7 +13,7 @@ import { UploadFile, ValidatedFilesResponse, FileValidateStatus } from '@core/mo
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private uploadedFiles: Array<UploadFile>;
-  public isValidating = false;
+  public validateSuccess = false;
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
@@ -31,34 +32,56 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   }
 
   public validateFiles(): void {
-    this.isValidating = true;
     this.uploadedFiles.map((file: UploadFile) => (file.status = FileValidateStatus.Validating));
 
     this.subscriptions.add(
       this.bulkUploadService.validateFiles(this.establishmentService.establishmentId).subscribe(
         (response: ValidatedFilesResponse) => {
-          this.finishValidating(response);
+          this.onValidateSuccess(response);
         },
         (response: HttpErrorResponse) => {
-          this.finishValidating(response);
-        },
-        () => {
-          this.finishValidating();
+          this.onValidateError(response);
         }
       )
     );
   }
 
   /**
-   * TODO update once BE api is able to return a 200 response on successful validate
-   * as well as once BE api is able to provide erros back on a file
+   * Set validate success flag, set file type labels
+   * And then set record count and status
+   * Then update ui
    * @param response
    */
-  private finishValidating(response?: ValidatedFilesResponse | HttpErrorResponse): void {
-    this.uploadedFiles.map((file: UploadFile) => (file.status = null));
-    this.isValidating = false;
-    console.clear();
-    console.log(response);
+  private onValidateSuccess(response: ValidatedFilesResponse): void {
+    this.validateSuccess = true;
+
+    response.establishment.fileType = 'Workplace';
+    response.training.fileType = 'Training';
+    response.workers.fileType = 'Staff';
+
+    const validatedFiles: Array<ValidatedFile> = [response.establishment, response.training, response.workers];
+    console.log(validatedFiles);
+
+    this.uploadedFiles.forEach((file: UploadFile) => {
+      const validatedFile: ValidatedFile = filter(validatedFiles, ['filename', file.name])[0];
+      file.records = validatedFile.records;
+      file.fileType = validatedFile.fileType;
+      file.status = FileValidateStatus.Pass;
+    });
+  }
+
+  /**
+   * TODO in another ticket
+   * @param error
+   */
+  private onValidateError(response: HttpErrorResponse): void {
+    const error: ValidatedFilesResponse = response.error;
+    console.log(error);
+  }
+
+  // TODO in another ticket
+  public importFiles(): void {
+    console.log('importFiles');
   }
 
   ngOnDestroy() {
