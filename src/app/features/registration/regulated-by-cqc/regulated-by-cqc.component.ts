@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationSearchResponse } from '@core/model/location.model';
@@ -15,7 +15,7 @@ import { skip } from 'rxjs/operators';
   selector: 'app-regulated-by-cqc',
   templateUrl: './regulated-by-cqc.component.html',
 })
-export class RegulatedByCqcComponent implements OnInit, OnDestroy {
+export class RegulatedByCqcComponent implements AfterViewChecked, OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
@@ -26,6 +26,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
   constructor(
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
+    private ref: ChangeDetectorRef,
     private fb: FormBuilder,
     private registrationService: RegistrationService,
     private route: ActivatedRoute,
@@ -60,12 +61,20 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
     this.setupSubscription();
   }
 
+  ngAfterViewChecked() {
+    this.ref.detectChanges();
+  }
+
   private setupForm(): void {
     this.form = this.fb.group({
       regulatedByCQC: [null, Validators.required],
       group: this.fb.group({
-        regulatedPostcode: ['', Validators.maxLength(8)],
+         // regulatedPostcode: ['', Validators.maxLength(8)],
         locationId: ['', Validators.maxLength(50)],
+        regulatedPostcode: new FormControl('', {
+          validators: Validators.maxLength(8),
+          updateOn: 'blur'
+        })
       }),
       nonRegulatedPostcode: ['', Validators.maxLength(8)],
     });
