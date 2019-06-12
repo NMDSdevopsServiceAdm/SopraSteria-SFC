@@ -4,7 +4,12 @@ import * as slugify from 'slugify';
 @Component({
   selector: 'app-tab',
   template: `
-    <section class="govuk-tabs__panel" [hidden]="!active">
+    <section
+      id="{{ slug }}"
+      role="tabpanel"
+      [attr.aria-labelledby]="'tab_'+ slug"
+      class="govuk-tabs__panel"
+      [hidden]="!active">
       <ng-content></ng-content>
     </section>
   `,
