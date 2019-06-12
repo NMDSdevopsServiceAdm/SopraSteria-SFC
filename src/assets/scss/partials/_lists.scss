@@ -23,6 +23,7 @@
     @include govuk-responsive-margin(3, 'right');
     @include govuk-responsive-margin(3, 'bottom');
     margin-top: 0;
+
     @include govuk-font(24, 'bold');
   }
   dd {
@@ -30,6 +31,7 @@
     @include govuk-responsive-margin(3, 'left');
     @include govuk-responsive-margin(3, 'right');
     margin-bottom: 0;
+
     @include govuk-font(80, 'bold');
   }
 }
