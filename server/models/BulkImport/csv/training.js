@@ -190,7 +190,7 @@ class Training {
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
         error: "Description (DESCRIPTION) must be defined (not empty)",
-        source: this._currentLine.LOCALESTID,
+        source: this._currentLine.DESCRIPTION,
       });
       return false;
     } else if (myDescription.length > MAX_LENGTH) {
@@ -199,7 +199,7 @@ class Training {
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
         error: `Description (DESCRIPTION) must be no more than ${MAX_LENGTH} characters`,
-        source: this._currentLine.LOCALESTID,
+        source: this._currentLine.DESCRIPTION,
       });
       return false;
     } else {
@@ -254,7 +254,10 @@ class Training {
         case 1:
           this._accredited = 'Yes';
           break;
-      }
+        case 999:
+          this._accredited = 'Don\'t know';
+          break;
+        }
       return true;
     }
   }
@@ -280,27 +283,20 @@ class Training {
     const myNotes = this._currentLine.NOTES;
     const MAX_LENGTH = 1000;
 
-    if (!myNotes || myNotes.length == 0) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Training.NOTES_ERROR,
-        errType: `NOTES_ERROR`,
-        error: "Notes (NOTES) must be defined (not empty)",
-        source: this._currentLine.LOCALESTID,
-      });
-      return false;
-    } else if (myNotes.length > MAX_LENGTH) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Training.NOTES_ERROR,
-        errType: `NOTES_ERROR`,
-        error: `Notes (NOTES) must be no more than ${MAX_LENGTH} characters`,
-        source: this._currentLine.LOCALESTID,
-      });
-      return false;
-    } else {
-      this._notes = myNotes;
-      return true;
+    if (myNotes && myNotes.length > 0) {
+      if (myNotes.length > MAX_LENGTH) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Training.NOTES_ERROR,
+          errType: `NOTES_ERROR`,
+          error: `Notes (NOTES) must be no more than ${MAX_LENGTH} characters`,
+          source: this._currentLine.NOTES,
+        });
+        return false;
+      } else {
+        this._notes = myNotes;
+        return true;
+      }  
     }
   }
 

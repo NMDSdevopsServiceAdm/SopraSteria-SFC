@@ -34,7 +34,6 @@ class Establishment {
     this._utilisations = null;
 
     this._totalPermTemp = null;
-    this._studentCount = null;
   
     this._alljobs = null;
     this._vacancies = null;
@@ -62,20 +61,10 @@ class Establishment {
   static get CAPACITY_UTILISATION_USERS_ERROR() { return 1140; }
 
   static get TOTAL_PERM_TEMP_ERROR() { return 1200; }
-  static get PERM_COUNT_ERROR() { return 1210; }
-  static get TEMP_COUNT_ERROR() { return 1220; }
-  static get POOL_COUNT_ERROR() { return 1230; }
-  static get AGENCY_COUNT_ERROR() { return 1240; }
-  static get STUDENT_COUNT_ERROR() { return 1250; }
-  static get VOLUNATRY_COUNT_ERROR() { return 1260; }
-  static get OTHER_COUNT_ERROR() { return 1270; }
   static get ALL_JOBS_ERROR() { return 1280; }
   static get VACANCIES_ERROR() { return 1300; }
   static get STARTERS_ERROR() { return 1310; }
   static get LEAVERS_ERROR() { return 1320; }
-  static get TOTAL_VACANCIES_ERROR() { return 1330; }
-  static get TOTAL_STARTERS_ERROR() { return 1340; }
-  static get TOTAL_LEAVERS_ERROR() { return 1350; }
 
   static get REASONS_FOR_LEAVING_ERROR() { return 1360; }
   static get DESTINATIONS_ON_LEAVING_ERROR() { return 1370; }
@@ -148,9 +137,6 @@ class Establishment {
   }
   get totalPermTemp() {
     return this._totalPermTemp;
-  }
-  get studentCount() {
-    return this._studentCount;
   }
   get allJobs() {
     return this._alljobs;
@@ -804,7 +790,6 @@ class Establishment {
       });
     }
     const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => {
-      console.log("WA DEBUG - this utilisation: ", thisUtilisation, parseInt(thisUtilisation), Number.isNaN(parseInt(thisUtilisation)))
       return thisUtilisation === null ||
             thisUtilisation.length==0 ? true : !Number.isNaN(parseInt(thisUtilisation)) && parseInt(thisUtilisation) < MAX_CAP_UTIL;
     });
@@ -925,26 +910,22 @@ class Establishment {
   // includes vacancies, starters and leavers, total vacancies, total starters and total leavers
   _validateJobRoleTotals() {
     // mandatory
-    const studentCount = this._currentLine.STUDENTCOUNT.split(';');
     const vacancies = this._currentLine.VACANCIES.split(';');
     const starters = this._currentLine.STARTERS.split(';');
     const leavers = this._currentLine.LEAVERS.split(';');
 
     const localValidationErrors = [];
-    const allJobsCount = this._alljobs.length;
+    const allJobsCount = this._alljobs ? this._alljobs.length : 0;
 
-    // all counts must have the same number of entries as all job roles
-    if (studentCount.length !== allJobsCount) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.STUDENT_COUNT_ERROR,
-        errType: `STUDENT_COUNT_ERROR`,
-        error: "Student Count (STUDENTCOUNT) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
-        source: `${this._currentLine.STUDENTCOUNT} - ${this._currentLine.ALLJOBROLES}`,
-      });
+    if (allJobsCount === 0) {
+      // no jobs defined, so ignore starters, leavers and vacancies
+      return true;
     }
 
-    if (vacancies.length !== allJobsCount) {
+    // all counts must have the same number of entries as all job roles
+    //  - except starters, leavers and vacancies can be a single value of 999
+    const DONT_KNOW='999';    // NUST BE A STRING VALUE!!!!!
+    if (!((vacancies.length === 1 && vacancies[0] === DONT_KNOW) || (vacancies.length === allJobsCount))) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.VACANCIES_ERROR,
@@ -953,7 +934,7 @@ class Establishment {
         source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
       });
     }
-    if (starters.length !== allJobsCount) {
+    if (!((starters.length === 1 && starters[0] === DONT_KNOW) || (starters.length === allJobsCount))) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STARTERS_ERROR,
@@ -962,7 +943,7 @@ class Establishment {
         source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
       });
     }
-    if (leavers.length !== allJobsCount) {
+    if (!((leavers.length === 1 && leavers[0] === DONT_KNOW) || (leavers.length === allJobsCount))) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.LEAVERS_ERROR,
@@ -974,40 +955,31 @@ class Establishment {
 
     // all counts must be integers and greater than/equal to zero
     const MIN_COUNT = 0;
-    if (!studentCount.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.STUDENT_COUNT_ERROR,
-        errType: `STUDENT_COUNT_ERROR`,
-        error: `Student Count (STUDENTCOUNT) values must be integers and ${MIN_COUNT} or more`,
-        source: `${this._currentLine.STUDENTCOUNT}`,
-      });
-    }
-
-    if (!vacancies.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+    const MAX_COUNT = 999999999;
+    if (!vacancies.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.VACANCIES_ERROR,
         errType: `VACANCIES_ERROR`,
-        error: `Vacancies (VACANCIES) values must be integers and ${MIN_COUNT} or more`,
+        error: `Vacancies (VACANCIES) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.VACANCIES}`,
       });
     }
-    if (!starters.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+    if (!starters.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STARTERS_ERROR,
         errType: `STARTERS_ERROR`,
-        error: `Starters (STARTERS) values must be integers and ${MIN_COUNT} or more`,
+        error: `Starters (STARTERS) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.STARTERS}`,
       });
     }
-    if (!leavers.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+    if (!leavers.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.LEAVERS_ERROR,
         errType: `LEAVERS_ERROR`,
-        error: `Leavers (LEAVERS) values must be integers and ${MIN_COUNT} or more`,
+        error: `Leavers (LEAVERS) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.LEAVERS}`,
       });
     }
@@ -1017,7 +989,6 @@ class Establishment {
       return false;
     }
 
-    this._studentCount = studentCount.map(thisCount => parseInt(thisCount, 10));
     this._vacancies = vacancies.map(thisCount => parseInt(thisCount, 10));
     this._starters = starters.map(thisCount => parseInt(thisCount, 10));
     this._leavers = leavers.map(thisCount => parseInt(thisCount, 10));
@@ -1125,7 +1096,20 @@ class Establishment {
     if (this._mainService) {
       const mappedService = BUDI.services(BUDI.TO_ASC, this._mainService);
       if (mappedService) {
-        this._mainService = mappedService;
+        // main service can have an "other" description. That "other" description is
+        //  given by _allServiceUsersOther, based on the position index of this main service
+        //  within _allServices
+        const positionOfMainService = this._allServices ? this._allServices.indexOf(this._mainService): -1;
+
+        let mainServiceOther = null;
+        if (positionOfMainService > -1) {
+          mainServiceOther = this._allServicesOther[positionOfMainService];
+        }
+        this._mainService = {
+          id: mappedService,
+          other: mainServiceOther ? mainServiceOther : undefined,
+        };
+
       } else {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
@@ -1325,32 +1309,66 @@ class Establishment {
     }
   }
 
+  // returns true if all given job counts are 0; otherwise returns false
+  _jobsAllZeros(jobs) {
+    if (jobs && Array.isArray(jobs)) {
+      return jobs.every(thisJob => thisJob === 0);
+    } else {
+      return false;
+    }
+  }
+
   _transformAllVacanciesStartersLeavers() {
-    if (this._vacancies && Array.isArray(this._vacancies)) {
-      this._vacancies = this._vacancies.map((thisJob, index) => {
-        return {
-          jobId: this._alljobs[index],
-          total: thisJob  
-        };
-      });
+    // vacancies, starters and leavers is either an array of counts against positional indexes to _allJobs
+    //  or a single value of 999
+    
+    // if a single value of 999, then map to "Don't know"
+    // if a full set of 0 (e.g. 0, or 0;0 or 0;0;0, ...), then map to "None"
+    const DONT_KNOW=999;
+
+    if (this._jobsAllZeros(this._vacancies)) {
+      this._vacancies = 'None';
+    } else if (this._vacancies && this._vacancies.length === 1 && this._vacancies[0] === DONT_KNOW) {
+      this._vacancies = 'Don\'t know';
+    } else if (this._vacancies && Array.isArray(this._vacancies)) {
+      this._vacancies = this._vacancies
+        .map((thisJob, index) => {
+          return {
+            jobId: this._alljobs[index],
+            total: thisJob  
+          };
+        })
+        .filter(thisJob => thisJob.total !== 0);
     }
 
-    if (this._starters && Array.isArray(this._starters)) {
-      this._starters = this._starters.map((thisJob, index) => {
-        return {
-          jobId: this._alljobs[index],
-          total: thisJob  
-        };
-      });
+    if (this._jobsAllZeros(this._starters)) {
+      this._starters = 'None';
+    } else if (this._starters && this._starters.length === 1 && this._starters[0] === DONT_KNOW) {
+      this._starters = 'Don\'t know';
+    } else if (this._starters && Array.isArray(this._starters)) {
+      this._starters = this._starters
+        .map((thisJob, index) => {
+          return {
+            jobId: this._alljobs[index],
+            total: thisJob  
+          };
+        })
+        .filter(thisJob => thisJob.total !== 0);
     }
 
-    if (this._leavers && Array.isArray(this._leavers)) {
-      this._leavers = this._leavers.map((thisJob, index) => {
-        return {
-          jobId: this._alljobs[index],
-          total: thisJob  
-        };
-      });
+    if (this._jobsAllZeros(this._leavers)) {
+      this._leavers = 'None';
+    } else if (this._leavers && this._leavers.length === 1 && this._leavers[0] === DONT_KNOW) {
+      this._leavers = 'Don\'t know';
+    } else if (this._leavers && Array.isArray(this._leavers)) {
+      this._leavers = this._leavers
+        .map((thisJob, index) => {
+          return {
+            jobId: this._alljobs[index],
+            total: thisJob  
+          };
+        })
+        .filter(thisJob => thisJob.total !== 0);
     }
 
   }
@@ -1446,9 +1464,7 @@ class Establishment {
       regType: this._regType,
       locationId: this._regType ? this._locationID : undefined,
       provId: this._regType ? this._provID : undefined,
-      mainService: {
-        id: this._mainService
-      },
+      mainService: this._mainService,
       allServices: this._allServices ? this._allServices.map((thisService, index) => {
         const returnThis = {
           id: thisService,
@@ -1476,7 +1492,6 @@ class Establishment {
       totalPermTemp: this._totalPermTemp,
       allJobs: this._alljobs,
       counts: {
-        student: this._studentCount,
         vacancies: this._vacancies,
         starters: this._starters,
         leavers: this._leavers,
@@ -1501,18 +1516,20 @@ class Establishment {
 
     const changeProperties = {
       name: this._name,
-      employerType: this._establishmentType,
-      employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
-      localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
-      mainService: {
-        id: this._mainService     // during BUDI lookup, it returns the main service as an id
+      employerType: {
+        value: this._establishmentType,
+        other: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
       },
+      localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
+      mainService: this._mainService,
       services: this._allServices ? this._allServices
         .filter(thisService => thisService !== this._mainService)   // main service cannot appear in otherServices
         .map((thisService, index) => {
           const returnThis = {
             id: thisService,
           };
+
+          //console.log("WA DEBUG - this other service: ", thisService, index, this._allServicesOther, this._allServicesOther[index])
 
           if (this._allServicesOther[index]) {
             returnThis.other = this._allServicesOther[index];
