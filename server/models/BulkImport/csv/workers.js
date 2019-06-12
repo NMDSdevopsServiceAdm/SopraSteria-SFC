@@ -468,7 +468,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.GENDER_ERROR,
           errType: 'GENDER_ERROR',
-          error: "GENDER (GENDER) must have value 1 (MALE) or 2(FEMALE) or 4(OTHER)",
+          error: "GENDER (GENDER) must have value 1 (MALE) or 2(FEMALE) or 3(Don't Know) or 4(OTHER)",
           source: this._currentLine.GENDER,
         });
         return false;
@@ -483,6 +483,9 @@ class Worker {
               break;
           case 3:
             this._gender = 'Don\'t know';
+            break;
+          case 4:
+            this._gender = 'Other';
             break;
         }
         return true;
@@ -639,6 +642,12 @@ class Worker {
             break;
           case 0:
             this._disabled = 'No';
+            break;
+          case 2:
+            this._disabled = 'Undisclosed';
+            break;
+          case 3:
+            this._disabled = 'Don\'t know';
             break;
         }
         return true;
@@ -1078,15 +1087,16 @@ class Worker {
   _validateContHours() {
     const myContHours = parseFloat(this._currentLine.CONTHOURS);
     const digitRegex = /^\d+(\.[0,5]{1})?$/;  // e.g. 15 or 0.5 or 1.0 or 100.5
+    const MAX_VALUE = 75;
 
     // optional
     if (this._currentLine.CONTHOURS && this._currentLine.CONTHOURS.length > 0) {
-      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS)) {
+      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) || myContHours > MAX_VALUE) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.CONT_HOURS_ERROR,
           errType: 'CONT_HOURS_ERROR',
-          error: "Contract Hours (CONTHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5",
+          error: `Contract Hours (CONTHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5 and less than or equal to ${MAX_VALUE}`,
           source: this._currentLine.CONTHOURS,
         });
         return false;
@@ -1538,19 +1548,9 @@ class Worker {
   _validateAmhp() {
     const amhpValues = [1,2,999];
     const myAmhp = parseInt(this._currentLine.AMHP);
-    const socialWorkerJobRole = 6;
 
     if (this._currentLine.AMHP && this._currentLine.AMHP.length > 0) {
-      if (this._mainJobRole === socialWorkerJobRole ) {
-        this._validationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.AMHP_ERROR,
-          errType: 'AMHP_ERROR',
-          error: "AMHP (AMHP) Main Job Role must be Social Worker 06",
-          source: this._currentLine.AMHP,
-        });
-        return false;
-      } else if (isNaN(myAmhp)) {
+      if (isNaN(myAmhp)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.AMHP_ERROR,
@@ -1578,7 +1578,7 @@ class Worker {
             this._amhp = 'No';
             break;
           case 999:
-            this._amhp = 'Not known';
+            this._amhp = 'Don\'t know';
             break;
         }
         return true;
