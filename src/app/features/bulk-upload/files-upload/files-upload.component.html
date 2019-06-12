@@ -1,5 +1,5 @@
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-form-group" [class.govuk-form-group--error]="form.invalid && submitted">
+  <div class="govuk-form-group govuk-!-margin-bottom-0" [class.govuk-form-group--error]="form.invalid && submitted">
     <label class="govuk-label govuk-visually-hidden" for="fileUpload">
       Choose files
     </label>
@@ -20,7 +20,7 @@
 
   <app-selected-files-list *ngIf="!filesUploaded"></app-selected-files-list>
 
-  <div *ngIf="!filesUploading">
+  <div class="govuk-!-margin-top-6" *ngIf="!filesUploading && !filesUploaded">
     <button type="submit" class="govuk-button">
       Upload files
     </button>
@@ -45,6 +45,5 @@
     </button>
   </div>
 </div>
-
 
 <app-uploaded-files-list *ngIf="filesUploaded"></app-uploaded-files-list>
