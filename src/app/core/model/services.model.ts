@@ -17,3 +17,7 @@ export interface Services {
   index: number;
   array: Service[];
 }
+
+export interface AllServicesResponse {
+  allOtherServices: ServiceGroup[];
+}
