@@ -12,6 +12,7 @@ const uuid = require('uuid');
 const models = require('../index');
 
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
+const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
 
 // notifications
 
@@ -195,6 +196,18 @@ class Establishment extends EntityValidator {
         if (this._properties.isValid === true) {
             return true;
         } else {
+            if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid)) {
+                const propertySuffixLength = 'Property'.length * -1;
+                thisEstablishmentIsValid.forEach(thisInvalidProp => {
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.WARNING,
+                        111111111,
+                        'Invalid',
+                        [thisInvalidProp.slice(0,propertySuffixLength)],
+                    ));
+                });
+            }
+
             this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisEstablishmentIsValid.toString()}`);
             return false;
         }
@@ -886,22 +899,27 @@ class Establishment extends EntityValidator {
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
 
-        this._validations.push({
-            type: 'ERROR',
-            code: 123,
-            message: 'Debug message - missing NMDS ID',
-            properties: ['NMDSID']
-        });
-
-        try {
+       try {
             const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
             if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    101,
+                    this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
+                    ['NMDSID']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
             }
 
-            if (!(this.name)) {
+            if (!(this._name)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    102,
+                    this._name ? `Invalid: ${this._name}` : 'Missing',
+                    ['Name']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
             }
 
@@ -912,22 +930,46 @@ class Establishment extends EntityValidator {
 
             if (!(this._address)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    103,
+                    this._address ? `Invalid: ${this._address}` : 'Missing',
+                    ['Address']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid address');
             }
 
             if (!(this._postcode)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    104,
+                    this._postcode ? `Invalid: ${_postcode}` : 'Missing',
+                    ['Postcode']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
             }
 
             if (this._isRegulated === null) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    105,
+                    'Missing',
+                    ['CQCRegistered']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing regulated flag');
             }
 
             // location id can be null for a Non-CQC site
             if (this._isRegulated && this._locationId === null) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    106,
+                    'Missing (mandatory) for a CQC Registered site',
+                    ['LocationID']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
             }
 
