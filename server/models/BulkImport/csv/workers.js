@@ -119,6 +119,14 @@ class Worker {
   static get QUAL_ACH02_NOTES_ERROR() { return 5070; }
   static get QUAL_ACH03_ERROR() { return 5080; }
   static get QUAL_ACH03_NOTES_ERROR() { return 5090; }
+
+  get lineNumber() {
+    return this._lineNumber;
+  }
+
+  get currentLine() {
+    return this._currentLine;
+  }
       
   get local() {
     return this._localId;

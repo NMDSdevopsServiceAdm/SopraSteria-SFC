@@ -24,6 +24,13 @@ class Training {
   static get CATEGORY_ERROR() { return 1050; }
   static get ACCREDITED_ERROR() { return 1060; }
 
+  get lineNumber() {
+    return this._lineNumber;
+  }
+
+  get currentLine() {
+    return this._currentLine;
+  }
 
   get localeStId() {
     return this._localeStId;

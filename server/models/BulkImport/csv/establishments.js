@@ -95,6 +95,14 @@ class Establishment {
   static get REASONS_FOR_LEAVING_ERROR() { return 1360; }
   static get DESTINATIONS_ON_LEAVING_ERROR() { return 1370; }
 
+  get lineNumber() {
+    return this._lineNumber;
+  }
+
+  get currentLine() {
+    return this._currentLine;
+  }
+
   get localId() {
     return this._localId;
   }

@@ -30,7 +30,15 @@ class ValidationMessage {
     this._type === ValidationMessage.WARNING;
   }
 
-  
+  get code() {
+    return this._code;
+  }
+  get message() {
+    return this._message;
+  }
+  get properties() {
+    return this._properties;
+  }
 };
 
 module.exports.ValidationMessage = ValidationMessage;
