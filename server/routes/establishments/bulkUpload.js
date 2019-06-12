@@ -48,7 +48,7 @@ router.route('/uploaded').get(async (req, res) => {
             records: 0,
             errors: 0,
             warnings: 0,
-            type: null,
+            fileType: null,
             size: file.Size,
             key: encodeURI(file.Key)         
           };          
@@ -60,7 +60,7 @@ router.route('/uploaded').get(async (req, res) => {
             returnData.records = metadataJSON.records ? metadataJSON.records : 0;
             returnData.errors = metadataJSON.errors ? metadataJSON.errors : 0;
             returnData.warnings = metadataJSON.warnings ? metadataJSON.warnings : 0;
-            returnData.type = metadataJSON.type ? metadataJSON.type : null;
+            returnData.fileType = metadataJSON.fileType ? metadataJSON.fileType : null;
           }
 
           return returnData;
