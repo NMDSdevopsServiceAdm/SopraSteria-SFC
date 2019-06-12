@@ -2302,7 +2302,7 @@ class Worker {
         qualification : {
           id: thisQual.id,
         },
-        year: 2020,//thisQual.year ? thisQual.year : undefined,
+        year: thisQual.year ? thisQual.year : undefined,
         other: undefined,     // "other" qualifier does not come from bulk import
         notes: thisQual.desc ? thisQual.desc : undefined,
       };
