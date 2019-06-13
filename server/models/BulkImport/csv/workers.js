@@ -593,12 +593,8 @@ class Worker {
   // ignore countr of birth check
   _validateYearOfEntry() {
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
-    const myDOB = this._currentLine.DOB;
     const yearRegex = /^\d{4}$/;
 
-    var dateParts = myDOB.split("/");
-    var birthDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
-  
     if (myYearOfEntry && !yearRegex.test(myYearOfEntry)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
@@ -608,23 +604,10 @@ class Worker {
         source: this._currentLine.YEAROFENTRY,
       });
       return false;
-    }
-    else if (myYearOfEntry && !(myYearOfEntry > birthDate.getFullYear())) {
-
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.YEAROFENTRY_ERROR,
-        errType: 'Ethnicity_ERROR',
-        error: "Year of Entry (YEAROFENTRY) must not be before date of birth",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    }
-    else {
+    } else {
       this._yearOfEntry = parseInt(myYearOfEntry, 10);
       return true;
     }
-
   }
 
   _validateDisabled() {
