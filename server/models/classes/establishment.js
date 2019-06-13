@@ -450,7 +450,7 @@ class Establishment {
                 // attributes: ['id', 'uid'],
                 where: {
                     id: id,
-                    Archived: false
+                    archived: false
                 },
                 include: [
                 ]
@@ -775,7 +775,7 @@ class Establishment {
             await models.sequelize.transaction(async t => {
 
                 const updateDocument = {
-                    Archived: true,
+                    archived: true,
                     updated: updatedTimestamp,
                     updatedBy: deletedBy
                 };
@@ -796,7 +796,6 @@ class Establishment {
 
                     this._updated = updatedRecord.updated;
                     this._updatedBy = deletedBy;
-                    this._id = updatedRecord.EstablishmentID;
 
                     const allAuditEvents = [{
                         establishmentFk: this._id,

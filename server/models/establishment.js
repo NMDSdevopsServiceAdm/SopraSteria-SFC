@@ -381,7 +381,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"LeaversChangedBy"'
     },
-    Archived: {
+    archived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       field: '"Archived"'

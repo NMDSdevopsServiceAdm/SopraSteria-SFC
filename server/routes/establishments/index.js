@@ -83,7 +83,6 @@ router.route('/:id').get(async (req, res) => {
 
 router.route('/:id').delete(async (req, res) => {
     const establishmentId = req.establishmentId;
-console.log('into establishment route');
     const establishmentInstance = new Establishment.Establishment(establishmentId);
 
     try {
