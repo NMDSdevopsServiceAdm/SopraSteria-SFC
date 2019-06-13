@@ -912,12 +912,12 @@ class Establishment extends EntityValidator {
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
             }
 
-            if (!(this._name)) {
+            if (!(this.name)) {
                 allExistAndValid = false;
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.ERROR,
                     102,
-                    this._name ? `Invalid: ${this._name}` : 'Missing',
+                    this.name ? `Invalid: ${this.name}` : 'Missing',
                     ['Name']
                 ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
