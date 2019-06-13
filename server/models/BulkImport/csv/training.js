@@ -6,6 +6,7 @@ class Training {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
+    this._headers_v1 = ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"];
 
     this._localeStId = null;
     this._uniqueWorkerId = null;
@@ -14,6 +15,7 @@ class Training {
     this._description = null;
     this._category = null;
     this._accredited = null;
+    this._notes= null;
   };
 
   static get LOCALESTID_ERROR() { return 1000; }
@@ -23,7 +25,8 @@ class Training {
   static get DESCRIPTION_ERROR() { return 1040; }
   static get CATEGORY_ERROR() { return 1050; }
   static get ACCREDITED_ERROR() { return 1060; }
-
+  static get NOTES_ERROR() { return 1070; }
+  static get HEADERS_ERROR() { return 1080; }
 
   get localeStId() {
     return this._localeStId;
@@ -45,6 +48,9 @@ class Training {
   }
   get accredited() {
     return this._accredited;
+  }
+  get notes() {
+    return this._notes;
   }
   
   _validateLocaleStId() {
@@ -177,7 +183,7 @@ class Training {
 
   _validateDescription() {
     const myDescription = this._currentLine.DESCRIPTION;
-    const MAX_LENGTH = 1000;
+    const MAX_LENGTH = 120;
 
     if (!myDescription || myDescription.length == 0) {
       this._validationErrors.push({
@@ -185,7 +191,7 @@ class Training {
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
         error: "Description (DESCRIPTION) must be defined (not empty)",
-        source: this._currentLine.LOCALESTID,
+        source: this._currentLine.DESCRIPTION,
       });
       return false;
     } else if (myDescription.length > MAX_LENGTH) {
@@ -194,7 +200,7 @@ class Training {
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
         error: `Description (DESCRIPTION) must be no more than ${MAX_LENGTH} characters`,
-        source: this._currentLine.LOCALESTID,
+        source: this._currentLine.DESCRIPTION,
       });
       return false;
     } else {
@@ -222,7 +228,7 @@ class Training {
 
   _validateAccredited() {
     const myAccredited = parseInt(this._currentLine.ACCREDITED);
-    const ALLOWED_VALUES = [0,1];
+    const ALLOWED_VALUES = [0,1,999];
     if (Number.isNaN(myAccredited)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
@@ -249,7 +255,10 @@ class Training {
         case 1:
           this._accredited = 'Yes';
           break;
-      }
+        case 999:
+          this._accredited = 'Don\'t know';
+          break;
+        }
       return true;
     }
   }
@@ -271,10 +280,47 @@ class Training {
     }
   }
 
+  _validateNotes() {
+    const myNotes = this._currentLine.NOTES;
+    const MAX_LENGTH = 1000;
+
+    if (myNotes && myNotes.length > 0) {
+      if (myNotes.length > MAX_LENGTH) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Training.NOTES_ERROR,
+          errType: `NOTES_ERROR`,
+          error: `Notes (NOTES) must be no more than ${MAX_LENGTH} characters`,
+          source: this._currentLine.NOTES,
+        });
+        return false;
+      } else {
+        this._notes = myNotes;
+        return true;
+      }  
+    }
+  }
+
+  _validateHeaders() {
+    const headers = Object.keys(this._currentLine);
+    // only run once for first line, so check _lineNumber
+    if (this._lineNumber === 2 && JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+      this._validationErrors.push({
+        lineNumber: 1,
+        errCode: Training.HEADERS_ERROR,
+        errType: `HEADERS_ERROR`,
+        error: `Training headers (HEADERS) can contain, ${this._headers_v1}`,
+        source: headers
+      });
+    }
+    return true;
+  }
+
   // returns true on success, false is any attribute of Training fails
   validate() {
     let status = true;
 
+    status = !this._validateHeaders() ? false : status;
     status = !this._validateLocaleStId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateDateCompleted() ? false : status;
@@ -282,7 +328,8 @@ class Training {
     status = !this._validateDescription() ? false : status;
     status = !this._validateCategory() ? false : status;
     status = !this._validateAccredited() ? false : status;
-  
+    status = !this._validateNotes() ? false : status;
+
     return status;
   }
 
@@ -303,22 +350,19 @@ class Training {
       description: this._description,
       category: this._category,
       accredited: this._accredited,
+      notes: this._notes,
     };
   };
 
   toAPI() {
-    const TITLE_MAX_LENGTH=120;
-
-    // split the description between ASCWDS `title` and `notes`.
-
     const changeProperties = {
       trainingCategory: {
         id: this._category
       },
       completed: this._dateCompleted ? this._dateCompleted.format('YYYY-MM-DD') : undefined,
       expires: this._expiry ? this._expiry.format('YYYY-MM-DD') : undefined,
-      title: this._description ? this._description.substring(0,TITLE_MAX_LENGTH) : undefined,
-      notes: this._description && this._description.length > TITLE_MAX_LENGTH ? this._description.substring(TITLE_MAX_LENGTH-1) : undefined,
+      title: this._description ? this._description : undefined,
+      notes: this._notes ? this._notes : undefined,
       accredited: this._accredited ? this._accredited : undefined,
     };
 

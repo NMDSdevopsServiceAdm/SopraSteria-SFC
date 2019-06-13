@@ -690,8 +690,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
     data: {
       csv: {
         establishments: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
-        workers: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
-        training: myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
+        workers: myWorkers.map(thisWorker => thisWorker.toJSON()),
+        training: myTrainings.map(thisTraining => thisTraining.toJSON()),
       },
       entities: {
         establishments: myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
