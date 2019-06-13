@@ -634,7 +634,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   }
   establishments.establishmentMetadata.records = myEstablishments.length;
   establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warningCode' in thisError).length;
+  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // parse and process Workers CSV
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType == "Worker") {
@@ -649,7 +649,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   }
   workers.workerMetadata.records = myWorkers.length;
   workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warningCode' in thisError).length;
+  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == "Training") {
@@ -664,7 +664,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   }
   training.trainingMetadata.records = myTrainings.length;
   training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warningCode' in thisError).length;
+  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
 
   // upload the validated metadata as JSON to S3
