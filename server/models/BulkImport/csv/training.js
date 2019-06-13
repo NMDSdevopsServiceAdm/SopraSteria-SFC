@@ -28,6 +28,14 @@ class Training {
   static get NOTES_ERROR() { return 1070; }
   static get HEADERS_ERROR() { return 1080; }
 
+  get lineNumber() {
+    return this._lineNumber;
+  }
+
+  get currentLine() {
+    return this._currentLine;
+  }
+
   get localeStId() {
     return this._localeStId;
   }

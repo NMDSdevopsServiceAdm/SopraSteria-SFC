@@ -71,6 +71,13 @@ class Establishment {
   static get DESTINATIONS_ON_LEAVING_ERROR() { return 1370; }
 
   static get HEADERS_ERROR() { return 1380; }
+  get lineNumber() {
+    return this._lineNumber;
+  }
+
+  get currentLine() {
+    return this._currentLine;
+  }
 
   get localId() {
     return this._localId;

@@ -118,6 +118,14 @@ class Worker {
   static get QUAL_ACH03_NOTES_ERROR() { return 5090; }
   static get AMHP_ERROR() { return 6000; }
   static get HEADERS_ERROR() { return 6010; }
+
+  get lineNumber() {
+    return this._lineNumber;
+  }
+
+  get currentLine() {
+    return this._currentLine;
+  }
       
   get local() {
     return this._localId;
@@ -578,12 +586,8 @@ class Worker {
   // ignore countr of birth check
   _validateYearOfEntry() {
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
-    const myDOB = this._currentLine.DOB;
     const yearRegex = /^\d{4}$/;
 
-    var dateParts = myDOB.split("/");
-    var birthDate = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
-  
     if (myYearOfEntry && !yearRegex.test(myYearOfEntry)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
@@ -593,23 +597,10 @@ class Worker {
         source: this._currentLine.YEAROFENTRY,
       });
       return false;
-    }
-    else if (myYearOfEntry && !(myYearOfEntry > birthDate.getFullYear())) {
-
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.YEAROFENTRY_ERROR,
-        errType: 'Ethnicity_ERROR',
-        error: "Year of Entry (YEAROFENTRY) must not be before date of birth",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    }
-    else {
+    } else {
       this._yearOfEntry = parseInt(myYearOfEntry, 10);
       return true;
     }
-
   }
 
   _validateDisabled() {
@@ -702,6 +693,54 @@ class Worker {
     }
   }
 
+<<<<<<< HEAD
+=======
+  _validateCareCertDate() {
+    const myCareCertDate = this._currentLine.CARECERTDATE;
+    const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
+
+    if (this._currentLine.CARECERTDATE && this._currentLine.CARECERTDATE.length > 0) {
+      const today = moment(new Date());
+      const myCareCertRealDate = moment.utc(myCareCertDate, "DD/MM/YYYY");
+  
+      // optional
+      if (!dateRegex.test(this._currentLine.CARECERTDATE)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CARE_CERT_DATE_ERROR,
+          errType: 'CARECERTDATE_ERROR',
+          error: "Care Certificate Date (CARECERTDATE) should by in dd/mm/yyyy format",
+          source: this._currentLine.CARECERTDATE,
+        });
+        return false;
+      } else if (!myCareCertRealDate.isValid()) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CARE_CERT_DATE_ERROR,
+          errType: 'CARE_CERT_DATE_ERROR',
+          error: "Care Certificate Date (CARECERTDATE)  is invalid date",
+          source: this._currentLine.STARTDATE,
+        });
+        return false;
+      } else if (myCareCertRealDate.isAfter(today)) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CARE_CERT_DATE_ERROR,
+          errType: 'CARECERTDATE_ERROR',
+          error: "Care Certificate Date (CARECERTDATE) can not be in future",
+          source: this._currentLine.CARECERTDATE,
+        });
+        return false;
+      } else if (myCareCertDate) {
+        this._careCertDate = myCareCertRealDate;
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+
+>>>>>>> origin/bulk_upload_validations_merge_with_api
   _validateRecSource() {
     const myRecSource = parseInt(this._currentLine.RECSOURCE);
 
@@ -734,13 +773,22 @@ class Worker {
 
       const today = moment(new Date());
       const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
-  
+
       if (!dateRegex.test(myStartDate)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.START_DATE_ERROR,
           errType: 'STARTDATE_ERROR',
           error: "Start Date (STARTDATE) should by in dd/mm/yyyy format",
+          source: this._currentLine.STARTDATE,
+        });
+        return false;
+      } else if (!myRealStartDate.isValid()) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.START_DATE_ERROR,
+          errType: 'STARTDATE_ERROR',
+          error: "Start Date (STARTDATE) is invalid date",
           source: this._currentLine.STARTDATE,
         });
         return false;
@@ -933,7 +981,7 @@ class Worker {
           source: this._currentLine.SALARYINT,
         });
         return false;
-      } else if (mySalaryInt && !salaryIntValues.includes(parseInt(mySalaryInt))) {
+      } else if (!salaryIntValues.includes(parseInt(mySalaryInt))) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
@@ -1005,7 +1053,6 @@ class Worker {
     // optional
     if (this._currentLine.HOURLYRATE && this._currentLine.HOURLYRATE.length > 0) {
       // can only give (annual) salary if salary interval (SALARYINT) is hourly
-      console.log("WA DEBUG - salary: ", this._salaryInt, Number.isInteger(this._salaryInt))
       if (this._salaryInt === null || this._salaryInt !== 'Hourly') {
         this._validationErrors.push({
           lineNumber: this._lineNumber,

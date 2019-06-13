@@ -14,6 +14,9 @@ const moment = require('moment');
 // database models
 const models = require('../index');
 
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
+
 // known qualification types
 const QUALIFICATION_TYPE = [
     'NVQ',
@@ -28,15 +31,17 @@ const QUALIFICATION_TYPE = [
 
 class QualificationDuplicateException {
     // TODO: parse the sequelize error on create failure
-    constructor() {  };
+    constructor() { };
 
     get message()  {
         return 'Duplicate';
     };
 };
 
-class Qualification {
+class Qualification extends EntityValidator {
     constructor(establishmentId, workerUid) {
+        super();
+
         this._establishmentId = establishmentId;
         this._workerUid = workerUid;
         this._id = null;
@@ -165,34 +170,68 @@ class Qualification {
         });
 
         if (!qualifications || !Array.isArray(qualifications)) {
+            this._validations.push(new ValidationMessage(
+                ValidationMessage.ERROR,
+                100,
+                'Failed to get all training categories',
+                ['Qualification']
+            ));
+
             this._log(Qualification.LOG_ERROR, 'Failed to get all training categories');
             return false;
         }
+
+        let returnStatus = true;
         
         const validatedQualificationRecord = {};
         // qualification category
         if (document.qualification) {
             // validate category
             if (!(document.qualification.id || (document.qualification.title && document.qualification.level))) {
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    101,
+                    'qualification.id or qualification.title and qualification.level must exist',
+                    ['Qualification']
+                ));
+    
                 this._log(Qualification.LOG_ERROR, 'qualification failed validation: qualification.id or qualification.title and qualification.level must exist');
-                return false;
+                returnStatus = false;
             }
 
             if (document.qualification.id && !Number.isInteger(document.qualification.id)) {
-                this._log(Qualification.LOG_ERROR, 'qualification failed validation: qualification.id must be an integer');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    102,
+                    `qualification.id (${document.qualification.id}) must be an integer`,
+                    ['Qualification']
+                ));
+                this._log(Qualification.LOG_ERROR, `qualification failed validation: qualification.id (${document.qualification.id}) must be an integer`);
+                returnStatus = false;
             }
             if (document.qualification.level && !Number.isInteger(document.qualification.level)) {
-                this._log(Qualification.LOG_ERROR, 'qualification failed validation: qualification.level must be an integer');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    103,
+                    `qualification.level (${document.qualification.level}) must be an integer`,
+                    ['Qualification']
+                ));
+                this._log(Qualification.LOG_ERROR, `qualification failed validation: qualification.level (${document.qualification.level}) must be an integer`);
+                returnStatus = false;
             }
             let foundQualification = null;
             if (document.qualification.id) {
                 foundQualification = qualifications.find(thisQualification => thisQualification.id === document.qualification.id);
             }
             if (!foundQualification) {
-                this._log(Qualification.LOG_ERROR, 'qualification failed validation: qualification.id or qualification.title and qualification.level must exist');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    104,
+                    `qualification.id(${document.qualification.id}) or qualification.title (${document.qualification.title}) and qualification.level (${document.qualification.level}) must exist`,
+                    ['Qualification']
+                ));
+                this._log(Qualification.LOG_ERROR, `qualification failed validation: qualification.id(${document.qualification.id}) or qualification.title (${document.qualification.title}) and qualification.level (${document.qualification.level}) must exist`);
+                returnStatus = false;
             } else {
                 validatedQualificationRecord.qualification = {
                     id: foundQualification.id,
@@ -210,13 +249,19 @@ class Qualification {
         if (document.year) {
             // validate year - it's an integer
             const MAX_AGE = 100;
-            const CURRENT_YEAR = new Date().getFullYear;
+            const CURRENT_YEAR = new Date().getFullYear();
 
             if (!Number.isInteger(document.year) ||
                 document.year < (CURRENT_YEAR-MAX_AGE) ||
                 document.year > CURRENT_YEAR) {
-                this._log(Qualification.LOG_ERROR, `year failed validation: must be an integer, must be <= this year and not more than ${MAX_AGE} years ago`);
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.WARNING,
+                    110,
+                    `(${document.year}) must be an integer, must be <= this year (${CURRENT_YEAR}) and not more than ${MAX_AGE} years ago`,
+                    ['Year']
+                ));
+                this._log(Qualification.LOG_ERROR, `year failed validation: year (${document.year}) must be an integer, must be <= this year (${CURRENT_YEAR}) and not more than ${MAX_AGE} years ago`);
+                returnStatus = false;
             }
 
             validatedQualificationRecord.year = document.year;
@@ -229,8 +274,14 @@ class Qualification {
             // validate title
             const MAX_LENGTH=1000;
             if (document.notes.length > MAX_LENGTH) {
-                this._log(Qualification.LOG_ERROR, 'notes failed validation: MAX length');
-                return false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.WARNING,
+                    120,
+                    `validation: MAX length (${MAX_LENGTH} characters)`,
+                    ['Notes']
+                ));
+                this._log(Qualification.LOG_ERROR, 'notes failed validation: MAX length (${MAX_LENGTH} characters)');
+                returnStatus = false;
             }
 
             validatedQualificationRecord.notes = document.notes;
@@ -239,13 +290,19 @@ class Qualification {
             validatedQualificationRecord.notes = null;
         }
 
-        return validatedQualificationRecord;
-    }
+
+        if (returnStatus === false) {
+            return false;
+        } else {
+            return validatedQualificationRecord;
+        }    }
 
     // takes the given JSON document and updates self (internal properties)
     // Thows "Error" on error.
     async load(document) {
         try {
+            this.resetValidations();
+
             const validatedQualificationRecord = await this.validateQualificationRecord(document);
 
             if (validatedQualificationRecord !== false) {
@@ -254,7 +311,7 @@ class Qualification {
                 this.notes = validatedQualificationRecord.notes;
             } else {
                 this._log(Qualification.LOG_ERROR, `Qualification::load - failed`);
-                throw new Error('Failed Validation');
+                return false;
             }
         } catch (err) {
             this._log(Qualification.LOG_ERROR, `Qualification::load - failed: ${err}`);
@@ -265,7 +322,7 @@ class Qualification {
 
     // returns true if Qualification is valid, otherwise false
     isValid() {
-        if (this.hasMandatoryProperties === true) {
+        if (this.hasMandatoryProperties && this._validations.length === 0) {
             return true;
         } else {
             this._log(Qualification.LOG_ERROR, `Invalid properties`);
@@ -627,7 +684,7 @@ class Qualification {
     // returns true if all mandatory properties for a Training Record exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
-        
+       
         // qualification must exist
         if (this.qualification === null) allExistAndValid = true
 

@@ -389,8 +389,12 @@ router.route('/validate').post(async (req, res) => {
       return res.status(400).send({
         establishments: {
           filename: null,
-          errors: validationResponse.validation.establishments,
-          warnings: [],
+          errors: validationResponse.validation.establishments
+            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+          warnings: validationResponse.validation.establishments
+            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           records: 0,
           data: {
             csv: validationResponse.data.csv.establishments,
@@ -399,8 +403,12 @@ router.route('/validate').post(async (req, res) => {
         },
         workers: {
           filename: null,
-          errors: validationResponse.validation.workers,
-          warnings: [],
+          errors: validationResponse.validation.workers
+            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+          warnings: validationResponse.validation.workers
+            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           records: 0,
           data: {
             csv: validationResponse.data.csv.workers,
@@ -412,8 +420,12 @@ router.route('/validate').post(async (req, res) => {
         },
         training: {
           filename: null,
-          errors: validationResponse.validation.training,
-          warnings: [],
+          errors: validationResponse.validation.training
+            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+          warnings: validationResponse.validation.training
+            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           records: 0,
           data: {
             csv: validationResponse.data.csv.training,
@@ -482,21 +494,41 @@ async function uploadAsJSON(username, establishmentId, content, key) {
   }
 }
 
+
+const _appendApiErrorsAndWarnings = (lineValidator, errors, warnings) => {
+
+  errors.forEach(thisError => {
+    thisError.properties ? thisError.properties.forEach(thisProp => {
+      lineValidator.validationErrors.push({
+        lineNumber: lineValidator.lineNumber,
+        errCode: thisError.code,
+        errType: "TBC",
+        error: thisError.message,
+        source: thisProp
+      });  
+    }) : true;
+  });
+
+  warnings.forEach(thisWarning => {
+    thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
+      lineValidator.validationErrors.push({
+        lineNumber: lineValidator.lineNumber,
+        warnCode: thisWarning.code,
+        warnType: "TBC",
+        warning: thisWarning.message,
+        source: thisProp
+      });
+    }) : true;
+  });
+
+};
+
 const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments) => {
   const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   lineValidator.validate();
   lineValidator.transform();
-
-  // TODO - not sure this is necessary yet - we can just iterate the collection of Establishments at the end to create the validation JSON document
-  if (lineValidator.validationErrors.length > 0) {
-    lineValidator.validationErrors.forEach(thisError => csvEstablishmentSchemaErrors.push(thisError));
-  }
-
-  //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
-  //console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
-  myEstablishments.push(lineValidator);
 
   const thisEstablishmentAsAPI = lineValidator.toAPI();
   const thisApiEstablishment = new EstablishmentEntity();
@@ -510,19 +542,61 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
       'A0000000000'       // TODO: remove this once Establishment::initialise is resolving NDMS ID based on given postcode
       );
   
-    const isValid = await thisApiEstablishment.load(thisEstablishmentAsAPI);
-    //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
-    myAPIEstablishments.push(thisApiEstablishment);
+    await thisApiEstablishment.load(thisEstablishmentAsAPI);
+
+    const isValid = thisApiEstablishment.validate();
+    if (isValid) {
+      // no validation errors in the entity itself, so add it ready for completion
+      //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
+      myAPIEstablishments.push(thisApiEstablishment);
+    } else {
+      const errors = thisApiEstablishment.errors;
+      const warnings = thisApiEstablishment.warnings;
+
+      _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+
+      if (errors.length === 0) {
+        //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
+        myAPIEstablishments.push(thisApiEstablishment);
+      }
+    }
+
   } catch (err) {
-    console.error("WA - localised validate establishment error until validation card");
+    console.error("WA - localised validate establishment error until validation card", err);
   }
+  
+  // collate all bulk upload validation errors/warnings
+  if (lineValidator.validationErrors.length > 0) {
+    lineValidator.validationErrors.forEach(thisError => csvEstablishmentSchemaErrors.push(thisError));
+  }
+
+  //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
+  //console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
+  myEstablishments.push(lineValidator);
 };
 
-const _loadWorkerQualifications = async (thisQual, myAPIQualifications) => {
+const _loadWorkerQualifications = async (lineValidator, thisQual, myAPIQualifications) => {
   const thisApiQualification = new QualificationEntity();
-  const isValid = await thisApiQualification.load(thisQual);
+  await thisApiQualification.load(thisQual);
   // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
-  myAPIQualifications.push(thisApiQualification);
+
+  const isValid = thisApiQualification.validate();
+
+  if (isValid) {
+    // no validation errors in the entity itself, so add it ready for completion
+    // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
+    myAPIQualifications.push(thisApiQualification);
+  } else {
+    const errors = thisApiQualification.errors;
+    const warnings = thisApiQualification.warnings;
+
+    _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+
+    if (errors.length === 0) {
+      // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
+      myAPIQualifications.push(thisApiQualification);
+    }
+  }
 };
 
 const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications) => {
@@ -532,6 +606,44 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
   lineValidator.validate();
   lineValidator.transform();
 
+  const thisWorkerAsAPI = lineValidator.toAPI();
+
+  // construct Worker entity
+  const thisApiWorker = new WorkerEntity();
+
+  try {
+    await thisApiWorker.load(thisWorkerAsAPI);
+
+    const isValid = thisApiWorker.validate();
+    if (isValid) {
+      // no validation errors in the entity itself, so add it ready for completion
+      //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
+      myAPIWorkers.push(thisApiWorker);
+    } else {
+      const errors = thisApiWorker.errors;
+      const warnings = thisApiWorker.warnings;
+
+      _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+  
+      if (errors.length === 0) {
+        //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
+        myAPIWorkers.push(thisApiWorker);
+      }
+    }
+
+    // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
+    //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
+    const thisQualificationAsAPI = lineValidator.toQualificationAPI();
+    await Promise.all(
+      thisQualificationAsAPI.map((thisQual) => {
+        return _loadWorkerQualifications(lineValidator, thisQual, myAPIQualifications);
+      }) 
+    );  
+  } catch (err) {
+    console.error("WA - localised validate workers error until validation card", err);
+  }
+
+  // collate all bulk upload validation errors/warnings
   if (lineValidator.validationErrors.length > 0) {
     lineValidator.validationErrors.forEach(thisError => csvWorkerSchemaErrors.push(thisError));
   }
@@ -539,27 +651,6 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
   //console.log("WA DEBUG - this establishment: ", lineValidator.toJSON());
   //console.log("WA DEBUG - this establishment: ", JSON.stringify(lineValidator.toAPI(), null, 4));
   myWorkers.push(lineValidator);
-
-  const thisWorkerAsAPI = lineValidator.toAPI();
-
-  // construct Worker entity
-  const thisApiWorker = new WorkerEntity();
-
-  try {
-    const isValid = await thisApiWorker.load(thisWorkerAsAPI);
-    //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
-    myAPIWorkers.push(thisApiWorker);
-  
-    // construct Qualification entities (can be multiple of a single Worker record)
-    const thisQualificationAsAPI = lineValidator.toQualificationAPI();
-    await Promise.all(
-      thisQualificationAsAPI.map((thisQual) => {
-        return _loadWorkerQualifications(thisQual, myAPIQualifications);
-      }) 
-    );  
-  } catch (err) {
-    console.error("WA - localised validate workers error until validation card");
-  }
 };
 
 const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings) => {
@@ -569,6 +660,32 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
   lineValidator.validate();
   lineValidator.transform();
 
+  const thisTrainingAsAPI = lineValidator.toAPI();
+  const thisApiTraining = new TrainingEntity();
+  try {
+    await thisApiTraining.load(thisTrainingAsAPI);
+
+    const isValid = thisApiTraining.validate();
+    if (isValid) {
+      // no validation errors in the entity itself, so add it ready for completion
+      // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
+      myAPITrainings.push(thisApiTraining);
+    } else {
+      const errors = thisApiTraining.errors;
+      const warnings = thisApiTraining.warnings;
+
+      _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+  
+      if (errors.length === 0) {
+        // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
+        myAPITrainings.push(thisApiTraining);
+      }
+    }
+  } catch (err) {
+    console.error("WA - localised validate training error until validation card", err);
+  }
+
+  // collate all bulk upload validation errors/warnings
   if (lineValidator.validationErrors.length > 0) {
     lineValidator.validationErrors.forEach(thisError => csvTrainingSchemaErrors.push(thisError));
   }
@@ -576,16 +693,6 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
   //console.log("WA DEBUG - this training csv record: ", lineValidator.toJSON());
   // console.log("WA DEBUG - this training API record: ", JSON.stringify(lineValidator.toAPI(), null, 4));
   myTrainings.push(lineValidator);
-
-  const thisTrainingAsAPI = lineValidator.toAPI();
-  const thisApiTraining = new TrainingEntity();
-  try {
-    const isValid = await thisApiTraining.load(thisTrainingAsAPI);
-    // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
-    myAPITrainings.push(thisApiTraining);  
-  } catch (err) {
-    console.error("WA - localised validate training error until validation card");
-  }
 };
 
 // if commit is false, then the results of validation are not uploaded to S3
@@ -610,7 +717,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   }
   establishments.establishmentMetadata.records = myEstablishments.length;
   establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warningCode' in thisError).length;
+  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // parse and process Workers CSV
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType == "Worker") {
@@ -625,7 +732,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   }
   workers.workerMetadata.records = myWorkers.length;
   workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warningCode' in thisError).length;
+  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == "Training") {
@@ -640,7 +747,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   }
   training.trainingMetadata.records = myTrainings.length;
   training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warningCode' in thisError).length;
+  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
 
   // upload the validated metadata as JSON to S3
