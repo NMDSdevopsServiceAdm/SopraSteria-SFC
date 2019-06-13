@@ -1,33 +1,31 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Job } from '@core/model/job.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { MessageService } from '@core/services/message.service';
+import { Question } from '@features/workplace/question/question.component';
 
 @Component({
   selector: 'app-starters',
   templateUrl: './starters.component.html',
-  styleUrls: ['./starters.component.scss'],
 })
-export class StartersComponent implements OnInit, OnDestroy {
+export class StartersComponent extends Question {
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private jobService: JobService,
-    private establishmentService: EstablishmentService,
-    private messageService: MessageService
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
+    private jobService: JobService
   ) {
-    this.validatorRecordTotal = this.validatorRecordTotal.bind(this);
-    this.validatorRecordJobId = this.validatorRecordJobId.bind(this);
+    super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
-  form: FormGroup;
   total: number = 0;
   jobsAvailable: Job[] = [];
-
-  private subscriptions = [];
 
   noRecordsReasons = [
     {
@@ -40,7 +38,7 @@ export class StartersComponent implements OnInit, OnDestroy {
     },
   ];
 
-  submitHandler(): void {
+  public onSubmit(): void {
     const { recordsControl, noRecordsReason } = this.form.controls;
 
     if (this.form.valid || noRecordsReason.value === 'no-new' || noRecordsReason.value === 'dont-know') {
@@ -170,16 +168,5 @@ export class StartersComponent implements OnInit, OnDestroy {
         this.total = 0;
       })
     );
-
-    this.subscriptions.push(
-      this.form.valueChanges.subscribe(() => {
-        this.messageService.clearAll();
-      })
-    );
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-    this.messageService.clearAll();
   }
 }
