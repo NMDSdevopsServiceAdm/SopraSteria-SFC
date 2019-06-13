@@ -17,7 +17,6 @@ import { QuestionComponent } from '../question/question.component';
 export class OtherJobRolesComponent extends QuestionComponent {
 
   public availableJobRoles: Job[];
-  public serverError: string;
   public jobsWithOtherRole: JobRole[] = [];
   private otherJobRoleCharacterLimit = 120;
 
@@ -74,6 +73,15 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [];
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'Worker Services could not be updated.',
+      },
+    ];
   }
 
   private updateForm(): void {
