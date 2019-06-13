@@ -763,12 +763,12 @@ class Worker {
     const myCareCertDate = this._currentLine.CARECERTDATE;
     const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
 
-    if (this._careCert) {
+    if (this._currentLine.CARECERTDATE && this._currentLine.CARECERTDATE.length > 0) {
       const today = moment(new Date());
       const myCareCertRealDate = moment.utc(myCareCertDate, "DD/MM/YYYY");
   
       // optional
-      if (myCareCertDate && !dateRegex.test(myCareCertDate)) {
+      if (!dateRegex.test(this._currentLine.CARECERTDATE)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.CARE_CERT_DATE_ERROR,
@@ -777,12 +777,21 @@ class Worker {
           source: this._currentLine.CARECERTDATE,
         });
         return false;
-      } else if (myCareCertDate && (myCareCertRealDate.isAfter(today))) {
+      } else if (!myCareCertRealDate.isValid()) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.CARE_CERT_DATE_ERROR,
+          errType: 'CARE_CERT_DATE_ERROR',
+          error: "Care Certificate Date (CARECERTDATE)  is invalid date",
+          source: this._currentLine.STARTDATE,
+        });
+        return false;
+      } else if (myCareCertRealDate.isAfter(today)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.CARE_CERT_DATE_ERROR,
           errType: 'CARECERTDATE_ERROR',
-          error: "Care Certificate (CARECERTDATE) Date can not be in future",
+          error: "Care Certificate Date (CARECERTDATE) can not be in future",
           source: this._currentLine.CARECERTDATE,
         });
         return false;
@@ -827,13 +836,22 @@ class Worker {
 
       const today = moment(new Date());
       const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
-  
+
       if (!dateRegex.test(myStartDate)) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.START_DATE_ERROR,
           errType: 'STARTDATE_ERROR',
           error: "Start Date (STARTDATE) should by in dd/mm/yyyy format",
+          source: this._currentLine.STARTDATE,
+        });
+        return false;
+      } else if (!myRealStartDate.isValid()) {
+        this._validationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Worker.START_DATE_ERROR,
+          errType: 'STARTDATE_ERROR',
+          error: "Start Date (STARTDATE) is invalid date",
           source: this._currentLine.STARTDATE,
         });
         return false;
@@ -1061,7 +1079,7 @@ class Worker {
           source: this._currentLine.SALARYINT,
         });
         return false;
-      } else if (mySalaryInt && !salaryIntValues.includes(parseInt(mySalaryInt))) {
+      } else if (!salaryIntValues.includes(parseInt(mySalaryInt))) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
