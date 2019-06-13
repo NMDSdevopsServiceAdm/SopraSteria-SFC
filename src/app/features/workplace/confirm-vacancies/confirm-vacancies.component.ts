@@ -1,37 +1,28 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-confirm-vacancies',
   templateUrl: './confirm-vacancies.component.html',
 })
 export class ConfirmVacanciesComponent implements OnInit, OnDestroy {
-  private subscriptions = [];
+  public establishment: Establishment;
+  private subscriptions: Subscription = new Subscription();
 
-  total: number;
-
-  constructor(private router: Router, private establishmentService: EstablishmentService) {}
-
-  makeChangeHandler() {
-    this.router.navigate(['/workplace', 'vacancies']);
-  }
-
-  submitHandler() {
-    this.router.navigate(['/workplace', 'starters']);
-  }
+  constructor(private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
-    this.subscriptions.push(
-      this.establishmentService
-        .getJobs()
-        .pipe(map(jobs => jobs.TotalVacencies))
-        .subscribe(total => (this.total = total))
+    this.subscriptions.add(
+      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+        this.establishment = establishment;
+      })
     );
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.unsubscribe();
   }
 }
