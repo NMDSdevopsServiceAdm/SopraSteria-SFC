@@ -384,7 +384,8 @@ module.exports = function(sequelize, DataTypes) {
     archived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      field: '"Archived"'
+      field: '"Archived"',
+      defaultValue: false
     },
     nmdsId: {
       type: DataTypes.TEXT,
