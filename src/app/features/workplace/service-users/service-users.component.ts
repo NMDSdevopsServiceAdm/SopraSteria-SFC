@@ -77,12 +77,14 @@ export class ServiceUsersComponent extends Question {
       });
     });
 
-    this.establishment.serviceUsers.forEach((service: ServiceUser) => {
-      this.form.get('serviceUsers').value.push(service.id);
-      if (service.other) {
-        this.form.get(`serviceUsers-${service.id}-otherService`).setValue(service.other);
-      }
-    });
+    if (this.establishment.serviceUsers) {
+      this.establishment.serviceUsers.forEach((service: ServiceUser) => {
+        this.form.get('serviceUsers').value.push(service.id);
+        if (service.other) {
+          this.form.get(`serviceUsers-${service.id}-otherService`).setValue(service.other);
+        }
+      });
+    }
 
     this.renderForm = true;
   }
