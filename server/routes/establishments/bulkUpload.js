@@ -545,6 +545,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
     await thisApiEstablishment.load(thisEstablishmentAsAPI);
 
     const isValid = thisApiEstablishment.validate();
+
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
       //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
@@ -557,6 +558,9 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
       if (errors.length === 0) {
         //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
+        myAPIEstablishments.push(thisApiEstablishment);
+      } else {
+        // TODO - remove this when capacities and services are fixed; temporarily adding establishments even though they're in error (because service/capacity validations put all in error)
         myAPIEstablishments.push(thisApiEstablishment);
       }
     }
