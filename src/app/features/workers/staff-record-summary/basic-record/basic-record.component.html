@@ -24,12 +24,22 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.mainJob != 'No'">
-        {{ worker.mainJob.title }}
+        <ng-template [ngIf]="worker.mainJob.other" [ngIfElse]="title">
+          <span>{{ worker.mainJob.other }}</span>
+        </ng-template>
+        <ng-template #title>
+          <span>{{ worker.mainJob.title }}</span>
+        </ng-template>
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport"  class="govuk-summary-list__value">
-      {{ worker.mainJob.title }}
+      <ng-template [ngIf]="worker.mainJob.other" [ngIfElse]="title">
+        <span>{{ worker.mainJob.other }}</span>
+      </ng-template>
+      <ng-template #title>
+        <span>{{ worker.mainJob.title }}</span>
+      </ng-template>
     </dd>
   </div>
 
@@ -38,12 +48,12 @@
       Contract type
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-        <ng-container *ngIf="worker.wdf.contract === 'No'">
-          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
-        </ng-container>
-        <ng-container *ngIf="worker.wdf.contract != 'No'">
-          {{ worker.contract }}
-        </ng-container>
+      <ng-container *ngIf="worker.wdf.contract === 'No'">
+        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.contract != 'No'">
+        {{ worker.contract }}
+      </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport"  class="govuk-summary-list__value">
