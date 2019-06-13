@@ -449,13 +449,15 @@ class Establishment {
             const fetchQuery = {
                 // attributes: ['id', 'uid'],
                 where: {
-                    id,
+                    id: id,
+                    Archived: false
                 },
                 include: [
                 ]
             };
 
             const fetchResults = await models.establishment.findOne(fetchQuery);
+            
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
@@ -766,10 +768,64 @@ class Establishment {
         }
     };
 
-    // deletes this User from DB
-    // Can throw "UserDeleteException"
-    async delete() {
-        throw new EstablishmentExceptions.EstablishmentDeleteException(null, null, null, 'Not implemented', 'Not implemented');
+    async delete(deletedBy) {
+        try {
+            const updatedTimestamp = new Date();
+
+            await models.sequelize.transaction(async t => {
+
+                const updateDocument = {
+                    Archived: true,
+                    updated: updatedTimestamp,
+                    updatedBy: deletedBy
+                };
+
+                let [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument,
+                                            {
+                                                returning: true,
+                                                where: {
+                                                    uid: this.uid
+                                                },
+                                                attributes: ['id', 'updated'],
+                                                transaction: t,
+                                            });
+
+                if (updatedRecordCount === 1) {
+
+                    const updatedRecord = updatedRows[0].get({plain: true});
+
+                    this._updated = updatedRecord.updated;
+                    this._updatedBy = deletedBy;
+                    this._id = updatedRecord.EstablishmentID;
+
+                    const allAuditEvents = [{
+                        establishmentFk: this._id,
+                        username: deletedBy,
+                        type: 'deleted'}];
+                       
+                    await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: t});
+
+                    this._log(Establishment.LOG_INFO, `Archived Establishment with uid (${this._uid}) and id (${this._id})`);
+
+                } else {
+                    const nameId = this._properties.get('NameOrId');
+                    throw new EstablishmentExceptions.EstablishmentDeleteException(null, 
+                                                                        this.uid, 
+                                                                        nameId ? nameId.property : null,
+                                                                        err,
+                                                                        `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
+                }
+                                                                        
+            });
+        } catch (err) {
+            console.log('throwing error');
+            console.log(err);
+            throw new EstablishmentExceptions.EstablishmentDeleteException(null, 
+                this.uid, 
+                nameId ? nameId.property : null,
+                err,
+                `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
+        }
     };
 
     // helper returns a set 'json ready' objects for representing an Establishments's overall
