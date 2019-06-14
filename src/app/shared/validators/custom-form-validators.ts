@@ -24,19 +24,19 @@ export class CustomValidators extends Validators {
     }
   }
 
-  static bothControlsHaveValues(group: AbstractControl, control1Name: string, control2Name: string): { [key: string]: boolean } | null {
+  static controlsHaveValues(group: AbstractControl, controls: string[]): { [key: string]: boolean } | null {
     const errors: ValidationErrors = {};
-    const control1: AbstractControl = group.get(control1Name);
-    const control2: AbstractControl = group.get(control2Name);
+    const control1: AbstractControl = group.get(controls[0]);
+    const control2: AbstractControl = group.get(controls[1]);
 
     if (!control1.value && !control2.value) {
       return { bothAreEmpty: true };
     } else {
       if (!control1.value && control2.value) {
-        errors[ `${control1Name}Empty` ] = true;
+        errors[ `${controls[0]}Empty` ] = true;
         return errors;
       } else if (control1.value && !control2.value) {
-        errors[ `${control2Name}Empty` ] = true;
+        errors[ `${controls[1]}Empty` ] = true;
         return errors;
       }
     }
