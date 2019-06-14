@@ -100,3 +100,20 @@ export interface Establishment {
   TotalLeavers: number;
   wdf: WDF;
 }
+
+export interface GetStartersResponse {
+  created: string;
+  id: number;
+  jobs: {
+    Leavers: Leaver[];
+    Starters: Starter[];
+    TotalLeavers: number;
+    TotalStarters: number;
+    TotalVacencies: number;
+    Vacancies: string;
+  };
+  name: string;
+  uid: string;
+  updated: string;
+  updatedBy: string;
+}
