@@ -7,7 +7,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { isNull } from 'util';
 
 export class Question implements OnInit, OnDestroy {
@@ -35,7 +34,7 @@ export class Question implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+      this.establishmentService.establishment$.subscribe(establishment => {
         this.establishment = establishment;
 
         this.init();
