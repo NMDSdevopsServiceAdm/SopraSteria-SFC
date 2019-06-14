@@ -1,7 +1,8 @@
 <div class="govuk-grid-row" *ngIf="validateSuccess">
   <div class="govuk-grid-column-two-thirds govuk-!-margin-top-2">
     <app-inset-text [color]="hasWarnings ? 'warning' : 'success'">
-      The files have passed validation with <strong>{{ totalWarnings }}</strong> {{ getWarningsText(totalWarnings) }}.
+      The files have passed validation with <strong>{{ totalWarnings }}</strong>
+      {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}.
     </app-inset-text>
   </div>
 </div>
@@ -24,7 +25,7 @@
           <strong class="govuk__flex">
             <img class="govuk-!-margin-right-2" src="/assets/images/flag-orange.svg" alt="" />
             {{ file.warnings }}
-            {{ getWarningsText(file.warnings) }}
+            {{ file.warnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}
           </strong>
         </p>
       </td>
@@ -48,8 +49,9 @@
 
 <ng-container *ngIf="validateSuccess">
   <p *ngIf="hasWarnings">
-    Review the <strong>{{ totalWarnings }}</strong> {{ getWarningsText(totalWarnings) }} in the report or complete the
-    upload to import the data.
+    Review the <strong>{{ totalWarnings }}</strong>
+    {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }} in the report or complete the upload to
+    import the data.
   </p>
 
   <p *ngIf="!hasWarnings">

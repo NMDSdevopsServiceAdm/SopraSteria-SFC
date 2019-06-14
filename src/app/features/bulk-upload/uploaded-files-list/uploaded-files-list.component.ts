@@ -86,10 +86,6 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     console.log('importFiles');
   }
 
-  public getWarningsText(noOfWarnings: number) {
-    return noOfWarnings === 1 ? 'warning' : 'warnings';
-  }
-
   get hasWarnings() {
     return this.totalWarnings > 0;
   }
