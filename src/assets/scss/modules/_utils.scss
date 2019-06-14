@@ -41,5 +41,11 @@
   border-bottom: solid 1px $alto;
   padding: govuk-spacing(4) 0;
 
-  &:first-child {border-top: solid 1px $alto; }
+  &:first-child {
+    border-top: solid 1px $alto;
+  }
+}
+
+.govuk__flex {
+  display: flex;
 }
