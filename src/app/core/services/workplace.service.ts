@@ -5,10 +5,9 @@ import { Observable } from 'rxjs';
 import { ServiceGroup } from '@core/model/services.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WorkplaceService {
-
   constructor(private http: HttpClient) {}
 
   public isRegulated(location: LocationAddress): boolean {

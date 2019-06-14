@@ -11,6 +11,9 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
+
 // notifications
 
 // temp formatters
@@ -27,8 +30,10 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
-class Establishment {
+class Establishment extends EntityValidator {
     constructor(username) {
+        super();
+
         this._username = username;
         this._id = null;
         this._uid = null;
@@ -170,6 +175,8 @@ class Establishment {
     // Returns true if the resulting Establishment is valid; otherwise false
     async load(document) {
         try {
+            this.resetValidations();
+
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
         } catch (err) {
@@ -189,6 +196,18 @@ class Establishment {
         if (this._properties.isValid === true) {
             return true;
         } else {
+            if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid)) {
+                const propertySuffixLength = 'Property'.length * -1;
+                thisEstablishmentIsValid.forEach(thisInvalidProp => {
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.WARNING,
+                        111111111,
+                        'Invalid',
+                        [thisInvalidProp.slice(0,propertySuffixLength)],
+                    ));
+                });
+            }
+
             this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisEstablishmentIsValid.toString()}`);
             return false;
         }
@@ -842,9 +861,9 @@ class Establishment {
                 myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
             }
 
-            myDefaultJSON.created = myDefaultJSON.created ? this.created.toJSON() : null;
-            myDefaultJSON.updated = myDefaultJSON.updated ? this.updated.toJSON() : null;
-            myDefaultJSON.updatedBy = this.updatedBy ? myDefaultJSON.updatedBy : null;
+            myDefaultJSON.created = this.created ? this.created.toJSON() : null;
+            myDefaultJSON.updated = this.updated ? this.updated.toJSON() : null;
+            myDefaultJSON.updatedBy = this.updatedBy ? this.updatedBy : null;
 
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {
@@ -879,15 +898,28 @@ class Establishment {
     // returns true if all mandatory properties for an Establishment exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
-        try {
+
+       try {
             const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
             if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    101,
+                    this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
+                    ['NMDSID']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
             }
 
             if (!(this.name)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    102,
+                    this.name ? `Invalid: ${this.name}` : 'Missing',
+                    ['Name']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
             }
 
@@ -898,22 +930,46 @@ class Establishment {
 
             if (!(this._address)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    103,
+                    this._address ? `Invalid: ${this._address}` : 'Missing',
+                    ['Address']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid address');
             }
 
             if (!(this._postcode)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    104,
+                    this._postcode ? `Invalid: ${_postcode}` : 'Missing',
+                    ['Postcode']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
             }
 
             if (this._isRegulated === null) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    105,
+                    'Missing',
+                    ['CQCRegistered']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing regulated flag');
             }
 
             // location id can be null for a Non-CQC site
             if (this._isRegulated && this._locationId === null) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    106,
+                    'Missing (mandatory) for a CQC Registered site',
+                    ['LocationID']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
             }
 

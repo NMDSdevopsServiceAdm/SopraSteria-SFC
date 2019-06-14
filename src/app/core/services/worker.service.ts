@@ -135,7 +135,7 @@ export class WorkerService {
 
     return this.http
       .get<AvailableQualificationsResponse>(
-        `api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/qualification/available`,
+        `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/qualification/available`,
         {
           params,
         }

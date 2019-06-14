@@ -12,6 +12,9 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
+
 const WorkerExceptions = require('./worker/workerExceptions');
 
 // Worker properties
@@ -22,8 +25,10 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_D
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
-class Worker {
+class Worker extends EntityValidator {
     constructor(establishmentId) {
+        super();
+        
         this._establishmentId = establishmentId;
         this._id = null;
         this._uid = null;
@@ -104,6 +109,8 @@ class Worker {
     // Returns true if the resulting Worker is valid; otherwise false
     async load(document) {
         try {
+            this.resetValidations();
+
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
             // reason is not a managed property, load it specifically
@@ -131,6 +138,18 @@ class Worker {
         if (thisWorkerIsValid === true && unmanagedPropertiesValid ) {
             return true;
         } else {
+            if (thisWorkerIsValid && Array.isArray(thisWorkerIsValid)) {
+                const propertySuffixLength = 'Property'.length * -1;
+                thisWorkerIsValid.forEach(thisInvalidProp => {
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.WARNING,
+                        111111111,
+                        'Invalid',
+                        [thisInvalidProp.slice(0,propertySuffixLength)],
+                    ));
+                });
+            }
+
             this._log(Worker.LOG_ERROR, `Worker invalid properties: ${thisWorkerIsValid.toString()}`);
             return false;
         }
@@ -739,22 +758,41 @@ class Worker {
     // returns true if all mandatory properties for a Worker exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
+
         try {
             const nameIdProperty = this._properties.get('NameOrId');
             if (!(nameIdProperty && nameIdProperty.isInitialised && nameIdProperty.valid)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    101,
+                    nameIdProperty ? 'Invalid' : 'Missing',
+                    ['NameOrId']
+                ));
                 this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid name or id property');
             }
     
             const mainJobProperty = this._properties.get('MainJob');
             if (!(mainJobProperty && mainJobProperty.isInitialised && mainJobProperty.valid)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    102,
+                    mainJobProperty ? 'Invalid' : 'Missing',
+                    ['MainJob']
+                ));
                 this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid main job property');
             }
     
             const contractProperty = this._properties.get('Contract');
             if (!(contractProperty && contractProperty.isInitialised && contractProperty.valid)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    102,
+                    contractProperty ? 'Invalid' : 'Missing',
+                    ['Contract']
+                ));
                 this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid contract property');
             }
     

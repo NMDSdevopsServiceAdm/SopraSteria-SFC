@@ -199,7 +199,10 @@
           </ng-template>
           <ng-template #serviceUsers>
             <ul class="govuk-list">
-              <li *ngFor="let users of workplace.serviceUsers">{{ users.service }}</li>
+              <li *ngFor="let users of workplace.serviceUsers">
+                <ng-container *ngIf="users.other">{{ users.other }}</ng-container>
+                <ng-container *ngIf="!users.other">{{ users.service }}</ng-container>
+              </li>
             </ul>
           </ng-template>
         </ng-container>
@@ -211,7 +214,10 @@
         </ng-template>
         <ng-template #serviceUsers>
           <ul class="govuk-list">
-            <li *ngFor="let users of workplace.serviceUsers">{{ users.service }}</li>
+            <li *ngFor="let users of workplace.serviceUsers">
+              <ng-container *ngIf="users.other">{{ users.other }}</ng-container>
+              <ng-container *ngIf="!users.other">{{ users.service }}</ng-container>
+            </li>
           </ul>
         </ng-template>
       </ng-container>

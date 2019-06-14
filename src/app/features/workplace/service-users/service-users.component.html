@@ -12,8 +12,8 @@
   </div>
 </div>
 
-<form (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-form-group" *ngFor="let group of serviceUsersGroups">
+<form *ngIf="renderForm" (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-form-group" *ngFor="let group of serviceUserGroups">
     <fieldset class="govuk-fieldset">
       <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
         <h2 class="govuk-fieldset__heading">
@@ -21,20 +21,57 @@
         </h2>
       </legend>
       <div class="govuk-checkboxes">
-        <div class="govuk-checkboxes__item" *ngFor="let service of group.services">
-          <input
-            class="govuk-checkboxes__input"
-            id="serviceUsers-{{ service.id }}"
-            name="serviceUsers"
-            type="checkbox"
-            [value]="service.id"
-            [checked]="service.isMyService"
-            (change)="toggle($event.target)"
-          />
-          <label class="govuk-label govuk-checkboxes__label" for="serviceUsers-{{ service.id }}">
-            {{ service.service }}
-          </label>
-        </div>
+        <ng-container *ngFor="let service of group.services">
+          <div class="govuk-checkboxes__item">
+            <input
+              class="govuk-checkboxes__input"
+              id="serviceUsers-{{ service.id }}"
+              name="serviceUsers"
+              type="checkbox"
+              [value]="service.id"
+              [checked]="form.get('serviceUsers').value.includes(service.id)"
+              (change)="toggle($event.target)"
+            />
+            <label class="govuk-label govuk-checkboxes__label" for="serviceUsers-{{ service.id }}">
+              {{ service.service }}
+            </label>
+          </div>
+          <div
+            *ngIf="service.other"
+            class="govuk-checkboxes__conditional"
+            [class.govuk-checkboxes__conditional--hidden]="!form.get('serviceUsers').value.includes(service.id)"
+            id="serviceUsers-conditional-{{ i }}"
+          >
+            <div
+              class="govuk-form-group"
+              [class.govuk-form-group--error]="
+                submitted && form.get('serviceUsers-' + service.id + '-otherService').invalid
+              "
+            >
+              <label class="govuk-label" for="serviceUsers-{{ service.id }}-otherService">
+                Enter your other service users
+              </label>
+              <span
+                id="serviceUsers-{{ service.id }}-otherService-error"
+                class="govuk-error-message"
+                *ngIf="submitted && form.get('serviceUsers-' + service.id + '-otherService').invalid"
+              >
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ getFormErrorMessage('serviceUsers-' + service.id + '-otherService', 'maxlength') }}
+              </span>
+              <input
+                class="govuk-input govuk-!-width-one-third"
+                [class.govuk-input--error]="
+                  submitted && form.get('serviceUsers-' + service.id + '-otherService').invalid
+                "
+                id="serviceUsers-{{ service.id }}-otherService"
+                name="serviceUsers-{{ service.id }}-otherService"
+                formControlName="serviceUsers-{{ service.id }}-otherService"
+                type="text"
+              />
+            </div>
+          </div>
+        </ng-container>
       </div>
     </fieldset>
   </div>
