@@ -26,6 +26,7 @@
     @include govuk-responsive-padding(3, 'right');
     @include govuk-responsive-padding(3, 'bottom');
     margin: 0;
+    position: relative;
 
     @include govuk-font(19);
     background-color: govuk-colour('grey-3');
@@ -36,8 +37,9 @@
     @include govuk-responsive-padding(3, 'left');
     @include govuk-responsive-padding(3, 'right');
     margin: 0;
+    position: relative;
 
-    @include govuk-font(19, 'bold');
+    @include govuk-font(24, 'bold');
     background-color: govuk-colour('grey-3');
   }
 
@@ -52,37 +54,58 @@
 
   @for $i from 1 through 3 {
     dt:nth-of-type(#{$i}) {
-      grid-row-start: 2;
-      grid-row-end: 3;
-      grid-column-start: $i;
-      grid-column-end: $i + 1;
+      grid-row-start: 2 + (2 * ($i - 1));
+      grid-row-end: 3 + (2 * ($i - 1));
+      grid-column-start: 1;
+      grid-column-end: 2;
 
-      @if $i > 1 {
-        &:before {
-          content: '&nbsp;';
-          color: transparent;
-          display: block;
-          position: absolute;
-          margin-left: -15px;
-          border-left: 1px solid govuk-colour('grey-1');
+      @include govuk-media-query($from: tablet) {
+        grid-row-start: 2;
+        grid-row-end: 3;
+        grid-column-start: $i;
+        grid-column-end: $i + 1;
+
+        @if $i > 1 {
+          &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 15px;
+
+            border-left: 1px solid govuk-colour('grey-1');
+          }
         }
       }
     }
 
     dd:nth-of-type(#{$i}) {
-      grid-row-start: 1;
-      grid-row-end: 2;
-      grid-column-start: $i;
-      grid-column-end: $i + 1;
-
+      grid-row-start: 1 + (2 * ($i - 1));
+      grid-row-end: 2 + (2 * ($i - 1));
+      grid-column-start: 1;
+      grid-column-end: 2;
       @if $i > 1 {
-        &:before {
-          content: '&nbsp;';
-          color: transparent;
-          display: block;
-          position: absolute;
-          margin-left: -15px;
-          border-left: 1px solid govuk-colour('grey-1');
+        border-top: 1px solid govuk-colour('grey-1');
+      }
+
+      @include govuk-media-query($from: tablet) {
+        grid-row-start: 1;
+        grid-row-end: 2;
+        grid-column-start: $i;
+        grid-column-end: $i + 1;
+        border-top: 0;
+
+        @if $i > 1 {
+          &:before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 15px;
+            left: 0;
+            bottom: 0;
+            border-left: 1px solid govuk-colour('grey-1');
+          }
         }
       }
     }

@@ -1,31 +1,20 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
-    <div class="govuk-grid-row govuk-!-padding-top-3 govuk-!-padding-bottom-3 govuk-util__light-bg">
-      <div class="govuk-grid-column-one-third">
-        <a routerLink="/worker/total-staff" class="govuk-util__float-right" (click)="setReturn()">Change</a>
-        <h3 class="govuk-heading-m govuk-!-margin-bottom-1">{{ totalStaff }}</h3>
-        <p class="govuk-!-margin-0">Total number of staff</p>
-      </div>
-      <ng-container *ngIf="totalStaff !== totalWorkers">
-        <div class="govuk-grid-column-one-third">
-          <h3
-            class="govuk-heading-m govuk-!-margin-bottom-1"
-            [ngClass]="{ 'icon-link icon-flag': totalStaff < totalWorkers }"
-          >
-            {{ totalWorkers }}
-          </h3>
-          <p class="govuk-!-margin-0">Staff records added</p>
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <h3
-            class="govuk-heading-m govuk-!-margin-bottom-1"
-            [ngClass]="{ 'icon-link icon-flag': totalStaff > totalWorkers }"
-          >
-            {{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}
-          </h3>
-          <p class="govuk-!-margin-0">Staff records missing</p>
-        </div>
-      </ng-container>
-    </div>
-  </div>
-</div>
+<dl class="govuk-list--definition">
+  <dt>
+    Total number of staff
+    <a routerLink="/worker/total-staff" class="govuk-util__float-right" (click)="setReturn()">
+      Change <span class="govuk-visually-hidden"> total number of staff</span>
+    </a>
+  </dt>
+  <dd>{{ totalStaff }}</dd>
+  <ng-container *ngIf="totalStaff !== totalWorkers">
+    <dt>Staff records added</dt>
+    <dd>
+      <img *ngIf="totalStaff < totalWorkers" src="/assets/images/flag-orange.svg" alt="warning" /> {{ totalWorkers }}
+    </dd>
+    <dt>Staff records missing</dt>
+    <dd>
+      <img *ngIf="totalStaff > totalWorkers" src="/assets/images/flag-orange.svg" alt="warning" />
+      {{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}
+    </dd>
+  </ng-container>
+</dl>
