@@ -82,6 +82,6 @@ deploy:
     space: sandbox
     manifest: manifest.featureGDS.yml
     on:
-        branch: feature/integrate-govuk-frontend
+        branch: FEATURE-accessilibity-issues
 notifications:
     slack: skills-for-care:Co9S4WS4ZitevGOyBrEb6yEL
