@@ -37,6 +37,7 @@
     @include govuk-responsive-padding(3, 'left');
     @include govuk-responsive-padding(3, 'right');
     margin: 0;
+    position: relative;
 
     @include govuk-font(24, 'bold');
     background-color: govuk-colour('grey-3');
@@ -66,8 +67,7 @@
 
         @if $i > 1 {
           &:before {
-            content: '&nbsp;';
-            color: transparent;
+            content: '';
             display: block;
             position: absolute;
             top: 0;
@@ -98,11 +98,12 @@
 
         @if $i > 1 {
           &:before {
-            content: '&nbsp;';
-            color: transparent;
+            content: '';
             display: block;
             position: absolute;
-            margin-left: -15px;
+            top: 15px;
+            left: 0;
+            bottom: 0;
             border-left: 1px solid govuk-colour('grey-1');
           }
         }
