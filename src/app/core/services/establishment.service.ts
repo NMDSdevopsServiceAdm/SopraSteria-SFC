@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, GetStartersResponse, Starter } from '@core/model/establishment.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import { map } from 'rxjs/operators';
@@ -105,8 +105,10 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
   }
 
-  getStarters() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.jobs.Starters));
+  public getStarters(): Observable<Starter[]> {
+    return this.http
+      .get<GetStartersResponse>(`/api/establishment/${this.establishmentId}/jobs`)
+      .pipe(map((res: GetStartersResponse) => res.jobs.Starters));
   }
 
   postStarters(starters) {
