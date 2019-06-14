@@ -10,8 +10,9 @@ import { JobService } from '@core/services/job.service';
 import { Question } from '../question/question.component';
 
 enum noVacancyOptions {
-  'NONE' = 'None',
-  'DONTKNOW' = "Don't know",
+  NONE = 'None',
+  // tslint:disable-next-line: quotemark
+  DONTKNOW = "Don't know",
 }
 
 @Component({
@@ -53,11 +54,17 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
   protected init(): void {
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobs = jobs)));
-    // PREFILL FORM
+    this.prefill();
 
     this.previous = this.establishment.share.enabled
       ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
       : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
+  }
+
+  private prefill(): void {
+    if (Object.values(noVacancyOptions).includes(this.establishment.vacancies)) {
+      this.form.get('noVacancies').setValue(this.establishment.vacancies);
+    }
   }
 
   protected setupFormErrorsMap(): void {
@@ -83,11 +90,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected onSuccess() {
-    if (
-      !this.establishment.vacancies ||
-      this.establishment.vacancies === noVacancyOptions.NONE ||
-      this.establishment.vacancies === noVacancyOptions.DONTKNOW
-    ) {
+    if (!this.establishment.vacancies || Object.values(noVacancyOptions).includes(this.establishment.vacancies)) {
       this.next = ['/workplace', `${this.establishment.id}`, 'starters'];
     } else {
       this.next = ['/workplace', `${this.establishment.id}`, 'confirm-vacancies'];
