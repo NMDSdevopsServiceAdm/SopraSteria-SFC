@@ -793,11 +793,14 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
     // having parsed all establishments, workers and training, need to cross-check all training records' establishment reference (LOCALESTID) against all parsed establishments
     // having parsed all establishments, workers and training, need to cross-check all training records' worker reference (UNIQUEWORKERID) against all parsed workers
     myTrainings.forEach(thisTraingRecord => {
-      if (!allEstablishmentsByKey[thisTraingRecord.localeStId]) {
+      const establishmentKeyNoWhitespace = thisTraingRecord.localeStId.replace(/\s/g, "");
+      const workerKeyNoWhitespace = thisTraingRecord.uniqueWorkerId.replace(/\s/g, "");
+
+      if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
         // not found the associated establishment
         csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedEstablishment());
       }
-      if (!allWorkersByKey[thisTraingRecord.uniqueWorkerId]) {
+      if (!allWorkersByKey[workerKeyNoWhitespace]) {
         // not found the associated worker
         csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedWorker());
       }
