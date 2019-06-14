@@ -38,9 +38,13 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService.validateFiles(this.establishmentService.establishmentId).subscribe(
         (response: ValidatedFilesResponse) => {
-          this.onValidateSuccess(response);
+          this.onValidateComplete(response);
         },
         (response: HttpErrorResponse) => {
+          if (response.status === 400) {
+            this.onValidateComplete(response.error);
+            return;
+          }
           this.onValidateError(response);
         }
       )
@@ -53,7 +57,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
    * Then update ui
    * @param response
    */
-  private onValidateSuccess(response: ValidatedFilesResponse): void {
+  private onValidateComplete(response: ValidatedFilesResponse): void {
     response.establishment.fileType = 'Workplace';
     response.training.fileType = 'Training';
     response.workers.fileType = 'Staff';
