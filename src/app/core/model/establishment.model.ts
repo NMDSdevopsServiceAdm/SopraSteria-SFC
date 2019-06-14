@@ -106,7 +106,7 @@ export interface GetStartersResponse {
   id: number;
   jobs: {
     Leavers: Leaver[];
-    Starters: Starter[];
+    Starters: Starter[] | string;
     TotalLeavers: number;
     TotalStarters: number;
     TotalVacencies: number;

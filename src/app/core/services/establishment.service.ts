@@ -105,7 +105,7 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
   }
 
-  public getStarters(): Observable<Starter[]> {
+  public getStarters(): Observable<string | Starter[]> {
     return this.http
       .get<GetStartersResponse>(`/api/establishment/${this.establishmentId}/jobs`)
       .pipe(map((res: GetStartersResponse) => res.jobs.Starters));
