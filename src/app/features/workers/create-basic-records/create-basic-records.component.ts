@@ -23,7 +23,6 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   public totalWorkers = 0;
   public form: FormGroup;
   public submitted = false;
-  public showInputTextforOtherRole: boolean;
   private subscriptions: Subscription = new Subscription();
   private otherJobRoleCharacterLimit = 120;
 
@@ -57,6 +56,11 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     return (
       this.totalWorkers + this.staffRecordsControl.controls.filter(control => !isNull(control.get('uid').value)).length
     );
+  }
+
+  showOtherField(id: number): boolean {
+    const selectedjob = this.jobs.find(job => job.id === +id);
+    return selectedjob && selectedjob.other;
   }
 
   ngOnInit() {
@@ -133,14 +137,6 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.staffRecordsControl.controls.forEach(control => {
       control.patchValue({ active: false });
     });
-  }
-
-  onChangeJobRole(id: number) {
-    this.showInputTextforOtherRole = false;
-    const selectedjob = this.jobs.find(job => job.id === +id);
-    if (selectedjob.other) {
-      this.showInputTextforOtherRole = true;
-    }
   }
 
   submitHandler() {
