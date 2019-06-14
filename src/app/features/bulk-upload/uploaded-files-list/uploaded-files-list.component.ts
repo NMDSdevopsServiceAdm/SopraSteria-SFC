@@ -14,6 +14,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private uploadedFiles: Array<UploadFile>;
   public validateSuccess = false;
+  public totalWarnings = 0;
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
@@ -53,21 +54,22 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
    * @param response
    */
   private onValidateSuccess(response: ValidatedFilesResponse): void {
-    this.validateSuccess = true;
-
     response.establishment.fileType = 'Workplace';
     response.training.fileType = 'Training';
     response.workers.fileType = 'Staff';
 
     const validatedFiles: Array<ValidatedFile> = [response.establishment, response.training, response.workers];
-    console.log(validatedFiles);
 
     this.uploadedFiles.forEach((file: UploadFile) => {
       const validatedFile: ValidatedFile = filter(validatedFiles, ['filename', file.name])[0];
       file.records = validatedFile.records;
       file.fileType = validatedFile.fileType;
+      file.warnings = validatedFile.warnings;
       file.status = FileValidateStatus.Pass;
     });
+
+    this.totalWarnings = this.uploadedFiles.reduce((accumulator, file) => accumulator + file.warnings, 0);
+    this.validateSuccess = true;
   }
 
   /**
@@ -82,6 +84,14 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   // TODO in another ticket
   public importFiles(): void {
     console.log('importFiles');
+  }
+
+  public getWarningsText(noOfWarnings: number) {
+    return noOfWarnings === 1 ? 'warning' : 'warnings';
+  }
+
+  get hasWarnings() {
+    return this.totalWarnings > 0;
   }
 
   ngOnDestroy() {

@@ -1,7 +1,7 @@
 <div class="govuk-grid-row" *ngIf="validateSuccess">
   <div class="govuk-grid-column-two-thirds govuk-!-margin-top-2">
-    <app-inset-text [color]="'success'">
-      The files have passed validation with <strong>0</strong> warnings.
+    <app-inset-text [color]="hasWarnings ? 'warning' : 'success'">
+      The files have passed validation with <strong>{{ totalWarnings }}</strong> {{ getWarningsText(totalWarnings) }}.
     </app-inset-text>
   </div>
 </div>
@@ -18,7 +18,16 @@
   </thead>
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let file of uploadedFiles">
-      <td class="govuk-table__cell" scope="row">{{ file.name }}</td>
+      <td class="govuk-table__cell" scope="row">
+        {{ file.name }}
+        <p *ngIf="file.warnings" class="govuk-!-margin-bottom-1 govuk-!-margin-top-2">
+          <strong class="govuk__flex">
+            <img class="govuk-!-margin-right-2" src="/assets/images/flag-orange.svg" alt="" />
+            {{ file.warnings }}
+            {{ getWarningsText(file.warnings) }}
+          </strong>
+        </p>
+      </td>
       <td class="govuk-table__cell">{{ file.fileType ? file.fileType : file.extension }}</td>
       <td class="govuk-table__cell">{{ file.records ? file.records : '-' }}</td>
       <td class="govuk-table__cell">-</td>
@@ -32,23 +41,22 @@
 <ng-container *ngIf="!validateSuccess">
   <p>The files must be validated before completing the upload.</p>
 
-  <button
-    type="button"
-    class="govuk-button govuk-button--tertiary govuk-!-margin-top-2"
-    (click)="validateFiles()"
-  >
+  <button type="button" class="govuk-button govuk-button--tertiary govuk-!-margin-top-2" (click)="validateFiles()">
     Validate files
   </button>
 </ng-container>
 
 <ng-container *ngIf="validateSuccess">
-  <p>You need to complete the upload to import the data.</p>
+  <p *ngIf="hasWarnings">
+    Review the <strong>{{ totalWarnings }}</strong> {{ getWarningsText(totalWarnings) }} in the report or complete the
+    upload to import the data.
+  </p>
 
-  <button
-    type="button"
-    class="govuk-button govuk-button--tertiary govuk-!-margin-top-2"
-    (click)="importFiles()"
-  >
+  <p *ngIf="!hasWarnings">
+    You need to complete the upload to import the data.
+  </p>
+
+  <button type="button" class="govuk-button govuk-button--primary govuk-!-margin-top-2" (click)="importFiles()">
     Complete upload
   </button>
 </ng-container>
