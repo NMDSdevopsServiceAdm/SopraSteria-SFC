@@ -1,8 +1,12 @@
 <div class="govuk-tabs" data-module="tabs"></div>
 
-<ul class="govuk-tabs__list">
+<ul class="govuk-tabs__list" role="tablist">
   <li class="govuk-tabs__list-item" *ngFor="let tab of tabs">
     <a
+      id="tab_{{ tab.slug }}"
+      role="tab"
+      [attr.aria-controls]="tab.slug"
+      [attr.aria-selected]="tab.active"
       class="govuk-tabs__tab"
       href="#{{ tab.title }}"
       (click)="selectTab($event, tab)"
