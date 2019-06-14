@@ -24,6 +24,27 @@ export class CustomValidators extends Validators {
     }
   }
 
+  static bothControlsHaveValues(group: AbstractControl): { [key: string]: boolean } | null {
+    const errors: ValidationErrors = {};
+    const control1Name: string = Object.keys(group['controls'])[0];
+    const control2Name: string = Object.keys(group['controls'])[1];
+
+    const control1: AbstractControl = group.get(control1Name);
+    const control2: AbstractControl = group.get(control2Name);
+
+    if (!control1.value && !control2.value) {
+      return { bothAreEmpty: true };
+    } else {
+      if (!control1.value && control2.value) {
+        errors[ `${control1Name}Empty` ] = true;
+        return errors;
+      } else if (control1.value && !control2.value) {
+        errors[ `${control2Name}Empty` ] = true;
+        return errors;
+      }
+    }
+  }
+
   static matchInputValues(c: AbstractControl): null | void {
     const passwordControl = c.get('createPasswordInput');
     const confirmPasswordControl = c.get('confirmPasswordInput');
