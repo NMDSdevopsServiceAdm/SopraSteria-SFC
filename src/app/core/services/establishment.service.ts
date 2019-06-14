@@ -101,10 +101,6 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.vacancies));
   }
 
-  postVacancies(data) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
-  }
-
   getStarters() {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.starters));
   }
@@ -156,5 +152,10 @@ export class EstablishmentService {
 
   updateLocalAuthorities(establishmentId, data) {
     return this.http.post<any>(`/api/establishment/${establishmentId}/localAuthorities`, data);
+  }
+
+  updateVacancies(establishmentId, vacancies) {
+    const data = { jobs: { vacancies } };
+    return this.http.post<any>(`/api/establishment/${establishmentId}/jobs`, data);
   }
 }

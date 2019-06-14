@@ -1,23 +1,14 @@
-<div class="main-page-container col-12">
-  <div id="back" class="back-link">
-    <a href="#" (click)="goBack($event)">
-      <span class="arrow"></span>Back
-    </a>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-xl">Add current staff vacancies</h1>
+    <p>This should only be for permanent or temporary staff</p>
+    <p>If you have any current staff vacancies, please add them below.</p>
   </div>
-
-  <form novalidate
-    (ngSubmit)="submitHandler()"
-    [formGroup]="vacanciesForm">
-
-    <header>
-      <h1 class="h1">Add current staff vacancies</h1>
-      <p class="page-input-info">This should only be for permanent or temporary staff</p>
-      <p class="page-description">If you have any current staff vacancies, please add them below.</p>
-    </header>
-
-    <app-messages></app-messages>
-
-    <div class="form-group mb-5 mt-5">
+</div>
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <!-- <div class="form-group mb-5 mt-5">
       <div class="col-12 p-0">
         <div formArrayName="vacancyControl">
           <div class="row column-desc">
@@ -29,19 +20,35 @@
             </div>
           </div>
 
-          <div *ngFor="let vacancy of vacanciesForm.get('vacancyControl').controls; let idx = index" [formGroupName]="idx" class="row record">
+          <div
+            *ngFor="let vacancy of vacanciesForm.get('vacancyControl').controls; let idx = index"
+            [formGroupName]="idx"
+            class="row record"
+          >
             <div class="col-6 col-sm-7">
               <select formControlName="jobId" class="form-control">
                 <option [ngValue]="null">Select Job Title</option>
                 <option *ngFor="let job of jobsLeft(idx)" [value]="job.id">
-                  {{job.title}}
+                  {{ job.title }}
                 </option>
               </select>
             </div>
             <div class="col-3 col-sm-2">
-              <input type="number" formControlName="total" class="form-control"
-                [appNumberMax]="999" [appNumberDigitsMax]="3" appNumberPositiveOnly appNumberIntOnly min="0" step="1"
-                [ngClass]="{'is-invalid': (vacancy.get('total').touched || vacancy.get('total').dirty) && !vacancy.get('total').valid }" />
+              <input
+                type="number"
+                formControlName="total"
+                class="form-control"
+                [appNumberMax]="999"
+                [appNumberDigitsMax]="3"
+                appNumberPositiveOnly
+                appNumberIntOnly
+                min="0"
+                step="1"
+                [ngClass]="{
+                  'is-invalid':
+                    (vacancy.get('total').touched || vacancy.get('total').dirty) && !vacancy.get('total').valid
+                }"
+              />
             </div>
             <div *ngIf="idx !== 0" class="col-3 center-v no-padding-left">
               <button type="button" class="btn-link" (click)="removeVacancy(idx)">Remove</button>
@@ -49,10 +56,12 @@
           </div>
           <div class="row summary-and-controls mb-5 record">
             <div class="col-6 col-sm-7 center-v">
-              <button *ngIf="this.isJobsNotTakenLeft()" type="button" class="btn-link" (click)="addVacancy()">+ Add another staff vacancy</button>
+              <button *ngIf="this.isJobsNotTakenLeft()" type="button" class="btn-link" (click)="addVacancy()">
+                + Add another staff vacancy
+              </button>
             </div>
             <div class="col-5 summary">
-              <span>Total: {{total}}</span>
+              <span>Total: {{ total }}</span>
             </div>
           </div>
         </div>
@@ -61,17 +70,21 @@
           <div *ngFor="let reason of noVacanciesReasonOptions; let idx = index" class="row mb-5">
             <div class="col-12">
               <div class="multiple-choice">
-                <input type="radio" id="selectReason-{{idx}}" formControlName="noVacanciesReason" [value]="reason.value" />
-                <label class="main-body-text p-0" for="selectReason-{{idx}}">{{reason.label}}</label>
+                <input
+                  type="radio"
+                  id="selectReason-{{ idx }}"
+                  formControlName="noVacanciesReason"
+                  [value]="reason.value"
+                />
+                <label class="main-body-text p-0" for="selectReason-{{ idx }}">{{ reason.label }}</label>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <div class="btn-container">
-      <button type="submit" class="btn btn-primary">Save and continue</button>
-    </div>
-  </form>
-</div>
+  <div class="govuk-button-group">
+    <button type="submit" class="govuk-button">Save and continue</button>
+  </div>
+</form>
