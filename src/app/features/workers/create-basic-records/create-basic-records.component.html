@@ -82,7 +82,7 @@
               "
               formControlName="mainJobRole"
               id="mainJobRole-{{ i }}"
-              (change)="onChangeJobRole($event.target.value)">
+            >
               <option [ngValue]="null">Select Main Job Role</option>
               <option *ngFor="let job of jobs" [value]="job.id">
                 {{ job.title }}
@@ -93,7 +93,7 @@
           <div
             class="govuk-form-group"
             [class.govuk-form-group--error]="staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched"
-            [class.govuk-select__conditional--hidden]="!showInputTextforOtherRole">
+            [class.govuk-select__conditional--hidden]="!showOtherField(staffRecord.get('mainJobRole').value)">
             <label class="govuk-label" for="otherJobRole">
               Enter your job role
             </label>
