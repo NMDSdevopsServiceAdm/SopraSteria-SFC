@@ -154,8 +154,7 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }
 
-  updateVacancies(establishmentId, vacancies) {
-    const data = { jobs: { vacancies } };
+  updateVacancies(establishmentId, data) {
     return this.http.post<any>(`/api/establishment/${establishmentId}/jobs`, data);
   }
 }

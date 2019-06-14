@@ -92,11 +92,11 @@ export interface Establishment {
   share: Share;
   localAuthorities: LocalAuthority[];
   primaryAuthority: PrimaryAuthority;
-  vacancies: Vacancy[];
+  vacancies: Vacancy[] | string;
   totalVacancies: number;
-  starters: Starter[];
+  starters: Starter[] | string;
   totalStarters: number;
-  leavers: Leaver[];
+  leavers: Leaver[] | string;
   totalLeavers: number;
   wdf: WDF;
 }
