@@ -18,6 +18,8 @@ class Training {
     this._notes= null;
   };
 
+  static get UNCHECKED_WORKER_ERROR() { return 997; }
+  static get UNCHECKED_ESTABLISHMENT_ERROR() { return 998; }
   static get LOCALESTID_ERROR() { return 1000; }
   static get UNIQUE_WORKER_ID_ERROR() { return 1010; }
   static get DATE_COMPLETED_ERROR() { return 1020; }
@@ -322,6 +324,28 @@ class Training {
       });
     }
     return true;
+  }
+
+  // add unchecked establishment reference validation error
+  uncheckedEstablishment() {
+    return {
+      lineNumber: this._lineNumber,
+      errCode: Training.UNCHECKED_ESTABLISHMENT_ERROR,
+      errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
+      error: `Unknown establishment/workplace cross reference`,
+      source: this._currentLine.LOCALESTID,
+    };
+  }
+
+  // add unchecked establishment reference validation error
+  uncheckedWorker() {
+    return {
+      lineNumber: this._lineNumber,
+      errCode: Training.UNCHECKED_WORKER_ERROR,
+      errType: `UNCHECKED_WORKER_ERROR`,
+      error: `Unknown worker/staff cross reference`,
+      source: this._currentLine.UNIQUEWORKERID,
+    };
   }
 
   // returns true on success, false is any attribute of Training fails
