@@ -707,7 +707,10 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   const myAPIEstablishments = [], myAPIWorkers = [], myAPITrainings = [], myAPIQualifications = [];
   
   let establishmentRecords=0; let workerRecords=0; let trainingRecords=0;
- 
+
+  // for unique/cross-reference validations
+  const allEstablishmentsByKey = {}; const allWorkersByKey = {};
+
   // parse and process Establishments CSV
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType == "Establishment") {
     await Promise.all(
@@ -715,6 +718,22 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         return _validateEstablishmentCsv(thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments);
       }) 
     );
+
+    // having parsed all establishments, check for duplicates
+    // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID`as property name
+    myEstablishments.forEach(thisEstablishment => {
+      const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, "");
+      if (allEstablishmentsByKey[keyNoWhitespace]) {
+        // this establishment is a duplicate
+        console.log("WA| DEBUG - duplicate establishment: ", thisEstablishment.lineNumber)
+        csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
+      } else {
+        // does not yet exist
+        allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
+      }
+    });
+    console.log("WA DEBUG - all known establishments: ", allEstablishmentsByKey)
+
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no establishment records");
     status = false;
@@ -730,6 +749,29 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         return _validateWorkerCsv(thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications);
       }) 
     );
+
+    // having parsed all workers, check for duplicates
+    // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
+    myWorkers.forEach(thisWorker => {
+      const keyNoWhitespace = thisWorker.uniqueWorker.replace(/\s/g, "");
+      if (allWorkersByKey[keyNoWhitespace]) {
+        // this worker is a duplicate
+        csvWorkerSchemaErrors.push(thisWorker.addDuplicate(allWorkersByKey[keyNoWhitespace]));
+      } else {
+        // does not yet exist
+        allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+      }
+    });
+
+    // having parsed all establishments and workers, need to cross-check all workers' establishment reference (LOCALESTID) against all parsed establishments
+    myWorkers.forEach(thisWorker => {
+      const keyNoWhitespace = thisWorker.local.replace(/\s/g, "");
+      if (!allEstablishmentsByKey[keyNoWhitespace]) {
+        // not found the associated establishment
+        csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
+      }
+    });
+    
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no workers records");
     status = false;
@@ -745,6 +787,22 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         return _validateTrainingCsv(thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
       }) 
     );
+
+    // note - there is no uniqueness test for a training record
+
+    // having parsed all establishments, workers and training, need to cross-check all training records' establishment reference (LOCALESTID) against all parsed establishments
+    // having parsed all establishments, workers and training, need to cross-check all training records' worker reference (UNIQUEWORKERID) against all parsed workers
+    myTrainings.forEach(thisTraingRecord => {
+      if (!allEstablishmentsByKey[thisTraingRecord.localeStId]) {
+        // not found the associated establishment
+        csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedEstablishment());
+      }
+      if (!allWorkersByKey[thisTraingRecord.uniqueWorkerId]) {
+        // not found the associated worker
+        csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedWorker());
+      }
+    });
+    
   } else {
       console.info("API bulkupload - validateBulkUploadFiles: no training records");
       status = false;

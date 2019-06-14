@@ -5,7 +5,7 @@ class Establishment {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
     this._validationErrors = [];
-    this._headers_v1 = ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","IIPSTATUS","PERMCQC","PERMNHSC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STUDENTCOUNT","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS","DESTNOS"];
+    this._headers_v1 = ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"];
 
 
     // CSV properties
@@ -45,6 +45,7 @@ class Establishment {
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
 
+  static get DUPLICATE_ERROR() { return 999; }
   static get MAIN_SERVICE_ERROR() { return 1000; }
   static get LOCAL_ID_ERROR() { return 1010; }
   static get STATUS_ERROR() { return 1020; }
@@ -1425,6 +1426,17 @@ class Establishment {
     return true;
   }
 
+  // add a duplicate validation error to the current set
+  addDuplicate(originalLineNumber) {
+    return {
+      lineNumber: this._lineNumber,
+      errCode: Establishment.DUPLICATE_ERROR,
+      errType: `DUPLICATE_ERROR`,
+      error: `Duplicate of line ${originalLineNumber}`,
+      source: this._currentLine.LOCALESTID,
+    };
+  }
+
   // returns true on success, false is any attribute of Establishment fails
   validate() {
     let status = true;
@@ -1436,7 +1448,6 @@ class Establishment {
     status = !this._validateAddress() ? false : status;
     status = !this._validateEstablishmentType() ? false : status;
 
-    // ignoring IIPSTATUS and PERMNHSC
     status = !this._validateShareWithCQC() ? false : status;
     status = !this._validateShareWithLA() ? false : status;
     status = !this._validateLocalAuthorities() ? false : status;

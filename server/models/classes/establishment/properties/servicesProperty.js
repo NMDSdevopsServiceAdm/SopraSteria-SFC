@@ -5,7 +5,7 @@ const ServiceFormatters = require('../../../api/services');
 
 const OTHER_MAX_LENGTH=120;
 
-exports.ServicesProperty = class ServicesPropertyProperty extends ChangePropertyPrototype {
+exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototype {
     constructor() {
         super('OtherServices');
 
@@ -15,7 +15,7 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
     }
 
     static clone() {
-        return new ServicesPropertyProperty();
+        return new ServicesProperty();
     }
 
     // concrete implementations

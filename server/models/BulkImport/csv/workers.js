@@ -66,6 +66,8 @@ class Worker {
   };
 
   //49 csv columns
+  static get DUPLICATE_ERROR() { return 999; }
+  static get UNCHECKED_ESTABLISHMENT_ERROR() { return 998; }
   static get LOCAL_ID_ERROR() { return 1010; }
   static get UNIQUE_WORKER_ID_ERROR() { return 1020; }
   static get CHANGE_UNIQUE_WORKER_ID_ERROR() { return 1030; }
@@ -1905,6 +1907,28 @@ class Worker {
       this._qualifications = mappedQualifications;
 
     }
+  }
+
+  // add a duplicate validation error to the current set
+  addDuplicate(originalLineNumber) {
+    return {
+      lineNumber: this._lineNumber,
+      errCode: Worker.DUPLICATE_ERROR,
+      errType: `DUPLICATE_ERROR`,
+      error: `Duplicate of line ${originalLineNumber}`,
+      source: this._currentLine.UNIQUEWORKERID,
+    };
+  }
+  
+  // add unchecked establishment reference validation error
+  uncheckedEstablishment() {
+    return {
+      lineNumber: this._lineNumber,
+      errCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
+      errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
+      error: `Unknown establishment/workplace cross reference`,
+      source: this._currentLine.LOCALESTID,
+    };
   }
   
   _validateHeaders() {
