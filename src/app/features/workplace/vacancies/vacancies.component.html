@@ -8,6 +8,23 @@
   </div>
 </div>
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-form-group">
+    <div class="govuk-radios">
+      <div class="govuk-radios__item" *ngFor="let option of noVacanciesReasonOptions; let i = index">
+        <input
+          class="govuk-radios__input"
+          id="noVacancies-{{ i }}"
+          name="noVacancies"
+          formControlName="noVacancies"
+          type="radio"
+          [value]="option.value"
+        />
+        <label class="govuk-label govuk-radios__label" for="noVacancies-{{ i }}">
+          {{ option.label }}
+        </label>
+      </div>
+    </div>
+  </div>
   <!-- <div class="form-group mb-5 mt-5">
       <div class="col-12 p-0">
         <div formArrayName="vacancyControl">

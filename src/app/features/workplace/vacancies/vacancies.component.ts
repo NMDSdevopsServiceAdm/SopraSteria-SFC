@@ -9,6 +9,11 @@ import { JobService } from '@core/services/job.service';
 
 import { Question } from '../question/question.component';
 
+enum noVacancyOptions {
+  'NONE' = 'None',
+  'DONTKNOW' = "Don't know",
+}
+
 @Component({
   selector: 'app-vacancies',
   templateUrl: './vacancies.component.html',
@@ -20,11 +25,11 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   public noVacanciesReasonOptions = [
     {
       label: 'There are no current staff vacancies.',
-      value: 'no-staff',
+      value: noVacancyOptions.NONE,
     },
     {
       label: `I don't know how many current staff vacancies there are.`,
-      value: 'dont-know',
+      value: noVacancyOptions.DONTKNOW,
     },
   ];
 
@@ -38,7 +43,9 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
-    this.form = this.formBuilder.group({});
+    this.form = this.formBuilder.group({
+      noVacancies: null,
+    });
 
     // this.validatorRecordTotal = this.validatorRecordTotal.bind(this);
     // this.validatorRecordJobId = this.validatorRecordJobId.bind(this);
@@ -48,7 +55,6 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobs = jobs)));
     // PREFILL FORM
 
-    this.next = ['/workplace', `${this.establishment.id}`, 'confirm-vacancies'];
     this.previous = this.establishment.share.enabled
       ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
       : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
@@ -59,6 +65,12 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected generateUpdateProps() {
+    const { noVacancies } = this.form.value;
+
+    if (noVacancies) {
+      return { vacancies: noVacancies };
+    }
+
     return null;
   }
 
@@ -68,6 +80,18 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         .updateVacancies(this.establishment.id, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
+  }
+
+  protected onSuccess() {
+    if (
+      !this.establishment.vacancies ||
+      this.establishment.vacancies === noVacancyOptions.NONE ||
+      this.establishment.vacancies === noVacancyOptions.DONTKNOW
+    ) {
+      this.next = ['/workplace', `${this.establishment.id}`, 'starters'];
+    } else {
+      this.next = ['/workplace', `${this.establishment.id}`, 'confirm-vacancies'];
+    }
   }
 
   // submitHandler(): void {
