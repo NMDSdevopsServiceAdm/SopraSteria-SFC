@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 enum Status {
   TODO = 'todo',
   SUCCESS = 'success',
+  WARNING = 'warning',
 }
 
 @Component({
