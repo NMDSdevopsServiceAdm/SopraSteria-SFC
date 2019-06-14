@@ -3,6 +3,7 @@ const appConfig = require('../../config/config');
 const AWS = require('aws-sdk');
 const fs = require('fs');
 const csv = require('csvtojson');
+const Stream = require('stream');
 
 const router = express.Router();
 const s3 = new AWS.S3({
@@ -453,7 +454,7 @@ async function downloadContent(key) {
       Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
       Key: key,
     };
-    
+
     const filenameRegex=/^(.+\/)*(.+)\.(.+)$/; 
     
     try {
@@ -810,6 +811,67 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   }
 };
 
+router.route('/report').get(async (req, res) => {  
+  try {
+    const params = {
+      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Prefix: `${req.establishmentId}/validation/`
+    };
+  
+    const validation = await s3.listObjects(params).promise();
+    const validationMsgs = await Promise.all(validation.Contents);
+  
+    const validationMsgContent = validationMsgs.map(async(file) => {
+      const content = await downloadContent(file.Key);
+      return JSON.parse(content.data);
+    });
+
+    const errorsAndWarnings = await Promise.all(validationMsgContent);
+
+    const key = `${req.establishmentId}/intermediary/establishment.entities.json`;
+    const establishment = await downloadContent(key);
+    const entities = JSON.parse(establishment.data);
+    const readable = new Stream.Readable();
+    
+    readable.push('**********************************************\n');
+    readable.push('* Errors (will cause file(s) to be rejected) *\n');
+    readable.push('**********************************************\n\n');
+    
+    errorsAndWarnings[0]
+      .filter(msg => msg.errCode && msg.errType)
+      .sort((a,b) => a.errCode < b.errCode)
+      .map(item => readable.push(`${item.error} on line ${item.lineNumber}\n`));
+    
+    readable.push('\n**********************************************\n');
+    readable.push('* Warnings (files will be accepted but data is incomplete or internally inconsistent) *\n');
+    readable.push('**********************************************\n\n');
+
+    errorsAndWarnings[0]
+      .filter(msg => msg.warnCode && msg.warnType)
+      .sort((a,b) => a.warnCode < b.warnCode)
+      .map(item => readable.push(`${item.warning} on line ${item.lineNumber}\n`));
+
+    readable.push('\n*************************************************************\n');
+    readable.push('* You are sharing data with the following Local Authorities *\n');
+    readable.push('*************************************************************\n\n');
+
+    entities
+      .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
+      .reduce((acc, val) => acc.concat(val), [])
+      .sort((a,b) => a.name > b.name)
+      .map(item => readable.push(`${item.name}\n`));
+    
+    readable.push(null);
+
+    const date = new Date().toISOString().split('T')[0];
+    res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-sfc-bulk-upload-report.txt`);
+    res.set('Content-Type', 'text/plain');
+    return readable.pipe(res);
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send({});
+  }
+});
 
 router.route('/').get(async (req, res) => {
   const establishmentId = req.establishmentId;
