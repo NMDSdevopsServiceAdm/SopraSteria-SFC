@@ -903,8 +903,9 @@ class Establishment extends EntityValidator {
             const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
             if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
                 allExistAndValid = false;
+                // TODO: temporarily downgrading to a warning, whilst awaiting for NMDS ID generation to be part of this Establishment entity - https://trello.com/c/HElnWYWF
                 this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
+                    ValidationMessage.WARNING,
                     101,
                     this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
                     ['NMDSID']
