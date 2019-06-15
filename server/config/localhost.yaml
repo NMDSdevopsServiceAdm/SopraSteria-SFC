@@ -1,3 +1,8 @@
+aws:
+    region: eu-west-1
+    secrets:
+        use: true
+        wallet: dev/api
 slack:
     level: 0    # disables Slack notifications
 jwt:
@@ -6,15 +11,13 @@ jwt:
         login: 60
 db:
     pool: 5
-    ssl: false
-
+    ssl: true
+    username: sfcapp
     client_ssl:
-        status: false
-        # certificate: 'E:/mycert.crt'
-        # key: 'E:/mykey.key'
-        # ca: 'E:/myca.crt'
+        status: true
+        usingFiles: false
 log:
     sequelize: false
 
-bulkuploaduser:
+bulkupload:
     bucketname: sfcbulkuploadfiles
