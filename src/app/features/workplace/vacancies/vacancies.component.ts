@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
@@ -9,7 +9,8 @@ import { JobService } from '@core/services/job.service';
 
 import { Question } from '../question/question.component';
 
-enum noVacancyOptions {
+enum vacancyOptions {
+  KNOWN = 'Known',
   NONE = 'None',
   // tslint:disable-next-line: quotemark
   DONTKNOW = "Don't know",
@@ -23,14 +24,19 @@ enum noVacancyOptions {
 export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   public total = 0;
   public jobs: Job[] = [];
-  public noVacanciesReasonOptions = [
+  public vacanciesKnownOptions = [
+    {
+      label: 'I know how many current staff vacancies there are.',
+      value: vacancyOptions.KNOWN,
+      vacancies: true,
+    },
     {
       label: 'There are no current staff vacancies.',
-      value: noVacancyOptions.NONE,
+      value: vacancyOptions.NONE,
     },
     {
       label: `I don't know how many current staff vacancies there are.`,
-      value: noVacancyOptions.DONTKNOW,
+      value: vacancyOptions.DONTKNOW,
     },
   ];
 
@@ -45,11 +51,21 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
     this.form = this.formBuilder.group({
-      noVacancies: null,
+      vacancies: this.formBuilder.array([]),
+      vacanciesKnown: null,
     });
+  }
 
-    // this.validatorRecordTotal = this.validatorRecordTotal.bind(this);
-    // this.validatorRecordJobId = this.validatorRecordJobId.bind(this);
+  get vacanciesControl(): FormArray {
+    return <FormArray>this.form.get('vacancies');
+  }
+
+  get allJobsSelected(): boolean {
+    return this.vacanciesControl.controls.length >= this.jobs.length;
+  }
+
+  get totalVacancies(): number {
+    return this.vacanciesControl.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
   }
 
   protected init(): void {
@@ -59,11 +75,35 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     this.previous = this.establishment.share.enabled
       ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
       : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
+
+    this.subscriptions.add(
+      this.form.get('vacanciesKnown').valueChanges.subscribe(value => {
+        if (value !== vacancyOptions.KNOWN) {
+        } else {
+        }
+        // while (vacancyControl.length > 1) {
+        //   vacancyControl.removeAt(1);
+        // }
+
+        // vacancyControl.reset([], { emitEvent: false });
+        // this.total = 0;
+      })
+    );
   }
 
   private prefill(): void {
-    if (Object.values(noVacancyOptions).includes(this.establishment.vacancies)) {
-      this.form.get('noVacancies').setValue(this.establishment.vacancies);
+    if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
+      this.establishment.vacancies.forEach(vacancy =>
+        this.vacanciesControl.push(this.createVacancyControl(vacancy.jobId, vacancy.total))
+      );
+      this.form.get('vacanciesKnown').setValue(vacancyOptions.KNOWN);
+    } else if (
+      this.establishment.vacancies === vacancyOptions.NONE ||
+      this.establishment.vacancies === vacancyOptions.DONTKNOW
+    ) {
+      this.form.get('vacanciesKnown').setValue(this.establishment.vacancies);
+    } else {
+      this.vacanciesControl.push(this.createVacancyControl());
     }
   }
 
@@ -71,17 +111,47 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     this.formErrorsMap = [];
   }
 
-  protected generateUpdateProps() {
-    const { noVacancies } = this.form.value;
+  public selectableJobs(index): Job[] {
+    return this.jobs.filter(
+      job =>
+        !this.vacanciesControl.controls.some(
+          vacancy =>
+            vacancy !== this.vacanciesControl.controls[index] && parseInt(vacancy.get('jobRole').value, 10) === job.id
+        )
+    );
+  }
 
-    if (noVacancies) {
-      return { vacancies: noVacancies };
+  public addVacancy(): void {
+    this.vacanciesControl.push(this.createVacancyControl());
+  }
+
+  public removeVacancy(event: Event, index): void {
+    event.preventDefault();
+    this.vacanciesControl.removeAt(index);
+  }
+
+  private createVacancyControl(jobId = null, total = null): FormGroup {
+    return this.formBuilder.group({
+      jobRole: jobId,
+      total: [total, [Validators.min(0), Validators.max(999)]],
+    });
+  }
+
+  protected generateUpdateProps() {
+    const { vacanciesKnown } = this.form.controls;
+
+    if (this.vacanciesControl.controls.length) {
+      return this.vacanciesControl.value.map(v => ({ jobId: parseInt(v.jobId, 10), total: v.total }));
+    }
+
+    if (vacanciesKnown.value === vacancyOptions.NONE || vacanciesKnown.value === vacancyOptions.DONTKNOW) {
+      return { vacancies: vacanciesKnown.value };
     }
 
     return null;
   }
 
-  updateEstablishment(props) {
+  protected updateEstablishment(props): void {
     this.subscriptions.add(
       this.establishmentService
         .updateVacancies(this.establishment.id, props)
@@ -89,141 +159,11 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     );
   }
 
-  protected onSuccess() {
-    if (!this.establishment.vacancies || Object.values(noVacancyOptions).includes(this.establishment.vacancies)) {
-      this.next = ['/workplace', `${this.establishment.id}`, 'starters'];
-    } else {
+  protected onSuccess(): void {
+    if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies) {
       this.next = ['/workplace', `${this.establishment.id}`, 'confirm-vacancies'];
+    } else {
+      this.next = ['/workplace', `${this.establishment.id}`, 'starters'];
     }
   }
-
-  // submitHandler(): void {
-  //   const { vacancyControl, noVacanciesReason } = this.vacanciesForm.controls;
-
-  //   if (this.vacanciesForm.valid || noVacanciesReason.value === 'no-staff' || noVacanciesReason.value === 'dont-know') {
-  //     // regardless of which option is chosen, must always submit to backend
-  //     let vacanciesToSubmit = null;
-  //     let nextStepNavigation = null;
-
-  //     if (noVacanciesReason.value === 'dont-know') {
-  //       vacanciesToSubmit = `Don't know`;
-  //       nextStepNavigation = '/workplace/starters';
-  //     } else if (noVacanciesReason.value === 'no-staff') {
-  //       vacanciesToSubmit = 'None';
-  //       nextStepNavigation = '/workplace/starters';
-  //     } else {
-  //       // default being to send the set of all the current jobs which then need to be confirmed.
-  //       vacanciesToSubmit = vacancyControl.value.map(v => ({ jobId: parseInt(v.jobId), total: v.total }));
-  //       nextStepNavigation = '/workplace/confirm-vacancies';
-  //     }
-  //   }
-  // }
-
-  // jobsLeft(idx) {
-  //   const vacancyControl = <FormArray>this.vacanciesForm.controls.vacancyControl;
-  //   const thisVacancy = vacancyControl.controls[idx];
-  //   return this.jobsAvailable.filter(
-  //     j => !vacancyControl.controls.some(v => v !== thisVacancy && parseFloat(v.value.jobId) === j.id)
-  //   );
-  // }
-
-  // addVacancy(): void {
-  //   const vacancyControl = <FormArray>this.vacanciesForm.controls.vacancyControl;
-
-  //   vacancyControl.push(this.createVacancyControlItem());
-  // }
-
-  // isJobsNotTakenLeft() {
-  //   return this.jobsAvailable.length !== this.vacanciesForm.controls.vacancyControl.value.length;
-  // }
-
-  // removeVacancy(index): void {
-  //   (<FormArray>this.vacanciesForm.controls.vacancyControl).removeAt(index);
-  // }
-
-  // validatorRecordTotal(control) {
-  //   return control.value !== null || this.vacanciesForm.controls.noVacanciesReason.value.length ? {} : { total: true };
-  // }
-
-  // validatorRecordJobId(control) {
-  //   return control.value !== null || this.vacanciesForm.controls.noVacanciesReason.value.length ? {} : { jobId: true };
-  // }
-
-  // createVacancyControlItem(jobId = null, total = null): FormGroup {
-  //   return this.fb.group({
-  //     jobId: [jobId, this.validatorRecordJobId],
-  //     total: [total, this.validatorRecordTotal],
-  //   });
-  // }
-
-  // calculateTotal(vacancies) {
-  //   return vacancies.reduce((acc, i) => (acc += parseInt(i.total, 10) || 0), 0) || 0;
-  // }
-
-  // ngOnInit() {
-  //   this.subscriptions.push(this.jobService.getJobs().subscribe(jobs => (this.jobsAvailable = jobs)));
-
-  //   this.vacanciesForm = this.fb.group({
-  //     vacancyControl: this.fb.array([]),
-  //     noVacanciesReason: '',
-  //   });
-
-  //   const vacancyControl = <FormArray>this.vacanciesForm.controls.vacancyControl;
-
-  //   this.subscriptions.push(
-  //     this.establishmentService.getVacancies().subscribe(vacancies => {
-  //       if (vacancies === 'None') {
-  //         // Even if "None" option on restore, want a single job role shown
-  //         // to force another deployment
-  //         vacancyControl.push(this.createVacancyControlItem());
-
-  //         this.vacanciesForm.patchValue({ noVacanciesReason: 'no-staff' }, { emitEvent: true });
-  //       } else if (vacancies === `Don't know`) {
-  //         // Even if "Don't know" option on restore, want a single job role shown
-  //         vacancyControl.push(this.createVacancyControlItem());
-
-  //         this.vacanciesForm.patchValue({ noVacanciesReason: 'dont-know' }, { emitEvent: true });
-  //       } else if (Array.isArray(vacancies) && vacancies.length) {
-  //         vacancies.forEach(v => vacancyControl.push(this.createVacancyControlItem(v.jobId.toString(), v.total)));
-  //       } else {
-  //         // If no options and no vacancies (the value has never been set) - just the default (select job) drop down
-  //         vacancyControl.push(this.createVacancyControlItem());
-  //       }
-  //     })
-  //   );
-
-  //   this.total = this.calculateTotal(vacancyControl.value);
-
-  //   this.subscriptions.push(
-  //     vacancyControl.valueChanges.subscribe(value => {
-  //       this.total = this.calculateTotal(value);
-
-  //       if (document.activeElement && document.activeElement.getAttribute('type') !== 'radio') {
-  //         this.vacanciesForm.patchValue(
-  //           {
-  //             noVacanciesReason: '',
-  //           },
-  //           { emitEvent: false }
-  //         );
-  //       }
-  //     })
-  //   );
-
-  //   this.subscriptions.push(
-  //     this.vacanciesForm.controls.noVacanciesReason.valueChanges.subscribe(() => {
-  //       while (vacancyControl.length > 1) {
-  //         vacancyControl.removeAt(1);
-  //       }
-
-  //       vacancyControl.reset([], { emitEvent: false });
-  //       this.total = 0;
-  //     })
-  //   );
-
-  //   this.subscriptions.push(
-  //     this.vacanciesForm.valueChanges.subscribe(() => {
-  //       this.messageService.clearAll();
-  //     })
-  //   );
-  // }
 }
