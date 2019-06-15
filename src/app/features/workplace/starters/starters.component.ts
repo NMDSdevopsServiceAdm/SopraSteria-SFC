@@ -50,7 +50,7 @@ export class StartersComponent extends Question {
         type: [
           {
             name: 'invalid',
-            message: 'Pleae select a job and enter number of new starters.',
+            message: 'Please select a job and enter number of new starters.',
           },
         ],
       },
