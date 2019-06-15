@@ -32,34 +32,20 @@ export class StartersComponent extends Question {
     this.setupForm();
     this.getJobs();
     this.getStarters();
+  }
 
-    // TODO dont think this is needed
-    // this.subscriptions.push(
-    //   this.starterRecords.valueChanges.subscribe(value => {
-    //     this.total = this.calculateTotal(value);
-    //
-    //     if (document.activeElement && document.activeElement.getAttribute('type') !== 'radio') {
-    //       this.form.patchValue(
-    //         {
-    //           noRecordsReason: '',
-    //         },
-    //         { emitEvent: false }
-    //       );
-    //     }
-    //   })
-    // );
-
-    // TODO double check to see if needed
-    // this.subscriptions.add(
-    //   this.noRecordsReason.valueChanges.subscribe(() => {
-    //     while (starterRecords.length > 1) {
-    //       starterRecords.removeAt(1);
-    //     }
-    //
-    //     starterRecords.reset([], { emitEvent: false });
-    //     this.total = 0;
-    //   })
-    // );
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'noRecordsReason',
+        type: [
+          {
+            name: 'required',
+            message: `Please specify if there's been any new starters.`,
+          },
+        ],
+      }
+    ];
   }
 
   private setupForm(): void {
@@ -132,26 +118,26 @@ export class StartersComponent extends Question {
     );
   }
 
-  public onSubmit(): void {
-    if (this.form.valid) {
-      let startersToSubmit = null;
-
-      if (this.noRecordsReason.value === 'dont-know') {
-        startersToSubmit = `Don't know`;
-      } else if (this.noRecordsReason.value === 'no-new') {
-        startersToSubmit = 'None';
-      } else {
-        // default being to send the set of all the current jobs which then need to be confirmed.
-        startersToSubmit = this.starterRecords.value.map(v => ({ jobId: parseInt(v.jobId, 10), total: v.total }));
-      }
-
-      this.subscriptions.add(
-        this.establishmentService.postStarters(startersToSubmit).subscribe(() => {
-          const nextRoute: string = this.noRecordsReason.value ? '/workplace/leavers' : '/workplace/confirm-starters';
-          this.router.navigate([nextRoute]);
-        })
-      );
-    }
+  protected generateUpdateProps(): void {
+    // if (this.form.valid) {
+    //   let startersToSubmit = null;
+    //
+    //   if (this.noRecordsReason.value === 'dont-know') {
+    //     startersToSubmit = `Don't know`;
+    //   } else if (this.noRecordsReason.value === 'no-new') {
+    //     startersToSubmit = 'None';
+    //   } else {
+    //     // default being to send the set of all the current jobs which then need to be confirmed.
+    //     startersToSubmit = this.starterRecords.value.map(v => ({ jobId: parseInt(v.jobId, 10), total: v.total }));
+    //   }
+    //
+    //   this.subscriptions.add(
+    //     this.establishmentService.postStarters(startersToSubmit).subscribe(() => {
+    //       const nextRoute: string = this.noRecordsReason.value ? '/workplace/leavers' : '/workplace/confirm-starters';
+    //       this.router.navigate([nextRoute]);
+    //     })
+    //   );
+    // }
   }
 
   /**

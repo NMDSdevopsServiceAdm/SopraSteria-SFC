@@ -11,14 +11,16 @@
 </div>
 
 <!--<div>allJobsTaken = {{ allJobsTaken() }}</div>-->
-<!--<div>this.starterRecords.length = {{ starterRecords.length }}</div>-->
+<!--<div>starterRecords.length = {{ starterRecords.length }}</div>-->
 <div>submitted = {{ submitted }}</div>
 <div>form.valid = {{ form.valid }}</div>
+<div>noRecordsReason.invalid = {{ noRecordsReason.invalid }}</div>
+<div>starterRecords.invalid = {{ starterRecords.invalid }}</div>
 
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Add new starters</h1>
+      <h1 class="govuk-heading-l">Add new starters</h1>
       <p>This should only be for permanent or temporary staff.</p>
     </legend>
     <ng-container formArrayName="starterRecords">
@@ -26,51 +28,54 @@
         *ngFor="let record of starterRecords.controls; let idx = index"
         [class.govuk-form-group--error]="submitted && record.invalid"
         [formGroupName]="idx"
-        class="govuk-grid-row"
+        class="govuk-!-margin-bottom-6"
       >
-        <!--        <pre>record errors = {{ record.errors | json }}</pre>-->
-        <div class="govuk-grid-column-two-thirds govuk-form-group">
-          <label *ngIf="idx === 0" class="govuk-label" for="jobId">
-            Job role
-          </label>
-          <select
-            class="govuk-select govuk-!-width-full"
-            [class.govuk-select--error]="submitted && record.invalid"
-            formControlName="jobId"
-            id="jobId"
-            name="jobId"
-          >
-            <option [ngValue]="null">Select Job Title</option>
-            <option *ngFor="let job of filteredJobs(idx)" [value]="job.id">
-              {{ job.title }}
-            </option>
-          </select>
-        </div>
-
-        <div class="govuk-grid-column-one-third">
-          <label *ngIf="idx === 0" class="govuk-label" for="total">
-            Number of new starters
-          </label>
-          <input
-            type="number"
-            formControlName="total"
-            id="total"
-            name="total"
-            class="govuk-input govuk-!-width-one-half"
-            [appNumberMax]="999"
-            appNumberPositiveOnly
-            appNumberIntOnly
-            [appNumberDigitsMax]="3"
-            min="0"
-            step="1"
-          />
-          <button
-            type="button"
-            class="govuk-button govuk-button--link govuk-!-margin-left-3"
-            (click)="removeRecord(idx)"
-          >
-            Remove
-          </button>
+        <div class="govuk-grid-row">
+<!--          <pre class="govuk-!-margin-0">record errors = {{ record.errors | json }}</pre>-->
+          <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0"
+            [class.govuk-!-padding-left-3]="submitted && record.invalid">
+            <label *ngIf="idx === 0" class="govuk-label" for="jobId">
+              Job role
+            </label>
+            <select
+              class="govuk-select govuk-!-width-full"
+              [class.govuk-select--error]="submitted && (record.hasError('bothAreEmpty') || record.hasError('jobIdEmpty'))"
+              formControlName="jobId"
+              id="jobId"
+              name="jobId"
+            >
+              <option [ngValue]="null">Select Job Title</option>
+              <option *ngFor="let job of filteredJobs(idx)" [value]="job.id">
+                {{ job.title }}
+              </option>
+            </select>
+          </div>
+          <div class="govuk-grid-column-one-third">
+            <label *ngIf="idx === 0" class="govuk-label" for="total">
+              Number of new starters
+            </label>
+            <input
+              type="number"
+              formControlName="total"
+              id="total"
+              name="total"
+              class="govuk-input govuk-!-width-one-half"
+              [class.govuk-input--error]="submitted && (record.hasError('bothAreEmpty') || record.hasError('totalEmpty'))"
+              [appNumberMax]="999"
+              appNumberPositiveOnly
+              appNumberIntOnly
+              [appNumberDigitsMax]="3"
+              min="0"
+              step="1"
+            />
+            <button
+              type="button"
+              class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3"
+              (click)="removeRecord(idx)"
+            >
+              Remove
+            </button>
+          </div>
         </div>
       </div>
       <div class="govuk-grid-row">
@@ -92,6 +97,14 @@
       </div>
     </ng-container>
     <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && noRecordsReason.invalid">
+      <span
+        id="noRecordsReason-error"
+        class="govuk-error-message"
+        *ngIf="submitted && noRecordsReason.invalid"
+      >
+        <span class="govuk-visually-hidden">Error:</span>
+        {{ getFormErrorMessage('noRecordsReason', 'required') }}
+      </span>
       <div class="govuk-radios">
         <div class="govuk-radios__item">
           <input
