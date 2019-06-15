@@ -554,7 +554,8 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
       const errors = thisApiEstablishment.errors;
       const warnings = thisApiEstablishment.warnings;
 
-      _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+      //_appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+      lineValidator.addAPIValidations(errors, warnings);
 
       if (errors.length === 0) {
         //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
