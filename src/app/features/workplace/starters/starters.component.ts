@@ -83,32 +83,35 @@ export class StartersComponent extends Question {
 
   private getStarters(): void {
     this.subscriptions.add(
-      this.establishmentService.getStarters().subscribe((starters: Starter[]) => {
+      this.establishmentService.getStarters().subscribe((starters: string | Starter[]) => {
         console.log(starters, typeof starters);
-        if (typeof starters === 'string') {
-          if (starters === 'None') {
-            // Even if "None" option on restore, want a single job role shown
-            this.starterRecords.push(this.createRecordItem());
-            this.noRecordsReason.patchValue('no-new');
-          } else if (starters === `Don't know`) {
-            // Even if "Don't know" option on restore, want a single job role shown
-            this.starterRecords.push(this.createRecordItem());
-            this.noRecordsReason.patchValue('dont-know');
-          }
-        } else if (Array.isArray(starters) && starters.length) {
-          starters.forEach((starter: Starter) =>
-            this.starterRecords.push(this.createRecordItem(starter.jobId, starter.total))
-          );
-        } else {
-          // If no options and no starters (the value has never been set) - just the default (select job) drop down
-          this.starterRecords.push(this.createRecordItem());
-        }
+        this.preSelectNoRecordsReason(starters);
+        this.prePopulateStarterRecords(starters);
       })
     );
   }
 
+  private preSelectNoRecordsReason(starters: string | Starter[]): void {
+    if (typeof starters === 'string') {
+      const patchValue: string = starters === 'None' ? 'no-new' : 'dont-know';
+      this.noRecordsReason.patchValue(patchValue);
+    }
+  }
+
+  private prePopulateStarterRecords(starters: string | Starter[]): void {
+    if (Array.isArray(starters) && starters.length) {
+      starters.forEach((starter: Starter) =>
+        this.starterRecords.push(this.createRecordItem(starter.jobId, starter.total))
+      );
+    }
+  }
+
   public calculateTotal(): number {
     return this.starterRecords.value.reduce((acc, i) => (acc += parseInt(i.total, 10) || 0), 0) || 0;
+  }
+
+  public addStarter(): void {
+    this.starterRecords.push(this.createRecordItem());
   }
 
   private createRecordItem(jobId: number = null, total: number = null): FormGroup {
@@ -120,22 +123,6 @@ export class StartersComponent extends Question {
       { validator: CustomValidators.bothControlsHaveValues }
     );
   }
-
-  public addStarter(): void {
-    this.starterRecords.push(this.createRecordItem());
-  }
-
-  // TODO move to template
-  // noRecordsReasons = [
-  //   {
-  //     label: 'There have been no new starters.',
-  //     value: 'no-new',
-  //   },
-  //   {
-  //     label: `I don't know how many new starters there have been.`,
-  //     value: 'dont-know',
-  //   },
-  // ];
 
   public onSubmit(): void {
     if (this.form.valid) {
@@ -162,15 +149,20 @@ export class StartersComponent extends Question {
     }
   }
 
-  public jobsLeft(index: number): Job[] {
+  /**
+   * Filter original jobs list
+   * And return jobs that haven't been already selected
+   * @param index
+   */
+  public filteredJobs(index: number): Job[] {
     const thisRecord = this.starterRecords.controls[index];
     return this.jobs.filter(
       (job: Job) => !this.starterRecords.controls.some(v => v !== thisRecord && parseFloat(v.value.jobId) === job.id)
     );
   }
 
-  public isJobsNotTakenLeft(): boolean {
-    return this.jobs.length !== this.starterRecords.value.length;
+  public allJobsTaken(): boolean {
+    return this.jobs.length === this.starterRecords.value.length;
   }
 
   public removeRecord(index: number): void {

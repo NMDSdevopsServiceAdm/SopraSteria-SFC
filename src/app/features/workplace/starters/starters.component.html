@@ -23,7 +23,7 @@
         [formGroupName]="idx"
         class="govuk-grid-row"
       >
-        <pre>record errors = {{ record.errors | json }}</pre>
+        <!--        <pre>record errors = {{ record.errors | json }}</pre>-->
         <div class="govuk-grid-column-two-thirds govuk-form-group">
           <label *ngIf="idx === 0" class="govuk-label" for="jobId">
             Job role
@@ -36,7 +36,7 @@
             name="jobId"
           >
             <option [ngValue]="null">Select Job Title</option>
-            <option *ngFor="let job of jobsLeft(idx)" [value]="job.id">
+            <option *ngFor="let job of filteredJobs(idx)" [value]="job.id">
               {{ job.title }}
             </option>
           </select>
@@ -60,7 +60,6 @@
             step="1"
           />
           <button
-            *ngIf="idx !== 0"
             type="button"
             class="govuk-button govuk-button--link govuk-!-margin-left-3"
             (click)="removeRecord(idx)"
@@ -72,16 +71,18 @@
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <button
-            *ngIf="isJobsNotTakenLeft()"
+            *ngIf="!allJobsTaken()"
             type="button"
             class="govuk-button govuk-button--secondary"
             (click)="addStarter()"
           >
-            + Add another new starter
+            + Add <ng-container *ngIf="starterRecords.controls.length">another</ng-container> new starter
           </button>
         </div>
         <div class="govuk-grid-column-one-third">
-          <p class="govuk-!-font-size-27"><strong>Total: {{ calculateTotal() }}</strong></p>
+          <p *ngIf="starterRecords.controls.length" class="govuk-!-font-size-27">
+            <strong>Total: {{ calculateTotal() }}</strong>
+          </p>
         </div>
       </div>
     </ng-container>
