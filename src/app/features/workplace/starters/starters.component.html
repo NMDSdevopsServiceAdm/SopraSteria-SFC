@@ -10,6 +10,11 @@
   </div>
 </div>
 
+<!--<div>allJobsTaken = {{ allJobsTaken() }}</div>-->
+<!--<div>this.starterRecords.length = {{ starterRecords.length }}</div>-->
+<div>submitted = {{ submitted }}</div>
+<div>form.valid = {{ form.valid }}</div>
+
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -79,7 +84,7 @@
             + Add <ng-container *ngIf="starterRecords.controls.length">another</ng-container> new starter
           </button>
         </div>
-        <div class="govuk-grid-column-one-third">
+        <div class="govuk-grid-column-one-third" [class.govuk-util__float-right]="allJobsTaken()">
           <p *ngIf="starterRecords.controls.length" class="govuk-!-font-size-27">
             <strong>Total: {{ calculateTotal() }}</strong>
           </p>
@@ -108,7 +113,7 @@
             id="noRecordsReason-dont-know"
             name="noRecordsReason"
             type="radio"
-            value="no-new"
+            value="dont-know"
           />
           <label class="govuk-label govuk-radios__label" for="noRecordsReason-dont-know">
             I don't know how many new starters there have been.
