@@ -1659,9 +1659,6 @@ class Establishment {
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
   addAPIValidations(errors, warnings) {
     errors.forEach(thisError => {
-
-console.log("WA DEBUG - this error: ", thisError)
-
       thisError.properties ? thisError.properties.forEach(thisProp => {
         const validationError = {
           lineNumber: this._lineNumber,
