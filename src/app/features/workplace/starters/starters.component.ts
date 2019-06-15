@@ -125,18 +125,6 @@ export class StartersComponent extends Question {
     this.starterRecords.push(this.createRecordItem());
   }
 
-  // TODO replaced with bothControlsHaveValues
-  private validatorRecordTotal(control: AbstractControl): { [key: string]: boolean } | null {
-    console.log('validatorRecordTotal', control.value);
-    return control.value !== null || this.noRecordsReason.value.length ? null : { total: true };
-  }
-
-  // TODO replaced with bothControlsHaveValues
-  private validatorRecordJobId(control: AbstractControl): { [key: string]: boolean } | null {
-    console.log('validatorRecordJobId', control.value);
-    return control.value !== null || this.noRecordsReason.value.length ? null : { jobId: true };
-  }
-
   // TODO move to template
   // noRecordsReasons = [
   //   {
@@ -150,28 +138,22 @@ export class StartersComponent extends Question {
   // ];
 
   public onSubmit(): void {
-    const { starterRecords, noRecordsReason } = this.form.controls;
-
-    if (this.form.valid || noRecordsReason.value === 'no-new' || noRecordsReason.value === 'dont-know') {
-      // regardless of which option is chosen, must always submit to backend
+    if (this.form.valid) {
       let startersToSubmit = null;
-      let nextStepNavigation = null;
 
-      if (noRecordsReason.value === 'dont-know') {
+      if (this.noRecordsReason.value === 'dont-know') {
         startersToSubmit = `Don't know`;
-        nextStepNavigation = '/workplace/leavers';
-      } else if (noRecordsReason.value === 'no-new') {
+      } else if (this.noRecordsReason.value === 'no-new') {
         startersToSubmit = 'None';
-        nextStepNavigation = '/workplace/leavers';
       } else {
         // default being to send the set of all the current jobs which then need to be confirmed.
-        startersToSubmit = starterRecords.value.map(v => ({ jobId: parseInt(v.jobId, 10), total: v.total }));
-        nextStepNavigation = '/workplace/confirm-starters';
+        startersToSubmit = this.starterRecords.value.map(v => ({ jobId: parseInt(v.jobId, 10), total: v.total }));
       }
 
       this.subscriptions.add(
         this.establishmentService.postStarters(startersToSubmit).subscribe(() => {
-          this.router.navigate([nextStepNavigation]);
+          const nextRoute: string = this.noRecordsReason.value ? '/workplace/leavers' : '/workplace/confirm-starters';
+          this.router.navigate([nextRoute]);
         })
       );
     } else {
@@ -180,19 +162,18 @@ export class StartersComponent extends Question {
     }
   }
 
-  jobsLeft(idx) {
-    const starterRecords = <FormArray>this.form.controls.starterRecords;
-    const thisRecord = starterRecords.controls[idx];
+  public jobsLeft(index: number): Job[] {
+    const thisRecord = this.starterRecords.controls[index];
     return this.jobs.filter(
-      j => !starterRecords.controls.some(v => v !== thisRecord && parseFloat(v.value.jobId) === j.id)
+      (job: Job) => !this.starterRecords.controls.some(v => v !== thisRecord && parseFloat(v.value.jobId) === job.id)
     );
   }
 
-  isJobsNotTakenLeft() {
+  public isJobsNotTakenLeft(): boolean {
     return this.jobs.length !== this.starterRecords.value.length;
   }
 
-  removeRecord(index): void {
+  public removeRecord(index: number): void {
     this.starterRecords.removeAt(index);
   }
 }

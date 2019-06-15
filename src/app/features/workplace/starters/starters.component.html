@@ -7,93 +7,104 @@
       [form]="form"
     >
     </app-error-summary>
-
-    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
-      <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-          <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Add new starters</h1>
-          <p>This should only be for permanent or temporary staff.</p>
-        </legend>
-
-        <div class="form-group mb-5 mt-5">
-          <div class="col-12 p-0">
-            <div formArrayName="starterRecords">
-              <div class="row column-desc">
-                <div class="col-6 col-sm-7">
-                  Job role
-                </div>
-                <div class="col-6 col-sm-5">
-                  Number of new starters
-                </div>
-              </div>
-
-              <div
-                *ngFor="let record of starterRecords.controls; let idx = index"
-                [formGroupName]="idx"
-                class="row record"
-              >
-                <pre>record errors = {{ record.errors | json }}</pre>
-                <div class="col-6 col-sm-7">
-                  <select formControlName="jobId" class="form-control">
-                    <option [ngValue]="null">Select Job Title</option>
-                    <option *ngFor="let job of jobsLeft(idx)" [value]="job.id">
-                      {{ job.title }}
-                    </option>
-                  </select>
-                </div>
-                <div class="col-3 col-sm-2">
-                  <input
-                    type="number"
-                    formControlName="total"
-                    class="form-control"
-                    [appNumberMax]="999"
-                    appNumberPositiveOnly
-                    appNumberIntOnly
-                    [appNumberDigitsMax]="3"
-                    min="0"
-                    step="1"
-                  />
-                </div>
-                <div *ngIf="idx !== 0" class="col-3 center-v no-padding-left">
-                  <button type="button" class="btn-link" (click)="removeRecord(idx)">Remove</button>
-                </div>
-              </div>
-              <div class="row summary-and-controls mb-5 record">
-                <div class="col-6 col-sm-7 center-v">
-                  <button *ngIf="isJobsNotTakenLeft()" type="button" class="btn-link" (click)="addStarter()">
-                    + Add another new starter
-                  </button>
-                </div>
-                <div class="col-5 summary">
-                  <span>Total: {{ calculateTotal() }}</span>
-                </div>
-              </div>
-            </div>
-
-            <!--
-            <div class="mb-5">
-              <div *ngFor="let reason of noRecordsReasons; let idx = index" class="row mb-5">
-                <div class="col-12">
-                  <div class="multiple-choice">
-                    <input
-                      type="radio"
-                      id="selectReason-{{ idx }}"
-                      formControlName="noRecordsReason"
-                      [value]="reason.value"
-                    />
-                    <label class="main-body-text p-0" for="selectReason-{{ idx }}">{{ reason.label }}</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            -->
-          </div>
-        </div>
-      </fieldset>
-
-      <div class="btn-container">
-        <button type="submit" class="btn btn-primary">Save and continue</button>
-      </div>
-    </form>
   </div>
 </div>
+
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <fieldset class="govuk-fieldset">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Add new starters</h1>
+      <p>This should only be for permanent or temporary staff.</p>
+    </legend>
+    <ng-container formArrayName="starterRecords">
+      <div
+        *ngFor="let record of starterRecords.controls; let idx = index"
+        [class.govuk-form-group--error]="submitted && record.invalid"
+        [formGroupName]="idx"
+        class="govuk-grid-row"
+      >
+        <pre>record errors = {{ record.errors | json }}</pre>
+        <div class="govuk-grid-column-two-thirds govuk-form-group">
+          <label *ngIf="idx === 0" class="govuk-label" for="jobId">
+            Job role
+          </label>
+          <select
+            class="govuk-select govuk-!-width-full"
+            [class.govuk-select--error]="submitted && record.invalid"
+            formControlName="jobId"
+            id="jobId"
+            name="jobId"
+          >
+            <option [ngValue]="null">Select Job Title</option>
+            <option *ngFor="let job of jobsLeft(idx)" [value]="job.id">
+              {{ job.title }}
+            </option>
+          </select>
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+          <label *ngIf="idx === 0" class="govuk-label" for="total">
+            Number of new starters
+          </label>
+          <input
+            type="number"
+            formControlName="total"
+            id="total"
+            name="total"
+            class="govuk-input govuk-!-width-one-half"
+            [appNumberMax]="999"
+            appNumberPositiveOnly
+            appNumberIntOnly
+            [appNumberDigitsMax]="3"
+            min="0"
+            step="1"
+          />
+          <button
+            *ngIf="idx !== 0"
+            type="button"
+            class="govuk-button govuk-button--link govuk-!-margin-left-3"
+            (click)="removeRecord(idx)"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <button
+            *ngIf="isJobsNotTakenLeft()"
+            type="button"
+            class="govuk-button govuk-button--secondary"
+            (click)="addStarter()"
+          >
+            + Add another new starter
+          </button>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <span>Total: {{ calculateTotal() }}</span>
+        </div>
+      </div>
+    </ng-container>
+    <!--
+    <div class="mb-5">
+      <div *ngFor="let reason of noRecordsReasons; let idx = index" class="row mb-5">
+        <div class="col-12">
+          <div class="multiple-choice">
+            <input
+              type="radio"
+              id="selectReason-{{ idx }}"
+              formControlName="noRecordsReason"
+              [value]="reason.value"
+            />
+            <label class="main-body-text p-0" for="selectReason-{{ idx }}">{{ reason.label }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    -->
+  </fieldset>
+
+  <div class="btn-container">
+    <button type="submit" class="btn btn-primary">Save and continue</button>
+  </div>
+</form>
