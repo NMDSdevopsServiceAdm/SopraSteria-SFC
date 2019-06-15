@@ -125,7 +125,7 @@ exports.LeaversProperty = class LeaversProperty extends ChangePropertyPrototype 
         }
 
         return {
-            Leavers: {
+            leavers: {
                 currentValue: jsonPresentation.Leavers,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }

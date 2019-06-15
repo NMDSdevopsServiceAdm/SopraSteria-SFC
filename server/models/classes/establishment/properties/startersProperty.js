@@ -125,7 +125,7 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
         }
 
         return {
-            Starters: {
+            starters: {
                 currentValue: jsonPresentation.Starters,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }
