@@ -44,7 +44,33 @@ export class StartersComponent extends Question {
             message: `Please specify if there's been any new starters.`,
           },
         ],
-      }
+      },
+      {
+        item: 'starterRecords',
+        type: [
+          {
+            name: 'invalid',
+            message: 'Pleae select a job and enter number of new starters.',
+          },
+        ],
+      },
+      // {
+      //   item: 'starterRecords',
+      //   type: [
+      //     {
+      //       name: 'bothAreEmpty',
+      //       message: 'Pleae select a job and enter number of new starters.',
+      //     },
+      //     {
+      //       name: 'jobIdEmpty',
+      //       message: 'Please select a job from the list.',
+      //     },
+      //     {
+      //       name: 'totalEmpty',
+      //       message: 'Please enter number of new starters.',
+      //     },
+      //   ],
+      // }
     ];
   }
 
@@ -70,7 +96,6 @@ export class StartersComponent extends Question {
   private getStarters(): void {
     this.subscriptions.add(
       this.establishmentService.getStarters().subscribe((starters: string | Starter[]) => {
-        console.log(starters, typeof starters);
         this.preSelectNoRecordsReason(starters);
         this.prePopulateStarterRecords(starters);
       })
@@ -116,6 +141,14 @@ export class StartersComponent extends Question {
       },
       { validator: CustomValidators.bothControlsHaveValues }
     );
+  }
+
+  public submitHandler(): void {
+    if (this.starterRecords.invalid) {
+      this.starterRecords.setErrors({ invalid: true });
+    }
+
+    this.onSubmit();
   }
 
   protected generateUpdateProps(): void {
