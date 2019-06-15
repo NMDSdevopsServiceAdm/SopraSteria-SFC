@@ -110,8 +110,14 @@ export class StartersComponent extends Question {
     return this.starterRecords.value.reduce((acc, i) => (acc += parseInt(i.total, 10) || 0), 0) || 0;
   }
 
+  /**
+   * Add new starter record
+   * And reset no records reason
+   * As the radio's shouldn't be selected
+   */
   public addStarter(): void {
     this.starterRecords.push(this.createRecordItem());
+    this.noRecordsReason.reset();
   }
 
   private createRecordItem(jobId: number = null, total: number = null): FormGroup {
@@ -143,9 +149,6 @@ export class StartersComponent extends Question {
           this.router.navigate([nextRoute]);
         })
       );
-    } else {
-      // this.messageService.clearError();
-      // this.messageService.show('error', 'Please fill the required fields.');
     }
   }
 
@@ -161,11 +164,27 @@ export class StartersComponent extends Question {
     );
   }
 
+  /**
+   * Method responsible for checking
+   * To see if there are any more jobs left
+   * That haven't been selected yet
+   * Controls visibility of the Add starter CTA button
+   */
   public allJobsTaken(): boolean {
-    return this.jobs.length === this.starterRecords.value.length;
+    return this.jobs.length === this.starterRecords.length;
   }
 
+  /**
+   * Remove starter record
+   * And if all starter records have been removed
+   * Then select None radio option
+   * @param index
+   */
   public removeRecord(index: number): void {
     this.starterRecords.removeAt(index);
+
+    if (!this.starterRecords.length) {
+      this.noRecordsReason.setValue('None');
+    }
   }
 }
