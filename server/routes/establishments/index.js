@@ -81,4 +81,32 @@ router.route('/:id').get(async (req, res) => {
     }
 });
 
+router.route('/:id').delete(async (req, res) => {
+    const establishmentId = req.establishmentId;
+    const establishmentInstance = new Establishment.Establishment(establishmentId);
+
+    try {
+        if (await establishmentInstance.restore(establishmentId)) {
+            console.log('restored about to delete');
+            await establishmentInstance.delete(req.username);
+            return res.status(204).send();
+        } else {
+            console.log('404 not found that establishment')
+            return res.status(404).send('Not Found');
+        }
+    } catch (err) {
+        const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
+            thisEstablishment.id,
+            thisEstablishment.uid,
+            null,
+            err,
+            null,
+            `Failed to delete Establishment with id/uid: ${establishmentId}`);
+
+        console.error('establishment::DELETE/:eID - failed', thisError.message);
+        return res.status(503).send(thisError.safe);
+}
+
+});
+
 module.exports = router;
