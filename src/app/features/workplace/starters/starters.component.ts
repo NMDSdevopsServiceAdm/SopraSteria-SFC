@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Starter } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
@@ -112,12 +112,14 @@ export class StartersComponent extends Question {
 
   /**
    * Add new starter record
-   * And reset no records reason
+   * And reset no records reason and clear validators
    * As the radio's shouldn't be selected
    */
   public addStarter(): void {
     this.starterRecords.push(this.createRecordItem());
     this.noRecordsReason.reset();
+    this.noRecordsReason.clearValidators();
+    this.noRecordsReason.updateValueAndValidity();
   }
 
   private createRecordItem(jobId: number = null, total: number = null): FormGroup {
@@ -177,14 +179,15 @@ export class StartersComponent extends Question {
   /**
    * Remove starter record
    * And if all starter records have been removed
-   * Then select None radio option
+   * Then set required validator on radios
    * @param index
    */
   public removeRecord(index: number): void {
     this.starterRecords.removeAt(index);
 
     if (!this.starterRecords.length) {
-      this.noRecordsReason.setValue('None');
+      this.noRecordsReason.setValidators([Validators.required]);
+      this.noRecordsReason.updateValueAndValidity();
     }
   }
 }
