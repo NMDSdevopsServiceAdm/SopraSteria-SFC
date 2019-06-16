@@ -10,14 +10,6 @@
   </div>
 </div>
 
-<!--<div>allJobsTaken = {{ allJobsTaken() }}</div>-->
-<!--<div>starterRecords.length = {{ starterRecords.length }}</div>-->
-<!--<div>submitted = {{ submitted }}</div>-->
-<!--<div>form.valid = {{ form.valid }}</div>-->
-<!--<div>noRecordsReason.invalid = {{ noRecordsReason.invalid }}</div>-->
-<div>starterRecords.invalid = {{ starterRecords.invalid }}</div>
-<!--<div>form.errors = {{ form.errors | json }}</div>-->
-
 <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -32,20 +24,11 @@
         class="govuk-!-margin-bottom-6"
       >
         <div class="govuk-grid-row">
-          <!--<pre class="govuk-!-margin-0">record errors = {{ record.errors | json }}</pre>-->
           <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0"
             [class.govuk-!-padding-left-3]="submitted && record.invalid">
             <label *ngIf="idx === 0" class="govuk-label" for="jobId">
               Job role
             </label>
-            <!--            <span-->
-            <!--              id="jobId-error"-->
-            <!--              class="govuk-error-message"-->
-            <!--              *ngIf="submitted && starterRecords.invalid"-->
-            <!--            >-->
-            <!--            <span class="govuk-visually-hidden">Error:</span>-->
-            <!--              {{ getFormErrorMessage('starterRecords', 'bothAreEmpty') }}-->
-            <!--            </span>-->
             <select
               class="govuk-select govuk-!-width-full"
               [class.govuk-select--error]="submitted && (record.hasError('bothAreEmpty') || record.hasError('jobIdEmpty'))"
