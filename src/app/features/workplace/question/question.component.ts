@@ -23,6 +23,7 @@ export class Question implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
   protected subscriptions: Subscription = new Subscription();
+  protected initiated = false;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -37,9 +38,11 @@ export class Question implements OnInit, OnDestroy {
       this.establishmentService.establishment$.subscribe(establishment => {
         this.establishment = establishment;
 
-        this.init();
+        if (!this.initiated) {
+          this._init();
 
-        this.setBackLink();
+          this.setBackLink();
+        }
       })
     );
 
@@ -84,6 +87,11 @@ export class Question implements OnInit, OnDestroy {
     }
 
     this.updateEstablishment(props);
+  }
+
+  protected _init(): void {
+    this.initiated = true;
+    this.init();
   }
 
   protected init(): void {}
