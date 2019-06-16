@@ -31,6 +31,7 @@ export class StartersComponent extends Question {
 
   protected init() {
     this.setupForm();
+    this.setPreviousRoute();
     this.getJobs();
     this.getStarters();
   }
@@ -63,6 +64,10 @@ export class StartersComponent extends Question {
       starterRecords: this.formBuilder.array([]),
       noRecordsReason: '',
     });
+  }
+
+  private setPreviousRoute(): void {
+    this.previous = ['/workplace', `${this.establishment.id}`, 'vacancies'];
   }
 
   get starterRecords(): FormArray {
@@ -151,12 +156,16 @@ export class StartersComponent extends Question {
     return request;
   }
 
+  private setNextRoute(): void {
+    const route: string = this.noRecordsReason.value ? 'leavers' : 'confirm-starters';
+    this.next = ['/workplace', `${this.establishment.id}`, route];
+  }
+
   protected generateUpdateProps(): void {
+    this.setNextRoute();
+
     this.subscriptions.add(
-      this.establishmentService.postStarters(this.getStartersRequest()).subscribe(() => {
-        const nextRoute: string = this.noRecordsReason.value ? 'leavers' : 'confirm-starters';
-        this.router.navigate(['/workplace', this.establishment.id, nextRoute]);
-      })
+      this.establishmentService.postStarters(this.getStartersRequest()).subscribe()
     );
   }
 
