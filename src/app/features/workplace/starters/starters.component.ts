@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NoRecordsReason, Starter } from '@core/model/establishment.model';
+import { NoRecordsReason, PostStartersRequest, Starter } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -55,23 +55,6 @@ export class StartersComponent extends Question {
           },
         ],
       },
-      // {
-      //   item: 'starterRecords',
-      //   type: [
-      //     {
-      //       name: 'bothAreEmpty',
-      //       message: 'Pleae select a job and enter number of new starters.',
-      //     },
-      //     {
-      //       name: 'jobIdEmpty',
-      //       message: 'Please select a job from the list.',
-      //     },
-      //     {
-      //       name: 'totalEmpty',
-      //       message: 'Please enter number of new starters.',
-      //     },
-      //   ],
-      // }
     ];
   }
 
@@ -153,26 +136,28 @@ export class StartersComponent extends Question {
     this.onSubmit();
   }
 
+  private getStartersRequest(): PostStartersRequest {
+    const request: PostStartersRequest = { starters: null };
+
+    if (this.noRecordsReason.value) {
+      request.starters = this.noRecordsReason.value;
+    } else {
+      request.starters = this.starterRecords.value.map(starterRecord => ({
+        jobId: parseInt(starterRecord.jobId, 10),
+        total: starterRecord.total,
+      }));
+    }
+
+    return request;
+  }
+
   protected generateUpdateProps(): void {
-    // if (this.form.valid) {
-    //   let startersToSubmit = null;
-    //
-    //   if (this.noRecordsReason.value === 'dont-know') {
-    //     startersToSubmit = `Don't know`;
-    //   } else if (this.noRecordsReason.value === 'no-new') {
-    //     startersToSubmit = 'None';
-    //   } else {
-    //     // default being to send the set of all the current jobs which then need to be confirmed.
-    //     startersToSubmit = this.starterRecords.value.map(v => ({ jobId: parseInt(v.jobId, 10), total: v.total }));
-    //   }
-    //
-    //   this.subscriptions.add(
-    //     this.establishmentService.postStarters(startersToSubmit).subscribe(() => {
-    //       const nextRoute: string = this.noRecordsReason.value ? '/workplace/leavers' : '/workplace/confirm-starters';
-    //       this.router.navigate([nextRoute]);
-    //     })
-    //   );
-    // }
+    this.subscriptions.add(
+      this.establishmentService.postStarters(this.getStartersRequest()).subscribe(() => {
+        const nextRoute: string = this.noRecordsReason.value ? '/workplace/leavers' : '/workplace/confirm-starters';
+        this.router.navigate([nextRoute]);
+      })
+    );
   }
 
   /**

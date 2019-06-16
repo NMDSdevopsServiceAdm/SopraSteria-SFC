@@ -116,6 +116,10 @@ export interface GetStartersResponse {
   vacancies: string;
 }
 
+export interface PostStartersRequest {
+  starters: string | Starter[];
+}
+
 export enum NoRecordsReason {
   DONT_KNOW = 'Don\'t know',
   NONE = 'None',

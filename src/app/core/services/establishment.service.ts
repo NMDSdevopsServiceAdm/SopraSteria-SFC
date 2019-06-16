@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Establishment, GetStartersResponse, Starter } from '@core/model/establishment.model';
+import { Establishment, GetStartersResponse, PostStartersRequest, Starter } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -111,8 +111,8 @@ export class EstablishmentService {
       .pipe(map((res: GetStartersResponse) => res.starters));
   }
 
-  postStarters(data) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
+  public postStarters(data: PostStartersRequest): Observable<any> {
+    return this.http.post<Observable<any>>(`/api/establishment/${this.establishmentId}/jobs`, data);
   }
 
   getLeavers() {
