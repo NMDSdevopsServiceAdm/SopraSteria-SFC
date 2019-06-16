@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Starter } from '@core/model/establishment.model';
+import { NoRecordsReason, Starter } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -16,6 +16,7 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 })
 export class StartersComponent extends Question {
   public jobs: Job[] = [];
+  public noRecordsReasonEnum = NoRecordsReason;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -104,7 +105,8 @@ export class StartersComponent extends Question {
 
   private preSelectNoRecordsReason(starters: string | Starter[]): void {
     if (typeof starters === 'string') {
-      const patchValue: string = starters === 'None' ? 'no-new' : 'dont-know';
+      const patchValue: string =
+        starters === this.noRecordsReasonEnum.NONE ? this.noRecordsReasonEnum.NONE : this.noRecordsReasonEnum.DONT_KNOW;
       this.noRecordsReason.patchValue(patchValue);
     }
   }

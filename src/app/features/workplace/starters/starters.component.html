@@ -119,12 +119,12 @@
           <input
             class="govuk-radios__input"
             formControlName="noRecordsReason"
-            id="noRecordsReason-no-new"
+            id="noRecordsReason-none"
             name="noRecordsReason"
             type="radio"
-            value="no-new"
+            [value]="noRecordsReasonEnum.NONE"
           />
-          <label class="govuk-label govuk-radios__label" for="noRecordsReason-no-new">
+          <label class="govuk-label govuk-radios__label" for="noRecordsReason-none">
             There have been no new starters.
           </label>
         </div>
@@ -135,7 +135,7 @@
             id="noRecordsReason-dont-know"
             name="noRecordsReason"
             type="radio"
-            value="dont-know"
+            [value]="noRecordsReasonEnum.DONT_KNOW"
           />
           <label class="govuk-label govuk-radios__label" for="noRecordsReason-dont-know">
             I don't know how many new starters there have been.

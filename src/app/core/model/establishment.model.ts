@@ -115,3 +115,8 @@ export interface GetStartersResponse {
   updatedBy: string;
   vacancies: string;
 }
+
+export enum NoRecordsReason {
+  DONT_KNOW = 'Don\'t know',
+  NONE = 'None',
+}
