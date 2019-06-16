@@ -1,11 +1,12 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
-import { Establishment } from '@core/model/establishment.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { PostServicesModel } from '../model/postServices.model';
+import { Establishment } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
+import { PostServicesModel } from '../model/postServices.model';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -93,29 +94,27 @@ export class EstablishmentService {
   }
 
   getJobs() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.jobs));
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`);
   }
 
   getVacancies() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.jobs.Vacancies));
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.vacancies));
   }
 
-  postVacancies(vacancies) {
-    const data = { jobs: { vacancies } };
+  postVacancies(data) {
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
   }
 
   getStarters() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.jobs.Starters));
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.starters));
   }
 
-  postStarters(starters) {
-    const data = { jobs: { starters } };
+  postStarters(data) {
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
   }
 
   getLeavers() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.jobs.Leavers));
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.leavers));
   }
 
   postLeavers(leavers) {

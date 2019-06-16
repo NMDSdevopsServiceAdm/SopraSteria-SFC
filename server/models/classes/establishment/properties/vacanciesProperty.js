@@ -14,11 +14,11 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
 
     // concrete implementations
     async restoreFromJson(document) {
-        if (document.jobs && document.jobs.vacancies) {
+        if (document.vacancies) {
             const jobDeclaration = ["None", "Don't know"];
             // can be an empty array
-            if (Array.isArray(document.jobs.vacancies)) {
-                const validatedJobs = await JobHelpers.validateJobs(document.jobs.vacancies);
+            if (Array.isArray(document.vacancies)) {
+                const validatedJobs = await JobHelpers.validateJobs(document.vacancies);
 
                 if (validatedJobs) {
                     this.property = validatedJobs;
@@ -26,8 +26,8 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
                 } else {
                     this.property = null;
                 }
-            } else if (jobDeclaration.includes(document.jobs.vacancies)) {
-                this.property = document.jobs.vacancies;
+            } else if (jobDeclaration.includes(document.vacancies)) {
+                this.property = document.vacancies;
             } else {
                 // but it must at least be an array, or one of the known enums
                 this.property = null;
@@ -120,13 +120,13 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
         if (!withHistory) {
             // simple form - includes 
             return {
-                Vacancies: jsonPresentation.Vacancies,
-                TotalVacencies: jsonPresentation.TotalVacencies
+                vacancies: jsonPresentation.Vacancies,
+                totalVacancies: jsonPresentation.TotalVacencies
             };
         }
 
         return {
-            Vacancies: {
+            vacancies: {
                 currentValue: jsonPresentation.Vacancies,
                 ... this.changePropsToJSON(showPropertyHistoryOnly)
             }

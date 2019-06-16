@@ -129,7 +129,7 @@ router.route('/uploaded').post(async function (req, res) {
   const uploadedFiles = req.body.files;
 
   const EXPECTED_NUMBHER_OF_FILES = 3;
-  if (!uploadedFiles || !Array.isArray(uploadedFiles) || uploadedFiles.length != EXPECTED_NUMBHER_OF_FILES) {
+  if (!uploadedFiles || !Array.isArray(uploadedFiles) || uploadedFiles.length > EXPECTED_NUMBHER_OF_FILES) {
     return res.status(400).send({});
   }
 
