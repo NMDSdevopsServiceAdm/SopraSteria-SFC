@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
@@ -38,6 +38,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
     Object.keys(this.form.controls).forEach(key => {
       const isFormControl: boolean = this.form.get(key) instanceof FormControl;
       const isFormGroup: boolean = this.form.get(key) instanceof FormGroup;
+      const isFormArray: boolean = this.form.get(key) instanceof FormArray;
 
       if (isFormControl) {
         this.collectError(this.form.get(key), key);
@@ -50,6 +51,17 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
 
         const formGroupControls: AbstractControl = formGroup['controls'];
         Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], `${key}.${i}`));
+      } else if (isFormArray) {
+        const formArray = <FormArray>this.form.get(key);
+
+        formArray.controls.forEach(formGroup => {
+          if (formGroup.errors) {
+            Object.keys(formGroup.errors).forEach(i => this.collectError(formGroup, key));
+          }
+
+          const formGroupControls: AbstractControl = formGroup['controls'];
+          Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], `${key}.${i}`));
+        });
       }
     });
   }
