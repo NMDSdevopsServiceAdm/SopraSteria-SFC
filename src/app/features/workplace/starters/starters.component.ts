@@ -138,10 +138,11 @@ export class StartersComponent extends Question {
       this.starterRecords.setErrors({ invalid: true });
     }
 
+    this.setNextRoute();
     this.onSubmit();
   }
 
-  private getStartersRequest(): PostStartersRequest {
+  protected generateUpdateProps(): PostStartersRequest {
     const request: PostStartersRequest = { starters: null };
 
     if (this.noRecordsReason.value) {
@@ -161,11 +162,11 @@ export class StartersComponent extends Question {
     this.next = ['/workplace', `${this.establishment.id}`, route];
   }
 
-  protected generateUpdateProps(): void {
-    this.setNextRoute();
-
+  protected updateEstablishment(props: PostStartersRequest): void {
     this.subscriptions.add(
-      this.establishmentService.postStarters(this.getStartersRequest()).subscribe()
+      this.establishmentService
+        .postStarters(props)
+        .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
