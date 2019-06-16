@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, GetStartersResponse, Starter } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -105,8 +105,10 @@ export class EstablishmentService {
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
   }
 
-  getStarters() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.starters));
+  public getStarters(): Observable<string | Starter[]> {
+    return this.http
+      .get<GetStartersResponse>(`/api/establishment/${this.establishmentId}/jobs`)
+      .pipe(map((res: GetStartersResponse) => res.starters));
   }
 
   postStarters(data) {
