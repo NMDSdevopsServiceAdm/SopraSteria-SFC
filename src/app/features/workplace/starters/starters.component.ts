@@ -34,6 +34,7 @@ export class StartersComponent extends Question {
     this.setPreviousRoute();
     this.getJobs();
     this.getStarters();
+    this.subscribeToStarterChanges();
   }
 
   protected setupFormErrorsMap(): void {
@@ -89,6 +90,18 @@ export class StartersComponent extends Question {
         this.prePopulateStarterRecords(starters);
       })
     );
+  }
+
+  private subscribeToStarterChanges(): void {
+    this.subscriptions.add(
+      this.starterRecords.valueChanges.subscribe(() => this.setFormArrayError())
+    );
+  }
+
+  private setFormArrayError(): void {
+    if (this.starterRecords.invalid) {
+      this.starterRecords.setErrors({ invalid: true });
+    }
   }
 
   /**
@@ -147,10 +160,7 @@ export class StartersComponent extends Question {
   }
 
   public submitHandler(): void {
-    if (this.starterRecords.invalid) {
-      this.starterRecords.setErrors({ invalid: true });
-    }
-
+    this.setFormArrayError();
     this.setNextRoute();
     this.onSubmit();
   }
