@@ -148,7 +148,8 @@ class Worker {
   static get SOCIALCARE_QUAL_ERROR() { return 3360; }
   static get NON_SOCIALCARE_QUAL_ERROR() { return 3370; }
 
-  static get QUAL_ACH_ERROR() { return 5000; }
+  static get AMHP_WARNING() { return 3380; }
+
   static get QUAL_ACH01_ERROR() { return 5010; }
   static get QUAL_ACH01_NOTES_ERROR() { return 5020; }
   static get QUAL_ACH02_ERROR() { return 5030; }
@@ -1542,7 +1543,7 @@ class Worker {
     }
   }
 
-  __validateQualification(qualificationName, qualificationError, qualificationErrorName, qualification,
+  __validateQualification(qualificationIndex, qualificationName, qualificationError, qualificationErrorName, qualification,
                           qualificationDescName, qualificationDescError, qualificationDescErrorName, qualificationDesc) {
     const myQualification = qualification ? qualification.split(';') : null;
 
@@ -1600,6 +1601,7 @@ class Worker {
         id: qualificationId,
         year: !isNaN(qualificationYear) ? qualificationYear : null,
         desc: myQualificationDesc,
+        column: qualificationIndex,
       };
 
     } else {
@@ -1621,6 +1623,7 @@ class Worker {
       const index = padNumber(i+1);
 
       return this.__validateQualification(
+        index,
         `QUALACH${index}`,
         Worker[`QUAL_ACH${index}_ERROR`],
         `QUAL_ACH${index}_ERROR`,
@@ -1931,14 +1934,15 @@ class Worker {
       this._qualifications.forEach(thisQualification => {
         const myValidatedQualification = BUDI.qualifications(BUDI.TO_ASC, thisQualification.id);
 
-        // TODO - WA REMOVE THE 72 test - for debugging only!!!!!
+        console.log("WA DBEUG - transformed qualification: ", thisQualification.id, myValidatedQualification)
+
         if (!myValidatedQualification) {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
-            errCode: Worker.QUAL_ACH_ERROR,
-            errType: `QUAL_ACH_ERROR`,
-            error: `Qualification (QUALACH01/QUALACH02/QUALACH03): ${thisQualification.id} is unknown`,
-            source: `${this._currentLine.QUALACH01}:${this._currentLine.QUALACH02}:${this._currentLine.QUALACH03}`,
+            errCode: Worker[`QUAL_ACH${thisQualification.column}_ERROR`],
+            errType: `QUAL_ACH${thisQualification.column}_ERROR`,
+            error: `Qualification (QUALACH${thisQualification.column}): ${thisQualification.id} is unknown`,
+            source: `${this._currentLine[`QUALACH${thisQualification.column}`]}`,
           });
         } else {
           const newQual = thisQualification;
@@ -2324,7 +2328,8 @@ class Worker {
       if (!thisQual) return undefined;
 
       const changeProperties = {
-        type: undefined,        // the qualification type does not come from bulk upload
+        column: thisQual.column,    // this is necessary to map the qualification to the CSV column
+        type: undefined,            // the qualification type does not come from bulk upload
         qualification : {
           id: thisQual.id,
         },
@@ -2411,7 +2416,78 @@ class Worker {
       }) : true;
     });
   }
+
   
+  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
+  addQualificationAPIValidation(columnIndex, errors, warnings) {
+    errors.forEach(thisError => {
+      thisError.properties ? thisError.properties.forEach(thisProp => {
+        const validationError = {
+          lineNumber: this._lineNumber,
+          error: thisError.message,
+        };
+
+        switch (thisProp) {
+          case 'Qualification':
+            validationError.errCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
+            validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            break;
+          case 'Year':
+            validationError.errCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
+            validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            break;
+          case 'Notes':
+            validationError.errCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
+            validationError.errType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
+            validationError.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
+            break;
+          default:
+            validationError.errCode = thisError.code;
+            validationError.errType = 'Undefined';
+            validationError.source  = thisProp;
+        }
+        this._validationErrors.push(validationError);
+      }) : true;
+    });
+
+  
+    warnings.forEach(thisWarning => {
+      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
+        const validationWarning = {
+          lineNumber: this._lineNumber,
+          warning: thisWarning.message,
+        };
+
+        switch (thisProp) {
+          case 'Qualification':
+            validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
+            validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            break;
+          case 'Year':
+            validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
+            validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            break;
+          case 'Notes':
+            validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
+            validationWarning.warnType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
+            validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
+            break;
+          default:
+            validationWarning.warnCode = thisWarning.code;
+            validationWarning.warnType = 'Undefined';
+            validationWarning.source  = thisProp;
+        }
+
+        this._validationErrors.push(validationWarning);
+      }) : true;
+    });
+  }
+
+
 };
 
 module.exports.Worker = Worker;
