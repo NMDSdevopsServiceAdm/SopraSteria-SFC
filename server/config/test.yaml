@@ -26,7 +26,6 @@ notify:
         resetPassword: 'f2c43610-9ec9-4271-b9b1-dd55569b191c'
         addUser: 'e581eea2-4206-4c90-8594-4357960e3e74'
 
-
 bulkupload:
     region: eu-west-2
     bucketname: sfc-bulkupload-staging
