@@ -789,7 +789,7 @@ class Worker extends EntityValidator {
                 allExistAndValid = false;
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.ERROR,
-                    102,
+                    103,
                     contractProperty ? 'Invalid' : 'Missing',
                     ['Contract']
                 ));
