@@ -91,19 +91,32 @@ export class StartersComponent extends Question {
     );
   }
 
+  /**
+   * Pre select no records reason radio
+   * And create default empty starter record
+   * @param starters
+   */
   private preSelectNoRecordsReason(starters: string | Starter[]): void {
     if (typeof starters === 'string') {
       const patchValue: string =
         starters === this.noRecordsReasonEnum.NONE ? this.noRecordsReasonEnum.NONE : this.noRecordsReasonEnum.DONT_KNOW;
       this.noRecordsReason.patchValue(patchValue);
+      this.starterRecords.push(this.createRecordItem());
     }
   }
 
+  /**
+   * Pre populate starter records
+   * And create default empty starter record
+   * @param starters
+   */
   private prePopulateStarterRecords(starters: string | Starter[]): void {
     if (Array.isArray(starters) && starters.length) {
       starters.forEach((starter: Starter) =>
         this.starterRecords.push(this.createRecordItem(starter.jobId, starter.total))
       );
+    } else {
+      this.starterRecords.push(this.createRecordItem());
     }
   }
 
