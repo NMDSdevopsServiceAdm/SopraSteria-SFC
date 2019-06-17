@@ -2300,8 +2300,6 @@ class Worker {
   get validationErrors() {
     // include the "origin" of validation error
     return this._validationErrors.map(thisValidation => {
-console.log("WA DEBUG - this validation: ", thisValidation)
-
       return {
         origin: 'Workers',
         ...thisValidation,
