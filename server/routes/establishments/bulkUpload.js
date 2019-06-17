@@ -7,9 +7,7 @@ const Stream = require('stream');
 
 const router = express.Router();
 const s3 = new AWS.S3({
-  accessKeyId: appConfig.get('bulkuploaduser.accessKeyId').toString(),
-  secretAccessKey: appConfig.get('bulkuploaduser.secretAccessKey').toString(),
-  region: appConfig.get('bulkuploaduser.region').toString(),
+  region: appConfig.get('bulkupload.region').toString(),
 });
 
 const CsvEstablishmentValidator = require('../../models/BulkImport/csv/establishments').Establishment;
@@ -33,7 +31,7 @@ const ignoreRoot = /.*\/$/;
 router.route('/uploaded').get(async (req, res) => {
   try {
     const params = {
-      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Bucket: appConfig.get('bulkupload.bucketname').toString(), 
       Prefix: `${req.establishmentId}/latest/`
     };
 
@@ -77,7 +75,7 @@ router.route('/uploaded/*').get(async (req, res) => {
   const requestedKey = req.params['0'];
 
   const params = {
-    Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+    Bucket: appConfig.get('bulkupload.bucketname').toString(), 
     Prefix: `${req.establishmentId}/latest/`
   };
 
@@ -94,9 +92,9 @@ router.route('/uploaded/*').get(async (req, res) => {
       size: objHeadData.ContentLength,
       key: requestedKey,
       signedUrl : s3.getSignedUrl('getObject', {
-        Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
+        Bucket: appConfig.get('bulkupload.bucketname').toString(),
         Key: requestedKey,
-        Expires: appConfig.get('bulkuploaduser.uploadSignedUrlExpire')
+        Expires: appConfig.get('bulkupload.uploadSignedUrlExpire')
       })       
     };
 
@@ -138,7 +136,7 @@ router.route('/uploaded').post(async function (req, res) {
   try {
     // drop all in latest
     let listParams = {
-      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Bucket: appConfig.get('bulkupload.bucketname').toString(), 
       Prefix: `${myEstablishmentId}/latest/`
     };
     const latestObjects = await s3.listObjects(listParams).promise();
@@ -172,7 +170,7 @@ router.route('/uploaded').post(async function (req, res) {
     if (deleteKeys.length > 0) {
       // now delete the objects in one go
       const deleteParams = {
-        Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+        Bucket: appConfig.get('bulkupload.bucketname').toString(), 
         Delete: {
           Objects: deleteKeys,
           Quiet: true,
@@ -184,7 +182,7 @@ router.route('/uploaded').post(async function (req, res) {
     uploadedFiles.forEach(thisFile => {
       if (thisFile.filename) {
         thisFile.signedUrl = s3.getSignedUrl('putObject', {
-          Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
+          Bucket: appConfig.get('bulkupload.bucketname').toString(),
           Key: myEstablishmentId + '/' + FileStatusEnum.Latest + '/' + thisFile.filename,
           // ACL: 'public-read',
           ContentType: req.query.type,
@@ -193,7 +191,7 @@ router.route('/uploaded').post(async function (req, res) {
             establishmentId: myEstablishmentId,
             validationstatus: FileValidationStatusEnum.Pending,
           },
-          Expires: appConfig.get('bulkuploaduser.uploadSignedUrlExpire'),
+          Expires: appConfig.get('bulkupload.uploadSignedUrlExpire'),
         });
         signedUrls.push(thisFile);
       }
@@ -214,7 +212,7 @@ router.route('/signedUrl').get(async function (req, res) {
   try {
     const myEstablishmentId = Number.isInteger(establishmentId) ? establishmentId.toString() : establishmentId;
     var uploadPreSignedUrl = s3.getSignedUrl('putObject', {
-      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
+      Bucket: appConfig.get('bulkupload.bucketname').toString(),
       Key: establishmentId + '/' + FileStatusEnum.Latest + '/' + req.query.filename,
       // ACL: 'public-read',
       ContentType: req.query.type,
@@ -223,7 +221,7 @@ router.route('/signedUrl').get(async function (req, res) {
         establishmentId: myEstablishmentId,
         validationstatus: FileValidationStatusEnum.Pending,
       },
-      Expires: appConfig.get('bulkuploaduser.uploadSignedUrlExpire'),
+      Expires: appConfig.get('bulkupload.uploadSignedUrlExpire'),
     });
     res.json({ urls: uploadPreSignedUrl });
     res.end();
@@ -263,7 +261,7 @@ router.route('/validate').put(async (req, res) => {
   try {
     // awaits must be within a try/catch block - checking if file exists - saves having to repeatedly download from S3 bucket
     const params = {
-      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Bucket: appConfig.get('bulkupload.bucketname').toString(), 
       Prefix: `${req.establishmentId}/latest/`
     };
     const data = await s3.listObjects(params).promise();
@@ -451,7 +449,7 @@ router.route('/validate').post(async (req, res) => {
 
 async function downloadContent(key) {
     var params = {
-      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
+      Bucket: appConfig.get('bulkupload.bucketname').toString(),
       Key: key,
     };
 
@@ -475,7 +473,7 @@ async function uploadAsJSON(username, establishmentId, content, key) {
   const myEstablishmentId = Number.isInteger(establishmentId) ? establishmentId.toString() : establishmentId;
 
   var params = {
-    Bucket: appConfig.get('bulkuploaduser.bucketname').toString(),
+    Bucket: appConfig.get('bulkupload.bucketname').toString(),
     Key: key,
     Body: JSON.stringify(content, null, 2),
     ContentType: 'application/json',
