@@ -195,11 +195,6 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   private checkUsernameDoesntExist(userName: string): void {
-    console.log(
-      '%c checkUsernameDoesntExist fired ',
-      'background:red; color:white',
-      ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES
-    );
     this.subscriptions.add(
       this.registrationService.getUsernameDuplicate(userName).subscribe(
         (data: Object) => {
