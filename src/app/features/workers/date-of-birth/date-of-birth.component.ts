@@ -60,7 +60,7 @@ export class DateOfBirthComponent extends QuestionComponent {
         type: [
           {
             name: 'dateValid',
-            message: 'DATE IS NOT VALID',
+            message: 'The date you entered is in the wrong format',
           },
           {
             name: 'dateBetween',
