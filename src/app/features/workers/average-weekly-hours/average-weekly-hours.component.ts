@@ -16,6 +16,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class AverageWeeklyHoursComponent extends QuestionComponent {
   public floatPattern = FLOAT_PATTERN.toString();
+  contractedMaxHours = 75;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -49,7 +50,9 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
         this.form.get('hours').clearValidators();
 
         if (value === 'Yes') {
-          this.form.get('hours').setValidators([Validators.required, Validators.min(0), Validators.max(65)]);
+          this.form.get('hours').setValidators(
+            [Validators.required, Validators.min(0), Validators.max(this.contractedMaxHours)]
+          );
         }
 
         this.form.get('hours').updateValueAndValidity();
@@ -78,11 +81,11 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
           },
           {
             name: 'min',
-            message: 'Average weekly hours must be between 0 and 65.',
+            message: `Average weekly hours must be between 0 and ${this.contractedMaxHours}.`,
           },
           {
             name: 'max',
-            message: 'Average weekly hours must be between 0 and 65.',
+            message: `verage weekly hours must be between 0 and ${this.contractedMaxHours}.`,
           },
         ],
       },
