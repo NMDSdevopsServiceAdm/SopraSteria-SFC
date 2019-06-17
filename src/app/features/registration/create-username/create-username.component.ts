@@ -1,16 +1,16 @@
-import { BackService } from '@core/services/back.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { LoginCredentials } from '@core/model/login-credentials.model';
-import { PASSWORD_PATTERN } from '@core/constants/constants';
-import { RegistrationService } from '@core/services/registration.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES, PASSWORD_PATTERN } from '@core/constants/constants';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { LoginCredentials } from '@core/model/login-credentials.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-username',
@@ -25,6 +25,8 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   private serverErrorsMap: Array<ErrorDefinition>;
   private submitted = false;
   private subscriptions: Subscription = new Subscription();
+  private userNameMinLength = 3;
+  private userNameMaxLength = 120;
 
   constructor(
     private backService: BackService,
@@ -108,7 +110,15 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
 
   private setupForm(): void {
     this.form = this.fb.group({
-      username: ['', [Validators.required, Validators.maxLength(50)]],
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(this.userNameMaxLength),
+          Validators.minLength(this.userNameMinLength),
+          Validators.pattern(ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES),
+        ],
+      ],
       passwordGroup: this.fb.group(
         {
           createPasswordInput: ['', [Validators.required, Validators.pattern(PASSWORD_PATTERN)]],
@@ -130,11 +140,19 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
           },
           {
             name: 'maxlength',
-            message: 'Your username must be no longer than 50 characters.',
+            message: `Your username must be no longer than ${this.userNameMaxLength} characters.`,
+          },
+          {
+            name: 'minlength',
+            message: `Your username must be at least ${this.userNameMinLength} characters long.`,
           },
           {
             name: 'usernameExists',
             message: 'Username already exists.',
+          },
+          {
+            name: 'pattern',
+            message: 'Only letters, numbers, hyphens and underscores are allowed.',
           },
         ],
       },
@@ -177,6 +195,11 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   private checkUsernameDoesntExist(userName: string): void {
+    console.log(
+      '%c checkUsernameDoesntExist fired ',
+      'background:red; color:white',
+      ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES
+    );
     this.subscriptions.add(
       this.registrationService.getUsernameDuplicate(userName).subscribe(
         (data: Object) => {
