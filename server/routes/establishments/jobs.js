@@ -72,7 +72,9 @@ router.route('/').post(async (req, res) => {
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in vacancies
       const isValidEstablishment = await thisEstablishment.load({
-        jobs: req.body.jobs,
+        vacancies: req.body.vacancies,
+        starters: req.body.starters,
+        leavers: req.body.leavers,
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
@@ -86,12 +88,13 @@ router.route('/').post(async (req, res) => {
         };
   
         // amalgamated vacancies, starters and leavers, therefore remove them from parent scope
-        delete resultJSON.Vacancies;
-        delete resultJSON.Starters;
-        delete resultJSON.Leavers;
-        delete resultJSON.TotalVacencies;
-        delete resultJSON.TotalStarters;
-        delete resultJSON.TotalLeavers;
+        delete resultJSON.jobs;
+        // delete resultJSON.Vacancies;
+        // delete resultJSON.Starters;
+        // delete resultJSON.Leavers;
+        // delete resultJSON.TotalVacencies;
+        // delete resultJSON.TotalStarters;
+        // delete resultJSON.TotalLeavers;
 
         // total starters, leavers and vacancies are always
   
