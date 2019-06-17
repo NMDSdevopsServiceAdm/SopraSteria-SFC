@@ -136,7 +136,7 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Please enter your username.',
+            message: 'Enter a username.',
           },
           {
             name: 'maxlength',
@@ -148,11 +148,11 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
           },
           {
             name: 'usernameExists',
-            message: 'Username already exists.',
+            message: 'The username you entered already exists.',
           },
           {
             name: 'pattern',
-            message: 'Only letters, numbers, hyphens and underscores are allowed.',
+            message: 'Your username cannot contain special characters, for example @.',
           },
         ],
       },
@@ -161,11 +161,11 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Please enter your password.',
+            message: 'Enter your password.',
           },
           {
             name: 'pattern',
-            message: 'Invalid password.',
+            message: 'Your password must be least 8 characters, contain one uppercase and one lowercase letter and a number.',
           },
         ],
       },
@@ -174,11 +174,11 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Please confirm your password.',
+            message: 'Confirm your password.',
           },
           {
             name: 'notMatched',
-            message: 'Confirm password does not match.',
+            message: 'The password you entered does not match. Enter the same password.',
           },
         ],
       },
