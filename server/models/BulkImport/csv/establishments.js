@@ -45,22 +45,22 @@ class Establishment {
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
 
-  static get DUPLICATE_ERROR() { return 999; }
+  static get DUPLICATE_ERROR() { return 998; }
+  static get HEADERS_ERROR() { return 999; }
   static get MAIN_SERVICE_ERROR() { return 1000; }
   static get LOCAL_ID_ERROR() { return 1010; }
   static get STATUS_ERROR() { return 1020; }
   static get NAME_ERROR() { return 1030; }
   static get ADDRESS_ERROR() { return 1040; }
   static get ESTABLISHMENT_TYPE_ERROR() { return 1070; }
-  static get SHARE_WITH_CQC_ERROR() { return 1070; }
-  static get SHARE_WITH_LA_ERROR() { return 1080; }
+  static get SHARE_WITH_ERROR() { return 1070; }
   static get LOCAL_AUTHORITIES_ERROR() { return 1090; }
   static get REGTYPE_ERROR() { return 1100; }
   static get PROV_ID_ERROR() { return 1105; }
   static get LOCATION_ID_ERROR() { return 1110; }
   static get ALL_SERVICES_ERROR() { return 1120; }
   static get SERVICE_USERS_ERROR() { return 1130; }
-  static get CAPACITY_UTILISATION_USERS_ERROR() { return 1140; }
+  static get CAPACITY_UTILISATION_ERROR() { return 1140; }
 
   static get TOTAL_PERM_TEMP_ERROR() { return 1200; }
   static get ALL_JOBS_ERROR() { return 1280; }
@@ -69,9 +69,27 @@ class Establishment {
   static get LEAVERS_ERROR() { return 1320; }
 
   static get REASONS_FOR_LEAVING_ERROR() { return 1360; }
-  static get DESTINATIONS_ON_LEAVING_ERROR() { return 1370; }
 
-  static get HEADERS_ERROR() { return 1380; }
+
+  static get MAIN_SERVICE_WARNING() { return 2000; }
+  static get NAME_WARNING() { return 2030; }
+  static get ADDRESS_WARNING() { return 2040; }
+  static get ESTABLISHMENT_TYPE_WARNING() { return 2070; }
+  static get SHARE_WITH_WARNING() { return 2070; }
+  static get TOTAL_PERM_TEMP_WARNING() { return 2200; }
+  static get LOCAL_AUTHORITIES_WARNING() { return 2090; }
+  static get REGTYPE_WARNING() { return 2100; }
+  static get PROV_ID_WARNING() { return 2105; }
+  static get LOCATION_ID_WARNING() { return 2110; }
+  static get ALL_SERVICES_WARNING() { return 2120; }
+  static get SERVICE_USERS_WARNING() { return 2130; }
+  static get CAPACITY_UTILISATION_WARNING() { return 2140; }
+  static get VACANCIES_WARNING() { return 2300; }
+  static get STARTERS_WARNING() { return 2310; }
+  static get LEAVERS_WARNING() { return 2320; }
+
+  static get REASONS_FOR_LEAVING_WARNING() { return 2360; }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -411,8 +429,8 @@ class Establishment {
     if (Number.isNaN(myShareWithCqc)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_CQC_ERROR,
-        errType: `SHARE_WITH_CQC_ERROR`,
+        errCode: Establishment.SHARE_WITH_ERROR,
+        errType: `SHARE_WITH_ERROR`,
         error: "Share with CQC (PERMCQC) must be an integer",
         source: this._currentLine.PERMCQC,
       });
@@ -420,8 +438,8 @@ class Establishment {
     } else if (!ALLOWED_VALUES.includes(myShareWithCqc)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_CQC_ERROR,
-        errType: `SHARE_WITH_CQC_ERROR`,
+        errCode: Establishment.SHARE_WITH_ERROR,
+        errType: `SHARE_WITH_ERROR`,
         error: "Share with CQC (PERMCQC) must be 0 or 1",
         source: myShareWithCqc,
       });
@@ -438,8 +456,8 @@ class Establishment {
     if (Number.isNaN(myShareWithLa)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_LA_ERROR,
-        errType: `SHARE_WITH_LA_ERROR`,
+        errCode: Establishment.SHARE_WITH_ERROR,
+        errType: `SHARE_WITH_ERROR`,
         error: "Share with LA (PERMLA) must be an integer",
         source: this._currentLine.PERMLA,
       });
@@ -447,8 +465,8 @@ class Establishment {
     } else if (!ALLOWED_VALUES.includes(myShareWithLa)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.SHARE_WITH_LA_ERROR,
-        errType: `SHARE_WITH_LA_ERROR`,
+        errCode: Establishment.SHARE_WITH_ERROR,
+        errType: `SHARE_WITH_ERROR`,
         error: "Share with LA (PERMLA) must be 0 or 1",
         source: myShareWithLa,
       });
@@ -748,8 +766,8 @@ class Establishment {
     if (listOfCapacities.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
-        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Capacities (CAPACITY) must be a semi-colon delimited list of integers",
         source: this._currentLine.CAPACITY,
       });
@@ -757,8 +775,8 @@ class Establishment {
     if (listOfUtilisations.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
-        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Utilisations (UTILISATION) must be a semi-colon delimited list of integers",
         source: this._currentLine.UTILISATION,
       });
@@ -766,8 +784,8 @@ class Establishment {
     if (listOfCapacities.length != listOfUtilisations.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
-        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Number of Capacities (CAPACITY) and Utilisations (UTILISATION) must be equal",
         source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`,
       });
@@ -777,8 +795,8 @@ class Establishment {
     if (listOfCapacities.length !== (this._allServices ? this._allServices.length : 0)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
-        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Number of Capacities/Utilisations (CAPACITY/UTILISATION) must equal the number of all services (ALLSERVICES)",
         source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION} - ${this._currentLine.ALLSERVICES}`,
       });
@@ -794,8 +812,8 @@ class Establishment {
     if (!areCapacitiesValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
-        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errType: `CAPACITY_UTILISATION_ERROR`,
         error: `All capacities (CAPACITY) must be integers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.CAPACITY,
       });
@@ -807,8 +825,8 @@ class Establishment {
     if (!areUtilisationsValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
-        errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+        errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+        errType: `CAPACITY_UTILISATION_ERROR`,
         error: `All utilisations (UTILISATION) must be integers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.UTILISATION,
       });
@@ -1247,8 +1265,8 @@ class Establishment {
           } else {
             this._validationErrors.push({
               lineNumber: this._lineNumber,
-              errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
-              errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+              errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+              errType: `CAPACITY_UTILISATION_ERROR`,
               error: `Capacities (CAPACITY): position ${index+1} is unexpected capacity (no expected capacity for given service: ${this._allServices[index]})`,
               source: this._currentLine.CAPACITY,
             });
@@ -1283,8 +1301,8 @@ class Establishment {
           } else {
             this._validationErrors.push({
               lineNumber: this._lineNumber,
-              errCode: Establishment.CAPACITY_UTILISATION_USERS_ERROR,
-              errType: `CAPACITY_UTILISATION_USERS_ERROR`,
+              errCode: Establishment.CAPACITY_UTILISATION_ERROR,
+              errType: `CAPACITY_UTILISATION_ERROR`,
               error: `Utilisations (UTILISATION): position ${index+1} is unknown utilisation`,
               source: this._currentLine.UTILISATION,
             });
@@ -1429,6 +1447,7 @@ class Establishment {
   // add a duplicate validation error to the current set
   addDuplicate(originalLineNumber) {
     return {
+      origin: 'Establishments',
       lineNumber: this._lineNumber,
       errCode: Establishment.DUPLICATE_ERROR,
       errType: `DUPLICATE_ERROR`,
@@ -1538,7 +1557,14 @@ class Establishment {
   };
 
   get validationErrors() {
-    return this._validationErrors;
+        // include the "origin" of validation error
+        return this._validationErrors.map(thisValidation => {
+          return {
+            origin: 'Establishments',
+            ...thisValidation,
+          };
+        });
+    
   };
 
   // returns an API representation of this Establishment
@@ -1633,6 +1659,202 @@ class Establishment {
       ...fixedProperties,
       ...changeProperties,
     };
+  }
+
+  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
+  addAPIValidations(errors, warnings) {
+    errors.forEach(thisError => {
+      thisError.properties ? thisError.properties.forEach(thisProp => {
+        const validationError = {
+          lineNumber: this._lineNumber,
+          error: thisError.message,
+        };
+
+        switch (thisProp) {
+          case 'Capacity':
+            validationError.errCode = Establishment.CAPACITY_UTILISATION_ERROR;
+            validationError.errType = 'CAPACITY_UTILISATION_ERROR';
+            validationError.source  = `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`;
+            break;
+          case 'EmployerType':
+            validationError.errCode = Establishment.ESTABLISHMENT_TYPE_ERROR;
+            validationError.errType = 'ESTABLISHMENT_TYPE_ERROR';
+            validationError.source  = `${this._currentLine.ESTTYPE}`;
+            break;
+          case 'Leavers':
+            validationError.errCode = Establishment.LEAVERS_ERROR;
+            validationError.errType = 'LEAVERS_ERROR';
+            validationError.source  = `${this._currentLine.LEAVERS}`;
+            break;
+          case 'Starters':
+            validationError.errCode = Establishment.STARTERS_ERROR;
+            validationError.errType = 'STARTERS_ERROR';
+            validationError.source  = `${this._currentLine.STARTERS}`;
+            break;
+          case 'Vacancies':
+            validationError.errCode = Establishment.VACANCIES_ERROR;
+            validationError.errType = 'VACANCIES_ERROR';
+            validationError.source  = `${this._currentLine.VACANCIES}`;
+            break;
+          case 'MainService':
+            validationError.errCode = Establishment.MAIN_SERVICE_ERROR;
+            validationError.errType = 'MAIN_SERVICE_ERROR';
+            validationError.source  = `${this._currentLine.MAINSERVICE}`;
+            break;
+          case 'Name':
+            validationError.errCode = Establishment.NAME_ERROR;
+            validationError.errType = 'NAME_ERROR';
+            validationError.source  = `${this._currentLine.ESTNAME}`;
+            break;
+          case 'Services':
+            validationError.errCode = Establishment.ALL_SERVICES_ERROR;
+            validationError.errType = 'ALL_SERVICES_ERROR';
+            validationError.source  = `${this._currentLine.ALLSERVICES} - ${this._currentLine.SERVICEDESC}`;
+            break;
+          case 'ServiceUsers':
+            validationError.errCode = Establishment.SERVICE_USERS_ERROR;
+            validationError.errType = 'SERVICE_USERS_ERROR';
+            validationError.source  = `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`;
+            break;
+          case 'ShareWithLA':
+            validationError.errCode = Establishment.LOCAL_AUTHORITIES_ERROR;
+            validationError.errType = 'LOCAL_AUTHORITIES_ERROR';
+            validationError.source  = `${this._currentLine.SHARELA}`;
+            break;
+          case 'ShareWith':
+            validationError.errCode = Establishment.SHARE_WITH;
+            validationError.errType = 'SHARE_WITH_ERROR';
+            validationError.source  = `${this._currentLine.PERMCQC} - ${this._currentLine.PERMLA}`;
+            break;
+          case 'Staff':
+            validationError.errCode = Establishment.TOTAL_PERM_TEMP_ERROR;
+            validationError.errType = 'TOTAL_PERM_TEMP_ERROR';
+            validationError.source  = `${this._currentLine.TOTALPERMTEMP}`;
+            break;
+          case 'Address':
+          case 'Postcode':
+            validationWarning.errCode = Establishment.ADDRESS_ERROR;
+            validationWarning.errType = 'ADDRESS_ERROR';
+            validationWarning.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
+            break;
+          case 'CQCRegistered':
+            validationWarning.errCode = Establishment.REGTYPE_ERROR;
+            validationWarning.errType = 'REGTYPE_ERROR';
+            validationWarning.source  = `${this._currentLine.REGTYPE}`;
+            break;
+          case 'LocationID':
+            validationWarning.errCode = Establishment.LOCATION_ID_ERROR;
+            validationWarning.errType = 'LOCATION_ID_ERROR';
+            validationWarning.source  = `${this._currentLine.LOCATIONID}`;
+            break;   
+          case 'NMDSID':
+              // where to map NMDSID error?????
+          default:
+            validationError.errCode = thisError.code;
+            validationError.errType = 'Undefined';
+            validationError.source  = thisProp;
+        }
+
+        this._validationErrors.push(validationError);
+      }) : true;
+    });
+  
+    warnings.forEach(thisWarning => {
+      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
+        const validationWarning = {
+          lineNumber: this._lineNumber,
+          warning: thisWarning.message,
+        };
+
+        switch (thisProp) {
+          case 'Capacity':
+            validationWarning.warnCode = Establishment.CAPACITY_UTILISATION_WARNING;
+            validationWarning.warnType = 'CAPACITY_UTILISATION_WARNING';
+            validationWarning.source  = `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`;
+            break;
+          case 'EmployerType':
+            validationWarning.warnCode = Establishment.ESTABLISHMENT_TYPE_WARNING;
+            validationWarning.warnType = 'ESTABLISHMENT_TYPE_WARNING';
+            validationWarning.source  = `${this._currentLine.ESTTYPE}`;
+            break;
+          case 'Leavers':
+            validationWarning.warnCode = Establishment.LEAVERS_WARNING;
+            validationWarning.warnType = 'LEAVERS_WARNING';
+            validationWarning.source  = `${this._currentLine.LEAVERS}`;
+            break;
+          case 'Starters':
+            validationWarning.warnCode = Establishment.STARTERS_WARNING;
+            validationWarning.warnType = 'STARTERS_WARNING';
+            validationWarning.source  = `${this._currentLine.STARTERS}`;
+            break;
+          case 'Vacancies':
+            validationWarning.warnCode = Establishment.VACANCIES_WARNING;
+            validationWarning.warnType = 'VACANCIES_WARNING';
+            validationWarning.source  = `${this._currentLine.VACANCIES}`;
+            break;
+          case 'MainService':
+            validationWarning.warnCode = Establishment.MAIN_SERVICE_WARNING;
+            validationWarning.warnType = 'MAIN_SERVICE_WARNING';
+            validationWarning.source  = `${this._currentLine.MAINSERVICE}`;
+            break;
+          case 'Name':
+            validationWarning.warnCode = Establishment.NAME_WARNING;
+            validationWarning.warnType = 'NAME_WARNING';
+            validationWarning.source  = `${this._currentLine.ESTNAME}`;
+            break;
+          case 'Services':
+            validationWarning.warnCode = Establishment.ALL_SERVICES_WARNING;
+            validationWarning.warnType = 'ALL_SERVICES_WARNING';
+            validationWarning.source  = `${this._currentLine.ALLSERVICES} - ${this._currentLine.SERVICEDESC}`;
+            break;
+          case 'ServiceUsers':
+            validationWarning.warnCode = Establishment.SERVICE_USERS_WARNING;
+            validationWarning.warnType = 'SERVICE_USERS_WARNING';
+            validationWarning.source  = `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`;
+            break;
+          case 'ShareWithLA':
+            validationWarning.warnCode = Establishment.LOCAL_AUTHORITIES_WARNING;
+            validationWarning.warnType = 'LOCAL_AUTHORITIES_WARNING';
+            validationWarning.source  = `${this._currentLine.SHARELA}`;
+            break;
+          case 'ShareWith':
+            validationWarning.warnCode = Establishment.SHARE_WITH;
+            validationWarning.warnType = 'SHARE_WITH';
+            validationWarning.source  = `${this._currentLine.PERMCQC} - ${this._currentLine.PERMLA}`;
+            break;
+          case 'Staff':
+            validationWarning.warnCode = Establishment.TOTAL_PERM_TEMP_WARNING;
+            validationWarning.warnType = 'TOTAL_PERM_TEMP_WARNING';
+            validationWarning.source  = `${this._currentLine.TOTALPERMTEMP}`;
+            break;
+          case 'Address':
+          case 'Postcode':
+            validationWarning.warnCode = Establishment.ADDRESS_WARNING;
+            validationWarning.warnType = 'ADDRESS_WARNING';
+            validationWarning.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
+            break;
+          case 'CQCRegistered':
+            validationWarning.warnCode = Establishment.REGTYPE_WARNING;
+            validationWarning.warnType = 'REGTYPE_WARNING';
+            validationWarning.source  = `${this._currentLine.REGTYPE}`;
+            break;
+          case 'LocationID':
+            validationWarning.warnCode = Establishment.LOCATION_ID_WARNING;
+            validationWarning.warnType = 'LOCATION_ID_WARNING';
+            validationWarning.source  = `${this._currentLine.LOCATIONID}`;
+            break;   
+          case 'NMDSID':
+              // where to map NMDSID error?????
+          default:
+            validationWarning.warnCode = thisWarning.code;
+            validationWarning.warnType = 'Undefined';
+            validationWarning.source  = thisProp;
+        }
+
+        this._validationErrors.push(validationWarning);
+      }) : true;
+    });
+
   }
 };
 

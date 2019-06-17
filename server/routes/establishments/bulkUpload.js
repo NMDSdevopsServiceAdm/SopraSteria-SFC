@@ -554,7 +554,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
       const errors = thisApiEstablishment.errors;
       const warnings = thisApiEstablishment.warnings;
 
-      _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+      lineValidator.addAPIValidations(errors, warnings);
 
       if (errors.length === 0) {
         //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
@@ -581,7 +581,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
 const _loadWorkerQualifications = async (lineValidator, thisQual, myAPIQualifications) => {
   const thisApiQualification = new QualificationEntity();
-  await thisApiQualification.load(thisQual);
+  await thisApiQualification.load(thisQual);      // ignores "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
   // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
 
   const isValid = thisApiQualification.validate();
@@ -594,7 +594,7 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, myAPIQualifica
     const errors = thisApiQualification.errors;
     const warnings = thisApiQualification.warnings;
 
-    _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+    lineValidator.addQualificationAPIValidation(thisQual.column, errors, warnings);
 
     if (errors.length === 0) {
       // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
@@ -623,26 +623,27 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
       // no validation errors in the entity itself, so add it ready for completion
       //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
       myAPIWorkers.push(thisApiWorker);
+
+      // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
+      //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
+      const thisQualificationAsAPI = lineValidator.toQualificationAPI();
+      await Promise.all(
+        thisQualificationAsAPI.map((thisQual) => {
+          return _loadWorkerQualifications(lineValidator, thisQual, myAPIQualifications);
+        }) 
+      );  
+
     } else {
       const errors = thisApiWorker.errors;
       const warnings = thisApiWorker.warnings;
 
-      _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+      lineValidator.addAPIValidations(errors, warnings);
   
       if (errors.length === 0) {
         //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
         myAPIWorkers.push(thisApiWorker);
       }
     }
-
-    // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
-    //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
-    const thisQualificationAsAPI = lineValidator.toQualificationAPI();
-    await Promise.all(
-      thisQualificationAsAPI.map((thisQual) => {
-        return _loadWorkerQualifications(lineValidator, thisQual, myAPIQualifications);
-      }) 
-    );  
   } catch (err) {
     console.error("WA - localised validate workers error until validation card", err);
   }
@@ -678,7 +679,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
       const errors = thisApiTraining.errors;
       const warnings = thisApiTraining.warnings;
 
-      _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+      lineValidator.addAPIValidations(errors, warnings);
   
       if (errors.length === 0) {
         // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
@@ -732,8 +733,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
       }
     });
-    console.log("WA DEBUG - all known establishments: ", allEstablishmentsByKey)
-
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no establishment records");
     status = false;

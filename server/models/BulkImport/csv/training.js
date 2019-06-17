@@ -18,8 +18,9 @@ class Training {
     this._notes= null;
   };
 
-  static get UNCHECKED_WORKER_ERROR() { return 997; }
-  static get UNCHECKED_ESTABLISHMENT_ERROR() { return 998; }
+  static get UNCHECKED_WORKER_ERROR() { return 996; }
+  static get UNCHECKED_ESTABLISHMENT_ERROR() { return 997; }
+  static get HEADERS_ERROR() { return 999; }
   static get LOCALESTID_ERROR() { return 1000; }
   static get UNIQUE_WORKER_ID_ERROR() { return 1010; }
   static get DATE_COMPLETED_ERROR() { return 1020; }
@@ -28,7 +29,13 @@ class Training {
   static get CATEGORY_ERROR() { return 1050; }
   static get ACCREDITED_ERROR() { return 1060; }
   static get NOTES_ERROR() { return 1070; }
-  static get HEADERS_ERROR() { return 1080; }
+
+  static get DATE_COMPLETED_WARNING() { return 2020; }
+  static get EXPIRY_DATE_WARNING() { return 2030; }
+  static get DESCRIPTION_WARNING() { return 2040; }
+  static get CATEGORY_WARNING() { return 2050; }
+  static get ACCREDITED_WARNING() { return 2060; }
+  static get NOTES_WARNING() { return 2070; }
 
   get lineNumber() {
     return this._lineNumber;
@@ -329,6 +336,7 @@ class Training {
   // add unchecked establishment reference validation error
   uncheckedEstablishment() {
     return {
+      origin: 'Training',
       lineNumber: this._lineNumber,
       errCode: Training.UNCHECKED_ESTABLISHMENT_ERROR,
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
@@ -340,6 +348,7 @@ class Training {
   // add unchecked establishment reference validation error
   uncheckedWorker() {
     return {
+      origin: 'Training',
       lineNumber: this._lineNumber,
       errCode: Training.UNCHECKED_WORKER_ERROR,
       errType: `UNCHECKED_WORKER_ERROR`,
@@ -402,8 +411,114 @@ class Training {
   };
 
   get validationErrors() {
-    return this._validationErrors;
+    // include the "origin" of validation error
+    return this._validationErrors.map(thisValidation => {
+      return {
+        origin: 'Training',
+        ...thisValidation,
+      };
+    });
   };
+
+  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
+  addAPIValidations(errors, warnings) {
+    errors.forEach(thisError => {
+      thisError.properties ? thisError.properties.forEach(thisProp => {
+        const validationError = {
+          lineNumber: this._lineNumber,
+          error: thisError.message,
+        };
+
+        switch (thisProp) {
+          case 'TrainingCategory':
+            validationError.errCode = Training.CATEGORY_ERROR;
+            validationError.errType = 'CATEGORY_ERROR';
+            validationError.source  = `${this._currentLine.CATEGORY}`;
+            break;
+          case 'Title':
+            validationError.errCode = Training.DESCRIPTION_ERROR;
+            validationError.errType = 'DESCRIPTION_ERROR';
+            validationError.source  = `${this._currentLine.DESCRIPTION}`;
+            break;
+          case 'Accredited':
+            validationError.errCode = Training.ACCREDITED_ERROR;
+            validationError.errType = 'ACCREDITED_ERROR';
+            validationError.source  = `${this._currentLine.ACCREDITED}`;
+            break;
+          case 'Completed':
+            validationError.errCode = Training.DATE_COMPLETED_ERROR;
+            validationError.errType = 'DATE_COMPLETED_ERROR';
+            validationError.source  = `${this._currentLine.DATECOMPLETED}`;
+            break;
+          case 'Expires':
+            validationError.errCode = Training.EXPIRY_DATE_ERROR;
+            validationError.errType = 'EXPIRY_DATE_ERROR';
+            validationError.source  = `${this._currentLine.EXPIRYDATE}`;
+            break;
+          case 'Notes':
+            validationError.errCode = Training.NOTES_ERROR;
+            validationError.errType = 'NOTES_ERROR';
+            validationError.source  = `${this._currentLine.NOTES}`;
+            break;
+          default:
+            validationError.errCode = thisError.code;
+            validationError.errType = 'Undefined';
+            validationError.source  = thisProp;
+        }
+        this._validationErrors.push(validationError);
+      }) : true;
+    });
+
+  
+    warnings.forEach(thisWarning => {
+      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
+        const validationWarning = {
+          lineNumber: this._lineNumber,
+          warning: thisWarning.message,
+        };
+
+        switch (thisProp) {
+          case 'TrainingCategory':
+            validationWarning.warnCode = Training.CATEGORY_WARNING;
+            validationWarning.warnType = 'CATEGORY_WARNING';
+            validationWarning.source  = `${this._currentLine.CATEGORY}`;
+            break;
+          case 'Title':
+            validationWarning.warnCode = Training.DESCRIPTION_WARNING;
+            validationWarning.warnType = 'DESCRIPTION_WARNING';
+            validationWarning.source  = `${this._currentLine.DESCRIPTION}`;
+            break;
+          case 'Accredited':
+            validationWarning.warnCode = Training.ACCREDITED_WARNING;
+            validationWarning.warnType = 'ACCREDITED_WARNING';
+            validationWarning.source  = `${this._currentLine.ACCREDITED}`;
+            break;
+          case 'Completed':
+            validationWarning.warnCode = Training.DATE_COMPLETED_WARNING;
+            validationWarning.warnType = 'DATE_COMPLETED_WARNING';
+            validationWarning.source  = `${this._currentLine.DATECOMPLETED}`;
+            break;
+          case 'Expires':
+            validationWarning.warnCode = Training.EXPIRY_DATE_WARNING;
+            validationWarning.warnType = 'EXPIRY_DATE_WARNING';
+            validationWarning.source  = `${this._currentLine.EXPIRYDATE}`;
+            break;
+          case 'Notes':
+            validationWarning.warnCode = Training.NOTES_WARNING;
+            validationWarning.warnType = 'NOTES_WARNING';
+            validationWarning.source  = `${this._currentLine.NOTES}`;
+            break;
+          default:
+            validationWarning.warnCode = thisWarning.code;
+            validationWarning.warnType = 'Undefined';
+            validationWarning.source  = thisProp;
+        }
+
+        this._validationErrors.push(validationWarning);
+      }) : true;
+    });
+  }
+
 };
 
 module.exports.Training = Training;
