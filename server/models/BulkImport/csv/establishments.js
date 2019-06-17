@@ -45,7 +45,8 @@ class Establishment {
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
 
-  static get DUPLICATE_ERROR() { return 999; }
+  static get DUPLICATE_ERROR() { return 998; }
+  static get HEADERS_ERROR() { return 999; }
   static get MAIN_SERVICE_ERROR() { return 1000; }
   static get LOCAL_ID_ERROR() { return 1010; }
   static get STATUS_ERROR() { return 1020; }
@@ -70,29 +71,25 @@ class Establishment {
   static get REASONS_FOR_LEAVING_ERROR() { return 1360; }
 
 
-  static get NAME_WARNING() { return 2000; }
-  static get MAIN_SERVICE_WARNING() { return 2010; }
-  static get ESTABLISHMENT_TYPE_WARNING() { return 2020; }
-  static get SHARE_WITH_WARNING() { return 2030; }
-  static get TOTAL_PERM_TEMP_WARNING() { return 2040; }
-  static get LOCAL_AUTHORITIES_WARNING() { return 2050; }
-  static get REGTYPE_WARNING() { return 2060; }
-  static get PROV_ID_WARNING() { return 2070; }
-  static get LOCATION_ID_WARNING() { return 2080; }
-  static get ALL_SERVICES_WARNING() { return 2090; }
-  static get SERVICE_USERS_WARNING() { return 2100; }
-  static get CAPACITY_UTILISATION_WARNING() { return 2110; }
-  static get VACANCIES_WARNING() { return 2120; }
-  static get STARTERS_WARNING() { return 2130; }
-  static get LEAVERS_WARNING() { return 2140; }
+  static get MAIN_SERVICE_WARNING() { return 2000; }
+  static get NAME_WARNING() { return 2030; }
+  static get ADDRESS_WARNING() { return 2040; }
+  static get ESTABLISHMENT_TYPE_WARNING() { return 2070; }
+  static get SHARE_WITH_WARNING() { return 2070; }
+  static get TOTAL_PERM_TEMP_WARNING() { return 2200; }
+  static get LOCAL_AUTHORITIES_WARNING() { return 2090; }
+  static get REGTYPE_WARNING() { return 2100; }
+  static get PROV_ID_WARNING() { return 2105; }
+  static get LOCATION_ID_WARNING() { return 2110; }
+  static get ALL_SERVICES_WARNING() { return 2120; }
+  static get SERVICE_USERS_WARNING() { return 2130; }
+  static get CAPACITY_UTILISATION_WARNING() { return 2140; }
+  static get VACANCIES_WARNING() { return 2300; }
+  static get STARTERS_WARNING() { return 2310; }
+  static get LEAVERS_WARNING() { return 2320; }
 
+  static get REASONS_FOR_LEAVING_WARNING() { return 2360; }
 
-  static get ADDRESS_WARNING() { return 2150; }
-  static get REGTYPE_WARNING() { return 2160; }
-  static get PROV_ID_WARNING() { return 2170; }
-  static get LOCATION_ID_WARNING() { return 2180; }
-
-  static get HEADERS_ERROR() { return 1380; }
   get lineNumber() {
     return this._lineNumber;
   }
@@ -1667,7 +1664,7 @@ class Establishment {
 
         switch (thisProp) {
           case 'Capacity':
-            validationEr.errCode = Establishment.CAPACITY_UTILISATION_ERROR;
+            validationError.errCode = Establishment.CAPACITY_UTILISATION_ERROR;
             validationError.errType = 'CAPACITY_UTILISATION_ERROR';
             validationError.source  = `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`;
             break;

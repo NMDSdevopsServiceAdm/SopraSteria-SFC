@@ -65,61 +65,104 @@ class Worker {
     this._amhp = null;
   };
 
-  //49 csv columns
-  static get DUPLICATE_ERROR() { return 999; }
-  static get UNCHECKED_ESTABLISHMENT_ERROR() { return 998; }
+  static get UNCHECKED_ESTABLISHMENT_ERROR() { return 997; }
+  static get DUPLICATE_ERROR() { return 998; }
+  static get HEADERS_ERROR() { return 999; }
+
   static get LOCAL_ID_ERROR() { return 1010; }
   static get UNIQUE_WORKER_ID_ERROR() { return 1020; }
   static get CHANGE_UNIQUE_WORKER_ID_ERROR() { return 1030; }
   static get STATUS_ERROR() { return 1040; }
+
   static get DISPLAY_ID_ERROR() { return 1050; }
   static get NINUMBER_ERROR() { return 1060; }
   static get POSTCODE_ERROR() { return 1070; }
   static get DOB_ERROR() { return 1080; }
   static get GENDER_ERROR() { return 1090; }
-  static get ETHNICITY_ERROR() { return 2000; }
-  static get NATIONALITY_ERROR() { return 2010; }
-  static get BRTITISH_CITIZENSHIP_ERROR() { return 2020; }
-  static get COUNTRY_OF_BIRTH_ERROR() { return 2030; }
-  static get YEAR_OF_ENTRY_ERROR() { return 2040; }
-  static get DISABLED_ERROR() { return 2050; }
-  static get CARE_CERT_ERROR() { return 2080; }
-  static get CARE_CERT_DATE_ERROR() { return 2090; }
-  static get RECSOURCE_ERROR() { return 3000; }
-  static get START_DATE_ERROR() { return 3010; }
-  static get START_INSECT_ERROR() { return 3020; }
-  static get APPRENCTICE_ERROR() { return 3030; }
-  static get CONTRACT_TYPE_ERROR() { return 3040; } //EMPL STATUS
-  static get ZERO_HRCONT_ERROR() { return 3060; }
-  static get DAYSICK_ERROR() { return 3070; }
-  static get SALARY_INT_ERROR() { return 3080; }
-  static get SALARY_ERROR() { return 3090; }
-  static get HOURLY_RATE_ERROR() { return 4000; }
-  static get MAIN_JOB_ROLE_ERROR() { return 4010; }
-  static get MAIN_JOB_DESC_ERROR() { return 4020; }
-  static get CONT_HOURS_ERROR() { return 4030; }
-  static get AVG_HOURS_ERROR() { return 4040; }
-  static get OTHER_JOB_ROLE_ERROR() { return 4050; }
-  static get OTHER_JR_DESC_ERROR() { return 4060; }
-  static get NMCREG_ERROR() { return 4070; }
-  static get NURSE_SPEC_ERROR() { return 4080; }
+  static get ETHNICITY_ERROR() { return 1100; }
+  static get NATIONALITY_ERROR() { return 1110; }
+  static get BRTITISH_CITIZENSHIP_ERROR() { return 1120; }
+  static get COUNTRY_OF_BIRTH_ERROR() { return 1230; }
+  static get YEAR_OF_ENTRY_ERROR() { return 1140; }
+  static get DISABLED_ERROR() { return 1150; }
+  static get CARE_CERT_ERROR() { return 1160; }
+  static get CARE_CERT_DATE_ERROR() { return 1170; }
+  static get RECSOURCE_ERROR() { return 1180; }
+  static get START_DATE_ERROR() { return 1190; }
+  static get START_INSECT_ERROR() { return 1200; }
+  static get APPRENCTICE_ERROR() { return 1210; }
+  static get CONTRACT_TYPE_ERROR() { return 1220; } //EMPL STATUS
+  static get ZERO_HRCONT_ERROR() { return 1230; }
+  static get DAYSICK_ERROR() { return 1240; }
+  static get SALARY_INT_ERROR() { return 1250; }
+  static get SALARY_ERROR() { return 1260; }
+  static get HOURLY_RATE_ERROR() { return 1270; }
+  static get MAIN_JOB_ROLE_ERROR() { return 1280; }
+  static get MAIN_JOB_DESC_ERROR() { return 1290; }
+  static get CONT_HOURS_ERROR() { return 1300; }
+  static get AVG_HOURS_ERROR() { return 1310; }
+  static get OTHER_JOB_ROLE_ERROR() { return 1320; }
+  static get OTHER_JR_DESC_ERROR() { return 1330; }
+  static get NMCREG_ERROR() { return 1340; }
+  static get NURSE_SPEC_ERROR() { return 1350; }
 
-  static get SOCIALCARE_QUAL_ERROR() { return 4090; }
-  static get NON_SOCIALCARE_QUAL_ERROR() { return 5000; }
+  static get SOCIALCARE_QUAL_ERROR() { return 1360; }
+  static get NON_SOCIALCARE_QUAL_ERROR() { return 1370; }
+
+  static get AMHP_ERROR() { return 1380; }
 
 
-  static get NO_QUAL_WT_ERROR() { return 5010; }
-  static get QUAL_WT_ERROR() { return 5020; }
-  static get QUAL_WT_NOTES_ERROR() { return 5030; }
-  static get QUAL_ACH_ERROR() { return 5035; }
-  static get QUAL_ACH01_ERROR() { return 5040; }
-  static get QUAL_ACH01_NOTES_ERROR() { return 5050; }
-  static get QUAL_ACH02_ERROR() { return 5060; }
-  static get QUAL_ACH02_NOTES_ERROR() { return 5070; }
-  static get QUAL_ACH03_ERROR() { return 5080; }
-  static get QUAL_ACH03_NOTES_ERROR() { return 5090; }
-  static get AMHP_ERROR() { return 6000; }
-  static get HEADERS_ERROR() { return 6010; }
+  static get UNIQUE_WORKER_ID_WARNING() { return 3020; }
+  static get DISPLAY_ID_WARNING() { return 3050; }
+  static get NINUMBER_WARNING() { return 3060; }
+  static get POSTCODE_WARNING() { return 3070; }
+  static get DOB_WARNING() { return 3080; }
+  static get GENDER_WARNING() { return 3090; }
+  static get ETHNICITY_WARNING() { return 3100; }
+  static get NATIONALITY_WARNING() { return 3110; }
+  static get BRTITISH_CITIZENSHIP_WARNING() { return 3120; }
+  static get COUNTRY_OF_BIRTH_WARNING() { return 3130; }
+  static get YEAR_OF_ENTRY_WARNING() { return 3140; }
+  static get DISABLED_WARNING() { return 3150; }
+  static get CARE_CERT_WARNING() { return 3160; }
+  static get CARE_CERT_DATE_WARNING() { return 3170; }
+  static get RECSOURCE_WARNING() { return 3180; }
+  static get START_DATE_WARNING() { return 3190; }
+  static get START_INSECT_WARNING() { return 3200; }
+  static get APPRENCTICE_WARNING() { return 3210; }
+  static get CONTRACT_TYPE_WARNING() { return 3220; } //EMPL STATUS
+  static get ZERO_HRCONT_WARNING() { return 3230; }
+  static get DAYSICK_WARNING() { return 3240; }
+  static get SALARY_INT_WARNING() { return 3250; }
+  static get SALARY_WARNING() { return 3260; }
+  static get HOURLY_RATE_WARNING() { return 3270; }
+  static get MAIN_JOB_ROLE_WARNING() { return 3280; }
+  static get MAIN_JOB_DESC_WARNING() { return 3290; }
+  static get CONT_HOURS_WARNING() { return 3300; }
+  static get AVG_HOURS_WARNING() { return 3310; }
+  static get OTHER_JOB_ROLE_WARNING() { return 3320; }
+  static get OTHER_JR_DESC_WARNING() { return 3330; }
+  static get NMCREG_WARNING() { return 3340; }
+  static get NURSE_SPEC_WARNING() { return 3350; }
+
+  static get SOCIALCARE_QUAL_ERROR() { return 3360; }
+  static get NON_SOCIALCARE_QUAL_ERROR() { return 3370; }
+
+  static get QUAL_ACH_ERROR() { return 5000; }
+  static get QUAL_ACH01_ERROR() { return 5010; }
+  static get QUAL_ACH01_NOTES_ERROR() { return 5020; }
+  static get QUAL_ACH02_ERROR() { return 5030; }
+  static get QUAL_ACH02_NOTES_ERROR() { return 5040; }
+  static get QUAL_ACH03_ERROR() { return 5050; }
+  static get QUAL_ACH03_NOTES_ERROR() { return 5060; }
+
+  static get QUAL_ACH_WARNING() { return 5500; }
+  static get QUAL_ACH01_WARNING() { return 5510; }
+  static get QUAL_ACH01_NOTES_WARNING() { return 5520; }
+  static get QUAL_ACH02_WARNING() { return 5530; }
+  static get QUAL_ACH02_NOTES_WARNING() { return 5540; }
+  static get QUAL_ACH03_WARNING() { return 5550; }
+  static get QUAL_ACH03_NOTES_WARNING() { return 5560; }
 
   get lineNumber() {
     return this._lineNumber;
@@ -2125,9 +2168,6 @@ class Worker {
 
     if (this._startInsect) {
       if (this._startInsect === 999) {
-
-console.log("WA DEBUG !!!!!!!!!!!!!! start in sector: ", this._startInsect)
-
         changeProperties.socialCareStartDate = {
           value : 'No'
         } 
@@ -2302,6 +2342,76 @@ console.log("WA DEBUG !!!!!!!!!!!!!! start in sector: ", this._startInsect)
   get validationErrors() {
     return this._validationErrors;
   };
+
+  // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
+  addAPIValidations(errors, warnings) {
+    errors.forEach(thisError => {
+      thisError.properties ? thisError.properties.forEach(thisProp => {
+        const validationError = {
+          lineNumber: this._lineNumber,
+          error: thisError.message,
+        };
+
+        switch (thisProp) {
+          case 'NameOrId':
+            validationError.errCode = Worker.UNIQUE_WORKER_ID_ERROR;
+            validationError.errType = 'UNIQUE_WORKER_ID_ERROR';
+            validationError.source  = `${this._currentLine.UNIQUEWORKERID}`;
+            break;
+          case 'MainJob':
+            validationError.errCode = Worker.MAIN_JOB_ROLE_ERROR;
+            validationError.errType = 'MAIN_JOB_ROLE_ERROR';
+            validationError.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
+            break;
+          case 'Contract':
+            validationError.errCode = Worker.CONTRACT_TYPE_ERROR;
+            validationError.errType = 'CONTRACT_TYPE_ERROR';
+            validationError.source  = `${this._currentLine.EMPLSTATUS}`;
+            break;
+          default:
+            validationError.errCode = thisError.code;
+            validationError.errType = 'Undefined';
+            validationError.source  = thisProp;
+        }
+        this._validationErrors.push(validationError);
+      }) : true;
+    });
+
+  
+    warnings.forEach(thisWarning => {
+      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
+        const validationWarning = {
+          lineNumber: this._lineNumber,
+          warning: thisWarning.message,
+        };
+
+        switch (thisProp) {
+          case 'NameOrId':
+            validationWarning.warnCode = Worker.UNIQUE_WORKER_ID_WARNING;
+            validationWarning.warnType = 'UNIQUE_WORKER_ID_WARNING';
+            validationWarning.source  = `${this._currentLine.UNIQUEWORKERID}`;
+            break;
+          case 'MainJob':
+            validationWarning.warnCode = Worker.MAIN_JOB_ROLE_WARNING;
+            validationWarning.warnType = 'MAIN_JOB_ROLE_WARNING';
+            validationWarning.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
+            break;
+          case 'Contract':
+            validationWarning.warnCode = Worker.CONTRACT_TYPE_WARNING;
+            validationWarning.warnType = 'CONTRACT_TYPE_WARNING';
+            validationWarning.source  = `${this._currentLine.EMPLSTATUS}`;
+            break;
+          default:
+            validationWarning.warnCode = thisWarning.code;
+            validationWarning.warnType = 'Undefined';
+            validationWarning.source  = thisProp;
+        }
+
+        this._validationErrors.push(validationWarning);
+      }) : true;
+    });
+  }
+  
 };
 
 module.exports.Worker = Worker;

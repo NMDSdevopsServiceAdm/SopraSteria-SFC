@@ -554,7 +554,6 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
       const errors = thisApiEstablishment.errors;
       const warnings = thisApiEstablishment.warnings;
 
-      //_appendApiErrorsAndWarnings(lineValidator, errors, warnings);
       lineValidator.addAPIValidations(errors, warnings);
 
       if (errors.length === 0) {
@@ -628,7 +627,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
       const errors = thisApiWorker.errors;
       const warnings = thisApiWorker.warnings;
 
-      _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+      lineValidator.addAPIValidations(errors, warnings);
   
       if (errors.length === 0) {
         //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
@@ -679,7 +678,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
       const errors = thisApiTraining.errors;
       const warnings = thisApiTraining.warnings;
 
-      _appendApiErrorsAndWarnings(lineValidator, errors, warnings);
+      lineValidator.addAPIValidations(errors, warnings);
   
       if (errors.length === 0) {
         // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
