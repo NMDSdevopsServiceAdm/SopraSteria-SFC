@@ -13,7 +13,7 @@ exports.WorkerWeeklyHoursContractedProperty = class WorkerWeeklyHoursContractedP
 
     // concrete implementations
     async restoreFromJson(document) {
-        const MAXIMUM_HOURS=65;
+        const MAXIMUM_HOURS=75;
 
         if (document.weeklyHoursContracted) {
             if (WEEKLY_HOURS_TYPE.includes(document.weeklyHoursContracted.value)) {
