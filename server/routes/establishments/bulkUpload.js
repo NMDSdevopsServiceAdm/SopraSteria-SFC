@@ -6,7 +6,7 @@ const csv = require('csvtojson');
 
 const router = express.Router();
 const s3 = new AWS.S3({
-  region: appConfig.get('aws.region').toString(),
+  region: appConfig.get('bulkupload.region').toString(),
 });
 
 const CsvEstablishmentValidator = require('../../models/BulkImport/csv/establishments').Establishment;

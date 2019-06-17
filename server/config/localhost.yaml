@@ -1,7 +1,7 @@
 aws:
     region: eu-west-1
     secrets:
-        use: true
+        use: false
         wallet: dev/api
 slack:
     level: 0    # disables Slack notifications
@@ -20,4 +20,5 @@ log:
     sequelize: false
 
 bulkupload:
-    bucketname: sfcbulkuploadfiles
+    region: eu-west-2
+    bucketname: sfc-bulkupload-dev

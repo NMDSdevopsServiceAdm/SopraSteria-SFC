@@ -3,12 +3,15 @@ aws:
     secrets:
         use: true
         wallet: prod/api
+
 slack:
     level : 3     # enables Slack notifications
+
 jwt:
     iss: 'asc-wds.skillsforcare.org.uk'
     ttl:
         login: 5
+
 db:
     pool: 5
     ssl: true
@@ -16,10 +19,13 @@ db:
     client_ssl:
         status: true
         usingFiles: false
+
 notify:
     replyTo: '44e98371-2e44-4c6b-ad76-235136be0f8a'
     templates:
         resetPassword: 'fd430f0d-6609-400a-b171-cf124453ec1c'
         addUser: 'f20e9cbe-920d-4b1f-b05d-bac1ca8d5b54'
+
 bulkupload:
-    bucketname: sfcbulkuploadfiles-prod
+    region: eu-west-2
+    bucketname: sfc-bulkupload-prod

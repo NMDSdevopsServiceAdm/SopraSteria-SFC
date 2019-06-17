@@ -20,4 +20,8 @@ jwt:
     ttl:
         login: 30
 
+bulkupload:
+    region: eu-west-2
+    bucketname: sfc-bulkupload-dev
+
 # no notify definition - not used in development

@@ -258,6 +258,11 @@ const config = convict({
     }
   },
   bulkupload: {
+    region: {
+      doc: 'AWS region override for bulk upload S3 only',
+      format: '*',
+      default: 'eu-west-2',
+    },
     bucketname: {
       doc: 'Bucket used to upload all client related csv files',
       format: '*',
