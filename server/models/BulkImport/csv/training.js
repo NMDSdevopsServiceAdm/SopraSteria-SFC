@@ -336,6 +336,7 @@ class Training {
   // add unchecked establishment reference validation error
   uncheckedEstablishment() {
     return {
+      origin: 'Training',
       lineNumber: this._lineNumber,
       errCode: Training.UNCHECKED_ESTABLISHMENT_ERROR,
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
@@ -347,6 +348,7 @@ class Training {
   // add unchecked establishment reference validation error
   uncheckedWorker() {
     return {
+      origin: 'Training',
       lineNumber: this._lineNumber,
       errCode: Training.UNCHECKED_WORKER_ERROR,
       errType: `UNCHECKED_WORKER_ERROR`,
@@ -409,7 +411,13 @@ class Training {
   };
 
   get validationErrors() {
-    return this._validationErrors;
+    // include the "origin" of validation error
+    return this._validationErrors.map(thisValidation => {
+      return {
+        origin: 'Training',
+        ...thisValidation,
+      };
+    });
   };
 
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)

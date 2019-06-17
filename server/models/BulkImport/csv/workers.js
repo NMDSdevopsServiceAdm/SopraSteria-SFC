@@ -1887,8 +1887,6 @@ class Worker {
       this._qualifications.forEach(thisQualification => {
         const myValidatedQualification = BUDI.qualifications(BUDI.TO_ASC, thisQualification.id);
 
-        console.log("WA DBEUG - transformed qualification: ", thisQualification.id, myValidatedQualification)
-
         if (!myValidatedQualification) {
           this._validationErrors.push({
             lineNumber: this._lineNumber,
@@ -1912,6 +1910,7 @@ class Worker {
   // add a duplicate validation error to the current set
   addDuplicate(originalLineNumber) {
     return {
+      origin: 'Workers',
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: `DUPLICATE_ERROR`,
@@ -1923,6 +1922,7 @@ class Worker {
   // add unchecked establishment reference validation error
   uncheckedEstablishment() {
     return {
+      origin: 'Workers',
       lineNumber: this._lineNumber,
       errCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
@@ -2298,7 +2298,15 @@ class Worker {
   }
 
   get validationErrors() {
-    return this._validationErrors;
+    // include the "origin" of validation error
+    return this._validationErrors.map(thisValidation => {
+console.log("WA DEBUG - this validation: ", thisValidation)
+
+      return {
+        origin: 'Workers',
+        ...thisValidation,
+      };
+    });
   };
 
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)

@@ -1447,6 +1447,7 @@ class Establishment {
   // add a duplicate validation error to the current set
   addDuplicate(originalLineNumber) {
     return {
+      origin: 'Establishments',
       lineNumber: this._lineNumber,
       errCode: Establishment.DUPLICATE_ERROR,
       errType: `DUPLICATE_ERROR`,
@@ -1556,7 +1557,14 @@ class Establishment {
   };
 
   get validationErrors() {
-    return this._validationErrors;
+        // include the "origin" of validation error
+        return this._validationErrors.map(thisValidation => {
+          return {
+            origin: 'Establishments',
+            ...thisValidation,
+          };
+        });
+    
   };
 
   // returns an API representation of this Establishment
