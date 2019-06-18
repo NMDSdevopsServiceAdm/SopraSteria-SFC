@@ -3,11 +3,7 @@
 @import '~govuk-frontend/settings/all';
 
 $govuk-global-styles: true;
-$govuk-font-family: 'Helvetica Neue',
-Helvetica,
-Arial,
-'Lucida Grande',
-sans-serif;
+$govuk-font-family: 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;
 
 @import '~govuk-frontend/all';
 
@@ -18,7 +14,6 @@ body {
 @import 'modules/overlay';
 @import 'modules/sticky-footer';
 @import 'modules/utils';
-@import 'modules/responsive';
 
 // Custom Partials
 @import 'partials/lists';
@@ -39,32 +34,7 @@ body {
 @import 'components/select';
 @import 'components/tabs';
 @import 'components/tag';
-@import 'components/info';
-
-
-// TO BE EXTRACTED INTO OWN COMPONENT
-
-ul.total-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-
-  li {
-    margin: 0;
-    list-style: none;
-    font-size: 19px;
-    padding-top: 35px;
-    position: relative;
-
-    .total {
-      position: absolute;
-      left: 20px;
-      bottom: 24px;
-      font-size: 24px;
-      font-weight: bold;
-    }
-  }
-}
+@import 'components/tables';
 
 .ext-link {
   position: relative;
