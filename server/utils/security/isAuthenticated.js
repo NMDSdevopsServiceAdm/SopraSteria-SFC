@@ -77,13 +77,10 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           }
         }
 
-        console.log(claim.isParent);
-
         // if still not authorised - and only if this user is attributed to a parent establishment
         //  then follow up by checking against any of the known subsidaries of this parent establishment
         //  including that of the given establishment (only known by it's UID)
         if (isAuthorised === false && claim.isParent) {
-          console.log('into parent check')
           models.establishment.findOne({
             attributes: ['id', 'parentPermissions'],
             where: {
