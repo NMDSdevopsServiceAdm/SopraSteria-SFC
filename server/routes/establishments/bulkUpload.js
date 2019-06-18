@@ -876,7 +876,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
 router.route('/report').get(async (req, res) => {  
   try {
     const params = {
-      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Bucket: appConfig.get('bulkupload.bucketname').toString(), 
       Prefix: `${req.establishmentId}/validation/`
     };
   
