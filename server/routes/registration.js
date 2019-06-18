@@ -287,8 +287,6 @@ router.route('/')
 			});
     }
 
-    req.body[0].user.username
-
     // TODO: JSON Schema validation
 
     // Password validation check
