@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { DataSharingOptions } from '@core/model/data-sharing.model';
 import { UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
@@ -101,7 +102,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private setPreviousRoute(): void {
-    this.previous = this.establishment.share.enabled
+    this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
       ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
       : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
   }
