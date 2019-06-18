@@ -560,7 +560,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
   myEstablishments.push(lineValidator);
 };
 
-const _loadWorkerQualifications = async (lineValidator, thisQual, myAPIQualifications) => {
+const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications) => {
   const thisApiQualification = new QualificationEntity();
   await thisApiQualification.load(thisQual);      // ignores "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
   // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
@@ -571,6 +571,9 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, myAPIQualifica
     // no validation errors in the entity itself, so add it ready for completion
     // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
     myAPIQualifications[lineValidator.lineNumber] = thisApiQualification;
+
+    // associate the qualification entity to the Worker
+    thisApiWorker.associateQualification(thisApiQualification);
   } else {
     const errors = thisApiQualification.errors;
     const warnings = thisApiQualification.warnings;
@@ -580,6 +583,9 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, myAPIQualifica
     if (errors.length === 0) {
       // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
       myAPIQualifications[lineValidator.lineNumber] = thisApiQualification;
+      
+      // associate the qualification entity to the Worker
+      thisApiWorker.associateQualification(thisApiQualification);
     }
   }
 };
@@ -610,7 +616,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
       const thisQualificationAsAPI = lineValidator.toQualificationAPI();
       await Promise.all(
         thisQualificationAsAPI.map((thisQual) => {
-          return _loadWorkerQualifications(lineValidator, thisQual, myAPIQualifications);
+          return _loadWorkerQualifications(lineValidator, thisQual, thisApiWorker, myAPIQualifications);
         }) 
       );  
 
@@ -734,7 +740,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
     await Promise.all(
       workers.imported.map((thisLine, currentLineNumber) => {
         return _validateWorkerCsv(thisLine, currentLineNumber+2, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications);
-      }) 
+      })
     );
 
     // having parsed all workers, check for duplicates
@@ -774,10 +780,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         }
       }
     });
-
-    // having parsed all establishments and workers, need to cross-check all workers' establishment reference (LOCALESTID) against all parsed establishments
-    myWorkers.forEach(thisWorker => {
-    });
     
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no workers records");
@@ -809,14 +811,25 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
 
         // remove the entity
         delete myAPITrainings[thisTraingRecord.lineNumber];
-      }
-
-      if (!allWorkersByKey[workerKeyNoWhitespace]) {
+      } else if (!allWorkersByKey[workerKeyNoWhitespace]) {
         // not found the associated worker
         csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedWorker());
         
         // remove the entity
         delete myAPITrainings[thisTraingRecord.lineNumber];
+      } else {
+        // gets here, all is good with the training record
+
+        // find the associated Worker entity and forward reference this training record
+        const foundWorkerByLineNumber = allWorkersByKey[workerKeyNoWhitespace];
+        const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
+        if (knownWorker) {
+          knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
+        } else {
+          // this should never happen
+          console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
+        }
+
       }
     });
     
@@ -852,6 +865,9 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
   const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
   const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
+
+
+  console.log("WA DEBUG - all entities: ", JSON.stringify(allentitiesreadyforjson, null, 2));
 
   establishmentsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`) : true;
   establishmentsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`) : true;

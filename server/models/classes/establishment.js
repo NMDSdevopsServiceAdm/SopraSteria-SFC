@@ -66,7 +66,7 @@ class Establishment extends EntityValidator {
         this._isNew = false;
 
         // all known workers for this establishment - an associative object (property key is the worker's key)
-        this._workers = {};
+        this._workerEntities = {};
         
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
@@ -178,7 +178,7 @@ class Establishment extends EntityValidator {
     associateWorker(key, worker) {
         if (key && worker && worker.nameOrId) {
             //const workerKey = worker.nameOrId.replace(/\s/g, "");
-            this._workers[key] = worker;    
+            this._workerEntities[key] = worker;    
         }
     };
 
@@ -942,7 +942,7 @@ class Establishment extends EntityValidator {
                 return {
                     ...myDefaultJSON,
                     ...myJSON,
-                    workers: includeAssociatedEntities ? Object.values(this._workers).map(thisWorker => thisWorker.toJSON()): undefined
+                    workers: includeAssociatedEntities ? Object.values(this._workerEntities).map(thisWorker => thisWorker.toJSON(false, false, false, false, true)): undefined,
                };
             }
         } else {

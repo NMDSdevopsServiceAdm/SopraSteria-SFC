@@ -54,6 +54,10 @@ class Worker extends EntityValidator {
         // local attributes
         this._reason = null;
         this._lastWdfEligibility = null;
+
+        // associated entities
+        this._qualificationsEntities = [];
+        this._trainingEntities = [];
     }
 
     // returns true if valid establishment id
@@ -104,6 +108,17 @@ class Worker extends EntityValidator {
             return false;
         }
     }
+
+    // this method add this given qualification (entity) as an association to this worker entity - (bulk import)
+    //  - note, no unique key for a qualification; just simply an array of
+    associateQualification(qualification) {
+        this._qualificationsEntities.push(qualification);    
+    };
+    // this method add this given training (entity) as an association to this worker entity - (bulk import)
+    //  - note, no unique key for a training; just simply an array of
+    associateTraining(training) {
+        this._trainingEntities.push(training);    
+    };
 
     get nameOrId() {
         // returns the name or id property - if known
@@ -680,7 +695,7 @@ class Worker extends EntityValidator {
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at Worker and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given Worker
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, associatedEntities=false) {
         if (!showHistoryTimeline) {
             // JSON representation of extendable properties
             const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties);
@@ -695,7 +710,6 @@ class Worker extends EntityValidator {
             myDefaultJSON.updatedBy = this.updatedBy ? this.updatedBy : null;
 
             // TODO: JSON schema validation
-            let workerHistory = null;
             if (showHistory && !showPropertyHistoryOnly) {
                 return {
                     ...myDefaultJSON,
@@ -705,7 +719,9 @@ class Worker extends EntityValidator {
             } else {
                 return {
                     ...myDefaultJSON,
-                    ...myJSON
+                    ...myJSON,
+                    training: associatedEntities ? this._trainingEntities.map(thisTrainingRecord => thisTrainingRecord.toJSON()) : undefined,
+                    qualifications: associatedEntities ? this._qualificationsEntities.map(thisQualification => thisQualification.toJSON()) : undefined,
                 };
             }
         } else {
