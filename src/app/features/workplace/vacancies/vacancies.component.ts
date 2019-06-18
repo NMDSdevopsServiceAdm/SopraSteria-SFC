@@ -20,7 +20,6 @@ enum vacancyOptions {
 @Component({
   selector: 'app-vacancies',
   templateUrl: './vacancies.component.html',
-  styleUrls: ['./vacancies.component.scss'],
 })
 export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   public total = 0;
