@@ -154,7 +154,7 @@ export class EstablishmentService {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }
 
-  updateJobs(establishmentId, data: UpdateJobsRequest) {
+  updateJobs(establishmentId, data: UpdateJobsRequest): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/jobs`, data);
   }
 }
