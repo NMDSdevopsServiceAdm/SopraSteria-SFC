@@ -1,0 +1,62 @@
+$error_border_size: 5px;
+$error_row_indent: 12px;
+$error_row_offset: 50px;
+$error_row_padding: 15px;
+
+.govuk-table__error {
+  margin-bottom: ($error_row_offset + $error_row_padding) * 1.25;
+}
+
+.govuk-table__error-row {
+  & + tr:not(.govuk-table__error-row) .govuk-table__error-cell {
+    padding-top: $error_row_offset + $error_row_padding;
+  }
+  & + .govuk-table__error-row {
+    border-top: $error_row_offset + $error_row_padding solid transparent;
+  }
+}
+
+.govuk-table__error-cell {
+  top: $error_row_offset;
+  position: relative;
+  border-bottom: none;
+  box-shadow: inset 0px $error_border_size 0 $shiraz, inset 0px $error_border_size * -1 0 $shiraz;
+  padding-top: $error_row_padding;
+  padding-bottom: $error_row_padding;
+
+  &:first-of-type:before,
+  &:last-of-type:before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    background: $shiraz;
+    width: $error_border_size;
+    top: 0;
+  }
+
+  &:first-of-type {
+    left: $error_row_indent;
+    padding-left: $error_row_padding;
+    &:before {
+      left: 0;
+    }
+  }
+
+  &:last-of-type {
+    padding-right: $error_row_padding;
+    &:before {
+      right: 0;
+    }
+  }
+}
+
+.govuk-table__error-message {
+  position: absolute;
+  white-space: nowrap;
+  left: $error_row_indent * -1;
+  top: ($error_row_offset - $error_row_padding) * -1;
+  height: 100%;
+  padding-bottom: $error_row_offset - $error_row_padding;
+  padding-left: 8px;
+  border-left: $error_border_size solid $shiraz;
+}
