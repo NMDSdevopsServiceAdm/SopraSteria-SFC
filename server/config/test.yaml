@@ -8,6 +8,7 @@ db:
     pool: 5
     ssl: true
     username: sfcapp
+    database: sfctstdb
     client_ssl:
         status: true
         usingFiles: false
