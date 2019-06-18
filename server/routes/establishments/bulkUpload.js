@@ -866,9 +866,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
   const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
 
-
-  console.log("WA DEBUG - all entities: ", JSON.stringify(allentitiesreadyforjson, null, 2));
-
   establishmentsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`) : true;
   establishmentsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`) : true;
   workersAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, workersOnlyForJson, `${establishmentId}/intermediary/worker.entities.json`) : true;
