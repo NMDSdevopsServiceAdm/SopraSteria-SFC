@@ -19,7 +19,7 @@ const UserSaveException = require('../models/classes/user/userExceptions').UserS
 
 const generateJWT = require('../utils/security/generateJWT');
 const passwordCheck = require('../utils/security/passwordValidation').isPasswordValid;
-
+const usernameCheck = require('../utils/security/usernameValidation').isUsernameValid;
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
 class RegistrationException {
@@ -263,6 +263,10 @@ const responseErrors = {
   invalidUser: {
     errCode: -800,
     errMessage: 'User data is invalid'
+  },
+  invalidUsername: {
+    errCode: -210,
+    errMessage: 'Invalid Username'
   }
 };
 
@@ -283,6 +287,8 @@ router.route('/')
 			});
     }
 
+    req.body[0].user.username
+
     // TODO: JSON Schema validation
 
     // Password validation check
@@ -290,11 +296,17 @@ router.route('/')
       if (!passwordCheck(req.body[0].user.password)) {
         return res.status(400).json({
           "success" : 0,
-          "message" : "Invalid Password"
+          "message" : "Invalid Password" 
         });
       }
     }
 
+    // Username validation check
+    if (req.body[0] && req.body[0].user && req.body[0].user.username) {
+      if (!usernameCheck(req.body[0].user.username)) {
+        return res.status(400).json(responseErrors.invalidUsername);
+      }
+    }
 
     let defaultError = responseErrors.default;
     try {
