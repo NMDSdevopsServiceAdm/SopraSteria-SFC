@@ -39,10 +39,26 @@ interface EmployerTypeRequest {
 export class EstablishmentService {
   private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   public establishment$: Observable<Establishment> = this._establishment$.asObservable();
+  public previousEstablishmentId: number;
+  public isSameLoggedInUser: boolean;
 
   constructor(private http: HttpClient) {}
 
   private _establishmentId: number = null;
+
+  public checkIfSameLoggedInUser(establishmentId: number): void {
+    if (!this.previousEstablishmentId) {
+      this.previousEstablishmentId = establishmentId;
+      this.isSameLoggedInUser = false;
+      return;
+    }
+
+    if (this.previousEstablishmentId === establishmentId) {
+      this.isSameLoggedInUser = true;
+    } else {
+      this.isSameLoggedInUser = false;
+    }
+  }
 
   public get establishment() {
     return this._establishment$.value as Establishment;
