@@ -173,13 +173,10 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private createVacancyControl(jobId = null, total = null): FormGroup {
-    return this.formBuilder.group(
-      {
-        jobRole: [jobId, [Validators.required]],
-        total: [total, [Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
-      },
-      { validators: Validators.required }
-    );
+    return this.formBuilder.group({
+      jobRole: [jobId, [Validators.required]],
+      total: [total, [Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
+    });
   }
 
   protected generateUpdateProps() {
