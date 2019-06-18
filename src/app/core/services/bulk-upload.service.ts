@@ -44,8 +44,11 @@ export class BulkUploadService {
     return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
   }
 
-  public getReport(establishmentId: number): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${establishmentId}/bulkupload/report`);
+  public getReport(establishmentId: number): Observable<Blob> {
+    const httpOptions: Object = {
+      responseType: 'blob',
+    };
+    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report`, httpOptions);
   }
 
   public formErrorsMap(): Array<ErrorDetails> {

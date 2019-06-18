@@ -80,7 +80,6 @@
     "@types/file-saver": "^2.0.1",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
-    "@types/lodash": "^4.14.134",
     "@types/node": "~8.9.4",
     "angular-in-memory-web-api": "^0.7.0",
     "codelyzer": "~4.5.0",

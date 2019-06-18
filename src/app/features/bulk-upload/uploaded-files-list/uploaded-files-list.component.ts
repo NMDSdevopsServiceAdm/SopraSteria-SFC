@@ -3,8 +3,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FileValidateStatus, UploadFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { saveAs } from 'file-saver';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -54,17 +56,16 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   }
 
   public downloadReport(): void {
-    console.log('DOWNLOAD REPORT');
-    this.subscriptions.add(
-      this.bulkUploadService.getReport(this.establishmentService.establishmentId).subscribe(
+    this.bulkUploadService
+      .getReport(this.establishmentService.establishmentId)
+      .pipe(take(1))
+      .subscribe(
         response => {
-          console.log('success', response);
+          const blob = new Blob([response], { type: 'text/plain;charset=utf-8' });
+          saveAs(blob, 'Bulk Upload Validation Report.txt');
         },
-        (response: HttpErrorResponse) => {
-          console.log('error', response);
-        }
-      )
-    );
+        () => {}
+      );
   }
 
   /**
