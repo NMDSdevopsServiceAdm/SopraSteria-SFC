@@ -21,7 +21,7 @@ exports.sendPasswordReset = async (emailAddress, name, resetUuid) => {
     const notifyClient = new GovNotifyClient(config.get('notify.key'));
     const response = await notifyClient.sendEmail(
       config.get('notify.templates.resetPassword'),
-      'warren.ayling@wozitech-ltd.co.uk',
+      emailAddress,
       {
           personalisation: {
               name,
