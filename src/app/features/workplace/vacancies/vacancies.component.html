@@ -26,7 +26,7 @@
         </div>
       </div>
       <div
-        *ngFor="let vacancy of vacanciesControl.controls; let i = index"
+        *ngFor="let vacancy of vacanciesArray.controls; let i = index"
         [formGroupName]="i"
         [class.govuk-form-group--error]="submitted && vacancy.invalid"
       >
@@ -55,7 +55,7 @@
               type="number"
             />
             <button
-              *ngIf="vacanciesControl.controls.length > 1"
+              *ngIf="vacanciesArray.length > 1"
               class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3"
               type="button"
               (click)="removeVacancy($event, i)"

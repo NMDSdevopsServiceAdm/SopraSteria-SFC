@@ -47,78 +47,91 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
-    this.form = this.formBuilder.group({
-      vacancies: this.formBuilder.array([]),
-      vacanciesKnown: null,
-    });
+    this.setupForm();
   }
 
-  get vacanciesControl(): FormArray {
+  get vacanciesArray(): FormArray {
     return <FormArray>this.form.get('vacancies');
   }
 
   get allJobsSelected(): boolean {
-    return this.vacanciesControl.controls.length >= this.jobs.length;
+    return this.vacanciesArray.length >= this.jobs.length;
   }
 
   get totalVacancies(): number {
-    return this.vacanciesControl.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
+    return this.vacanciesArray.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
   }
 
   protected init(): void {
-    this.subscriptions.add(
-      this.jobService
-        .getJobs()
-        .pipe(take(1))
-        .subscribe(jobs => (this.jobs = jobs))
-    );
+    this.getJobs();
+    this.setPreviousRoute();
     this.prefill();
-
-    this.previous = this.establishment.share.enabled
-      ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
 
     this.subscriptions.add(
       this.form.get('vacanciesKnown').valueChanges.subscribe(value => {
-        while (this.vacanciesControl.length > 1) {
-          this.vacanciesControl.removeAt(1);
+        while (this.vacanciesArray.length > 1) {
+          this.vacanciesArray.removeAt(1);
         }
-        this.vacanciesControl.controls[0].get('jobRole').clearValidators();
-        this.vacanciesControl.controls[0].get('total').clearValidators();
-        this.vacanciesControl.reset([], { emitEvent: false });
+
+        this.vacanciesArray.controls[0].get('jobRole').clearValidators();
+        this.vacanciesArray.controls[0].get('total').clearValidators();
+        this.vacanciesArray.controls[0].get('jobRole').updateValueAndValidity();
+        this.vacanciesArray.controls[0].get('total').updateValueAndValidity();
+        this.vacanciesArray.reset([], { emitEvent: false });
 
         this.form.get('vacanciesKnown').setValue(value, { emitEvent: false });
       })
     );
 
     this.subscriptions.add(
-      this.vacanciesControl.valueChanges.subscribe(() => {
-        this.vacanciesControl.controls[0].get('jobRole').setValidators([Validators.required]);
-        this.vacanciesControl.controls[0]
+      this.vacanciesArray.valueChanges.subscribe(() => {
+        this.vacanciesArray.controls[0].get('jobRole').setValidators([Validators.required]);
+        this.vacanciesArray.controls[0]
           .get('total')
           .setValidators([Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]);
+        this.vacanciesArray.controls[0].get('jobRole').updateValueAndValidity();
+        this.vacanciesArray.controls[0].get('total').updateValueAndValidity();
 
         this.form.get('vacanciesKnown').setValue(null, { emitEvent: false });
       })
     );
   }
 
+  private setupForm(): void {
+    this.form = this.formBuilder.group({
+      vacancies: this.formBuilder.array([]),
+      vacanciesKnown: null,
+    });
+  }
+
+  private setPreviousRoute(): void {
+    this.previous = this.establishment.share.enabled
+      ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
+      : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
+  }
+
+  private getJobs(): void {
+    this.subscriptions.add(
+      this.jobService
+        .getJobs()
+        .pipe(take(1))
+        .subscribe(jobs => (this.jobs = jobs))
+    );
+  }
+
   private prefill(): void {
-    if (
-      this.establishment.vacancies === vacancyOptions.NONE ||
-      this.establishment.vacancies === vacancyOptions.DONT_KNOW
-    ) {
-      this.form.get('vacanciesKnown').setValue(this.establishment.vacancies);
-    }
-    {
-      if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
-        this.establishment.vacancies.forEach(vacancy =>
-          this.vacanciesControl.push(this.createVacancyControl(vacancy.jobId, vacancy.total))
-        );
-        this.form.get('vacanciesKnown').setValue(null);
-      } else {
-        this.vacanciesControl.push(this.createVacancyControl());
+    if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
+      this.establishment.vacancies.forEach(vacancy =>
+        this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId, vacancy.total))
+      );
+    } else {
+      if (
+        this.establishment.vacancies === vacancyOptions.NONE ||
+        this.establishment.vacancies === vacancyOptions.DONT_KNOW
+      ) {
+        this.form.get('vacanciesKnown').setValue(this.establishment.vacancies);
       }
+      this.vacanciesArray.push(this.createVacancyControl());
     }
   }
 
@@ -156,20 +169,20 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   public selectableJobs(index): Job[] {
     return this.jobs.filter(
       job =>
-        !this.vacanciesControl.controls.some(
+        !this.vacanciesArray.controls.some(
           vacancy =>
-            vacancy !== this.vacanciesControl.controls[index] && parseInt(vacancy.get('jobRole').value, 10) === job.id
+            vacancy !== this.vacanciesArray.controls[index] && parseInt(vacancy.get('jobRole').value, 10) === job.id
         )
     );
   }
 
   public addVacancy(): void {
-    this.vacanciesControl.push(this.createVacancyControl());
+    this.vacanciesArray.push(this.createVacancyControl());
   }
 
   public removeVacancy(event: Event, index): void {
     event.preventDefault();
-    this.vacanciesControl.removeAt(index);
+    this.vacanciesArray.removeAt(index);
   }
 
   private createVacancyControl(jobId = null, total = null): FormGroup {
@@ -186,9 +199,9 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       return { vacancies: vacanciesKnown.value };
     }
 
-    if (this.vacanciesControl.controls.length) {
+    if (this.vacanciesArray.length) {
       return {
-        vacancies: this.vacanciesControl.value.map(vacancy => ({
+        vacancies: this.vacanciesArray.value.map(vacancy => ({
           jobId: parseInt(vacancy.jobRole, 10),
           total: vacancy.total,
         })),
@@ -207,7 +220,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   protected onSuccess(): void {
-    if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies) {
+    if (this.establishment.vacancies && Array.isArray(this.establishment.vacancies)) {
       this.next = ['/workplace', `${this.establishment.id}`, 'confirm-vacancies'];
     } else {
       this.next = ['/workplace', `${this.establishment.id}`, 'starters'];
