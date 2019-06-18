@@ -13,7 +13,7 @@ import { Question } from '../question/question.component';
 enum vacancyOptions {
   NONE = 'None',
   // tslint:disable-next-line: quotemark
-  DONTKNOW = "Don't know",
+  DONT_KNOW = "Don't know",
 }
 
 @Component({
@@ -31,7 +31,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     },
     {
       label: `I don't know how many current staff vacancies there are.`,
-      value: vacancyOptions.DONTKNOW,
+      value: vacancyOptions.DONT_KNOW,
     },
   ];
   private minVacancies = 0;
@@ -106,7 +106,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   private prefill(): void {
     if (
       this.establishment.vacancies === vacancyOptions.NONE ||
-      this.establishment.vacancies === vacancyOptions.DONTKNOW
+      this.establishment.vacancies === vacancyOptions.DONT_KNOW
     ) {
       this.form.get('vacanciesKnown').setValue(this.establishment.vacancies);
     }
@@ -185,7 +185,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   protected generateUpdateProps() {
     const { vacanciesKnown } = this.form.controls;
 
-    if (vacanciesKnown.value === vacancyOptions.NONE || vacanciesKnown.value === vacancyOptions.DONTKNOW) {
+    if (vacanciesKnown.value === vacancyOptions.NONE || vacanciesKnown.value === vacancyOptions.DONT_KNOW) {
       return { vacancies: vacanciesKnown.value };
     }
 
