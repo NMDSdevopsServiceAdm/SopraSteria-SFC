@@ -538,9 +538,8 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
       thisEstablishmentAsAPI.Address,
       thisEstablishmentAsAPI.LocationId,
       thisEstablishmentAsAPI.Postcode,
-      thisEstablishmentAsAPI.IsCQCRegulated,
-      'A0000000000'       // TODO: remove this once Establishment::initialise is resolving NDMS ID based on given postcode
-      );
+      thisEstablishmentAsAPI.IsCQCRegulated
+    );
   
     await thisApiEstablishment.load(thisEstablishmentAsAPI);
 

@@ -77,10 +77,13 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           }
         }
 
+        console.log(claim.isParent);
+
         // if still not authorised - and only if this user is attributed to a parent establishment
         //  then follow up by checking against any of the known subsidaries of this parent establishment
         //  including that of the given establishment (only known by it's UID)
         if (isAuthorised === false && claim.isParent) {
+          console.log('into parent check')
           models.establishment.findOne({
             attributes: ['id', 'parentPermissions'],
             where: {
@@ -91,7 +94,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           .then(record => record.get())
           .then(establishment => {
             // this is a known subsidairy of this given parent establishment
-            
+
             // but, to be able to access the subsidary, then the permissions must not be null
             if (establishment.parentPermissions === null) {
               console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);

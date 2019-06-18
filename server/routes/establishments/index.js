@@ -6,8 +6,11 @@ const Authorization = require('../../utils/security/isAuthenticated');
 const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const WdfUtils = require('../../utils/wdfEligibilityDate');
 
+const concatenateAddress = require('../../utils/concatenateAddress').concatenateAddress;
+
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
+const models = require('../../models');
 
 const Name = require('./name');
 const MainService = require('./mainService');
@@ -21,6 +24,72 @@ const Jobs = require('./jobs');
 const LA = require('./la');
 const Worker = require('./worker');
 const BulkUpload = require('./bulkUpload');
+
+const OTHER_MAX_LENGTH=120;
+
+const responseErrors = {
+    default: {
+      errCode: -1,
+      errMessage: 'Registration Error'
+    },
+    eastablishment: {
+      errCode: -2,
+      errMessage: 'Registration: Failed to create Establishment'
+    },
+    user: {
+      errCode: -3,
+      errMessage: 'Registration: Failed to create User'
+    },
+    login: {
+      errCode: -4,
+      errMessage: 'Registration: Failed to create Login'
+    },
+    duplicateNonCQC: {
+      errCode: -100,
+      errMessage: 'Duplicate non-CQC Establishment',
+      db_constraint: 'Establishment_unique_registration'
+    },
+    duplicateCQC: {
+      errCode: -150,
+      errMessage: 'Duplicate CQC Establishment',
+      db_constraint: 'Establishment_unique_registration_with_locationid'
+    },
+    duplicateEstablishment: {
+      errCode: -190,
+      errMessage: 'Duplicate Establishment'
+    },
+    duplicateUsername: {
+      errCode: -200,
+      errMessage: 'Duplicate Username',
+      db_constraint: 'uc_Login_Username'
+    },
+    unexpectedMainService: {
+      errCode: -300,
+      errMessage: 'Unexpected main service'
+    },
+    unknownLocation: {
+      errCode: -400,
+      errMessage: 'Unknown location',
+      db_constraint: 'uc_Login_Username'
+    },
+    unknownNMDSsequence: {
+      errCode: -500,
+      errMessage: 'Unknown NMDS Sequence'
+    },
+    unknownNMDSLetter: {
+      errCode: -600,
+      errMessage: 'Unknown NMDS Letter/CSSR Region'
+    },
+    invalidEstablishment: {
+      errCode: -700,
+      errMessage: 'Establishment data is invalid'
+    },
+    invalidUser: {
+      errCode: -800,
+      errMessage: 'User data is invalid'
+    }
+  };
+  
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -36,6 +105,128 @@ router.use('/:id/jobs', Jobs);
 router.use('/:id/localAuthorities', LA);
 router.use('/:id/worker', Worker);
 router.use('/:id/bulkupload', BulkUpload);
+
+
+router.route('/:id').post(async (req, res) => {
+
+    if (!req.body[0].isRegulated) {
+        delete req.body[0].locationId;
+    }
+
+    const establishmentData = {
+        Name : req.body[0].locationName,
+        Address : concatenateAddress(req.body[0].addressLine1, req.body[0].addressLine2, req.body[0].townCity, req.body[0].county),
+        LocationID: req.body[0].locationId,
+        PostCode: req.body[0].postalCode,
+        MainService: req.body[0].mainService,
+        MainServiceId : null,
+        MainServiceOther: req.body[0].mainServiceOther,
+        IsRegulated: req.body[0].isRegulated
+    };
+    
+    try {
+        await models.sequelize.transaction(async t => {
+
+          // Get the main service depending on whether the establishment is or is not cqc registered  
+          let serviceResults = null;
+          if (establishmentData.IsRegulated) {
+            serviceResults = await models.services.findOne({
+              where: {
+                name: estabslishmentData.MainService,
+                isMain: true
+              }
+            });
+          } else {
+            serviceResults = await models.services.findOne({
+              where: {
+                name: establishmentData.MainService,
+                iscqcregistered: false,
+                isMain: true
+              }
+            });
+          }
+
+          if (serviceResults && serviceResults.id && (establishmentData.MainService === serviceResults.name)) {
+            establishmentData.MainServiceId = serviceResults.id;
+          } else {
+            throw new RegistrationException(
+              `Lookup on services for '${establishmentData.MainService}' being cqc registered (${establishmentData.IsRegulated}) resulted with zero records`,
+              responseErrors.unexpectedMainServiceId.errCode,
+              responseErrors.unexpectedMainServiceId.errMessage
+            );
+          }
+          
+          if (serviceResults.other && establishmentData.MainServiceOther && establishmentData.MainServiceOther.length > OTHER_MAX_LENGTH){
+            throw new RegistrationException(
+              `Other field value of '${establishmentData.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
+              responseErrors.unexpectedMainServiceId.errCode,
+              responseErrors.unexpectedMainServiceId.errMessage
+            );            
+          }
+
+          const newEstablishment = new Establishment.Establishment();
+          await newEstablishment.initialise(
+            establishmentData.Address,
+            establishmentData.LocationID,
+            establishmentData.PostCode,
+            establishmentData.IsRegulated
+          );
+
+          newEstablishment.initialiseSub(req.establishment.id, req.establishment.uid);
+
+          await newEstablishment.load({
+            name: establishmentData.Name,
+            mainService: {
+              id: establishmentData.MainServiceId,
+              other : establishmentData.MainServiceOther
+            }
+          });    
+          
+          // no Establishment properties on registration
+          if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
+            await newEstablishment.save(req.username, 0, t);
+            establishmentData.id = newEstablishment.id;
+            establishmentData.eUID = newEstablishment.uid;
+          } else {
+            // Establishment properties not valid
+            throw new RegistrationException(
+              'Inavlid establishment properties',
+              responseErrors.invalidEstablishment.errCode,
+              responseErrors.invalidEstablishment.errMessage
+            );
+          }
+
+          res.status(201);
+          res.json({
+            "status" : 1,
+            "message" : "Establishment successfully created",
+            "establishmentId" : establishmentData.id,
+            "establishmentUid" : establishmentData.eUID,
+            "nmdsId": newEstablishment.NmdsId ? newEstablishment.NmdsId : 'undefined'
+          }); 
+
+
+        });
+    } catch (err) {
+        console.log(err);
+        console.error("Add establishment: rolling back all changes because: ", err.errCode, err.errMessage);
+        if (err.errCode > -99) {
+            console.error("Add establishment: original error: ", err.err);
+        }
+
+        if (err.errCode > -99) {
+           // we have an unexpected error
+            res.status(500);
+        } else {
+            // we have an expected error owing to given establishment data
+            res.status(400);
+        }
+        res.json({
+            "status" : err.errCode,
+            "message" : err.errMessage
+        });
+    }
+});
 
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
