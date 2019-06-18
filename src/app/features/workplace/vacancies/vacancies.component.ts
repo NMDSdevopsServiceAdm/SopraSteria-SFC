@@ -96,7 +96,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         this.vacanciesControl.controls[0].get('jobRole').setValidators([Validators.required]);
         this.vacanciesControl.controls[0]
           .get('total')
-          .setValidators([Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]);
+          .setValidators([Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]);
 
         this.form.get('vacanciesKnown').setValue(null, { emitEvent: false });
       })
