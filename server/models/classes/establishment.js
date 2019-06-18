@@ -468,8 +468,7 @@ class Establishment extends EntityValidator {
             const fetchQuery = {
                 // attributes: ['id', 'uid'],
                 where: {
-                    id: id,
-                    archived: false
+                    id: id
                 },
                 include: [
                 ]
