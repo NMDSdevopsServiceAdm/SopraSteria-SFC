@@ -1,7 +1,7 @@
-$error_border_size: 5px;
+$error_border_size: $govuk-border-width-form-element-error;
 $error_row_indent: 12px;
 $error_row_offset: 50px;
-$error_row_padding: 15px;
+$error_row_padding: $govuk-gutter-half;
 
 .govuk-table__error {
   margin-bottom: ($error_row_offset + $error_row_padding) * 1.25;
