@@ -7,7 +7,7 @@
   </div>
 </div>
 
-<table class="govuk-table" [class.govuk-table__error]="hasErrors" [class.govuk-!-margin-top-6]="!validationComplete">
+<table class="govuk-table" [class.govuk-error-table]="hasErrors" [class.govuk-!-margin-top-6]="!validationComplete">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">File name</th>
@@ -19,9 +19,9 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container *ngFor="let file of uploadedFiles">
-      <tr class="govuk-table__row" [class.govuk-table__error-row]="file.errors">
-        <td class="govuk-table__cell" [class.govuk-table__error-cell]="file.errors" scope="row">
-          <p *ngIf="file.errors" class="govuk-error-message govuk-table__error-message">
+      <tr class="govuk-table__row" [class.govuk-error-table__row]="file.errors">
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors" scope="row">
+          <p *ngIf="file.errors" class="govuk-error-message govuk-error-table__message">
             Check the file before validating.
           </p>
           {{ file.name }}
@@ -33,14 +33,14 @@
             </strong>
           </p>
         </td>
-        <td class="govuk-table__cell" [class.govuk-table__error-cell]="file.errors">
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
           {{ file.fileType ? file.fileType : file.extension }}
         </td>
-        <td class="govuk-table__cell" [class.govuk-table__error-cell]="file.errors">
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
           {{ file.records ? file.records : '-' }}
         </td>
-        <td class="govuk-table__cell" [class.govuk-table__error-cell]="file.errors">-</td>
-        <td class="govuk-table__cell" [class.govuk-table__error-cell]="file.errors">
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">-</td>
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
           <app-file-validate-status [status]="file.status"></app-file-validate-status>
         </td>
       </tr>

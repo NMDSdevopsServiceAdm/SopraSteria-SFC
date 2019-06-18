@@ -3,20 +3,20 @@ $error_row_indent: 12px;
 $error_row_offset: 50px;
 $error_row_padding: $govuk-gutter-half;
 
-.govuk-table__error {
+.govuk-error-table {
   margin-bottom: ($error_row_offset + $error_row_padding) * 1.25;
 }
 
-.govuk-table__error-row {
-  & + tr:not(.govuk-table__error-row) .govuk-table__error-cell {
+.govuk-error-table__row {
+  & + tr:not(.govuk-error-table__row) .govuk-error-table__cell {
     padding-top: $error_row_offset + $error_row_padding;
   }
-  & + .govuk-table__error-row {
+  & + .govuk-error-table__row {
     border-top: $error_row_offset + $error_row_padding solid transparent;
   }
 }
 
-.govuk-table__error-cell {
+.govuk-error-table__cell {
   top: $error_row_offset;
   position: relative;
   border-bottom: none;
@@ -50,7 +50,7 @@ $error_row_padding: $govuk-gutter-half;
   }
 }
 
-.govuk-table__error-message {
+.govuk-error-table__message {
   position: absolute;
   white-space: nowrap;
   left: $error_row_indent * -1;
