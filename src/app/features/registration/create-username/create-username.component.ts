@@ -148,7 +148,7 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
           },
           {
             name: 'usernameExists',
-            message: 'The username you entered already exists.',
+            message: 'The username you entered is unavailable.',
           },
           {
             name: 'pattern',
