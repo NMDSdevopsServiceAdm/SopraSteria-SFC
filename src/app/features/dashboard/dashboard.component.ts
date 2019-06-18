@@ -1,18 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { DEFAULT_DATE_DISPLAY_FORMAT } from '@core/constants/constants';
-import { AuthService } from '@core/services/auth-service';
-import { UserService } from '@core/services/user.service';
+import { AuthService } from '@core/services/auth.service';
+import { LoggedInEstablishment } from '@core/model/logged-in.model';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
-  public establishment: any;
-  public lastLoggedIn = null;
-  public dateFormat = DEFAULT_DATE_DISPLAY_FORMAT;
+  public establishment: LoggedInEstablishment | null;
+  public lastLoggedIn: string | null;
 
-  constructor(private authService: AuthService, private userService: UserService) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
     this.establishment = this.authService.establishment;

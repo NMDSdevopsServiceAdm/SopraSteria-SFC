@@ -1,106 +1,143 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, Validators  } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Worker } from '@core/model/worker.model';
+import { HttpErrorResponse } from '@angular/common/http';
+
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
-import { MessageService } from '@core/services/message.service';
-import { WorkerEditResponse, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { WorkerService } from '@core/services/worker.service';
+import { Job, JobRole } from '@core/model/job.model';
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-other-job-roles',
   templateUrl: './other-job-roles.component.html',
 })
-export class OtherJobRolesComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
-  public backLink: string;
-  private worker: Worker;
-  private subscriptions: Subscription = new Subscription();
+export class OtherJobRolesComponent extends QuestionComponent {
+
+  public availableJobRoles: Job[];
+  public jobsWithOtherRole: JobRole[] = [];
+  private otherJobRoleCharacterLimit = 120;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private workerService: WorkerService,
-    private messageService: MessageService,
-    private jobService: JobService
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected workerService: WorkerService,
+    protected jobService: JobService
   ) {
-    this.saveHandler = this.saveHandler.bind(this);
-  }
+    super(formBuilder, router, backService, errorSummaryService, workerService);
 
-  ngOnInit() {
     this.form = this.formBuilder.group({
       selectedJobRoles: this.formBuilder.array([]),
     });
+  }
 
-    if (this.workerService.returnToSummary) {
-      this.backLink = 'summary';
-    } else {
-      this.backLink = 'main-job-start-date';
-    }
+  init() {
+    this.subscriptions.add(
+      this.jobService.getJobs().subscribe(
+        jobRoles => {
+          this.availableJobRoles = jobRoles.filter(j => j.id !== this.worker.mainJob.jobId);
 
-    this.workerService.worker$.pipe(take(1)).subscribe(worker => {
-      this.worker = worker;
+          // TODO: This does not really allow fall back for non-javascript form submissions
+          this.availableJobRoles.map(job => {
+            const otherJob = this.worker.otherJobs && this.worker.otherJobs.find(o => o.jobId === job.id);
 
-      this.subscriptions.add(
-        this.jobService.getJobs().subscribe(availableJobRoles => {
-          const availableJobRolesFiltered = availableJobRoles.filter(j => j.id !== this.worker.mainJob.jobId);
-          const jobs = availableJobRolesFiltered.map(j =>
-            this.formBuilder.control({
-              jobId: j.id,
-              title: j.title,
-              checked: this.worker.otherJobs ? this.worker.otherJobs.some(o => o.jobId === j.id) : false,
-            })
-          );
+            if (job.other) {
+              this.jobsWithOtherRole.push({
+                jobId: job.id,
+                other: otherJob ? otherJob.other : '',
+              });
+            }
 
-          jobs.forEach(j => (this.form.controls.selectedJobRoles as FormArray).push(j));
+            const control = this.formBuilder.control({
+              jobId: job.id,
+              title: job.title,
+              checked: otherJob ? true : false,
+            });
+            (this.form.controls.selectedJobRoles as FormArray).push(control);
+          });
+        },
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.errorSummaryService.scrollToErrorSummary();
+        },
+       () => this.updateForm()
+      )
+    );
+
+    this.previous = ['/worker', this.worker.uid, 'main-job-start-date'];
+  }
+
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [];
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'Worker Services could not be updated.',
+      },
+    ];
+  }
+
+  private updateForm(): void {
+    this.jobsWithOtherRole.forEach((job: JobRole) => {
+      this.form.addControl(
+        `otherSelectedJobRole${job.jobId}`,
+        new FormControl(job.other, {
+          validators: Validators.maxLength(this.otherJobRoleCharacterLimit),
+          updateOn: 'blur'
         })
       );
+
+      this.formErrorsMap.push({
+        item: `otherSelectedJobRole${job.jobId}`,
+        type: [
+          {
+            name: 'maxlength',
+            message: `Enter your job role must be ${this.otherJobRoleCharacterLimit} characters or less`,
+          },
+        ],
+      });
     });
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
-    this.messageService.clearAll();
+  generateUpdateProps() {
+    const { selectedJobRoles } = this.form.value;
+    return {
+      otherJobs: selectedJobRoles.filter(j => j.checked).map(j => {
+        const isJobWithRole = this.jobsWithOtherRole.some(jbRole => jbRole.jobId === j.jobId);
+        if (isJobWithRole) {
+          const otherValue = this.form.get(`otherSelectedJobRole${j.jobId}`).value;
+          return {
+            jobId: j.jobId,
+            ...(otherValue && {  other: otherValue })
+          };
+        }
+
+        return { jobId: j.jobId };
+      })
+    };
   }
 
-  async submitHandler() {
-    try {
-      await this.saveHandler();
-
-      if (this.form.value.selectedJobRoles.some(j => j.checked && j.jobId === 27)) {
-        this.router.navigate(['/worker', this.worker.uid, 'mental-health-professional']);
-      } else {
-        this.router.navigate(['/worker', this.worker.uid, 'national-insurance-number']);
-      }
-    } catch (err) {
-      // keep typescript transpiler silent
-    }
-  }
-
-  saveHandler(): Promise<WorkerEditResponse> {
-    return new Promise((resolve, reject) => {
-      const { selectedJobRoles } = this.form.value;
-      this.messageService.clearError();
-
-      if (this.form.valid) {
-        const props = {
-          otherJobs: selectedJobRoles.filter(j => j.checked).map(j => ({ jobId: j.jobId, title: j.title })),
-        };
-
-        this.subscriptions.add(
-          this.workerService.updateWorker(this.worker.uid, props).subscribe(data => {
-            this.workerService.setState({ ...this.worker, ...data });
-            resolve();
-          }, reject)
-        );
-      } else {
-        reject();
-      }
-    });
+  onSuccess() {
+    this.next = this.worker.otherJobs.some(j => j.jobId === 27)
+      ? ['/worker', this.worker.uid, 'mental-health-professional']
+      : ['/worker', this.worker.uid, 'national-insurance-number'];
   }
 
   onChange(control) {
     control.value.checked = !control.value.checked;
+  }
+
+  showforOtherJobRole(control): boolean {
+    const selectedJobRole = this.availableJobRoles.find(
+      job => job.id === control.value.jobId
+    );
+    return selectedJobRole && selectedJobRole.other;
   }
 }

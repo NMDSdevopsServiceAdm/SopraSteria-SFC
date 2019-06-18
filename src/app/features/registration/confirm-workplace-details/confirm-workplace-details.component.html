@@ -1,0 +1,71 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Confirm your workplace details</h1>
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-7">Are these details correct?</h2>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row" *ngIf="locationAddress.locationId">
+        <dt class="govuk-summary-list__key">
+          CQC Location ID
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ locationAddress.locationId }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/regulated-by-cqc']" class="govuk-link">
+            Change
+            <span class="govuk-visually-hidden"> location ID</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Workplace name
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ locationAddress.locationName }}
+        </dd>
+        <dd class="govuk-summary-list__actions">&nbsp;</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Address
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <div *ngIf="locationAddress.addressLine1">{{ locationAddress.addressLine1 }}</div>
+          <div *ngIf="locationAddress.addressLine2">{{ locationAddress.addressLine2 }}</div>
+          <div *ngIf="locationAddress.townCity">{{ locationAddress.townCity }}</div>
+          <div *ngIf="locationAddress.county">{{ locationAddress.county }}</div>
+          <div *ngIf="locationAddress.postalCode">{{ locationAddress.postalCode }}</div>
+        </dd>
+        <dd class="govuk-summary-list__actions">&nbsp;</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Main service provided
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <ng-template [ngIf]="workplaceService.otherName" [ngIfElse]="showName">
+            {{ workplaceService.otherName }}
+          </ng-template>
+          <ng-template #showName>
+            {{ workplaceService.name }}
+          </ng-template>
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/select-main-service']" class="govuk-link">
+            Change
+            <span class="govuk-visually-hidden"> main service</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+
+    <p class="govuk-!-margin-bottom-6">
+      <a class="govuk-link" [routerLink]="['/registration/select-workplace-address']">
+        This is not my workplace
+      </a>
+    </p>
+    <a class="govuk-button" role="button" [routerLink]="['/registration/your-details']">Continue</a>
+  </div>
+</div>

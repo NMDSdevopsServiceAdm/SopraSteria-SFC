@@ -8,9 +8,8 @@ describe('BasicRecordsSaveSuccessComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BasicRecordsSaveSuccessComponent ]
-    })
-    .compileComponents();
+      declarations: [BasicRecordsSaveSuccessComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

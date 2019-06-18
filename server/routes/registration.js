@@ -8,6 +8,8 @@ const slack = require('../utils/slack/slack-logger');
 
 const models = require('../models');
 
+const OTHER_MAX_LENGTH=120;
+
 // extended change properties
 const EstablishmentModel = require('../models/classes/establishment').Establishment;
 const EstablishmentSaveException = require('../models/classes/establishment/establishmentExceptions').EstablishmentSaveException;
@@ -237,9 +239,9 @@ const responseErrors = {
     errMessage: 'Duplicate Username',
     db_constraint: 'uc_Login_Username'
   },
-  unexpectedMainServiceId: {
+  unexpectedMainService: {
     errCode: -300,
-    errMessage: 'Unexpected main service id'
+    errMessage: 'Unexpected main service'
   },
   unknownLocation: {
     errCode: -400,
@@ -309,6 +311,7 @@ router.route('/')
         PostCode: req.body[0].postalCode,
         MainService: req.body[0].mainService,
         MainServiceId : null,
+        MainServiceOther: req.body[0].mainServiceOther,
         IsRegulated: req.body[0].isRegulated
       };
       const Userdata = {
@@ -360,13 +363,21 @@ router.route('/')
           }
 
           if (serviceResults && serviceResults.id && (Estblistmentdata.MainService === serviceResults.name)) {
-            Estblistmentdata.MainServiceId = serviceResults.id
+            Estblistmentdata.MainServiceId = serviceResults.id;
           } else {
             throw new RegistrationException(
               `Lookup on services for '${Estblistmentdata.MainService}' being cqc registered (${Estblistmentdata.IsRegulated}) resulted with zero records`,
-              responseErrors.unexpectedMainServiceId.errCode,
-              responseErrors.unexpectedMainServiceId.errMessage
+              responseErrors.unexpectedMainService.errCode,
+              responseErrors.unexpectedMainService.errMessage
             );
+          }
+          
+          if (serviceResults.other && Estblistmentdata.MainServiceOther && Estblistmentdata.MainServiceOther.length > OTHER_MAX_LENGTH){
+            throw new RegistrationException(
+              `Other field value of '${Estblistmentdata.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
+              responseErrors.unexpectedMainService.errCode,
+              responseErrors.unexpectedMainService.errMessage
+            );            
           }
 
           // need to create an NMDS ID - which is a combination of the CSSR nmds letter and a unique sequence number
@@ -440,7 +451,8 @@ router.route('/')
           await newEstablishment.load({
             name: Estblistmentdata.Name,
             mainService: {
-              id: Estblistmentdata.MainServiceId
+              id: Estblistmentdata.MainServiceId,
+              other : Estblistmentdata.MainServiceOther
             }
           });    // no Establishment properties on registration
           if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
@@ -510,6 +522,8 @@ router.route('/')
         if (err instanceof RegistrationException) throw err;
 
         if (!defaultError) defaultError = responseErrors.default;
+
+        console.log("WA DEBUG - exception: ", err)
 
         if (err instanceof EstablishmentSaveException) {
           if (err.message === 'Duplicate Establishment') {

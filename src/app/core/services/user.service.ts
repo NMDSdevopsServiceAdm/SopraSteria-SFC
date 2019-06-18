@@ -3,38 +3,47 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { EstablishmentService } from './establishment.service';
+import { UserDetails } from '@core/model/userDetails.model';
+import { MyWorkplacesResponse } from '@core/model/my-workplaces.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private _userDetails$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
-  public userDetails$: Observable<string> = this._userDetails$.asObservable();
+  private _userDetails$: BehaviorSubject<UserDetails> = new BehaviorSubject<UserDetails>(null);
+  public userDetails$: Observable<UserDetails> = this._userDetails$.asObservable();
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
   /*
    * GET /api/user/establishment/:establishmentId
    */
-  getUsernameFromEstbId() {
+  public getUsernameFromEstbId() {
     return this.http.get<any>(`/api/user/establishment/${this.establishmentService.establishmentId}`);
   }
 
   /*
    * GET /api/user/establishment/:establishmentId/:username
    */
-  getUserDetails(username) {
+  public getUserDetails(username): Observable<UserDetails> {
     return this.http.get<any>(`/api/user/establishment/${this.establishmentService.establishmentId}/${username}`);
   }
 
   /*
    * PUT /api/user/establishment/:establishmentId/:username
    */
-  updateUserDetails(username, data) {
-    return this.http.put<any>(`/api/user/establishment/${this.establishmentService.establishmentId}/${username}`, data);
+  public updateUserDetails(userDetails: UserDetails): Observable<UserDetails> {
+    return this.http.put<UserDetails>(
+      `/api/user/establishment/${this.establishmentService.establishmentId}/${userDetails.username}`,
+      userDetails
+    );
   }
 
-  updateState(data) {
-    this._userDetails$.next(data);
+  public updateState(userDetails: UserDetails) {
+    this._userDetails$.next(userDetails);
+  }
+
+  public getMyEstablishments(): Observable<MyWorkplacesResponse> {
+    return this.http.get<MyWorkplacesResponse>(`/api/user/my/establishments`);
   }
 }

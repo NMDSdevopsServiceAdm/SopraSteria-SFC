@@ -1,9 +1,17 @@
-<app-header id="app-header" class="container-fluid p-0"></app-header>
+<app-skip-link></app-skip-link>
+<app-header></app-header>
 
-<div id="app-main" class="container-fluid p-0">
-  <main class="container" id="main-content" role="main">
+<div id="main" class="govuk-width-container">
+  <app-phase-banner phase="beta">
+    This is a new service – your
+    <a routerLink="/public/feedback" target="_blank">feedback</a> will help us to improve it.
+  </app-phase-banner>
+
+  <app-back-link></app-back-link>
+
+  <main class="govuk-main-wrapper app-main-class" id="main-content" role="main">
     <router-outlet></router-outlet>
   </main>
 </div>
 
-<app-footer id="app-footer" class="col-12 p-0"></app-footer>
+<app-footer></app-footer>

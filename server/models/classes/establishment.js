@@ -11,6 +11,9 @@ const uuid = require('uuid');
 // database models
 const models = require('../index');
 
+const EntityValidator = require('./validations/entityValidator').EntityValidator;
+const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
+
 // notifications
 
 // temp formatters
@@ -27,8 +30,10 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
-class Establishment {
+class Establishment extends EntityValidator {
     constructor(username) {
+        super();
+
         this._username = username;
         this._id = null;
         this._uid = null;
@@ -50,6 +55,8 @@ class Establishment {
         this._isParent = false;
         this._parentUid = null;
         this._parentId = null;
+        this._dataOwner = null;
+        this._parentPermissions = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -130,6 +137,14 @@ class Establishment {
         return this._parentUid;
     }
 
+    get dataOwner() {
+        return this._dataOwner;
+    }
+
+    get parentPermissions() {
+        return this._parentPermissions;
+    }
+
     get numberOfStaff() {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
     }
@@ -160,6 +175,8 @@ class Establishment {
     // Returns true if the resulting Establishment is valid; otherwise false
     async load(document) {
         try {
+            this.resetValidations();
+
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
         } catch (err) {
@@ -179,6 +196,18 @@ class Establishment {
         if (this._properties.isValid === true) {
             return true;
         } else {
+            if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid)) {
+                const propertySuffixLength = 'Property'.length * -1;
+                thisEstablishmentIsValid.forEach(thisInvalidProp => {
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.WARNING,
+                        111111111,
+                        'Invalid',
+                        [thisInvalidProp.slice(0,propertySuffixLength)],
+                    ));
+                });
+            }
+
             this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisEstablishmentIsValid.toString()}`);
             return false;
         }
@@ -215,6 +244,7 @@ class Establishment {
                     ShareDataValue: false,
                     shareWithCQC: false,
                     shareWithLA: false,
+                    dataOwner: 'Workplace',
                     attributes: ['id', 'created', 'updated'],
                 };
 
@@ -420,8 +450,8 @@ class Establishment {
     // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
     // returns true on success; false if no User
     // Can throw EstablishmentRestoreException exception.
-    async restore(id, uid, showHistory=false) {
-        if (!id && !uid) {
+    async restore(id, showHistory=false) {
+        if (!id) {
             throw new EstablishmentExceptions.EstablishmentRestoreException(null,
                 null,
                 null,
@@ -435,120 +465,17 @@ class Establishment {
             //  fetch, we are sure to only fetch those
             //  Establishment records associated to the known
             //   user
-            let fetchQuery = null;
-            
-            if (uid) {
-                // fetch by uid
-                fetchQuery = {
-                    // attributes: ['id', 'uid'],
-                    where: {
-                        uid,
-                    },
-                    include: [
-                        {
-                            model: models.user,
-                            as: 'users',
-                            attributes: ['id'],
-                            where: {
-                                archived: false,
-                            },
-                            include: [
-                                {
-                                    model: models.login,
-                                    attributes: ['username'],
-                                    where: {
-                                        username: this._username,
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                };
-            } else {
-                // fetch by id
-                fetchQuery = {
-                    // attributes: ['id', 'uid'],
-                    where: {
-                        id,
-                    },
-                    include: [
-                        {
-                            model: models.user,
-                            as: 'users',
-                            attributes: ['id'],
-                            where: {
-                                archived: false,
-                            },
-                            include: [
-                                {
-                                    model: models.login,
-                                    attributes: ['username'],
-                                    where: {
-                                        username: this._username,
-                                    }
-                                }
-                            ]
-                        }
-                    ]
-                };
-            }
-
-            // now join across the other dependent tables
-            fetchQuery.include = fetchQuery.include.concat([
-                {
-                  model: models.services,
-                  as: 'otherServices',
-                  attributes: ['id', 'name', 'category'],
-                  order: [
-                    ['category', 'ASC'],
-                    ['name', 'ASC']
-                  ]
-                },{
-                  model: models.serviceUsers,
-                  as: 'serviceUsers',
-                  attributes: ['id', 'service', 'group', 'seq'],
-                  order: [
-                    ['seq', 'ASC']
-                  ]
-                },{
-                  model: models.services,
-                  as: 'mainService',
-                  attributes: ['id', 'name']
-                },{
-                  model: models.establishmentCapacity,
-                  as: 'capacity',
-                  attributes: ['id', 'answer'],
-                  include: [{
-                    model: models.serviceCapacity,
-                    as: 'reference',
-                    attributes: ['id', 'question']
-                  }]
+            const fetchQuery = {
+                // attributes: ['id', 'uid'],
+                where: {
+                    id: id
                 },
-                {
-                  model: models.establishmentJobs,
-                  as: 'jobs',
-                  attributes: ['id', 'type', 'total'],
-                  order: [
-                    ['type', 'ASC']
-                  ],
-                  include: [{
-                    model: models.job,
-                    as: 'reference',
-                    attributes: ['id', 'title'],
-                    order: [
-                      ['title', 'ASC']
-                    ]
-                  }]
-                },
-                {
-                  model: models.establishmentLocalAuthority,
-                  as: 'localAuthorities',
-                  attributes: ['id', 'cssrId', 'cssr'],
-                }
-              ]
-            );
+                include: [
+                ]
+            };
 
             const fetchResults = await models.establishment.findOne(fetchQuery);
+            
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
@@ -563,16 +490,15 @@ class Establishment {
                 this._locationId = fetchResults.locationId;
                 this._postcode = fetchResults.postcode;
                 this._isRegulated = fetchResults.isRegulated;
-                this._mainService = {
-                    id: fetchResults.mainService.id,
-                    name: fetchResults.mainService.name
-                };
+
                 this._nmdsId = fetchResults.nmdsId;
                 this._lastWdfEligibility = fetchResults.lastWdfEligibility;
                 this._overallWdfEligibility = fetchResults.overallWdfEligibility;
                 this._isParent = fetchResults.isParent;
                 this._parentId = fetchResults.parentId;
                 this._parentUid = fetchResults.parentUid;
+                this._dataOwner = fetchResults.dataOwner;
+                this._parentPermissions = fetchResults.parentPermissions;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -591,6 +517,123 @@ class Establishment {
                         ]
                     });
                 }
+
+                // Individual fetches for extended information in associations
+                const establishmentServiceUserResults = await models.establishmentServiceUsers.findAll({
+                    where: {
+                        EstablishmentID : this._id
+                    },
+                    raw: true
+                });
+
+                const establishmentServices = await models.establishmentServices.findAll({
+                    where: {
+                        EstablishmentID : this._id
+                    },
+                    raw: true
+                });
+
+                const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
+                    models.services.findAll({
+                        where: {
+                            id: establishmentServices.map(su => su.serviceId)
+                        },
+                        attributes: ['id', 'name', 'category'],
+                        order: [
+                            ['category', 'ASC'],
+                            ['name', 'ASC']
+                        ],
+                        raw: true,
+                    }),
+                    models.services.findOne({
+                        where: {
+                            id : fetchResults.MainServiceFKValue
+                        },                    
+                        attributes: ['id', 'name'],
+                        raw: true   
+                    }),
+                    models.serviceUsers.findAll({
+                        where: {
+                            id: establishmentServiceUserResults.map(su => su.serviceUserId)
+                        },
+                        attributes: ['id', 'service', 'group', 'seq'],
+                        order: [
+                            ['seq', 'ASC']
+                        ],
+                        raw: true
+                    }),
+                    models.establishmentCapacity.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        include: [{
+                            model: models.serviceCapacity,
+                            as: 'reference',
+                            attributes: ['id', 'question']
+                        }],
+                        attributes: ['id', 'answer']
+                    }),
+                    models.establishmentJobs.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        include: [{
+                            model: models.job,
+                            as: 'reference',
+                            attributes: ['id', 'title'],
+                            order: [
+                              ['title', 'ASC']
+                            ]
+                        }],
+                        attributes: ['id', 'type', 'total'],
+                        order: [
+                          ['type', 'ASC']
+                        ]
+                    }),
+                    models.establishmentLocalAuthority.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        attributes: ['id', 'cssrId', 'cssr']
+                    })
+                ]);
+
+                // For services merge any other data into resultset 
+                fetchResults.serviceUsers = establishmentServiceUserResults.map((suResult)=>{
+                    const serviceUser = serviceUsers.find(element => { return suResult.serviceUserId === element.id});
+                    if(suResult.other) {
+                        return {
+                            ...serviceUser,
+                            other: suResult.other
+                        }
+                    } else {
+                        return serviceUser;
+                    }
+                });
+
+                fetchResults.otherServices = establishmentServices.map((suResult)=>{
+                    const otherService = otherServices.find(element => { return suResult.serviceId === element.id});
+                    if(suResult.other) {
+                        return {
+                            ...otherService,
+                            other: suResult.other
+                        }
+                    } else {
+                        return otherService;
+                    }
+                });                
+
+                fetchResults.capacity = capacity;
+                fetchResults.jobs = jobs;
+                fetchResults.localAuthorities = localAuthorities;
+
+                fetchResults.mainService = { ...mainService, other: fetchResults.MainServiceFkOther };
+
+                // Moved this code from the section after the findOne, to here, now that mainService is pulled in seperately
+                this._mainService = {
+                    id: fetchResults.mainService.id,
+                    name: fetchResults.mainService.name
+                };
 
                 // other services output requires a list of ALL services available to
                 //  the Establishment
@@ -613,6 +656,7 @@ class Establishment {
                         ]
                     });  
                 }
+
 
                 // service capacities output requires a list of ALL service capacities available to
                 //  the Establishment
@@ -742,10 +786,63 @@ class Establishment {
         }
     };
 
-    // deletes this User from DB
-    // Can throw "UserDeleteException"
-    async delete() {
-        throw new EstablishmentExceptions.EstablishmentDeleteException(null, null, null, 'Not implemented', 'Not implemented');
+    async delete(deletedBy) {
+        try {
+            const updatedTimestamp = new Date();
+
+            await models.sequelize.transaction(async t => {
+
+                const updateDocument = {
+                    archived: true,
+                    updated: updatedTimestamp,
+                    updatedBy: deletedBy
+                };
+
+                let [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument,
+                                            {
+                                                returning: true,
+                                                where: {
+                                                    uid: this.uid
+                                                },
+                                                attributes: ['id', 'updated'],
+                                                transaction: t,
+                                            });
+
+                if (updatedRecordCount === 1) {
+
+                    const updatedRecord = updatedRows[0].get({plain: true});
+
+                    this._updated = updatedRecord.updated;
+                    this._updatedBy = deletedBy;
+
+                    const allAuditEvents = [{
+                        establishmentFk: this._id,
+                        username: deletedBy,
+                        type: 'deleted'}];
+                       
+                    await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: t});
+
+                    this._log(Establishment.LOG_INFO, `Archived Establishment with uid (${this._uid}) and id (${this._id})`);
+
+                } else {
+                    const nameId = this._properties.get('NameOrId');
+                    throw new EstablishmentExceptions.EstablishmentDeleteException(null, 
+                                                                        this.uid, 
+                                                                        nameId ? nameId.property : null,
+                                                                        err,
+                                                                        `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
+                }
+                                                                        
+            });
+        } catch (err) {
+            console.log('throwing error');
+            console.log(err);
+            throw new EstablishmentExceptions.EstablishmentDeleteException(null, 
+                this.uid, 
+                nameId ? nameId.property : null,
+                err,
+                `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
+        }
     };
 
     // helper returns a set 'json ready' objects for representing an Establishments's overall
@@ -812,11 +909,15 @@ class Establishment {
                 myDefaultJSON.locationRef = this.locationId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
+                myDefaultJSON.isParent = this.isParent;
+                myDefaultJSON.parentUid = this.parentUid;
+                myDefaultJSON.dataOwner = this.dataOwner;
+                myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
             }
 
-            myDefaultJSON.created = this.created.toJSON();
-            myDefaultJSON.updated = this.updated.toJSON();
-            myDefaultJSON.updatedBy = this.updatedBy;
+            myDefaultJSON.created = this.created ? this.created.toJSON() : null;
+            myDefaultJSON.updated = this.updated ? this.updated.toJSON() : null;
+            myDefaultJSON.updatedBy = this.updatedBy ? this.updatedBy : null;
 
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {
@@ -851,15 +952,29 @@ class Establishment {
     // returns true if all mandatory properties for an Establishment exist and are valid
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
-        try {
+
+       try {
             const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
             if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
                 allExistAndValid = false;
+                // TODO: temporarily downgrading to a warning, whilst awaiting for NMDS ID generation to be part of this Establishment entity - https://trello.com/c/HElnWYWF
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.WARNING,
+                    101,
+                    this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
+                    ['NMDSID']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
             }
 
             if (!(this.name)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    102,
+                    this.name ? `Invalid: ${this.name}` : 'Missing',
+                    ['Name']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
             }
 
@@ -870,22 +985,46 @@ class Establishment {
 
             if (!(this._address)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    103,
+                    this._address ? `Invalid: ${this._address}` : 'Missing',
+                    ['Address']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid address');
             }
 
             if (!(this._postcode)) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    104,
+                    this._postcode ? `Invalid: ${_postcode}` : 'Missing',
+                    ['Postcode']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
             }
 
             if (this._isRegulated === null) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    105,
+                    'Missing',
+                    ['CQCRegistered']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing regulated flag');
             }
 
             // location id can be null for a Non-CQC site
             if (this._isRegulated && this._locationId === null) {
                 allExistAndValid = false;
+                this._validations.push(new ValidationMessage(
+                    ValidationMessage.ERROR,
+                    106,
+                    'Missing (mandatory) for a CQC Registered site',
+                    ['LocationID']
+                ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
             }
 
@@ -951,9 +1090,6 @@ class Establishment {
 
         // main service & Other Service & Service Capacities & Service Users
         myWdf['mainService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('MainServiceFK')) ? 'Yes' : 'No';
-        
-        
-        console.log("WA DEBUG - other services check: ", this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')))
         myWdf['otherService'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('OtherServices')) ? 'Yes' : 'No';
 
         // capacities eligibility is only relevant to the main service capacities (other services' capacities are not relevant)

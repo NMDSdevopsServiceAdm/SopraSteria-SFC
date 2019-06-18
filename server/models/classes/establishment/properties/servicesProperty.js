@@ -3,7 +3,9 @@ const ChangePropertyPrototype = require('../../properties/changePrototype').Chan
 
 const ServiceFormatters = require('../../../api/services');
 
-exports.ServicesProperty = class ServicesPropertyProperty extends ChangePropertyPrototype {
+const OTHER_MAX_LENGTH=120;
+
+exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototype {
     constructor() {
         super('OtherServices');
 
@@ -13,7 +15,7 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
     }
 
     static clone() {
-        return new ServicesPropertyProperty();
+        return new ServicesProperty();
     }
 
     // concrete implementations
@@ -69,7 +71,8 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
                 return {
                     id: thisService.id,
                     name: thisService.name,
-                    category: thisService.category
+                    category: thisService.category,
+                    other: thisService.other ? thisService.other : undefined                    
                 };
             });
         }
@@ -85,7 +88,8 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
             servicesDocument.additionalModels = {
                 establishmentServices: this.property.map(thisService => {
                     return {
-                        serviceId: thisService.id
+                        serviceId: thisService.id,
+                        other: thisService.other ? thisService.other : null,
                     };
                 })
             };
@@ -105,7 +109,12 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
             //  current value, and confirm it is in the the new data set.
             //  Array.every will drop out on the first iteration to return false
             arraysEqual = currentValue.every(thisService => {
-                return newValue.find(newService => newService.id === thisService.id);
+                return newValue.find(newService => 
+                    newService.id === thisService.id && (
+                        (thisService.other && newService.other && thisService.other === newService.other) ||
+                        (!thisService.other && !newService.other)
+                    )
+                );
             });
         } else {
             // if the arrays are lengths are not equal, then we know they're not equal
@@ -185,11 +194,17 @@ exports.ServicesProperty = class ServicesPropertyProperty extends ChangeProperty
             if (referenceService && referenceService.id) {
                 // found a service match - prevent duplicates by checking if the reference service already exists
                 if (!setOfValidatedServices.find(thisService => thisService.id === referenceService.id)) {
-                    setOfValidatedServices.push({
-                        id: referenceService.id,
-                        name: referenceService.name,
-                        category: referenceService.category
-                    });
+
+                    if (referenceService.other && thisService.other && thisService.other.length && thisService.other.length > OTHER_MAX_LENGTH) {
+                        setOfValidatedServicesInvalid = true;
+                    } else {
+                        setOfValidatedServices.push({
+                            id: referenceService.id,
+                            name: referenceService.name,
+                            category: referenceService.category,
+                            other: (thisService.other && referenceService.other) ? thisService.other : undefined,
+                        });
+                    }
                 }
             } else {
                 setOfValidatedServicesInvalid = true;

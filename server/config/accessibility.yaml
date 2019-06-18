@@ -1,0 +1,6 @@
+slack:
+    level : 3     # enables Slack notifications
+jwt:
+    iss: 'sfcaccessibility.cloudapps.digital'
+    ttl:
+        login: 10

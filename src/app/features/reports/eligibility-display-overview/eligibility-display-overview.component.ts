@@ -1,16 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-eligibility-display-overview',
-  templateUrl: './eligibility-display-overview.component.html',
-  styleUrls: ['./eligibility-display-overview.component.scss']
+  templateUrl: './eligibility-display-overview.component.html'
 })
-export class EligibilityDisplayOverviewComponent implements OnInit {
+export class EligibilityDisplayOverviewComponent {
   @Input() eligibility: string;
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
 }

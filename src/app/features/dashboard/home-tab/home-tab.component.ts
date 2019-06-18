@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { LoggedInSession } from '@core/model/logged-in.model';
+import { Roles } from '@core/model/roles.enum';
+import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -7,16 +10,32 @@ import { take } from 'rxjs/operators';
 @Component({
   selector: 'app-home-tab',
   templateUrl: './home-tab.component.html',
-  styleUrls: ['./home-tab.component.scss'],
 })
 export class HomeTabComponent implements OnInit {
-  public updateWorkplace: boolean;
-  public updateStaffRecords: boolean;
+  private editRole: Roles = Roles.Edit;
+  private role: Roles;
   private subscriptions: Subscription = new Subscription();
+  public establishmentId: number;
+  public isParent: boolean;
+  public updateStaffRecords: boolean;
+  public updateWorkplace: boolean;
 
-  constructor(private establishmentService: EstablishmentService, private workerService: WorkerService) {}
+  constructor(
+    private authService: AuthService,
+    private establishmentService: EstablishmentService,
+    private workerService: WorkerService
+  ) {}
 
   ngOnInit() {
+    this.establishmentId = this.establishmentService.establishmentId;
+
+    this.subscriptions.add(
+      this.authService.auth$.pipe(take(1)).subscribe((loggedInSession: LoggedInSession) => {
+        this.role = loggedInSession.role;
+        this.isParent = loggedInSession.establishment.isParent;
+      })
+    );
+
     this.subscriptions.add(
       this.workerService
         .getAllWorkers()

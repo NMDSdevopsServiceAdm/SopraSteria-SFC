@@ -1,0 +1,54 @@
+<app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">What is your workplace address?</h1>
+
+    <p class="govuk-!-margin-bottom-2">
+      <strong>Postcode</strong>
+    </p>
+    <p class="govuk-!-margin-bottom-6">
+      <strong>{{ enteredPostcode }}</strong>
+      <a [routerLink]="['/registration/find-workplace-address']" class="govuk-!-margin-left-6">Change</a>
+    </p>
+
+    <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress.errors">
+        <label class="govuk-label" for="address">
+          Select an address
+        </label>
+        <span *ngIf="submitted && getAddress.errors" id="address-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFormErrorMessage('address', 'required') }}
+        </span>
+        <select
+          class="govuk-select"
+          [class.govuk-select--error]="submitted && getAddress.errors"
+          formControlName="address"
+          id="address"
+          name="address"
+          (change)="onLocationChange($event.target.value)"
+        >
+          <option [value]="">{{ locationAddresses.length }} addresses found</option>
+          <option
+            *ngFor="let location of locationAddresses"
+            [value]="location.addressLine1"
+          >
+            {{ getLocationName(location) }}
+          </option>
+        </select>
+      </div>
+
+      <p>
+        <a [routerLink]="['/registration/enter-workplace-address']">I can't find my address</a>
+      </p>
+
+      <button class="govuk-button govuk-!-margin-top-6" type="submit">Continue</button>
+    </form>
+  </div>
+</div>

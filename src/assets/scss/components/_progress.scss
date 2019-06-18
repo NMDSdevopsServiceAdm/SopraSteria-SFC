@@ -1,0 +1,22 @@
+.govuk-progress {
+  &[value] {
+    appearance: none;
+
+    border: none;
+    height: 30px;
+
+
+    &::-webkit-progress-bar {
+      background: transparent;
+      border: 2px solid govuk-colour("grey-1");
+    }
+
+    /* IE10 */
+    color: $funGreen;
+
+    &::-webkit-progress-value,
+    &::-moz-progress-bar {
+      background: $funGreen;
+    }
+  }
+}

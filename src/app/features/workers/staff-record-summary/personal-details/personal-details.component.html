@@ -1,5 +1,5 @@
-<h3 class="fs-24 mb-4 text-weight-bold">Personal details</h3>
-<dl class="govuk-summary-list">
+<h2 class="govuk-heading-m">Personal details</h2>
+<dl class="govuk-summary-list govuk-summary-list--top-border">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       National Insurance Number
@@ -27,7 +27,7 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.dateOfBirth === 'No'">
-        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.dateOfBirth != 'No'">
          {{ worker.dateOfBirth ? dob : '-' }}
@@ -79,7 +79,7 @@
 
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.gender === 'No'">
-        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.gender != 'No'">
         {{ worker.gender || '-' }}
@@ -151,7 +151,7 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.nationality === 'No'">
-        <img src="/assets/img/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.nationality != 'No'">
         {{

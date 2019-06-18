@@ -1,11 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavigationExtras, Router } from '@angular/router';
-import { LoginApiModel } from '@core/model/loginApi.model';
-import { AuthService } from '@core/services/auth-service';
+import { LoginCredentials } from '@core/model/login-credentials.model';
+import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
-import { MessageService } from '@core/services/message.service';
+import { Subscription } from 'rxjs';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 const PING_INTERVAL = 240;
 const TIMEOUT_INTERVAL = 1800;
@@ -13,88 +16,117 @@ const TIMEOUT_INTERVAL = 1800;
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  loginForm: FormGroup;
-  // loginUser = new LoginUser();
-
-  login: LoginApiModel;
-
-  // Login values
-  usernameValue: string;
-  userPasswordValue: string;
-
-  private subscriptions = [];
-
-  // Set up Validation messages
-  usernameMessage: string;
-  passwordMessage: string;
+  public form: FormGroup;
+  public submitted = false;
+  private subscriptions: Subscription = new Subscription();
+  public formErrorsMap: Array<ErrorDetails>;
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverError: string;
 
   constructor(
     private idleService: IdleService,
     private authService: AuthService,
     private establishmentService: EstablishmentService,
-    private messageService: MessageService,
     private router: Router,
-    private fb: FormBuilder
+    private formBuilder: FormBuilder,
+    private errorSummaryService: ErrorSummaryService
   ) {}
 
-  // Get user fullname
-  get getUsernameInput() {
-    return this.loginForm.get('username');
-  }
-
-  // Get user job title
-  get getPasswordInput() {
-    return this.loginForm.get('password');
-  }
-
   ngOnInit() {
-    this.loginForm = this.fb.group({
-      username: ['', [Validators.required, Validators.maxLength(120)]],
-      password: ['', [Validators.required, Validators.maxLength(120)]],
+    this.form = this.formBuilder.group({
+      username: [null, Validators.required],
+      password: [null, Validators.required],
     });
 
-    this.subscriptions.push(
-      this.loginForm.valueChanges.subscribe(value => {
-        if (this.loginForm.valid) {
-          this.messageService.clearError();
-        }
-      })
-    );
-
-    this.subscriptions.push(this.authService.auth$.subscribe(login => (this.login = login)));
+    this.setupFormErrorsMap();
+    this.setupServerErrorsMap();
   }
 
-  onSubmit() {
-    this.usernameValue = this.getUsernameInput.value;
-    this.userPasswordValue = this.getPasswordInput.value;
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
 
-    if (this.loginForm.invalid) {
-      this.messageService.clearError();
-      this.messageService.show('error', 'Please fill the required fields.');
-    } else {
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'username',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your username.',
+          },
+        ],
+      },
+      {
+        item: 'password',
+        type: [
+          {
+            name: 'required',
+            message: 'Please enter your password.',
+          },
+        ],
+      },
+    ];
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 401,
+        message: 'User unauthorised - username or password is incorrect.',
+      },
+      {
+        name: 404,
+        message: 'User not found.',
+      },
+      {
+        name: 503,
+        message: 'Unable to authenticate user.',
+      },
+    ];
+  }
+
+  public onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (this.form.valid) {
       this.save();
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  save() {
-    this.login.username = this.usernameValue;
-    this.login.password = this.userPasswordValue;
-    this.messageService.clearError();
+  /**
+   * Pass in formGroup or formControl name and errorType
+   * Then return error message
+   * @param item
+   * @param errorType
+   */
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
 
-    this.subscriptions.push(
-      this.authService.postLogin(this.login).subscribe(
+  private getLoginCredentials(): LoginCredentials {
+    return {
+      username: this.form.get('username').value,
+      password: this.form.get('password').value,
+    };
+  }
+
+  private save(): void {
+    this.subscriptions.add(
+      this.authService.postLogin(this.getLoginCredentials()).subscribe(
         response => {
-          response.body['username'] = this.usernameValue;
           this.authService.updateState(response.body);
 
-
-          // // update the establishment service state with the given establishment oid
+          // // update the establishment service state with the given establishment id
           this.establishmentService.establishmentId = response.body.establishment.id;
 
           const token = response.headers.get('authorization');
+          this.authService.authorise(token);
           this.authService.authorise(token);
 
           this.idleService.init(PING_INTERVAL, TIMEOUT_INTERVAL);
@@ -111,9 +143,9 @@ export class LoginComponent implements OnInit, OnDestroy {
             this.router.navigate(['/logged-out']);
           });
         },
-        err => {
-          const message = err.error.message || 'Invalid username or password.';
-          this.messageService.show('error', message);
+        (error: HttpErrorResponse) => {
+          this.form.setErrors({ serverError: true });
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         },
         () => {
           const redirect = this.authService.redirect;
@@ -132,10 +164,5 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       )
     );
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
-    this.messageService.clearAll();
   }
 }

@@ -14,22 +14,10 @@ router.route('/').get(async (req, res) => {
   const showHistoryTime = req.query.history === 'timeline' ? true : false;
   const showPropertyHistoryOnly = req.query.history === 'property' ? true : false;
 
-  // validating establishment id - must be a V4 UUID or it's an id
-  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-  let byUUID = null, byID = null;
-  if (typeof establishmentId === 'string' && uuidRegex.test(establishmentId.toUpperCase())) {
-    byUUID = establishmentId;
-  } else if (Number.isInteger(establishmentId)) {
-    byID = parseInt(escape(establishmentId));
-  } else {
-    // unexpected establishment id
-    return res.status(400).send();
-  }
-
   const thisEstablishment = new Establishment.Establishment(req.username);
 
   try {
-    if (await thisEstablishment.restore(byID, byUUID, showHistory)) {
+    if (await thisEstablishment.restore(establishmentId, showHistory)) {
       // show only brief info on Establishment
       const jsonResponse = thisEstablishment.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false, false, filteredProperties);
       const resultJSON = {
@@ -67,20 +55,7 @@ router.route('/').get(async (req, res) => {
 
 // updates the current jobs  for the known establishment
 router.route('/').post(async (req, res) => {
-  const establishmentId = req.establishmentId;
-
-  // validating establishment id - must be a V4 UUID or it's an id
-  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-  let byUUID = null, byID = null;
-  if (typeof establishmentId === 'string' && uuidRegex.test(establishmentId.toUpperCase())) {
-      byUUID = establishmentId;
-  } else if (Number.isInteger(establishmentId)) {
-    byID = parseInt(escape(establishmentId));
-  } else {
-    // unexpected establishment id
-    return res.status(400).send();
-  }
-  
+  const establishmentId = req.establishmentId;  
   const thisEstablishment = new Establishment.Establishment(req.username);
 
 
@@ -90,14 +65,16 @@ router.route('/').post(async (req, res) => {
     //  is to restore from given UID
     // by loading the Establishment before updating it, we have all the facts about
     //  an Establishment (if needing to make inter-property decisions)
-    if (await thisEstablishment.restore(byID, byUUID)) {
+    if (await thisEstablishment.restore(establishmentId)) {
       // TODO: JSON validation
 
       // by loading after the restore, only those properties defined in the
       //  POST body will be updated (peristed)
       // With this endpoint we're only interested in vacancies
       const isValidEstablishment = await thisEstablishment.load({
-        jobs: req.body.jobs,
+        vacancies: req.body.vacancies,
+        starters: req.body.starters,
+        leavers: req.body.leavers,
       });
 
       // this is an update to an existing Establishment, so no mandatory properties!
@@ -111,12 +88,13 @@ router.route('/').post(async (req, res) => {
         };
   
         // amalgamated vacancies, starters and leavers, therefore remove them from parent scope
-        delete resultJSON.Vacancies;
-        delete resultJSON.Starters;
-        delete resultJSON.Leavers;
-        delete resultJSON.TotalVacencies;
-        delete resultJSON.TotalStarters;
-        delete resultJSON.TotalLeavers;
+        delete resultJSON.jobs;
+        // delete resultJSON.Vacancies;
+        // delete resultJSON.Starters;
+        // delete resultJSON.Leavers;
+        // delete resultJSON.TotalVacencies;
+        // delete resultJSON.TotalStarters;
+        // delete resultJSON.TotalLeavers;
 
         // total starters, leavers and vacancies are always
   

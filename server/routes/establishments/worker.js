@@ -17,43 +17,48 @@ const Workers = require('../../models/classes/worker');
 const TrainingRoutes = require('./training');
 const QualificationRoutes = require('./qualification');
 
-// middleware to validate the establishment on all worker endpoints
-const validateEstablishment = async (req, res, next) => {
-    const establishmentId = req.establishmentId;
-    const validatedEstablishment = await Workers.Worker.validateEstablishment(establishmentId);
-    if (!validatedEstablishment) {
-        return res.status(404).send('Establishment unknown.');
-    } else {
-        next();
-    }
-};
-
 // this middleware validates a worker against known establishment ID
 const validateWorker = async (req, res, next) => {
     const workerId = req.params.workerId;
     const establishmentId = req.establishmentId;
 
-    // validating worker id - must be a V4 UUID
-    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-    if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
-
-    const thisWorker = new Workers.Worker(establishmentId);
-
-    try {
-        if (await thisWorker.restore(workerId, false)) {
-            next();
-        } else {
-            // not found worker
-            return res.status(404).send('Not Found');
+    // if the request for this worker is by a user associated with parent, and the requested establishment is
+    //  not their primary establishment, then they must have been granted "staff" level permission to access the worker
+    if (req.isParent && req.establishmentId !== req.establishment.id) {
+        // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
+        if (req.parentPermissions === null ||
+            req.parentPermissions !== "Workplace and Staff") {
+                console.error("validateWorker authorisation - parent is requesting a subdiaries worker without required permission");
+                return res.status(403).send('Not Found');
         }
+    }
 
-    } catch (err) {
-        console.error('worker::validateWorker - failed', err);
-        return res.status(503).send();
+
+    if (workerId) {
+        // validating worker id - must be a V4 UUID
+        const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+        if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
+
+        const thisWorker = new Workers.Worker(establishmentId);
+
+        try {
+            if (await thisWorker.restore(workerId, false)) {
+                next();
+            } else {
+                // not found worker
+                return res.status(404).send('Not Found');
+            }
+
+        } catch (err) {
+            console.error('worker::validateWorker - failed', err);
+            return res.status(503).send();
+        }
+    } else {
+        next();
     }
 };
 
-router.use('/', validateEstablishment);
+router.use('/', validateWorker);
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
 
@@ -62,7 +67,7 @@ router.route('/').get(async (req, res) => {
     const establishmentId = req.establishmentId;
 
     try {
-        const allTheseWorkers = await Workers.Worker.fetch(establishmentId, null);
+        const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
         return res.status(200).json({
             workers: allTheseWorkers
         });
@@ -131,9 +136,8 @@ router.route('/').post(async (req, res) => {
             // note - req.username is assured, vecause it is provided through the
             //  hasAuthorisedEstablishment middleware which runs on all establishment routes
             await newWorker.save(req.username);
-            return res.status(201).json({
-                uid: newWorker.uid
-            });
+            return res.status(201).json(newWorker.toJSON(false, false, false, false));
+
         } else {
             return res.status(400).send('Unexpected Input.');
         }

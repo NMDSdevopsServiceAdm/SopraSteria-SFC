@@ -8,9 +8,8 @@ describe('NationalInsuranceNumberComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NationalInsuranceNumberComponent ]
-    })
-    .compileComponents();
+      declarations: [NationalInsuranceNumberComponent],
+    }).compileComponents();
   }));
 
   beforeEach(() => {

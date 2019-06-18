@@ -5,34 +5,26 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { EstablishmentService } from './establishment.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ReportsService {
   private _reportDetails$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   public reportDetails$: Observable<string> = this._reportDetails$.asObservable();
 
-  constructor(
-    private http: HttpClient,
-    private establishmentService: EstablishmentService
-  ) {}
+  constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
   getWDFReport(updatedEffectiveFrom?) {
-
     if (updatedEffectiveFrom) {
       const effectiveFrom = '?effectiveFrom=' + updatedEffectiveFrom;
       return this.http.get<any>(
         `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}${effectiveFrom}`
       );
-    }
-    else {
-      return this.http.get<any>(
-        `/api/reports/wdf/establishment/${this.establishmentService.establishmentId}`
-      );
+    } else {
+      return this.http.get<any>(`/api/reports/wdf/establishment/${this.establishmentService.establishmentId}`);
     }
   }
 
   updateState(data) {
     this._reportDetails$.next(data);
   }
-
 }

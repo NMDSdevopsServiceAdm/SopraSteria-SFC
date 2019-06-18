@@ -1,0 +1,18 @@
+@import '../partials/colors';
+
+.govuk-inset-text {
+  &.todo {
+    border-color: $jaffa;
+    background-color: rgba($jaffa, 0.25);
+  }
+
+  &.success {
+    border-color: $funGreen;
+    background-color: rgba($funGreen, 0.25);
+  }
+
+  &.warning {
+    border-color: $jaffa;
+    background-color: rgba($jaffa, 0.25);
+  }
+}

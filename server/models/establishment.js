@@ -61,6 +61,19 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"ParentUID"'
     },
+    dataOwner: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ['Workplace','Parent'],
+      field: '"Owner"',
+      default: 'Workplace',
+    },
+    parentPermissions: {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Workplace','Worker'],
+      field: '"ParentAccess"',
+    },
     NameValue: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -112,6 +125,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"MainServiceFKChangedBy"'
     },
+    MainServiceFkOther: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      primaryKey: false,
+      field: '"MainServiceFkOther"'
+    },
     EmployerTypeValue: {
       type: DataTypes.ENUM,
       allowNull: true,
@@ -137,6 +156,12 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"EmployerTypeChangedBy"'
+    },
+    EmployerTypeOther: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      primaryKey: false,
+      field: '"EmployerTypeOther"'
     },
     NumberOfStaffValue: {
       type: DataTypes.INTEGER,
@@ -356,6 +381,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"LeaversChangedBy"'
     },
+    archived: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"Archived"',
+      defaultValue: false
+    },
     nmdsId: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -377,8 +408,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false,
       field: 'updatedby'
-    },
+    }
   }, {
+    defaultScope: {
+      where: {
+        archived: false
+      }
+    },  
     tableName: '"Establishment"',
     schema: 'cqc',
     createdAt: false,

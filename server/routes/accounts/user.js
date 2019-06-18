@@ -534,4 +534,27 @@ router.route('/add').post(async (req, res) => {
     }
 });
 
+// returns the set of establishments associated with this (as given by JWT) user
+// their primary establishment always exists and is awlays returned.
+// If, this user has Edit authority and their primary establishment is a parent, then this aslo returns all the subs.
+router.use('/my/establishments', Authorization.isAuthorised);
+router.route('/my/establishments').get(async (req, res) => {
+    // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
+    const theLoggedInUser = req.username;
+    const primaryEstablishmentId = req.establishment.id;
+    const isParent = req.isParent;
+
+    try {
+        const thisUser = new User.User(primaryEstablishmentId);;
+        await thisUser.restore(null, theLoggedInUser, false);
+
+        const myEstablishments = await thisUser.myEstablishments(isParent, null);
+        return res.status(200).send(myEstablishments);
+
+    } catch (err) {
+        console.error("/user/my/establishments: ERR: ", err.message);
+        return res.status(503).send({});        // intentionally an empty JSON response
+    }
+});
+
 module.exports = router;

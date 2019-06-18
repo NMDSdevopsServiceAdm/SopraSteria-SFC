@@ -1,47 +1,67 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
+import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { LocalAuthorityModel } from '../model/localAuthority.model';
+import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
-import { ServicesModel } from '../model/services.model';
-import { SharingOptionsModel } from '../model/sharingOptions.model';
 
 interface EstablishmentApiResponse {
   id: number;
   name: string;
 }
-interface ShareOptionsRequest {
-  share: SharingOptionsModel;
-}
+
 interface ShareOptionsResponse extends EstablishmentApiResponse {
   share: SharingOptionsModel;
-}
-interface ShareWithLocalAuthorityRequest {
-  localAuthorities: LocalAuthorityModel[];
-}
-interface ShareWithLocalAuthorityResponse extends EstablishmentApiResponse {
-  primaryAuthority: LocalAuthorityModel;
-  localAuthorities: LocalAuthorityModel[];
 }
 
 interface EmployerTypeResponse {
   id: number;
   name: string;
-  employerType: string;
+  employerType: {
+    value: string;
+    other?: string;
+  };
+}
+
+interface EmployerTypeRequest {
+  employerType: {
+    value: string;
+    other?: string;
+  };
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class EstablishmentService {
+  private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
+  public establishment$: Observable<Establishment> = this._establishment$.asObservable();
+
   constructor(private http: HttpClient) {}
 
   private _establishmentId: number = null;
 
+  public get establishment() {
+    return this._establishment$.value as Establishment;
+  }
+
+  setState(establishment) {
+    this._establishment$.next(establishment);
+  }
+
   public set establishmentId(value: number) {
     this._establishmentId = value;
     localStorage.setItem('establishmentId', value.toString());
+  }
+
+  public getAllServices(establishmentId): Observable<ServiceGroup[]> {
+    const params = new HttpParams().set('all', 'true');
+    return this.http
+      .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
+      .pipe(map(res => res.allOtherServices));
   }
 
   public get establishmentId() {
@@ -64,39 +84,37 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${id}`);
   }
 
-  getCapacity(all = false) {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/capacity?all=${all}`);
+  getCapacity(establishmentId, all = false) {
+    const params = new HttpParams().set('all', `${all}`);
+    return this.http.get<any>(`/api/establishment/${establishmentId}/capacity`, { params });
   }
 
-  postCapacity(capacities) {
-    const data = { capacities };
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/capacity`, data);
+  updateCapacity(establishmentId, data) {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/capacity`, data);
   }
 
   getJobs() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.jobs));
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`);
   }
 
   getVacancies() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.jobs.Vacancies));
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.vacancies));
   }
 
-  postVacancies(vacancies) {
-    const data = { jobs: { vacancies } };
+  postVacancies(data) {
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
   }
 
   getStarters() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.jobs.Starters));
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.starters));
   }
 
-  postStarters(starters) {
-    const data = { jobs: { starters } };
+  postStarters(data) {
     return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
   }
 
   getLeavers() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.jobs.Leavers));
+    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.leavers));
   }
 
   postLeavers(leavers) {
@@ -116,55 +134,27 @@ export class EstablishmentService {
     return this.http.get<ShareOptionsResponse>(`/api/establishment/${this.establishmentId}/share`);
   }
 
-  postSharingOptions(shareOptions: SharingOptionsModel) {
-    const postBody: ShareOptionsRequest = {
-      share: shareOptions,
-    };
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/share`, postBody);
-  }
-
-  getLocalAuthorities() {
-    return this.http.get<ShareWithLocalAuthorityResponse>(
-      `/api/establishment/${this.establishmentId}/localAuthorities`
-    );
-  }
-
-  postLocalAuthorities(authorities: LocalAuthorityModel[]) {
-    const postBody: ShareWithLocalAuthorityRequest = {
-      localAuthorities: authorities,
-    };
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/localAuthorities`, postBody);
-  }
-
   getEmployerType() {
     return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`);
   }
 
-  postEmployerType(data) {
-    return this.http.post<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`, data);
+  updateServiceUsers(establishmentId, data) {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/serviceUsers`, data);
   }
 
-  getAllServices() {
-    return this.http.get<ServicesModel>(`/api/establishment/${this.establishmentId}/services?all=true`);
+  updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest) {
+    return this.http.post<EmployerTypeResponse>(`/api/establishment/${establishmentId}/employerType`, data);
   }
 
-  getCurrentServices() {
-    return this.http.get<ServicesModel>(`/api/establishment/${this.establishmentId}/services?all=false`);
+  updateOtherServices(establishmentId, data: PostServicesModel) {
+    return this.http.post<PostServicesModel>(`/api/establishment/${establishmentId}/services`, data);
   }
 
-  postOtherServices(obj: PostServicesModel) {
-    return this.http.post<PostServicesModel>(`/api/establishment/${this.establishmentId}/services`, obj);
+  updateDataSharing(establishmentId, data: DataSharingRequest): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/share`, data);
   }
 
-  getAllServiceUsers() {
-    return this.http.get<any>('/api/serviceUsers');
-  }
-
-  getServiceUsersChecked() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/serviceUsers`);
-  }
-
-  postServiceUsers(data) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/serviceUsers`, data);
+  updateLocalAuthorities(establishmentId, data) {
+    return this.http.post<any>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }
 }
