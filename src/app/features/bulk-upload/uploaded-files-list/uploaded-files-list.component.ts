@@ -53,6 +53,20 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     );
   }
 
+  public downloadReport(): void {
+    console.log('DOWNLOAD REPORT');
+    this.subscriptions.add(
+      this.bulkUploadService.getReport(this.establishmentService.establishmentId).subscribe(
+        response => {
+          console.log('success', response);
+        },
+        (response: HttpErrorResponse) => {
+          console.log('error', response);
+        }
+      )
+    );
+  }
+
   /**
    * Set validate success flag, set file type labels
    * And then set record count and status
