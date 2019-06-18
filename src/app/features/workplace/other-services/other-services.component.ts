@@ -8,7 +8,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Question } from '../question/question.component';
 import { Router } from '@angular/router';
 import { Service, ServiceGroup } from '@core/model/services.model';
-import { WorkplaceService } from '@core/services/workplace.service';
 
 @Component({
   selector: 'app-other-services',
@@ -27,7 +26,6 @@ export class OtherServicesComponent extends Question {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    protected workplaceService: WorkplaceService
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
