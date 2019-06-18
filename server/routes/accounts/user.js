@@ -8,6 +8,7 @@ const passwordCheck = require('../../utils/security/passwordValidation').isPassw
 const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
 const generateJWT = require('../../utils/security/generateJWT');
+const usernameCheck = require('../../utils/security/usernameValidation').isUsernameValid;
 
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
@@ -17,6 +18,12 @@ router.route('/').get(async (req, res) => {
     res.status(200).send();
 });
 
+const responseErrors = {
+  invalidUsername: {
+    errCode: -210,
+    errMessage: 'Invalid Username'
+  }
+};
 
 // returns a list of all users for the given establishment
 router.use('/establishment/:id', Authorization.hasAuthorisedEstablishment);
@@ -469,6 +476,11 @@ router.route('/add').post(async (req, res) => {
    
     try {
         // TODO: JSON validation
+        if (req.body[0] && req.body[0].user && req.body[0].user.username) {
+          if (!usernameCheck(req.body[0].user.username)) {
+            return res.status(400).json(responseErrors.invalidUsername);
+          }
+        }
 
         // The required User role will obtained from the original user record at the time of registration via the
         //  add user tracking UUID, along with the establishment ID
