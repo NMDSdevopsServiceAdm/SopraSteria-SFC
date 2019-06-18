@@ -5,7 +5,7 @@
   outline: 0 !important;
 }
 
-@include govuk-media-query($from: mobile, $until: tablet) {
+@include govuk-media-query($from: mobile, $until: desktop) {
 
   .has-divider {
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.16) !important;
@@ -76,7 +76,7 @@
   }
 
   .govuk-header__menu-button {
-    color: $govuk-brand-colour;
+    color: $govuk-brand-colour !important;
     margin-right: 20px;
     font-size: 17px;
   }
