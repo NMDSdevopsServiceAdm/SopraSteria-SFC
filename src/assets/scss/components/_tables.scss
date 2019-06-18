@@ -1,0 +1,62 @@
+$error_border_size: $govuk-border-width-form-element-error;
+$error_row_indent: 12px;
+$error_row_offset: 50px;
+$error_row_padding: $govuk-gutter-half;
+
+.govuk-error-table {
+  margin-bottom: ($error_row_offset + $error_row_padding) * 1.25;
+}
+
+.govuk-error-table__row {
+  & + tr:not(.govuk-error-table__row) .govuk-error-table__cell {
+    padding-top: $error_row_offset + $error_row_padding;
+  }
+  & + .govuk-error-table__row {
+    border-top: $error_row_offset + $error_row_padding solid transparent;
+  }
+}
+
+.govuk-error-table__cell {
+  top: $error_row_offset;
+  position: relative;
+  border-bottom: none;
+  box-shadow: inset 0px $error_border_size 0 $shiraz, inset 0px $error_border_size * -1 0 $shiraz;
+  padding-top: $error_row_padding;
+  padding-bottom: $error_row_padding;
+
+  &:first-of-type:before,
+  &:last-of-type:before {
+    content: '';
+    position: absolute;
+    height: 100%;
+    background: $shiraz;
+    width: $error_border_size;
+    top: 0;
+  }
+
+  &:first-of-type {
+    left: $error_row_indent;
+    padding-left: $error_row_padding;
+    &:before {
+      left: 0;
+    }
+  }
+
+  &:last-of-type {
+    padding-right: $error_row_padding;
+    &:before {
+      right: 0;
+    }
+  }
+}
+
+.govuk-error-table__message {
+  position: absolute;
+  white-space: nowrap;
+  left: $error_row_indent * -1;
+  top: ($error_row_offset - $error_row_padding) * -1;
+  height: 100%;
+  padding-bottom: $error_row_offset - $error_row_padding;
+  padding-left: 8px;
+  border-left: $error_border_size solid $shiraz;
+}
