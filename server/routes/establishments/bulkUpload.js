@@ -894,28 +894,30 @@ router.route('/report').get(async (req, res) => {
     const establishment = await downloadContent(key);
     const entities = JSON.parse(establishment.data);
     const readable = new Stream.Readable();
-    
-    readable.push('**********************************************\n');
-    readable.push('* Errors (will cause file(s) to be rejected) *\n');
-    readable.push('**********************************************\n\n');
-    
-    errorsAndWarnings[0]
+
+    const errorTitle = '* Errors (will cause file(s) to be rejected) *';
+    const errorPadding = '*'.padStart(errorTitle.length, '*');
+    readable.push(`${errorPadding}\n${errorTitle}\n${errorPadding}\n\n`);
+
+    errorsAndWarnings
+      .reduce((acc, val) => acc.concat(val), [])
       .filter(msg => msg.errCode && msg.errType)
-      .sort((a,b) => a.errCode < b.errCode)
-      .map(item => readable.push(`${item.error} on line ${item.lineNumber}\n`));
+      .sort((a,b) => a.errCode - b.errCode)
+      .map(item => readable.push(`${item.origin} - ${item.error}, ${item.errCode} on line ${item.lineNumber}\n`));
     
-    readable.push('\n**********************************************\n');
-    readable.push('* Warnings (files will be accepted but data is incomplete or internally inconsistent) *\n');
-    readable.push('**********************************************\n\n');
-
-    errorsAndWarnings[0]
+    const warningTitle = '* Warnings (files will be accepted but data is incomplete or internally inconsistent) *';
+    const warningPadding = '*'.padStart(warningTitle.length, '*');
+    readable.push(`\n${warningPadding}\n${warningTitle}\n${warningPadding}\n\n`);
+    
+    errorsAndWarnings
+      .reduce((acc, val) => acc.concat(val), [])
       .filter(msg => msg.warnCode && msg.warnType)
-      .sort((a,b) => a.warnCode < b.warnCode)
-      .map(item => readable.push(`${item.warning} on line ${item.lineNumber}\n`));
+      .sort((a,b) => a.warnCode - b.warnCode)
+      .map(item => readable.push(`${item.origin} - ${item.warning}, ${item.warnCode} on line ${item.lineNumber}\n`));
 
-    readable.push('\n*************************************************************\n');
-    readable.push('* You are sharing data with the following Local Authorities *\n');
-    readable.push('*************************************************************\n\n');
+    const laTitle = '* You are sharing data with the following Local Authorities *';
+    const laPadding = '*'.padStart(laTitle.length, '*');
+    readable.push(`\n${laPadding}\n${laTitle}\n${laPadding}\n\n`);
 
     entities
       .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
