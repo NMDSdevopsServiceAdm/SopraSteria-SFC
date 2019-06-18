@@ -23,12 +23,18 @@
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link--no-visited-state" href="#" (click)="deleteStaffRecord($event, i)">
-            Delete<span class="govuk-visually-hidden"> basic record</span>
+            Delete
+            <span class="govuk-visually-hidden">
+              basic record for {{ staffRecord.get('nameOrId').value }}
+            </span>
           </a>
         </dd>
         <dd class="govuk-summary-list__actions">
           <a class="govuk-link--no-visited-state" href="#" (click)="openStaffRecord($event, i)">
-            View or Change<span class="govuk-visually-hidden"> basic record</span>
+            View or Change
+            <span class="govuk-visually-hidden">
+              basic record for {{ staffRecord.get('nameOrId').value }}
+            </span>
           </a>
         </dd>
       </ng-template>

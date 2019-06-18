@@ -8,7 +8,7 @@
       [attr.aria-controls]="tab.slug"
       [attr.aria-selected]="tab.active"
       class="govuk-tabs__tab"
-      href="#{{ tab.title }}"
+      href="#{{ tab.slug }}"
       (click)="selectTab($event, tab)"
       [class.govuk-tabs__tab--selected]="tab.active"
     >
