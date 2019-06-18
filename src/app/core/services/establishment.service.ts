@@ -97,14 +97,6 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`);
   }
 
-  getVacancies() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.vacancies));
-  }
-
-  public postStarters(data): Observable<any> {
-    return this.http.post<Observable<any>>(`/api/establishment/${this.establishmentId}/jobs`, data);
-  }
-
   getLeavers() {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.leavers));
   }

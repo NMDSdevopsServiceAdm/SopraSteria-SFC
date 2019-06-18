@@ -10,118 +10,92 @@
   </div>
 </div>
 
-<form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-      <h1 class="govuk-heading-l">Add new starters in the last 12 months</h1>
+      <h1 class="govuk-heading-xl">Add new starters in the last 12 months</h1>
       <p>This should only be for permanent or temporary staff.</p>
     </legend>
+
     <ng-container formArrayName="starterRecords">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0">
+          <p>Job Role</p>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <p>Number of new starters</p>
+        </div>
+      </div>
       <div
-        *ngFor="let record of starterRecords.controls; let idx = index"
+        *ngFor="let record of starterRecords.controls; let i = index"
+        [formGroupName]="i"
         [class.govuk-form-group--error]="submitted && record.invalid"
-        [formGroupName]="idx"
-        class="govuk-!-margin-bottom-6"
       >
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-two-thirds govuk-form-group govuk-!-margin-bottom-0"
-            [class.govuk-!-padding-left-3]="submitted && record.invalid">
-            <label *ngIf="idx === 0" class="govuk-label" for="jobId">
-              Job role
-            </label>
+        <div class="govuk-grid-row govuk-!-margin-bottom-6">
+          <div class="govuk-grid-column-two-thirds">
             <select
               class="govuk-select govuk-!-width-full"
-              [class.govuk-select--error]="submitted && (record.hasError('bothAreEmpty') || record.hasError('jobIdEmpty'))"
+              [class.govuk-select--error]="submitted && record.get('jobId').invalid"
               formControlName="jobId"
-              id="jobId"
+              id="jobId-{{ i }}"
               name="jobId"
             >
-              <option [ngValue]="null">Select Job Title</option>
-              <option *ngFor="let job of filteredJobs(idx)" [value]="job.id">
+              <option [ngValue]="null">Select job role</option>
+              <option *ngFor="let job of selectableJobs(i)" [value]="job.id">
                 {{ job.title }}
               </option>
             </select>
           </div>
           <div class="govuk-grid-column-one-third">
-            <label *ngIf="idx === 0" class="govuk-label" for="total">
-              Number of new starters
-            </label>
             <input
-              type="number"
-              formControlName="total"
-              id="total"
-              name="total"
               class="govuk-input govuk-!-width-one-half"
-              [class.govuk-input--error]="submitted && (record.hasError('bothAreEmpty') || record.hasError('totalEmpty'))"
-              [appNumberMax]="999"
-              appNumberPositiveOnly
-              appNumberIntOnly
-              [appNumberDigitsMax]="3"
-              min="0"
-              step="1"
+              [class.govuk-input--error]="submitted && record.get('total').invalid"
+              formControlName="total"
+              id="total-{{ i }}"
+              name="total"
+              type="number"
             />
             <button
-              type="button"
+              *ngIf="starterRecords.length > 1"
               class="govuk-button govuk-button--link govuk-!-margin-bottom-0 govuk-!-margin-left-3"
-              (click)="removeRecord(idx)"
+              type="button"
+              (click)="removeRecord($event, i)"
             >
               Remove
             </button>
           </div>
         </div>
       </div>
-      <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-          <button
-            *ngIf="!allJobsTaken()"
-            type="button"
-            class="govuk-button govuk-button--secondary"
-            (click)="addStarter()"
-          >
-            + Add <ng-container *ngIf="starterRecords.controls.length">another</ng-container> new starter
-          </button>
-        </div>
-        <div class="govuk-grid-column-one-third" [class.govuk-util__float-right]="allJobsTaken()">
-          <p *ngIf="starterRecords.controls.length" class="govuk-!-font-size-27">
-            <strong>Total: {{ calculateTotal() }}</strong>
-          </p>
-        </div>
-      </div>
     </ng-container>
-    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && noRecordsReason.invalid">
-      <span
-        id="noRecordsReason-error"
-        class="govuk-error-message"
-        *ngIf="submitted && noRecordsReason.invalid"
-      >
-        <span class="govuk-visually-hidden">Error:</span>
-        {{ getFormErrorMessage('noRecordsReason', 'required') }}
-      </span>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds govuk-!-margin-bottom-6">
+        <button
+          *ngIf="!allJobsSelected"
+          class="govuk-button govuk-button--secondary"
+          type="button"
+          (click)="addStarter()"
+        >
+          Add another new starter
+        </button>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <p class="govuk-heading-m">Total: {{ totalStarters }}</p>
+      </div>
+    </div>
+
+    <div class="govuk-form-group">
       <div class="govuk-radios">
-        <div class="govuk-radios__item">
+        <div class="govuk-radios__item" *ngFor="let option of startersKnownOptions; let i = index">
           <input
             class="govuk-radios__input"
-            formControlName="noRecordsReason"
-            id="noRecordsReason-none"
+            id="noRecordsReason-{{ i }}"
             name="noRecordsReason"
-            type="radio"
-            [value]="noRecordsReasonEnum.NONE"
-          />
-          <label class="govuk-label govuk-radios__label" for="noRecordsReason-none">
-            There have been no new starters.
-          </label>
-        </div>
-        <div class="govuk-radios__item">
-          <input
-            class="govuk-radios__input"
             formControlName="noRecordsReason"
-            id="noRecordsReason-dont-know"
-            name="noRecordsReason"
             type="radio"
-            [value]="noRecordsReasonEnum.DONT_KNOW"
+            [value]="option.value"
           />
-          <label class="govuk-label govuk-radios__label" for="noRecordsReason-dont-know">
-            I don't know how many new starters there have been.
+          <label class="govuk-label govuk-radios__label" for="noRecordsReason-{{ i }}">
+            {{ option.label }}
           </label>
         </div>
       </div>

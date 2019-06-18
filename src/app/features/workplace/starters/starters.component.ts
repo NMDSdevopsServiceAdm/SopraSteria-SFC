@@ -1,22 +1,34 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NoRecordsReason, PostStartersRequest, Starter } from '@core/model/establishment.model';
+import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { Question } from '@features/workplace/question/question.component';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-starters',
   templateUrl: './starters.component.html',
 })
 export class StartersComponent extends Question {
+  public total = 0;
   public jobs: Job[] = [];
-  public noRecordsReasonEnum = NoRecordsReason;
+  public startersKnownOptions = [
+    {
+      label: 'There have been no new starters.',
+      value: jobOptionsEnum.NONE,
+    },
+    {
+      label: `I don't know how many new starters there have been.`,
+      value: jobOptionsEnum.DONT_KNOW,
+    },
+  ];
+  private minStarters = 0;
+  private maxStarters = 999;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -27,43 +39,61 @@ export class StartersComponent extends Question {
     private jobService: JobService
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
+
+    this.setupForm();
+  }
+
+  get starterRecords(): FormArray {
+    return <FormArray>this.form.get('starterRecords');
+  }
+
+  get noRecordsReason(): AbstractControl {
+    return <FormControl>this.form.get('noRecordsReason');
+  }
+
+  get allJobsSelected(): boolean {
+    return this.starterRecords.length >= this.jobs.length;
+  }
+
+  get totalStarters(): number {
+    return this.starterRecords.value.reduce((total, current) => (total += current.total ? current.total : 0), 0);
   }
 
   protected init() {
-    this.setupForm();
-    this.setPreviousRoute();
     this.getJobs();
-    this.getStarters();
-    this.subscribeToStarterChanges();
-  }
+    this.setPreviousRoute();
+    this.prefill();
 
-  protected setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'noRecordsReason',
-        type: [
-          {
-            name: 'required',
-            message: `Please specify if there's been any new starters.`,
-          },
-        ],
-      },
-      {
-        item: 'starterRecords',
-        type: [
-          {
-            name: 'invalid',
-            message: 'Please select a job and enter number of new starters.',
-          },
-        ],
-      },
-    ];
+    this.subscriptions.add(
+      this.form.get('noRecordsReason').valueChanges.subscribe(value => {
+        while (this.starterRecords.length > 1) {
+          this.starterRecords.removeAt(1);
+        }
+
+        this.starterRecords.controls[0].get('jobId').clearValidators();
+        this.starterRecords.controls[0].get('total').clearValidators();
+        this.starterRecords.reset([], { emitEvent: false });
+
+        this.form.get('noRecordsReason').setValue(value, { emitEvent: false });
+      })
+    );
+
+    this.subscriptions.add(
+      this.starterRecords.valueChanges.subscribe(() => {
+        this.starterRecords.controls[0].get('jobId').setValidators([Validators.required]);
+        this.starterRecords.controls[0]
+          .get('total')
+          .setValidators([Validators.required, Validators.min(this.minStarters), Validators.max(this.maxStarters)]);
+
+        this.form.get('noRecordsReason').setValue(null, { emitEvent: false });
+      })
+    );
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
       starterRecords: this.formBuilder.array([]),
-      noRecordsReason: '',
+      noRecordsReason: null,
     });
   }
 
@@ -71,70 +101,70 @@ export class StartersComponent extends Question {
     this.previous = ['/workplace', `${this.establishment.id}`, 'vacancies'];
   }
 
-  get starterRecords(): FormArray {
-    return <FormArray>this.form.controls.starterRecords;
-  }
-
-  get noRecordsReason(): AbstractControl {
-    return <FormControl>this.form.controls.noRecordsReason;
-  }
-
   private getJobs(): void {
-    this.subscriptions.add(this.jobService.getJobs().subscribe((jobs: Job[]) => (this.jobs = jobs)));
-  }
-
-  private getStarters(): void {
     this.subscriptions.add(
-      this.establishmentService.getStarters().subscribe((starters: string | Starter[]) => {
-        this.preSelectNoRecordsReason(starters);
-        this.prePopulateStarterRecords(starters);
-      })
+      this.jobService
+        .getJobs()
+        .pipe(take(1))
+        .subscribe(jobs => (this.jobs = jobs))
     );
   }
 
-  private subscribeToStarterChanges(): void {
-    this.subscriptions.add(
-      this.starterRecords.valueChanges.subscribe(() => this.setFormArrayError())
-    );
-  }
-
-  private setFormArrayError(): void {
-    if (this.starterRecords.invalid) {
-      this.starterRecords.setErrors({ invalid: true });
-    }
-  }
-
-  /**
-   * Pre select no records reason radio
-   * And create default empty starter record
-   * @param starters
-   */
-  private preSelectNoRecordsReason(starters: string | Starter[]): void {
-    if (typeof starters === 'string') {
-      const patchValue: string =
-        starters === this.noRecordsReasonEnum.NONE ? this.noRecordsReasonEnum.NONE : this.noRecordsReasonEnum.DONT_KNOW;
-      this.noRecordsReason.patchValue(patchValue);
-      this.starterRecords.push(this.createRecordItem());
-    }
-  }
-
-  /**
-   * Pre populate starter records
-   * And create default empty starter record
-   * @param starters
-   */
-  private prePopulateStarterRecords(starters: string | Starter[]): void {
-    if (Array.isArray(starters) && starters.length) {
-      starters.forEach((starter: Starter) =>
+  private prefill(): void {
+    if (Array.isArray(this.establishment.starters) && this.establishment.starters.length) {
+      this.establishment.starters.forEach(starter =>
         this.starterRecords.push(this.createRecordItem(starter.jobId, starter.total))
       );
     } else {
+      if (
+        this.establishment.starters === jobOptionsEnum.NONE ||
+        this.establishment.starters === jobOptionsEnum.DONT_KNOW
+      ) {
+        this.form.get('noRecordsReason').setValue(this.establishment.starters);
+      }
       this.starterRecords.push(this.createRecordItem());
     }
   }
 
-  public calculateTotal(): number {
-    return this.starterRecords.value.reduce((acc, i) => (acc += parseInt(i.total, 10) || 0), 0) || 0;
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'starterRecords.jobId',
+        type: [
+          {
+            name: 'required',
+            message: 'Job Role is required',
+          },
+        ],
+      },
+      {
+        item: 'starterRecords.total',
+        type: [
+          {
+            name: 'required',
+            message: 'Total is required',
+          },
+          {
+            name: 'min',
+            message: `Total must be ${this.minStarters} or above`,
+          },
+          {
+            name: 'max',
+            message: `Total must be ${this.maxStarters} or lower`,
+          },
+        ],
+      },
+    ];
+  }
+
+  public selectableJobs(index): Job[] {
+    return this.jobs.filter(
+      job =>
+        !this.starterRecords.controls.some(
+          starter =>
+            starter !== this.starterRecords.controls[index] && parseInt(starter.get('jobId').value, 10) === job.id
+        )
+    );
   }
 
   /**
@@ -144,75 +174,6 @@ export class StartersComponent extends Question {
    */
   public addStarter(): void {
     this.starterRecords.push(this.createRecordItem());
-    this.noRecordsReason.reset();
-    this.noRecordsReason.clearValidators();
-    this.noRecordsReason.updateValueAndValidity();
-  }
-
-  private createRecordItem(jobId: number = null, total: number = null): FormGroup {
-    return this.formBuilder.group(
-      {
-        jobId: [jobId],
-        total: [total],
-      },
-      { validator: CustomValidators.bothControlsHaveValues }
-    );
-  }
-
-  public submitHandler(): void {
-    this.setFormArrayError();
-    this.setNextRoute();
-    this.onSubmit();
-  }
-
-  protected generateUpdateProps(): PostStartersRequest {
-    const request: PostStartersRequest = { starters: null };
-
-    if (this.noRecordsReason.value) {
-      request.starters = this.noRecordsReason.value;
-    } else {
-      request.starters = this.starterRecords.value.map(starterRecord => ({
-        jobId: parseInt(starterRecord.jobId, 10),
-        total: starterRecord.total,
-      }));
-    }
-
-    return request;
-  }
-
-  private setNextRoute(): void {
-    const route: string = this.noRecordsReason.value ? 'leavers' : 'confirm-starters';
-    this.next = ['/workplace', `${this.establishment.id}`, route];
-  }
-
-  protected updateEstablishment(props: PostStartersRequest): void {
-    this.subscriptions.add(
-      this.establishmentService
-        .postStarters(props)
-        .subscribe(data => this._onSuccess(data), error => this.onError(error))
-    );
-  }
-
-  /**
-   * Filter original jobs list
-   * And return jobs that haven't been already selected
-   * @param index
-   */
-  public filteredJobs(index: number): Job[] {
-    const thisRecord = this.starterRecords.controls[index];
-    return this.jobs.filter(
-      (job: Job) => !this.starterRecords.controls.some(v => v !== thisRecord && parseFloat(v.value.jobId) === job.id)
-    );
-  }
-
-  /**
-   * Method responsible for checking
-   * To see if there are any more jobs left
-   * That haven't been selected yet
-   * Controls visibility of the Add starter CTA button
-   */
-  public allJobsTaken(): boolean {
-    return this.jobs.length === this.starterRecords.length;
   }
 
   /**
@@ -221,12 +182,54 @@ export class StartersComponent extends Question {
    * Then set required validator on radios
    * @param index
    */
-  public removeRecord(index: number): void {
+  public removeRecord(event: Event, index: number): void {
+    event.preventDefault();
     this.starterRecords.removeAt(index);
+  }
 
-    if (!this.starterRecords.length) {
-      this.noRecordsReason.setValidators([Validators.required]);
-      this.noRecordsReason.updateValueAndValidity();
+  private createRecordItem(jobId: number = null, total: number = null): FormGroup {
+    return this.formBuilder.group({
+      jobId: [jobId, [Validators.required]],
+      total: [total, [Validators.required, Validators.min(this.minStarters), Validators.max(this.maxStarters)]],
+    });
+  }
+
+  protected generateUpdateProps(): UpdateJobsRequest {
+    const { noRecordsReason } = this.form.value;
+
+    if (noRecordsReason === jobOptionsEnum.NONE || noRecordsReason === jobOptionsEnum.DONT_KNOW) {
+      return { starters: noRecordsReason };
     }
+
+    if (this.starterRecords.length) {
+      return {
+        starters: this.starterRecords.value.map(starterRecord => ({
+          jobId: parseInt(starterRecord.jobId, 10),
+          total: starterRecord.total,
+        })),
+      };
+    }
+
+    return null;
+  }
+
+  protected updateEstablishment(props: UpdateJobsRequest): void {
+    this.subscriptions.add(
+      this.establishmentService
+        .updateJobs(this.establishment.id, props)
+        .subscribe(data => this._onSuccess(data), error => this.onError(error))
+    );
+  }
+
+  protected onSuccess(): void {
+    if (this.establishment.starters && Array.isArray(this.establishment.starters)) {
+      this.next = ['/workplace', `${this.establishment.id}`, 'confirm-starters'];
+    } else {
+      this.next = ['/workplace', `${this.establishment.id}`, 'leavers'];
+    }
+  }
+
+  public getFormErrorMessage(item: string, errorType: string): string {
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 }
