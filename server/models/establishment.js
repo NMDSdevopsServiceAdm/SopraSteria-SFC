@@ -410,6 +410,11 @@ module.exports = function(sequelize, DataTypes) {
       field: 'updatedby'
     }
   }, {
+    defaultScope: {
+      where: {
+        archived: false
+      }
+    },  
     tableName: '"Establishment"',
     schema: 'cqc',
     createdAt: false,

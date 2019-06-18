@@ -767,7 +767,7 @@ class Worker extends EntityValidator {
                     ValidationMessage.ERROR,
                     101,
                     nameIdProperty ? 'Invalid' : 'Missing',
-                    ['NameOrId']
+                    ['WorkerNameOrId']
                 ));
                 this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid name or id property');
             }
@@ -779,7 +779,7 @@ class Worker extends EntityValidator {
                     ValidationMessage.ERROR,
                     102,
                     mainJobProperty ? 'Invalid' : 'Missing',
-                    ['MainJob']
+                    ['WorkerMainJob']
                 ));
                 this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid main job property');
             }
@@ -789,9 +789,9 @@ class Worker extends EntityValidator {
                 allExistAndValid = false;
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.ERROR,
-                    102,
+                    103,
                     contractProperty ? 'Invalid' : 'Missing',
-                    ['Contract']
+                    ['WorkerContract']
                 ));
                 this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid contract property');
             }

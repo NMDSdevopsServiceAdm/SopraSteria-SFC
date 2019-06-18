@@ -15,6 +15,7 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class WeeklyContractedHoursComponent extends QuestionComponent {
   public floatPattern = FLOAT_PATTERN.toString();
+  public contractedMaxHours = 75;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -46,7 +47,9 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
         this.form.get('hours').clearValidators();
 
         if (value === 'Yes') {
-          this.form.get('hours').setValidators([Validators.required, Validators.min(0), Validators.max(65)]);
+          this.form.get('hours').setValidators(
+            [Validators.required, Validators.min(0), Validators.max(this.contractedMaxHours)]
+          );
         }
 
         this.form.get('hours').updateValueAndValidity();
@@ -75,11 +78,11 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
           },
           {
             name: 'min',
-            message: 'Contracted weekly hours must be between 0 and 65.',
+            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}.`,
           },
           {
             name: 'max',
-            message: 'Contracted weekly hours must be between 0 and 65.',
+            message: `Contracted weekly hours must be between 0 and ${this.contractedMaxHours}.`,
           },
           {
             name: 'pattern',

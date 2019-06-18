@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Establishment, GetStartersResponse, PostStartersRequest, Starter } from '@core/model/establishment.model';
+import { Establishment, UpdateJobsRequest } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -101,17 +101,7 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.vacancies));
   }
 
-  postVacancies(data) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
-  }
-
-  public getStarters(): Observable<string | Starter[]> {
-    return this.http
-      .get<GetStartersResponse>(`/api/establishment/${this.establishmentId}/jobs`)
-      .pipe(map((res: GetStartersResponse) => res.starters));
-  }
-
-  public postStarters(data: PostStartersRequest): Observable<any> {
+  public postStarters(data): Observable<any> {
     return this.http.post<Observable<any>>(`/api/establishment/${this.establishmentId}/jobs`, data);
   }
 
@@ -153,10 +143,14 @@ export class EstablishmentService {
   }
 
   updateDataSharing(establishmentId, data: DataSharingRequest): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/share`, data);
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
   }
 
   updateLocalAuthorities(establishmentId, data) {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/localAuthorities`, data);
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
+  }
+
+  updateJobs(establishmentId, data: UpdateJobsRequest): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/jobs`, data);
   }
 }

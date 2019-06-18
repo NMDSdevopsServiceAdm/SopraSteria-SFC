@@ -45,7 +45,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
     const { otherQualification } = this.form.value;
 
     if (!otherQualification) {
-      return false;
+      return null;
     }
 
     return {

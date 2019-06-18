@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 // app config
+var AppConfig = require('./server/config/appConfig');
 var config = require('./server/config/config');
 
 // caching middleware - ref and transactional
@@ -47,7 +48,6 @@ var errors = require('./server/routes/errors');
 
 // test only routes - helpers to setup and execute automated tests
 var testOnly = require('./server/routes/testOnly');
-
 
 var app = express();
 
@@ -159,7 +159,6 @@ app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
 
-
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
@@ -195,11 +194,19 @@ app.use(function(err, req, res, next) {
     });
 });
 
-var debug = require('debug')('server');
-const listenPort = parseInt(config.get('listen.port'), 10);
-app.set('port', listenPort);
-app.listen(app.get('port'));
+const startApp = () => {
+    const listenPort = parseInt(config.get('listen.port'), 10);
+    app.set('port', listenPort);
+    app.listen(app.get('port'));
+    console.log('Listening on port: ' + app.get('port'));
+};
 
-console.log('Listening on port: ' + app.get('port'));
+if (AppConfig.ready) {
+    startApp();
+} else {
+    AppConfig.on(AppConfig.READY_EVENT, () => {
+        startApp();
+    });
+}
 
 module.exports = app;

@@ -4,6 +4,10 @@ export interface Job {
   other?: boolean;
 }
 
+export interface GetJobsResponse {
+  jobs: Job[];
+}
+
 export interface JobRole {
   jobId: number;
   title?: string;

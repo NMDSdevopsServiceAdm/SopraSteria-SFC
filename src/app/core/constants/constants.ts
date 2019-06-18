@@ -8,4 +8,5 @@ export const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,50}$/;
 export const INT_PATTERN = /^[0-9]*$/;
 export const FLOAT_PATTERN = /^([0-9]*[.])?[0-9]+$/;
 export const API_PATTERN = /^\/api\//;
+export const ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES = /[a-z0-9_-]$/i;
 export const FILE_UPLOAD_TYPES = ['CSV', 'ZIP'];

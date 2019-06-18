@@ -11,6 +11,6 @@ export class JobService {
   constructor(private http: HttpClient) {}
 
   public getJobs(): Observable<Job[]> {
-    return this.http.get<GetJobsResponse>('/api/jobs').pipe(map((res: GetJobsResponse) => res.jobs));
+    return this.http.get<GetJobsResponse>('/api/jobs').pipe(map(res => res.jobs));
   }
 }

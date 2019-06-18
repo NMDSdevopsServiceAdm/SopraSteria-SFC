@@ -20,15 +20,21 @@
         </span>
         <span *ngIf="submitted && getUsername.errors" id="username-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getUsername.hasError('required')">
+          <ng-container *ngIf="getUsername.hasError('required')">
             {{ getFormErrorMessage('username', 'required') }}
-          </span>
-          <span *ngIf="getUsername.hasError('maxLength')">
+          </ng-container>
+          <ng-container *ngIf="getUsername.hasError('maxlength')">
             {{ getFormErrorMessage('username', 'maxlength') }}
-          </span>
-          <span *ngIf="getUsername.hasError('usernameExists')">
+          </ng-container>
+          <ng-container *ngIf="getUsername.hasError('minlength')">
+            {{ getFormErrorMessage('username', 'minlength') }}
+          </ng-container>
+          <ng-container *ngIf="getUsername.hasError('usernameExists')">
             {{ getFormErrorMessage('username', 'usernameExists') }}
-          </span>
+          </ng-container>
+          <ng-container *ngIf="getUsername.hasError('pattern')">
+            {{ getFormErrorMessage('username', 'pattern') }}
+          </ng-container>
         </span>
         <input
           class="govuk-input"

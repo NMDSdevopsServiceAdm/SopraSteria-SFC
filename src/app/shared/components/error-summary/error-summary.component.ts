@@ -52,11 +52,16 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
         const formGroupControls: AbstractControl = formGroup['controls'];
         Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], `${key}.${i}`));
       } else if (isFormArray) {
-        const formArray: AbstractControl = this.form.get(key);
+        const formArray = <FormArray>this.form.get(key);
 
-        if (formArray.errors) {
-          Object.keys(formArray.errors).forEach(i => this.collectError(formArray, key));
-        }
+        formArray.controls.forEach(formGroup => {
+          if (formGroup.errors) {
+            Object.keys(formGroup.errors).forEach(() => this.collectError(formGroup, key));
+          }
+
+          const formGroupControls: AbstractControl = formGroup['controls'];
+          Object.keys(formGroupControls).forEach(i => this.collectError(formGroupControls[i], `${key}.${i}`));
+        });
       }
     });
   }

@@ -92,35 +92,17 @@ export interface Establishment {
   share: Share;
   localAuthorities: LocalAuthority[];
   primaryAuthority: PrimaryAuthority;
-  vacancies: Vacancy[];
+  vacancies: Vacancy[] | string;
   totalVacancies: number;
-  starters: Starter[];
+  starters: Starter[] | string;
   totalStarters: number;
-  leavers: Leaver[];
+  leavers: Leaver[] | string;
   totalLeavers: number;
   wdf: WDF;
 }
 
-export interface GetStartersResponse {
-  created: string;
-  id: number;
-  leavers: Leaver[];
-  name: string;
-  starters: Starter[] | string;
-  totalLeavers: number;
-  totalStarters: number;
-  totalVacancies: number;
-  uid: string;
-  updated: string;
-  updatedBy: string;
-  vacancies: string;
-}
-
-export interface PostStartersRequest {
-  starters: string | Starter[];
-}
-
-export enum NoRecordsReason {
-  DONT_KNOW = 'Don\'t know',
-  NONE = 'None',
+export interface UpdateJobsRequest {
+  leavers?: Leaver[] | string;
+  starters?: Starter[] | string;
+  vacancies?: Vacancy[] | string;
 }
