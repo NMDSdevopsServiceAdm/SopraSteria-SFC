@@ -13,7 +13,7 @@ exports.WorkerWeeklyHoursAverageProperty = class WorkerWeeklyHoursAveragePropert
 
     // concrete implementations
     async restoreFromJson(document) {
-        const MAXIMUM_HOURS=65;
+        const MAXIMUM_HOURS=75;
 
         if (document.weeklyHoursAverage) {
             if (WEEKLY_HOURS_TYPE.includes(document.weeklyHoursAverage.value)) {

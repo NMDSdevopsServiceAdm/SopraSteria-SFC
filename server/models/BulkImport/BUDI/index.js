@@ -55,7 +55,6 @@ class BUDI {
             serviceId: thisCapacity.serviceId,
           };
         });
-
     }
   }
 
@@ -1087,7 +1086,7 @@ class BUDI {
       { "BUDI": 98, "ASC": 59 },
       { "BUDI": 99, "ASC": 6 },
       { "BUDI": 100, "ASC": 7 },
-      { "BUDI": 101, "ASC": 101 },
+      { "BUDI": 101, "ASC": 68 },
       { "BUDI": 102, "ASC": 63 },
       { "BUDI": 103, "ASC": 8 },
       { "BUDI": 104, "ASC": 75 },
@@ -1155,10 +1154,23 @@ class BUDI {
   // more to come
 }
 
-BUDI.initialize()
-  .then()
-  .catch(err => {
-    console.error("Failed to initialise BUDI: ", err);
+// and now to initialise BUDI
+if (dbmodels.status.ready) {
+  BUDI.initialize()
+    .then()
+    .catch(err => {
+      console.error("Failed to initialise BUDI: ", err);
+    });
+} else {
+  dbmodels.status.on(dbmodels.status.READY_EVENT, () => {
+    // initialising BUDI
+    BUDI.initialize()
+      .then()
+      .catch(err => {
+        console.error("Failed to initialise BUDI: ", err);
+      });
   });
+}
+
 
 exports.BUDI = BUDI;

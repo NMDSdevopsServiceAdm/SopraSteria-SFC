@@ -381,6 +381,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"LeaversChangedBy"'
     },
+    archived: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: '"Archived"',
+      defaultValue: false
+    },
     nmdsId: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -402,8 +408,13 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: false,
       field: 'updatedby'
-    },
+    }
   }, {
+    defaultScope: {
+      where: {
+        archived: false
+      }
+    },  
     tableName: '"Establishment"',
     schema: 'cqc',
     createdAt: false,

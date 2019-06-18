@@ -367,16 +367,16 @@ router.route('/')
           } else {
             throw new RegistrationException(
               `Lookup on services for '${Estblistmentdata.MainService}' being cqc registered (${Estblistmentdata.IsRegulated}) resulted with zero records`,
-              responseErrors.unexpectedMainServiceId.errCode,
-              responseErrors.unexpectedMainServiceId.errMessage
+              responseErrors.unexpectedMainService.errCode,
+              responseErrors.unexpectedMainService.errMessage
             );
           }
           
           if (serviceResults.other && Estblistmentdata.MainServiceOther && Estblistmentdata.MainServiceOther.length > OTHER_MAX_LENGTH){
             throw new RegistrationException(
               `Other field value of '${Estblistmentdata.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
-              responseErrors.unexpectedMainServiceId.errCode,
-              responseErrors.unexpectedMainServiceId.errMessage
+              responseErrors.unexpectedMainService.errCode,
+              responseErrors.unexpectedMainService.errMessage
             );            
           }
 
@@ -522,6 +522,8 @@ router.route('/')
         if (err instanceof RegistrationException) throw err;
 
         if (!defaultError) defaultError = responseErrors.default;
+
+        console.log("WA DEBUG - exception: ", err)
 
         if (err instanceof EstablishmentSaveException) {
           if (err.message === 'Duplicate Establishment') {

@@ -1,6 +1,12 @@
+
 const convict = require('convict');
 const fs = require('fs');
 const yaml = require('js-yaml');
+
+// AWS Secrets Manager override
+const AWSSecrets = require('../aws/secrets');
+
+const AppConfig = require('./appConfig');
 
 // Define schema
 const config = convict({
@@ -90,23 +96,47 @@ const config = convict({
         default: false,
         env: "DB_CLIENT_SSL_STATUS"
       },
-      certificate: {
-        doc: 'The full path location of the client certificate file',
-        format: String,
-        default: 'TBC',
-        env: "DB_CLIENT_SSL_CERTIFICATE"
+      usingFiles: {
+        doc: 'If true, retrieves client certificate, client key and root certificate from file; if false, using data values',
+        format: 'Boolean',
+        default: true,
       },
-      key: {
-        doc: 'The full path location of the client key file',
-        format: String,
-        default: 'TBC',
-        env: "DB_CLIENT_SSL_KEY"
+      files: {
+        certificate: {
+          doc: 'The full path location of the client certificate file',
+          format: String,
+          default: 'TBC',
+          env: "DB_CLIENT_SSL_CERTIFICATE"
+        },
+        key: {
+          doc: 'The full path location of the client key file',
+          format: String,
+          default: 'TBC',
+          env: "DB_CLIENT_SSL_KEY"
+        },
+        ca: {
+          doc: 'The full path location of the server certificate (authority - ca) file',
+          format: String,
+          default: 'TBC',
+          env: "DB_CLIENT_SSL_CA"
+        }
       },
-      ca: {
-        doc: 'The full path location of the server certificate (authority - ca) file',
-        format: String,
-        default: 'TBC',
-        env: "DB_CLIENT_SSL_CA"
+      data: {
+        certificate: {
+          doc: 'The client certificate',
+          format: String,
+          default: 'TBC',
+        },
+        key: {
+          doc: 'The client key',
+          format: String,
+          default: 'TBC',
+        },
+        ca: {
+          doc: 'The server certificate (authority - ca)',
+          format: String,
+          default: 'TBC',
+        }  
       }
     },
     pool: {
@@ -208,28 +238,35 @@ const config = convict({
           default: 0
       }
   },
-  bulkuploaduser: {
-    accessKeyId: {
-      doc: 'Access key for AWS IAM user',
+  aws: {
+    region: {
+      doc: 'AWS region',
       format: '*',
-      default: '',
-      env: 'ACCESS_KEY_ID',
+      default: 'eu-west-2',
     },
-    secretAccessKey: {
-      doc: 'Bulk user secret key needed to upload file programmatically from aws sdk',
+    secrets: {
+      use: {
+        doc: 'Whether to use AWS Secret Manager to retrieve sensitive information, e.g. DB_PASS. If false, expect to read from environment variables.',
+        format: 'Boolean',
+        default: false
+      },
+      wallet: {
+        doc: 'The name of the AWS Secrets Manager wallet to recall from',
+        format: String,
+        default: 'bob'
+      }
+    }
+  },
+  bulkupload: {
+    region: {
+      doc: 'AWS region override for bulk upload S3 only',
       format: '*',
-      default: '',
-      env: 'SECRET_ACCESS_KEY',
+      default: 'eu-west-2',
     },
     bucketname: {
       doc: 'Bucket used to upload all client related csv files',
       format: '*',
       default: 'sfcbulkuploadfiles',
-    },
-    region: {
-      doc: 'AWS region',
-      format: '*',
-      default: 'eu-west-2',
     },
     uploadSignedUrlExpire: {
       doc: 'The duration in seconds for the upload signed URL to expire',
@@ -253,4 +290,30 @@ config.load(envConfigfile);
 config.validate(
     {allowed: 'strict'}
 );
+
+// now, if defined, load secrets from AWS Secret Manager
+if (config.get('aws.secrets.use')) {
+  AWSSecrets.initialiseSecrets(
+    config.get('aws.region'),
+    config.get('aws.secrets.wallet')
+  ).then(ret => {
+    // DB rebind
+    config.set('db.host', AWSSecrets.dbHost());
+    config.set('db.password', AWSSecrets.dbPass());
+    config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
+    config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
+    config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
+
+    // external APIs
+    config.set('slack.url', AWSSecrets.slackUrl());
+    config.set('notify.key', AWSSecrets.govNotify());
+
+    AppConfig.ready = true;
+    AppConfig.emit(AppConfig.READY_EVENT);
+  });
+} else {
+  // emit something here
+  AppConfig.ready = true;
+}
+
 module.exports = config;

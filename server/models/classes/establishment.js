@@ -468,13 +468,14 @@ class Establishment extends EntityValidator {
             const fetchQuery = {
                 // attributes: ['id', 'uid'],
                 where: {
-                    id,
+                    id: id
                 },
                 include: [
                 ]
             };
 
             const fetchResults = await models.establishment.findOne(fetchQuery);
+            
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
@@ -785,10 +786,63 @@ class Establishment extends EntityValidator {
         }
     };
 
-    // deletes this User from DB
-    // Can throw "UserDeleteException"
-    async delete() {
-        throw new EstablishmentExceptions.EstablishmentDeleteException(null, null, null, 'Not implemented', 'Not implemented');
+    async delete(deletedBy) {
+        try {
+            const updatedTimestamp = new Date();
+
+            await models.sequelize.transaction(async t => {
+
+                const updateDocument = {
+                    archived: true,
+                    updated: updatedTimestamp,
+                    updatedBy: deletedBy
+                };
+
+                let [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument,
+                                            {
+                                                returning: true,
+                                                where: {
+                                                    uid: this.uid
+                                                },
+                                                attributes: ['id', 'updated'],
+                                                transaction: t,
+                                            });
+
+                if (updatedRecordCount === 1) {
+
+                    const updatedRecord = updatedRows[0].get({plain: true});
+
+                    this._updated = updatedRecord.updated;
+                    this._updatedBy = deletedBy;
+
+                    const allAuditEvents = [{
+                        establishmentFk: this._id,
+                        username: deletedBy,
+                        type: 'deleted'}];
+                       
+                    await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: t});
+
+                    this._log(Establishment.LOG_INFO, `Archived Establishment with uid (${this._uid}) and id (${this._id})`);
+
+                } else {
+                    const nameId = this._properties.get('NameOrId');
+                    throw new EstablishmentExceptions.EstablishmentDeleteException(null, 
+                                                                        this.uid, 
+                                                                        nameId ? nameId.property : null,
+                                                                        err,
+                                                                        `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
+                }
+                                                                        
+            });
+        } catch (err) {
+            console.log('throwing error');
+            console.log(err);
+            throw new EstablishmentExceptions.EstablishmentDeleteException(null, 
+                this.uid, 
+                nameId ? nameId.property : null,
+                err,
+                `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
+        }
     };
 
     // helper returns a set 'json ready' objects for representing an Establishments's overall
@@ -903,8 +957,9 @@ class Establishment extends EntityValidator {
             const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
             if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
                 allExistAndValid = false;
+                // TODO: temporarily downgrading to a warning, whilst awaiting for NMDS ID generation to be part of this Establishment entity - https://trello.com/c/HElnWYWF
                 this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
+                    ValidationMessage.WARNING,
                     101,
                     this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
                     ['NMDSID']

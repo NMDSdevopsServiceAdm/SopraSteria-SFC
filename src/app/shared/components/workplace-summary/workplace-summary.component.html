@@ -282,21 +282,21 @@
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.vacancies === 'Yes'">
-          <ng-template [ngIf]="!workplace.Vacancies?.length" [ngIfElse]="vacancies">
+          <ng-template [ngIf]="!workplace.vacancies?.length" [ngIfElse]="vacancies">
             -
           </ng-template>
           <ng-template #vacancies>
-            <ng-container *ngIf="isArray(workplace.Vacancies)">
+            <ng-container *ngIf="isArray(workplace.vacancies)">
               <ul class="govuk-list">
-                <li *ngFor="let vacancy of workplace.Vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
+                <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
               </ul>
             </ng-container>
-            <ng-container *ngIf="!isArray(workplace.Vacancies)">
+            <ng-container *ngIf="!isArray(workplace.vacancies)">
               <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
                 <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
               </ng-container>
               <ng-container *ngIf="workplace.wdf.vacancies != 'No'">
-                {{ workplace.Vacancies }}
+                {{ workplace.vacancies }}
               </ng-container>
             </ng-container>
           </ng-template>
@@ -304,21 +304,21 @@
       </ng-container>
 
       <ng-container *ngIf="!displayWDFReport">
-        <ng-template [ngIf]="!workplace.Vacancies?.length" [ngIfElse]="vacancies">
+        <ng-template [ngIf]="!workplace.vacancies?.length" [ngIfElse]="vacancies">
           -
         </ng-template>
         <ng-template #vacancies>
-          <ng-container *ngIf="isArray(workplace.Vacancies)">
+          <ng-container *ngIf="isArray(workplace.vacancies)">
             <ul class="govuk-list">
-              <li *ngFor="let vacancy of workplace.Vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
+              <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
             </ul>
           </ng-container>
-          <ng-container *ngIf="!isArray(workplace.Vacancies)">
+          <ng-container *ngIf="!isArray(workplace.vacancies)">
             <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
               <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
             </ng-container>
             <ng-container *ngIf="workplace.wdf.vacancies != 'No'">
-              {{ workplace.Vacancies }}
+              {{ workplace.vacancies }}
             </ng-container>
           </ng-container>
         </ng-template>
@@ -326,11 +326,11 @@
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'vacancies']">
-        <ng-container *ngIf="!workplace.Vacancies?.length">
+        <ng-container *ngIf="!workplace.vacancies?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="workplace.Vacancies?.length">
+        <ng-container *ngIf="workplace.vacancies?.length">
           Change
         </ng-container>
         <span class="govuk-visually-hidden"> staff vacancies</span>
@@ -343,46 +343,46 @@
       New starters
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="isArray(workplace.Starters)">
+      <ng-container *ngIf="isArray(workplace.starters)">
         <ul class="govuk-list">
-          <li *ngFor="let starter of workplace.Starters">{{ starter.total }} {{ starter.title }}</li>
+          <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
         </ul>
       </ng-container>
-      <ng-container *ngIf="!isArray(workplace.Starters)">
+      <ng-container *ngIf="!isArray(workplace.starters)">
         <ng-container *ngIf="displayWDFReport">
           <ng-container *ngIf="workplace.wdf.starters === 'No'">
             <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
           </ng-container>
 
           <ng-container *ngIf="workplace.wdf.starters === 'Yes'">
-            <ng-template [ngIf]="!workplace.Starters?.length" [ngIfElse]="starters">
+            <ng-template [ngIf]="!workplace.starters?.length" [ngIfElse]="starters">
               -
             </ng-template>
             <ng-template #starters>
-              <ng-container *ngIf="isArray(workplace.Starters)">
+              <ng-container *ngIf="isArray(workplace.starters)">
                 <ul class="govuk-list">
-                  <li *ngFor="let starter of workplace.Starters">{{ starter.total }} {{ starter.title }}</li>
+                  <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
                 </ul>
               </ng-container>
-              <ng-container *ngIf="!isArray(workplace.Starters)">
-                {{ workplace.Starters }}
+              <ng-container *ngIf="!isArray(workplace.starters)">
+                {{ workplace.starters }}
               </ng-container>
             </ng-template>
           </ng-container>
         </ng-container>
 
         <ng-container *ngIf="!displayWDFReport">
-          <ng-template [ngIf]="!workplace.Starters?.length" [ngIfElse]="starters">
+          <ng-template [ngIf]="!workplace.starters?.length" [ngIfElse]="starters">
             -
           </ng-template>
           <ng-template #starters>
-            <ng-container *ngIf="isArray(workplace.Starters)">
+            <ng-container *ngIf="isArray(workplace.starters)">
               <ul class="govuk-list">
-                <li *ngFor="let starter of workplace.Starters">{{ starter.total }} {{ starter.title }}</li>
+                <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
               </ul>
             </ng-container>
-            <ng-container *ngIf="!isArray(workplace.Starters)">
-              {{ workplace.Starters }}
+            <ng-container *ngIf="!isArray(workplace.starters)">
+              {{ workplace.starters }}
             </ng-container>
           </ng-template>
         </ng-container>
@@ -390,11 +390,11 @@
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'starters']">
-        <ng-container *ngIf="!workplace.Starters?.length">
+        <ng-container *ngIf="!workplace.starters?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="workplace.Starters?.length">
+        <ng-container *ngIf="workplace.starters?.length">
           Change
         </ng-container>
         <span class="govuk-visually-hidden"> new starters</span>
@@ -413,45 +413,45 @@
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.leavers === 'Yes'">
-          <ng-template [ngIf]="!workplace.Leavers?.length" [ngIfElse]="leavers">
+          <ng-template [ngIf]="!workplace.leavers?.length" [ngIfElse]="leavers">
             -
           </ng-template>
           <ng-template #leavers>
-            <ng-container *ngIf="isArray(workplace.Leavers)">
+            <ng-container *ngIf="isArray(workplace.leavers)">
               <ul class="govuk-list">
-                <li *ngFor="let leaver of workplace.Leavers">{{ leaver.total }} {{ leaver.title }}</li>
+                <li *ngFor="let leaver of workplace.leavers">{{ leaver.total }} {{ leaver.title }}</li>
               </ul>
             </ng-container>
-            <ng-container *ngIf="!isArray(workplace.Leavers)">
-              {{ workplace.Leavers }}
+            <ng-container *ngIf="!isArray(workplace.leavers)">
+              {{ workplace.leavers }}
             </ng-container>
           </ng-template>
         </ng-container>
       </ng-container>
 
       <ng-container *ngIf="!displayWDFReport">
-        <ng-template [ngIf]="!workplace.Leavers?.length" [ngIfElse]="leavers">
+        <ng-template [ngIf]="!workplace.leavers?.length" [ngIfElse]="leavers">
           -
         </ng-template>
         <ng-template #leavers>
-          <ng-container *ngIf="isArray(workplace.Leavers)">
+          <ng-container *ngIf="isArray(workplace.leavers)">
             <ul class="govuk-list">
-              <li *ngFor="let leaver of workplace.Leavers">{{ leaver.total }} {{ leaver.title }}</li>
+              <li *ngFor="let leaver of workplace.leavers">{{ leaver.total }} {{ leaver.title }}</li>
             </ul>
           </ng-container>
-          <ng-container *ngIf="!isArray(workplace.Leavers)">
-            {{ workplace.Leavers }}
+          <ng-container *ngIf="!isArray(workplace.leavers)">
+            {{ workplace.leavers }}
           </ng-container>
         </ng-template>
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'leavers']">
-        <ng-container *ngIf="!workplace.Leavers?.length">
+        <ng-container *ngIf="!workplace.leavers?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
         </ng-container>
-        <ng-container *ngIf="workplace.Leavers?.length">
+        <ng-container *ngIf="workplace.leavers?.length">
           Change
         </ng-container>
         <span class="govuk-visually-hidden"> staff leavers</span>

@@ -1,17 +1,20 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
-    <div class="govuk-grid-row govuk-!-padding-top-3 govuk-!-padding-bottom-3 govuk-util__light-bg">
-      <ul class="total-list">
-        <li class="govuk-grid-column-one-third has-divider">
-          Total number of staff <span class="total">{{ totalStaff }}</span><a class="govuk-util__float-right" [routerLink]="['/worker/total-staff']" (click)="setReturn()">Change <span class="govuk-visually-hidden"> total number of staff</span></a>
-        </li>
-        <li class="govuk-grid-column-one-third has-divider" *ngIf="totalStaff !== totalWorkers">
-          Staff records added <span class="total" [ngClass]="{ 'icon-link icon-flag': totalStaff < totalWorkers }">{{ totalWorkers }}</span>
-        </li>
-        <li class="govuk-grid-column-one-third" *ngIf="totalStaff !== totalWorkers">
-          Staff records missing <span class="total" [ngClass]="{ 'icon-link icon-flag': totalStaff > totalWorkers }">{{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}</span>
-        </li>
-      </ul>
-    </div>
-  </div>
-</div>
+<dl class="govuk-list--definition">
+  <dt>
+    Total number of staff
+    <a routerLink="/worker/total-staff" class="govuk-util__float-right" (click)="setReturn()">
+      Change <span class="govuk-visually-hidden"> total number of staff</span>
+    </a>
+  </dt>
+  <dd>{{ totalStaff }}</dd>
+  <ng-container *ngIf="totalStaff !== totalWorkers">
+    <dt>Staff records added</dt>
+    <dd>
+      <img *ngIf="totalStaff < totalWorkers" src="/assets/images/flag-orange.svg" alt="warning" /> {{ totalWorkers }}
+    </dd>
+    <dt>Staff records missing</dt>
+    <dd>
+      <img *ngIf="totalStaff > totalWorkers" src="/assets/images/flag-orange.svg" alt="warning" />
+      {{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}
+    </dd>
+  </ng-container>
+</dl>

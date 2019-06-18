@@ -1,9 +1,9 @@
-import { BulkUploadService } from '@core/services/bulk-upload.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { FileValidateStatus, UploadFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
-import { filter } from 'lodash';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FileValidateStatus, UploadFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -13,8 +13,10 @@ import { Subscription } from 'rxjs';
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private uploadedFiles: Array<UploadFile>;
-  public validateSuccess = false;
+  public validatedFiles: Array<UploadFile>;
+  public validationComplete = false;
   public totalWarnings = 0;
+  public totalErrors = 0;
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
@@ -38,9 +40,13 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService.validateFiles(this.establishmentService.establishmentId).subscribe(
         (response: ValidatedFilesResponse) => {
-          this.onValidateSuccess(response);
+          this.onValidateComplete(response);
         },
         (response: HttpErrorResponse) => {
+          if (response.status === 400) {
+            this.onValidateComplete(response.error);
+            return;
+          }
           this.onValidateError(response);
         }
       )
@@ -53,7 +59,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
    * Then update ui
    * @param response
    */
-  private onValidateSuccess(response: ValidatedFilesResponse): void {
+  private onValidateComplete(response: ValidatedFilesResponse): void {
     response.establishment.fileType = 'Workplace';
     response.training.fileType = 'Training';
     response.workers.fileType = 'Staff';
@@ -65,11 +71,13 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       file.records = validatedFile.records;
       file.fileType = validatedFile.fileType;
       file.warnings = validatedFile.warnings;
-      file.status = FileValidateStatus.Pass;
+      file.errors = validatedFile.errors;
+      file.status = file.errors ? FileValidateStatus.Fail : FileValidateStatus.Pass;
+      this.totalWarnings = this.totalWarnings + file.warnings;
+      this.totalErrors = this.totalErrors + file.errors;
     });
 
-    this.totalWarnings = this.uploadedFiles.reduce((accumulator, file) => accumulator + file.warnings, 0);
-    this.validateSuccess = true;
+    this.validationComplete = true;
   }
 
   /**
@@ -88,6 +96,10 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   get hasWarnings() {
     return this.totalWarnings > 0;
+  }
+
+  get hasErrors() {
+    return this.totalErrors > 0;
   }
 
   ngOnDestroy() {

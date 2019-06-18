@@ -8,16 +8,16 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
-    
 
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getFullName.errors">
-
+      
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
           <span class="govuk-caption-m govuk-!-margin-bottom-2">User account</span>
           <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Your details</h1>
         </legend>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getFullName.errors">
 
           <label class="govuk-!-margin-bottom-2 govuk-label" for="fullName">
             Your full name

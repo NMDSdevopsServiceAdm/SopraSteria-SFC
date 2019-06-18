@@ -23,13 +23,11 @@
   }}
 </app-status>
 
-<div class="govuk-grid-column-full">
-  <app-total-staff-panel
-    [totalStaff]="totalStaff"
-    [totalWorkers]="this.workers?.length"
-    [returnToDash]="true"
-  ></app-total-staff-panel>
-</div>
+<app-total-staff-panel
+  [totalStaff]="totalStaff"
+  [totalWorkers]="this.workers?.length"
+  [returnToDash]="true"
+></app-total-staff-panel>
 
 <table class="govuk-table">
   <thead class="govuk-table__head">

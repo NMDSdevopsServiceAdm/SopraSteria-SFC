@@ -92,11 +92,23 @@ export interface Establishment {
   share: Share;
   localAuthorities: LocalAuthority[];
   primaryAuthority: PrimaryAuthority;
-  Vacancies: Vacancy[];
-  TotalVacencies: number;
-  Starters: Starter[];
-  TotalStarters: number;
-  Leavers: Leaver[];
-  TotalLeavers: number;
+  vacancies: Vacancy[] | string;
+  totalVacancies: number;
+  starters: Starter[] | string;
+  totalStarters: number;
+  leavers: Leaver[] | string;
+  totalLeavers: number;
   wdf: WDF;
+}
+
+export interface UpdateJobsRequest {
+  leavers?: Leaver[] | string;
+  starters?: Starter[] | string;
+  vacancies?: Vacancy[] | string;
+}
+
+export enum jobOptionsEnum {
+  // tslint:disable-next-line: quotemark
+  DONT_KNOW = "Don't know",
+  NONE = 'None',
 }

@@ -99,7 +99,7 @@ export class NationalityComponent extends QuestionComponent {
 
   onSuccess() {
     this.next =
-      this.worker.nationality.value === 'British'
+      this.worker.nationality && this.worker.nationality.value === 'British'
         ? ['/worker', this.worker.uid, 'country-of-birth']
         : ['/worker', this.worker.uid, 'british-citizenship'];
   }
