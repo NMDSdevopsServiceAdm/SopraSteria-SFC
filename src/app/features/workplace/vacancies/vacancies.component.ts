@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -175,11 +176,11 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   private createVacancyControl(jobId = null, total = null): FormGroup {
     return this.formBuilder.group({
       jobRole: [jobId, [Validators.required]],
-      total: [total, [Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
+      total: [total, [Validators.required, Validators.min(this.minVacancies), Validators.max(this.maxVacancies)]],
     });
   }
 
-  protected generateUpdateProps() {
+  protected generateUpdateProps(): UpdateJobsRequest {
     const { vacanciesKnown } = this.form.controls;
 
     if (vacanciesKnown.value === vacancyOptions.NONE || vacanciesKnown.value === vacancyOptions.DONT_KNOW) {
@@ -198,10 +199,10 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     return null;
   }
 
-  protected updateEstablishment(props): void {
+  protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
       this.establishmentService
-        .updateVacancies(this.establishment.id, props)
+        .updateJobs(this.establishment.id, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }

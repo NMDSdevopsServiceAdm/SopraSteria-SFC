@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, UpdateJobsRequest } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -147,14 +147,14 @@ export class EstablishmentService {
   }
 
   updateDataSharing(establishmentId, data: DataSharingRequest): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/share`, data);
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
   }
 
   updateLocalAuthorities(establishmentId, data) {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/localAuthorities`, data);
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }
 
-  updateVacancies(establishmentId, data) {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/jobs`, data);
+  updateJobs(establishmentId, data: UpdateJobsRequest) {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/jobs`, data);
   }
 }

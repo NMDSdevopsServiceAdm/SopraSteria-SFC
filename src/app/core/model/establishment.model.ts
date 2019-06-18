@@ -100,3 +100,9 @@ export interface Establishment {
   totalLeavers: number;
   wdf: WDF;
 }
+
+export interface UpdateJobsRequest {
+  leavers?: Leaver[] | string;
+  starters?: Starter[] | string;
+  vacancies?: Vacancy[] | string;
+}
