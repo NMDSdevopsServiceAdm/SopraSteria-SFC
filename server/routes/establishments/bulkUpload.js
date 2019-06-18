@@ -232,24 +232,6 @@ router.route('/signedUrl').get(async function (req, res) {
   }
 });
 
-// Happy path
-//Concern in download files to local folder; if many user download, or we stream 
-//User case0; create 3 files with known sample data for establishment, worker
-//Use case 1: Accept three filenames and make a key default to New
-//Use case 2: First validation, must be three filename, unless do revalidation
-//User case3: in case of fail or re validation, always run full on 3 files.
-//Use case4: search new in s3 and retrieve file
-//Use case 5: run validation on schema or pattern to make sure they are indeed establishment, worker and trainning csv
-//Use case 6: field mapping
-//Use case7: BUDI mapping
-//user case7: LI mapping
-//Use case8 : make an api call
-//user case9: return list of error
-
-
-// FOR NASIR:
-//  2. If using a POST or PATCH, can pass data as JSON BODY
-//  7. This current approach to validation is "very synchronous"; there is lots we can do yet to optimise this - but we optimise later once we have the process working.
 router.route('/validate').put(async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
@@ -523,7 +505,7 @@ const _appendApiErrorsAndWarnings = (lineValidator, errors, warnings) => {
 };
 
 const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments) => {
-  const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
+  const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   lineValidator.validate();
@@ -548,7 +530,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
       //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
-      myAPIEstablishments.push(thisApiEstablishment);
+      myAPIEstablishments[currentLineNumber] = thisApiEstablishment;
     } else {
       const errors = thisApiEstablishment.errors;
       const warnings = thisApiEstablishment.warnings;
@@ -557,10 +539,10 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
       if (errors.length === 0) {
         //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
-        myAPIEstablishments.push(thisApiEstablishment);
+        myAPIEstablishments[currentLineNumber] = thisApiEstablishment;
       } else {
         // TODO - remove this when capacities and services are fixed; temporarily adding establishments even though they're in error (because service/capacity validations put all in error)
-        myAPIEstablishments.push(thisApiEstablishment);
+        myAPIEstablishments[currentLineNumber] = thisApiEstablishment;
       }
     }
 
@@ -588,7 +570,7 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, myAPIQualifica
   if (isValid) {
     // no validation errors in the entity itself, so add it ready for completion
     // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
-    myAPIQualifications.push(thisApiQualification);
+    myAPIQualifications[lineValidator.lineNumber] = thisApiQualification;
   } else {
     const errors = thisApiQualification.errors;
     const warnings = thisApiQualification.warnings;
@@ -597,13 +579,13 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, myAPIQualifica
 
     if (errors.length === 0) {
       // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
-      myAPIQualifications.push(thisApiQualification);
+      myAPIQualifications[lineValidator.lineNumber] = thisApiQualification;
     }
   }
 };
 
 const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications) => {
-  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
+  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   lineValidator.validate();
@@ -621,7 +603,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
       //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
-      myAPIWorkers.push(thisApiWorker);
+      myAPIWorkers[currentLineNumber] = thisApiWorker;
 
       // construct Qualification entities (can be multiple of a single Worker record) - regardless of whether the
       //  Worker is valid or not; we need to return as many errors/warnings in one go as possible
@@ -640,7 +622,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
   
       if (errors.length === 0) {
         //console.log("WA DEBUG - this worker entity: ", JSON.stringify(thisApiWorker.toJSON(), null, 2));
-        myAPIWorkers.push(thisApiWorker);
+        myAPIWorkers[currentLineNumber] = thisApiWorker;
       }
     }
   } catch (err) {
@@ -658,7 +640,7 @@ const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaEr
 };
 
 const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings) => {
-  const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber+2);   // +2 because the first row is CSV headers, and forEach counter is zero index
+  const lineValidator = new CsvTrainingValidator(thisLine, currentLineNumber);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   lineValidator.validate();
@@ -673,7 +655,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
       // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
-      myAPITrainings.push(thisApiTraining);
+      myAPITrainings[currentLineNumber] = thisApiTraining;
     } else {
       const errors = thisApiTraining.errors;
       const warnings = thisApiTraining.warnings;
@@ -682,7 +664,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
   
       if (errors.length === 0) {
         // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
-        myAPITrainings.push(thisApiTraining);
+        myAPITrainings[currentLineNumber] = thisApiTraining;
       }
     }
   } catch (err) {
@@ -704,10 +686,15 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   let status = true;
   const csvEstablishmentSchemaErrors = [], csvWorkerSchemaErrors = [], csvTrainingSchemaErrors = [];
   const myEstablishments = [], myWorkers = [], myTrainings = [];
-  const myAPIEstablishments = [], myAPIWorkers = [], myAPITrainings = [], myAPIQualifications = [];
-  
-  let establishmentRecords=0; let workerRecords=0; let trainingRecords=0;
 
+  // rather than an array of entities, entities will be known by their line number within the source, e.g:
+  // establishments: {
+  //    1: { },
+  //    2: { },
+  //    ...
+  // }
+  const myAPIEstablishments = {}, myAPIWorkers = {}, myAPITrainings = {}, myAPIQualifications = {};
+  
   // for unique/cross-reference validations
   const allEstablishmentsByKey = {}; const allWorkersByKey = {};
 
@@ -715,18 +702,20 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType == "Establishment") {
     await Promise.all(
       establishments.imported.map((thisLine, currentLineNumber) => {
-        return _validateEstablishmentCsv(thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments);
+        return _validateEstablishmentCsv(thisLine, currentLineNumber+2, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments);
       }) 
     );
 
     // having parsed all establishments, check for duplicates
-    // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID`as property name
+    // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
     myEstablishments.forEach(thisEstablishment => {
       const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, "");
       if (allEstablishmentsByKey[keyNoWhitespace]) {
         // this establishment is a duplicate
-        console.log("WA| DEBUG - duplicate establishment: ", thisEstablishment.lineNumber)
         csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
+
+        // remove the entity
+        delete myAPIEstablishments[thisEstablishment.lineNumber];
       } else {
         // does not yet exist
         allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
@@ -744,30 +733,50 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType == "Worker") {
     await Promise.all(
       workers.imported.map((thisLine, currentLineNumber) => {
-        return _validateWorkerCsv(thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications);
+        return _validateWorkerCsv(thisLine, currentLineNumber+2, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications);
       }) 
     );
 
     // having parsed all workers, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'UNIQUEWORKERID`as property name
     myWorkers.forEach(thisWorker => {
-      const keyNoWhitespace = thisWorker.uniqueWorker.replace(/\s/g, "");
+      // uniquness for a worker is across both the establishment and the worker
+      const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, "");
       if (allWorkersByKey[keyNoWhitespace]) {
         // this worker is a duplicate
         csvWorkerSchemaErrors.push(thisWorker.addDuplicate(allWorkersByKey[keyNoWhitespace]));
+
+        // remove the entity
+        delete myAPIWorkers[thisWorker.lineNumber];
       } else {
-        // does not yet exist
-        allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+        // does not yet exist - check this worker can be associated with a known establishment
+        const establishmentKeyNoWhitespace = thisWorker.local.replace(/\s/g, "");
+        if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
+          // not found the associated establishment
+          csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
+  
+          // remove the entity
+          delete myAPIWorkers[thisWorker.lineNumber];
+        } else {
+          // this worker is unique and can be associated to establishment
+          allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
+
+          // associate this worker to the known establishment
+          const workerKey = thisWorker.uniqueWorker.replace(/\s/g, "");
+          const foundEstablishmentByLineNumber = allEstablishmentsByKey[establishmentKeyNoWhitespace];
+          const knownEstablishment = foundEstablishmentByLineNumber ? myAPIEstablishments[foundEstablishmentByLineNumber] : null;
+          if (knownEstablishment) {
+            knownEstablishment.associateWorker(workerKey, myAPIWorkers[thisWorker.lineNumber]);
+          } else {
+            // this should never happen
+            console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
+          }
+        }
       }
     });
 
     // having parsed all establishments and workers, need to cross-check all workers' establishment reference (LOCALESTID) against all parsed establishments
     myWorkers.forEach(thisWorker => {
-      const keyNoWhitespace = thisWorker.local.replace(/\s/g, "");
-      if (!allEstablishmentsByKey[keyNoWhitespace]) {
-        // not found the associated establishment
-        csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
-      }
     });
     
   } else {
@@ -782,7 +791,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == "Training") {
     await Promise.all(
       training.imported.map((thisLine, currentLineNumber) => {
-        return _validateTrainingCsv(thisLine, currentLineNumber, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
+        return _validateTrainingCsv(thisLine, currentLineNumber=2, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
       }) 
     );
 
@@ -792,15 +801,22 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
     // having parsed all establishments, workers and training, need to cross-check all training records' worker reference (UNIQUEWORKERID) against all parsed workers
     myTrainings.forEach(thisTraingRecord => {
       const establishmentKeyNoWhitespace = thisTraingRecord.localeStId.replace(/\s/g, "");
-      const workerKeyNoWhitespace = thisTraingRecord.uniqueWorkerId.replace(/\s/g, "");
+      const workerKeyNoWhitespace = (thisTraingRecord.localeStId + thisTraingRecord.uniqueWorkerId).replace(/\s/g, "");
 
       if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
         // not found the associated establishment
         csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedEstablishment());
+
+        // remove the entity
+        delete myAPITrainings[thisTraingRecord.lineNumber];
       }
+
       if (!allWorkersByKey[workerKeyNoWhitespace]) {
         // not found the associated worker
         csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedWorker());
+        
+        // remove the entity
+        delete myAPITrainings[thisTraingRecord.lineNumber];
       }
     });
     
@@ -824,17 +840,27 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   myTrainings.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`) : true;
 
   // upload the intermediary entities as JSON to S3
-  myAPIEstablishments.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/establishment.entities.json`) : true;
-  myAPIWorkers.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myAPIWorkers.map(thisWorker => thisWorker.toJSON()), `${establishmentId}/intermediary/worker.entities.json`) : true;
-  myAPITrainings.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myAPITrainings.map(thisTraining => thisTraining.toJSON()), `${establishmentId}/intermediary/training.entities.json`) : true;
-  myAPIQualifications.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myAPIQualifications.map(thisQualification => thisQualification.toJSON()), `${establishmentId}/intermediary/qualification.entities.json`) : true;
+  //console.log("WA DEBUG - establishment entities as JSON:\n", JSON.stringify(myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,false,true)), null, 4));
+  const establishmentsAsArray = Object.values(myAPIEstablishments);
+  const workersAsArray = Object.values(myAPIWorkers);
+  const trainingAsArray = Object.values(myAPITrainings);
+  const qualificationsAsArray = Object.values(myAPIQualifications);
+
+  // debug
+  const allentitiesreadyforjson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true));
+  const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
+  const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
+  const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
+  const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
+
+  establishmentsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`) : true;
+  establishmentsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`) : true;
+  workersAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, workersOnlyForJson, `${establishmentId}/intermediary/worker.entities.json`) : true;
+  trainingAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, trainingOnlyForJson, `${establishmentId}/intermediary/training.entities.json`) : true;
+  qualificationsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, qualificationsOnlyForJson, `${establishmentId}/intermediary/qualification.entities.json`) : true;
   
   // handle parsing errors
   if (csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0 || csvTrainingSchemaErrors.length > 0) {
-    //console.error('WA DEBUG Establishment validation errors: ', csvEstablishmentSchemaErrors)
-    //console.error('NM DEBUG Worker validation errors: ', csvWorkerSchemaErrors)
-    //console.error('NM DEBUG Training validation errors: ', csvTrainingSchemaErrors)
-
     // upload the validation to S3
     commit ? await uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/${establishments.establishmentMetadata.filename}.validation.json`) : true;
     commit ? await uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/${workers.workerMetadata.filename}.validation.json`) : true;
@@ -864,10 +890,10 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         training: myTrainings.map(thisTraining => thisTraining.toJSON()),
       },
       entities: {
-        establishments: myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON()),
-        workers: myAPIWorkers.map(thisWorker => thisWorker.toJSON()),
-        training: myAPITrainings.map(thisTraining => thisTraining.toJSON()),
-        qualifications: myAPIQualifications.map(thisQualification => thisQualification.toJSON()),
+        establishments: establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON()),
+        workers: workersAsArray.map(thisWorker => thisWorker.toJSON()),
+        training: trainingAsArray.map(thisTraining => thisTraining.toJSON()),
+        qualifications: qualificationsAsArray.map(thisQualification => thisQualification.toJSON()),
       }
     }
   }
@@ -876,7 +902,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
 router.route('/report').get(async (req, res) => {  
   try {
     const params = {
-      Bucket: appConfig.get('bulkuploaduser.bucketname').toString(), 
+      Bucket: appConfig.get('bulkupload.bucketname').toString(), 
       Prefix: `${req.establishmentId}/validation/`
     };
   

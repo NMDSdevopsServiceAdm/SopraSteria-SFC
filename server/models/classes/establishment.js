@@ -64,6 +64,9 @@ class Establishment extends EntityValidator {
 
         // change properties
         this._isNew = false;
+
+        // all known workers for this establishment - an associative object (property key is the worker's key)
+        this._workers = {};
         
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
@@ -170,6 +173,14 @@ class Establishment extends EntityValidator {
         this._locationId = locationId;
         this._nmdsId = nmdsId;
     }
+
+    // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
+    associateWorker(key, worker) {
+        if (key && worker && worker.nameOrId) {
+            //const workerKey = worker.nameOrId.replace(/\s/g, "");
+            this._workers[key] = worker;    
+        }
+    };
 
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
@@ -887,7 +898,7 @@ class Establishment extends EntityValidator {
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at User and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given User
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false) {
         if (!showHistoryTimeline) {
             if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
                 throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
@@ -930,8 +941,8 @@ class Establishment extends EntityValidator {
             } else {
                 return {
                     ...myDefaultJSON,
-                    ...myJSON
-            
+                    ...myJSON,
+                    workers: includeAssociatedEntities ? Object.values(this._workers).map(thisWorker => thisWorker.toJSON()): undefined
                };
             }
         } else {

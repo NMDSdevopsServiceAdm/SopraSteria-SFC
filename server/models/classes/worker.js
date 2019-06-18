@@ -105,6 +105,15 @@ class Worker extends EntityValidator {
         }
     }
 
+    get nameOrId() {
+        // returns the name or id property - if known
+        if (this._properties.get('NameOrId') && this._properties.get('NameOrId').property) {
+            return this._properties.get('NameOrId').property;
+        } else {
+            return null;
+        }
+    }
+
     // takes the given JSON document and creates a Worker's set of extendable properties
     // Returns true if the resulting Worker is valid; otherwise false
     async load(document) {
