@@ -47,16 +47,12 @@ export class EstablishmentService {
   private _establishmentId: number = null;
 
   public checkIfSameLoggedInUser(establishmentId: number): void {
-    if (!this.previousEstablishmentId) {
+    if (!this.previousEstablishmentId || this.previousEstablishmentId !== establishmentId) {
       this.previousEstablishmentId = establishmentId;
       this.isSameLoggedInUser = false;
       return;
-    }
-
-    if (this.previousEstablishmentId === establishmentId) {
-      this.isSameLoggedInUser = true;
     } else {
-      this.isSameLoggedInUser = false;
+      this.isSameLoggedInUser = true;
     }
   }
 
