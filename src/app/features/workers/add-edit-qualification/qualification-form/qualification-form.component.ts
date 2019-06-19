@@ -27,7 +27,7 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
   public intPattern = INT_PATTERN.toString();
   private subscriptions: Subscription = new Subscription();
 
-  private get group() {
+  get group() {
     return this.form.get(this.type.key);
   }
 
