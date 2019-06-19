@@ -50,7 +50,6 @@ export class EstablishmentService {
     if (!this.previousEstablishmentId || this.previousEstablishmentId !== establishmentId) {
       this.previousEstablishmentId = establishmentId;
       this.isSameLoggedInUser = false;
-      return;
     } else {
       this.isSameLoggedInUser = true;
     }
