@@ -56,7 +56,7 @@ const routes: Routes = [
   {
     path: 'create-username',
     component: CreateUsernameComponent,
-    // canActivate: [RegisterGuard],
+    canActivate: [RegisterGuard],
     data: { title: 'Create Username' },
   },
   {
