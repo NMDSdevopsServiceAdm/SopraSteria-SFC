@@ -17,6 +17,11 @@ const ValidationMessage = require('./validations/validationMessage').ValidationM
 
 const WorkerExceptions = require('./worker/workerExceptions');
 
+// associations
+const Training = require('./training').Training;
+const Qualification = require('./qualification').Qualification;
+
+
 // Worker properties
 const WorkerProperties = require('./worker/workerProperties').WorkerPropertyManager;
 const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
@@ -140,6 +145,34 @@ class Worker extends EntityValidator {
             // reason is not a managed property, load it specifically
             if (document.reason) {
                 this._reason = await this.validateReason(document.reason);
+            }
+
+            // allow for deep restoration of entities (associations - namely Qualifications and Training here)
+            if (associatedEntities) {
+                const promises = [];
+
+                // first training records
+                if (document.training && Array.isArray(document.training)) {
+                    document.training.forEach(thisTraining => {
+                        const newTrainingRecord = new Training(null, null);
+                        
+                        this.associateTraining(newTrainingRecord);
+                        promises.push(newTrainingRecord.load(thisTraining));
+                    });
+                }
+
+                // and qualifications records
+                if (document.qualifications && Array.isArray(document.qualifications)) {
+                    document.qualifications.forEach(thisQualificationRecord => {
+                        const newQualificationRecord = new Qualification(null, null);
+                        
+                        this.associateQualification(newQualificationRecord);
+                        promises.push(newQualificationRecord.load(thisQualificationRecord));
+                    });
+                }                
+
+                // wait for loading of all training and qualification records
+                await Promise.all(promises);
             }
         } catch (err) {
             this._log(Worker.LOG_ERROR, `Woker::load - failed: ${err}`);
