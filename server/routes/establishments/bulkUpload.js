@@ -902,51 +902,6 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
     // gets a list of "my establishments", which if a parent, includes all known subsidaries too, and this "parent's" access permissions to those subsidaries
     const myEstablishments = await thisUser.myEstablishments(isParent, null);
 
-    // returns:
-    // {
-    //   "primary": {
-    //     "uid": "98a83eef-e1e1-49f3-89c5-b1287a3cc8dd",
-    //     "updated": "2019-06-15T09:46:14.884Z",
-    //     "isParent": true,
-    //     "parentUid": null,
-    //     "name": "WOZiTech Cares Updated",
-    //     "mainService": "Extra care housing services",
-    //     "dataOwner": "Workplace"
-    //   },
-    //   "subsidaries": {
-    //     "count": 3,
-    //     "establishments": [
-    //       {
-    //         "uid": "db97cd2a-c0b0-4491-86de-b9ad75984b49",
-    //         "updated": "2019-05-15T15:20:05.836Z",
-    //         "parentUid": "98a83eef-e1e1-49f3-89c5-b1287a3cc8dd",
-    //         "name": "WOZiTech new workplace - updated by parent",
-    //         "mainService": "Community support and outreach",
-    //         "dataOwner": "Parent",
-    //         "parentPermissions": "Workplace and Staff"
-    //       },
-    //       {
-    //         "uid": "975987ae-4876-40a6-a30f-72a43c51ce67",
-    //         "updated": "2019-03-16T12:03:41.089Z",
-    //         "parentUid": "98a83eef-e1e1-49f3-89c5-b1287a3cc8dd",
-    //         "name": "Warren Care Non-CQC With eUID 5",
-    //         "mainService": "Community support and outreach",
-    //         "dataOwner": "Workplace",
-    //         "parentPermissions": null
-    //       },
-    //       {
-    //         "uid": "cdf7833e-a66f-4913-a53c-7231ef8ec539",
-    //         "updated": "2019-03-15T11:14:31.424Z",
-    //         "parentUid": "98a83eef-e1e1-49f3-89c5-b1287a3cc8dd",
-    //         "name": "Warren Care Non-CQC With eUID",
-    //         "mainService": "Community support and outreach",
-    //         "dataOwner": "Parent",
-    //         "parentPermissions": "Workplace"
-    //       }
-    //     ]
-    //   }
-    // }
-
     // having got this list of establishments, now need to fully restore each establishment as entities.
     //  using an object adding entities by a known key to make lookup comparisions easier.
     const currentEntities = [];
@@ -1046,18 +1001,74 @@ router.route('/report').get(async (req, res) => {
   }
 });
 
+// for the given user, restores all establishment and worker entities only from the DB, associating the workers
+//  back to the establishment
+const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) => {
+  try {
+    // the result of validation is to make available an S3 object outlining ALL entities ready to be uploaded
+    const allEntitiesKey = `${primaryEstablishmentId}/intermediary/all.entities.json`;
+
+    const onLoadEntitiesJSON = await downloadContent(allEntitiesKey);
+    const onLoadEntities = JSON.parse(onLoadEntitiesJSON.data);
+    
+    // now create/load establishment entities from each of the establishments, including all associated entities (full depth including training/quals)
+    const onLoadEstablishments = [];
+    const onloadPromises = [];
+    if (onLoadEntities && Array.isArray(onLoadEntities)) {
+      onLoadEntities.forEach(thisEntity => {
+        const newOnloadEstablishment = new EstablishmentEntity(loggedInUsername);
+        onLoadEstablishments.push(newOnloadEstablishment);
+
+
+        newOnloadEstablishment.initialise(thisEntity.address,
+                                          thisEntity.locationRef,
+                                          thisEntity.postcode,
+                                          thisEntity.isRegulated,
+                                          null);
+        onloadPromises.push(newOnloadEstablishment.load(thisEntity))
+      });
+    }
+    // wait here for the loading of all establishments from entities to complete
+    await Promise.all(onloadPromises);
+
+    return onLoadEstablishments;
+
+  } catch (err) {
+      console.error("/restoreExistingEntities: ERR: ", err.message);
+      throw err;
+  }
+};
+
+
 router.route('/complete').post(async (req, res) => {
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
   const isParent = req.isParent;
 
+  // TODO: add traps to prevent completing without having ensure validation and just warnings not errors
+
   try {
-    const myEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent);
+    // completing bulk upload must always work on the current set of known entities and not rely
+    //  on any aspect of the current entities at the time of validation; there may be minutes/hours
+    //  validating a bulk upload and completing it.
+    const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent);
+
+    try {
+      const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
+
+      return res.status(200).send({
+        current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
+        validated: onloadEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
+      });
+  
+    } catch (err) {
+      console.error('router.route(\'/complete\').post: failed to download entities intermediary - atypical that the object does not exist because not yet validated: ', err);
+      return res.status(400).send({
+        message: 'Validation has not ran'
+      });
+    }
     
-    return res.status(200).send(myEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)));
-
   } catch (err) {
-
     console.error(err);
     return res.status(503).send({});
   }
