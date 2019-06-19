@@ -128,7 +128,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.staffRecordsControl.controls[index].patchValue({ active: true });
     setTimeout(() => {
       this.elementRef.nativeElement
-        .querySelector(`.govuk-summary-list__row:nth-of-type(${index + 1})`)
+        .querySelector(`.staffRecord-view_${index}`)
         .scrollIntoView(true);
     });
   }
