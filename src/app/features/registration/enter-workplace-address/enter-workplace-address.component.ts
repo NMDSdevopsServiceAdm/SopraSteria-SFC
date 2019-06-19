@@ -1,21 +1,21 @@
-import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-enter-workplace-address',
-  templateUrl: './enter-workplace-address.component.html'
+  templateUrl: './enter-workplace-address.component.html',
 })
 export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
-  private form: FormGroup;
+  public form: FormGroup;
+  public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
-  private submitted = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -24,7 +24,7 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private registrationService: RegistrationService,
     private route: ActivatedRoute,
-    private router: Router,
+    private router: Router
   ) {}
 
   // Get postcode
@@ -71,19 +71,17 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
       county: ['', [Validators.required, Validators.maxLength(40)]],
       postcode: ['', [Validators.required, Validators.maxLength(8)]],
       townOrCity: ['', [Validators.required, Validators.maxLength(40)]],
-      workplaceName: ['', [Validators.required, Validators.maxLength(120)]]
+      workplaceName: ['', [Validators.required, Validators.maxLength(120)]],
     });
   }
 
   private setupSubscription(): void {
     this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe(
-        (selectedLocation: LocationAddress) => {
-          if (selectedLocation) {
-            this.preFillForm(selectedLocation);
-          }
+      this.registrationService.selectedLocationAddress$.subscribe((selectedLocation: LocationAddress) => {
+        if (selectedLocation) {
+          this.preFillForm(selectedLocation);
         }
-      )
+      })
     );
   }
 
@@ -94,7 +92,7 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
       county: selectedLocation.county,
       postcode: selectedLocation.postalCode,
       townOrCity: selectedLocation.townCity,
-      workplaceName: selectedLocation.locationName
+      workplaceName: selectedLocation.locationName,
     });
   }
 
@@ -181,7 +179,7 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private onSubmit(): void {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -224,5 +222,4 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
 }

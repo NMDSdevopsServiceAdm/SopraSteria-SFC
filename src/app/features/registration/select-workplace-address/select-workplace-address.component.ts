@@ -1,25 +1,25 @@
-import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { LocationAddress } from '@core/model/location.model';
-import { RegistrationService } from '@core/services/registration.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { LocationAddress } from '@core/model/location.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { filter } from 'lodash';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-workplace-address',
   templateUrl: './select-workplace-address.component.html',
 })
 export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
-  private enteredPostcode: string;
-  private form: FormGroup;
+  public enteredPostcode: string;
+  public locationAddresses: Array<LocationAddress>;
+  public form: FormGroup;
+  public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
-  private locationAddresses: Array<LocationAddress>;
   private selectedLocationAddress: LocationAddress;
-  private submitted = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -57,7 +57,7 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.registrationService.selectedLocationAddress$.subscribe(
-        (locationAddress: LocationAddress) => this.selectedLocationAddress = locationAddress
+        (locationAddress: LocationAddress) => (this.selectedLocationAddress = locationAddress)
       )
     );
   }
@@ -72,7 +72,7 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
             message: 'Please select an address.',
           },
         ],
-      }
+      },
     ];
   }
 
@@ -80,12 +80,12 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
     this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
   }
 
-  private onLocationChange(addressLine1: string): void {
+  public onLocationChange(addressLine1: string): void {
     const selectedLocation: LocationAddress = filter(this.locationAddresses, ['addressLine1', addressLine1])[0];
     this.registrationService.selectedLocationAddress$.next(selectedLocation);
   }
 
-  private onSubmit(): void {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 

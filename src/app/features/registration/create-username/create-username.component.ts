@@ -17,13 +17,13 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
   templateUrl: './create-username.component.html',
 })
 export class CreateUsernameComponent implements OnInit, OnDestroy {
-  private callToActionLabel: string;
-  private form: FormGroup;
+  public callToActionLabel: string;
+  public form: FormGroup;
+  public serverError: string;
+  public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
   private loginCredentialsExist = false;
-  private serverError: string;
   private serverErrorsMap: Array<ErrorDefinition>;
-  private submitted = false;
   private subscriptions: Subscription = new Subscription();
   private userNameMinLength = 3;
   private userNameMaxLength = 120;
@@ -165,7 +165,8 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
           },
           {
             name: 'pattern',
-            message: 'Your password must be least 8 characters, contain one uppercase and one lowercase letter and a number.',
+            message:
+              'Your password must be least 8 characters, contain one uppercase and one lowercase letter and a number.',
           },
         ],
       },

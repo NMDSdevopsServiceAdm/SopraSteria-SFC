@@ -1,16 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { UploadFile } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { UploadFile } from '@core/model/bulk-upload.model';
 
 @Component({
   selector: 'app-selected-files-list',
   templateUrl: './selected-files-list.component.html',
 })
 export class SelectedFilesListComponent implements OnInit, OnDestroy {
+  public selectedFiles: Array<UploadFile>;
   private subscriptions: Subscription = new Subscription();
-  private selectedFiles: Array<UploadFile>;
 
   constructor(private bulkUploadService: BulkUploadService) {}
 
@@ -34,11 +34,13 @@ export class SelectedFilesListComponent implements OnInit, OnDestroy {
 
   private setupSubscription(): void {
     this.subscriptions.add(
-      this.bulkUploadService.selectedFiles$.pipe(distinctUntilChanged()).subscribe((selectedFiles: Array<UploadFile>) => {
-        if (selectedFiles) {
-          this.selectedFiles = selectedFiles;
-        }
-      })
+      this.bulkUploadService.selectedFiles$
+        .pipe(distinctUntilChanged())
+        .subscribe((selectedFiles: Array<UploadFile>) => {
+          if (selectedFiles) {
+            this.selectedFiles = selectedFiles;
+          }
+        })
     );
   }
 

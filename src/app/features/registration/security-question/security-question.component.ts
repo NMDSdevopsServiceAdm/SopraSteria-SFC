@@ -1,11 +1,11 @@
-import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SecurityDetails } from '@core/model/security-details.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -13,12 +13,12 @@ import { Subscription } from 'rxjs';
   templateUrl: './security-question.component.html',
 })
 export class SecurityQuestionComponent implements OnInit, OnDestroy {
-  private callToActionLabel: string;
-  private form: FormGroup;
+  public callToActionLabel: string;
+  public form: FormGroup;
+  public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
   private securityDetailsExist = false;
   private securityDetailsMaxLength = 255;
-  private submitted = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
