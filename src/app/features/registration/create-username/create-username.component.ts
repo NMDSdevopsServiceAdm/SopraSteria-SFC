@@ -10,7 +10,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-username',
@@ -85,13 +84,6 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
           this.preFillForm(loginCredentials);
         }
       })
-    );
-
-    this.subscriptions.add(
-      this.getUsername.valueChanges
-        .pipe(debounceTime(1000))
-        .pipe(distinctUntilChanged())
-        .subscribe((userName: string) => this.checkUsernameDoesntExist(userName))
     );
   }
 
@@ -195,12 +187,12 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private checkUsernameDoesntExist(userName: string): void {
+  public checkUsernameDoesntExist(): void {
     this.subscriptions.add(
-      this.registrationService.getUsernameDuplicate(userName).subscribe(
+      this.registrationService.getUsernameDuplicate(this.getUsername.value).subscribe(
         (data: Object) => {
+          this.submitted = true;
           if (data['status'] === '1') {
-            this.submitted = true;
             this.getUsername.setErrors({ usernameExists: true });
           } else {
             this.getUsername.setErrors({ usernameExists: null });
@@ -208,14 +200,17 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
           }
         },
         (error: HttpErrorResponse) => {
+          this.submitted = true;
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        },
+        () => {
+          this.onSubmit();
         }
       )
     );
   }
 
-  public onSubmit(): void {
-    this.submitted = true;
+  private onSubmit(): void {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
