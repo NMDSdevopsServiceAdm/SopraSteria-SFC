@@ -179,7 +179,6 @@ class Establishment extends EntityValidator {
 
     // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
     associateWorker(key, worker) {
-        console.log("WA DEBUG - associating worker: ", key, worker.nameOrId)
         if (key && worker) {
             //const workerKey = worker.nameOrId.replace(/\s/g, "");
             this._workerEntities[key] = worker;    
@@ -207,8 +206,6 @@ class Establishment extends EntityValidator {
                     });
                 }
                 await Promise.all(promises);
-
-                console.log("WA DEBUG - this establishments associated workers: ", this._workerEntities);
             }
 
         } catch (err) {
@@ -826,7 +823,6 @@ class Establishment extends EntityValidator {
 
                     if (myWorkerSet && Array.isArray(myWorkerSet)) {
                         await Promise.all(myWorkerSet.map(async thisWorker => {
-                            console.log("WA DEBUG - establishment restore: restoring Worker with uid: ", thisWorker.uid);
                             const newWorker = new Worker(this._id);
                             await newWorker.restore(thisWorker.uid, false);
 

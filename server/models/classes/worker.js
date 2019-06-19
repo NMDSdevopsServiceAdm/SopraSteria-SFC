@@ -136,7 +136,6 @@ class Worker extends EntityValidator {
             this.resetValidations();
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
-            console.log(`WA DEBUG - have restored Worker from JSON: ${this.nameOrId}`);
 
             // reason is not a managed property, load it specifically
             if (document.reason) {
