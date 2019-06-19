@@ -11,7 +11,7 @@
       <a
         class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
         role="button"
-        [routerLink]="['/workplace', this.establishment.id, 'dashboard']"
+        [routerLink]="['/workplace', this.establishment.id, 'check-answers']"
       >
         Save and continue
       </a>
@@ -21,7 +21,7 @@
         role="button"
         [routerLink]="['/workplace', this.establishment.id, 'leavers']"
       >
-        Make a change
+        Make a change <span class="govuk-visually-hidden">to the number of staff who left in the last 12 months</span>
       </a>
     </div>
   </div>
