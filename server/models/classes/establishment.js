@@ -193,52 +193,10 @@ class Establishment extends EntityValidator {
     }
 
     // external method to initialise the mandatory non-extendable properties
-    async initialise(address, locationId, postcode, isRegulated) {
+    initialise(address, locationId, postcode, isRegulated) {
 
+        // NMDS ID will be calculated when saving this establishment for the very first time - on creation only
         this._nmdsId = null;
-
-        const cssrResults = await models.pcodedata.findOne({
-            where: {
-                postcode: postcode,
-            },
-            include: [{
-                model: models.cssr,
-                as: 'theAuthority',
-                attributes: ['id', 'name', 'nmdsIdLetter']
-            }]
-        });
-
-        let nmdsLetter = null;
-        if (cssrResults && cssrResults.postcode === postcode && cssrResults.theAuthority && cssrResults.theAuthority.id && Number.isInteger(cssrResults.theAuthority.id)) {
-            nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
-        } else {
-            // No direct match so do the fuzzy match
-            const [firstHalfOfPostcode] = postcode.split(' '); 
-            const fuzzyCssrNmdsIdMatch = await models.sequelize.query(`select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`, { type: models.sequelize.QueryTypes.SELECT });
-
-            if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
-                nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
-            }
-        }
-
-        let nextNmdsIdSeqNumber = 0;
-        const nextNmdsIdSeqNumberResults = await models.sequelize.query('SELECT nextval(\'cqc."NmdsID_seq"\')', { type: models.sequelize.QueryTypes.SELECT });
-        
-        if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
-            nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
-        } else {
-            // no sequence number
-            console.error("Failed to get next sequence number for Establishment: ", nextNmdsIdSeqNumberResults);
-            throw new RegistrationException(
-                'Failed to get next sequence number for Establishment',
-                responseErrors.unknownNMDSsequence.errCode,
-                responseErrors.unknownNMDSsequence.errMessage
-            );
-        }
-
-        if (nmdsLetter) {
-            this._nmdsId = `${nmdsLetter}${nextNmdsIdSeqNumber}`;
-        }
 
         this._address = address;
         this._postcode = postcode;
@@ -333,6 +291,49 @@ class Establishment extends EntityValidator {
         if (mustSave && this._isNew) {
             // create new Establishment
             try {
+                // when creating an establishment, need to calculate it's NMDS ID, which is combination of postcode area and sequence.
+                const cssrResults = await models.pcodedata.findOne({
+                    where: {
+                        postcode: postcode,
+                    },
+                    include: [{
+                        model: models.cssr,
+                        as: 'theAuthority',
+                        attributes: ['id', 'name', 'nmdsIdLetter']
+                    }]
+                });
+        
+                let nmdsLetter = null;
+                if (cssrResults && cssrResults.postcode === postcode && cssrResults.theAuthority && cssrResults.theAuthority.id && Number.isInteger(cssrResults.theAuthority.id)) {
+                    nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
+                } else {
+                    // No direct match so do the fuzzy match
+                    const [firstHalfOfPostcode] = postcode.split(' '); 
+                    const fuzzyCssrNmdsIdMatch = await models.sequelize.query(`select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`, { type: models.sequelize.QueryTypes.SELECT });
+        
+                    if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
+                        nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
+                    }
+                }
+
+                // catch all - because we don't want new establishments failing just because of old postcode data
+                if (nmdsLetter === null) {
+                    nmdsLetter = 'W';
+                }
+        
+                let nextNmdsIdSeqNumber = 0;
+                const nextNmdsIdSeqNumberResults = await models.sequelize.query('SELECT nextval(\'cqc."NmdsID_seq"\')', { type: models.sequelize.QueryTypes.SELECT });
+                
+                if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
+                    nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
+                } else {
+                    // no sequence number
+                    console.error("Failed to get next sequence number for Establishment: ", nextNmdsIdSeqNumberResults);
+                    throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Failed to generate NMDS ID', 'Failed to generate NMDS ID');
+                }
+
+                this._nmdsId = `${nmdsLetter}${nextNmdsIdSeqNumber}`;
+
                 const creationDocument = {
                     uid: this.uid,
                     NameValue: this.name,
@@ -1091,11 +1092,11 @@ class Establishment extends EntityValidator {
         let allExistAndValid = true;    // assume all exist until proven otherwise
 
        try {
-            const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
-            if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
+            const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i;
+            if (this._uid !== null && !(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
                 allExistAndValid = false;
                 this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
+                    ValidationMessage.WARNING,
                     101,
                     this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
                     ['NMDSID']

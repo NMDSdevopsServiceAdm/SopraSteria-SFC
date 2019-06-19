@@ -393,7 +393,7 @@ router.route('/')
           // now create establishment - using the extended property encapsulation
           defaultError = responseErrors.establishment;
           const newEstablishment = new EstablishmentModel(Logindata.UserName);
-          await newEstablishment.initialise(
+          newEstablishment.initialise(
             Estblistmentdata.Address,
             Estblistmentdata.LocationID,
             Estblistmentdata.PostCode,
