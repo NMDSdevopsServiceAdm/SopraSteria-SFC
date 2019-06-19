@@ -14,6 +14,9 @@ const models = require('../index');
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
 const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
 
+// associations
+const Worker = require('./worker').Worker;
+
 // notifications
 
 // temp formatters
@@ -88,6 +91,9 @@ class Establishment extends EntityValidator {
 
         // change properties
         this._isNew = false;
+
+        // all known workers for this establishment - an associative object (property key is the worker's key)
+        this._workerEntities = {};
         
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
@@ -245,13 +251,36 @@ class Establishment extends EntityValidator {
         this._parentId = parentID;
     }
 
+    // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
+    associateWorker(key, worker) {
+        if (key && worker) {
+            //const workerKey = worker.nameOrId.replace(/\s/g, "");
+            this._workerEntities[key] = worker;    
+        }
+    };
+
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
-    async load(document) {
+    async load(document, associatedEntities=false) {
         try {
             this.resetValidations();
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+
+            // allow for deep restoration of entities (associations - namely Worker here)
+            if (associatedEntities) {
+                const promises = [];
+                if (document.workers && Array.isArray(document.workers)) {
+                    document.workers.forEach(thisWorker => {
+                        const newWorker = new Worker(null);
+                        
+                        // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                        this.associateWorker(thisWorker.nameOrId.replace(/\s/g, ""), newWorker);
+                        promises.push(newWorker.load(thisWorker, true));
+                    });
+                }
+                await Promise.all(promises);
+            }
 
         } catch (err) {
             this._log(Establishment.LOG_ERROR, `Establishment::load - failed: ${err}`);
@@ -289,7 +318,7 @@ class Establishment extends EntityValidator {
 
     // saves the Establishment to DB. Returns true if saved; false is not.
     // Throws "EstablishmentSaveException" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -321,6 +350,7 @@ class Establishment extends EntityValidator {
                     shareWithCQC: false,
                     shareWithLA: false,
                     dataOwner: 'Workplace',
+                    source: bulkUploaded ? 'Bulk' : 'Online',
                     attributes: ['id', 'created', 'updated'],
                 };
 
@@ -403,8 +433,10 @@ class Establishment extends EntityValidator {
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
+                    // note - if the establishment was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         ...modifedUpdateDocument,
+                        source: bulkUploaded ? 'Bulk' : 'Online',
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
@@ -526,7 +558,7 @@ class Establishment extends EntityValidator {
     // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
     // returns true on success; false if no User
     // Can throw EstablishmentRestoreException exception.
-    async restore(id, showHistory=false) {
+    async restore(id, showHistory=false, associatedEntities=false) {
         if (!id) {
             throw new EstablishmentExceptions.EstablishmentRestoreException(null,
                 null,
@@ -537,18 +569,23 @@ class Establishment extends EntityValidator {
         }
 
         try {
-            // by including the user id in the
-            //  fetch, we are sure to only fetch those
-            //  Establishment records associated to the known
-            //   user
-            const fetchQuery = {
+            // restore establishment based on id as an integer (primary key or uid)
+            let fetchQuery = {
                 // attributes: ['id', 'uid'],
                 where: {
                     id: id
                 },
-                include: [
-                ]
             };
+
+            if (!Number.isInteger(id)) {
+                fetchQuery = {
+                    // attributes: ['id', 'uid'],
+                    where: {
+                        uid: id,
+                        archived: false
+                    },
+                };
+            }
 
             const fetchResults = await models.establishment.findOne(fetchQuery);
             
@@ -849,6 +886,30 @@ class Establishment extends EntityValidator {
                 // load extendable properties
                 await this._properties.restore(fetchResults, SEQUELIZE_DOCUMENT_TYPE);
 
+                // certainly for bulk upload, but also expected for cross-entity validations, restore all associated entities (workers)
+                if (associatedEntities) {
+                    const myWorkerSet = await models.worker.findAll({
+                        attributes: ['uid'],
+                        where: {
+                            establishmentFk: this._id,
+                            archived: false
+                        },
+                    });
+
+                    if (myWorkerSet && Array.isArray(myWorkerSet)) {
+                        await Promise.all(myWorkerSet.map(async thisWorker => {
+                            const newWorker = new Worker(this._id);
+                            await newWorker.restore(thisWorker.uid, false);
+
+                            // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
+                            // without whitespace
+                            this.associateWorker(newWorker.nameOrId.replace(/\s/g, ""), newWorker);
+
+                            return {};
+                        }));
+                    }
+                }
+
                 return true;
             }
 
@@ -962,7 +1023,7 @@ class Establishment extends EntityValidator {
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at User and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given User
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, fullDescription=true, filteredPropertiesByName=null, includeAssociatedEntities=false) {
         if (!showHistoryTimeline) {
             if (filteredPropertiesByName !== null && !Array.isArray(filteredPropertiesByName)) {
                 throw new Error('Establishment::toJSON filteredPropertiesByName must be a simple Array of names');
@@ -1005,8 +1066,8 @@ class Establishment extends EntityValidator {
             } else {
                 return {
                     ...myDefaultJSON,
-                    ...myJSON
-            
+                    ...myJSON,
+                    workers: includeAssociatedEntities ? Object.values(this._workerEntities).map(thisWorker => thisWorker.toJSON(false, false, false, false, true)): undefined,
                };
             }
         } else {
