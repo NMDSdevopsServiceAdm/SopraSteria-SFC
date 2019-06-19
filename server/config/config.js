@@ -297,24 +297,16 @@ if (config.get('aws.secrets.use')) {
     config.get('aws.region'),
     config.get('aws.secrets.wallet')
   ).then(ret => {
-    // DB_HOST
+    // DB rebind
     config.set('db.host', AWSSecrets.dbHost());
     config.set('db.password', AWSSecrets.dbPass());
-
-    // const certificate = AWSSecrets.dbAppUserCertificate();
-    // console.log("WA DEBUG - AWS Secrets - original certificate: ", certificate);
-    // console.log("WA DEBUG - AWS Secrets - modified certificate: ", certificate.replace(/\\n/g, "\n"));
-
     config.set('db.client_ssl.data.certificate', AWSSecrets.dbAppUserCertificate().replace(/\\n/g, "\n"));
     config.set('db.client_ssl.data.key', AWSSecrets.dbAppUserKey().replace(/\\n/g, "\n"));
     config.set('db.client_ssl.data.ca', AWSSecrets.dbAppRootCertificate().replace(/\\n/g, "\n"));
 
-
-    // console.log("New database host: ", config.get('db.host'));
-    // console.log("New database password: ", config.get('db.password'));
-    // console.log("New database client certificate: ", config.get('db.client_ssl.data.certificate'));
-    // console.log("New database client key: ", config.get('db.client_ssl.data.key'));
-    // console.log("New database root cert: ", config.get('db.client_ssl.data.ca'));
+    // external APIs
+    config.set('slack.url', AWSSecrets.slackUrl());
+    config.set('notify.key', AWSSecrets.govNotify());
 
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);

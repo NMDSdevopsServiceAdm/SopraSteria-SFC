@@ -7,7 +7,6 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 import { isNull } from 'util';
 
 export class Question implements OnInit, OnDestroy {
@@ -24,6 +23,7 @@ export class Question implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
   protected subscriptions: Subscription = new Subscription();
+  protected initiated = false;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -35,12 +35,14 @@ export class Question implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+      this.establishmentService.establishment$.subscribe(establishment => {
         this.establishment = establishment;
 
-        this.init();
+        if (!this.initiated) {
+          this._init();
 
-        this.setBackLink();
+          this.setBackLink();
+        }
       })
     );
 
@@ -85,6 +87,11 @@ export class Question implements OnInit, OnDestroy {
     }
 
     this.updateEstablishment(props);
+  }
+
+  protected _init(): void {
+    this.initiated = true;
+    this.init();
   }
 
   protected init(): void {}

@@ -97,7 +97,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
   onSuccess() {
     this.next =
-      this.worker.countryOfBirth.value === 'United Kingdom'
+      this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
         ? ['/worker', this.worker.uid, 'recruited-from']
         : ['/worker', this.worker.uid, 'year-arrived-uk'];
   }
