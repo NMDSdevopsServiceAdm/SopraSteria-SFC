@@ -294,7 +294,7 @@ class Establishment extends EntityValidator {
                 // when creating an establishment, need to calculate it's NMDS ID, which is combination of postcode area and sequence.
                 const cssrResults = await models.pcodedata.findOne({
                     where: {
-                        postcode: postcode,
+                        postcode: this._postcode,
                     },
                     include: [{
                         model: models.cssr,
@@ -304,11 +304,11 @@ class Establishment extends EntityValidator {
                 });
         
                 let nmdsLetter = null;
-                if (cssrResults && cssrResults.postcode === postcode && cssrResults.theAuthority && cssrResults.theAuthority.id && Number.isInteger(cssrResults.theAuthority.id)) {
+                if (cssrResults && cssrResults.postcode === this._postcode && cssrResults.theAuthority && cssrResults.theAuthority.id && Number.isInteger(cssrResults.theAuthority.id)) {
                     nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
                 } else {
                     // No direct match so do the fuzzy match
-                    const [firstHalfOfPostcode] = postcode.split(' '); 
+                    const [firstHalfOfPostcode] = `postcode`.split(' '); 
                     const fuzzyCssrNmdsIdMatch = await models.sequelize.query(`select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`, { type: models.sequelize.QueryTypes.SELECT });
         
                     if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
