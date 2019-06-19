@@ -82,7 +82,12 @@
     You need to complete the upload to import the data.
   </p>
 
-  <button type="button" class="govuk-button govuk-button--primary govuk-!-margin-top-2" (click)="importFiles()">
+  <button
+    *ngIf="!hasErrors"
+    type="button"
+    class="govuk-button govuk-button--primary govuk-!-margin-top-2"
+    (click)="importFiles()"
+  >
     Complete upload
   </button>
 </ng-container>
