@@ -9,8 +9,8 @@ import { EstablishmentService } from './establishment.service';
   providedIn: 'root',
 })
 export class ReportsService {
-  private _reportDetails$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
-  public reportDetails$: Observable<string> = this._reportDetails$.asObservable();
+  private _reportDetails$: BehaviorSubject<WDFReport> = new BehaviorSubject<WDFReport>(null);
+  public reportDetails$: Observable<WDFReport> = this._reportDetails$.asObservable();
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 

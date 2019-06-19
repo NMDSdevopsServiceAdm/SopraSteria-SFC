@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { WDFReport } from '@core/model/reports.model';
 import { AuthService } from '@core/services/auth.service';
 import { ReportsService } from '@core/services/reports.service';
 import * as moment from 'moment';
@@ -12,7 +13,7 @@ import { Subscription } from 'rxjs';
 export class ReportsComponent implements OnInit, OnDestroy {
   public updateEligibilityForm: FormGroup;
   public establishment: any;
-  public reportDetails: {};
+  public reportDetails: WDFReport;
   public displayWDFReport: {};
   public eligibility: {};
   public newDate: string;
