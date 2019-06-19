@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 export class JobService {
   constructor(private http: HttpClient) {}
 
-  getJobs(): Observable<Job[]> {
+  public getJobs(): Observable<Job[]> {
     return this.http.get<GetJobsResponse>('/api/jobs').pipe(map(res => res.jobs));
   }
 }

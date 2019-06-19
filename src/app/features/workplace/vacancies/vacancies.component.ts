@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DataSharingOptions } from '@core/model/data-sharing.model';
-import { UpdateJobsRequest } from '@core/model/establishment.model';
+import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -11,12 +11,6 @@ import { JobService } from '@core/services/job.service';
 import { take } from 'rxjs/operators';
 
 import { Question } from '../question/question.component';
-
-enum vacancyOptions {
-  NONE = 'None',
-  // tslint:disable-next-line: quotemark
-  DONT_KNOW = "Don't know",
-}
 
 @Component({
   selector: 'app-vacancies',
@@ -28,11 +22,11 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   public vacanciesKnownOptions = [
     {
       label: 'There are no current staff vacancies.',
-      value: vacancyOptions.NONE,
+      value: jobOptionsEnum.NONE,
     },
     {
       label: `I don't know how many current staff vacancies there are.`,
-      value: vacancyOptions.DONT_KNOW,
+      value: jobOptionsEnum.DONT_KNOW,
     },
   ];
   private minVacancies = 0;
@@ -44,7 +38,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    protected jobService: JobService
+    private jobService: JobService
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -123,8 +117,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
       );
     } else {
       if (
-        this.establishment.vacancies === vacancyOptions.NONE ||
-        this.establishment.vacancies === vacancyOptions.DONT_KNOW
+        this.establishment.vacancies === jobOptionsEnum.NONE ||
+        this.establishment.vacancies === jobOptionsEnum.DONT_KNOW
       ) {
         this.form.get('vacanciesKnown').setValue(this.establishment.vacancies);
       }
@@ -152,11 +146,11 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
           },
           {
             name: 'min',
-            message: 'Total must be 0 or above',
+            message: `Total must be ${this.minVacancies} or above`,
           },
           {
             name: 'max',
-            message: 'Total must be 999 or lower',
+            message: `Total must be ${this.maxVacancies} or lower`,
           },
         ],
       },
@@ -192,7 +186,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   protected generateUpdateProps(): UpdateJobsRequest {
     const { vacanciesKnown } = this.form.controls;
 
-    if (vacanciesKnown.value === vacancyOptions.NONE || vacanciesKnown.value === vacancyOptions.DONT_KNOW) {
+    if (vacanciesKnown.value === jobOptionsEnum.NONE || vacanciesKnown.value === jobOptionsEnum.DONT_KNOW) {
       return { vacancies: vacanciesKnown.value };
     }
 

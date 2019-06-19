@@ -91,7 +91,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           .then(record => record.get())
           .then(establishment => {
             // this is a known subsidairy of this given parent establishment
-            
+
             // but, to be able to access the subsidary, then the permissions must not be null
             if (establishment.parentPermissions === null) {
               console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);

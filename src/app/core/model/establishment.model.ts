@@ -106,3 +106,9 @@ export interface UpdateJobsRequest {
   starters?: Starter[] | string;
   vacancies?: Vacancy[] | string;
 }
+
+export enum jobOptionsEnum {
+  // tslint:disable-next-line: quotemark
+  DONT_KNOW = "Don't know",
+  NONE = 'None',
+}

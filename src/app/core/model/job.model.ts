@@ -13,3 +13,7 @@ export interface JobRole {
   title?: string;
   other?: string;
 }
+
+export interface GetJobsResponse {
+  jobs: Job[];
+}
