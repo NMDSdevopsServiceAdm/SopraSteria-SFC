@@ -179,7 +179,8 @@ class Establishment extends EntityValidator {
 
     // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
     associateWorker(key, worker) {
-        if (key && worker && worker.nameOrId) {
+        console.log("WA DEBUG - associating worker: ", key, worker.nameOrId)
+        if (key && worker) {
             //const workerKey = worker.nameOrId.replace(/\s/g, "");
             this._workerEntities[key] = worker;    
         }
@@ -187,11 +188,28 @@ class Establishment extends EntityValidator {
 
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
-    async load(document) {
+    async load(document, associatedEntities=false) {
         try {
             this.resetValidations();
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+
+            // allow for deep restoration of entities (associations - namely Worker here)
+            if (associatedEntities) {
+                const promises = [];
+                if (document.workers && Array.isArray(document.workers)) {
+                    document.workers.forEach(thisWorker => {
+                        const newWorker = new Worker(null);
+                        
+                        // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                        this.associateWorker(thisWorker.nameOrId.replace(/\s/g, ""), newWorker);
+                        promises.push(newWorker.load(thisWorker, true));
+                    });
+                }
+                await Promise.all(promises);
+
+                console.log("WA DEBUG - this establishments associated workers: ", this._workerEntities);
+            }
 
         } catch (err) {
             this._log(Establishment.LOG_ERROR, `Establishment::load - failed: ${err}`);

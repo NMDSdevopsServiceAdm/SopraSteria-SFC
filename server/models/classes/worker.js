@@ -131,11 +131,12 @@ class Worker extends EntityValidator {
 
     // takes the given JSON document and creates a Worker's set of extendable properties
     // Returns true if the resulting Worker is valid; otherwise false
-    async load(document) {
+    async load(document, associatedEntities=false) {
         try {
             this.resetValidations();
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+            console.log(`WA DEBUG - have restored Worker from JSON: ${this.nameOrId}`);
 
             // reason is not a managed property, load it specifically
             if (document.reason) {

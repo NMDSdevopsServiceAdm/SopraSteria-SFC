@@ -1025,7 +1025,7 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
                                           thisEntity.postcode,
                                           thisEntity.isRegulated,
                                           null);
-        onloadPromises.push(newOnloadEstablishment.load(thisEntity))
+        onloadPromises.push(newOnloadEstablishment.load(thisEntity, true));
       });
     }
     // wait here for the loading of all establishments from entities to complete
