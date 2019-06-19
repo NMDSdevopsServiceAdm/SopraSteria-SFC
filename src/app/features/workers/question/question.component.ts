@@ -81,7 +81,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
         break;
 
       case 'summary':
-        this.router.navigate(['/worker', this.worker.uid, 'summary']);
+        this.router.navigate(['/worker', this.worker.uid, 'check-answers']);
         break;
 
       case 'exit':

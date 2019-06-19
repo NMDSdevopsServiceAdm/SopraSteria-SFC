@@ -12,7 +12,7 @@ export class StaffRecordSummaryComponent {
   public returnTo: URLStructure;
   @Input() set worker(value: Worker) {
     this._worker = value;
-    this.returnTo = { url: ['/worker', this.worker.uid, 'summary'] };
+    this.returnTo = { url: ['/worker', this.worker.uid, 'check-answers'] };
   }
   @Input() return: URLStructure;
   private _worker: Worker;
