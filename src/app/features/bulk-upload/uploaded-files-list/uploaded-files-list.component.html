@@ -6,8 +6,12 @@
     </app-inset-text>
   </div>
 </div>
-
-<table class="govuk-table" [class.govuk-error-table]="hasErrors" [class.govuk-!-margin-top-6]="!validationComplete">
+<table
+  id="bulkUploadValidation"
+  class="govuk-table"
+  [class.govuk-error-table]="hasErrors"
+  [class.govuk-!-margin-top-6]="!validationComplete"
+>
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">File name</th>
