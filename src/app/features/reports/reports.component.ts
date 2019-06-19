@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reports',
-  templateUrl: './reports.component.html'
+  templateUrl: './reports.component.html',
 })
 export class ReportsComponent implements OnInit, OnDestroy {
   public updateEligibilityForm: FormGroup;
@@ -43,8 +43,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
     this.displayWDFReport = false;
   }
 
-  setEffectiveFromDate(data) {
-    const effectiveFrom = data.effectiveFrom;
+  setEffectiveFromDate(effectiveFrom: Date) {
     this.effectiveFromDateNextYear = moment(effectiveFrom)
       .add(1, 'years')
       .format('YYYY');
@@ -56,8 +55,8 @@ export class ReportsComponent implements OnInit, OnDestroy {
     }
 
     this.subscriptions.add(
-      this.reportsService.getWDFReport().subscribe(res => {
-        this.setEffectiveFromDate(res);
+      this.reportsService.getWDFReport(null).subscribe(res => {
+        this.setEffectiveFromDate(res.effectiveFrom);
 
         this.eligibility = res;
         this.displayWDFReport = true;
@@ -69,10 +68,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
   }
 
   updateEffectiveFrom() {
-    const date = this.updateEligibilityForm.get('date').value;
-    const hour = this.updateEligibilityForm.get('hour').value;
-    const minute = this.updateEligibilityForm.get('minute').value;
-    const second = this.updateEligibilityForm.get('second').value;
+    const { date, hour, minute, second } = this.updateEligibilityForm.value;
 
     if (date === null || date === '') {
       this.newDate = '';
@@ -80,7 +76,7 @@ export class ReportsComponent implements OnInit, OnDestroy {
       this.newDate = date + 'T' + hour + ':' + minute + ':' + second + 'Z';
     }
 
-    this.subscriptions.add(this.reportsService.getWDFReport(this.newDate).subscribe(res => {}));
+    this.subscriptions.add(this.reportsService.getWDFReport(null, this.newDate).subscribe(res => {}));
   }
 
   ngOnDestroy() {
