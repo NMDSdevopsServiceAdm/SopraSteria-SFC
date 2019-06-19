@@ -1,11 +1,11 @@
-import { BackService } from '@core/services/back.service';
-import { Component } from '@angular/core';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RegistrationService } from '@core/services/registration.service';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 
@@ -14,7 +14,7 @@ import { YourDetailsComponent } from '@features/registration/your-details/your-d
   templateUrl: './../your-details/your-details.component.html',
 })
 export class ChangeYourDetailsComponent extends YourDetailsComponent {
-  protected callToActionLabel = 'Save and return';
+  public callToActionLabel = 'Save and return';
   protected registrationInProgress: boolean;
 
   constructor(
