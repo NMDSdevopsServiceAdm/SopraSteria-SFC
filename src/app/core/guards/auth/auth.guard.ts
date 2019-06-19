@@ -15,21 +15,22 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   ) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    return this.checkLogin(route);
+    return this.checkLogin(state);
   }
 
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     return this.canActivate(route, state);
   }
 
-  private checkLogin(route: ActivatedRouteSnapshot): boolean {
+  private checkLogin(state: RouterStateSnapshot): boolean {
+    if (this.establishmentService.isSameLoggedInUser) {
+      this.authService.redirect = state.url;
+    }
+
     if (this.authService.isLoggedIn) {
       return true;
     }
 
-    if (this.establishmentService.isSameLoggedInUser) {
-      this.authService.redirect = { url: route.url, fragment: route.fragment, queryParams: route.queryParams };
-    }
     this.router.navigate(['/login']);
     return false;
   }
