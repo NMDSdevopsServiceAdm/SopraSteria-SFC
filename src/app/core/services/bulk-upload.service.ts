@@ -14,6 +14,7 @@ export class BulkUploadService {
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
   public selectedFiles$: BehaviorSubject<Array<UploadFile>> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<Array<UploadFile>> = new BehaviorSubject(null);
+  public totalErrors$: BehaviorSubject<number> = new BehaviorSubject(0);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 

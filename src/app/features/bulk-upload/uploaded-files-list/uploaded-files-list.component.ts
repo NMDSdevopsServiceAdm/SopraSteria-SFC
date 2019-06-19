@@ -90,6 +90,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       file.status = file.errors ? FileValidateStatus.Fail : FileValidateStatus.Pass;
       this.totalWarnings = this.totalWarnings + file.warnings;
       this.totalErrors = this.totalErrors + file.errors;
+      this.bulkUploadService.totalErrors$.next(this.totalErrors);
     });
 
     this.validationComplete = true;
