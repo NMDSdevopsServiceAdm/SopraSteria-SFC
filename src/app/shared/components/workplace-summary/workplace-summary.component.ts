@@ -32,6 +32,7 @@ export class WorkplaceSummaryComponent {
       }
     }
   }
+  @Input() return: string[] = null;
 
   get workplace(): any {
     return this._workplace;
@@ -60,7 +61,12 @@ export class WorkplaceSummaryComponent {
     };
   }
 
-  isArray(variable) {
+  public isArray(variable): boolean {
     return isArray(variable);
+  }
+
+  public setReturn(): void {
+    console.log(this.return);
+    // this.workerService.setReturnTo(this.return);
   }
 }
