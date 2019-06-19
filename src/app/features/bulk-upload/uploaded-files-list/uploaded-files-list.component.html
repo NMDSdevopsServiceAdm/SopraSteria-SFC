@@ -19,11 +19,15 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container *ngFor="let file of uploadedFiles">
-      <tr class="govuk-table__row" [class.govuk-error-table__row]="file.errors">
-        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors" scope="row">
-          <p *ngIf="file.errors" class="govuk-error-message govuk-error-table__message">
+      <tr *ngIf="file.errors">
+        <td class="govuk-error-table__message-cell" colspan="5">
+          <p class="govuk-error-message govuk-error-table__message">
             Check the file before validating.
           </p>
+        </td>
+      </tr>
+      <tr class="govuk-table__row" [class.govuk-error-table__row]="file.errors">
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors" scope="row">
           {{ file.name }}
           <p *ngIf="file.warnings" class="govuk-!-margin-bottom-1 govuk-!-margin-top-2">
             <strong class="govuk__flex">
