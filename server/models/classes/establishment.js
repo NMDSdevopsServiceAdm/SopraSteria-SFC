@@ -1096,7 +1096,7 @@ class Establishment extends EntityValidator {
             if (this._uid !== null && !(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
                 allExistAndValid = false;
                 this._validations.push(new ValidationMessage(
-                    ValidationMessage.WARNING,
+                    ValidationMessage.ERROR,
                     101,
                     this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
                     ['NMDSID']
