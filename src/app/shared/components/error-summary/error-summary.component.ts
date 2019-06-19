@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormControl, FormGroup } from '@angular/forms';
-import { ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails, ErrorSummary } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
@@ -12,6 +12,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public form: FormGroup;
   @Input() public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError?: string;
+  @Input() public customErrors?: Array<ErrorDefinition>;
   @ViewChild('errorSummary') private errorSummaryElement: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;
