@@ -22,6 +22,7 @@ const EstablishmentEntity = require('../../models/classes/establishment').Establ
 const WorkerEntity = require('../../models/classes/worker').Worker;
 const QualificationEntity = require('../../models/classes/qualification').Qualification;
 const TrainingEntity = require('../../models/classes/training').Training;
+const UserEntity = require('../../models/classes/user').User;
   
 const FileValidationStatusEnum = { "Pending": "pending", "Validating": "validating", "Pass": "pass", "PassWithWarnings": "pass with warnings", "Fail": "fail" };
 
@@ -413,14 +414,11 @@ router.route('/validate').post(async (req, res) => {
             entities: validationResponse.data.entities.training,
           },
         },
+        all: validationResponse.data.resulting,
       });
 
     } else {
-      return res.status(200).send({
-        establishment: validationResponse.data.establishments,
-        workers: validationResponse.data.workers,
-        training: validationResponse.data.training,
-      });
+      return res.status(200).send(validationResponse.data.resulting);
     }
 
   } catch (err) {
@@ -467,42 +465,13 @@ async function uploadAsJSON(username, establishmentId, content, key) {
 
   try {
     const objData = await s3.putObject(params).promise();
-    console.log(`${key} has been uploaded!`, objData);
+    console.log(`${key} has been uploaded!`);
 
   } catch (err) {
     console.error('api/establishment/bulkupload/uploadFile: ', err);
     throw new Error(`Failed to upload S3 object: ${key}`);
   }
 }
-
-
-const _appendApiErrorsAndWarnings = (lineValidator, errors, warnings) => {
-
-  errors.forEach(thisError => {
-    thisError.properties ? thisError.properties.forEach(thisProp => {
-      lineValidator.validationErrors.push({
-        lineNumber: lineValidator.lineNumber,
-        errCode: thisError.code,
-        errType: "TBC",
-        error: thisError.message,
-        source: thisProp
-      });  
-    }) : true;
-  });
-
-  warnings.forEach(thisWarning => {
-    thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
-      lineValidator.validationErrors.push({
-        lineNumber: lineValidator.lineNumber,
-        warnCode: thisWarning.code,
-        warnType: "TBC",
-        warning: thisWarning.message,
-        source: thisProp
-      });
-    }) : true;
-  });
-
-};
 
 const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments) => {
   const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber);   // +2 because the first row is CSV headers, and forEach counter is zero index
@@ -841,50 +810,58 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
-
-  // upload the validated metadata as JSON to S3
-  establishments.imported && commit ? await uploadAsJSON(username, establishmentId, establishments.establishmentMetadata, `${establishmentId}/latest/${establishments.establishmentMetadata.filename}.metadata.json`) : true;
-  workers.imported && commit ? await uploadAsJSON(username, establishmentId, workers.workerMetadata, `${establishmentId}/latest/${workers.workerMetadata.filename}.metadata.json`) : true;
-  training.imported && commit ? await uploadAsJSON(username, establishmentId, training.trainingMetadata, `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`) : true;
-
-  // upload the converted CSV as JSON to S3
-  myEstablishments.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`) : true;
-  myWorkers.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myWorkers.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${workers.workerMetadata.filename}.csv.json`) : true;
-  myTrainings.length > 0 && commit ? await uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`) : true;
-
-  // upload the intermediary entities as JSON to S3
-  //console.log("WA DEBUG - establishment entities as JSON:\n", JSON.stringify(myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,false,true)), null, 4));
+  // prepare entities ready for upload/return
   const establishmentsAsArray = Object.values(myAPIEstablishments);
   const workersAsArray = Object.values(myAPIWorkers);
   const trainingAsArray = Object.values(myAPITrainings);
   const qualificationsAsArray = Object.values(myAPIQualifications);
 
-  // debug
-  const allentitiesreadyforjson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true));
-  const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
-  const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
-  const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
-  const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
+  // upload intermediary/validation S3 objects
+  if (commit) {
+    const s3UploadPromises = [];
 
-  establishmentsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`) : true;
-  establishmentsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`) : true;
-  workersAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, workersOnlyForJson, `${establishmentId}/intermediary/worker.entities.json`) : true;
-  trainingAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, trainingOnlyForJson, `${establishmentId}/intermediary/training.entities.json`) : true;
-  qualificationsAsArray.length > 0 && commit ? await uploadAsJSON(username, establishmentId, qualificationsOnlyForJson, `${establishmentId}/intermediary/qualification.entities.json`) : true;
-  
-  // handle parsing errors
-  if (csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0 || csvTrainingSchemaErrors.length > 0) {
-    // upload the validation to S3
-    commit ? await uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/${establishments.establishmentMetadata.filename}.validation.json`) : true;
-    commit ? await uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/${workers.workerMetadata.filename}.validation.json`) : true;
-    commit ? await uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/${training.trainingMetadata.filename}.validation.json`) : true;
+    // upload the metadata as JSON to S3 - these are requited for uploaded list endpoint
+    establishments.imported  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, establishments.establishmentMetadata, `${establishmentId}/latest/${establishments.establishmentMetadata.filename}.metadata.json`)) : true;
+    workers.imported  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, workers.workerMetadata, `${establishmentId}/latest/${workers.workerMetadata.filename}.metadata.json`)) : true;
+    training.imported ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, training.trainingMetadata, `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`)) : true;
 
-    status = false;
+    // upload the validation data to S3 - these are reuquired for validation report - although one object is likely to be quicker to upload - and only one object is required then to download
+    commit ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/${establishments.establishmentMetadata.filename}.validation.json`)) : true;
+    commit ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/${workers.workerMetadata.filename}.validation.json`)) : true;
+    commit ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/${training.trainingMetadata.filename}.validation.json`)) : true;
+
+    // to false to disable the upload of intermediary objects
+    const traceData = true;
+    if (traceData) {
+      // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
+      myEstablishments.length > 0  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`)) : true;
+      myWorkers.length > 0  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myWorkers.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${workers.workerMetadata.filename}.csv.json`)) : true;
+      myTrainings.length > 0  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`)) : true;
+
+      // upload the intermediary entities as JSON to S3
+      //console.log("WA DEBUG - establishment entities as JSON:\n", JSON.stringify(myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,false,true)), null, 4));
+
+      // debug
+      const allentitiesreadyforjson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true));
+      const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
+      const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
+      const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
+      const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
+
+      establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`)) : true;
+      establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`)) : true;
+      workersAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, workersOnlyForJson, `${establishmentId}/intermediary/worker.entities.json`)) : true;
+      trainingAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, trainingOnlyForJson, `${establishmentId}/intermediary/training.entities.json`)) : true;
+      qualificationsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, qualificationsOnlyForJson, `${establishmentId}/intermediary/qualification.entities.json`)) : true;      
+    }
+
+    // before returning, wait for all uploads to complete
+    await Promise.all(s3UploadPromises);
   }
 
-   //upload metadata as json, by filename+metadata.json
+  status = csvEstablishmentSchemaErrors.length > 0 || csvWorkerSchemaErrors.length > 0 || csvTrainingSchemaErrors.length > 0 ? false : true;
 
-  return {
+  const response = {
     status,
     validation: {
       establishments: csvEstablishmentSchemaErrors,
@@ -907,9 +884,104 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         workers: workersAsArray.map(thisWorker => thisWorker.toJSON()),
         training: trainingAsArray.map(thisTraining => thisTraining.toJSON()),
         qualifications: qualificationsAsArray.map(thisQualification => thisQualification.toJSON()),
-      }
+      },
+      resulting:  establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
     }
+  };
+
+  return response;
+};
+
+// for the given user, restores all establishment and worker entities only from the DB, associating the workers
+//  back to the establishment
+const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent) => {
+  try {
+    const thisUser = new UserEntity(primaryEstablishmentId);;
+    await thisUser.restore(null, loggedInUsername, false);
+
+    // gets a list of "my establishments", which if a parent, includes all known subsidaries too, and this "parent's" access permissions to those subsidaries
+    const myEstablishments = await thisUser.myEstablishments(isParent, null);
+
+    // returns:
+    // {
+    //   "primary": {
+    //     "uid": "98a83eef-e1e1-49f3-89c5-b1287a3cc8dd",
+    //     "updated": "2019-06-15T09:46:14.884Z",
+    //     "isParent": true,
+    //     "parentUid": null,
+    //     "name": "WOZiTech Cares Updated",
+    //     "mainService": "Extra care housing services",
+    //     "dataOwner": "Workplace"
+    //   },
+    //   "subsidaries": {
+    //     "count": 3,
+    //     "establishments": [
+    //       {
+    //         "uid": "db97cd2a-c0b0-4491-86de-b9ad75984b49",
+    //         "updated": "2019-05-15T15:20:05.836Z",
+    //         "parentUid": "98a83eef-e1e1-49f3-89c5-b1287a3cc8dd",
+    //         "name": "WOZiTech new workplace - updated by parent",
+    //         "mainService": "Community support and outreach",
+    //         "dataOwner": "Parent",
+    //         "parentPermissions": "Workplace and Staff"
+    //       },
+    //       {
+    //         "uid": "975987ae-4876-40a6-a30f-72a43c51ce67",
+    //         "updated": "2019-03-16T12:03:41.089Z",
+    //         "parentUid": "98a83eef-e1e1-49f3-89c5-b1287a3cc8dd",
+    //         "name": "Warren Care Non-CQC With eUID 5",
+    //         "mainService": "Community support and outreach",
+    //         "dataOwner": "Workplace",
+    //         "parentPermissions": null
+    //       },
+    //       {
+    //         "uid": "cdf7833e-a66f-4913-a53c-7231ef8ec539",
+    //         "updated": "2019-03-15T11:14:31.424Z",
+    //         "parentUid": "98a83eef-e1e1-49f3-89c5-b1287a3cc8dd",
+    //         "name": "Warren Care Non-CQC With eUID",
+    //         "mainService": "Community support and outreach",
+    //         "dataOwner": "Parent",
+    //         "parentPermissions": "Workplace"
+    //       }
+    //     ]
+    //   }
+    // }
+
+    // having got this list of establishments, now need to fully restore each establishment as entities.
+    //  using an object adding entities by a known key to make lookup comparisions easier.
+    const currentEntities = [];
+    const restoreEntityPromises = [];
+
+    // first add the primary establishment entity
+    const primaryEstablishment = new EstablishmentEntity(loggedInUsername);
+    currentEntities.push(primaryEstablishment);
+    restoreEntityPromises.push(primaryEstablishment.restore(myEstablishments.primary.uid, false, true));
+
+    if (myEstablishments.subsidaries && myEstablishments.subsidaries.establishments && Array.isArray(myEstablishments.subsidaries.establishments)) {
+      myEstablishments.subsidaries.establishments.forEach(thisSubsidairy => {
+        const newSub = new EstablishmentEntity(loggedInUsername);
+        currentEntities.push(newSub);
+        restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true));
+      });
+    }
+
+    await Promise.all(restoreEntityPromises);
+
+    return currentEntities;
+
+  } catch (err) {
+      console.error("/restoreExistingEntities: ERR: ", err.message);
+      throw err;
   }
+};
+
+// having validated bulk upload files - and generated any number of validation errors and warnings
+//  if there are no error, then the user will be able to complete the upload. But to be
+//  able to complete on the upload though, they will need a report highlighting which, if any, of the
+//  the establishments and workers will be deleted.
+// Only generate this validation difference report, if there are no errors.
+const validationDifferenceReport = async (onloadEntities, currentEntities) => {
+
 };
 
 router.route('/report').get(async (req, res) => {  
@@ -974,10 +1046,22 @@ router.route('/report').get(async (req, res) => {
   }
 });
 
-router.route('/').get(async (req, res) => {
-  const establishmentId = req.establishmentId;
-  console.log('ok - bulk', establishmentId);
-  return res.status(501).send({});
+router.route('/complete').post(async (req, res) => {
+  const theLoggedInUser = req.username;
+  const primaryEstablishmentId = req.establishment.id;
+  const isParent = req.isParent;
+
+  try {
+    const myEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent);
+    
+    return res.status(200).send(myEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)));
+
+  } catch (err) {
+
+    console.error(err);
+    return res.status(503).send({});
+  }
 });
+
 
 module.exports = router;

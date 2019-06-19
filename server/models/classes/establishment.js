@@ -14,6 +14,9 @@ const models = require('../index');
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
 const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
 
+// associations
+const Worker = require('./worker').Worker;
+
 // notifications
 
 // temp formatters
@@ -461,7 +464,7 @@ class Establishment extends EntityValidator {
     // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
     // returns true on success; false if no User
     // Can throw EstablishmentRestoreException exception.
-    async restore(id, showHistory=false) {
+    async restore(id, showHistory=false, associatedEntities=false) {
         if (!id) {
             throw new EstablishmentExceptions.EstablishmentRestoreException(null,
                 null,
@@ -472,19 +475,24 @@ class Establishment extends EntityValidator {
         }
 
         try {
-            // by including the user id in the
-            //  fetch, we are sure to only fetch those
-            //  Establishment records associated to the known
-            //   user
-            const fetchQuery = {
+            // restore establishment based on id as an integer (primary key or uid)
+            let fetchQuery = {
                 // attributes: ['id', 'uid'],
                 where: {
                     id: id,
                     archived: false
                 },
-                include: [
-                ]
             };
+
+            if (!Number.isInteger(id)) {
+                fetchQuery = {
+                    // attributes: ['id', 'uid'],
+                    where: {
+                        uid: id,
+                        archived: false
+                    },
+                };
+            }
 
             const fetchResults = await models.establishment.findOne(fetchQuery);
             
@@ -784,6 +792,31 @@ class Establishment extends EntityValidator {
 
                 // load extendable properties
                 await this._properties.restore(fetchResults, SEQUELIZE_DOCUMENT_TYPE);
+
+                // certainly for bulk upload, but also expected for cross-entity validations, restore all associated entities (workers)
+                if (associatedEntities) {
+                    const myWorkerSet = await models.worker.findAll({
+                        attributes: ['uid'],
+                        where: {
+                            establishmentFk: this._id,
+                            archived: false
+                        },
+                    });
+
+                    if (myWorkerSet && Array.isArray(myWorkerSet)) {
+                        await Promise.all(myWorkerSet.map(async thisWorker => {
+                            console.log("WA DEBUG - establishment restore: restoring Worker with uid: ", thisWorker.uid);
+                            const newWorker = new Worker(this._id);
+                            await newWorker.restore(thisWorker.uid, false);
+
+                            // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
+                            // without whitespace
+                            this.associateWorker(newWorker.nameOrId.replace(/\s/g, ""), newWorker);
+
+                            return {};
+                        }));
+                    }
+                }
 
                 return true;
             }
