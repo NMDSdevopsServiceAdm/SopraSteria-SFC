@@ -1,5 +1,7 @@
 import { I18nPluralPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { URLStructure } from '@core/model/url.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { isArray } from 'util';
 
 @Component({
@@ -32,13 +34,13 @@ export class WorkplaceSummaryComponent {
       }
     }
   }
-  @Input() return: string[] = null;
+  @Input() return: URLStructure = null;
 
   get workplace(): any {
     return this._workplace;
   }
 
-  constructor(private i18nPluralPipe: I18nPluralPipe) {
+  constructor(private i18nPluralPipe: I18nPluralPipe, private establishmentService: EstablishmentService) {
     this.pluralMap['How many beds do you currently have?'] = {
       '=1': '# bed',
       other: '# beds',
@@ -66,7 +68,6 @@ export class WorkplaceSummaryComponent {
   }
 
   public setReturn(): void {
-    console.log(this.return);
-    // this.workerService.setReturnTo(this.return);
+    this.establishmentService.setReturnTo(this.return);
   }
 }

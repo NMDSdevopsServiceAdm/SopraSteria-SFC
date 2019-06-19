@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
 import { Establishment, UpdateJobsRequest } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
+import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -39,6 +40,7 @@ interface EmployerTypeRequest {
 export class EstablishmentService {
   private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   public establishment$: Observable<Establishment> = this._establishment$.asObservable();
+  private returnTo$ = new BehaviorSubject<URLStructure>(null);
   public previousEstablishmentId: number;
   public isSameLoggedInUser: boolean;
 
@@ -89,6 +91,14 @@ export class EstablishmentService {
     }
 
     return this._establishmentId;
+  }
+
+  public get returnTo(): URLStructure {
+    return this.returnTo$.value;
+  }
+
+  public setReturnTo(returnTo: URLStructure) {
+    this.returnTo$.next(returnTo);
   }
 
   getEstablishment(id: number) {

@@ -8,10 +8,7 @@
     Before saving this workplace record, check the information you have provided is correct.
   </p>
 
-  <app-workplace-summary
-    [workplace]="establishment"
-    [return]="['/workplace', establishment.id, 'check-answers']"
-  ></app-workplace-summary>
+  <app-workplace-summary [workplace]="establishment" [return]="summaryReturnUrl"></app-workplace-summary>
 
   <a class="govuk-button" role="button" routerLink="/workplace/success">
     Save and complete

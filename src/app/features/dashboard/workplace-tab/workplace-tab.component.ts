@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportsService } from '@core/services/reports.service';
 import { Subscription } from 'rxjs';
@@ -12,6 +13,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   public workplace: any;
   public reportDetails: any;
   public updateWorkplace: boolean;
+  public summaryReturnUrl: URLStructure;
   @Input() displayWDFReport;
   private subscriptions: Subscription = new Subscription();
 
@@ -19,6 +21,9 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const workplaceId = parseInt(localStorage.getItem('establishmentId'), 10);
+
+    this.summaryReturnUrl = { url: ['/dashboard'], fragment: 'workplace' };
+
     this.subscriptions.add(
       this.establishmentService
         .getEstablishment(workplaceId)

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -14,16 +15,17 @@ export class Question implements OnInit, OnDestroy {
   public establishment: Establishment;
   public submitted = false;
 
-  public return: string[];
+  public return: URLStructure;
   public previous: string[];
   public next: string[];
-  public back: string[];
+  public back: URLStructure;
 
   public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
   protected subscriptions: Subscription = new Subscription();
   protected initiated = false;
+  protected submitAction: { action: string; save: boolean } = null;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -34,6 +36,8 @@ export class Question implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.return = this.establishmentService.returnTo;
+
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(establishment => {
         this.establishment = establishment;
@@ -51,8 +55,8 @@ export class Question implements OnInit, OnDestroy {
   }
 
   setBackLink() {
-    this.back = this.return ? this.return : this.previous;
-    this.backService.setBackLink({ url: this.back });
+    this.back = this.return ? this.return : { url: this.previous };
+    this.backService.setBackLink(this.back);
   }
 
   ngOnDestroy() {
@@ -68,7 +72,34 @@ export class Question implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public onSubmit() {
+  protected navigate(): void {
+    const action = this.submitAction.action;
+    switch (action) {
+      case 'continue':
+        this.router.navigate(this.next);
+        break;
+
+      case 'summary':
+        this.router.navigate(['/worker', this.establishment.id, 'check-answers']);
+        break;
+
+      case 'exit':
+        this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+        break;
+
+      case 'return':
+        this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
+        break;
+    }
+  }
+
+  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
+    this.submitAction = payload;
+    if (!this.submitAction.save) {
+      this.navigate();
+      return;
+    }
+
     this.serverError = null;
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -100,10 +131,6 @@ export class Question implements OnInit, OnDestroy {
   protected generateUpdateProps(): any {}
   protected updateEstablishment(props): void {}
   protected onSuccess(): void {}
-
-  protected navigate(): void {
-    this.router.navigate(this.next);
-  }
 
   protected _onSuccess(data) {
     this.establishmentService.setState({ ...this.establishment, ...data });
