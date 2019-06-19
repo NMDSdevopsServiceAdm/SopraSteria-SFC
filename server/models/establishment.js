@@ -392,6 +392,13 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: '"NmdsID"'
     },
+    source: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ["Online","Bulk"],
+      default: 'Online',
+      field: '"DataSource"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -410,6 +417,11 @@ module.exports = function(sequelize, DataTypes) {
       field: 'updatedby'
     }
   }, {
+    defaultScope: {
+      where: {
+        archived: false
+      }
+    },  
     tableName: '"Establishment"',
     schema: 'cqc',
     createdAt: false,

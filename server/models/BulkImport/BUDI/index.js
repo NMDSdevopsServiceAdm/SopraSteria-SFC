@@ -55,7 +55,6 @@ class BUDI {
             serviceId: thisCapacity.serviceId,
           };
         });
-
     }
   }
 
@@ -1155,10 +1154,23 @@ class BUDI {
   // more to come
 }
 
-BUDI.initialize()
-  .then()
-  .catch(err => {
-    console.error("Failed to initialise BUDI: ", err);
+// and now to initialise BUDI
+if (dbmodels.status.ready) {
+  BUDI.initialize()
+    .then()
+    .catch(err => {
+      console.error("Failed to initialise BUDI: ", err);
+    });
+} else {
+  dbmodels.status.on(dbmodels.status.READY_EVENT, () => {
+    // initialising BUDI
+    BUDI.initialize()
+      .then()
+      .catch(err => {
+        console.error("Failed to initialise BUDI: ", err);
+      });
   });
+}
+
 
 exports.BUDI = BUDI;

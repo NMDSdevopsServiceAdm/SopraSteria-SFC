@@ -1,10 +1,12 @@
-import { BulkUploadService } from '@core/services/bulk-upload.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { FileValidateStatus, UploadFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
-import { filter } from 'lodash';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FileValidateStatus, UploadFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { saveAs } from 'file-saver';
+import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -13,8 +15,10 @@ import { Subscription } from 'rxjs';
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private uploadedFiles: Array<UploadFile>;
-  public validateSuccess = false;
+  public validatedFiles: Array<UploadFile>;
+  public validationComplete = false;
   public totalWarnings = 0;
+  public totalErrors = 0;
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 
@@ -51,6 +55,19 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     );
   }
 
+  public downloadReport(): void {
+    this.bulkUploadService
+      .getReport(this.establishmentService.establishmentId)
+      .pipe(take(1))
+      .subscribe(
+        response => {
+          const blob = new Blob([response], { type: 'text/plain;charset=utf-8' });
+          saveAs(blob, 'Bulk Upload Validation Report.txt');
+        },
+        () => {}
+      );
+  }
+
   /**
    * Set validate success flag, set file type labels
    * And then set record count and status
@@ -69,11 +86,13 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       file.records = validatedFile.records;
       file.fileType = validatedFile.fileType;
       file.warnings = validatedFile.warnings;
-      file.status = FileValidateStatus.Pass;
+      file.errors = validatedFile.errors;
+      file.status = file.errors ? FileValidateStatus.Fail : FileValidateStatus.Pass;
+      this.totalWarnings = this.totalWarnings + file.warnings;
+      this.totalErrors = this.totalErrors + file.errors;
     });
 
-    this.totalWarnings = this.uploadedFiles.reduce((accumulator, file) => accumulator + file.warnings, 0);
-    this.validateSuccess = true;
+    this.validationComplete = true;
   }
 
   /**
@@ -92,6 +111,10 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   get hasWarnings() {
     return this.totalWarnings > 0;
+  }
+
+  get hasErrors() {
+    return this.totalErrors > 0;
   }
 
   ngOnDestroy() {

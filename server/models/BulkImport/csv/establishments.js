@@ -1613,11 +1613,9 @@ class Establishment {
           return returnThis;
         }),
       numberOfStaff: this._totalPermTemp,
-      jobs: {
-        vacancies: this._vacancies ? this._vacancies : undefined,
-        starters: this._starters ? this._starters : undefined,
-        leavers: this.leavers ? this.leavers : undefined,
-      }
+      vacancies: this._vacancies ? this._vacancies : undefined,
+      starters: this._starters ? this._starters : undefined,
+      leavers: this.leavers ? this.leavers : undefined,
     };
 
     // share options

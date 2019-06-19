@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, UpdateJobsRequest } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -39,10 +39,21 @@ interface EmployerTypeRequest {
 export class EstablishmentService {
   private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   public establishment$: Observable<Establishment> = this._establishment$.asObservable();
+  public previousEstablishmentId: number;
+  public isSameLoggedInUser: boolean;
 
   constructor(private http: HttpClient) {}
 
   private _establishmentId: number = null;
+
+  public checkIfSameLoggedInUser(establishmentId: number): void {
+    if (!this.previousEstablishmentId || this.previousEstablishmentId !== establishmentId) {
+      this.previousEstablishmentId = establishmentId;
+      this.isSameLoggedInUser = false;
+    } else {
+      this.isSameLoggedInUser = true;
+    }
+  }
 
   public get establishment() {
     return this._establishment$.value as Establishment;
@@ -97,31 +108,6 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`);
   }
 
-  getVacancies() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.vacancies));
-  }
-
-  postVacancies(data) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
-  }
-
-  getStarters() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.starters));
-  }
-
-  postStarters(data) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
-  }
-
-  getLeavers() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`).pipe(map(res => res.leavers));
-  }
-
-  postLeavers(leavers) {
-    const data = { jobs: { leavers } };
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/jobs`, data);
-  }
-
   getStaff() {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/staff`).pipe(map(res => res.numberOfStaff));
   }
@@ -151,10 +137,14 @@ export class EstablishmentService {
   }
 
   updateDataSharing(establishmentId, data: DataSharingRequest): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/share`, data);
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
   }
 
   updateLocalAuthorities(establishmentId, data) {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/localAuthorities`, data);
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
+  }
+
+  updateJobs(establishmentId, data: UpdateJobsRequest): Observable<Establishment> {
+    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/jobs`, data);
   }
 }

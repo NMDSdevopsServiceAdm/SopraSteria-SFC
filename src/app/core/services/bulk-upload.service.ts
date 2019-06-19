@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { PresignedUrlResponse, UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
-import { ErrorDetails, ErrorDefinition } from '@core/model/errorSummary.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -42,6 +42,13 @@ export class BulkUploadService {
 
   public validateFiles(establishmentId: number): Observable<ValidatedFilesResponse> {
     return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
+  }
+
+  public getReport(establishmentId: number): Observable<Blob> {
+    const httpOptions: Object = {
+      responseType: 'blob',
+    };
+    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report`, httpOptions);
   }
 
   public formErrorsMap(): Array<ErrorDetails> {
