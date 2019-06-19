@@ -2,7 +2,8 @@
   *ngIf="(submitted && form.invalid) || serverError"
   [formErrorsMap]="formErrorsMap"
   [serverError]="serverError"
-  [form]="form">
+  [form]="form"
+>
 </app-error-summary>
 
 <div class="govuk-grid-row">
@@ -18,8 +19,7 @@
       </span>
       <div class="govuk-checkboxes">
         <ng-container *ngFor="let job of form.get('selectedJobRoles').controls; let idx = index">
-          <div
-            class="govuk-checkboxes__item">
+          <div class="govuk-checkboxes__item">
             <input
               class="govuk-checkboxes__input"
               id="selectedJobRole-{{ job.value.jobId }}"
@@ -27,7 +27,8 @@
               type="checkbox"
               (change)="onChange(job)"
               [checked]="job.value.checked"
-              [value]="job.value.jobId"/>
+              [value]="job.value.jobId"
+            />
             <label class="govuk-label govuk-checkboxes__label" for="selectedJobRole-{{ job.value.jobId }}">
               {{ job.value.title }}
             </label>
@@ -36,14 +37,17 @@
             class="govuk-checkboxes__conditional"
             [class.govuk-checkboxes__conditional--hidden]="!job.value.checked"
             *ngIf="showforOtherJobRole(job)"
-            id="otherSelectedJobRole-conditional-{{ idx }}">
+            id="otherSelectedJobRole-conditional-{{ idx }}"
+          >
             <div class="govuk-form-group">
               <label class="govuk-label" for="otherSelectedJobRole-{{ job.value.jobId }}">
                 Enter your job role
               </label>
-              <span id="otherSelectedJobRole-error"
+              <span
+                id="otherSelectedJobRole-error"
                 class="govuk-error-message"
-                *ngIf="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid">
+                *ngIf="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid"
+              >
                 <span class="govuk-visually-hidden">Error:</span>
                 {{ getFormErrorMessage('otherSelectedJobRole' + job.value.jobId, 'maxlength') }}
               </span>
@@ -57,7 +61,8 @@
                 type="text"
                 formControlName="otherSelectedJobRole{{ job.value.jobId }}"
                 [class.govuk-input--error]="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid"
-                spellcheck="false">
+                spellcheck="false"
+              />
             </div>
           </div>
         </ng-container>
@@ -65,8 +70,5 @@
     </fieldset>
   </div>
 
-  <app-submit-button
-    [return]="!!return"
-    (clicked)="onSubmit($event)">
-  </app-submit-button>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"> </app-submit-button>
 </form>

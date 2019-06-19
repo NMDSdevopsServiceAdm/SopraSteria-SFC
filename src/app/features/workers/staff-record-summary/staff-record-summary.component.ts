@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 
@@ -8,8 +9,17 @@ import { WorkerService } from '@core/services/worker.service';
   templateUrl: './staff-record-summary.component.html',
 })
 export class StaffRecordSummaryComponent {
-  @Input() worker: Worker;
-  @Input() return: string[] = null;
+  public returnTo: URLStructure;
+  @Input() set worker(value: Worker) {
+    this._worker = value;
+    this.returnTo = { url: ['/worker', this.worker.uid, 'summary'] };
+  }
+  @Input() return: URLStructure;
+  private _worker: Worker;
+
+  get worker(): Worker {
+    return this._worker;
+  }
 
   constructor(private location: Location, public workerService: WorkerService) {}
 
