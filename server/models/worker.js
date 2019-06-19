@@ -874,7 +874,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
       field: 'MainJobFkOther'
-    }
+    },
+    source: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ["Online","Bulk"],
+      default: 'Online',
+      field: '"DataSource"'
+    },
   }, {
     tableName: '"Worker"',
     schema: 'cqc',

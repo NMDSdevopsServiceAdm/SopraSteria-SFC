@@ -181,7 +181,7 @@ class Worker extends EntityValidator {
 
     // saves the Worker to DB. Returns true if saved; false is not.
     // Throws "WorkerSaveException" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -202,6 +202,7 @@ class Worker extends EntityValidator {
                     uid: this.uid,
                     updatedBy: savedBy.toLowerCase(),
                     archived: false,
+                    source: bulkUploaded ? 'Bulk' : 'Online',
                     updated: creationDate,
                     created: creationDate,
                     attributes: ['id', 'created', 'updated'],
@@ -270,8 +271,10 @@ class Worker extends EntityValidator {
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
+                    // note - if the worker was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         ...modifedUpdateDocument,
+                        source: bulkUploaded ? 'Bulk' : 'Online',
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
