@@ -390,73 +390,14 @@ router.route('/')
             );            
           }
 
-          // need to create an NMDS ID - which is a combination of the CSSR nmds letter and a unique sequence number
-          // first find the associated CSSR NMDS letter using the postcode given for this establishment. Note - there
-          //  might not be an associated pcodedata record
-          const cssrResults = await models.pcodedata.findOne({
-            where: {
-              postcode: Estblistmentdata.PostCode,
-            },
-            include: [{
-              model: models.cssr,
-              as: 'theAuthority',
-              attributes: ['id', 'name', 'nmdsIdLetter']
-            }]
-          });
-
-          let nmdsLetter = null;
-          if (cssrResults && cssrResults.postcode === Estblistmentdata.PostCode &&
-              cssrResults.theAuthority && cssrResults.theAuthority.id &&
-              Number.isInteger(cssrResults.theAuthority.id)) {
-            nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
-          } else {
-            // if, there is no direct match on pcodedata using the Establishment's postcode, then a more fuzzy match is done
-            //  using just the first half of the postcode
-            const [firstHalfOfPostcode] = Estblistmentdata.PostCode.split(' '); 
-            
-            // must escape the string to prevent SQL injection
-            const fuzzyCssrNmdsIdMatch = await models.sequelize.query(
-                `select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`,
-                {
-                  type: models.sequelize.QueryTypes.SELECT
-                }
-              );
-            if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
-              nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
-            }
-          }
-
-          let nextNmdsIdSeqNumber = 0;
-          const nextNmdsIdSeqNumberResults = await models.sequelize.query(
-              'SELECT nextval(\'cqc."NmdsID_seq"\')',
-              {
-                type: models.sequelize.QueryTypes.SELECT
-              });
-          if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
-            nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
-          } else {
-            // no sequence number
-            console.error("Failed to get next sequence number for Establishment: ", nextNmdsIdSeqNumberResults);
-            throw new RegistrationException(
-              'Failed to get next sequence number for Establishment',
-              responseErrors.unknownNMDSsequence.errCode,
-              responseErrors.unknownNMDSsequence.errMessage
-            );
-          }
-
-          if (nmdsLetter) {
-            Estblistmentdata.NmdsId = `${nmdsLetter}${nextNmdsIdSeqNumber}`;
-          }
-
           // now create establishment - using the extended property encapsulation
           defaultError = responseErrors.establishment;
           const newEstablishment = new EstablishmentModel(Logindata.UserName);
-          newEstablishment.initialise(
+          await newEstablishment.initialise(
             Estblistmentdata.Address,
             Estblistmentdata.LocationID,
             Estblistmentdata.PostCode,
-            Estblistmentdata.IsRegulated,
-            Estblistmentdata.NmdsId
+            Estblistmentdata.IsRegulated
           );
           await newEstablishment.load({
             name: Estblistmentdata.Name,

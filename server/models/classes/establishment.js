@@ -30,6 +30,30 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
+// Errors for initialise and registration error - this needs to be refactored out DB
+class RegistrationException {
+    constructor(originalError, errCode, errMessage) {
+      this.err = originalError;
+      this.errCode = errCode;
+      this.errMessage = errMessage;
+    };
+  
+    toString() {
+      return `${this.errCode}: ${this.errMessage}`;
+    };
+};
+  
+const responseErrors = {
+    unknownNMDSsequence: {
+      errCode: -500,
+      errMessage: 'Unknown NMDS Sequence'
+    },
+    unknownNMDSLetter: {
+      errCode: -600,
+      errMessage: 'Unknown NMDS Letter/CSSR Region'
+    }
+};
+
 class Establishment extends EntityValidator {
     constructor(username) {
         super();
@@ -154,7 +178,7 @@ class Establishment extends EntityValidator {
         if (this._uid === null) {
             this._isNew = true;
             this._uid = uuid.v4();
-            
+
             // note, do not initialise the id as this will be returned by database
             return true;
         } else {
@@ -163,12 +187,62 @@ class Establishment extends EntityValidator {
     }
 
     // external method to initialise the mandatory non-extendable properties
-    initialise(address, locationId, postcode, isRegulated, nmdsId) {
+    async initialise(address, locationId, postcode, isRegulated) {
+
+        this._nmdsId = null;
+
+        const cssrResults = await models.pcodedata.findOne({
+            where: {
+                postcode: postcode,
+            },
+            include: [{
+                model: models.cssr,
+                as: 'theAuthority',
+                attributes: ['id', 'name', 'nmdsIdLetter']
+            }]
+        });
+
+        let nmdsLetter = null;
+        if (cssrResults && cssrResults.postcode === postcode && cssrResults.theAuthority && cssrResults.theAuthority.id && Number.isInteger(cssrResults.theAuthority.id)) {
+            nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
+        } else {
+            // No direct match so do the fuzzy match
+            const [firstHalfOfPostcode] = postcode.split(' '); 
+            const fuzzyCssrNmdsIdMatch = await models.sequelize.query(`select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`, { type: models.sequelize.QueryTypes.SELECT });
+
+            if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
+                nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
+            }
+        }
+
+        let nextNmdsIdSeqNumber = 0;
+        const nextNmdsIdSeqNumberResults = await models.sequelize.query('SELECT nextval(\'cqc."NmdsID_seq"\')', { type: models.sequelize.QueryTypes.SELECT });
+        
+        if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
+            nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
+        } else {
+            // no sequence number
+            console.error("Failed to get next sequence number for Establishment: ", nextNmdsIdSeqNumberResults);
+            throw new RegistrationException(
+                'Failed to get next sequence number for Establishment',
+                responseErrors.unknownNMDSsequence.errCode,
+                responseErrors.unknownNMDSsequence.errMessage
+            );
+        }
+
+        if (nmdsLetter) {
+            this._nmdsId = `${nmdsLetter}${nextNmdsIdSeqNumber}`;
+        }
+
         this._address = address;
         this._postcode = postcode;
         this._isRegulated = isRegulated;
         this._locationId = locationId;
-        this._nmdsId = nmdsId;
+    }
+
+    initialiseSub(parentID, parentUid){
+        this._parentUid = parentUid;
+        this._parentId = parentID;
     }
 
     // takes the given JSON document and creates an Establishment's set of extendable properties
@@ -236,6 +310,8 @@ class Establishment extends EntityValidator {
                     address: this._address,
                     postcode: this._postcode,
                     isParent: this._isParent,
+                    parentUid: this._parentUid,
+                    parentId: this._parentId,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
                     MainServiceFKValue: this.mainService.id,
@@ -957,9 +1033,8 @@ class Establishment extends EntityValidator {
             const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i; 
             if (!(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
                 allExistAndValid = false;
-                // TODO: temporarily downgrading to a warning, whilst awaiting for NMDS ID generation to be part of this Establishment entity - https://trello.com/c/HElnWYWF
                 this._validations.push(new ValidationMessage(
-                    ValidationMessage.WARNING,
+                    ValidationMessage.ERROR,
                     101,
                     this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
                     ['NMDSID']
