@@ -1,6 +1,8 @@
+import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FileValidateStatus, UploadFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { saveAs } from 'file-saver';
@@ -11,6 +13,7 @@ import { take } from 'rxjs/operators';
 @Component({
   selector: 'app-uploaded-files-list',
   templateUrl: './uploaded-files-list.component.html',
+  providers: [I18nPluralPipe],
 })
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
   public uploadedFiles: Array<UploadFile>;
@@ -20,7 +23,11 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   public totalErrors = 0;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
+  constructor(
+    private bulkUploadService: BulkUploadService,
+    private establishmentService: EstablishmentService,
+    private i18nPluralPipe: I18nPluralPipe
+  ) {}
 
   ngOnInit() {
     this.setupSubscription();
@@ -80,6 +87,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     response.workers.fileType = 'Staff';
 
     const validatedFiles: Array<ValidatedFile> = [response.establishment, response.training, response.workers];
+    const validationErrors: Array<ErrorDefinition> = [];
 
     this.uploadedFiles.forEach((file: UploadFile) => {
       const validatedFile: ValidatedFile = filter(validatedFiles, ['filename', file.name])[0];
@@ -90,9 +98,26 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       file.status = file.errors ? FileValidateStatus.Fail : FileValidateStatus.Pass;
       this.totalWarnings = this.totalWarnings + file.warnings;
       this.totalErrors = this.totalErrors + file.errors;
+      if (file.errors) {
+        validationErrors.push(this.getValidationError(file));
+      }
     });
-
+    this.bulkUploadService.validationErrors$.next(validationErrors);
     this.validationComplete = true;
+  }
+
+  private getValidationError(file: UploadFile): ErrorDefinition {
+    return {
+      name: this.getFileId(file),
+      message: this.i18nPluralPipe.transform(file.errors, {
+        '=1': 'There was # error in the file',
+        other: 'There were # errors in the file',
+      }),
+    };
+  }
+
+  private getFileId(file: UploadFile) {
+    return `bulk-upload-validation-${file.name.substr(0, file.name.lastIndexOf('.'))}`;
   }
 
   /**
