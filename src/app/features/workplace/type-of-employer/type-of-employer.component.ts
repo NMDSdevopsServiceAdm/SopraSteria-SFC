@@ -45,7 +45,7 @@ export class TypeOfEmployerComponent extends Question {
     }
 
     this.next = ['/workplace', `${this.establishment.id}`, 'other-services'];
-    this.previous = ['/workplace', 'start-screen'];
+    this.previous = ['/workplace', 'start'];
   }
 
   protected setupFormErrorsMap(): void {
