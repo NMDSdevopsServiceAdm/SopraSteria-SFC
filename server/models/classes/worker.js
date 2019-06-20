@@ -756,8 +756,8 @@ class Worker extends EntityValidator {
                 return {
                     ...myDefaultJSON,
                     ...myJSON,
-                    training: associatedEntities ? this._trainingEntities.map(thisTrainingRecord => thisTrainingRecord.toJSON()) : undefined,
-                    qualifications: associatedEntities ? this._qualificationsEntities.map(thisQualification => thisQualification.toJSON()) : undefined,
+                    training: associatedEntities ? this._trainingEntities.map(thisTrainingRecord => thisTrainingRecord ? thisTrainingRecord.toJSON() : undefined) : undefined,
+                    qualifications: associatedEntities ? this._qualificationsEntities.map(thisQualification => thisQualification ? thisQualification.toJSON() : undefined) : undefined,
                 };
             }
         } else {

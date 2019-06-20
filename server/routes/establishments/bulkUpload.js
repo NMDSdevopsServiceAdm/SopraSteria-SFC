@@ -530,10 +530,8 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
 const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker, myAPIQualifications) => {
   const thisApiQualification = new QualificationEntity();
-  await thisApiQualification.load(thisQual);      // ignores "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
+  const isValid = await thisApiQualification.load(thisQual);      // ignores "column" attribute (being the CSV column index, e.g "03" from which the qualification is mapped)
   // console.log("WA DEBUG - this qualification entity: ", JSON.stringify(thisApiQualification.toJSON(), null, 2));
-
-  const isValid = thisApiQualification.validate();
 
   if (isValid) {
     // no validation errors in the entity itself, so add it ready for completion
@@ -623,9 +621,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
   const thisTrainingAsAPI = lineValidator.toAPI();
   const thisApiTraining = new TrainingEntity();
   try {
-    await thisApiTraining.load(thisTrainingAsAPI);
-
-    const isValid = thisApiTraining.validate();
+    const isValid = await thisApiTraining.load(thisTrainingAsAPI);
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
       // console.log("WA DEBUG - this training entity: ", JSON.stringify(thisApiTraining.toJSON(), null, 2));
@@ -792,6 +788,9 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         const foundWorkerByLineNumber = allWorkersByKey[workerKeyNoWhitespace];
         const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
         if (knownWorker) {
+console.log("WA DEBUG - associating a training record - thisTrainingRecord: ", thisTraingRecord.lineNumber, myAPITrainings)
+
+
           knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
         } else {
           // this should never happen
