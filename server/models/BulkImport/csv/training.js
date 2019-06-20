@@ -318,10 +318,19 @@ class Training {
     }
   }
 
+  preValidate() {
+    return _validateHeaders();
+  }
+
+  static isContent(data) {
+    const contentRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
+    return contentRegex.test(data.substring(0,50));
+  }
+
   _validateHeaders() {
     const headers = Object.keys(this._currentLine);
     // only run once for first line, so check _lineNumber
-    if (this._lineNumber === 2 && JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
       this._validationErrors.push({
         lineNumber: 1,
         errCode: Training.HEADERS_ERROR,
@@ -329,6 +338,7 @@ class Training {
         error: `Training headers (HEADERS) can contain, ${this._headers_v1}`,
         source: headers
       });
+      return false;
     }
     return true;
   }
@@ -361,7 +371,6 @@ class Training {
   validate() {
     let status = true;
 
-    status = !this._validateHeaders() ? false : status;
     status = !this._validateLocaleStId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateDateCompleted() ? false : status;
