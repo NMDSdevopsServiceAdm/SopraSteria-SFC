@@ -7,6 +7,7 @@ import { AuthService } from '@core/services/auth.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-bulk-upload-page',
@@ -24,8 +25,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private bulkUploadService: BulkUploadService,
-    private errorSummaryService: ErrorSummaryService,
-    private i18nPluralPipe: I18nPluralPipe
+    private errorSummaryService: ErrorSummaryService
   ) {}
 
   ngOnInit() {
@@ -41,18 +41,12 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
 
   public setupUploadValidationErrors(): void {
     this.subscriptions.add(
-      this.bulkUploadService.totalErrors$.subscribe(totalErrors => {
-        this.uploadValidationErrors = [
-          {
-            name: 'bulkUploadValidation',
-            message: this.i18nPluralPipe.transform(totalErrors, {
-              '=1': 'There was # error in the files',
-              other: 'There were # errors in the files',
-            }),
-          },
-        ];
-        this.showErrorSummary = totalErrors > 0;
-      })
+      this.bulkUploadService.validationErrors$
+        .pipe(filter(uploadValidationErrors => uploadValidationErrors !== null))
+        .subscribe(uploadValidationErrors => {
+          this.uploadValidationErrors = uploadValidationErrors;
+          this.showErrorSummary = uploadValidationErrors.length > 0;
+        })
     );
   }
 
