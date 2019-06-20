@@ -25,8 +25,8 @@ export class AddEditTrainingComponent implements OnInit {
   public trainingRecordId: string;
   public worker: Worker;
   public formErrorsMap: Array<ErrorDetails>;
+  public notesMaxLength = 1000;
   private titleMaxLength = 120;
-  private notesMaxLength = 1000;
   private subscriptions: Subscription = new Subscription();
 
   constructor(

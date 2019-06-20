@@ -11,9 +11,9 @@
 <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
   <div formArrayName="staffRecords">
     <div
-      *ngFor="let staffRecord of form.get('staffRecords').controls; let i = index"
-      [formGroupName]="i">
-
+      *ngFor="let staffRecord of staffRecordsControl.controls; let i = index"
+      [formGroupName]="i"
+    >
       <ng-container *ngIf="staffRecord.get('active').value; then form; else summary"></ng-container>
 
       <ng-template #summary>
@@ -92,17 +92,21 @@
 
           <div
             class="govuk-form-group"
-            [class.govuk-form-group--error]="staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched"
-            [class.govuk-select__conditional--hidden]="!showOtherField(staffRecord.get('mainJobRole').value)">
+            [class.govuk-form-group--error]="
+              staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched
+            "
+            [class.govuk-select__conditional--hidden]="!showOtherField(staffRecord.get('mainJobRole').value)"
+          >
             <label class="govuk-label" for="otherJobRole">
               Enter your job role
             </label>
             <span
               *ngIf="staffRecord.get('otherJobRole').invalid && staffRecord.get('otherJobRole').touched"
               class="govuk-error-message"
-              id="otherJobRole-{{ i }}-error">
+              id="otherJobRole-{{ i }}-error"
+            >
               <span class="govuk-visually-hidden">Error:</span>
-              Enter your job role must be {{this.otherJobRoleCharacterLimit}} characters or less.
+              Enter your job role must be {{ this.otherJobRoleCharacterLimit }} characters or less.
             </span>
             <span id="otherJobRole-hint" class="govuk-hint">
               Optional
@@ -157,10 +161,10 @@
             (click)="deleteStaffRecord($event, i)">
             <ng-container *ngIf="staffRecord.get('uid').value; then delete; else cancel"></ng-container>
             <ng-template #delete>
-                Delete record<span class="govuk-visually-hidden"> {{ i + 1 + totalWorkers }}</span>
+              Delete record<span class="govuk-visually-hidden"> {{ i + 1 + totalWorkers }}</span>
             </ng-template>
             <ng-template #cancel>
-                Cancel
+              Cancel
             </ng-template>
           </button>
         </fieldset>

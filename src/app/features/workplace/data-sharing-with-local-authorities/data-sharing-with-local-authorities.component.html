@@ -31,11 +31,11 @@
     </div>
   </div>
   <p>Add more local authorities to share your data with.</p>
+  <h2 class="govuk-heading-m">Local Authorities</h2>
   <ng-container formArrayName="localAuthorities">
-    <h2 class="govuk-heading-m">Local Authorities</h2>
     <div
       class="govuk-form-group"
-      *ngFor="let localAuthorities of form.get('localAuthorities').controls; let i = index"
+      *ngFor="let localAuthorities of localAuthoritiesArray.controls; let i = index"
       [formGroupName]="i"
     >
       <select class="govuk-select" formControlName="custodianCode" id="localAuthorities-{{ i }}">

@@ -1,12 +1,12 @@
-import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { filter } from 'lodash';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LocationAddress } from '@core/model/location.model';
-import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { LocationAddress } from '@core/model/location.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
+import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,18 +14,18 @@ import { Subscription } from 'rxjs';
   templateUrl: './select-workplace.component.html',
 })
 export class SelectWorkplaceComponent implements OnInit, OnDestroy {
-  private locationAddresses: Array<LocationAddress>;
-  private subscriptions: Subscription = new Subscription();
+  public locationAddresses: Array<LocationAddress>;
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted = false;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private fb: FormBuilder,
     private registrationService: RegistrationService,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -35,7 +35,7 @@ export class SelectWorkplaceComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.registrationService.locationAddresses$.subscribe(
-        (locationAddresses: Array<LocationAddress>) => this.locationAddresses = locationAddresses
+        (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses)
       )
     );
   }

@@ -13,12 +13,12 @@ import { take } from 'rxjs/operators';
   templateUrl: './uploaded-files-list.component.html',
 })
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
-  private subscriptions: Subscription = new Subscription();
-  private uploadedFiles: Array<UploadFile>;
+  public uploadedFiles: Array<UploadFile>;
   public validatedFiles: Array<UploadFile>;
   public validationComplete = false;
   public totalWarnings = 0;
   public totalErrors = 0;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
 

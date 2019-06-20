@@ -113,7 +113,7 @@ router.route('/:id').post(async (req, res) => {
           }
 
           const newEstablishment = new Establishment.Establishment();
-          await newEstablishment.initialise(
+          newEstablishment.initialise(
             establishmentData.Address,
             establishmentData.LocationID,
             establishmentData.PostCode,
