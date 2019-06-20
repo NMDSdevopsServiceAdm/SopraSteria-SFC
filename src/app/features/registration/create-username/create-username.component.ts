@@ -205,16 +205,14 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
   }
 
   private onSubmit(): void {
-    this.checkUsernameDoesntExist().then(() => {
-      this.submitted = true;
-      this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-      if (this.form.invalid || this.serverError) {
-        this.errorSummaryService.scrollToErrorSummary();
-      } else {
-        this.save();
-      }
-    });
+    if (this.form.valid) {
+      this.checkUsernameDoesntExist().then(() => this.save());
+    } else {
+      this.errorSummaryService.scrollToErrorSummary();
+    }
   }
 
   private save(): void {
