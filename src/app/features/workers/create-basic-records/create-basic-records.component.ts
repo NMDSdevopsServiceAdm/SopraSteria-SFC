@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
@@ -28,6 +28,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
 
   constructor(
     private elementRef: ElementRef,
+    private renderer: Renderer2,
     private formBuilder: FormBuilder,
     private router: Router,
     private backService: BackService,
@@ -127,9 +128,9 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.closeStaffRecords();
     this.staffRecordsControl.controls[index].patchValue({ active: true });
     setTimeout(() => {
-      this.elementRef.nativeElement
-        .querySelector(`.staffRecord-view_${index}`)
-        .scrollIntoView(true);
+      this.renderer
+        .selectRootElement(`#staffRecord_${index}`, true)
+        .scrollIntoView({ behavior: 'smooth'});
     });
   }
 
