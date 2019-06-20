@@ -151,14 +151,9 @@ export class LoginComponent implements OnInit, OnDestroy {
         () => {
           const redirect = this.authService.redirect;
 
-          if (redirect && redirect.url.length) {
-            const navExtras: NavigationExtras = {
-              queryParams: redirect.queryParams,
-              fragment: redirect.fragment,
-            };
-
+          if (redirect && redirect.length) {
+            this.router.navigateByUrl(redirect);
             this.authService.redirect = null;
-            this.router.navigate([redirect.url.toString()], navExtras);
           } else {
             this.router.navigate(['/dashboard']);
           }
