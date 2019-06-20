@@ -194,7 +194,6 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
         .getUsernameDuplicate(this.getUsername.value)
         .pipe(
           finalize(() => {
-            console.log('finally');
             this.submitted = true;
             this.onSubmit();
           })
@@ -209,7 +208,6 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
             }
           },
           (error: HttpErrorResponse) => {
-            console.log('error fired');
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           }
         )
