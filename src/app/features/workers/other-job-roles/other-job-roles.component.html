@@ -18,7 +18,7 @@
         Select all that apply.
       </span>
       <div class="govuk-checkboxes">
-        <ng-container *ngFor="let job of form.get('selectedJobRoles').controls; let idx = index">
+        <ng-container *ngFor="let job of selectedJobRoles.controls; let idx = index">
           <div class="govuk-checkboxes__item">
             <input
               class="govuk-checkboxes__input"

@@ -956,8 +956,13 @@ router.route('/report').get(async (req, res) => {
     const errorsAndWarnings = await Promise.all(validationMsgContent);
 
     const key = `${req.establishmentId}/intermediary/establishment.entities.json`;
-    const establishment = await downloadContent(key);
-    const entities = JSON.parse(establishment.data);
+    let establishment =  null;
+    try {
+      establishment = await downloadContent(key);
+    } catch (err) {
+      console.log(`router.route('/report').get - failed to download: `, key);
+    }
+    const entities = establishment ? JSON.parse(establishment.data) : null;
     const readable = new Stream.Readable();
 
     const errorTitle = '* Errors (will cause file(s) to be rejected) *';
@@ -984,11 +989,11 @@ router.route('/report').get(async (req, res) => {
     const laPadding = '*'.padStart(laTitle.length, '*');
     readable.push(`\n${laPadding}\n${laTitle}\n${laPadding}\n\n`);
 
-    entities
+    entities ? entities
       .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
       .reduce((acc, val) => acc.concat(val), [])
       .sort((a,b) => a.name > b.name)
-      .map(item => readable.push(`${item.name}\n`));
+      .map(item => readable.push(`${item.name}\n`)) : true;
     
     readable.push(null);
 

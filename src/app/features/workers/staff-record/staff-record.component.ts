@@ -10,6 +10,7 @@ import { take } from 'rxjs/operators';
 
 import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 
+// TODO Remove CSS for delete button
 @Component({
   selector: 'app-staff-record',
   templateUrl: './staff-record.component.html',
@@ -24,9 +25,9 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public qualificationDeleted = false;
   public returnToRecord: URLStructure;
   public returnToQuals: URLStructure;
+  public worker: Worker;
   public reportDetails: {};
   public updatedDate: any;
-  private worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
   constructor(

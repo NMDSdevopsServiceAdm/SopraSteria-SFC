@@ -12,13 +12,13 @@ import { take } from 'rxjs/operators';
   templateUrl: './home-tab.component.html',
 })
 export class HomeTabComponent implements OnInit {
-  private editRole: Roles = Roles.Edit;
-  private role: Roles;
-  private subscriptions: Subscription = new Subscription();
+  public editRole: Roles = Roles.Edit;
+  public role: Roles;
   public establishmentId: number;
   public isParent: boolean;
   public updateStaffRecords: boolean;
   public updateWorkplace: boolean;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private authService: AuthService,

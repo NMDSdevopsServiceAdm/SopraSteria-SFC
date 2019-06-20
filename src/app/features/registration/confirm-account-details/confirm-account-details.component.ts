@@ -1,35 +1,35 @@
-import { BackService } from '@core/services/back.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
-import { RegistrationService } from '@core/services/registration.service';
-import { Router } from '@angular/router';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
-import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-account-details',
   templateUrl: './confirm-account-details.component.html',
 })
 export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
-  private form: FormGroup;
+  public form: FormGroup;
+  public userDetails: UserDetails;
+  public loginCredentials: LoginCredentials;
+  public securityDetails: SecurityDetails;
+  public serverError: string;
+  public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
   private locationAddress: LocationAddress;
-  private loginCredentials: LoginCredentials;
-  private securityDetails: SecurityDetails;
-  private serverError: string;
   private serverErrorsMap: Array<ErrorDefinition>;
-  private submitted = false;
   private subscriptions: Subscription = new Subscription();
-  private userDetails: UserDetails;
   private workplaceService: Service;
 
   constructor(
@@ -131,7 +131,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
     return [payload];
   }
 
-  private onSubmit(): void {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
