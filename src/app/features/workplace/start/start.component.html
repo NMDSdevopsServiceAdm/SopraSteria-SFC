@@ -4,6 +4,11 @@
   starters and staff who have left in the last 12 months. We would also like to know about your current vacancies.
 </p>
 <p>Once you have added it you can change this information at any time from the workplace tab.</p>
-<a routerLink="/workplace/type-of-employer" role="button" draggable="false" class="govuk-button govuk-button--start">
+<a
+  [routerLink]="['/workplace', establishment.id, 'type-of-employer']"
+  role="button"
+  draggable="false"
+  class="govuk-button govuk-button--start"
+>
   Start now
 </a>
