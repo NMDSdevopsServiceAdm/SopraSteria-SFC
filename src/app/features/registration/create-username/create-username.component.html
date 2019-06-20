@@ -10,7 +10,7 @@
   <div class="govuk-grid-column-one-half">
     <h1 class="govuk-heading-xl">Create a username</h1>
 
-    <form novalidate (ngSubmit)="checkUsernameDoesntExist()" [formGroup]="form" id="server-error">
+    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUsername.errors">
         <label class="govuk-label" for="username">
           Username

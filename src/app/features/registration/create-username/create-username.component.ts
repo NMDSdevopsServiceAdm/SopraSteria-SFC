@@ -10,7 +10,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
-import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-username',
@@ -188,40 +187,34 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
     ];
   }
 
-  public checkUsernameDoesntExist(): void {
-    this.subscriptions.add(
-      this.registrationService
-        .getUsernameDuplicate(this.getUsername.value)
-        .pipe(
-          finalize(() => {
-            this.submitted = true;
-            this.onSubmit();
-          })
-        )
-        .subscribe(
-          (data: Object) => {
-            if (data['status'] === '1') {
-              this.getUsername.setErrors({ usernameExists: true });
-            } else {
-              this.getUsername.setErrors({ usernameExists: null });
-              this.getUsername.updateValueAndValidity();
-            }
-          },
-          (error: HttpErrorResponse) => {
-            this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          }
-        )
-    );
+  public async checkUsernameDoesntExist(): Promise<any> {
+    await this.registrationService
+      .getUsernameDuplicate(this.getUsername.value)
+      .toPromise()
+      .then((data: Object) => {
+        if (data['status'] === '1') {
+          this.getUsername.setErrors({ usernameExists: true });
+        } else {
+          this.getUsername.setErrors({ usernameExists: null });
+          this.getUsername.updateValueAndValidity();
+        }
+      })
+      .catch((error: HttpErrorResponse) => {
+        this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+      });
   }
 
   private onSubmit(): void {
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.checkUsernameDoesntExist().then(() => {
+      this.submitted = true;
+      this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if (this.form.invalid || this.serverError) {
-      this.errorSummaryService.scrollToErrorSummary();
-    } else {
-      this.save();
-    }
+      if (this.form.invalid || this.serverError) {
+        this.errorSummaryService.scrollToErrorSummary();
+      } else {
+        this.save();
+      }
+    });
   }
 
   private save(): void {
