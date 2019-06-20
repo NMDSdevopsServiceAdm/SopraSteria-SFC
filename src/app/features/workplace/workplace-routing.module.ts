@@ -16,6 +16,7 @@ import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
+import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
@@ -37,10 +38,16 @@ const routes: Routes = [
     path: ':establishmentid',
     component: EditWorkplaceComponent,
     resolve: { establishment: WorkplaceResolver },
+    data: { title: 'Workplace' },
     children: [
       {
         path: '',
-        data: { title: 'Workplace' },
+        redirectTo: 'type-of-employer',
+      },
+      {
+        path: 'start',
+        component: StartComponent,
+        data: { title: 'Start' },
       },
       {
         path: 'type-of-employer',

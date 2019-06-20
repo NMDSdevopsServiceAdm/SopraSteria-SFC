@@ -24,6 +24,7 @@ import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { WorkplaceResolver } from './workplace.resolver';
+import { StartComponent } from './start/start.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkplaceRoutingModule],
@@ -45,6 +46,7 @@ import { WorkplaceResolver } from './workplace.resolver';
     TypeOfEmployerComponent,
     VacanciesComponent,
     ViewMyWorkplacesComponent,
+    StartComponent,
   ],
   providers: [WorkplaceResolver],
 })
