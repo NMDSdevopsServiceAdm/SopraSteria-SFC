@@ -102,7 +102,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
         type: [
           {
             name: 'maxlength',
-            message: `Enter your job role must be ${this.otherJobRoleCharacterLimit} characters or less`,
+            message: `Your job role must be ${this.otherJobRoleCharacterLimit} characters or less`,
           },
         ],
       });
