@@ -1,17 +1,20 @@
 <ng-container *ngIf="worker">
   <ng-container *ngIf="trainingRecordCreated">
     <app-inset-text color="success">
-      Training has been added <a href="#" (click)="closeTrainingCreatedAlert($event)" class="govuk-util__float-right">Close</a>
+      Training has been added
+      <a href="#" (click)="closeTrainingCreatedAlert($event)" class="govuk-util__float-right">Close</a>
     </app-inset-text>
   </ng-container>
   <ng-container *ngIf="trainingRecordEdited">
     <app-inset-text color="success">
-      Training has been saved <a href="#" (click)="closeTrainingEditedAlert($event)" class="govuk-util__float-right">Close</a>
+      Training has been saved
+      <a href="#" (click)="closeTrainingEditedAlert($event)" class="govuk-util__float-right">Close</a>
     </app-inset-text>
   </ng-container>
   <ng-container *ngIf="trainingRecordDeleted">
     <app-inset-text color="success">
-      Training has been deleted <a href="#" (click)="closeTrainingDeletedAlert($event)" class="govuk-util__float-right">Close</a>
+      Training has been deleted
+      <a href="#" (click)="closeTrainingDeletedAlert($event)" class="govuk-util__float-right">Close</a>
     </app-inset-text>
   </ng-container>
 
@@ -85,26 +88,18 @@
 
   <app-tabs>
     <app-tab title="Staff Record">
-      <app-basic-record
-        [worker]="worker"
-        [return]="['/worker', worker.uid]"
-        [reportDetails]="reportDetails"
-      ></app-basic-record>
+      <app-basic-record [worker]="worker" [return]="returnTo" [reportDetails]="reportDetails"></app-basic-record>
       <app-personal-details
         [worker]="worker"
-        [return]="['/worker', worker.uid]"
+        [return]="returnToRecord"
         [reportDetails]="reportDetails"
       ></app-personal-details>
-      <app-employment
-        [worker]="worker"
-        [return]="['/worker', worker.uid]"
-        [reportDetails]="reportDetails"
-      ></app-employment>
+      <app-employment [worker]="worker" [return]="returnTo" [reportDetails]="reportDetails"></app-employment>
     </app-tab>
     <app-tab title="Qualifications and training">
       <app-qualifications-and-training
         [worker]="worker"
-        [return]="['/worker', worker.uid]"
+        [return]="returnToQuals"
         [reportDetails]="reportDetails"
       ></app-qualifications-and-training>
       <p><img src="/assets/images/icon-information.svg" /> Adding additional qualifications or training is optional.</p>

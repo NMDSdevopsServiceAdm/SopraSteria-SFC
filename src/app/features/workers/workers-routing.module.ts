@@ -234,7 +234,7 @@ const routes: Routes = [
         data: { title: 'Highest Level of Other Qualifications' },
       },
       {
-        path: 'summary',
+        path: 'check-answers',
         component: CheckStaffRecordComponent,
         data: { title: 'Check Answers' },
       },

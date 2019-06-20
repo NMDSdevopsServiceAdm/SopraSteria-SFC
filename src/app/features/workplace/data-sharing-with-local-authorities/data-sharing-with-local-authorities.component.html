@@ -55,7 +55,5 @@
   <button class="govuk-button govuk-button--secondary" type="button" (click)="addLocalAuthority()">
     Add another local authority
   </button>
-  <div class="govuk-button-group">
-    <button type="submit" class="govuk-button">Save and continue</button>
-  </div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
 </form>

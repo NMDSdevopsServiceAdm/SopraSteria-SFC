@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 
+import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
@@ -27,6 +28,7 @@ import { WorkplaceResolver } from './workplace.resolver';
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkplaceRoutingModule],
   declarations: [
+    CheckAnswersComponent,
     ConfirmLeaversComponent,
     ConfirmStartersComponent,
     ConfirmVacanciesComponent,
