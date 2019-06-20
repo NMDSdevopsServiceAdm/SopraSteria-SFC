@@ -18,6 +18,7 @@ import { OtherServicesComponent } from './other-services/other-services.componen
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StartersComponent } from './starters/starters.component';
+import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
@@ -40,6 +41,7 @@ import { WorkplaceResolver } from './workplace.resolver';
     ServicesCapacityComponent,
     ServiceUsersComponent,
     StartersComponent,
+    SuccessComponent,
     TypeOfEmployerComponent,
     VacanciesComponent,
     ViewMyWorkplacesComponent,
