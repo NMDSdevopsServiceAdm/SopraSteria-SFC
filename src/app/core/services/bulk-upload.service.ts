@@ -13,6 +13,7 @@ export class BulkUploadService {
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
   public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
+  public uploadComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
@@ -42,6 +43,10 @@ export class BulkUploadService {
       responseType: 'blob',
     };
     return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report`, httpOptions);
+  }
+
+  public complete(establishmentId: number) {
+    return this.http.post(`/api/establishment/${establishmentId}/bulkupload/complete`, null);
   }
 
   public formErrorsMap(): Array<ErrorDetails> {

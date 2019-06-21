@@ -1,6 +1,7 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FileValidateStatus, UploadedFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -25,7 +26,8 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
-    private i18nPluralPipe: I18nPluralPipe
+    private i18nPluralPipe: I18nPluralPipe,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -35,10 +37,8 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   public setupSubscription(): void {
     this.subscriptions.add(
       this.bulkUploadService.selectedFiles$
-        .pipe(
-          map((selectedFiles: File[]) => selectedFiles.map((file: File) => ({ name: file.name })))
-        )
-        .subscribe((uploadedFiles: UploadedFile[]) => this.uploadedFiles = uploadedFiles)
+        .pipe(map((selectedFiles: File[]) => selectedFiles.map((file: File) => ({ name: file.name }))))
+        .subscribe((uploadedFiles: UploadedFile[]) => (this.uploadedFiles = uploadedFiles))
     );
   }
 
@@ -132,9 +132,14 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     console.log(error);
   }
 
-  // TODO in another ticket
-  public importFiles(): void {
-    console.log('importFiles');
+  public completeUpload(): void {
+    this.bulkUploadService
+      .complete(this.establishmentService.establishmentId)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.bulkUploadService.uploadComplete$.next(true);
+        this.router.navigate(['/dashboard']);
+      });
   }
 
   get hasWarnings() {
