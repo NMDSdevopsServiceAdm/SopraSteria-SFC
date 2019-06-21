@@ -356,7 +356,7 @@ router.route('/uploaded').put(async (req, res) => {
       return {
         filename: metaData.filename,
         uploaded: metaData.lastModified,
-        uploadedBy: metaData.username,
+        uploadedBy: metaData.userName ? metaData.userName : null,
         records: metaData.records,
         errors: 0,
         warnings: 0,
