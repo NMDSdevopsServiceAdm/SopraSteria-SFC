@@ -148,13 +148,19 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   }
 
   public completeUpload(): void {
+    this.bulkUploadService.serverError$.next(null);
     this.bulkUploadService
       .complete(this.establishmentService.establishmentId)
       .pipe(take(1))
-      .subscribe(() => {
-        this.bulkUploadService.uploadComplete$.next(true);
-        this.router.navigate(['/dashboard']);
-      });
+      .subscribe(
+        () => {
+          this.bulkUploadService.uploadComplete$.next(true);
+          this.router.navigate(['/dashboard']);
+        },
+        response => {
+          this.bulkUploadService.serverError$.next(response.error.message);
+        }
+      );
   }
 
   get hasWarnings() {

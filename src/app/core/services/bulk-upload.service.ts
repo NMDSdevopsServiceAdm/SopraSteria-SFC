@@ -1,7 +1,12 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { PresignedUrlResponseItem, PresignedUrlsRequest, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import {
+  PresignedUrlResponseItem,
+  PresignedUrlsRequest,
+  ValidatedFile,
+  ValidatedFilesResponse,
+} from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -14,6 +19,7 @@ export class BulkUploadService {
   public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
   public uploadComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
