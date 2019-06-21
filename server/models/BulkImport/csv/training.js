@@ -319,7 +319,7 @@ class Training {
   }
 
   preValidate() {
-    return _validateHeaders();
+    return this._validateHeaders();
   }
 
   static isContent(data) {

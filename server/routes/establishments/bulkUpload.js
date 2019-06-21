@@ -259,7 +259,7 @@ router.route('/uploaded').put(async (req, res) => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
       if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
-        createModelPromises.push(  downloadContent(myFile.Key) );
+        createModelPromises.push(  downloadContent(myFile.Key, myFile.Size, myFile.LastModified) );
       }
     });
     
@@ -271,16 +271,27 @@ router.route('/uploaded').put(async (req, res) => {
         establishmentMetadata.filename = myfile.filename;
         establishmentMetadata.fileType = 'Establishment';
         establishmentMetadata.userName = myfile.username;
+        establishmentMetadata.size = myfile.size;
+        establishmentMetadata.key = myfile.key;
+        establishmentMetadata.lastModified = myfile.lastModified;
       } else if (CsvWorkerValidator.isContent(myfile.data)) {
         myDownloads.workers = myfile.data;
         workerMetadata.filename = myfile.filename;
         workerMetadata.fileType = 'Worker';
         workerMetadata.userName = myfile.username;
+        workerMetadata.size = myfile.size;        
+        workerMetadata.key = myfile.key;
+        workerMetadata.lastModified = myfile.lastModified;        
       } else if (CsvTrainingValidator.isContent(myfile.data)) {
         myDownloads.trainings = myfile.data;
         trainingMetadata.filename = myfile.filename;
         trainingMetadata.fileType = 'Training';
         trainingMetadata.userName = myfile.username;
+        trainingMetadata.size = myfile.size; 
+        trainingMetadata.key = myfile.key; 
+        trainingMetadata.lastModified = myfile.lastModified; 
+      } else {
+
       }
     });
 
@@ -297,38 +308,42 @@ router.route('/uploaded').put(async (req, res) => {
     const firstRow = 0;
     const firstLineNumber = 2;
     const metadataS3Promises = [];
+
     if(importedEstablishments){
-      const establishmentsCsvValidator = new CsvEstablishmentValidator(importedEstablishments.imported[firstRow], firstLineNumber);  
+      const establishmentsCsvValidator = new CsvEstablishmentValidator(importedEstablishments[firstRow], firstLineNumber);  
       if (establishmentsCsvValidator.preValidate()) {
         // count records and update metadata
-        establishmentMetadata.records = importedEstablishments.imported.length;
+        establishmentMetadata.records = importedEstablishments.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, establishmentMetadata, `${establishmentId}/latest/${establishmentMetadata.filename}.metadata.json`));
       } else {
         // reset metadata filetype because this is not an expected establishment
+        establishmentMetadata.fileType = null;
         status = false;
       }
     }
 
     if(importedWorkers){
-      const workerCsvValidator = new CsvWorkerValidator(importedWorkers.imported[firstRow], firstLineNumber);  
+      const workerCsvValidator = new CsvWorkerValidator(importedWorkers[firstRow], firstLineNumber);  
       if(workerCsvValidator.preValidate()){
         // count records and update metadata
-        workersMetadata.records = importedWorkers.imported.length;
+        workerMetadata.records = importedWorkers.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, workerMetadata, `${establishmentId}/latest/${workerMetadata.filename}.metadata.json`));
       } else {
         // reset metadata filetype because this is not an expected establishment
+        workerMetadata.fileType = null;
         status = false;
       }
     }
 
     if(importedTraining){
-      const trainingCsvValidator = new CsvTrainingValidator(importedTraining.imported[firstRow], firstLineNumber);  
+      const trainingCsvValidator = new CsvTrainingValidator(importedTraining[firstRow], firstLineNumber);  
       if(trainingCsvValidator.preValidate()){
         // count records and update metadata
-        trainingMetadata.records = importedTraining.imported.length;
+        trainingMetadata.records = importedTraining.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, trainingMetadata, `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`));
       } else {
         // reset metadata filetype because this is not an expected establishment
+        trainingMetadata.fileType = null;
         status = false;
       }
     }
@@ -336,36 +351,56 @@ router.route('/uploaded').put(async (req, res) => {
     //////////////////////////////////////
     await Promise.all(metadataS3Promises);
 
-    const generateReturnData = (fileData, metaData) => {
-      console.log(fileData);
+    const generateReturnData = (metaData) => {
       return {
         filename: metaData.filename,
-        uploaded: '',
+        uploaded: metaData.lastModified,
         uploadedBy: metaData.username,
         records: metaData.records,
         errors: 0,
         warnings: 0,
         fileType: metaData.fileType,
-        size: fileData.size,
-        key: fileData.key         
+        size: metaData.size,
+        key: metaData.key         
       }
     }
 
     const returnData = [];
-    if(importedEstablishments){
-      returnData.push(generateReturnData(myDownloads.establishments,establishmentMetadata))
-    }
 
-    if(importedWorkers){
-      returnData.push(generateReturnData(myDownloads.workers, workerMetadata))
+    // now forn response for each file
+    data.Contents.forEach(myFile => {
+      const ignoreMetaDataObjects = /.*metadata.json$/;
+      const ignoreRoot = /.*\/$/;
+      if (!ignoreMetaDataObjects.test(myFile.Key) && !ignoreRoot.test(myFile.Key)) {
+        if (myFile.Key === establishmentMetadata.key) {
+          returnData.push(generateReturnData(establishmentMetadata));
+        } else if (myFile.Key === workerMetadata.key) {
+          returnData.push(generateReturnData(workerMetadata));
+        } else if (myFile.Key === trainingMetadata.key) {
+          returnData.push(generateReturnData(trainingMetadata));
+        } else {
+          let fileNameElements = myFile.Key.split("/");
+          let fileName = fileNameElements[fileNameElements.length - 1];
+          returnData.push(
+            generateReturnData(
+              {
+                filename: fileName,
+                uploaded: myFile.LastModified,
+                uploadedBy : myFile.username,
+                records: 0,
+                errors: 0,
+                warnings: 0,
+                fileType: null,
+                size: myFile.size, 
+                key: myFile.Key,
+              })
+            );
+        }
+      }
+    });
 
-    }
+    return res.status(200).send(returnData);
 
-    if(importedTraining){
-      returnData.push(generateReturnData(myDownloads.training, trainingMetadata))
-    }
-
-    return returnData;
   } catch (err) {
       console.error(err);
       return res.status(503).send({});
@@ -589,7 +624,7 @@ router.route('/validate').post(async (req, res) => {
   }
 });
 
-async function downloadContent(key) {
+async function downloadContent(key, objectSize, lastModified) {
     var params = {
       Bucket: appConfig.get('bulkupload.bucketname').toString(),
       Key: key,
@@ -600,9 +635,12 @@ async function downloadContent(key) {
     try {
       const objData = await s3.getObject(params).promise();
       return {
+        key: key,
         data: objData.Body.toString(), 
         filename: key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3],
         username: objData.Metadata.username,
+        size: objectSize,
+        lastModified: lastModified,
      };
 
     } catch (err) {
