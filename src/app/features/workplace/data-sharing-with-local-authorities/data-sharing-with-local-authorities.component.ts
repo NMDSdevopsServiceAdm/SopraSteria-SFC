@@ -1,14 +1,15 @@
-import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { DataSharingOptions } from '@core/model/data-sharing.model';
+import { LocalAuthorityModel } from '@core/model/localAuthority.model';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { LocalAuthorityService } from '@core/services/localAuthority.service';
-import { Question } from '../question/question.component';
-import { Router } from '@angular/router';
 import { uniqBy } from 'lodash';
-import { LocalAuthorityModel } from '@core/model/localAuthority.model';
+
+import { Question } from '../question/question.component';
 
 @Component({
   selector: 'app-data-sharing-with-local-authorities',
@@ -48,12 +49,16 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
   }
 
   protected init(): void {
-    this.next = ['/workplace', `${this.establishment.id}`, 'vacancies'];
-    this.previous = ['/workplace', `${this.establishment.id}`, 'sharing-data'];
-
     if (!this.establishment.share.with.includes(DataSharingOptions.LOCAL)) {
       this.router.navigate(this.previous, { replaceUrl: true });
     }
+
+    this.next = ['/workplace', `${this.establishment.id}`, 'vacancies'];
+    this.previous = ['/workplace', `${this.establishment.id}`, 'sharing-data'];
+
+    this.subscriptions.add(
+      this.localAuthorityService.getAuthorities().subscribe(authorities => (this.authorities = authorities))
+    );
 
     this.primaryAuthority = this.establishment.primaryAuthority;
 
@@ -64,12 +69,6 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
         this.form.get('primaryAuthority').patchValue(true);
       }
     });
-
-    this.subscriptions.add(
-      this.localAuthorityService
-        .getAuthorities()
-        .subscribe((authorities: Array<LocalAuthorityModel>) => (this.authorities = authorities))
-    );
   }
 
   private createLocalAuthorityItem(custodianCode: number = null): FormGroup {
