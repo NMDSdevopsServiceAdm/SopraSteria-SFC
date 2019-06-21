@@ -17,6 +17,11 @@ const ValidationMessage = require('./validations/validationMessage').ValidationM
 
 const WorkerExceptions = require('./worker/workerExceptions');
 
+// associations
+const Training = require('./training').Training;
+const Qualification = require('./qualification').Qualification;
+
+
 // Worker properties
 const WorkerProperties = require('./worker/workerProperties').WorkerPropertyManager;
 const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
@@ -54,6 +59,10 @@ class Worker extends EntityValidator {
         // local attributes
         this._reason = null;
         this._lastWdfEligibility = null;
+
+        // associated entities
+        this._qualificationsEntities = [];
+        this._trainingEntities = [];
     }
 
     // returns true if valid establishment id
@@ -105,9 +114,29 @@ class Worker extends EntityValidator {
         }
     }
 
+    // this method add this given qualification (entity) as an association to this worker entity - (bulk import)
+    //  - note, no unique key for a qualification; just simply an array of
+    associateQualification(qualification) {
+        this._qualificationsEntities.push(qualification);    
+    };
+    // this method add this given training (entity) as an association to this worker entity - (bulk import)
+    //  - note, no unique key for a training; just simply an array of
+    associateTraining(training) {
+        this._trainingEntities.push(training);    
+    };
+
+    get nameOrId() {
+        // returns the name or id property - if known
+        if (this._properties.get('NameOrId') && this._properties.get('NameOrId').property) {
+            return this._properties.get('NameOrId').property;
+        } else {
+            return null;
+        }
+    }
+
     // takes the given JSON document and creates a Worker's set of extendable properties
     // Returns true if the resulting Worker is valid; otherwise false
-    async load(document) {
+    async load(document, associatedEntities=false) {
         try {
             this.resetValidations();
 
@@ -116,6 +145,34 @@ class Worker extends EntityValidator {
             // reason is not a managed property, load it specifically
             if (document.reason) {
                 this._reason = await this.validateReason(document.reason);
+            }
+
+            // allow for deep restoration of entities (associations - namely Qualifications and Training here)
+            if (associatedEntities) {
+                const promises = [];
+
+                // first training records
+                if (document.training && Array.isArray(document.training)) {
+                    document.training.forEach(thisTraining => {
+                        const newTrainingRecord = new Training(null, null);
+                        
+                        this.associateTraining(newTrainingRecord);
+                        promises.push(newTrainingRecord.load(thisTraining));
+                    });
+                }
+
+                // and qualifications records
+                if (document.qualifications && Array.isArray(document.qualifications)) {
+                    document.qualifications.forEach(thisQualificationRecord => {
+                        const newQualificationRecord = new Qualification(null, null);
+                        
+                        this.associateQualification(newQualificationRecord);
+                        promises.push(newQualificationRecord.load(thisQualificationRecord));
+                    });
+                }                
+
+                // wait for loading of all training and qualification records
+                await Promise.all(promises);
             }
         } catch (err) {
             this._log(Worker.LOG_ERROR, `Woker::load - failed: ${err}`);
@@ -157,7 +214,7 @@ class Worker extends EntityValidator {
 
     // saves the Worker to DB. Returns true if saved; false is not.
     // Throws "WorkerSaveException" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -178,6 +235,7 @@ class Worker extends EntityValidator {
                     uid: this.uid,
                     updatedBy: savedBy.toLowerCase(),
                     archived: false,
+                    source: bulkUploaded ? 'Bulk' : 'Online',
                     updated: creationDate,
                     created: creationDate,
                     attributes: ['id', 'created', 'updated'],
@@ -246,8 +304,10 @@ class Worker extends EntityValidator {
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});
 
+                    // note - if the worker was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         ...modifedUpdateDocument,
+                        source: bulkUploaded ? 'Bulk' : 'Online',
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
@@ -671,7 +731,7 @@ class Worker extends EntityValidator {
     // returns a Javascript object which can be used to present as JSON
     //  showHistory appends the historical account of changes at Worker and individual property level
     //  showHistoryTimeline just returns the history set of audit events for the given Worker
-    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false) {
+    toJSON(showHistory=false, showPropertyHistoryOnly=true, showHistoryTimeline=false, modifiedOnlyProperties=false, associatedEntities=false) {
         if (!showHistoryTimeline) {
             // JSON representation of extendable properties
             const myJSON = this._properties.toJSON(showHistory, showPropertyHistoryOnly, modifiedOnlyProperties);
@@ -686,7 +746,6 @@ class Worker extends EntityValidator {
             myDefaultJSON.updatedBy = this.updatedBy ? this.updatedBy : null;
 
             // TODO: JSON schema validation
-            let workerHistory = null;
             if (showHistory && !showPropertyHistoryOnly) {
                 return {
                     ...myDefaultJSON,
@@ -696,7 +755,9 @@ class Worker extends EntityValidator {
             } else {
                 return {
                     ...myDefaultJSON,
-                    ...myJSON
+                    ...myJSON,
+                    training: associatedEntities ? this._trainingEntities.map(thisTrainingRecord => thisTrainingRecord ? thisTrainingRecord.toJSON() : undefined) : undefined,
+                    qualifications: associatedEntities ? this._qualificationsEntities.map(thisQualification => thisQualification ? thisQualification.toJSON() : undefined) : undefined,
                 };
             }
         } else {

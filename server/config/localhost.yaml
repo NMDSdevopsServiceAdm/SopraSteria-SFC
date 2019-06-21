@@ -12,7 +12,7 @@ jwt:
 db:
     pool: 5
     ssl: false
-    username: sfcapp
+    username: sfcadmin
     client_ssl:
         status: false
         usingFiles: false
@@ -21,4 +21,4 @@ log:
 
 bulkupload:
     region: eu-west-2
-    bucketname: sfc-bulkupload-dev
+    bucketname: sfcbulkuploadfiles

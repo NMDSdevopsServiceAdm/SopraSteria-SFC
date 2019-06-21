@@ -12,21 +12,22 @@
   <div class="govuk-error-summary__body">
     <ul class="govuk-list govuk-error-summary__list">
       <li *ngFor="let i of errors">
-        <a
-          routerLink="."
-          fragment="{{ transformFragmentName(i.item) }}-error"
-          queryParamsHandling="merge">
+        <a routerLink="." fragment="{{ transformFragmentName(i.item) }}-error" queryParamsHandling="merge">
           {{ getFormErrorMessage(i.item, i.errors[0]) }}
         </a>
       </li>
       <li *ngIf="serverError">
-        <a
-          routerLink="."
-          fragment="server-error"
-          queryParamsHandling="merge">
+        <a routerLink="." fragment="server-error" queryParamsHandling="merge">
           {{ serverError }}
         </a>
       </li>
+      <ng-container *ngIf="customErrors">
+        <li *ngFor="let customError of customErrors">
+          <a routerLink="." [fragment]="customError.name" queryParamsHandling="merge">
+            {{ customError.message }}
+          </a>
+        </li>
+      </ng-container>
     </ul>
   </div>
 </div>

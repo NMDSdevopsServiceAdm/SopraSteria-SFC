@@ -6,7 +6,6 @@
     </app-inset-text>
   </div>
 </div>
-
 <table class="govuk-table" [class.govuk-error-table]="hasErrors" [class.govuk-!-margin-top-6]="!validationComplete">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
@@ -19,12 +18,18 @@
   </thead>
   <tbody class="govuk-table__body">
     <ng-container *ngFor="let file of uploadedFiles">
-      <tr class="govuk-table__row" [class.govuk-error-table__row]="file.errors">
-        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors" scope="row">
-          <p *ngIf="file.errors" class="govuk-error-message govuk-error-table__message">
+      <tr *ngIf="file.errors">
+        <td class="govuk-error-table__message-cell" colspan="5">
+          <p class="govuk-error-message govuk-error-table__message">
             Check the file before validating.
           </p>
-          {{ file.name }}
+        </td>
+      </tr>
+      <tr [id]="getFileId(file)" class="govuk-table__row" [class.govuk-error-table__row]="file.errors">
+        <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors" scope="row">
+          <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-2">
+            {{ file.name }}
+          </p>
           <p *ngIf="file.warnings" class="govuk-!-margin-bottom-1 govuk-!-margin-top-2">
             <strong class="govuk__flex">
               <img class="govuk-!-margin-right-2" src="/assets/images/flag-orange.svg" alt="" />
@@ -57,16 +62,9 @@
 </ng-container>
 
 <ng-container *ngIf="validationComplete">
-  <ng-container *ngIf="hasErrors">
-    <p>
-      Review the <strong>{{ totalErrors }}</strong> errors in the report.
-    </p>
-    <p>
-      <button (click)="downloadReport()" class="govuk-button govuk-button--link govuk-!-padding-0">
-        Download the report
-      </button>
-    </p>
-  </ng-container>
+  <p *ngIf="hasErrors">
+    Review the <strong>{{ totalErrors }}</strong> errors in the report.
+  </p>
 
   <p *ngIf="hasWarnings && !hasErrors">
     Review the <strong>{{ totalWarnings }}</strong>
@@ -74,11 +72,22 @@
     import the data.
   </p>
 
+  <p *ngIf="hasWarnings || hasErrors">
+    <button (click)="downloadReport()" class="govuk-button govuk-button--link govuk-!-padding-0">
+      Download the report
+    </button>
+  </p>
+
   <p *ngIf="!hasWarnings && !hasErrors">
     You need to complete the upload to import the data.
   </p>
 
-  <button type="button" class="govuk-button govuk-button--primary govuk-!-margin-top-2" (click)="importFiles()">
+  <button
+    *ngIf="!hasErrors"
+    type="button"
+    class="govuk-button govuk-button--primary govuk-!-margin-top-2"
+    (click)="importFiles()"
+  >
     Complete upload
   </button>
 </ng-container>

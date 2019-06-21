@@ -7,9 +7,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class SubmitButtonComponent {
   @Input() return: boolean;
   @Input() saveCallback: any;
-  @Output() click = new EventEmitter<{ action: string; save: boolean }>();
+  @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
   onClick(action: string, save: boolean) {
-    this.click.emit({ action, save });
+    this.clicked.emit({ action, save });
   }
 }

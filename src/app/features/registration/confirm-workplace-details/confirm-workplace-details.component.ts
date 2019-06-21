@@ -1,8 +1,8 @@
-import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
-import { RegistrationService } from '@core/services/registration.service';
 import { Service } from '@core/model/services.model';
+import { BackService } from '@core/services/back.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -10,14 +10,11 @@ import { Subscription } from 'rxjs';
   templateUrl: './confirm-workplace-details.component.html',
 })
 export class ConfirmWorkplaceDetailsComponent implements OnInit, OnDestroy {
+  public locationAddress: LocationAddress;
+  public workplaceService: Service;
   private subscriptions: Subscription = new Subscription();
-  protected locationAddress: LocationAddress;
-  protected workplaceService: Service;
 
-  constructor(
-    private backService: BackService,
-    private registrationService: RegistrationService,
-  ) {}
+  constructor(private backService: BackService, private registrationService: RegistrationService) {}
 
   ngOnInit() {
     this.getWorkplaceData();
@@ -27,13 +24,13 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit, OnDestroy {
   private getWorkplaceData(): void {
     this.subscriptions.add(
       this.registrationService.selectedLocationAddress$.subscribe(
-        (locationAddress: LocationAddress) => this.locationAddress = locationAddress
+        (locationAddress: LocationAddress) => (this.locationAddress = locationAddress)
       )
     );
 
     this.subscriptions.add(
       this.registrationService.selectedWorkplaceService$.subscribe(
-        (workplaceService: Service) => this.workplaceService = workplaceService
+        (workplaceService: Service) => (this.workplaceService = workplaceService)
       )
     );
   }
@@ -45,5 +42,4 @@ export class ConfirmWorkplaceDetailsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }
-
 }

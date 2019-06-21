@@ -164,6 +164,10 @@ class Training extends EntityValidator {
         }
     }
 
+    async preValidateTrainingRecord(){
+        
+    }
+
     // validates a given training record; returns the training record if valid
     async validateTrainingRecord(document) {
         // to validate a training record, need the list of available training categories
@@ -415,7 +419,7 @@ class Training extends EntityValidator {
 
     // saves the Training record to DB. Returns true if saved; false is not.
     // Throws "Error" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -444,6 +448,7 @@ class Training extends EntityValidator {
                         created: now,
                         updated: now,
                         updatedBy: savedBy.toLowerCase(),
+                        source: bulkUploaded ? 'Bulk' : 'Online',
                         categoryFk: this._category.id,
                         title: this._title,
                         accredited: this._accredited,
@@ -494,6 +499,7 @@ class Training extends EntityValidator {
                     //  an external transaction
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
+                    // note - if the training was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         categoryFk: this._category.id,
                         title: this._title,
@@ -501,6 +507,7 @@ class Training extends EntityValidator {
                         completed: this._completed,
                         expires: this._expires,
                         notes: this._notes,
+                        source: bulkUploaded ? 'Bulk' : 'Online',
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };

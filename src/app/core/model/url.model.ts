@@ -1,7 +1,7 @@
 import { Params } from '@angular/router';
 
 export interface URLStructure {
-  url: string[];
+  url: any[];
   fragment?: string;
   queryParams?: Params;
 }

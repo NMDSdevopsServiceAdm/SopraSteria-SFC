@@ -1429,10 +1429,19 @@ class Establishment {
     }
   }
 
+  preValidate() {
+    return this._validateHeaders();
+  }
+
+  static isContent(data) {
+    const contentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
+    return contentRegex.test(data.substring(0,50));
+  }
+
   _validateHeaders() {
     const headers = Object.keys(this._currentLine);
     // only run once for first line, so check _lineNumber
-    if (this._lineNumber === 2 && JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
       this._validationErrors.push({
         lineNumber: 1,
         errCode: Establishment.HEADERS_ERROR,
@@ -1440,6 +1449,7 @@ class Establishment {
         error: `Establishment headers (HEADERS) can contain, ${this._headers_v1}`,
         source: headers
       });
+      return false;
     }
     return true;
   }
@@ -1460,7 +1470,6 @@ class Establishment {
   validate() {
     let status = true;
 
-    status = !this._validateHeaders() ? false : status;
     status = !this._validateLocalisedId() ? false : status;
     status = !this._validateStatus() ? false : status;
     status = !this._validateEstablishmentName() ? false : status;
@@ -1613,11 +1622,9 @@ class Establishment {
           return returnThis;
         }),
       numberOfStaff: this._totalPermTemp,
-      jobs: {
-        vacancies: this._vacancies ? this._vacancies : undefined,
-        starters: this._starters ? this._starters : undefined,
-        leavers: this.leavers ? this.leavers : undefined,
-      }
+      vacancies: this._vacancies ? this._vacancies : undefined,
+      starters: this._starters ? this._starters : undefined,
+      leavers: this.leavers ? this.leavers : undefined,
     };
 
     // share options
@@ -1733,19 +1740,19 @@ class Establishment {
             break;
           case 'Address':
           case 'Postcode':
-            validationWarning.errCode = Establishment.ADDRESS_ERROR;
-            validationWarning.errType = 'ADDRESS_ERROR';
-            validationWarning.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
+            validationError.errCode = Establishment.ADDRESS_ERROR;
+            validationError.errType = 'ADDRESS_ERROR';
+            validationError.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
             break;
           case 'CQCRegistered':
-            validationWarning.errCode = Establishment.REGTYPE_ERROR;
-            validationWarning.errType = 'REGTYPE_ERROR';
-            validationWarning.source  = `${this._currentLine.REGTYPE}`;
+            validationError.errCode = Establishment.REGTYPE_ERROR;
+            validationError.errType = 'REGTYPE_ERROR';
+            validationError.source  = `${this._currentLine.REGTYPE}`;
             break;
           case 'LocationID':
-            validationWarning.errCode = Establishment.LOCATION_ID_ERROR;
-            validationWarning.errType = 'LOCATION_ID_ERROR';
-            validationWarning.source  = `${this._currentLine.LOCATIONID}`;
+            validationError.errCode = Establishment.LOCATION_ID_ERROR;
+            validationError.errType = 'LOCATION_ID_ERROR';
+            validationError.source  = `${this._currentLine.LOCATIONID}`;
             break;   
           case 'NMDSID':
               // where to map NMDSID error?????
