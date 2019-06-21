@@ -37,4 +37,5 @@ export interface ValidatedFile {
   uploaded: string;
   status?: FileValidateStatus;
   warnings: number;
+  username: string;
 }
