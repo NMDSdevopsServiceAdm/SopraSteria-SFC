@@ -28,7 +28,7 @@
       <tr [id]="getFileId(file)" class="govuk-table__row" [class.govuk-error-table__row]="file.errors">
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors" scope="row">
           <p class="govuk-!-margin-top-2 govuk-!-margin-bottom-2">
-            {{ file.name }}
+            {{ file.filename }}
           </p>
           <p *ngIf="file.warnings" class="govuk-!-margin-bottom-1 govuk-!-margin-top-2">
             <strong class="govuk__flex">
@@ -39,7 +39,7 @@
           </p>
         </td>
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
-          {{ file.fileType ? file.fileType : getFileType(file.name) }}
+          {{ file.fileType ? file.fileType : getFileType(file.filename) }}
         </td>
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
           {{ file.records ? file.records : '-' }}

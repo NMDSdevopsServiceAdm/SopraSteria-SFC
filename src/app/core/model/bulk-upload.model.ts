@@ -21,15 +21,6 @@ export interface UploadFileRequestItem {
   signedUrl: string;
 }
 
-export interface UploadedFile {
-  name: string;
-  errors?: number;
-  fileType?: string;
-  records?: number;
-  status?: FileValidateStatus;
-  warnings?: number;
-}
-
 export interface ValidatedFilesResponse {
   establishment: ValidatedFile;
   training: ValidatedFile;
@@ -40,6 +31,10 @@ export interface ValidatedFile {
   errors: number;
   filename: string;
   fileType: string;
+  key: string;
   records: number;
+  size: number;
+  uploaded: string;
+  status?: FileValidateStatus;
   warnings: number;
 }

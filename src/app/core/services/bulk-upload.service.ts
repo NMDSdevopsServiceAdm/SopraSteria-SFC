@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { PresignedUrlResponseItem, PresignedUrlsRequest, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { PresignedUrlResponseItem, PresignedUrlsRequest, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -32,6 +32,10 @@ export class BulkUploadService {
   public getFileType(fileName: string): string {
     const parts: Array<string> = fileName.split('.');
     return parts[parts.length - 1].toUpperCase();
+  }
+
+  public preValidateFiles(establishmentId: number): Observable<ValidatedFile[]> {
+    return this.http.put<ValidatedFile[]>(`/api/establishment/${establishmentId}/bulkupload/uploaded`, null);
   }
 
   public validateFiles(establishmentId: number): Observable<ValidatedFilesResponse> {
