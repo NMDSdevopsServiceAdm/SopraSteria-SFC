@@ -2,6 +2,7 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -14,10 +15,10 @@ export class QuestionComponent implements OnInit, OnDestroy {
   public worker: Worker;
   public submitted = false;
 
-  public return: string[];
+  public return: URLStructure;
   public previous: string[];
   public next: string[];
-  public back: string[];
+  public back: URLStructure;
 
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
@@ -43,8 +44,8 @@ export class QuestionComponent implements OnInit, OnDestroy {
         if (!this.initiated) {
           this._init();
 
-          this.back = this.return ? this.return : this.previous;
-          this.backService.setBackLink({ url: this.back });
+          this.back = this.return ? this.return : { url: this.previous };
+          this.backService.setBackLink(this.back);
         }
       })
     );
@@ -80,7 +81,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
         break;
 
       case 'summary':
-        this.router.navigate(['/worker', this.worker.uid, 'summary']);
+        this.router.navigate(['/worker', this.worker.uid, 'check-answers']);
         break;
 
       case 'exit':
@@ -88,7 +89,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
         break;
 
       case 'return':
-        this.router.navigate(this.return);
+        this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
         break;
     }
   }

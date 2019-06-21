@@ -332,7 +332,7 @@ class Qualification extends EntityValidator {
 
     // saves the Qualification record to DB. Returns true if saved; false if not.
     // Throws "Error" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -362,6 +362,7 @@ class Qualification extends EntityValidator {
                         created: now,
                         updated: now,
                         updatedBy: savedBy.toLowerCase(),
+                        source: bulkUploaded ? 'Bulk' : 'Online',
                         qualificationFk: this._qualification.id,
                         year: this._year,
                         notes: this._notes,
@@ -416,10 +417,12 @@ class Qualification extends EntityValidator {
                     //  an external transaction
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
+                    // note - if the qualification was created online, but then updated via bulk upload, the source become bulk and vice-versa.
                     const updateDocument = {
                         qualificationFk: this._qualification.id,
                         year: this._year,
                         notes: this._notes,
+                        source: bulkUploaded ? 'Bulk' : 'Online',
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };

@@ -57,6 +57,6 @@ export class OtherQualificationsComponent extends QuestionComponent {
     this.next =
       this.worker.otherQualification === 'Yes'
         ? ['/worker', this.worker.uid, 'other-qualifications-level']
-        : ['/worker', this.worker.uid, 'summary'];
+        : ['/worker', this.worker.uid, 'check-answers'];
   }
 }

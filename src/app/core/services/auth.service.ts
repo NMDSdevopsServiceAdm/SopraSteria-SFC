@@ -17,7 +17,7 @@ export class AuthService {
   private _session: LoggedInSession = null;
   private _token: string = null;
 
-  public redirect: { url: UrlSegment[]; fragment?: string; queryParams?: Params };
+  public redirect: string;
 
   // Observable login stream
   public auth$: Observable<LoggedInSession> = this._auth$.asObservable();
@@ -120,7 +120,7 @@ export class AuthService {
       localStorage.clear();
       this._session = null;
       this.token = null;
-      this.router.navigate(['/login']);
+      this.router.navigate(['/logged-out']);
     }
   }
 

@@ -296,8 +296,6 @@ class User {
                     this._isPrimary = false;        // isPrimary is only explicitly declared on registration and it is true
                 }
 
-                console.log("WA DEBUG - saving User - isPrimary: ", this._isPrimary)
-
                 const creationDocument = {
                     establishmentId: this._establishmentId,
                     uid: this.uid,

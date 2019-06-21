@@ -9,7 +9,7 @@
     <dd class="govuk-summary-list__actions">
       <!--
       TODO uncomment once workplace name question section is created
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id]">
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
         <ng-container *ngIf="!workplace.name">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -42,7 +42,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'type-of-employer']">
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'type-of-employer']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.employerType?.value">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -74,7 +74,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <!-- <a class="govuk-link" [routerLink]="['/workplace', workplace.id]">
+      <!-- <a class="govuk-link" [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
         <ng-container *ngIf="!workplace.mainService">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -125,7 +125,7 @@
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'other-services']">
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'other-services']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.otherServices?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -171,7 +171,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'capacity-of-services']">
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'capacity-of-services']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.capacities?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -223,7 +223,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'service-users']">
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'service-users']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.serviceUsers?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -258,7 +258,7 @@
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'sharing-data']">
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'sharing-data']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.share?.enabled">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -325,7 +325,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'vacancies']">
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'vacancies']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.vacancies?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -389,7 +389,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'starters']">
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'starters']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.starters?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -446,7 +446,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'leavers']">
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'leavers']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.leavers?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -459,6 +459,8 @@
     </dd>
   </div>
 
+  <!--
+      TODO uncomment once volunteers section is created
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       Number of volunteers
@@ -467,9 +469,8 @@
       {{ workplace.volunteers || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <!--
-      TODO uncomment once volunteers section is created
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id]">
+
+      <a class="govuk-link" [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
         <ng-container *ngIf="!workplace.volunteers">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -479,7 +480,8 @@
         </ng-container>
         <span class="govuk-visually-hidden"> number of volunteers</span>
       </a>
-      -->
+
     </dd>
   </div>
+  -->
 </dl>

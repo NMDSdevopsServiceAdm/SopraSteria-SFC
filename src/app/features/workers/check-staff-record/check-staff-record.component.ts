@@ -11,7 +11,7 @@ import { take } from 'rxjs/operators';
   templateUrl: './check-staff-record.component.html',
 })
 export class CheckStaffRecordComponent implements OnInit {
-  private worker: Worker;
+  public worker: Worker;
   private subscriptions: Subscription = new Subscription();
 
   constructor(private router: Router, private location: Location, private workerService: WorkerService) {}

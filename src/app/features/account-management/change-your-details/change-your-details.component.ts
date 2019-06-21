@@ -15,16 +15,16 @@ import { Subscription } from 'rxjs';
   templateUrl: './change-your-details.component.html',
 })
 export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
-  protected form: FormGroup;
+  public form: FormGroup;
+  public submitted = false;
+  public callToActionLabel = 'Save and return';
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverError: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
-  protected submitted = false;
   protected subscriptions: Subscription = new Subscription();
   protected userDetails: UserDetails;
   protected username: string;
 
-  protected callToActionLabel = 'Save and return';
   protected registrationInProgress: boolean;
 
   constructor(

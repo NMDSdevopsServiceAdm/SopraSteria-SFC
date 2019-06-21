@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
 import { ReportsService } from '@core/services/reports.service';
@@ -9,6 +10,7 @@ import { take } from 'rxjs/operators';
 
 import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 
+// TODO Remove CSS for delete button
 @Component({
   selector: 'app-staff-record',
   templateUrl: './staff-record.component.html',
@@ -21,7 +23,9 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public qualificationCreated = false;
   public qualificationEdited = false;
   public qualificationDeleted = false;
-  private worker: Worker;
+  public returnToRecord: URLStructure;
+  public returnToQuals: URLStructure;
+  public worker: Worker;
   public reportDetails: {};
   public updatedDate: any;
   private subscriptions: Subscription = new Subscription();
@@ -36,6 +40,9 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe(worker => {
         this.worker = worker;
+
+        this.returnToRecord = { url: ['/worker', this.worker.uid], fragment: 'staff-record' };
+        this.returnToQuals = { url: ['/worker', this.worker.uid], fragment: 'qualifications-and-training' };
       })
     );
 

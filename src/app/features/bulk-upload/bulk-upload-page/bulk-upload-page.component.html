@@ -1,4 +1,9 @@
-<app-error-summary *ngIf="showErrorSummary" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+<app-error-summary
+  *ngIf="showErrorSummary"
+  [customErrors]="uploadValidationErrors"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+></app-error-summary>
 
 <app-dashboard-header></app-dashboard-header>
 

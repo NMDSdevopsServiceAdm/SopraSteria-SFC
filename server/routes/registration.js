@@ -302,6 +302,7 @@ router.route('/')
     // Username validation check
     if (req.body[0] && req.body[0].user && req.body[0].user.username) {
       if (!usernameCheck(req.body[0].user.username)) {
+        console.error(`Registration:  ${responseErrors.invalidUsername.message} - ${req.body[0].user.username}`);
         return res.status(400).json(responseErrors.invalidUsername);
       }
     }
@@ -393,7 +394,7 @@ router.route('/')
           // now create establishment - using the extended property encapsulation
           defaultError = responseErrors.establishment;
           const newEstablishment = new EstablishmentModel(Logindata.UserName);
-          await newEstablishment.initialise(
+          newEstablishment.initialise(
             Estblistmentdata.Address,
             Estblistmentdata.LocationID,
             Estblistmentdata.PostCode,

@@ -1,12 +1,12 @@
-import { BackService } from '@core/services/back.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { LocationSearchResponse } from '@core/model/location.model';
-import { RegistrationService } from '@core/services/registration.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { LocationSearchResponse } from '@core/model/location.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,11 +14,11 @@ import { Subscription } from 'rxjs';
   templateUrl: './find-workplace-address.component.html',
 })
 export class FindWorkplaceAddressComponent implements OnInit, OnDestroy {
-  private form: FormGroup;
+  public form: FormGroup;
+  public serverError: string;
+  public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
-  private serverError: string;
   private serverErrorsMap: Array<ErrorDefinition>;
-  private submitted = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -26,7 +26,7 @@ export class FindWorkplaceAddressComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private fb: FormBuilder,
     private registrationService: RegistrationService,
-    private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -96,7 +96,7 @@ export class FindWorkplaceAddressComponent implements OnInit, OnDestroy {
     );
   }
 
-  private onSubmit(): void {
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -124,5 +124,4 @@ export class FindWorkplaceAddressComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
 }

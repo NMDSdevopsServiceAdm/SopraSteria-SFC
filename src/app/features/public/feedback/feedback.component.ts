@@ -1,28 +1,28 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FeedbackModel } from '@core/model/feedback.model';
-import { FeedbackService } from '@core/services/feedback.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { FeedbackModel } from '@core/model/feedback.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FeedbackService } from '@core/services/feedback.service';
 import { WindowRef } from '@core/services/window.ref';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-feedback',
   templateUrl: './feedback.component.html',
 })
 export class FeedbackComponent implements OnInit, OnDestroy {
+  public form: FormGroup;
+  public submitted = false;
+  public serverError: string;
+  public doingWhatCharacterLimit = 500;
+  public tellUsCharactersLimit = 500;
   private _pendingFeedback = true;
-  private doingWhatCharacterLimit = 500;
   private emailCharacterLimit = 120;
-  private form: FormGroup;
   private formErrorsMap: Array<ErrorDetails>;
   private fullNameCharacterLimit = 120;
-  private serverError: string;
   private serverErrorsMap: Array<ErrorDefinition>;
-  private submitted = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -43,7 +43,7 @@ export class FeedbackComponent implements OnInit, OnDestroy {
       doingWhat: [null, [Validators.required, Validators.maxLength(this.doingWhatCharacterLimit)]],
       email: [null, [Validators.email, Validators.maxLength(this.emailCharacterLimit)]],
       fullname: [null, [Validators.maxLength(this.fullNameCharacterLimit)]],
-      tellUs: [null, [Validators.required, CustomValidators.maxWords(10)]],
+      tellUs: [null, [Validators.required, Validators.maxLength(this.tellUsCharactersLimit)]],
     });
   }
 

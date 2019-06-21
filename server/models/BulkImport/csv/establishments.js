@@ -1622,11 +1622,9 @@ class Establishment {
           return returnThis;
         }),
       numberOfStaff: this._totalPermTemp,
-      jobs: {
-        vacancies: this._vacancies ? this._vacancies : undefined,
-        starters: this._starters ? this._starters : undefined,
-        leavers: this.leavers ? this.leavers : undefined,
-      }
+      vacancies: this._vacancies ? this._vacancies : undefined,
+      starters: this._starters ? this._starters : undefined,
+      leavers: this.leavers ? this.leavers : undefined,
     };
 
     // share options
@@ -1742,19 +1740,19 @@ class Establishment {
             break;
           case 'Address':
           case 'Postcode':
-            validationWarning.errCode = Establishment.ADDRESS_ERROR;
-            validationWarning.errType = 'ADDRESS_ERROR';
-            validationWarning.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
+            validationError.errCode = Establishment.ADDRESS_ERROR;
+            validationError.errType = 'ADDRESS_ERROR';
+            validationError.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
             break;
           case 'CQCRegistered':
-            validationWarning.errCode = Establishment.REGTYPE_ERROR;
-            validationWarning.errType = 'REGTYPE_ERROR';
-            validationWarning.source  = `${this._currentLine.REGTYPE}`;
+            validationError.errCode = Establishment.REGTYPE_ERROR;
+            validationError.errType = 'REGTYPE_ERROR';
+            validationError.source  = `${this._currentLine.REGTYPE}`;
             break;
           case 'LocationID':
-            validationWarning.errCode = Establishment.LOCATION_ID_ERROR;
-            validationWarning.errType = 'LOCATION_ID_ERROR';
-            validationWarning.source  = `${this._currentLine.LOCATIONID}`;
+            validationError.errCode = Establishment.LOCATION_ID_ERROR;
+            validationError.errType = 'LOCATION_ID_ERROR';
+            validationError.source  = `${this._currentLine.LOCATIONID}`;
             break;   
           case 'NMDSID':
               // where to map NMDSID error?????

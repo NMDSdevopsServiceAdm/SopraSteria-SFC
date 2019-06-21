@@ -1,24 +1,24 @@
-import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-your-details',
   templateUrl: './your-details.component.html',
 })
 export class YourDetailsComponent implements OnInit, OnDestroy {
-  protected callToActionLabel = 'Continue';
-  protected form: FormGroup;
+  public form: FormGroup;
+  public callToActionLabel = 'Continue';
+  public submitted = false;
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverError: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
-  protected submitted = false;
   protected subscriptions: Subscription = new Subscription();
   protected userDetails: UserDetails;
 
@@ -27,7 +27,7 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService,
+    protected userService: UserService
   ) {}
 
   // Get fullname
@@ -74,12 +74,12 @@ export class YourDetailsComponent implements OnInit, OnDestroy {
   protected init() {}
 
   protected setUserDetails(): UserDetails {
-    return this.userDetails = {
+    return (this.userDetails = {
       emailAddress: this.getEmail.value,
       fullname: this.getFullName.value,
       jobTitle: this.getJobTitle.value,
       contactNumber: this.getPhone.value,
-    };
+    });
   }
 
   public setupFormErrorsMap(): void {

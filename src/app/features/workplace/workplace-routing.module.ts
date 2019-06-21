@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ParentGuard } from '@core/guards/parent/parent.guard';
+import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 
+import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
@@ -13,12 +16,12 @@ import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
+import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
+import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceResolver } from './workplace.resolver';
-import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
-import { ParentGuard } from '@core/guards/parent/parent.guard';
 
 const routes: Routes = [
   {
@@ -35,10 +38,16 @@ const routes: Routes = [
     path: ':establishmentid',
     component: EditWorkplaceComponent,
     resolve: { establishment: WorkplaceResolver },
+    data: { title: 'Workplace' },
     children: [
       {
         path: '',
-        data: { title: 'Workplace' },
+        redirectTo: 'type-of-employer',
+      },
+      {
+        path: 'start',
+        component: StartComponent,
+        data: { title: 'Start' },
       },
       {
         path: 'type-of-employer',
@@ -105,11 +114,13 @@ const routes: Routes = [
         data: { title: 'Volunteers' },
       },
       {
-        path: 'summary',
+        path: 'check-answers',
+        component: CheckAnswersComponent,
         data: { title: 'Check Answers' },
       },
       {
         path: 'success',
+        component: SuccessComponent,
         data: { title: 'Success' },
       },
     ],

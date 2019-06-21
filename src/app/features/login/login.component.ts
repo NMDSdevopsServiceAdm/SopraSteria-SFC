@@ -121,8 +121,9 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.authService.postLogin(this.getLoginCredentials()).subscribe(
         response => {
           this.authService.updateState(response.body);
+          this.establishmentService.checkIfSameLoggedInUser(response.body.establishment.id);
 
-          // // update the establishment service state with the given establishment id
+          // update the establishment service state with the given establishment id
           this.establishmentService.establishmentId = response.body.establishment.id;
 
           const token = response.headers.get('authorization');
@@ -150,14 +151,9 @@ export class LoginComponent implements OnInit, OnDestroy {
         () => {
           const redirect = this.authService.redirect;
 
-          if (redirect && redirect.url.length) {
-            const navExtras: NavigationExtras = {
-              queryParams: redirect.queryParams,
-              fragment: redirect.fragment,
-            };
-
+          if (redirect && redirect.length) {
+            this.router.navigateByUrl(redirect);
             this.authService.redirect = null;
-            this.router.navigate([redirect.url.toString()], navExtras);
           } else {
             this.router.navigate(['/dashboard']);
           }

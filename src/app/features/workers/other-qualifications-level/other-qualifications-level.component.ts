@@ -48,7 +48,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'summary'];
+    this.next = ['/worker', this.worker.uid, 'check-answers'];
     this.previous = ['/worker', this.worker.uid, 'other-qualifications'];
   }
 

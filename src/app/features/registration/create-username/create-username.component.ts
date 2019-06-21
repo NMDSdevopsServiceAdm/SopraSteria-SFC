@@ -10,20 +10,20 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-username',
   templateUrl: './create-username.component.html',
 })
 export class CreateUsernameComponent implements OnInit, OnDestroy {
-  private callToActionLabel: string;
-  private form: FormGroup;
+  public callToActionLabel: string;
+  public form: FormGroup;
+  public serverError: string;
+  public submitted = false;
   private formErrorsMap: Array<ErrorDetails>;
   private loginCredentialsExist = false;
-  private serverError: string;
   private serverErrorsMap: Array<ErrorDefinition>;
-  private submitted = false;
   private subscriptions: Subscription = new Subscription();
   private userNameMinLength = 3;
   private userNameMaxLength = 120;
@@ -85,13 +85,6 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
           this.preFillForm(loginCredentials);
         }
       })
-    );
-
-    this.subscriptions.add(
-      this.getUsername.valueChanges
-        .pipe(debounceTime(1000))
-        .pipe(distinctUntilChanged())
-        .subscribe((userName: string) => this.checkUsernameDoesntExist(userName))
     );
   }
 
@@ -165,7 +158,8 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
           },
           {
             name: 'pattern',
-            message: 'Your password must be least 8 characters, contain one uppercase and one lowercase letter and a number.',
+            message:
+              'Your password must be least 8 characters, contain one uppercase and one lowercase letter and a number.',
           },
         ],
       },
@@ -194,36 +188,41 @@ export class CreateUsernameComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private checkUsernameDoesntExist(userName: string): void {
+  public checkUsernameDoesntExist(): void {
     this.subscriptions.add(
-      this.registrationService.getUsernameDuplicate(userName).subscribe(
-        (data: Object) => {
-          if (data['status'] === '1') {
+      this.registrationService
+        .getUsernameDuplicate(this.getUsername.value)
+        .pipe(
+          finalize(() => {
             this.submitted = true;
-            this.getUsername.setErrors({ usernameExists: true });
-          } else {
-            this.getUsername.setErrors({ usernameExists: null });
-            this.getUsername.updateValueAndValidity();
+            this.onSubmit();
+          })
+        )
+        .subscribe(
+          (data: Object) => {
+            if (data['status'] === '1') {
+              this.getUsername.setErrors({ usernameExists: true });
+            } else {
+              this.getUsername.setErrors({ usernameExists: null });
+              this.getUsername.updateValueAndValidity();
+            }
+          },
+          (error: HttpErrorResponse) => {
+            this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           }
-        },
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
+        )
     );
   }
 
-  public onSubmit(): void {
-    this.submitted = true;
+  private onSubmit(): void {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if (this.form.valid) {
-      this.save();
-    } else {
+    if (this.form.invalid || this.serverError) {
       this.errorSummaryService.scrollToErrorSummary();
+    } else {
+      this.save();
     }
   }
-
   private save(): void {
     this.router.navigate([this.setFormSubmissionLink()]).then(() => {
       this.registrationService.loginCredentials$.next({

@@ -13,14 +13,14 @@ import { map, take, tap } from 'rxjs/operators';
   templateUrl: './files-upload.component.html',
 })
 export class FilesUploadComponent implements OnInit {
-  private form: FormGroup;
+  public form: FormGroup;
+  public filesUploading = false;
+  public filesUploaded = false;
+  public submitted = false;
   private selectedFiles: Array<UploadFile>;
-  private submitted = false;
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
   private uploadSubscription$: Subscription;
-  public filesUploading = false;
-  public filesUploaded = false;
 
   constructor(
     private bulkUploadService: BulkUploadService,

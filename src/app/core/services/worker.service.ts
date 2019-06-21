@@ -8,6 +8,7 @@ import {
   QualificationType,
 } from '@core/model/qualification.model';
 import { TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
+import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -38,7 +39,7 @@ export class WorkerService {
   private _worker$ = new BehaviorSubject<Worker>(null);
   public worker$ = this._worker$.asObservable();
   private lastDeleted$ = new BehaviorSubject<string>(null);
-  private returnTo$ = new BehaviorSubject<string[]>(null);
+  private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private totalStaffReturn$ = new BehaviorSubject<boolean>(false);
   public createStaffResponse = null;
   public trainingRecordCreated = null;
@@ -62,7 +63,7 @@ export class WorkerService {
     return this.lastDeleted$.value as string;
   }
 
-  public get returnTo(): string[] {
+  public get returnTo(): URLStructure {
     return this.returnTo$.value;
   }
 
@@ -82,8 +83,8 @@ export class WorkerService {
     this._worker$.next(worker);
   }
 
-  setReturnTo(val: string[]): void {
-    this.returnTo$.next(val);
+  setReturnTo(returnTo: URLStructure): void {
+    this.returnTo$.next(returnTo);
   }
 
   setTotalStaffReturn(val) {
