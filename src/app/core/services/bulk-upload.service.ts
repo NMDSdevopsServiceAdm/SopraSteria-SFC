@@ -56,7 +56,7 @@ export class BulkUploadService {
           },
           {
             name: 'filecount',
-            message: 'Please select a total of 3 files.',
+            message: 'Please select between 2 and 3 files.',
           },
           {
             name: 'filesize',

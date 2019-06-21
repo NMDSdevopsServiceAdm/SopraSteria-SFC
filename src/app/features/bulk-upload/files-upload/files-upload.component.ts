@@ -91,7 +91,6 @@ export class FilesUploadComponent implements OnInit {
 
     if (this.form.valid) {
       this.getPresignedUrls();
-      // this.uploadFiles(this.selectedFiles);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
