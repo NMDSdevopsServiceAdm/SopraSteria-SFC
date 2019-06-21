@@ -266,9 +266,6 @@ router.route('/validate').put(async (req, res) => {
     
     await Promise.all(createModelPromises).then(function(values){
        values.forEach(myfile=>{
-
-console.log("WA DEBUG - why is establishments metadata null: ", myfile.data.substring(0,50))
-
           if (establishmentRegex.test(myfile.data.substring(0,50))) {
             myDownloads.establishments = myfile.data;
             establishmentMetadata.filename = myfile.filename;
@@ -290,9 +287,6 @@ console.log("WA DEBUG - why is establishments metadata null: ", myfile.data.subs
         console.error("NM: validate.put", err);
     }) ;
 
-    console.log("WA DEBUG - why is establishments metadata null: ", establishmentMetadata)
-    
-  
     const importedEstablishments = myDownloads.establishments ? await csv().fromString(myDownloads.establishments) : null;
     const importedWorkers = myDownloads.workers ? await csv().fromString(myDownloads.workers) :  null;
     const importedTraining = myDownloads.trainings ? await csv().fromString(myDownloads.trainings) : null;
@@ -304,7 +298,7 @@ console.log("WA DEBUG - why is establishments metadata null: ", myfile.data.subs
       isParent,
       { imported: importedEstablishments, establishmentMetadata: establishmentMetadata  },
       { imported: importedWorkers, workerMetadata: workerMetadata },
-      { imported: importedTraining, trainingMetadata: trainingMetadata })
+      { imported: importedTraining, trainingMetadata: trainingMetadata });
 
       // handle parsing errors
       if (!validationResponse.status) {
@@ -681,9 +675,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const allEstablishmentsByKey = {}; const allWorkersByKey = {};
 
   // parse and process Establishments CSV
-console.log("WA DEBUG - validateBulkUploadFiles - estabishment metadata: ", establishments.establishmentMetadata)
-
-
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType == "Establishment") {
     await Promise.all(
       establishments.imported.map((thisLine, currentLineNumber) => {
@@ -981,8 +972,6 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
       const currentWorkers = foundCurrentEstablishment.associatedWorkers;
       const onloadWorkers = thisOnloadEstablishment.associatedWorkers;
       const newWorkers = [], updatedWorkers = [], deletedWorkers = [];
-
-      console.log("WA DEBUG - onload workers: ". onloadWorkers)
 
       // find new/updated/deleted workers
       onloadWorkers.forEach(thisOnloadWorker => {
