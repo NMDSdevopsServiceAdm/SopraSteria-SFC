@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FileValidateStatus, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { AlertsService } from '@core/services/alerts.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { saveAs } from 'file-saver';
@@ -27,7 +28,8 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
     private i18nPluralPipe: I18nPluralPipe,
-    private router: Router
+    private router: Router,
+    private alertsService: AlertsService
   ) {}
 
   ngOnInit() {
@@ -154,7 +156,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(
         () => {
-          this.bulkUploadService.uploadComplete$.next(true);
+          this.alertsService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
           this.router.navigate(['/dashboard']);
         },
         response => {

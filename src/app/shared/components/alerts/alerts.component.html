@@ -1,8 +1,3 @@
-<app-inset-text
-  *ngIf="displayUploadCompleteAlert"
-  color="success"
-  [closable]="true"
-  (closed)="displayUploadCompleteAlert = false"
->
-  Bulk upload complete.
+<app-inset-text *ngIf="alert" color="success" [closable]="true" (closed)="removeAlert()">
+  {{ alert.message }}
 </app-inset-text>

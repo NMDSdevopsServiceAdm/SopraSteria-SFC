@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { Alert } from '@core/model/alerts.model';
+import { AlertsService } from '@core/services/alerts.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -7,17 +8,21 @@ import { Subscription } from 'rxjs';
   templateUrl: './alerts.component.html',
 })
 export class AlertsComponent implements OnInit, OnDestroy {
-  public displayUploadCompleteAlert = false;
+  public alert: Alert;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private bulkUploadService: BulkUploadService) {}
+  constructor(private alertService: AlertsService) {}
 
   ngOnInit() {
     this.subscriptions.add(
-      this.bulkUploadService.uploadComplete$.subscribe(uploadComplete => {
-        this.displayUploadCompleteAlert = uploadComplete;
+      this.alertService.alert$.subscribe(alert => {
+        this.alert = alert;
       })
     );
+  }
+
+  removeAlert() {
+    this.alertService.removeAlert();
   }
 
   ngOnDestroy() {
