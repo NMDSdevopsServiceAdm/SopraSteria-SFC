@@ -819,7 +819,41 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
   // prepare the validation difference report which highlights all new, updated and deleted establishments and workers
   const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent);
+
+  // bulk upload specific validations - knowing the to load and current set of entities
+
+  // firstly, if the logged in account performing this validation is not a parent, then
+  //  there should be just one establishment, and that establishment should the primary establishment
+  if (!isParent) {
+    const numberOfEstablishments = establishments.imported.length;
+    const MAX_ESTABLISHMENTS = 1;
+
+    if (establishments.imported.length !== MAX_ESTABLISHMENTS) {
+      csvEstablishmentSchemaErrors.push(CsvEstablishmentValidator.justOneEstablishmentError());
+    }
+  }
+  
+  // the primary establishment should alway be present
+  // TODO - should use LOCAL_IDENTIFIER when available.
+  const primaryEstablishment = myCurrentEstablishments.find(thisCurrentEstablishment => {
+    if (thisCurrentEstablishment.id === establishmentId) {
+      return thisCurrentEstablishment;
+    }
+  });
+  let notPrimary = true;
+  if (primaryEstablishment) {
+    const primaryEstablishmentKey = primaryEstablishment.name.replace(/\s/g, "");
+    const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishmentKey];
+    if (!onloadedPrimaryEstablishment) {
+      csvEstablishmentSchemaErrors.push(CsvEstablishmentValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
+    }
+  } else {
+    console.error(("Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!"));
+  }
+
+  // create the difference report, which includes trapping for deleting of primary establishment
   const report = validationDifferenceReport(establishmentId, establishmentsAsArray, myCurrentEstablishments);
+
 
   // from the validation report, get a summary of deleted establishments and workers
   // the report will always have new, udpated, deleted array values, even if empty
