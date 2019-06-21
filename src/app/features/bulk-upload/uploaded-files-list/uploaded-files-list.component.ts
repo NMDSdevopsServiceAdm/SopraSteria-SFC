@@ -8,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { saveAs } from 'file-saver';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -16,7 +16,7 @@ import { take } from 'rxjs/operators';
   providers: [I18nPluralPipe],
 })
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
-  public uploadedFiles: Array<UploadedFile>;
+  public uploadedFiles: UploadedFile[];
   public validationComplete = false;
   public totalWarnings = 0;
   public totalErrors = 0;
@@ -34,14 +34,11 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   public setupSubscription(): void {
     this.subscriptions.add(
-      this.bulkUploadService.selectedFiles$.subscribe((selectedFiles: File[]) => {
-        if (selectedFiles) {
-          this.uploadedFiles = [];
-          selectedFiles.forEach((selectedFile: File) => {
-            this.uploadedFiles.push({ name: selectedFile.name });
-          });
-        }
-      })
+      this.bulkUploadService.selectedFiles$
+        .pipe(
+          map((selectedFiles: File[]) => selectedFiles.map((file: File) => ({ name: file.name })))
+        )
+        .subscribe((uploadedFiles: UploadedFile[]) => this.uploadedFiles = uploadedFiles)
     );
   }
 
