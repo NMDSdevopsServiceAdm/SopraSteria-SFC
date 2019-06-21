@@ -45,6 +45,9 @@ class Establishment {
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
 
+  static get EXPECT_JUST_ONE_ERROR() { return 950; }
+  static get MISSING_PRIMARY_ERROR() { return 955; }
+
   static get DUPLICATE_ERROR() { return 998; }
   static get HEADERS_ERROR() { return 999; }
   static get MAIN_SERVICE_ERROR() { return 1000; }
@@ -1463,6 +1466,29 @@ class Establishment {
       errType: `DUPLICATE_ERROR`,
       error: `Duplicate of line ${originalLineNumber}`,
       source: this._currentLine.LOCALESTID,
+    };
+  }
+
+  static justOneEstablishmentError() {
+    return {
+      origin: 'Establishments',
+      lineNumber: 1,
+      errCode: Establishment.EXPECT_JUST_ONE_ERROR,
+      errType: `EXPECT_JUST_ONE_ERROR`,
+      error: 'Expect just one establishment',
+      source: '',
+    };
+  }
+
+  static missingPrimaryEstablishmentError(name) {
+    // TODO - this should be an error, but raising it as a warning for now
+    return {
+      origin: 'Establishments',
+      lineNumber: 1,
+      warnCode: Establishment.MISSING_PRIMARY_ERROR,
+      warnCode: `MISSING_PRIMARY_ERROR`,
+      error: `Missing the primary establishment: ${name}`,
+      source: '',
     };
   }
 

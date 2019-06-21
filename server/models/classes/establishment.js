@@ -217,6 +217,15 @@ class Establishment extends EntityValidator {
         }
     };
 
+    // returns just the set of keys of the associated workers
+    get associatedWorkers() {
+        if (this._workerEntities) {
+            return Object.keys(this._workerEntities);
+        } else {
+            return [];
+        }
+    }
+
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
     async load(document, associatedEntities=false) {
@@ -257,7 +266,8 @@ class Establishment extends EntityValidator {
         if (this._properties.isValid === true) {
             return true;
         } else {
-            if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid)) {
+            // only add validations if not already existing
+            if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid) && this._validations.length == 0) {
                 const propertySuffixLength = 'Property'.length * -1;
                 thisEstablishmentIsValid.forEach(thisInvalidProp => {
                     this._validations.push(new ValidationMessage(
