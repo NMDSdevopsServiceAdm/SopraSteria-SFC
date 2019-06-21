@@ -1,12 +1,18 @@
 import { HttpEventType } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UploadFile } from '@core/model/bulk-upload.model';
+import {
+  PresignedUrlResponseItem,
+  PresignedUrlsRequest,
+  UploadFile,
+  UploadFileRequestItem,
+} from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { combineLatest, forkJoin, Observable, Subscription } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { combineLatest, Subscription } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { filter } from 'lodash';
 
 @Component({
   selector: 'app-files-upload',
@@ -20,6 +26,7 @@ export class FilesUploadComponent implements OnInit {
   private selectedFiles: Array<UploadFile>;
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
+  private presignedUrlsSubcription$: Subscription = new Subscription();
   private uploadSubscription$: Subscription;
 
   constructor(
@@ -61,61 +68,79 @@ export class FilesUploadComponent implements OnInit {
     }
   }
 
+  private getPresignedUrlsRequest(): PresignedUrlsRequest {
+    const request: PresignedUrlsRequest = { files: [] };
+    this.selectedFiles.forEach((file: UploadFile) => {
+      request.files.push({ filename: file.name });
+    });
+
+    return request;
+  }
+
+  private getPresignedUrls(): void {
+    this.presignedUrlsSubcription$.add(
+      this.bulkUploadService
+        .getPresignedUrls(this.getPresignedUrlsRequest())
+        .subscribe((response: PresignedUrlResponseItem[]) => this.prepForUpload(response))
+    );
+  }
+
   public onSubmit(): void {
     this.submitted = true;
     this.bulkUploadService.exposeForm$.next(this.form);
 
     if (this.form.valid) {
-      this.uploadFiles(this.selectedFiles);
+      this.getPresignedUrls();
+      // this.uploadFiles(this.selectedFiles);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  private uploadFiles(files: UploadFile[]): void {
+  private prepForUpload(response: PresignedUrlResponseItem[]): void {
     this.bytesUploaded = [];
-    this.filesUploading = true;
+    const request: UploadFileRequestItem[] = [];
 
-    forkJoin(
-      files.map((file: UploadFile) => {
-        this.bytesTotal += file.size;
-        this.bytesUploaded.push(0);
-        return this.getPresignedUrl(file).pipe(
-          take(1),
-          map(signedUrl => {
-            return { file, signedUrl };
-          })
-        );
-      })
-    ).subscribe(signedUrls => {
-      this.uploadSubscription$ = combineLatest(
-        signedUrls.map(data => this.bulkUploadService.uploadFile(data.file, data.signedUrl))
-      )
-        .pipe(
-          tap(events => {
-            events.map((event, index: number) => {
-              switch (event.type) {
-                case HttpEventType.UploadProgress:
-                  this.bytesUploaded[index] = event.loaded;
-                  break;
-              }
-            });
-          })
-        )
-        .subscribe(
-          null,
-          () => this.cancelUpload(),
-          () => {
-            this.bulkUploadService.uploadedFiles$.next(this.selectedFiles);
-            this.filesUploading = false;
-            this.filesUploaded = true;
-          }
-        );
+    this.selectedFiles.forEach((file: UploadFile) => {
+      this.bytesTotal += file.size;
+      this.bytesUploaded.push(0);
+
+      const filteredItem = filter(response, ['filename', file.name])[0];
+      request.push({
+        file: file,
+        signedUrl: filteredItem.signedUrl,
+      });
     });
+
+    this.uploadFiles(request);
   }
 
-  private getPresignedUrl(file: UploadFile): Observable<string> {
-    return this.bulkUploadService.getPresignedUrl(file.name);
+  private uploadFiles(request: UploadFileRequestItem[]): void {
+    this.filesUploading = true;
+
+    this.uploadSubscription$ = combineLatest(
+      request.map(data => this.bulkUploadService.uploadFile(data.file, data.signedUrl))
+    )
+      .pipe(
+        tap(events => {
+          events.map((event, index: number) => {
+            switch (event.type) {
+              case HttpEventType.UploadProgress:
+                this.bytesUploaded[index] = event.loaded;
+                break;
+            }
+          });
+        })
+      )
+      .subscribe(
+        null,
+        () => this.cancelUpload(),
+        () => {
+          this.bulkUploadService.uploadedFiles$.next(this.selectedFiles);
+          this.filesUploading = false;
+          this.filesUploaded = true;
+        }
+      );
   }
 
   public removeFiles(): void {
@@ -132,6 +157,7 @@ export class FilesUploadComponent implements OnInit {
 
   public cancelUpload(): void {
     this.filesUploading = false;
+    this.presignedUrlsSubcription$.unsubscribe();
     this.uploadSubscription$.unsubscribe();
   }
 

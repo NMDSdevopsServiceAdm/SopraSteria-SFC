@@ -61,7 +61,7 @@ export class CustomValidators extends Validators {
     const errors: ValidationErrors = {};
     const maxFileSize = 20971520;
 
-    if (files.length !== 3) {
+    if (files.length < 2 || files.length > 3) {
       errors[`filecount`] = true;
     }
 

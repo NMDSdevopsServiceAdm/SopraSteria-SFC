@@ -1,11 +1,10 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { PresignedUrlResponse, UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { PresignedUrlResponseItem, PresignedUrlsRequest, UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -18,17 +17,11 @@ export class BulkUploadService {
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
-  public getPresignedUrl(filename: string): Observable<string> {
-    const params = new HttpParams().set('filename', filename);
-
-    return this.http
-      .get<PresignedUrlResponse>(
-        `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/signedUrl`,
-        {
-          params,
-        }
-      )
-      .pipe(map((data: PresignedUrlResponse) => data.urls));
+  public getPresignedUrls(payload: PresignedUrlsRequest): Observable<PresignedUrlResponseItem[]> {
+    return this.http.post<PresignedUrlResponseItem[]>(
+      `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/uploaded`,
+      payload
+    );
   }
 
   public uploadFile(file: UploadFile, signedURL: string): Observable<any> {

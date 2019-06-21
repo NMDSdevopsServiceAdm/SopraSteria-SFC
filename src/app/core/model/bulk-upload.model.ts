@@ -4,8 +4,21 @@ export enum FileValidateStatus {
   Pass = 'Pass',
 }
 
-export interface PresignedUrlResponse {
-  urls: string;
+export interface PresignedUrlRequestItem {
+  filename: string;
+}
+
+export interface PresignedUrlResponseItem extends PresignedUrlRequestItem {
+  signedUrl: string;
+}
+
+export interface PresignedUrlsRequest {
+  files: PresignedUrlRequestItem[];
+}
+
+export interface UploadFileRequestItem {
+  file: UploadFile;
+  signedUrl: string;
 }
 
 export interface UploadFile extends File {
