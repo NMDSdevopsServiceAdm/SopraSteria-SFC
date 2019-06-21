@@ -1,7 +1,7 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FileValidateStatus, UploadFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { FileValidateStatus, UploadedFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -16,8 +16,7 @@ import { take } from 'rxjs/operators';
   providers: [I18nPluralPipe],
 })
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
-  public uploadedFiles: Array<UploadFile>;
-  public validatedFiles: Array<UploadFile>;
+  public uploadedFiles: Array<UploadedFile>;
   public validationComplete = false;
   public totalWarnings = 0;
   public totalErrors = 0;
@@ -35,16 +34,23 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   public setupSubscription(): void {
     this.subscriptions.add(
-      this.bulkUploadService.uploadedFiles$.subscribe((uploadedFiles: Array<UploadFile>) => {
-        if (uploadedFiles) {
-          this.uploadedFiles = uploadedFiles;
+      this.bulkUploadService.selectedFiles$.subscribe((selectedFiles: File[]) => {
+        if (selectedFiles) {
+          this.uploadedFiles = [];
+          selectedFiles.forEach((selectedFile: File) => {
+            this.uploadedFiles.push({ name: selectedFile.name });
+          });
         }
       })
     );
   }
 
+  public getFileType(fileName: string): string {
+    return this.bulkUploadService.getFileType(fileName);
+  }
+
   public validateFiles(): void {
-    this.uploadedFiles.map((file: UploadFile) => (file.status = FileValidateStatus.Validating));
+    this.uploadedFiles.map((file: UploadedFile) => (file.status = FileValidateStatus.Validating));
 
     this.subscriptions.add(
       this.bulkUploadService.validateFiles(this.establishmentService.establishmentId).subscribe(
@@ -89,7 +95,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     const validatedFiles: Array<ValidatedFile> = [response.establishment, response.training, response.workers];
     const validationErrors: Array<ErrorDefinition> = [];
 
-    this.uploadedFiles.forEach((file: UploadFile) => {
+    this.uploadedFiles.forEach((file: UploadedFile) => {
       const validatedFile: ValidatedFile = filter(validatedFiles, ['filename', file.name])[0];
       file.records = validatedFile.records;
       file.fileType = validatedFile.fileType;
@@ -106,7 +112,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     this.validationComplete = true;
   }
 
-  private getValidationError(file: UploadFile): ErrorDefinition {
+  private getValidationError(file: UploadedFile): ErrorDefinition {
     return {
       name: this.getFileId(file),
       message: this.i18nPluralPipe.transform(file.errors, {
@@ -116,7 +122,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     };
   }
 
-  private getFileId(file: UploadFile) {
+  private getFileId(file: UploadedFile) {
     return `bulk-upload-validation-${file.name.substr(0, file.name.lastIndexOf('.'))}`;
   }
 

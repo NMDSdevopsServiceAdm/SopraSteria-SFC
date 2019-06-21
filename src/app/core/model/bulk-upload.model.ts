@@ -17,13 +17,13 @@ export interface PresignedUrlsRequest {
 }
 
 export interface UploadFileRequestItem {
-  file: UploadFile;
+  file: File;
   signedUrl: string;
 }
 
-export interface UploadFile extends File {
+export interface UploadedFile {
+  name: string;
   errors?: number;
-  extension: string;
   fileType?: string;
   records?: number;
   status?: FileValidateStatus;
@@ -39,7 +39,7 @@ export interface ValidatedFilesResponse {
 export interface ValidatedFile {
   errors: number;
   filename: string;
-  fileType?: string;
+  fileType: string;
   records: number;
   warnings: number;
 }

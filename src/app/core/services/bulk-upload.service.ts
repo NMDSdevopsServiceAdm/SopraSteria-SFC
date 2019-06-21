@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { PresignedUrlResponseItem, PresignedUrlsRequest, UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { PresignedUrlResponseItem, PresignedUrlsRequest, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -11,8 +11,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class BulkUploadService {
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
-  public selectedFiles$: BehaviorSubject<Array<UploadFile>> = new BehaviorSubject(null);
-  public uploadedFiles$: BehaviorSubject<Array<UploadFile>> = new BehaviorSubject(null);
+  public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
@@ -24,7 +23,7 @@ export class BulkUploadService {
     );
   }
 
-  public uploadFile(file: UploadFile, signedURL: string): Observable<any> {
+  public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
     return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
