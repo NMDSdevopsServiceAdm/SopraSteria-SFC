@@ -11,7 +11,7 @@ class MetaData {
   };
 
   get userName() {
-    return this._userName;
+    return this._username;
   }
   get id() {
     return this._id;
