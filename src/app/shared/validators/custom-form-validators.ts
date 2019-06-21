@@ -1,6 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FILE_UPLOAD_TYPES } from '@core/constants/constants';
-import { UploadFile } from '@core/model/bulk-upload.model';
 
 export class CustomValidators extends Validators {
   static maxWords(limit: number): ValidatorFn {
@@ -57,7 +56,7 @@ export class CustomValidators extends Validators {
     }
   }
 
-  static checkFiles(fileUpload, files: Array<UploadFile>): ValidatorFn {
+  static checkFiles(fileUpload, files: File[]): ValidatorFn {
     const errors: ValidationErrors = {};
     const maxFileSize = 20971520;
 
@@ -65,15 +64,18 @@ export class CustomValidators extends Validators {
       errors[`filecount`] = true;
     }
 
-    files.forEach((file: UploadFile) => {
+    files.forEach((file: File) => {
       if (file.size > maxFileSize) {
         errors['filesize'] = true;
         return;
       }
     });
 
-    files.forEach((file: UploadFile) => {
-      if (!FILE_UPLOAD_TYPES.includes(file.extension)) {
+    files.forEach((file: File) => {
+      const parts: Array<string> = file.name.split('.');
+      const fileExtension: string = parts[parts.length - 1].toUpperCase();
+
+      if (!FILE_UPLOAD_TYPES.includes(fileExtension)) {
         errors['filetype'] = true;
         return;
       }

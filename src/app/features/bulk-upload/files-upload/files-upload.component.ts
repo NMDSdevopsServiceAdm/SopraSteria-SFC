@@ -4,7 +4,6 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import {
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
-  UploadFile,
   UploadFileRequestItem,
 } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -23,7 +22,7 @@ export class FilesUploadComponent implements OnInit {
   public filesUploading = false;
   public filesUploaded = false;
   public submitted = false;
-  private selectedFiles: Array<UploadFile>;
+  private selectedFiles: File[];
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
   private presignedUrlsSubcription$: Subscription = new Subscription();
@@ -58,8 +57,6 @@ export class FilesUploadComponent implements OnInit {
   public onFilesSelection($event: Event): void {
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target['files']);
-    this.selectedFiles.map((file: UploadFile) => (file.extension = this.bulkUploadService.getFileType(file.name)));
-
     this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
 
@@ -70,7 +67,7 @@ export class FilesUploadComponent implements OnInit {
 
   private getPresignedUrlsRequest(): PresignedUrlsRequest {
     const request: PresignedUrlsRequest = { files: [] };
-    this.selectedFiles.forEach((file: UploadFile) => {
+    this.selectedFiles.forEach((file: File) => {
       request.files.push({ filename: file.name });
     });
 
@@ -100,7 +97,7 @@ export class FilesUploadComponent implements OnInit {
     this.bytesUploaded = [];
     const request: UploadFileRequestItem[] = [];
 
-    this.selectedFiles.forEach((file: UploadFile) => {
+    this.selectedFiles.forEach((file: File) => {
       this.bytesTotal += file.size;
       this.bytesUploaded.push(0);
 
@@ -135,7 +132,6 @@ export class FilesUploadComponent implements OnInit {
         null,
         () => this.cancelUpload(),
         () => {
-          this.bulkUploadService.uploadedFiles$.next(this.selectedFiles);
           this.filesUploading = false;
           this.filesUploaded = true;
         }

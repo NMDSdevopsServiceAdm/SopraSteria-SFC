@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UploadFile } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Subscription } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
@@ -9,7 +8,7 @@ import { distinctUntilChanged } from 'rxjs/operators';
   templateUrl: './selected-files-list.component.html',
 })
 export class SelectedFilesListComponent implements OnInit, OnDestroy {
-  public selectedFiles: Array<UploadFile>;
+  public selectedFiles: File[];
   private subscriptions: Subscription = new Subscription();
 
   constructor(private bulkUploadService: BulkUploadService) {}
@@ -18,7 +17,7 @@ export class SelectedFilesListComponent implements OnInit, OnDestroy {
     this.setupSubscription();
   }
 
-  private transformFileSize(fileSize: number): string {
+  public transformFileSize(fileSize: number): string {
     const fileSizeInKB: number = Math.round(fileSize / 1000);
 
     if (fileSizeInKB < 1) {
@@ -32,11 +31,15 @@ export class SelectedFilesListComponent implements OnInit, OnDestroy {
     }
   }
 
+  public getFileType(fileName: string): string {
+    return this.bulkUploadService.getFileType(fileName);
+  }
+
   private setupSubscription(): void {
     this.subscriptions.add(
       this.bulkUploadService.selectedFiles$
         .pipe(distinctUntilChanged())
-        .subscribe((selectedFiles: Array<UploadFile>) => {
+        .subscribe((selectedFiles: File[]) => {
           if (selectedFiles) {
             this.selectedFiles = selectedFiles;
           }
@@ -46,11 +49,8 @@ export class SelectedFilesListComponent implements OnInit, OnDestroy {
 
   /**
    * Unsubscribe to ensure no memory leaks
-   * And set selected files to none otherwise
-   * on route revisit the selected files are cached
    */
   ngOnDestroy() {
-    this.bulkUploadService.selectedFiles$.next(null);
     this.subscriptions.unsubscribe();
   }
 }
