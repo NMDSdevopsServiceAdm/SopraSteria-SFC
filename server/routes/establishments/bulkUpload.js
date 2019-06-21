@@ -44,7 +44,7 @@ router.route('/uploaded').get(async (req, res) => {
           const returnData = {
             filename: elements[elements.length - 1],
             uploaded: file.LastModified,
-            uploadedBy: objData.Metadata.username,
+            username: objData.Metadata.username,
             records: 0,
             errors: 0,
             warnings: 0,
@@ -89,7 +89,7 @@ router.route('/uploaded/*').get(async (req, res) => {
     const returnData = { 
       filename: elements[elements.length - 1],
       uploaded: objHeadData.LastModified,
-      uploadedBy: objHeadData.Metadata.username,
+      username: objHeadData.Metadata.username,
       size: objHeadData.ContentLength,
       key: requestedKey,
       signedUrl : s3.getSignedUrl('getObject', {
@@ -356,7 +356,7 @@ router.route('/uploaded').put(async (req, res) => {
       return {
         filename: metaData.filename,
         uploaded: metaData.lastModified,
-        uploadedBy: metaData.userName ? metaData.userName : null,
+        username: metaData.userName ? metaData.userName : null,
         records: metaData.records,
         errors: 0,
         warnings: 0,
@@ -387,7 +387,7 @@ router.route('/uploaded').put(async (req, res) => {
               {
                 filename: fileName,
                 uploaded: myFile.LastModified,
-                uploadedBy : myFile.username,
+                username : myFile.username,
                 records: 0,
                 errors: 0,
                 warnings: 0,
