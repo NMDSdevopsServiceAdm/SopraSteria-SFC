@@ -164,6 +164,10 @@ class Training extends EntityValidator {
         }
     }
 
+    async preValidateTrainingRecord(){
+        
+    }
+
     // validates a given training record; returns the training record if valid
     async validateTrainingRecord(document) {
         // to validate a training record, need the list of available training categories
