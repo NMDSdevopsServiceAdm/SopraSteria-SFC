@@ -195,7 +195,8 @@ class Worker extends EntityValidator {
         if (thisWorkerIsValid === true && unmanagedPropertiesValid ) {
             return true;
         } else {
-            if (thisWorkerIsValid && Array.isArray(thisWorkerIsValid)) {
+            // only add validations if not already existing
+            if (thisWorkerIsValid && Array.isArray(thisWorkerIsValid) && this._validations.length == 0) {
                 const propertySuffixLength = 'Property'.length * -1;
                 thisWorkerIsValid.forEach(thisInvalidProp => {
                     this._validations.push(new ValidationMessage(
