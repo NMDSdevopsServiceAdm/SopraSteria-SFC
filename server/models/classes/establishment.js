@@ -33,6 +33,10 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
+// service cache
+const ServiceCache = require('../cache/singletons/services').ServiceCache;
+const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCache;
+
 // Errors for initialise and registration error - this needs to be refactored out DB
 class RegistrationException {
     constructor(originalError, errCode, errMessage) {
@@ -178,6 +182,22 @@ class Establishment extends EntityValidator {
 
     get numberOfStaff() {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
+    }
+
+    _allMyServices(services, cqc) {
+        return ServiceCache.getServices(services)
+            .filter(x => services.indexOf(x) < 0)
+            .filter(x => cqc ? x.iscqcregistered !== cqc : x.iscqcregistered === cqc )
+            .map( x => { return { id: x.id, name: x.name, category: x.category }});
+    }
+
+    _allCapacities(id) {
+        // To `CapacitiesCache`, a method to return "all available capacities",
+        // taking as parameter the Establishment entity, and resolving based on
+        //  "main service" and "other services". Use the code in `Establishment::restore` as reference.
+
+        return CapacitiesCache.getCapacities()
+            .filter(x => x.id === id);
     }
 
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -747,17 +767,7 @@ class Establishment extends EntityValidator {
                 });
 
                 const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
-                    models.services.findAll({
-                        where: {
-                            id: establishmentServices.map(su => su.serviceId)
-                        },
-                        attributes: ['id', 'name', 'category'],
-                        order: [
-                            ['category', 'ASC'],
-                            ['name', 'ASC']
-                        ],
-                        raw: true,
-                    }),
+                    this._allMyServices(establishmentServices),
                     models.services.findOne({
                         where: {
                             id : fetchResults.MainServiceFKValue
@@ -775,17 +785,7 @@ class Establishment extends EntityValidator {
                         ],
                         raw: true
                     }),
-                    models.establishmentCapacity.findAll({
-                        where: {
-                            EstablishmentID: this._id
-                        },
-                        include: [{
-                            model: models.serviceCapacity,
-                            as: 'reference',
-                            attributes: ['id', 'question']
-                        }],
-                        attributes: ['id', 'answer']
-                    }),
+                    this._allCapacities(this._id),
                     models.establishmentJobs.findAll({
                         where: {
                             EstablishmentID: this._id
@@ -851,25 +851,10 @@ class Establishment extends EntityValidator {
                 // other services output requires a list of ALL services available to
                 //  the Establishment
                 if (fetchResults.isRegulated) {
-                    // other services for CQC regulated is ALL including non-CQC
-                    fetchResults.allMyServices = await models.services.findAll({
-                        order: [
-                            ['category', 'ASC'],
-                            ['name', 'ASC']
-                        ]
-                    });
+                    fetchResults.allMyServices = this._allMyServices(establishmentServices)
                 } else {
-                    fetchResults.allMyServices = await models.services.findAll({
-                        where: {
-                            iscqcregistered: false
-                        },
-                        order: [
-                            ['category', 'ASC'],
-                            ['name', 'ASC']
-                        ]
-                    });  
+                    fetchResults.allMyServices = this._allMyServices(establishmentServices, false);
                 }
-
 
                 // service capacities output requires a list of ALL service capacities available to
                 //  the Establishment
