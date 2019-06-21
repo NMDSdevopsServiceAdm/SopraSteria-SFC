@@ -843,7 +843,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   let notPrimary = true;
   if (primaryEstablishment) {
     const primaryEstablishmentKey = primaryEstablishment.name.replace(/\s/g, "");
-    const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishmentKey];
+    const onloadedPrimaryEstablishment = myAPIEstablishments[allEstablishmentsByKey[primaryEstablishmentKey]];
     if (!onloadedPrimaryEstablishment) {
       csvEstablishmentSchemaErrors.push(CsvEstablishmentValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
     }
