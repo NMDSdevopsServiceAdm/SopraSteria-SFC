@@ -1,12 +1,13 @@
 $error_border_size: $govuk-border-width-form-element-error;
-$error_row_indent: 12px;
-$error_row_offset: 50px;
+$error_row_indent: 8px;
 $error_row_padding: $govuk-gutter-half;
+
+.govuk-error-table__row {
+  border: $error_border_size solid $shiraz;
+}
 
 .govuk-error-table__cell {
   position: relative;
-  border-bottom: none;
-  box-shadow: inset 0px $error_border_size 0 $shiraz, inset 0px $error_border_size * -1 0 $shiraz;
   padding-top: $error_row_padding;
   padding-bottom: $error_row_padding;
 
@@ -16,28 +17,26 @@ $error_row_padding: $govuk-gutter-half;
     content: '';
     position: absolute;
     height: 100%;
-    background: $shiraz;
-    width: $error_border_size;
-    top: 0;
-  }
-
-  &:first-of-type:after {
-    left: -11px;
+    padding-bottom: $error_row_indent;
+    top: $error_border_size * -1;
   }
 
   &:first-of-type {
-    left: $error_row_indent;
-    padding-left: $error_row_padding;
+    padding-left: $error_row_padding * 1.5;
     &:before {
+      width: $error_row_indent;
+      background: #fff;
       left: 0;
+    }
+    &:after {
+      width: $error_border_size;
+      background: $shiraz;
+      left: $error_row_indent;
     }
   }
 
   &:last-of-type {
-    padding-right: $error_row_padding;
-    &:before {
-      right: 0;
-    }
+    padding-right: $error_row_indent * 2;
   }
 }
 
@@ -49,6 +48,14 @@ $error_row_padding: $govuk-gutter-half;
 .govuk-error-table__message {
   margin-bottom: 0;
   padding-bottom: $error_row_padding;
-  padding-left: 8px;
-  border-left: $error_border_size solid $shiraz;
+  padding-left: $error_row_indent;
+  position: relative;
+  &:before {
+    content: '';
+    position: absolute;
+    left: ($error_border_size - 1) * -1;
+    width: $error_border_size;
+    background: $shiraz;
+    height: 100%;
+  }
 }
