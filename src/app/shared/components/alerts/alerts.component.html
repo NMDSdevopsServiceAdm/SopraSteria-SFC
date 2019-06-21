@@ -1,0 +1,8 @@
+<app-inset-text
+  *ngIf="displayUploadCompleteAlert"
+  color="success"
+  [closable]="true"
+  (closed)="displayUploadCompleteAlert = false"
+>
+  Bulk upload complete.
+</app-inset-text>
