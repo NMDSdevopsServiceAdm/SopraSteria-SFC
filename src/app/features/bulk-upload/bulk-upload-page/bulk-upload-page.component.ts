@@ -33,6 +33,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupUploadValidationErrors();
     this.setupSubscription();
+    this.bulkUploadService.uploadComplete$.next(false);
   }
 
   public setupFormErrorsMap(): void {
