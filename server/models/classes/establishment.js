@@ -217,6 +217,15 @@ class Establishment extends EntityValidator {
         }
     };
 
+    // returns just the set of keys of the associated workers
+    get associatedWorkers() {
+        if (this._workerEntities) {
+            return Object.keys(this._workerEntities);
+        } else {
+            return [];
+        }
+    }
+
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
     async load(document, associatedEntities=false) {

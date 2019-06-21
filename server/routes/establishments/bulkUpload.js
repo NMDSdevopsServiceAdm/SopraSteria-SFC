@@ -236,6 +236,7 @@ router.route('/signedUrl').get(async function (req, res) {
 router.route('/validate').put(async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
+  const isParent = req.isParent;
   const myDownloads = {};
   const establishmentMetadata = new MetaData();
   const workerMetadata = new MetaData();
@@ -265,6 +266,9 @@ router.route('/validate').put(async (req, res) => {
     
     await Promise.all(createModelPromises).then(function(values){
        values.forEach(myfile=>{
+
+console.log("WA DEBUG - why is establishments metadata null: ", myfile.data.substring(0,50))
+
           if (establishmentRegex.test(myfile.data.substring(0,50))) {
             myDownloads.establishments = myfile.data;
             establishmentMetadata.filename = myfile.filename;
@@ -285,6 +289,9 @@ router.route('/validate').put(async (req, res) => {
     }).catch(err => {
         console.error("NM: validate.put", err);
     }) ;
+
+    console.log("WA DEBUG - why is establishments metadata null: ", establishmentMetadata)
+    
   
     const importedEstablishments = myDownloads.establishments ? await csv().fromString(myDownloads.establishments) : null;
     const importedWorkers = myDownloads.workers ? await csv().fromString(myDownloads.workers) :  null;
@@ -294,6 +301,7 @@ router.route('/validate').put(async (req, res) => {
       true,
       username,
       establishmentId,
+      isParent,
       { imported: importedEstablishments, establishmentMetadata: establishmentMetadata  },
       { imported: importedWorkers, workerMetadata: workerMetadata },
       { imported: importedTraining, trainingMetadata: trainingMetadata })
@@ -325,6 +333,7 @@ router.route('/validate').put(async (req, res) => {
 router.route('/validate').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const username = req.username;
+  const isParent = req.isParent;
   const establishmentMetadata = new MetaData();
   const workerMetadata = new MetaData();
   const trainingMetadata = new MetaData();
@@ -362,6 +371,7 @@ router.route('/validate').post(async (req, res) => {
       false,
       username,
       establishmentId,
+      isParent,
       { imported: importedEstablishments, establishmentMetadata: establishmentMetadata  },
       { imported: importedWorkers, workerMetadata: workerMetadata },
       { imported: importedTraining, trainingMetadata: trainingMetadata })
@@ -371,13 +381,14 @@ router.route('/validate').post(async (req, res) => {
       return res.status(400).send({
         establishments: {
           filename: null,
+          records: importedEstablishments.length,
+          deleted: validationResponse.metaData.establishments.deleted, 
           errors: validationResponse.validation.establishments
             .filter(thisVal => thisVal.hasOwnProperty('errCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           warnings: validationResponse.validation.establishments
             .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          records: 0,
           data: {
             csv: validationResponse.data.csv.establishments,
             entities: validationResponse.data.entities.establishments,
@@ -385,13 +396,14 @@ router.route('/validate').post(async (req, res) => {
         },
         workers: {
           filename: null,
+          records: importedWorkers.length,
+          deleted: validationResponse.metaData.workers.deleted, 
           errors: validationResponse.validation.workers
             .filter(thisVal => thisVal.hasOwnProperty('errCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           warnings: validationResponse.validation.workers
             .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          records: 0,
           data: {
             csv: validationResponse.data.csv.workers,
             entities: {
@@ -402,13 +414,13 @@ router.route('/validate').post(async (req, res) => {
         },
         training: {
           filename: null,
+          records: importedTraining.length,
           errors: validationResponse.validation.training
             .filter(thisVal => thisVal.hasOwnProperty('errCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
           warnings: validationResponse.validation.training
             .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
             .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          records: 0,
           data: {
             csv: validationResponse.data.csv.training,
             entities: validationResponse.data.entities.training,
@@ -444,7 +456,7 @@ async function downloadContent(key) {
      };
 
     } catch (err) {
-      console.error('api/establishment/bulkupload/downloadFile: ', err);
+      console.error(`api/establishment/bulkupload/downloadFile: ${key})\n`, err);
       throw new Error(`Failed to download S3 object: ${key}`);
     }
 }
@@ -652,7 +664,7 @@ const _validateTrainingCsv = async (thisLine, currentLineNumber, csvTrainingSche
 };
 
 // if commit is false, then the results of validation are not uploaded to S3
-const validateBulkUploadFiles = async (commit, username , establishmentId, establishments, workers, training) => {
+const validateBulkUploadFiles = async (commit, username , establishmentId, isParent, establishments, workers, training) => {
   let status = true;
   const csvEstablishmentSchemaErrors = [], csvWorkerSchemaErrors = [], csvTrainingSchemaErrors = [];
   const myEstablishments = [], myWorkers = [], myTrainings = [];
@@ -669,6 +681,9 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
   const allEstablishmentsByKey = {}; const allWorkersByKey = {};
 
   // parse and process Establishments CSV
+console.log("WA DEBUG - validateBulkUploadFiles - estabishment metadata: ", establishments.establishmentMetadata)
+
+
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType == "Establishment") {
     await Promise.all(
       establishments.imported.map((thisLine, currentLineNumber) => {
@@ -788,9 +803,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, estab
         const foundWorkerByLineNumber = allWorkersByKey[workerKeyNoWhitespace];
         const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
         if (knownWorker) {
-console.log("WA DEBUG - associating a training record - thisTrainingRecord: ", thisTraingRecord.lineNumber, myAPITrainings)
-
-
           knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
         } else {
           // this should never happen
@@ -814,6 +826,18 @@ console.log("WA DEBUG - associating a training record - thisTrainingRecord: ", t
   const trainingAsArray = Object.values(myAPITrainings);
   const qualificationsAsArray = Object.values(myAPIQualifications);
 
+  // prepare the validation difference report which highlights all new, updated and deleted establishments and workers
+  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent);
+  const report = validationDifferenceReport(establishmentId, establishmentsAsArray, myCurrentEstablishments);
+
+  // from the validation report, get a summary of deleted establishments and workers
+  // the report will always have new, udpated, deleted array values, even if empty
+  // Note - Array.reduce but it doesn't work with empty arrays, except when you provide an initial value (0 in this case)
+  establishments.establishmentMetadata.deleted = report.deleted.length;
+  const numberOfDeletedWorkersFromUpdatedEstablishments = report.updated.reduce((total, current) => total += current.workers.deleted.length, 0);
+  const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
+  workers.workerMetadata.deleted = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
+
   // upload intermediary/validation S3 objects
   if (commit) {
     const s3UploadPromises = [];
@@ -824,9 +848,10 @@ console.log("WA DEBUG - associating a training record - thisTrainingRecord: ", t
     training.imported ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, training.trainingMetadata, `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`)) : true;
 
     // upload the validation data to S3 - these are reuquired for validation report - although one object is likely to be quicker to upload - and only one object is required then to download
-    commit ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/${establishments.establishmentMetadata.filename}.validation.json`)) : true;
-    commit ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/${workers.workerMetadata.filename}.validation.json`)) : true;
-    commit ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/${training.trainingMetadata.filename}.validation.json`)) : true;
+    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/${establishments.establishmentMetadata.filename}.validation.json`));
+    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/${workers.workerMetadata.filename}.validation.json`));
+    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/${training.trainingMetadata.filename}.validation.json`));
+    s3UploadPromises.push(uploadAsJSON(username, establishmentId, report, `${establishmentId}/validation/difference.report.json`));
 
     // to false to disable the upload of intermediary objects
     const traceData = true;
@@ -933,7 +958,109 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
 //  able to complete on the upload though, they will need a report highlighting which, if any, of the
 //  the establishments and workers will be deleted.
 // Only generate this validation difference report, if there are no errors.
-const validationDifferenceReport = async (onloadEntities, currentEntities) => {
+const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, currentEntities) => {
+  const status = true;
+  const newEntities = [], updatedEntities = [], deletedEntities = [];
+
+  if (!onloadEntities || !Array.isArray(onloadEntities)) {
+    console.error('validationDifferenceReport: onload entities unexpected');
+    status = false;
+  }
+  if (!currentEntities || !Array.isArray(currentEntities)) {
+    console.error('validationDifferenceReport: current entities unexpected');
+    status = false;
+  }
+
+  // determine new and updated establishments, by referencing the onload set against the current set
+  onloadEntities.forEach(thisOnloadEstablishment => {
+    // find a match for this establishment
+    // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
+    const foundCurrentEstablishment = currentEntities.find(thisCurrentEstablishment => thisCurrentEstablishment.name === thisOnloadEstablishment.name);
+    if (foundCurrentEstablishment) {
+      // for updated establishments, need to cross check the set of onload and current workers to identify the new, updated and deleted workers
+      const currentWorkers = foundCurrentEstablishment.associatedWorkers;
+      const onloadWorkers = thisOnloadEstablishment.associatedWorkers;
+      const newWorkers = [], updatedWorkers = [], deletedWorkers = [];
+
+      console.log("WA DEBUG - onload workers: ". onloadWorkers)
+
+      // find new/updated/deleted workers
+      onloadWorkers.forEach(thisOnloadWorker => {
+        const foundWorker= currentWorkers.find(thisCurrentWorker => thisCurrentWorker === thisOnloadWorker);
+
+        if (foundWorker) {
+          updatedWorkers.push({
+            nameOrId: thisOnloadWorker
+          });
+        } else {
+          newWorkers.push({
+            nameOrId: thisOnloadWorker
+          });
+        }
+      });
+
+      // find deleted workers
+      currentWorkers.forEach(thisCurrentWorker => {
+        const foundWorker= onloadWorkers.find(thisOnloadWorker => thisCurrentWorker === thisOnloadWorker);
+
+        if (foundWorker) {
+          deletedWorkers.push({
+            nameOrId: thisCurrentWorker
+          });
+        }
+      });
+
+      // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
+      updatedEntities.push({
+        name: thisOnloadEstablishment.name,
+        workers: {
+          new: newWorkers,
+          updated: updatedWorkers,
+          deleted: deletedWorkers
+        }
+      });
+    } else {
+      // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
+      newEntities.push({
+        name: thisOnloadEstablishment.name,
+      });
+    }
+  });
+
+  // determine the delete establishments, by reference the current set against the onload set
+  currentEntities.forEach(thisCurrentEstablishment => {
+    if (thisCurrentEstablishment.id !== primaryEstablishmentId) {
+      // find a match for this establishment
+      // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
+      const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.name === thisOnloadEstablishment.name);
+
+      // cannot delete self
+      if (!foundOnloadEstablishment) {
+        // when delete an establishment, we're deleting all workers too
+        const currentWorkers = thisCurrentEstablishment.associatedWorkers;
+        const deletedWorkers = [];
+
+        currentWorkers.forEach(thisCurrentWorker => deletedWorkers.push(thisCurrentWorker));
+
+        deletedEntities.push({
+          name: thisCurrentEstablishment.name,
+          workers: {
+            deleted: deletedWorkers,
+          }
+        });
+      }
+    } else {
+      // TODO
+      // need to raise a validation error as a result of trying to delete self
+    }
+  });
+
+  // return validation difference report
+  return {
+    new: newEntities,
+    updated: updatedEntities,
+    deleted: deletedEntities,
+  };
 
 };
 
@@ -1061,7 +1188,11 @@ router.route('/complete').post(async (req, res) => {
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
 
+      // having the set of onload and current entities, work through the onload entities creating the validation difference report
+      const report = validationDifferenceReport(primaryEstablishmentId, onloadEstablishments, myCurrentEstablishments);
+
       return res.status(200).send({
+        report,
         current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
         validated: onloadEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
       });
