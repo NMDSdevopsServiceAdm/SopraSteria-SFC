@@ -2,14 +2,14 @@ import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FileValidateStatus, UploadedFile, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { FileValidateStatus, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { saveAs } from 'file-saver';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -17,7 +17,7 @@ import { map, take } from 'rxjs/operators';
   providers: [I18nPluralPipe],
 })
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
-  public uploadedFiles: UploadedFile[];
+  public uploadedFiles: ValidatedFile[];
   public validationComplete = false;
   public totalWarnings = 0;
   public totalErrors = 0;
@@ -36,9 +36,24 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   public setupSubscription(): void {
     this.subscriptions.add(
-      this.bulkUploadService.selectedFiles$
-        .pipe(map((selectedFiles: File[]) => selectedFiles.map((file: File) => ({ name: file.name }))))
-        .subscribe((uploadedFiles: UploadedFile[]) => (this.uploadedFiles = uploadedFiles))
+      this.bulkUploadService.selectedFiles$.subscribe((selectedFiles: File[]) => {
+        if (selectedFiles) {
+          this.preValidateFiles();
+        }
+      })
+    );
+  }
+
+  private preValidateFiles(): void {
+    this.subscriptions.add(
+      this.bulkUploadService.preValidateFiles(this.establishmentService.establishmentId).subscribe(
+        (response: ValidatedFile[]) => {
+          this.uploadedFiles = response;
+        },
+        (response: HttpErrorResponse) => {
+          this.onValidateError(response);
+        }
+      )
     );
   }
 
@@ -47,7 +62,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   }
 
   public validateFiles(): void {
-    this.uploadedFiles.map((file: UploadedFile) => (file.status = FileValidateStatus.Validating));
+    this.uploadedFiles.map((file: ValidatedFile) => (file.status = FileValidateStatus.Validating));
 
     this.subscriptions.add(
       this.bulkUploadService.validateFiles(this.establishmentService.establishmentId).subscribe(
@@ -92,8 +107,8 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     const validatedFiles: Array<ValidatedFile> = [response.establishment, response.training, response.workers];
     const validationErrors: Array<ErrorDefinition> = [];
 
-    this.uploadedFiles.forEach((file: UploadedFile) => {
-      const validatedFile: ValidatedFile = filter(validatedFiles, ['filename', file.name])[0];
+    this.uploadedFiles.forEach((file: ValidatedFile) => {
+      const validatedFile: ValidatedFile = filter(validatedFiles, ['filename', file.filename])[0];
       file.records = validatedFile.records;
       file.fileType = validatedFile.fileType;
       file.warnings = validatedFile.warnings;
@@ -109,7 +124,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     this.validationComplete = true;
   }
 
-  private getValidationError(file: UploadedFile): ErrorDefinition {
+  private getValidationError(file: ValidatedFile): ErrorDefinition {
     return {
       name: this.getFileId(file),
       message: this.i18nPluralPipe.transform(file.errors, {
@@ -119,8 +134,8 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     };
   }
 
-  private getFileId(file: UploadedFile) {
-    return `bulk-upload-validation-${file.name.substr(0, file.name.lastIndexOf('.'))}`;
+  private getFileId(file: ValidatedFile) {
+    return `bulk-upload-validation-${file.filename.substr(0, file.filename.lastIndexOf('.'))}`;
   }
 
   /**
