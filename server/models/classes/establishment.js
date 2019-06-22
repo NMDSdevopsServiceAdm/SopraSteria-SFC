@@ -1023,7 +1023,7 @@ class Establishment extends EntityValidator {
         }
     };
 
-    async delete(deletedBy, externalTransaction=null) {
+    async delete(deletedBy, externalTransaction=null, associatedEntities=false) {
         try {
             const updatedTimestamp = new Date();
 
@@ -1061,6 +1061,16 @@ class Establishment extends EntityValidator {
                         type: 'deleted'}];
                        
                     await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
+
+                    // if deleting this establishment, and if requested, then delete all the associated entities (workers) too
+                    if (associatedEntities) {
+                        if (this._workerEntities) {
+                            const associatedWorkersArray = Object.values(this._workerEntities);
+                            await Promise.all(associatedWorkersArray.map(thisWorker => {
+                                return thisWorker.archive(deletedBy, thisTransaction);
+                            }));
+                        }
+                    }
 
                     this._log(Establishment.LOG_INFO, `Archived Establishment with uid (${this._uid}) and id (${this._id})`);
 

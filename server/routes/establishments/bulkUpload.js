@@ -1450,7 +1450,7 @@ router.route('/complete').post(async (req, res) => {
 
             // current is already restored, so simply need to delete it
             if (foundCurrentEstablishment) {
-              updateEstablishmentPromises.push(foundCurrentEstablishment.delete(theLoggedInUser, t));
+              updateEstablishmentPromises.push(foundCurrentEstablishment.delete(theLoggedInUser, t, true));
             }
           });
 
