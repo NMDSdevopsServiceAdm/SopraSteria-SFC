@@ -286,9 +286,27 @@ class Establishment extends EntityValidator {
         }
     }
 
+    async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
+        if (this._workerEntities) {
+            try {
+                const workerPromises = [];
+                const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
+                    thisWorker.establishmentId = this._id;
+                    return thisWorker;
+                });
+    
+                await Promise.all(workersAsArray.map(thisWorkerToSave => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction)));
+            } catch (err) {
+                console.error('Establishment::saveAssociatedEntities error: ', err);
+                // rethrow error to ensure the transaction is rolled back
+                throw err;
+            }
+        }
+    }
+
     // saves the Establishment to DB. Returns true if saved; false is not.
     // Throws "EstablishmentSaveException" on error
-    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null) {
+    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null, associatedEntities=false) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -440,6 +458,11 @@ class Establishment extends EntityValidator {
                         );
                     });
                     await Promise.all(createModelPromises);
+
+                    // if requested, propagate the saving of this establishment down to each of the associated entities
+                    if (associatedEntities) {
+                        await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
+                    }
                     
                     this._log(Establishment.LOG_INFO, `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`);
                 });

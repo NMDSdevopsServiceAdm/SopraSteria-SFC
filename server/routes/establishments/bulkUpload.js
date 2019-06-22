@@ -1466,9 +1466,9 @@ router.route('/complete').post(async (req, res) => {
           console.log("WA DEBUG - watiing for updates/deletes to finish 'loading'")
           await Promise.all(updateEstablishmentPromises);
 
-          // and now all saves for new, updated and deleted establishments
+          // and now all saves for new, updated and deleted establishments, including their associated entities
           console.log("WA DEBUG - waiting for saves to finish")
-          await Promise.all(updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t)));
+          await Promise.all(updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t, true)));
 
           console.log("WA DEBUG - saves have completed")
 
