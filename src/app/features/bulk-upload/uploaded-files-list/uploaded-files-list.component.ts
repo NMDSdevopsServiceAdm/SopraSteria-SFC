@@ -18,6 +18,7 @@ import { take } from 'rxjs/operators';
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public bulkUploadFileTypeEnum = BulkUploadFileType;
+  public preValidationError: boolean;
   public totalErrors = 0;
   public totalWarnings = 0;
   public uploadedFiles: ValidatedFile[];
@@ -46,13 +47,29 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   private preValidateFiles(): void {
     this.subscriptions.add(
-      this.bulkUploadService.preValidateFiles(this.establishmentService.establishmentId).subscribe(
-        (response: ValidatedFile[]) => {
-          this.uploadedFiles = response;
-        },
-        (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message)
-      )
+      this.bulkUploadService
+        .preValidateFiles(this.establishmentService.establishmentId)
+        .subscribe(
+          (response: ValidatedFile[]) => this.checkForMandatoryFiles(response),
+          (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message)
+        )
     );
+  }
+
+  private checkForMandatoryFiles(response: ValidatedFile[]): void {
+    const files: string[] = response.map(data => this.bulkUploadFileTypeEnum[data.fileType]);
+    this.uploadedFiles = response;
+
+    if (
+      !files.includes(this.bulkUploadFileTypeEnum.Establishment) ||
+      !files.includes(this.bulkUploadFileTypeEnum.Worker)
+    ) {
+      this.preValidationError = true;
+    } else {
+      this.preValidationError = false;
+    }
+
+    this.bulkUploadService.preValidationError$.next(this.preValidationError);
   }
 
   public getFileType(fileName: string): string {
@@ -122,7 +139,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     };
   }
 
-  private getFileId(file: ValidatedFile) {
+  private getFileId(file: ValidatedFile): string {
     return `bulk-upload-validation-${file.filename.substr(0, file.filename.lastIndexOf('.'))}`;
   }
 

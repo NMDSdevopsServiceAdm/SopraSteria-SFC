@@ -16,10 +16,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class BulkUploadService {
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
+  public preValidationError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
-  public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
-  public uploadComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public uploadComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
@@ -79,6 +80,10 @@ export class BulkUploadService {
           {
             name: 'filetype',
             message: 'The selected files must be a CSV or ZIP.',
+          },
+          {
+            name: 'prevalidation',
+            message: 'Please ensure both workplace and staff files are uploaded.',
           },
         ],
       },
