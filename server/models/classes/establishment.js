@@ -207,6 +207,8 @@ class Establishment extends EntityValidator {
     initialiseSub(parentID, parentUid){
         this._parentUid = parentUid;
         this._parentId = parentID;
+        this._dataOwner = 'Parent';
+        this._parentPermissions = null;     // if the owner is parent, then parent permissions are irrelevant
     }
 
     // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
@@ -352,6 +354,8 @@ class Establishment extends EntityValidator {
                     isParent: this._isParent,
                     parentUid: this._parentUid,
                     parentId: this._parentId,
+                    dataOwner: this._dataOwner ? this._dataOwner : 'Workplace',
+                    parentPermissions: this._parentPermissions,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
                     MainServiceFKValue: this.mainService.id,
@@ -360,7 +364,6 @@ class Establishment extends EntityValidator {
                     ShareDataValue: false,
                     shareWithCQC: false,
                     shareWithLA: false,
-                    dataOwner: 'Workplace',
                     source: bulkUploaded ? 'Bulk' : 'Online',
                     attributes: ['id', 'created', 'updated'],
                 };
