@@ -59,6 +59,7 @@ export class FilesUploadComponent implements OnInit {
     this.selectedFiles = Array.from(target['files']);
     this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
+    this.filesUploaded = false;
 
     if (this.submitted) {
       this.bulkUploadService.exposeForm$.next(this.form);
