@@ -1404,8 +1404,6 @@ router.route('/complete').post(async (req, res) => {
       const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null);
       const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
 
-      console.log("WA DEBUG - validation report download: ", validationDiferenceReport)
-
       // could look to parallel the three above tasks as each is relatively intensive - but happy path first
       // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction
       try {
@@ -1415,8 +1413,6 @@ router.route('/complete').post(async (req, res) => {
 
           // first create the new establishments
           validationDiferenceReport.new.forEach(thisNewEstablishment => {
-            console.log("WA DEBUG - creating establishment, key: ", thisNewEstablishment.name);
-
             // find the onload establishment by key
             // TODO - use the LOCAL_IDENTIFIER when its available
             const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.name === thisNewEstablishment.name);
@@ -1432,17 +1428,15 @@ router.route('/complete').post(async (req, res) => {
           // now update the updated
           const updateEstablishmentPromises = []; 
           validationDiferenceReport.updated.forEach(thisUpdatedEstablishment => {
-            console.log("WA DEBUG - updating establishment, key: ", thisUpdatedEstablishment.name);
-
             // find the current establishment and onload establishment by key
             // TODO - use the LOCAL_IDENTIFIER when its available
             const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.name === thisUpdatedEstablishment.name);
             const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.name === thisUpdatedEstablishment.name);
 
-            // current is already restored, so simply need to load the onboard into the current
+            // current is already restored, so simply need to load the onboard into the current, and load the associated work entities
             if (foundCurrentEstablishment) {
               updatedEstablishments.push(foundCurrentEstablishment);
-              updateEstablishmentPromises.push(foundCurrentEstablishment.load(foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true)));
+              updateEstablishmentPromises.push(foundCurrentEstablishment.load(foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true), true));
             }
           });
 
@@ -1454,8 +1448,6 @@ router.route('/complete').post(async (req, res) => {
             // TODO - use the LOCAL_IDENTIFIER when its available
             const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.name === thisDeletedEstablishment.name);
 
-            console.log("WA DEBUG - found current establishment: ", foundCurrentEstablishment)
-
             // current is already restored, so simply need to delete it
             if (foundCurrentEstablishment) {
               updateEstablishmentPromises.push(foundCurrentEstablishment.delete(theLoggedInUser, t));
@@ -1463,16 +1455,10 @@ router.route('/complete').post(async (req, res) => {
           });
 
           // wait for all updated::loads and deleted::deletes to complete
-          console.log("WA DEBUG - watiing for updates/deletes to finish 'loading'")
           await Promise.all(updateEstablishmentPromises);
 
           // and now all saves for new, updated and deleted establishments, including their associated entities
-          console.log("WA DEBUG - waiting for saves to finish")
           await Promise.all(updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t, true)));
-
-          console.log("WA DEBUG - saves have completed")
-
-          //console.log("WA DEBUG - the transaction: ", t);
         });
 
         return res.status(200).send({

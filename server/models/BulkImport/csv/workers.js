@@ -2130,6 +2130,7 @@ class Worker {
           id: this._nursingSpecialist
         } : undefined,
       amhp: this._amhp ? this._amhp : undefined,
+      completed: true,                                    // on bulk upload, every Worker record is naturally completed!
     };
 
     if (this._startInsect) {

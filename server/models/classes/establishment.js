@@ -94,6 +94,7 @@ class Establishment extends EntityValidator {
 
         // all known workers for this establishment - an associative object (property key is the worker's key)
         this._workerEntities = {};
+        this._readyForDeletionWorkers = null;
         
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
@@ -214,8 +215,8 @@ class Establishment extends EntityValidator {
     // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
     associateWorker(key, worker) {
         if (key && worker) {
-            //const workerKey = worker.nameOrId.replace(/\s/g, "");
-            this._workerEntities[key] = worker;    
+            // worker not yet associated; take as is
+            this._workerEntities[key] = worker;
         }
     };
 
@@ -227,6 +228,7 @@ class Establishment extends EntityValidator {
             return [];
         }
     }
+
 
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
@@ -241,11 +243,31 @@ class Establishment extends EntityValidator {
                 const promises = [];
                 if (document.workers && Array.isArray(document.workers)) {
                     document.workers.forEach(thisWorker => {
-                        const newWorker = new Worker(null);
-                        
-                        // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-                        this.associateWorker(thisWorker.nameOrId.replace(/\s/g, ""), newWorker);
-                        promises.push(newWorker.load(thisWorker, true));
+                        const workerKey = thisWorker.nameOrId.replace(/\s/g, "");
+
+                        // check if we already have the Worker associated, before associating a new worker
+                        if (this._workerEntities[workerKey]) {
+                            // else we already have this worker, load changes against it
+                            promises.push(this._workerEntities[workerKey].load(thisWorker));
+
+                        } else {
+                            const newWorker = new Worker(null);
+
+                            // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                            this.associateWorker(workerKey, newWorker);
+                            promises.push(newWorker.load(thisWorker, true));    
+                        }
+
+                    });
+
+                    // this has updated existing Worker associations and/or added new Worker associations
+                    // however, how do we mark for deletion those no longer required
+                    this._readyForDeletionWorkers = [];
+                    Object.values(this._workerEntities).forEach(thisWorker => {
+                        const foundWorker = document.workers.find(givenWorker => givenWorker.nameOrId === thisWorker.nameOrId);
+                        if (!foundWorker) {
+                            this._readyForDeletionWorkers.push(thisWorker);
+                        }
                     });
                 }
                 await Promise.all(promises);
@@ -289,13 +311,15 @@ class Establishment extends EntityValidator {
     async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
         if (this._workerEntities) {
             try {
-                const workerPromises = [];
                 const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
                     thisWorker.establishmentId = this._id;
                     return thisWorker;
                 });
     
                 await Promise.all(workersAsArray.map(thisWorkerToSave => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction)));
+
+                // and now all the associated Workers marked for deletion
+                await Promise.all(this._readyForDeletionWorkers.map(thisWorkerToSave => thisWorkerToSave.archive(savedBy,externalTransaction)));
             } catch (err) {
                 console.error('Establishment::saveAssociatedEntities error: ', err);
                 // rethrow error to ensure the transaction is rolled back
@@ -608,6 +632,11 @@ class Establishment extends EntityValidator {
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
                         }
                         */
+
+                        // if requested, propagate the saving of this establishment down to each of the associated entities
+                        if (associatedEntities) {
+                            await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
+                        }
 
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
 
