@@ -72,6 +72,7 @@ export class FilesUploadComponent implements OnInit {
 
     if (this.submitted) {
       this.bulkUploadService.exposeForm$.next(this.form);
+      this.bulkUploadService.validationErrors$.next(null);
     }
   }
 
