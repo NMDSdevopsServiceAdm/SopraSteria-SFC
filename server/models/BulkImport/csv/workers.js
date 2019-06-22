@@ -2191,14 +2191,15 @@ class Worker {
     }
 
     if (this._daysSick) {
-      if (Number.isInteger(this._daysSick)) {
+      // days sick is decimal
+      if (this._daysSick !== 'No') {
         changeProperties.daysSick = {
           value : 'Yes',
           days: this._daysSick,
         };
       } else {
         changeProperties.daysSick = {
-          value : this._daysSick,
+          value : 'No',
         };
       }
     }
@@ -2217,26 +2218,26 @@ class Worker {
     }
 
     if (this._contHours) {
-      if (Number.isInteger(this._contHours)) {
+      if (this._contHours !== 'No') {
         changeProperties.weeklyHoursContracted = {
           value: 'Yes',
           hours: this._contHours,
         };
       } else {
         changeProperties.weeklyHoursContracted = {
-          value: this._contHours,
+          value: 'No',
         };
       }
     }
     if (this._avgHours) {
-      if (Number.isInteger(this._avgHours)) {
+      if (this._avgHours !== 'No') {
         changeProperties.weeklyHoursAverage = {
           value: 'Yes',
           hours: this._avgHours,
         };
       } else {
         changeProperties.weeklyHoursAverage = {
-          value: this._avgHours,
+          value: 'No',
         };
       }
     }
