@@ -125,6 +125,14 @@ class Worker extends EntityValidator {
         this._trainingEntities.push(training);    
     };
 
+    get establishmentId() {
+        return this._establishmentId;
+    }
+
+    set establishmentId(establishmentId) {
+        this._establishmentId = establishmentId;
+    }
+
     get nameOrId() {
         // returns the name or id property - if known
         if (this._properties.get('NameOrId') && this._properties.get('NameOrId').property) {
