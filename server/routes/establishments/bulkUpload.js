@@ -4,6 +4,7 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const csv = require('csvtojson');
 const Stream = require('stream');
+const dbmodels = require('../../models');
 
 const router = express.Router();
 const s3 = new AWS.S3({
@@ -548,6 +549,7 @@ router.route('/validate').post(async (req, res) => {
     // handle parsing errors
     if (!validationResponse.status) {
       return res.status(400).send({
+        report: validationResponse.report,
         establishments: {
           filename: null,
           records: importedEstablishments.length,
@@ -1089,6 +1091,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
   const response = {
     status,
+    report,
     validation: {
       establishments: csvEstablishmentSchemaErrors,
       workers: csvWorkerSchemaErrors,
@@ -1204,7 +1207,7 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
       currentWorkers.forEach(thisCurrentWorker => {
         const foundWorker= onloadWorkers.find(thisOnloadWorker => thisCurrentWorker === thisOnloadWorker);
 
-        if (foundWorker) {
+        if (!foundWorker) {
           deletedWorkers.push({
             nameOrId: thisCurrentWorker
           });
@@ -1376,9 +1379,11 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
 router.route('/complete').post(async (req, res) => {
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
+  const primaryEstablishmentUid = req.establishment.uid;
   const isParent = req.isParent;
 
   // TODO: add traps to prevent completing without having ensure validation and just warnings not errors
+  const fetchPromises = [];
 
   try {
     // completing bulk upload must always work on the current set of known entities and not rely
@@ -1388,16 +1393,93 @@ router.route('/complete').post(async (req, res) => {
 
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
+      const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null);
+      const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
 
-      // having the set of onload and current entities, work through the onload entities creating the validation difference report
-      const report = validationDifferenceReport(primaryEstablishmentId, onloadEstablishments, myCurrentEstablishments);
+      console.log("WA DEBUG - validation report download: ", validationDiferenceReport)
 
-      return res.status(200).send({
-        report,
-        current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
-        validated: onloadEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
-      });
-  
+      // could look to parallel the three above tasks as each is relatively intensive - but happy path first
+      // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction
+      try {
+        // all creates, updates and deletes (archive) are done in one transaction to ensure database integrity
+        await dbmodels.sequelize.transaction(async t => {
+          const updatedEstablishments = [];
+
+          // first create the new establishments
+          validationDiferenceReport.new.forEach(thisNewEstablishment => {
+            console.log("WA DEBUG - creating establishment, key: ", thisNewEstablishment.name);
+
+            // find the onload establishment by key
+            // TODO - use the LOCAL_IDENTIFIER when its available
+            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.name === thisNewEstablishment.name);
+
+            // the entity is already loaded, so simply prep it ready for saving
+            if (foundOnloadEstablishment) {
+              // as this new establishment is created from a parent, it automatically becomes a sub
+              foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
+              updatedEstablishments.push(foundOnloadEstablishment);
+            }
+          });
+
+          // now update the updated
+          const updateEstablishmentPromises = []; 
+          validationDiferenceReport.updated.forEach(thisUpdatedEstablishment => {
+            console.log("WA DEBUG - updating establishment, key: ", thisUpdatedEstablishment.name);
+
+            // find the current establishment and onload establishment by key
+            // TODO - use the LOCAL_IDENTIFIER when its available
+            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.name === thisUpdatedEstablishment.name);
+            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.name === thisUpdatedEstablishment.name);
+
+            // current is already restored, so simply need to load the onboard into the current
+            if (foundCurrentEstablishment) {
+              updatedEstablishments.push(foundCurrentEstablishment);
+              updateEstablishmentPromises.push(foundCurrentEstablishment.load(foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true)));
+            }
+          });
+
+          // and finally, delete the deleted
+          validationDiferenceReport.deleted.forEach(thisDeletedEstablishment => {
+            console.log("WA DEBUG - deleting establishment, key: ", thisDeletedEstablishment.name);
+
+            // find the current establishment by key
+            // TODO - use the LOCAL_IDENTIFIER when its available
+            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.name === thisDeletedEstablishment.name);
+
+            console.log("WA DEBUG - found current establishment: ", foundCurrentEstablishment)
+
+            // current is already restored, so simply need to delete it
+            if (foundCurrentEstablishment) {
+              updateEstablishmentPromises.push(foundCurrentEstablishment.delete(theLoggedInUser, t));
+            }
+          });
+
+          // wait for all updated::loads and deleted::deletes to complete
+          console.log("WA DEBUG - watiing for updates/deletes to finish 'loading'")
+          await Promise.all(updateEstablishmentPromises);
+
+          // and now all saves for new, updated and deleted establishments
+          console.log("WA DEBUG - waiting for saves to finish")
+          await Promise.all(updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t)));
+
+          console.log("WA DEBUG - saves have completed")
+
+          //console.log("WA DEBUG - the transaction: ", t);
+        });
+
+        return res.status(200).send({
+          // current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
+          // validated: onloadEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
+        });
+    
+      } catch (err) {
+        console.error("route('/complete') err: ", err);
+        return res.status(503).send({
+          message: 'Failed to save'
+        });
+      }
+
+
     } catch (err) {
       console.error('router.route(\'/complete\').post: failed to download entities intermediary - atypical that the object does not exist because not yet validated: ', err);
       return res.status(400).send({

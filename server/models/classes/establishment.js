@@ -207,6 +207,8 @@ class Establishment extends EntityValidator {
     initialiseSub(parentID, parentUid){
         this._parentUid = parentUid;
         this._parentId = parentID;
+        this._dataOwner = 'Parent';
+        this._parentPermissions = null;     // if the owner is parent, then parent permissions are irrelevant
     }
 
     // this method add this given worker (entity) as an association to this establishment entity - (bulk import)
@@ -352,6 +354,8 @@ class Establishment extends EntityValidator {
                     isParent: this._isParent,
                     parentUid: this._parentUid,
                     parentId: this._parentId,
+                    dataOwner: this._dataOwner ? this._dataOwner : 'Workplace',
+                    parentPermissions: this._parentPermissions,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
                     MainServiceFKValue: this.mainService.id,
@@ -360,7 +364,6 @@ class Establishment extends EntityValidator {
                     ShareDataValue: false,
                     shareWithCQC: false,
                     shareWithLA: false,
-                    dataOwner: 'Workplace',
                     source: bulkUploaded ? 'Bulk' : 'Online',
                     attributes: ['id', 'created', 'updated'],
                 };
@@ -406,6 +409,38 @@ class Establishment extends EntityValidator {
                         }));
                     await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
+                    // now - work through any additional models having processed all properties (first delete and then re-create)
+                    const additionalModels = this._properties.additionalModels;
+                    const additionalModelsByname = Object.keys(additionalModels);
+                    const deleteModelPromises = [];
+                    additionalModelsByname.forEach(async thisModelByName => {
+                        deleteModelPromises.push(
+                            models[thisModelByName].destroy({
+                                where: {
+                                    establishmentId: this._id
+                                },
+                                transaction: thisTransaction,
+                                })
+                        );
+                    });
+                    await Promise.all(deleteModelPromises);
+                    const createModelPromises = [];
+                    additionalModelsByname.forEach(async thisModelByName => {
+                        const thisModelData = additionalModels[thisModelByName];
+                        createModelPromises.push(
+                            models[thisModelByName].bulkCreate(
+                                thisModelData.map(thisRecord => {
+                                    return {
+                                        ...thisRecord,
+                                        establishmentId: this._id
+                                    };
+                                }),
+                                { transaction: thisTransaction },
+                            )
+                        );
+                    });
+                    await Promise.all(createModelPromises);
+                    
                     this._log(Establishment.LOG_INFO, `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`);
                 });
                 
@@ -535,6 +570,7 @@ class Establishment extends EntityValidator {
                         });
                         await Promise.all(createModelPromises);
 
+                        /*
                         // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
                         // having updated the Establishment, check to see whether it is necessary to recalculate
                         //  the overall WDF eligibility for this establishment and all its workers
@@ -548,12 +584,13 @@ class Establishment extends EntityValidator {
                             // TODO - include Completed logic.
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
                         }
+                        */
 
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
 
 
                     } else {
-                        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update resulting establishment record with id: ${this._id}`);
+                        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, `Failed to update resulting establishment record with id: ${this._id}`, `Failed to update resulting establishment record with id: ${this._id}`);
                     }
                 });
                 
@@ -934,11 +971,14 @@ class Establishment extends EntityValidator {
         }
     };
 
-    async delete(deletedBy) {
+    async delete(deletedBy, externalTransaction=null) {
         try {
             const updatedTimestamp = new Date();
 
             await models.sequelize.transaction(async t => {
+                // the saving of an Establishment can be initiated within
+                //  an external transaction
+                const thisTransaction = externalTransaction ? externalTransaction : t;
 
                 const updateDocument = {
                     archived: true,
@@ -953,7 +993,7 @@ class Establishment extends EntityValidator {
                                                     uid: this.uid
                                                 },
                                                 attributes: ['id', 'updated'],
-                                                transaction: t,
+                                                transaction: thisTransaction,
                                             });
 
                 if (updatedRecordCount === 1) {
@@ -968,7 +1008,7 @@ class Establishment extends EntityValidator {
                         username: deletedBy,
                         type: 'deleted'}];
                        
-                    await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                     this._log(Establishment.LOG_INFO, `Archived Establishment with uid (${this._uid}) and id (${this._id})`);
 
