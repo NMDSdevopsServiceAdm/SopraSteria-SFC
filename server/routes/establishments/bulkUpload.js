@@ -945,7 +945,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == "Training") {
     await Promise.all(
       training.imported.map((thisLine, currentLineNumber) => {
-        return _validateTrainingCsv(thisLine, currentLineNumber=2, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
+        return _validateTrainingCsv(thisLine, currentLineNumber+2, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
       }) 
     );
 
