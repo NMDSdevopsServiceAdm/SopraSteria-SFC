@@ -52,7 +52,6 @@ export class FilesUploadComponent implements OnInit {
       this.bulkUploadService.preValidationError$
         .subscribe((preValidationError: boolean) => {
           if (preValidationError) {
-            console.log('preValidationError', preValidationError);
             this.fileUpload.setErrors({ prevalidation: preValidationError === true ? true : null });
             this.bulkUploadService.exposeForm$.next(this.form);
           }
