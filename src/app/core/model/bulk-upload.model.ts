@@ -4,6 +4,12 @@ export enum FileValidateStatus {
   Pass = 'Pass',
 }
 
+export enum BulkUploadFileType {
+  Establishment = 'Workplace',
+  Training = 'Training',
+  Worker = 'Staff',
+}
+
 export interface PresignedUrlRequestItem {
   filename: string;
 }
