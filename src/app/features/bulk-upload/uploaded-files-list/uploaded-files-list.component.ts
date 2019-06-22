@@ -2,12 +2,11 @@ import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FileValidateStatus, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import { BulkUploadFileType, FileValidateStatus, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { saveAs } from 'file-saver';
-import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -17,11 +16,12 @@ import { take } from 'rxjs/operators';
   providers: [I18nPluralPipe],
 })
 export class UploadedFilesListComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription = new Subscription();
+  public bulkUploadFileTypeEnum = BulkUploadFileType;
+  public totalErrors = 0;
+  public totalWarnings = 0;
   public uploadedFiles: ValidatedFile[];
   public validationComplete = false;
-  public totalWarnings = 0;
-  public totalErrors = 0;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -50,9 +50,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
         (response: ValidatedFile[]) => {
           this.uploadedFiles = response;
         },
-        (response: HttpErrorResponse) => {
-          this.onValidateError(response);
-        }
+        (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message)
       )
     );
   }
@@ -94,25 +92,15 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Set validate success flag, set file type labels
-   * And then set record count and status
-   * Then update ui
+   * Set validate success update uploaded files
+   * And then set total warnings and/or errors and status
    * @param response
    */
   private onValidateComplete(response: ValidatedFilesResponse): void {
-    response.establishment.fileType = 'Workplace';
-    response.training.fileType = 'Training';
-    response.workers.fileType = 'Staff';
-
-    const validatedFiles: Array<ValidatedFile> = [response.establishment, response.training, response.workers];
+    this.uploadedFiles = [response.establishment, response.training, response.workers];
     const validationErrors: Array<ErrorDefinition> = [];
 
     this.uploadedFiles.forEach((file: ValidatedFile) => {
-      const validatedFile: ValidatedFile = filter(validatedFiles, ['filename', file.filename])[0];
-      file.records = validatedFile.records;
-      file.fileType = validatedFile.fileType;
-      file.warnings = validatedFile.warnings;
-      file.errors = validatedFile.errors;
       file.status = file.errors ? FileValidateStatus.Fail : FileValidateStatus.Pass;
       this.totalWarnings = this.totalWarnings + file.warnings;
       this.totalErrors = this.totalErrors + file.errors;
