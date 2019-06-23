@@ -44,6 +44,7 @@ class Qualification extends EntityValidator {
 
         this._establishmentId = establishmentId;
         this._workerUid = workerUid;
+        this._workerId = null;
         this._id = null;
         this._uid = null;
         this._created = null;
@@ -93,6 +94,25 @@ class Qualification extends EntityValidator {
         if (this._logLevel >= level) {
             console.log(`TODO: (${level}) - Qualification class: `, msg);
         }
+    }
+
+    get workerId() {
+        return this._workerUid;
+    }
+    get workerUid() {
+        return this._workerUid;
+    }
+    get establishmentId() {
+        return this._establishmentId;
+    }
+    set workerId(newID) {
+        this._workerId = newID;
+    }
+    set workerUid(newUid) {
+        this._workerUid = newUid;
+    }
+    set establishmentId(newId) {
+        this._establishmentId = newId;
     }
 
     //
@@ -343,16 +363,27 @@ class Qualification extends EntityValidator {
         if (mustSave && this._isNew) {
             // create new Qualification Record
             try {
-                // must validate the Worker record - to get the workerFk (integer)
-                const workerRecord = await models.worker.findOne({
-                    where: {
-                        establishmentFk: this._establishmentId,
-                        uid: this._workerUid,
-                        archived: false
-                    },
-                    attributes: ['id']
-                });
+                console.log("WA DEBUG - saving qualification: ", this._qualification)
 
+
+                // must validate the Worker record - to get the workerFk (integer)
+                let workerRecord = null;
+
+                if (!this._workerId) {
+                    workerRecord = await models.worker.findOne({
+                        where: {
+                            establishmentFk: this._establishmentId,
+                            uid: this._workerUid,
+                            archived: false
+                        },
+                        attributes: ['id']
+                    });    
+                } else {
+                    workerRecord = {
+                        id: this._workerId
+                    };
+                }
+                
                 if (workerRecord && workerRecord.id) {
 
                     const now = new Date();
@@ -368,6 +399,7 @@ class Qualification extends EntityValidator {
                         notes: this._notes,
                         attributes: ['uid', 'created', 'updated'],
                     };
+                    console.log("WA DEBUG - saving qualification found associated worker record: ", creationDocument)
 
                     //console.log("WA DEBUG creation document: ", creationDocument)
     

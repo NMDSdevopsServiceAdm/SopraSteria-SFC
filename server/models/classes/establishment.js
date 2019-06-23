@@ -248,7 +248,7 @@ class Establishment extends EntityValidator {
                         // check if we already have the Worker associated, before associating a new worker
                         if (this._workerEntities[workerKey]) {
                             // else we already have this worker, load changes against it
-                            promises.push(this._workerEntities[workerKey].load(thisWorker));
+                            promises.push(this._workerEntities[workerKey].load(thisWorker, true));
 
                         } else {
                             const newWorker = new Worker(null);
@@ -316,10 +316,10 @@ class Establishment extends EntityValidator {
                     return thisWorker;
                 });
     
-                await Promise.all(workersAsArray.map(thisWorkerToSave => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction)));
+                await Promise.all(workersAsArray.map(thisWorkerToSave => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true)));
 
                 // and now all the associated Workers marked for deletion
-                await Promise.all(this._readyForDeletionWorkers.map(thisWorkerToSave => thisWorkerToSave.archive(savedBy,externalTransaction)));
+                await Promise.all(this._readyForDeletionWorkers.map(thisWorkerToSave => thisWorkerToSave.archive(savedBy,externalTransaction, true)));
             } catch (err) {
                 console.error('Establishment::saveAssociatedEntities error: ', err);
                 // rethrow error to ensure the transaction is rolled back
