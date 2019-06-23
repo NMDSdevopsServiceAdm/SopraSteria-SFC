@@ -1,5 +1,5 @@
 import { HttpEventType } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PresignedUrlResponseItem, PresignedUrlsRequest, UploadFileRequestItem, ValidatedFile } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -27,9 +27,10 @@ export class FilesUploadComponent implements OnInit {
 
   constructor(
     private bulkUploadService: BulkUploadService,
-    private establishmentService: EstablishmentService,
     private errorSummaryService: ErrorSummaryService,
-    private formBuilder: FormBuilder
+    private establishmentService: EstablishmentService,
+    private formBuilder: FormBuilder,
+    private renderer: Renderer2
   ) {}
 
   ngOnInit() {
@@ -65,13 +66,12 @@ export class FilesUploadComponent implements OnInit {
 
   private checkForPreValidationError(): void {
     this.subscriptions.add(
-      this.bulkUploadService.preValidationError$
-        .subscribe((preValidationError: boolean) => {
-          if (preValidationError) {
-            this.fileUpload.setErrors({ prevalidation: preValidationError === true ? true : null });
-            this.bulkUploadService.exposeForm$.next(this.form);
-          }
-        })
+      this.bulkUploadService.preValidationError$.subscribe((preValidationError: boolean) => {
+        if (preValidationError) {
+          this.fileUpload.setErrors({ prevalidation: preValidationError === true ? true : null });
+          this.bulkUploadService.exposeForm$.next(this.form);
+        }
+      })
     );
   }
 
@@ -166,6 +166,7 @@ export class FilesUploadComponent implements OnInit {
   }
 
   public removeFiles(): void {
+    this.renderer.selectRootElement('#fileUpload').value = '';
     this.fileUpload.setValidators(Validators.required);
     this.form.reset();
     this.submitted = false;
