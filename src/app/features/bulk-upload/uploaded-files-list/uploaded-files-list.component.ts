@@ -57,6 +57,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   }
 
   private checkForMandatoryFiles(response: ValidatedFile[]): void {
+    this.bulkUploadService.validationErrors$.next(null);
     const files: string[] = response.map(data => this.bulkUploadFileTypeEnum[data.fileType]);
     this.uploadedFiles = response;
 

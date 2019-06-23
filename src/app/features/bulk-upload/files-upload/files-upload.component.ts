@@ -64,6 +64,7 @@ export class FilesUploadComponent implements OnInit {
   }
 
   public onFilesSelection($event: Event): void {
+    this.bulkUploadService.clearPreviousErrors();
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target['files']);
     this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
@@ -72,7 +73,6 @@ export class FilesUploadComponent implements OnInit {
 
     if (this.submitted) {
       this.bulkUploadService.exposeForm$.next(this.form);
-      this.bulkUploadService.validationErrors$.next(null);
     }
   }
 
@@ -154,7 +154,7 @@ export class FilesUploadComponent implements OnInit {
     this.form.reset();
     this.submitted = false;
     this.selectedFiles = [];
-    this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
+    this.bulkUploadService.selectedFiles$.next(null);
 
     if (this.submitted) {
       this.bulkUploadService.exposeForm$.next(this.form);
