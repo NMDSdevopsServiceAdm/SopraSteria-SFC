@@ -60,6 +60,11 @@ export class BulkUploadService {
     return this.http.post(`/api/establishment/${establishmentId}/bulkupload/complete`, null);
   }
 
+  public clearPreviousErrors(): void {
+    this.validationErrors$.next(null);
+    this.serverError$.next(null);
+  }
+
   public formErrorsMap(): Array<ErrorDetails> {
     return [
       {
