@@ -1,9 +1,10 @@
 import { HttpEventType } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PresignedUrlResponseItem, PresignedUrlsRequest, UploadFileRequestItem } from '@core/model/bulk-upload.model';
+import { PresignedUrlResponseItem, PresignedUrlsRequest, UploadFileRequestItem, ValidatedFile } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { filter } from 'lodash';
 import { combineLatest, Subscription } from 'rxjs';
@@ -21,18 +22,19 @@ export class FilesUploadComponent implements OnInit {
   private selectedFiles: File[];
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
-  private prevalidateSubscriptions$: Subscription = new Subscription();
+  private subscriptions: Subscription = new Subscription();
   private uploadSubscription$: Subscription;
 
   constructor(
     private bulkUploadService: BulkUploadService,
+    private establishmentService: EstablishmentService,
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: FormBuilder
   ) {}
 
   ngOnInit() {
     this.setupForm();
-    this.setupSubscription();
+    this.checkForUploadedFiles();
   }
 
   public get progress(): number {
@@ -47,8 +49,22 @@ export class FilesUploadComponent implements OnInit {
     });
   }
 
-  private setupSubscription(): void {
-    this.prevalidateSubscriptions$.add(
+  private checkForUploadedFiles(): void {
+    this.subscriptions.add(
+      this.bulkUploadService
+        .getUploadedFiles(this.establishmentService.establishmentId)
+        .subscribe((response: ValidatedFile[]) => {
+          if (response.length) {
+            this.filesUploaded = true;
+            this.bulkUploadService.uploadedFiles$.next(response);
+          }
+          this.checkForPreValidationError();
+        })
+    );
+  }
+
+  private checkForPreValidationError(): void {
+    this.subscriptions.add(
       this.bulkUploadService.preValidationError$
         .subscribe((preValidationError: boolean) => {
           if (preValidationError) {
@@ -86,7 +102,7 @@ export class FilesUploadComponent implements OnInit {
   }
 
   private getPresignedUrls(): void {
-    this.prevalidateSubscriptions$.add(
+    this.subscriptions.add(
       this.bulkUploadService
         .getPresignedUrls(this.getPresignedUrlsRequest())
         .subscribe((response: PresignedUrlResponseItem[]) => this.prepForUpload(response))
@@ -163,7 +179,7 @@ export class FilesUploadComponent implements OnInit {
 
   public cancelUpload(): void {
     this.filesUploading = false;
-    this.prevalidateSubscriptions$.unsubscribe();
+    this.subscriptions.unsubscribe();
     this.uploadSubscription$.unsubscribe();
   }
 

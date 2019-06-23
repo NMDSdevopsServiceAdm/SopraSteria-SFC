@@ -4,12 +4,14 @@ import { FormGroup } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
+  UploadedFilesResponse,
   ValidatedFile,
   ValidatedFilesResponse,
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +22,7 @@ export class BulkUploadService {
   public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadComplete$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
@@ -43,6 +46,12 @@ export class BulkUploadService {
 
   public preValidateFiles(establishmentId: number): Observable<ValidatedFile[]> {
     return this.http.put<ValidatedFile[]>(`/api/establishment/${establishmentId}/bulkupload/uploaded`, null);
+  }
+
+  public getUploadedFiles(establishmentId: number): Observable<ValidatedFile[]> {
+    return this.http
+      .get<UploadedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/uploaded`)
+      .pipe(map(response => response.files));
   }
 
   public validateFiles(establishmentId: number): Observable<ValidatedFilesResponse> {
