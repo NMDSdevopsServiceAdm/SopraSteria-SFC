@@ -10,7 +10,7 @@ jwt:
     ttl:
         login: 60
 db:
-    pool: 5
+    pool: 15
     ssl: false
     username: sfcadmin
     client_ssl:

@@ -5,7 +5,7 @@ aws:
         wallet: dev/api
 
 db:
-    pool: 5
+    pool: 15
     ssl: true
     username: sfcapp
     client_ssl:
