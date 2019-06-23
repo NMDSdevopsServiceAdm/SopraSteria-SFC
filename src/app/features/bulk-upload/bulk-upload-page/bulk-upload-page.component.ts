@@ -33,7 +33,6 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupUploadValidationErrors();
     this.setupSubscription();
-    this.bulkUploadService.uploadComplete$.next(false);
   }
 
   public setupFormErrorsMap(): void {
@@ -75,7 +74,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
    */
   ngOnDestroy() {
     this.bulkUploadService.selectedFiles$.next(null);
-    this.bulkUploadService.clearPreviousErrors();
+    this.bulkUploadService.resetBulkUpload();
     this.subscriptions.unsubscribe();
   }
 }
