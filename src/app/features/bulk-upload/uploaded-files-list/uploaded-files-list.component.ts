@@ -9,6 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { saveAs } from 'file-saver';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { filter } from 'lodash';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -32,10 +33,21 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.setupSubscription();
+    this.checkForUploadedFiles();
+    this.checkForSelectedFiles();
   }
 
-  public setupSubscription(): void {
+  private checkForUploadedFiles(): void {
+    this.subscriptions.add(
+      this.bulkUploadService.uploadedFiles$.subscribe((uploadedFiles: ValidatedFile[]) => {
+        if (uploadedFiles.length) {
+          this.preValidateFiles();
+        }
+      })
+    );
+  }
+
+  private checkForSelectedFiles(): void {
     this.subscriptions.add(
       this.bulkUploadService.selectedFiles$.subscribe((selectedFiles: File[]) => {
         if (selectedFiles) {
@@ -115,6 +127,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
    */
   private onValidateComplete(response: ValidatedFilesResponse): void {
     this.uploadedFiles = [response.establishment, response.training, response.workers];
+    this.uploadedFiles = filter(this.uploadedFiles, 'filename');
     const validationErrors: Array<ErrorDefinition> = [];
 
     this.uploadedFiles.forEach((file: ValidatedFile) => {
