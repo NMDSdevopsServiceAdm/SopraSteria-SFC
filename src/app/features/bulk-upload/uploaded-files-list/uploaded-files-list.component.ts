@@ -40,7 +40,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private checkForUploadedFiles(): void {
     this.subscriptions.add(
       this.bulkUploadService.uploadedFiles$.subscribe((uploadedFiles: ValidatedFile[]) => {
-        if (uploadedFiles.length) {
+        if (uploadedFiles) {
           this.preValidateFiles();
         }
       })

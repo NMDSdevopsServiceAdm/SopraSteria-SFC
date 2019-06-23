@@ -80,7 +80,7 @@ export class FilesUploadComponent implements OnInit {
   }
 
   public onFilesSelection($event: Event): void {
-    this.bulkUploadService.clearPreviousErrors();
+    this.bulkUploadService.resetBulkUpload();
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target['files']);
     this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
