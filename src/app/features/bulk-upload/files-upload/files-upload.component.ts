@@ -21,7 +21,7 @@ export class FilesUploadComponent implements OnInit {
   private selectedFiles: File[];
   private bytesTotal = 0;
   private bytesUploaded: number[] = [];
-  private subcriptions$: Subscription = new Subscription();
+  private prevalidateSubscriptions$: Subscription = new Subscription();
   private uploadSubscription$: Subscription;
 
   constructor(
@@ -48,7 +48,7 @@ export class FilesUploadComponent implements OnInit {
   }
 
   private setupSubscription(): void {
-    this.subcriptions$.add(
+    this.prevalidateSubscriptions$.add(
       this.bulkUploadService.preValidationError$
         .subscribe((preValidationError: boolean) => {
           if (preValidationError) {
@@ -86,7 +86,7 @@ export class FilesUploadComponent implements OnInit {
   }
 
   private getPresignedUrls(): void {
-    this.subcriptions$.add(
+    this.prevalidateSubscriptions$.add(
       this.bulkUploadService
         .getPresignedUrls(this.getPresignedUrlsRequest())
         .subscribe((response: PresignedUrlResponseItem[]) => this.prepForUpload(response))
@@ -163,7 +163,7 @@ export class FilesUploadComponent implements OnInit {
 
   public cancelUpload(): void {
     this.filesUploading = false;
-    this.subcriptions$.unsubscribe();
+    this.prevalidateSubscriptions$.unsubscribe();
     this.uploadSubscription$.unsubscribe();
   }
 
