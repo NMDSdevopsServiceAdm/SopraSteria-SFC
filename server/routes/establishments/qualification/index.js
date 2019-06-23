@@ -83,7 +83,6 @@ router.route('/').post(async (req, res) => {
     const establishmentId = req.establishmentId;
     const workerUid = req.params.workerId;
 
-    console.log("WA DEBUG - POST qualification - establishment id/worker id",establishmentId, workerUid);
     const thisQualificationRecord = new Qualification(establishmentId, workerUid);
     
     try {
