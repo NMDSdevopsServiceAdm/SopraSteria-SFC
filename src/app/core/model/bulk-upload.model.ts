@@ -33,6 +33,13 @@ export interface ValidatedFilesResponse {
   workers: ValidatedFile;
 }
 
+export interface UploadedFilesResponse {
+  establishment: {
+    uid: number;
+  };
+  files: ValidatedFile[];
+}
+
 export interface ValidatedFile {
   errors: number;
   filename: string;
