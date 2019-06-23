@@ -246,6 +246,7 @@ class Worker extends EntityValidator {
 
                 // now create new training records
                 this._trainingEntities.forEach(currentTrainingRecord => {
+                    currentTrainingRecord.workerId = this._id;
                     currentTrainingRecord.workerUid = this._uid;
                     currentTrainingRecord.establishmentId = this._establishmentId;
                     newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
