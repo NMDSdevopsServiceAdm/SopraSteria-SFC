@@ -41,7 +41,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService.uploadedFiles$.subscribe((uploadedFiles: ValidatedFile[]) => {
         if (uploadedFiles) {
-          this.preValidateFiles();
+          this.checkForMandatoryFiles(uploadedFiles);
         }
       })
     );
