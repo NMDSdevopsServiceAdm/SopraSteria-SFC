@@ -20,6 +20,9 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
     // concrete implementations
     async restoreFromJson(document) {
+        this._allServices = document.allServices;
+        this._mainService = document.mainService;
+
         if (document.services) {
             // can be an empty array
             if (Array.isArray(document.services)) {

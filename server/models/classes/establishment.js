@@ -184,22 +184,6 @@ class Establishment extends EntityValidator {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
     }
 
-    _allMyServices(services, cqc) {
-        return ServiceCache.getServices(services)
-            .filter(x => services.indexOf(x) < 0)
-            .filter(x => cqc ? x.iscqcregistered !== cqc : x.iscqcregistered === cqc )
-            .map( x => { return { id: x.id, name: x.name, category: x.category }});
-    }
-
-    _allCapacities(id) {
-        // To `CapacitiesCache`, a method to return "all available capacities",
-        // taking as parameter the Establishment entity, and resolving based on
-        //  "main service" and "other services". Use the code in `Establishment::restore` as reference.
-
-        return CapacitiesCache.getCapacities()
-            .filter(x => x.id === id);
-    }
-
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
     _initialise() {
         if (this._uid === null) {
@@ -255,6 +239,10 @@ class Establishment extends EntityValidator {
     async load(document, associatedEntities=false) {
         try {
             this.resetValidations();
+
+            // load cache against this establishment
+            document.allServices = ServiceCache.allMyOtherServices(docuement || this);
+            document.allCapacities = CapacitiesCache.allMyCapacities(docuement || this);
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
@@ -767,7 +755,19 @@ class Establishment extends EntityValidator {
                 });
 
                 const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
-                    this._allMyServices(establishmentServices),
+                    ServiceCache.allMyOtherServices(establishmentServices, fetchResults.isRegulated),
+
+                    // models.services.findAll({
+                    //     where: {
+                    //         id: establishmentServices.map(su => su.serviceId)
+                    //     },
+                    //     attributes: ['id', 'name', 'category'],
+                    //     order: [
+                    //         ['category', 'ASC'],
+                    //         ['name', 'ASC']
+                    //     ],
+                    //     raw: true,
+                    // }),
                     models.services.findOne({
                         where: {
                             id : fetchResults.MainServiceFKValue
@@ -785,7 +785,17 @@ class Establishment extends EntityValidator {
                         ],
                         raw: true
                     }),
-                    this._allCapacities(this._id),
+                    models.establishmentCapacity.findAll({
+                        where: {
+                            EstablishmentID: this._id
+                        },
+                        include: [{
+                            model: models.serviceCapacity,
+                            as: 'reference',
+                            attributes: ['id', 'question']
+                        }],
+                        attributes: ['id', 'answer']
+                    }),
                     models.establishmentJobs.findAll({
                         where: {
                             EstablishmentID: this._id
@@ -849,15 +859,11 @@ class Establishment extends EntityValidator {
                 };
 
                 // other services output requires a list of ALL services available to
-                //  the Establishment
-                if (fetchResults.isRegulated) {
-                    fetchResults.allMyServices = this._allMyServices(establishmentServices)
-                } else {
-                    fetchResults.allMyServices = this._allMyServices(establishmentServices, false);
-                }
+                // the Establishment
+                fetchResults.allMyServices = ServiceCache.allMyOtherServices(establishmentServices, fetchResults)
 
                 // service capacities output requires a list of ALL service capacities available to
-                //  the Establishment
+                // the Establishment
                 // fetch the main service id and all the associated 'other services' by id only
                 const allCapacitiesResults = await models.establishment.findOne({
                     where: {
@@ -893,26 +899,27 @@ class Establishment extends EntityValidator {
         
                 // now fetch all the questions for the given set of combined services
                 if (allAssociatedServiceIndices.length > 0) {
-                    fetchResults.allServiceCapacityQuestions = await models.serviceCapacity.findAll({
-                        where: {
-                            serviceId: allAssociatedServiceIndices
-                        },
-                        attributes: ['id', 'seq', 'question'],
-                        order: [
-                            ['seq', 'ASC']
-                        ],
-                        include: [
-                            {
-                                model: models.services,
-                                as: 'service',
-                                attributes: ['id', 'category', 'name'],
-                                order: [
-                                    ['category', 'ASC'],
-                                    ['name', 'ASC']
-                                ]
-                            }
-                        ]
-                    });
+                    CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
+                    // fetchResults.allServiceCapacityQuestions = await models.serviceCapacity.findAll({
+                    //     where: {
+                    //         serviceId: allAssociatedServiceIndices
+                    //     },
+                    //     attributes: ['id', 'seq', 'question'],
+                    //     order: [
+                    //         ['seq', 'ASC']
+                    //     ],
+                    //     include: [
+                    //         {
+                    //             model: models.services,
+                    //             as: 'service',
+                    //             attributes: ['id', 'category', 'name'],
+                    //             order: [
+                    //                 ['category', 'ASC'],
+                    //                 ['name', 'ASC']
+                    //             ]
+                    //         }
+                    //     ]
+                    // });
                 } else {
                     fetchResults.allServiceCapacityQuestions = null;
                 }
