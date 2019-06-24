@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Alert } from '@core/model/alerts.model';
+import { Alert } from '@core/model/alert.model';
 import { AlertService } from '@core/services/alert.service';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-alerts',
-  templateUrl: './alerts.component.html',
+  templateUrl: './alert.component.html',
 })
-export class AlertsComponent implements OnInit {
+export class AlertComponent implements OnInit {
   public alert$: BehaviorSubject<Alert>;
 
   constructor(private alertService: AlertService) {}

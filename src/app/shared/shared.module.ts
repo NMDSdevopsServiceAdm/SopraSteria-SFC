@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { AlertComponent } from '@shared/components/alert/alert.component';
 import { DashboardHeaderComponent } from '@shared/components/dashboard-header/dashboard-header.component';
 
-import { AlertsComponent } from './components/alerts/alerts.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { CharacterCountComponent } from './components/character-count/character-count.component';
@@ -62,7 +62,7 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
-    AlertsComponent,
+    AlertComponent,
   ],
   exports: [
     AutoSuggestComponent,
@@ -91,7 +91,7 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
-    AlertsComponent,
+    AlertComponent,
   ],
 })
 export class SharedModule {}
