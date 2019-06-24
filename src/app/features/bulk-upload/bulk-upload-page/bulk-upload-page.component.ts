@@ -67,7 +67,14 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * Unsubscribe to ensure no memory leaks
+   * And clear selected files, previous errors
+   * when navigated away from bulk upload page
+   */
   ngOnDestroy() {
+    this.bulkUploadService.selectedFiles$.next(null);
+    this.bulkUploadService.resetBulkUpload();
     this.subscriptions.unsubscribe();
   }
 }

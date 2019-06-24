@@ -1567,7 +1567,7 @@ class Establishment {
 
         return returnThis;
       }) : undefined,
-      serviceUsers: this._allServiceUsers.map((thisService, index) => {
+      serviceUsers: this._allServiceUsers ? this._allServiceUsers.map((thisService, index) => {
         const returnThis = {
           id: thisService,
         };
@@ -1577,7 +1577,7 @@ class Establishment {
         }
 
         return returnThis;
-      }),
+      }) : undefined,
       capacities: this._capacities,
       utilisations: this._utilisations,
       totalPermTemp: this._totalPermTemp,
@@ -1635,7 +1635,7 @@ class Establishment {
 
           return returnThis;
         }) : undefined,
-      serviceUsers: this._allServiceUsers
+      serviceUsers: this._allServiceUsers ? this._allServiceUsers
         .map((thisService, index) => {
           const returnThis = {
             id: thisService,
@@ -1646,7 +1646,7 @@ class Establishment {
           }
 
           return returnThis;
-        }),
+        }) : undefined,
       numberOfStaff: this._totalPermTemp,
       vacancies: this._vacancies ? this._vacancies : undefined,
       starters: this._starters ? this._starters : undefined,

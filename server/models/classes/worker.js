@@ -125,6 +125,14 @@ class Worker extends EntityValidator {
         this._trainingEntities.push(training);    
     };
 
+    get establishmentId() {
+        return this._establishmentId;
+    }
+
+    set establishmentId(establishmentId) {
+        this._establishmentId = establishmentId;
+    }
+
     get nameOrId() {
         // returns the name or id property - if known
         if (this._properties.get('NameOrId') && this._properties.get('NameOrId').property) {
@@ -562,7 +570,7 @@ class Worker extends EntityValidator {
 
     // "deletes" this Worker by setting the Worker to archived - does not delete any data!
     // Can throw "WorkerDeleteException"
-    async archive(deletedBy) {
+    async archive(deletedBy, externalTransaction=null) {
         try {
             
             const updatedTimestamp = new Date();
@@ -570,6 +578,8 @@ class Worker extends EntityValidator {
             // need to update the existing Worker record and add an
             //  deleted audit event within a single transaction
             await models.sequelize.transaction(async t => {
+                const thisTransaction = externalTransaction ? externalTransaction : t;
+
                 // now append the extendable properties
                 const updateDocument = {
                     archived: true,
@@ -594,7 +604,7 @@ class Worker extends EntityValidator {
                                                     uid: this.uid
                                                 },
                                                 attributes: ['id', 'updated'],
-                                                transaction: t,
+                                                transaction: thisTransaction,
                                             });
 
                 if (updatedRecordCount === 1) {
@@ -609,7 +619,7 @@ class Worker extends EntityValidator {
                         username: deletedBy,
                         type: 'deleted'}];
                         // having updated the record, create the audit event
-                    await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+                    await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                     this._log(Worker.LOG_INFO, `Archived Worker with uid (${this._uid}) and id (${this._id})`);
 
