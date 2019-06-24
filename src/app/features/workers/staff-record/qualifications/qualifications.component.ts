@@ -33,7 +33,7 @@ export class QualificationsComponent implements OnInit {
     dialog.afterClosed.pipe(take(1)).subscribe(confirm => {
       if (confirm) {
         this.workerService.deleteQualification(this.worker.uid, record.uid).subscribe(() => {
-          this.workerService.setQualificationDeleted(true);
+          this.workerService.alert = { type: 'success', message: 'Qualification has been deleted' };
           this.fetchAllRecords();
         });
       }
