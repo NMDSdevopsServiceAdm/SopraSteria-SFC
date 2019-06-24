@@ -2,15 +2,20 @@ import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BulkUploadFileType, FileValidateStatus, ValidatedFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import {
+  BulkUploadFileType,
+  FileValidateStatus,
+  ValidatedFile,
+  ValidatedFilesResponse,
+} from '@core/model/bulk-upload.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { AlertsService } from '@core/services/alerts.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { saveAs } from 'file-saver';
+import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { filter } from 'lodash';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -115,8 +120,11 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(
         response => {
-          const blob = new Blob([response], { type: 'text/plain;charset=utf-8' });
-          saveAs(blob, 'Bulk Upload Validation Report.txt');
+          const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+          const filenameMatches = response.headers.get('content-disposition').match(filenameRegEx);
+          const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
+          const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+          saveAs(blob, filename);
         },
         () => {}
       );

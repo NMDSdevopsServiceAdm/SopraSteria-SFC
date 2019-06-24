@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
@@ -57,11 +57,11 @@ export class BulkUploadService {
     return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
   }
 
-  public getReport(establishmentId: number): Observable<Blob> {
-    const httpOptions: Object = {
-      responseType: 'blob',
-    };
-    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report`, httpOptions);
+  public getReport(establishmentId: number): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
   }
 
   public complete(establishmentId: number) {
