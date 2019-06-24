@@ -19,10 +19,10 @@ class ServiceCache {
   }
 
   static allMyOtherServices(services, establishment) {
-    const cqc = establishment.isRegulated;
+    const cqc = establishment ? establishment.isRegulated : false;
 
     return ALL_SERVICES
-      .filter(x => services.indexOf(x) < 0)
+      .filter(x => services && services.length > 0 && services.indexOf(x) < 0)
       .filter(x => cqc ? x.iscqcregistered !== cqc : x.iscqcregistered === cqc )
       .map( x => { return { id: x.id, name: x.name, category: x.category }});
   }

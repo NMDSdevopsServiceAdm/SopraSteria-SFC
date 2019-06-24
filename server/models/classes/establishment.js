@@ -241,8 +241,8 @@ class Establishment extends EntityValidator {
             this.resetValidations();
 
             // load cache against this establishment
-            document.allServices = ServiceCache.allMyOtherServices(docuement || this);
-            document.allCapacities = CapacitiesCache.allMyCapacities(docuement || this);
+            document.allServices = ServiceCache.allMyOtherServices(document || this);
+            document.allCapacities = CapacitiesCache.allMyCapacities(document || this);
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
