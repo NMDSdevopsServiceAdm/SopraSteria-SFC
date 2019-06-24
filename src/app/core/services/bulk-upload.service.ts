@@ -1,18 +1,27 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { PresignedUrlResponseItem, PresignedUrlsRequest, UploadFile, ValidatedFilesResponse } from '@core/model/bulk-upload.model';
+import {
+  PresignedUrlResponseItem,
+  PresignedUrlsRequest,
+  UploadedFilesResponse,
+  ValidatedFile,
+  ValidatedFilesResponse,
+} from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BulkUploadService {
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
-  public selectedFiles$: BehaviorSubject<Array<UploadFile>> = new BehaviorSubject(null);
-  public uploadedFiles$: BehaviorSubject<Array<UploadFile>> = new BehaviorSubject(null);
+  public preValidationError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
+  public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
+  public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
@@ -24,7 +33,7 @@ export class BulkUploadService {
     );
   }
 
-  public uploadFile(file: UploadFile, signedURL: string): Observable<any> {
+  public uploadFile(file: File, signedURL: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': file.type });
     return this.http.put(signedURL, file, { headers, reportProgress: true, observe: 'events' });
   }
@@ -32,6 +41,16 @@ export class BulkUploadService {
   public getFileType(fileName: string): string {
     const parts: Array<string> = fileName.split('.');
     return parts[parts.length - 1].toUpperCase();
+  }
+
+  public preValidateFiles(establishmentId: number): Observable<ValidatedFile[]> {
+    return this.http.put<ValidatedFile[]>(`/api/establishment/${establishmentId}/bulkupload/uploaded`, null);
+  }
+
+  public getUploadedFiles(establishmentId: number): Observable<ValidatedFile[]> {
+    return this.http
+      .get<UploadedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/uploaded`)
+      .pipe(map(response => response.files));
   }
 
   public validateFiles(establishmentId: number): Observable<ValidatedFilesResponse> {
@@ -43,6 +62,15 @@ export class BulkUploadService {
       responseType: 'blob',
     };
     return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report`, httpOptions);
+  }
+
+  public complete(establishmentId: number) {
+    return this.http.post(`/api/establishment/${establishmentId}/bulkupload/complete`, null);
+  }
+
+  public resetBulkUpload(): void {
+    this.validationErrors$.next(null);
+    this.serverError$.next(null);
   }
 
   public formErrorsMap(): Array<ErrorDetails> {
@@ -65,6 +93,10 @@ export class BulkUploadService {
           {
             name: 'filetype',
             message: 'The selected files must be a CSV or ZIP.',
+          },
+          {
+            name: 'prevalidation',
+            message: 'Please ensure both workplace and staff files are uploaded.',
           },
         ],
       },

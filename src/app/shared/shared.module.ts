@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { DashboardHeaderComponent } from '@shared/components/dashboard-header/dashboard-header.component';
 
+import { AlertsComponent } from './components/alerts/alerts.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
 import { CharacterCountComponent } from './components/character-count/character-count.component';
@@ -28,8 +29,8 @@ import { NumberIntOnly } from './directives/number-int-only.directive';
 import { NumberMax } from './directives/number-max.directive';
 import { NumberPositiveOnly } from './directives/number-positive-only.directive';
 import { Number } from './directives/number.directive';
-import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
+import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
@@ -61,6 +62,7 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    AlertsComponent,
   ],
   exports: [
     AutoSuggestComponent,
@@ -89,6 +91,7 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    AlertsComponent,
   ],
 })
 export class SharedModule {}

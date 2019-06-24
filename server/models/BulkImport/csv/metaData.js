@@ -7,10 +7,11 @@ class MetaData {
     this._warnings = null;
     this._errors = null;
     this._records = null;
+    this._deleted = null;
   };
 
   get userName() {
-    return this._userName;
+    return this._username;
   }
   get id() {
     return this._id;
@@ -29,6 +30,9 @@ class MetaData {
   }
   get records() {
     return this._records;
+  }
+  get deleted() {
+    return this._deleted;
   }
 
   set userName(userName) {
@@ -58,6 +62,10 @@ class MetaData {
   set records(records) {
     return this._records = records;
   }
+
+  set deleted(deleted) {
+    return this._deleted = deleted;
+  }
   
   toJSON() {
     return {
@@ -66,7 +74,8 @@ class MetaData {
       fileType: this._fileType ? this._fileType : null,
       records: this._records ? this._records : 0,
       errors: this._errors ? this._errors : 0,
-      warnings: this._warnings ? this._warnings : 0
+      warnings: this._warnings ? this._warnings : 0,
+      deleted: this._deleted !== null ? this._deleted : undefined,
     }
   }
 };

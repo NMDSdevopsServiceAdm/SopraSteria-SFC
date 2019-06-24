@@ -23,6 +23,7 @@ class Training extends EntityValidator {
         
         this._establishmentId = establishmentId;
         this._workerUid = workerUid;
+        this._workerId = null;
         this._id = null;
         this._uid = null;
         this._created = null;
@@ -75,6 +76,25 @@ class Training extends EntityValidator {
         if (this._logLevel >= level) {
             console.log(`TODO: (${level}) - Training class: `, msg);
         }
+    }
+
+    get workerId() {
+        return this._workerId;
+    }
+    get workerUid() {
+        return this._workerUid;
+    }
+    get establishmentId() {
+        return this._establishmentId;
+    }
+    set workerId(newID) {
+        this._workerId = newID;
+    }
+    set workerUid(newUid) {
+        this._workerUid = newUid;
+    }
+    set establishmentId(newId) {
+        this._establishmentId = newId;
     }
 
     //
@@ -431,15 +451,24 @@ class Training extends EntityValidator {
             // create new Training Record
             try {
                 // must validate the Worker record
-                const workerRecord = await models.worker.findOne({
-                    where: {
-                        establishmentFk: this._establishmentId,
-                        uid: this._workerUid,
-                        archived: false
-                    },
-                    attributes: ['id']
-                });
-
+                let workerRecord = null;
+                
+                
+                if (!this._workerId) {
+                    workerRecord = await models.worker.findOne({
+                        where: {
+                            establishmentFk: this._establishmentId,
+                            uid: this._workerUid,
+                            archived: false
+                        },
+                        attributes: ['id']
+                    });    
+                } else {
+                    workerRecord = {
+                        id: this._workerId
+                    };
+                }
+                
                 if (workerRecord && workerRecord.id) {
                     const now = new Date();
                     const creationDocument = {

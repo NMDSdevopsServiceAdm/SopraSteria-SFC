@@ -45,6 +45,9 @@ class Establishment {
     //console.log(`WA DEBUG - current establishment (${this._lineNumber}:`, this._currentLine);
   };
 
+  static get EXPECT_JUST_ONE_ERROR() { return 950; }
+  static get MISSING_PRIMARY_ERROR() { return 955; }
+
   static get DUPLICATE_ERROR() { return 998; }
   static get HEADERS_ERROR() { return 999; }
   static get MAIN_SERVICE_ERROR() { return 1000; }
@@ -1466,6 +1469,29 @@ class Establishment {
     };
   }
 
+  static justOneEstablishmentError() {
+    return {
+      origin: 'Establishments',
+      lineNumber: 1,
+      errCode: Establishment.EXPECT_JUST_ONE_ERROR,
+      errType: `EXPECT_JUST_ONE_ERROR`,
+      error: 'Expect just one establishment',
+      source: '',
+    };
+  }
+
+  static missingPrimaryEstablishmentError(name) {
+    // TODO - this should be an error, but raising it as a warning for now
+    return {
+      origin: 'Establishments',
+      lineNumber: 1,
+      warnCode: Establishment.MISSING_PRIMARY_ERROR,
+      warnCode: `MISSING_PRIMARY_ERROR`,
+      error: `Missing the primary establishment: ${name}`,
+      source: '',
+    };
+  }
+
   // returns true on success, false is any attribute of Establishment fails
   validate() {
     let status = true;
@@ -1541,7 +1567,7 @@ class Establishment {
 
         return returnThis;
       }) : undefined,
-      serviceUsers: this._allServiceUsers.map((thisService, index) => {
+      serviceUsers: this._allServiceUsers ? this._allServiceUsers.map((thisService, index) => {
         const returnThis = {
           id: thisService,
         };
@@ -1551,7 +1577,7 @@ class Establishment {
         }
 
         return returnThis;
-      }),
+      }) : undefined,
       capacities: this._capacities,
       utilisations: this._utilisations,
       totalPermTemp: this._totalPermTemp,
@@ -1609,7 +1635,7 @@ class Establishment {
 
           return returnThis;
         }) : undefined,
-      serviceUsers: this._allServiceUsers
+      serviceUsers: this._allServiceUsers ? this._allServiceUsers
         .map((thisService, index) => {
           const returnThis = {
             id: thisService,
@@ -1620,7 +1646,7 @@ class Establishment {
           }
 
           return returnThis;
-        }),
+        }) : undefined,
       numberOfStaff: this._totalPermTemp,
       vacancies: this._vacancies ? this._vacancies : undefined,
       starters: this._starters ? this._starters : undefined,

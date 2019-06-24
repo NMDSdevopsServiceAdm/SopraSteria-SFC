@@ -4,6 +4,12 @@ export enum FileValidateStatus {
   Pass = 'Pass',
 }
 
+export enum BulkUploadFileType {
+  Establishment = 'Workplace',
+  Training = 'Training',
+  Worker = 'Staff',
+}
+
 export interface PresignedUrlRequestItem {
   filename: string;
 }
@@ -17,17 +23,8 @@ export interface PresignedUrlsRequest {
 }
 
 export interface UploadFileRequestItem {
-  file: UploadFile;
+  file: File;
   signedUrl: string;
-}
-
-export interface UploadFile extends File {
-  errors?: number;
-  extension: string;
-  fileType?: string;
-  records?: number;
-  status?: FileValidateStatus;
-  warnings?: number;
 }
 
 export interface ValidatedFilesResponse {
@@ -36,10 +33,22 @@ export interface ValidatedFilesResponse {
   workers: ValidatedFile;
 }
 
+export interface UploadedFilesResponse {
+  establishment: {
+    uid: number;
+  };
+  files: ValidatedFile[];
+}
+
 export interface ValidatedFile {
   errors: number;
   filename: string;
-  fileType?: string;
+  fileType: string;
+  key: string;
   records: number;
+  size: number;
+  uploaded: string;
+  status?: FileValidateStatus;
   warnings: number;
+  username: string;
 }

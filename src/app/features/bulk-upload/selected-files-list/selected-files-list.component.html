@@ -9,7 +9,7 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let file of selectedFiles">
       <td class="govuk-table__cell" scope="row">{{ file.name }}</td>
-      <td class="govuk-table__cell">{{ file.extension }}</td>
+      <td class="govuk-table__cell">{{ getFileType(file.name) }}</td>
       <td class="govuk-table__cell">{{ transformFileSize(file.size) }}</td>
     </tr>
   </tbody>
