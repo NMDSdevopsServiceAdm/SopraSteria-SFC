@@ -122,7 +122,7 @@ class Worker extends EntityValidator {
     // this method add this given training (entity) as an association to this worker entity - (bulk import)
     //  - note, no unique key for a training; just simply an array of
     associateTraining(training) {
-        this._trainingEntities.push(training);    
+        this._trainingEntities.push(training);
     };
 
     get establishmentId() {
@@ -159,7 +159,12 @@ class Worker extends EntityValidator {
             if (associatedEntities) {
                 const promises = [];
 
+                // training records and qualifications are no change managed
+                //  therefore, simply remove all existing associations
+                //  and create new ones
+
                 // first training records
+                this._trainingEntities = [];
                 if (document.training && Array.isArray(document.training)) {
                     document.training.forEach(thisTraining => {
                         const newTrainingRecord = new Training(null, null);
@@ -170,6 +175,7 @@ class Worker extends EntityValidator {
                 }
 
                 // and qualifications records
+                this._qualificationsEntities = [];
                 if (document.qualifications && Array.isArray(document.qualifications)) {
                     document.qualifications.forEach(thisQualificationRecord => {
                         const newQualificationRecord = new Qualification(null, null);
@@ -177,11 +183,12 @@ class Worker extends EntityValidator {
                         this.associateQualification(newQualificationRecord);
                         promises.push(newQualificationRecord.load(thisQualificationRecord));
                     });
-                }                
+                }
 
                 // wait for loading of all training and qualification records
                 await Promise.all(promises);
             }
+
         } catch (err) {
             this._log(Worker.LOG_ERROR, `Woker::load - failed: ${err}`);
             throw new WorkerExceptions.WorkerJsonException(
@@ -221,9 +228,64 @@ class Worker extends EntityValidator {
         }
     }
 
+    async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
+        const newQualificationsPromises = [];
+        const newTrainingPromises = [];
+
+        try {
+            // there is no change audit on training; simply delete all that is there and recreate
+            if (this._trainingEntities && this._trainingEntities.length > 0) {
+                // delete all existing training records for this worker
+                await models.workerTraining.destroy(
+                    {
+                        where: {
+                            workerFk: this._id
+                        },
+                        transaction: externalTransaction,
+                    });
+
+                // now create new training records
+                this._trainingEntities.forEach(currentTrainingRecord => {
+                    currentTrainingRecord.workerId = this._id;
+                    currentTrainingRecord.workerUid = this._uid;
+                    currentTrainingRecord.establishmentId = this._establishmentId;
+                    newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
+                })
+            }
+
+            // there is no change audit on qualifications; simply delete all that is there and recreate
+            if (this._qualificationsEntities && this._qualificationsEntities.length > 0) {
+                // delete all existing training records for this worker
+                await models.workerQualifications.destroy(
+                    {
+                        where: {
+                            workerFk: this._id
+                        },
+                        transaction: externalTransaction,
+                    });
+
+                // now create new training records
+                this._qualificationsEntities.forEach(currentQualificationRecord => {
+                    currentQualificationRecord.workerId = this._id;
+                    currentQualificationRecord.workerUid = this._uid;
+                    currentQualificationRecord.establishmentId = this._establishmentId;
+                    newQualificationsPromises.push(currentQualificationRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
+                })
+            }
+
+            await Promise.all(newTrainingPromises);
+            await Promise.all(newQualificationsPromises);
+        } catch (err) {
+            console.error('Worker::saveAssociatedEntities error: ', err);
+            // rethrow error to ensure the transaction is rolled back
+            throw err;
+        }
+
+    }
+
     // saves the Worker to DB. Returns true if saved; false is not.
     // Throws "WorkerSaveException" on error
-    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null) {
+    async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null, associatedEntities=false) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -285,6 +347,13 @@ class Worker extends EntityValidator {
                             };
                         }));
                     await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
+
+
+                    console.log("WA DEBUG - saving worker: ", this.nameOrId, associatedEntities)
+
+                    if (associatedEntities) {
+                        await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
+                    }
 
                     this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 });
@@ -409,6 +478,10 @@ class Worker extends EntityValidator {
                         const completedProperty = this._properties.get('Completed');
                         if (completedProperty && completedProperty.modified) {
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._establishmentId, null, thisTransaction);
+                        }
+
+                        if (associatedEntities) {
+                            await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
                         }
 
                         this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
@@ -570,7 +643,7 @@ class Worker extends EntityValidator {
 
     // "deletes" this Worker by setting the Worker to archived - does not delete any data!
     // Can throw "WorkerDeleteException"
-    async archive(deletedBy, externalTransaction=null) {
+    async archive(deletedBy, externalTransaction=null, associatedEntities=false) {
         try {
             
             const updatedTimestamp = new Date();
@@ -620,6 +693,11 @@ class Worker extends EntityValidator {
                         type: 'deleted'}];
                         // having updated the record, create the audit event
                     await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
+
+                    // delete all training and qualifications for this user??
+                    if (associatedEntities) {
+                        // TODO - to be confirmed
+                    }
 
                     this._log(Worker.LOG_INFO, `Archived Worker with uid (${this._uid}) and id (${this._id})`);
 
