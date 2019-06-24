@@ -18,8 +18,13 @@ class ServiceCache {
     ALL_SERVICES = services.map(service => service.dataValues);
   }
 
-  static getServices() {
-    return (ALL_SERVICES || [])
+  static allMyOtherServices(services, establishment) {
+    const cqc = establishment.isRegulated;
+
+    return ALL_SERVICES
+      .filter(x => services.indexOf(x) < 0)
+      .filter(x => cqc ? x.iscqcregistered !== cqc : x.iscqcregistered === cqc )
+      .map( x => { return { id: x.id, name: x.name, category: x.category }});
   }
 }
 

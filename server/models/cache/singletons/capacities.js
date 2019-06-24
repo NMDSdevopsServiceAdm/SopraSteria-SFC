@@ -6,20 +6,30 @@ class CapacitiesCache {
   constructor() {}
 
   static async initialize() {
-    const services = await dbmodels.establishmentCapacity.findAll({
-      // attributes: ['id', 'answer'],
-      include: [{
-        model: dbmodels.serviceCapacity,
-        as: 'reference',
-        attributes: ['id', 'question']
-      }]
+    const capacity = await dbmodels.serviceCapacity.findAll({
+      attributes: ['id', 'seq', 'question'],
+      order: [
+        ['seq', 'ASC']
+      ],
+      include: [
+        {
+            model: dbmodels.services,
+            as: 'service',
+            attributes: ['id', 'category', 'name'],
+            order: [
+                ['category', 'ASC'],
+                ['name', 'ASC']
+            ]
+        }
+    ]
     });
-
-    ALL_CAPACITIES = services.map(service => service.dataValues);
+    
+    ALL_CAPACITIES = capacity.map(cap => cap.dataValues);
   }
 
-  static getCapacities() {
-    return (ALL_CAPACITIES || [])
+  static allMyCapacities(allAssociatedServiceIndices) {
+    return ALL_CAPACITIES
+      .filter(x => x.serviceId === allAssociatedServiceIndices)
   }
 }
 

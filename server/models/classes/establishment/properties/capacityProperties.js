@@ -19,6 +19,9 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
 
     // concrete implementations
     async restoreFromJson(document) {
+        this._allCapacities = document.allCapacities;
+        this._mainService = document.mainService;
+        
         if (document.capacities) {
             // can be an empty array
             if (Array.isArray(document.capacities)) {
