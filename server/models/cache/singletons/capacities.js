@@ -6,7 +6,7 @@ class CapacitiesCache {
   constructor() {}
 
   static async initialize() {
-    const capacity = await dbmodels.serviceCapacity.findAll({
+    const capacities = await dbmodels.serviceCapacity.findAll({
       attributes: ['id', 'seq', 'question'],
       order: [
         ['seq', 'ASC']
@@ -24,12 +24,12 @@ class CapacitiesCache {
     ]
     });
 
-    ALL_CAPACITIES = capacity.map(cap => cap.dataValues);
+    ALL_CAPACITIES = capacities;
   }
 
   static allMyCapacities(allAssociatedServiceIndices) {
     return ALL_CAPACITIES
-      .filter(x => x.serviceId === allAssociatedServiceIndices)
+      .filter(x => allAssociatedServiceIndices && allAssociatedServiceIndices.length > 0 && allAssociatedServiceIndices.indexOf(x) < 0);
   }
 }
 

@@ -12,17 +12,23 @@ class ServiceCache {
       order: [
         ['category', 'ASC'],
         ['name', 'ASC']
-      ]
+      ],
+      raw: true
     });
 
-    ALL_SERVICES = services.map(service => service.dataValues);
+    ALL_SERVICES = services;
   }
 
-  static allMyOtherServices(services, establishment) {
+  static allMyOtherServices(services) {
+    return ALL_SERVICES
+      .filter(x => services && services.length > 0 && services.indexOf(x) < 0)
+      .map( x => { return { id: x.id, name: x.name, category: x.category }});
+  }
+
+  static allMyServices(establishment) {
     const cqc = establishment ? establishment.isRegulated : false;
 
     return ALL_SERVICES
-      .filter(x => services && services.length > 0 && services.indexOf(x) < 0)
       .filter(x => cqc ? x.iscqcregistered !== cqc : x.iscqcregistered === cqc )
       .map( x => { return { id: x.id, name: x.name, category: x.category }});
   }
