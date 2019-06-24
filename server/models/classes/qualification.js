@@ -229,16 +229,6 @@ class Qualification extends EntityValidator {
                 this._log(Qualification.LOG_ERROR, `qualification failed validation: qualification.id (${document.qualification.id}) must be an integer`);
                 returnStatus = false;
             }
-            if (document.qualification.level && !Number.isInteger(document.qualification.level)) {
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    103,
-                    `qualification.level (${document.qualification.level}) must be an integer`,
-                    ['Qualification']
-                ));
-                this._log(Qualification.LOG_ERROR, `qualification failed validation: qualification.level (${document.qualification.level}) must be an integer`);
-                returnStatus = false;
-            }
             let foundQualification = null;
             if (document.qualification.id) {
                 foundQualification = qualifications.find(thisQualification => thisQualification.id === document.qualification.id);
@@ -363,9 +353,6 @@ class Qualification extends EntityValidator {
         if (mustSave && this._isNew) {
             // create new Qualification Record
             try {
-                console.log("WA DEBUG - saving qualification: ", this._qualification)
-
-
                 // must validate the Worker record - to get the workerFk (integer)
                 let workerRecord = null;
 
@@ -399,9 +386,6 @@ class Qualification extends EntityValidator {
                         notes: this._notes,
                         attributes: ['uid', 'created', 'updated'],
                     };
-                    console.log("WA DEBUG - saving qualification found associated worker record: ", creationDocument)
-
-                    //console.log("WA DEBUG creation document: ", creationDocument)
     
                     // need to create the Training record only
                     //  in one transaction

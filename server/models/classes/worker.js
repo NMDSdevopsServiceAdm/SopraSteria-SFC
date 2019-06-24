@@ -253,7 +253,6 @@ class Worker extends EntityValidator {
                 })
             }
 
-            /*
             // there is no change audit on qualifications; simply delete all that is there and recreate
             if (this._qualificationsEntities && this._qualificationsEntities.length > 0) {
                 // delete all existing training records for this worker
@@ -273,7 +272,6 @@ class Worker extends EntityValidator {
                     newQualificationsPromises.push(currentQualificationRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
                 })
             }
-            */
 
             await Promise.all(newTrainingPromises);
             await Promise.all(newQualificationsPromises);
