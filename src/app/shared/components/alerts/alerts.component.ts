@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Alert } from '@core/model/alerts.model';
-import { AlertsService } from '@core/services/alerts.service';
+import { AlertService } from '@core/services/alert.service';
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
@@ -10,13 +10,13 @@ import { BehaviorSubject } from 'rxjs';
 export class AlertsComponent implements OnInit {
   public alert$: BehaviorSubject<Alert>;
 
-  constructor(private alertsService: AlertsService) {}
+  constructor(private alertService: AlertService) {}
 
   ngOnInit() {
-    this.alert$ = this.alertsService.alert$;
+    this.alert$ = this.alertService.alert$;
   }
 
   remove() {
-    this.alertsService.removeAlert();
+    this.alertService.removeAlert();
   }
 }

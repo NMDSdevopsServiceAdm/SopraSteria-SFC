@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { AlertsService } from '@core/services/alerts.service';
+import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { ReportsService } from '@core/services/reports.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -26,7 +26,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private alertsService: AlertsService,
+    private alertService: AlertService,
     private dialogService: DialogService,
     private workerService: WorkerService,
     private reportsService: ReportsService
@@ -54,7 +54,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       this.workerService.alert$.subscribe(alert => {
         if (alert) {
           window.scrollTo(0, 0);
-          this.alertsService.addAlert(alert);
+          this.alertService.addAlert(alert);
         }
       })
     );

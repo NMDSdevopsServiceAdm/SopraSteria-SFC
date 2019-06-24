@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class AlertsService {
+export class AlertService {
   public alert$: BehaviorSubject<Alert> = new BehaviorSubject(null);
 
   constructor() {}
