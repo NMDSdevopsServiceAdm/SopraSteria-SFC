@@ -6,8 +6,7 @@ import { LoggedInEstablishment } from '@core/model/logged-in.model';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-bulk-upload-page',
@@ -20,6 +19,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public uploadValidationErrors: Array<ErrorDefinition>;
+  public serverError: string;
   public showErrorSummary: boolean;
 
   constructor(
@@ -33,7 +33,6 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupUploadValidationErrors();
     this.setupSubscription();
-    this.bulkUploadService.uploadComplete$.next(false);
   }
 
   public setupFormErrorsMap(): void {
@@ -42,12 +41,17 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
 
   public setupUploadValidationErrors(): void {
     this.subscriptions.add(
-      this.bulkUploadService.validationErrors$
-        .pipe(filter(uploadValidationErrors => uploadValidationErrors !== null))
-        .subscribe(uploadValidationErrors => {
+      combineLatest(this.bulkUploadService.validationErrors$, this.bulkUploadService.serverError$).subscribe(
+        ([uploadValidationErrors, serverError]) => {
           this.uploadValidationErrors = uploadValidationErrors;
-          this.showErrorSummary = uploadValidationErrors.length > 0;
-        })
+          this.serverError = serverError;
+          this.showErrorSummary = (!!uploadValidationErrors && uploadValidationErrors.length > 0) || !!serverError;
+
+          if (this.showErrorSummary) {
+            this.errorSummaryService.scrollToErrorSummary();
+          }
+        }
+      )
     );
   }
 
@@ -63,7 +67,14 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * Unsubscribe to ensure no memory leaks
+   * And clear selected files, previous errors
+   * when navigated away from bulk upload page
+   */
   ngOnDestroy() {
+    this.bulkUploadService.selectedFiles$.next(null);
+    this.bulkUploadService.resetBulkUpload();
     this.subscriptions.unsubscribe();
   }
 }

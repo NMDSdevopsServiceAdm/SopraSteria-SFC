@@ -11,7 +11,7 @@ class MetaData {
   };
 
   get userName() {
-    return this._userName;
+    return this._username;
   }
   get id() {
     return this._id;
@@ -75,7 +75,7 @@ class MetaData {
       records: this._records ? this._records : 0,
       errors: this._errors ? this._errors : 0,
       warnings: this._warnings ? this._warnings : 0,
-      deleted: this._deleted ? this._deleted : undefined,
+      deleted: this._deleted !== null ? this._deleted : undefined,
     }
   }
 };

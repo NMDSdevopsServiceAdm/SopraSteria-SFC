@@ -1,26 +1,22 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BulkUploadService } from '@core/services/bulk-upload.service';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Alert } from '@core/model/alerts.model';
+import { AlertsService } from '@core/services/alerts.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-alerts',
   templateUrl: './alerts.component.html',
 })
-export class AlertsComponent implements OnInit, OnDestroy {
-  public displayUploadCompleteAlert = false;
-  private subscriptions: Subscription = new Subscription();
+export class AlertsComponent implements OnInit {
+  public alert$: BehaviorSubject<Alert>;
 
-  constructor(private bulkUploadService: BulkUploadService) {}
+  constructor(private alertsService: AlertsService) {}
 
   ngOnInit() {
-    this.subscriptions.add(
-      this.bulkUploadService.uploadComplete$.subscribe(uploadComplete => {
-        this.displayUploadCompleteAlert = uploadComplete;
-      })
-    );
+    this.alert$ = this.alertsService.alert$;
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  remove() {
+    this.alertsService.removeAlert();
   }
 }

@@ -4,6 +4,9 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const csv = require('csvtojson');
 const Stream = require('stream');
+const dbmodels = require('../../models');
+
+const UserAgentParser = require('ua-parser-js');
 
 const router = express.Router();
 const s3 = new AWS.S3({
@@ -44,7 +47,7 @@ router.route('/uploaded').get(async (req, res) => {
           const returnData = {
             filename: elements[elements.length - 1],
             uploaded: file.LastModified,
-            uploadedBy: objData.Metadata.username,
+            username: objData.Metadata.username,
             records: 0,
             errors: 0,
             warnings: 0,
@@ -89,7 +92,7 @@ router.route('/uploaded/*').get(async (req, res) => {
     const returnData = { 
       filename: elements[elements.length - 1],
       uploaded: objHeadData.LastModified,
-      uploadedBy: objHeadData.Metadata.username,
+      username: objHeadData.Metadata.username,
       size: objHeadData.ContentLength,
       key: requestedKey,
       signedUrl : s3.getSignedUrl('getObject', {
@@ -356,7 +359,7 @@ router.route('/uploaded').put(async (req, res) => {
       return {
         filename: metaData.filename,
         uploaded: metaData.lastModified,
-        uploadedBy: metaData.username,
+        username: metaData.userName ? metaData.userName : null,
         records: metaData.records,
         errors: 0,
         warnings: 0,
@@ -387,7 +390,7 @@ router.route('/uploaded').put(async (req, res) => {
               {
                 filename: fileName,
                 uploaded: myFile.LastModified,
-                uploadedBy : myFile.username,
+                username : myFile.username,
                 records: 0,
                 errors: 0,
                 warnings: 0,
@@ -548,6 +551,7 @@ router.route('/validate').post(async (req, res) => {
     // handle parsing errors
     if (!validationResponse.status) {
       return res.status(400).send({
+        report: validationResponse.report,
         establishments: {
           filename: null,
           records: importedEstablishments.length,
@@ -941,7 +945,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == "Training") {
     await Promise.all(
       training.imported.map((thisLine, currentLineNumber) => {
-        return _validateTrainingCsv(thisLine, currentLineNumber=2, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
+        return _validateTrainingCsv(thisLine, currentLineNumber+2, csvTrainingSchemaErrors, myTrainings, myAPITrainings);
       }) 
     );
 
@@ -1089,6 +1093,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
   const response = {
     status,
+    report,
     validation: {
       establishments: csvEstablishmentSchemaErrors,
       workers: csvWorkerSchemaErrors,
@@ -1204,7 +1209,7 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
       currentWorkers.forEach(thisCurrentWorker => {
         const foundWorker= onloadWorkers.find(thisOnloadWorker => thisCurrentWorker === thisOnloadWorker);
 
-        if (foundWorker) {
+        if (!foundWorker) {
           deletedWorkers.push({
             nameOrId: thisCurrentWorker
           });
@@ -1265,7 +1270,13 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
 
 };
 
-router.route('/report').get(async (req, res) => {  
+router.route('/report').get(async (req, res) => {
+  // this report returns as plain text. The report line endings are dependent on not the
+  //  runtime platform, but on the requesting platform (99.9999% of the users will be on Windows)
+  const userAgent = UserAgentParser(req.headers['user-agent']);
+  const windowsTest = /windows/i;
+  const NEWLINE = windowsTest.test(userAgent.os.name) ? "\r\n" : "\n";
+
   try {
     const params = {
       Bucket: appConfig.get('bulkupload.bucketname').toString(), 
@@ -1294,33 +1305,33 @@ router.route('/report').get(async (req, res) => {
 
     const errorTitle = '* Errors (will cause file(s) to be rejected) *';
     const errorPadding = '*'.padStart(errorTitle.length, '*');
-    readable.push(`${errorPadding}\n${errorTitle}\n${errorPadding}\n\n`);
+    readable.push(`${errorPadding}${NEWLINE}${errorTitle}${NEWLINE}${errorPadding}${NEWLINE}${NEWLINE}`);
 
     errorsAndWarnings
       .reduce((acc, val) => acc.concat(val), [])
       .filter(msg => msg.errCode && msg.errType)
       .sort((a,b) => a.errCode - b.errCode)
-      .map(item => readable.push(`${item.origin} - ${item.error}, ${item.errCode} on line ${item.lineNumber}\n`));
+      .map(item => readable.push(`${item.origin} - ${item.error}, ${item.errCode} on line ${item.lineNumber}${NEWLINE}`));
     
     const warningTitle = '* Warnings (files will be accepted but data is incomplete or internally inconsistent) *';
     const warningPadding = '*'.padStart(warningTitle.length, '*');
-    readable.push(`\n${warningPadding}\n${warningTitle}\n${warningPadding}\n\n`);
+    readable.push(`${NEWLINE}${warningPadding}${NEWLINE}${warningTitle}${NEWLINE}${warningPadding}${NEWLINE}${NEWLINE}`);
     
     errorsAndWarnings
       .reduce((acc, val) => acc.concat(val), [])
       .filter(msg => msg.warnCode && msg.warnType)
       .sort((a,b) => a.warnCode - b.warnCode)
-      .map(item => readable.push(`${item.origin} - ${item.warning}, ${item.warnCode} on line ${item.lineNumber}\n`));
+      .map(item => readable.push(`${item.origin} - ${item.warning}, ${item.warnCode} on line ${item.lineNumber}${NEWLINE}`));
 
     const laTitle = '* You are sharing data with the following Local Authorities *';
     const laPadding = '*'.padStart(laTitle.length, '*');
-    readable.push(`\n${laPadding}\n${laTitle}\n${laPadding}\n\n`);
+    readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}${NEWLINE}`);
 
     entities ? entities
       .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
       .reduce((acc, val) => acc.concat(val), [])
       .sort((a,b) => a.name > b.name)
-      .map(item => readable.push(`${item.name}\n`)) : true;
+      .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
     
     readable.push(null);
 
@@ -1376,9 +1387,11 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
 router.route('/complete').post(async (req, res) => {
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
+  const primaryEstablishmentUid = req.establishment.uid;
   const isParent = req.isParent;
 
   // TODO: add traps to prevent completing without having ensure validation and just warnings not errors
+  const fetchPromises = [];
 
   try {
     // completing bulk upload must always work on the current set of known entities and not rely
@@ -1388,16 +1401,79 @@ router.route('/complete').post(async (req, res) => {
 
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
+      const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null);
+      const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
 
-      // having the set of onload and current entities, work through the onload entities creating the validation difference report
-      const report = validationDifferenceReport(primaryEstablishmentId, onloadEstablishments, myCurrentEstablishments);
+      // could look to parallel the three above tasks as each is relatively intensive - but happy path first
+      // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction
+      try {
+        // all creates, updates and deletes (archive) are done in one transaction to ensure database integrity
+        await dbmodels.sequelize.transaction(async t => {
+          const updatedEstablishments = [];
 
-      return res.status(200).send({
-        report,
-        current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
-        validated: onloadEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
-      });
-  
+          // first create the new establishments
+          validationDiferenceReport.new.forEach(thisNewEstablishment => {
+            // find the onload establishment by key
+            // TODO - use the LOCAL_IDENTIFIER when its available
+            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.name === thisNewEstablishment.name);
+
+            // the entity is already loaded, so simply prep it ready for saving
+            if (foundOnloadEstablishment) {
+              // as this new establishment is created from a parent, it automatically becomes a sub
+              foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
+              updatedEstablishments.push(foundOnloadEstablishment);
+            }
+          });
+
+          // now update the updated
+          const updateEstablishmentPromises = []; 
+          validationDiferenceReport.updated.forEach(thisUpdatedEstablishment => {
+            // find the current establishment and onload establishment by key
+            // TODO - use the LOCAL_IDENTIFIER when its available
+            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.name === thisUpdatedEstablishment.name);
+            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.name === thisUpdatedEstablishment.name);
+
+            // current is already restored, so simply need to load the onboard into the current, and load the associated work entities
+            if (foundCurrentEstablishment) {
+              updatedEstablishments.push(foundCurrentEstablishment);
+              updateEstablishmentPromises.push(foundCurrentEstablishment.load(foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true), true));
+            }
+          });
+
+          // and finally, delete the deleted
+          validationDiferenceReport.deleted.forEach(thisDeletedEstablishment => {
+            console.log("WA DEBUG - deleting establishment, key: ", thisDeletedEstablishment.name);
+
+            // find the current establishment by key
+            // TODO - use the LOCAL_IDENTIFIER when its available
+            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.name === thisDeletedEstablishment.name);
+
+            // current is already restored, so simply need to delete it
+            if (foundCurrentEstablishment) {
+              updateEstablishmentPromises.push(foundCurrentEstablishment.delete(theLoggedInUser, t, true));
+            }
+          });
+
+          // wait for all updated::loads and deleted::deletes to complete
+          await Promise.all(updateEstablishmentPromises);
+
+          // and now all saves for new, updated and deleted establishments, including their associated entities
+          await Promise.all(updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t, true)));
+        });
+
+        return res.status(200).send({
+          // current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
+          // validated: onloadEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
+        });
+    
+      } catch (err) {
+        console.error("route('/complete') err: ", err);
+        return res.status(503).send({
+          message: 'Failed to save'
+        });
+      }
+
+
     } catch (err) {
       console.error('router.route(\'/complete\').post: failed to download entities intermediary - atypical that the object does not exist because not yet validated: ', err);
       return res.status(400).send({

@@ -111,7 +111,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
             req.role = claim.role;
             req.establishment = {
               id: claim.EstblishmentId,
-              uid: establishmentIdIsUID ? claim.EstablishmentUID : null
+              uid: claim.EstablishmentUID
             };
 
             next();
@@ -131,7 +131,7 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           req.role = claim.role;
           req.establishment = {
             id: claim.EstblishmentId,
-            uid: establishmentIdIsUID ? claim.EstablishmentUID : null
+            uid: claim.EstablishmentUID
           };
 
           // having settled all claims, it is necessary to normalise req.establishmentId so it is always the establishment primary key
