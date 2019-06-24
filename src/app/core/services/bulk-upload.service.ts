@@ -21,7 +21,6 @@ export class BulkUploadService {
   public preValidationError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
-  public uploadComplete$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
 
@@ -72,7 +71,6 @@ export class BulkUploadService {
   public resetBulkUpload(): void {
     this.validationErrors$.next(null);
     this.serverError$.next(null);
-    this.uploadComplete$.next(null);
   }
 
   public formErrorsMap(): Array<ErrorDetails> {
