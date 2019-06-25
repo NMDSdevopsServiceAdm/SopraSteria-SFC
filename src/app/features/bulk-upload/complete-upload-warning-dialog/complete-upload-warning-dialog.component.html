@@ -1,0 +1,25 @@
+<h1 class="govuk-panel--warning-prompt">Uploading the files will permanently delete all the following information:</h1>
+
+<table class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Number of workplaces</th>
+      <th class="govuk-table__header" scope="col">Number of staff records</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">{{ data.deletedWorkplaces }}</td>
+      <td class="govuk-table__cell">{{ data.deletedStaffRecords }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  <strong>This action cannot be undone.</strong>
+</p>
+
+<button (click)="close(true)" class="govuk-button">Continue upload</button>
+<button (click)="close(false)" class="govuk-button govuk-button--link govuk-util__float-right">
+  Cancel
+</button>
