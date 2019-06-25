@@ -159,6 +159,7 @@ export class FilesUploadComponent implements OnInit {
         null,
         () => this.cancelUpload(),
         () => {
+          this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
           this.filesUploaded = true;
         }

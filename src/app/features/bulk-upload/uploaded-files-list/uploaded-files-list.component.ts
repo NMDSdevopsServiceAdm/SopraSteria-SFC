@@ -40,24 +40,24 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.checkForUploadedFiles();
-    this.checkForSelectedFiles();
+    this.getUploadedFiles();
+    this.preValidateFilesSubscription();
   }
 
-  private checkForUploadedFiles(): void {
+  private getUploadedFiles(): void {
     this.subscriptions.add(
       this.bulkUploadService.uploadedFiles$.subscribe((uploadedFiles: ValidatedFile[]) => {
         if (uploadedFiles) {
-          this.checkForMandatoryFiles(uploadedFiles);
+          this.uploadedFiles = uploadedFiles;
         }
       })
     );
   }
 
-  private checkForSelectedFiles(): void {
+  private preValidateFilesSubscription(): void {
     this.subscriptions.add(
-      this.bulkUploadService.selectedFiles$.subscribe((selectedFiles: File[]) => {
-        if (selectedFiles) {
+      this.bulkUploadService.preValidateFiles$.subscribe((preValidateFiles: boolean) => {
+        if (preValidateFiles) {
           this.preValidateFiles();
         }
       })
@@ -68,6 +68,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.bulkUploadService
         .preValidateFiles(this.establishmentService.establishmentId)
+        .pipe(take(1))
         .subscribe(
           (response: ValidatedFile[]) => this.checkForMandatoryFiles(response),
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message)
