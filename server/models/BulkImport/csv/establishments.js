@@ -1481,12 +1481,11 @@ class Establishment {
   }
 
   static missingPrimaryEstablishmentError(name) {
-    // TODO - this should be an error, but raising it as a warning for now
     return {
       origin: 'Establishments',
       lineNumber: 1,
-      warnCode: Establishment.MISSING_PRIMARY_ERROR,
-      warnCode: `MISSING_PRIMARY_ERROR`,
+      errCode: Establishment.MISSING_PRIMARY_ERROR,
+      errType: `MISSING_PRIMARY_ERROR`,
       error: `Missing the primary establishment: ${name}`,
       source: '',
     };

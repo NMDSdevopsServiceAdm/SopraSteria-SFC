@@ -110,6 +110,54 @@ router.route('/uploaded/*').get(async (req, res) => {
     return res.status(503).send({});
   }
 });
+
+const purgeBulkUploadS3Obbejcts = async (establishmentId) => {
+    // drop all in latest
+    let listParams = {
+      Bucket: appConfig.get('bulkupload.bucketname').toString(), 
+      Prefix: `${establishmentId}/latest/`
+    };
+    const latestObjects = await s3.listObjects(listParams).promise();
+    
+    const deleteKeys = [];
+    latestObjects.Contents.forEach(myFile => {
+      const ignoreRoot = /.*\/$/;
+      if (!ignoreRoot.test(myFile.Key)) {
+        deleteKeys.push({
+          Key: myFile.Key
+        });
+      }
+    });
+
+    listParams.Prefix = `${establishmentId}/intermediary/`;
+    const intermediaryObjects = await s3.listObjects(listParams).promise();
+    intermediaryObjects.Contents.forEach(myFile => {
+      deleteKeys.push({
+        Key: myFile.Key
+      });
+    });
+
+    listParams.Prefix = `${establishmentId}/validation/`;
+    const validationObjects = await s3.listObjects(listParams).promise();
+    validationObjects.Contents.forEach(myFile => {
+      deleteKeys.push({
+        Key: myFile.Key
+      });
+    });
+
+    if (deleteKeys.length > 0) {
+      // now delete the objects in one go
+      const deleteParams = {
+        Bucket: appConfig.get('bulkupload.bucketname').toString(), 
+        Delete: {
+          Objects: deleteKeys,
+          Quiet: true,
+        },
+      };
+      await s3.deleteObjects(deleteParams).promise();
+    }
+}
+
 /*
  * input:
  * "files": [
@@ -140,50 +188,8 @@ router.route('/uploaded').post(async function (req, res) {
 
   const signedUrls = [];
   try {
-    // drop all in latest
-    let listParams = {
-      Bucket: appConfig.get('bulkupload.bucketname').toString(), 
-      Prefix: `${myEstablishmentId}/latest/`
-    };
-    const latestObjects = await s3.listObjects(listParams).promise();
-    
-    const deleteKeys = [];
-    latestObjects.Contents.forEach(myFile => {
-      const ignoreRoot = /.*\/$/;
-      if (!ignoreRoot.test(myFile.Key)) {
-        deleteKeys.push({
-          Key: myFile.Key
-        });
-      }
-    });
-
-    listParams.Prefix = `${myEstablishmentId}/intermediary/`;
-    const intermediaryObjects = await s3.listObjects(listParams).promise();
-    intermediaryObjects.Contents.forEach(myFile => {
-      deleteKeys.push({
-        Key: myFile.Key
-      });
-    });
-
-    listParams.Prefix = `${myEstablishmentId}/validation/`;
-    const validationObjects = await s3.listObjects(listParams).promise();
-    validationObjects.Contents.forEach(myFile => {
-      deleteKeys.push({
-        Key: myFile.Key
-      });
-    });
-
-    if (deleteKeys.length > 0) {
-      // now delete the objects in one go
-      const deleteParams = {
-        Bucket: appConfig.get('bulkupload.bucketname').toString(), 
-        Delete: {
-          Objects: deleteKeys,
-          Quiet: true,
-        },
-      };
-      await s3.deleteObjects(deleteParams).promise();
-    }
+    // clean up existing bulk upload objects
+    await purgeBulkUploadS3Obbejcts(myEstablishmentId);
 
     uploadedFiles.forEach(thisFile => {
       if (thisFile.filename) {
@@ -884,8 +890,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     status = false;
   }
   establishments.establishmentMetadata.records = myEstablishments.length;
-  establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // parse and process Workers CSV
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType == "Worker") {
@@ -938,8 +942,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     status = false;
   }
   workers.workerMetadata.records = myWorkers.length;
-  workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == "Training") {
@@ -990,8 +992,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
       status = false;
   }
   training.trainingMetadata.records = myTrainings.length;
-  training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // prepare entities ready for upload/return
   const establishmentsAsArray = Object.values(myAPIEstablishments);
@@ -1032,6 +1032,14 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   } else {
     console.error(("Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!"));
   }
+
+  // update CSV metadata error/warning counts
+  establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
+  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+  workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
+  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+  training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
+  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // create the difference report, which includes trapping for deleting of primary establishment
   const report = validationDifferenceReport(establishmentId, establishmentsAsArray, myCurrentEstablishments);
@@ -1442,7 +1450,6 @@ router.route('/complete').post(async (req, res) => {
 
           // and finally, delete the deleted
           validationDiferenceReport.deleted.forEach(thisDeletedEstablishment => {
-            console.log("WA DEBUG - deleting establishment, key: ", thisDeletedEstablishment.name);
 
             // find the current establishment by key
             // TODO - use the LOCAL_IDENTIFIER when its available
@@ -1460,6 +1467,10 @@ router.route('/complete').post(async (req, res) => {
           // and now all saves for new, updated and deleted establishments, including their associated entities
           await Promise.all(updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t, true)));
         });
+
+        // gets here having successfully completed upon the bulk upload
+        //  clean up the S3 objects
+        await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
 
         return res.status(200).send({
           // current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
