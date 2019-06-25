@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import {
+  BulkUploadFileType,
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
@@ -61,6 +62,25 @@ export class BulkUploadService {
 
   public getReport(establishmentId: number, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report/${reportType}`, {
+      observe: 'response',
+      responseType: 'blob' as 'json',
+    });
+  }
+
+  public getDataCSV(establishmentId: number, type: BulkUploadFileType): Observable<any> {
+    let url: string;
+    switch (type) {
+      case BulkUploadFileType.Establishment:
+        url = 'establishment';
+        break;
+      case BulkUploadFileType.Worker:
+        url = 'workers';
+        break;
+      case BulkUploadFileType.Training:
+        url = 'training';
+        break;
+    }
+    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/download/${url}`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });

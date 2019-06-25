@@ -2,19 +2,19 @@
 <p class="govuk-caption-m">Last updated on {{ lastUpdated | date: 'd MMMM y' }}</p>
 <ul class="govuk-list govuk-list--download">
   <li>
-    <a href="#">Workplace information</a><br />
+    <a href="#" (click)="downloadFile($event, BulkUploadFileType.Establishment)">Workplace information</a><br />
     <a href="/public/download/BUDI_Workplace_Codes_and_Guidance_ACSWDS.pdf">
       Workplace codes and guidance
     </a>
   </li>
   <li>
-    <a href="#">Staff records</a><br />
+    <a href="#" (click)="downloadFile($event, BulkUploadFileType.Worker)">Staff records</a><br />
     <a href="/public/download/BUDI_Staff_Records_Codes_and_Guidance_ACSWDS.pdf ">
       Staff records codes and guidance
     </a>
   </li>
   <li>
-    <a href="#">Training records</a><br />
+    <a href="#" (click)="downloadFile($event, BulkUploadFileType.Training)">Training records</a><br />
     <a href="/public/download/BUDI_Training_Records_Codes_and_Guidance_ACSWDS.pdf">
       Training records codes and guidance
     </a>
