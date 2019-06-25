@@ -53,7 +53,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.alert$.subscribe(alert => {
         if (alert) {
-          window.scrollTo(0, 0);
           this.alertService.addAlert(alert);
         }
       })

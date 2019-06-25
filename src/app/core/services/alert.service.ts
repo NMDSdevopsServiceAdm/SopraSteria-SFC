@@ -4,13 +4,15 @@ import { Alert } from '@core/model/alert.model';
 import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
+import { WindowRef } from './window.ref';
+
 @Injectable({
   providedIn: 'root',
 })
 export class AlertService {
   public alert$: BehaviorSubject<Alert> = new BehaviorSubject(null);
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private windowRef: WindowRef) {
     this.router.events.pipe(filter(event => event instanceof NavigationStart)).subscribe(() => {
       this.removeAlert();
     });
@@ -18,6 +20,7 @@ export class AlertService {
 
   addAlert(alert: Alert) {
     this.alert$.next(alert);
+    this.windowRef.nativeWindow.scrollTo(0, 0);
   }
 
   removeAlert() {
