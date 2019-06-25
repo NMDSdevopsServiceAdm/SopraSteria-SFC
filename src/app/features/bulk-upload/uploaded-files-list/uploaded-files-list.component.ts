@@ -1,7 +1,6 @@
 import { I18nPluralPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import {
   BulkUploadFileType,
   FileValidateStatus,
@@ -9,13 +8,10 @@ import {
   ValidatedFilesResponse,
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
-import { AlertService } from '@core/services/alert.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { saveAs } from 'file-saver';
 import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-uploaded-files-list',
@@ -34,9 +30,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
-    private i18nPluralPipe: I18nPluralPipe,
-    private router: Router,
-    private alertService: AlertService
+    private i18nPluralPipe: I18nPluralPipe
   ) {}
 
   ngOnInit() {
@@ -114,22 +108,6 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     );
   }
 
-  public downloadReport(): void {
-    this.bulkUploadService
-      .getReport(this.establishmentService.establishmentId)
-      .pipe(take(1))
-      .subscribe(
-        response => {
-          const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-          const filenameMatches = response.headers.get('content-disposition').match(filenameRegEx);
-          const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
-          const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
-          saveAs(blob, filename);
-        },
-        () => {}
-      );
-  }
-
   /**
    * Set validate success update uploaded files
    * And then set total warnings and/or errors and status
@@ -173,22 +151,6 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private onValidateError(response: HttpErrorResponse): void {
     const error: ValidatedFilesResponse = response.error;
     console.log(error);
-  }
-
-  public completeUpload(): void {
-    this.bulkUploadService.serverError$.next(null);
-    this.bulkUploadService
-      .complete(this.establishmentService.establishmentId)
-      .pipe(take(1))
-      .subscribe(
-        () => {
-          this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
-          this.router.navigate(['/dashboard']);
-        },
-        response => {
-          this.bulkUploadService.serverError$.next(response.error.message);
-        }
-      );
   }
 
   get hasWarnings() {

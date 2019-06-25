@@ -64,32 +64,9 @@
 </ng-container>
 
 <ng-container *ngIf="validationComplete">
-  <p *ngIf="hasErrors">
-    Review the <strong>{{ totalErrors }}</strong> errors in the report.
-  </p>
-
-  <p *ngIf="hasWarnings && !hasErrors">
-    Review the <strong>{{ totalWarnings }}</strong>
-    {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }} in the report or complete the upload to
-    import the data.
-  </p>
-
-  <p *ngIf="hasWarnings || hasErrors">
-    <button (click)="downloadReport()" class="govuk-button govuk-button--link govuk-!-padding-0">
-      Download the report
-    </button>
-  </p>
-
-  <p *ngIf="!hasWarnings && !hasErrors">
-    You need to complete the upload to import the data.
-  </p>
-
-  <button
-    *ngIf="!hasErrors"
-    type="button"
-    class="govuk-button govuk-button--primary govuk-!-margin-top-2"
-    (click)="completeUpload()"
-  >
-    Complete upload
-  </button>
+  <app-post-validation-actions
+    [uploadedFiles]="uploadedFiles"
+    [hasErrors]="hasErrors"
+    [hasWarnings]="hasWarnings"
+  ></app-post-validation-actions>
 </ng-container>
