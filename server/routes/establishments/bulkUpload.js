@@ -884,8 +884,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     status = false;
   }
   establishments.establishmentMetadata.records = myEstablishments.length;
-  establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // parse and process Workers CSV
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType == "Worker") {
@@ -938,8 +936,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     status = false;
   }
   workers.workerMetadata.records = myWorkers.length;
-  workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // parse and process Training CSV
   if (Array.isArray(training.imported) && training.imported.length > 0 && training.trainingMetadata.fileType == "Training") {
@@ -990,8 +986,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
       status = false;
   }
   training.trainingMetadata.records = myTrainings.length;
-  training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
-  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // prepare entities ready for upload/return
   const establishmentsAsArray = Object.values(myAPIEstablishments);
@@ -1032,6 +1026,14 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   } else {
     console.error(("Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!"));
   }
+
+  // update CSV metadata error/warning counts
+  establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
+  establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+  workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
+  workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+  training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
+  training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
   // create the difference report, which includes trapping for deleting of primary establishment
   const report = validationDifferenceReport(establishmentId, establishmentsAsArray, myCurrentEstablishments);
