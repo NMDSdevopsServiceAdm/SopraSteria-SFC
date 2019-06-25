@@ -741,7 +741,7 @@ class Worker extends EntityValidator {
                         attributes: ['id', 'title']
                         }
                 ],
-                attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", 'lastWdfEligibility', "created", "updated", "updatedBy"],
+                attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", 'MainJobFkOther', 'lastWdfEligibility', "created", "updated", "updatedBy"],
                 order: [
                     ['updated', 'DESC']
                 ]
@@ -759,7 +759,8 @@ class Worker extends EntityValidator {
                         contract: thisWorker.ContractValue,
                         mainJob: {
                             jobId: thisWorker.mainJob.id,
-                            title: thisWorker.mainJob.title
+                            title: thisWorker.mainJob.title,
+                            other: thisWorker.MainJobFkOther ? thisWorker.MainJobFkOther : undefined,
                         },
                         completed: thisWorker.CompletedValue,
                         created:  thisWorker.created.toJSON(),
