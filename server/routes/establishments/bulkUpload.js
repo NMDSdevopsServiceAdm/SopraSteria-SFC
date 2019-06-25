@@ -110,6 +110,54 @@ router.route('/uploaded/*').get(async (req, res) => {
     return res.status(503).send({});
   }
 });
+
+const purgeBulkUploadS3Obbejcts = async (establishmentId) => {
+    // drop all in latest
+    let listParams = {
+      Bucket: appConfig.get('bulkupload.bucketname').toString(), 
+      Prefix: `${establishmentId}/latest/`
+    };
+    const latestObjects = await s3.listObjects(listParams).promise();
+    
+    const deleteKeys = [];
+    latestObjects.Contents.forEach(myFile => {
+      const ignoreRoot = /.*\/$/;
+      if (!ignoreRoot.test(myFile.Key)) {
+        deleteKeys.push({
+          Key: myFile.Key
+        });
+      }
+    });
+
+    listParams.Prefix = `${establishmentId}/intermediary/`;
+    const intermediaryObjects = await s3.listObjects(listParams).promise();
+    intermediaryObjects.Contents.forEach(myFile => {
+      deleteKeys.push({
+        Key: myFile.Key
+      });
+    });
+
+    listParams.Prefix = `${establishmentId}/validation/`;
+    const validationObjects = await s3.listObjects(listParams).promise();
+    validationObjects.Contents.forEach(myFile => {
+      deleteKeys.push({
+        Key: myFile.Key
+      });
+    });
+
+    if (deleteKeys.length > 0) {
+      // now delete the objects in one go
+      const deleteParams = {
+        Bucket: appConfig.get('bulkupload.bucketname').toString(), 
+        Delete: {
+          Objects: deleteKeys,
+          Quiet: true,
+        },
+      };
+      await s3.deleteObjects(deleteParams).promise();
+    }
+}
+
 /*
  * input:
  * "files": [
@@ -140,50 +188,8 @@ router.route('/uploaded').post(async function (req, res) {
 
   const signedUrls = [];
   try {
-    // drop all in latest
-    let listParams = {
-      Bucket: appConfig.get('bulkupload.bucketname').toString(), 
-      Prefix: `${myEstablishmentId}/latest/`
-    };
-    const latestObjects = await s3.listObjects(listParams).promise();
-    
-    const deleteKeys = [];
-    latestObjects.Contents.forEach(myFile => {
-      const ignoreRoot = /.*\/$/;
-      if (!ignoreRoot.test(myFile.Key)) {
-        deleteKeys.push({
-          Key: myFile.Key
-        });
-      }
-    });
-
-    listParams.Prefix = `${myEstablishmentId}/intermediary/`;
-    const intermediaryObjects = await s3.listObjects(listParams).promise();
-    intermediaryObjects.Contents.forEach(myFile => {
-      deleteKeys.push({
-        Key: myFile.Key
-      });
-    });
-
-    listParams.Prefix = `${myEstablishmentId}/validation/`;
-    const validationObjects = await s3.listObjects(listParams).promise();
-    validationObjects.Contents.forEach(myFile => {
-      deleteKeys.push({
-        Key: myFile.Key
-      });
-    });
-
-    if (deleteKeys.length > 0) {
-      // now delete the objects in one go
-      const deleteParams = {
-        Bucket: appConfig.get('bulkupload.bucketname').toString(), 
-        Delete: {
-          Objects: deleteKeys,
-          Quiet: true,
-        },
-      };
-      await s3.deleteObjects(deleteParams).promise();
-    }
+    // clean up existing bulk upload objects
+    await purgeBulkUploadS3Obbejcts(myEstablishmentId);
 
     uploadedFiles.forEach(thisFile => {
       if (thisFile.filename) {
@@ -1444,7 +1450,6 @@ router.route('/complete').post(async (req, res) => {
 
           // and finally, delete the deleted
           validationDiferenceReport.deleted.forEach(thisDeletedEstablishment => {
-            console.log("WA DEBUG - deleting establishment, key: ", thisDeletedEstablishment.name);
 
             // find the current establishment by key
             // TODO - use the LOCAL_IDENTIFIER when its available
@@ -1462,6 +1467,10 @@ router.route('/complete').post(async (req, res) => {
           // and now all saves for new, updated and deleted establishments, including their associated entities
           await Promise.all(updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t, true)));
         });
+
+        // gets here having successfully completed upon the bulk upload
+        //  clean up the S3 objects
+        await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
 
         return res.status(200).send({
           // current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
