@@ -920,7 +920,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
 
           // associate this worker to the known establishment
-          const workerKey = thisWorker.uniqueWorker.replace(/\s/g, "");
+          const workerKey = thisWorker.uniqueWorker ? thisWorker.uniqueWorker.replace(/\s/g, "") : null;
           const foundEstablishmentByLineNumber = allEstablishmentsByKey[establishmentKeyNoWhitespace];
           const knownEstablishment = foundEstablishmentByLineNumber ? myAPIEstablishments[foundEstablishmentByLineNumber] : null;
           if (knownEstablishment) {
@@ -1351,50 +1351,59 @@ router.route('/report/:reportType').get(async (req, res) => {
   const NEWLINE = windowsTest.test(userAgent.os.name) ? "\r\n" : "\n";
   const reportTypes = ['training', 'establishments', 'workers'];
   const reportType = req.params.reportType;
+  const readable = new Stream.Readable();
 
   try {
     if (!reportTypes.includes(reportType)) {
-      throw new Error(`Invalid report type, valid types include - ${reportTypes.join(', ')}`);
+      throw new Error(`router.route('/report').get - Invalid report type, valid types include - ${reportTypes.join(', ')}`);
     }
 
-    let establishment =  null;
+    let entities =  null;
+    let messages =  null;
 
     try {
       const entityKey = `${req.establishmentId}/intermediary/establishment.entities.json`;
-      establishment = await downloadContent(entityKey);
+      const establishment = await downloadContent(entityKey);
+      entities = establishment ? JSON.parse(establishment.data) : null;
     } catch (err) {
       throw new Error(`router.route('/report').get - failed to download: `, key);
     }
 
-    const entities = establishment ? JSON.parse(establishment.data) : null;
-    const reportKey = `${req.establishmentId}/validation/${reportType}.validation.json`;
-    const content = await downloadContent(reportKey);
-    const messages = JSON.parse(content.data);
-    const readable = new Stream.Readable();
+    try {
+      const reportKey = `${req.establishmentId}/validation/${reportType}.validation.json`;
+      const content = await downloadContent(reportKey);
+      messages = content ? JSON.parse(content.data) : null;
+    } catch (err) {
+      throw new Error(`router.route('/report').get - failed to download: `, key);
+    }
 
     const errorTitle = '* Errors (will cause file(s) to be rejected) *';
     const errorPadding = '*'.padStart(errorTitle.length, '*');
-    readable.push(`${errorPadding}${NEWLINE}${errorTitle}${NEWLINE}${errorPadding}${NEWLINE}${NEWLINE}`);
+    readable.push(`${errorPadding}${NEWLINE}${errorTitle}${NEWLINE}${errorPadding}${NEWLINE}`);
 
-    messages
+    const errors = messages
       .reduce((acc, val) => acc.concat(val), [])
       .filter(msg => msg.errCode && msg.errType)
-      .sort((a,b) => a.errCode - b.errCode)
-      .map(item => readable.push(getError(NEWLINE, reportType, item)));
+      .sort((a,b) => a.lineNumber - b.lineNumber)
+      .reduce((result, item) => ({ ...result, [item['error']]: [...(result[item['error']] || []), item]}), {});
+ 
+    printLine(readable, reportType, errors, NEWLINE)
 
     const warningTitle = '* Warnings (files will be accepted but data is incomplete or internally inconsistent) *';
     const warningPadding = '*'.padStart(warningTitle.length, '*');
-    readable.push(`${NEWLINE}${warningPadding}${NEWLINE}${warningTitle}${NEWLINE}${warningPadding}${NEWLINE}${NEWLINE}`);
+    readable.push(`${NEWLINE}${warningPadding}${NEWLINE}${warningTitle}${NEWLINE}${warningPadding}${NEWLINE}`);
     
-    messages
+    const warnings =  messages
       .reduce((acc, val) => acc.concat(val), [])
       .filter(msg => msg.warnCode && msg.warnType)
-      .sort((a,b) => a.warnCode - b.warnCode)
-      .map(item => readable.push(getError(NEWLINE, reportType, item)));
-
+      .sort((a,b) => a.lineNumber - b.lineNumber)
+      .reduce((result, item) => ({ ...result, [item['warning']]: [...(result[item['warning']] || []), item]}), {});
+    
+    printLine(readable, reportType, warnings, NEWLINE)
+    
     const laTitle = '* You are sharing data with the following Local Authorities *';
     const laPadding = '*'.padStart(laTitle.length, '*');
-    readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}${NEWLINE}`);
+    readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
 
     entities ? entities
       .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
@@ -1413,6 +1422,20 @@ router.route('/report/:reportType').get(async (req, res) => {
   }
 });
 
+const printLine = (readable, reportType, errors, sep) => {
+  Object.keys(errors).forEach(key => {
+    readable.push(`${sep}${key}${sep}`);
+      errors[key].forEach(item => { 
+        if (reportType === 'training') 
+          return readable.push(`For worker with ${item.name} Subsidiary 3 and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`)
+        else if (reportType === 'establishments')
+          return readable.push(`For establishment called ${item.name} on line ${item.lineNumber}${sep}`)
+        else if (reportType === 'workers')
+          return readable.push(`For worker with LOCALESTID ${item.name} and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`)
+      });
+  });
+}
+
 const getFileName = (reportType) => {
   if (reportType === 'training') 
     return 'TrainingResults.txt';
@@ -1420,15 +1443,6 @@ const getFileName = (reportType) => {
     return 'WorkplaceResults.txt';
   else if (reportType === 'workers')
     return 'StaffrecordsResults.txt';
-}
-
-const getError = (NEWLINE, reportType, item) => {
-  if (reportType === 'training') 
-    return `${NEWLINE}${item.error || item.warnType}${NEWLINE}For worker with ${item.name} Subsidiary 3 and UNIQUEWORKERID g on line ${item.lineNumber}${NEWLINE}`
-  else if (reportType === 'establishments')
-    return `${NEWLINE}${item.error || item.warnType}${NEWLINE}For establishment called ${item.name} on line ${item.lineNumber}${NEWLINE}`
-  else if (reportType === 'workers')
-    return `${NEWLINE}${item.error || item.warnType}${NEWLINE}For worker with LOCALESTID ${item.name} and UNIQUEWORKERID h on line ${item.lineNumber}${NEWLINE}`
 }
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers

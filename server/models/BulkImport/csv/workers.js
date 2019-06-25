@@ -262,6 +262,8 @@ class Worker {
     //console.log("NM DEBUG: contract type (employment status): ", myContractType)
     if (Number.isNaN(myContractType)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.CONTRACT_TYPE_ERROR,
         errType: 'CONTRACT_TYPE_ERROR',
@@ -283,6 +285,8 @@ class Worker {
 
     if (!myLocalId || myLocalId.length == 0) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
@@ -292,6 +296,8 @@ class Worker {
       return false;
     } else if (myLocalId.length >= MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
@@ -314,6 +320,8 @@ class Worker {
 
     if (!myUniqueWorkerId || myUniqueWorkerId.length == 0) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
@@ -323,6 +331,8 @@ class Worker {
       return false;
     } else if (myUniqueWorkerId.length >= MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
@@ -342,6 +352,8 @@ class Worker {
     const MAX_LENGTH = 50;
     if (myChangeUniqueWorkerId.length >= MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.CHANGE_UNIQUE_WORKER_ID_ERROR,
         errType: `CHANGE_UNIQUE_WORKER_ID_ERROR`,
@@ -362,6 +374,8 @@ class Worker {
     // must be present and must be one of the preset values (case insensitive)
     if (!statusValues.includes(myStatus)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.STATUS_ERROR,
         errType: `STATUS_ERROR`,
@@ -381,6 +395,8 @@ class Worker {
 
     if (myDisplayId.length >= MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.DISPLAY_ID_ERROR,
         errType: `WORKER_DISPLAY_ID_ERROR`,
@@ -402,6 +418,8 @@ class Worker {
     if (myNINumber.length > 0) {
       if  (myNINumber.length != LENGTH  ) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.NINUMBER_ERROR,
           errType: `WORKER_NINUMBER_ERROR`,
@@ -412,6 +430,8 @@ class Worker {
       } else if (myNINumber.length > 0 && myNINumber.length == LENGTH && !niRegex.test(myNINumber)) {
   
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.NINUMBER_ERROR,
           errType: `WORKER_NINUMBER_ERROR`,
@@ -435,6 +455,8 @@ class Worker {
     if (myPostcode.length) {
       if (myPostcode.length >= MAX_LENGTH) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.LOCAL_ID_ERROR,
           errType: `POSTCODE_ERROR`,
@@ -444,6 +466,8 @@ class Worker {
         return false;
       } else if (myPostcode.length >= MAX_LENGTH && !postcodeRegex.test(myPostcode)) {
          this._validationErrors.push({
+           worker: this._currentLine.UNIQUEWORKERID,
+           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.POSTCODE_ERROR,
           errType: `POSTCODE ERROR`,
@@ -467,6 +491,8 @@ class Worker {
   
       if (!myDobRealDate.isValid()) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.DOB_ERROR,
           errType: `DOB_ERROR`,
@@ -485,6 +511,8 @@ class Worker {
         if (MIN_DATE.isBefore(myDobRealDate, 'year') || MAX_DATE.isAfter(myDobRealDate, 'year')) {
   
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.DOB_ERROR,
             errType: `DOB_ERROR`,
@@ -510,6 +538,8 @@ class Worker {
     if (this._currentLine.GENDER.length > 0) {
       if (isNaN(myGender)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.GENDER_ERROR,
           errType: 'GENDER_ERROR',
@@ -519,6 +549,8 @@ class Worker {
         return false;
       } else if (!genderValues.includes(parseInt(myGender))) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.GENDER_ERROR,
           errType: 'GENDER_ERROR',
@@ -556,6 +588,8 @@ class Worker {
     if (this._currentLine.ETHNICITY && this._currentLine.ETHNICITY.length > 0) {
       if (isNaN(myEthnicity)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ETHNICITY_ERROR,
           errType: 'ETHNICITY_ERROR',
@@ -565,6 +599,8 @@ class Worker {
         return false;
       } else if (!ethnicityValues.includes(myEthnicity)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ETHNICITY_ERROR,
           errType: 'ETHNICITY_ERROR',
@@ -590,6 +626,8 @@ class Worker {
     if (this._currentLine.BRITISHCITIZENSHIP && this._currentLine.BRITISHCITIZENSHIP.length > 0) {
       if (isNaN(myBritishCitizenship)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
           errType: 'BRITISH_CITIZENSHIP_ERROR',
@@ -599,6 +637,8 @@ class Worker {
         return false;
       } else if (!BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
           errType: 'BRITISH_CITIZENSHIP_ERROR',
@@ -634,6 +674,8 @@ class Worker {
 
     if (myYearOfEntry && !yearRegex.test(myYearOfEntry)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.YEAROFENTRY_ERROR,
         errType: 'Ethnicity_ERROR',
@@ -655,6 +697,8 @@ class Worker {
     if (this._currentLine.DISABLED && this._currentLine.DISABLED.length > 0) {
       if (isNaN(myDisabled)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.DISABLED_ERROR,
           errType: 'DISABLED_ERROR',
@@ -664,6 +708,8 @@ class Worker {
         return false;
       } else if (!disabledValues.includes(parseInt(myDisabled))) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.DISABLED_ERROR,
           errType: 'DISABLED_ERROR',
@@ -701,6 +747,8 @@ class Worker {
     if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
       if (isNaN(myCareCert)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.CARE_CERT_ERROR,
           errType: 'CARECERT_ERROR',
@@ -710,6 +758,8 @@ class Worker {
         return false;
       } else if (!careCertValues.includes(parseInt(myCareCert))) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.CARE_CERT_ERROR,
           errType: 'CARECERT_ERROR',
@@ -744,6 +794,8 @@ class Worker {
     if (this._currentLine.RECSOURCE && this._currentLine.RECSOURCE.length > 0) {
       if (isNaN(myRecSource)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.RESOURCE_ERROR,
           errType: 'RECSOURCE_ERROR',
@@ -772,6 +824,8 @@ class Worker {
 
       if (!dateRegex.test(myStartDate)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.START_DATE_ERROR,
           errType: 'STARTDATE_ERROR',
@@ -781,6 +835,8 @@ class Worker {
         return false;
       } else if (!myRealStartDate.isValid()) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.START_DATE_ERROR,
           errType: 'STARTDATE_ERROR',
@@ -790,6 +846,8 @@ class Worker {
         return false;
       } else if (myRealStartDate.isAfter(today)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.START_DATE_ERROR,
           errType: 'STARTDATE_ERROR',
@@ -816,6 +874,8 @@ class Worker {
 
       if (!yearRegex.test(myStartInsect)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.START_INSECT_ERROR,
           errType: 'START_INSECT_ERROR',
@@ -841,6 +901,8 @@ class Worker {
     if (this._currentLine.APPRENTICE && this._currentLine.APPRENTICE.length) {
       if (isNaN(myApprentice)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.APPRENCTICE_ERROR,
           errType: 'APPRENTICE_ERROR',
@@ -850,6 +912,8 @@ class Worker {
         return false;
       } else if (!apprenticeValues.includes(myApprentice)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.APPRENCTICE_ERROR,
           errType: 'APPRENTICE_ERROR',
@@ -885,6 +949,8 @@ class Worker {
     if (this._currentLine.ZEROHRCONT && this._currentLine.ZEROHRCONT.length > 0) {
       if (isNaN(myZeroHourContract)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ZERO_HRCONT_ERROR,
           errType: 'ZEROHRCONT_ERROR',
@@ -894,6 +960,8 @@ class Worker {
         return false;
       } else if (!zeroHourContractValues.includes(myZeroHourContract)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ZERO_HRCONT_ERROR,
           errType: 'ZEROHRCONT_ERROR',
@@ -930,6 +998,8 @@ class Worker {
       const DONT_KNOW_VALUE = 999;
       if (isNaN(myDaysSick)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.DAYSICK_ERROR,
           errType: 'DAYSSICK_ERROR',
@@ -939,6 +1009,8 @@ class Worker {
         return false;
       } else if (myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.DAYSICK_ERROR,
           errType: 'DAYSSICK_ERROR',
@@ -970,6 +1042,8 @@ class Worker {
     if (this._currentLine.SALARYINT && this._currentLine.SALARYINT.length > 0) {
       if (isNaN(mySalaryInt)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
           errType: 'SALARYINT_ERROR',
@@ -979,6 +1053,8 @@ class Worker {
         return false;
       } else if (!salaryIntValues.includes(parseInt(mySalaryInt))) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
           errType: 'SALARYINT_ERROR',
@@ -1016,6 +1092,8 @@ class Worker {
       // can only give (annual) salary if salary interval (SALARYINT) is annual
       if (this._salaryInt === null || this._salaryInt !== 'Annually') {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
           errType: 'SALARY_ERROR',
@@ -1025,6 +1103,8 @@ class Worker {
         return false;
       } else if (isNaN(mySalary) || !digitRegex.test(this._currentLine.SALARY)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.SALARY_ERROR,
           errType: 'SALARY_ERROR',
@@ -1051,6 +1131,8 @@ class Worker {
       // can only give (annual) salary if salary interval (SALARYINT) is hourly
       if (this._salaryInt === null || this._salaryInt !== 'Hourly') {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.HOURLY_RATE_ERROR,
           errType: 'HOURLY_RATE_ERROR',
@@ -1060,6 +1142,8 @@ class Worker {
         return false;
       } else if (isNaN(myHourlyRate) || !digitRegex.test(this._currentLine.HOURLYRATE)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.HOURLY_RATE_ERROR,
           errType: 'HOURLY_RATE_ERROR',
@@ -1083,6 +1167,8 @@ class Worker {
     // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
     if (isNaN(myMainJobRole)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.MAIN_JOB_ROLE_ERROR,
         errType: 'MAIN_JOB_ROLE_ERROR',
@@ -1108,6 +1194,8 @@ class Worker {
       if (this._currentLine.MAINJRDESC && this._currentLine.MAINJRDESC.length > 0) {
         if (myMainJobDesc.length >= MAX_LENGTH) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.MAIN_JOB_DESC_ERROR,
             errType: 'MAIN_JOB_DESC_ERROR',
@@ -1138,6 +1226,8 @@ class Worker {
     if (this._currentLine.CONTHOURS && this._currentLine.CONTHOURS.length > 0) {
       if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) || myContHours > MAX_VALUE) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.CONT_HOURS_ERROR,
           errType: 'CONT_HOURS_ERROR',
@@ -1168,6 +1258,8 @@ class Worker {
     if (this._currentLine.AVGHOURS && this._currentLine.AVGHOURS.length > 0) {
       if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) || myAvgHours > MAX_VALUE) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.AVG_HOURS_ERROR,
           errType: 'AVG_HOURS_ERROR',
@@ -1276,6 +1368,8 @@ class Worker {
           (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) {
         if (isNaN(myRegisteredNurse)) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.NMCREG_ERROR,
             errType: 'NMCREG_ERROR',
@@ -1308,6 +1402,8 @@ class Worker {
           (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) {
         if (isNaN(myNursingSpecialist)) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.NURSE_SPEC_ERROR,
             errType: 'NURSE_SPEC_ERROR',
@@ -1335,6 +1431,8 @@ class Worker {
     if (this._currentLine.NATIONALITY && this._currentLine.NATIONALITY.length > 0) {
       if (isNaN(myNationality)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.NATIONALITY_ERROR,
           errType: 'NATIONALITY_ERROR',
@@ -1360,6 +1458,8 @@ class Worker {
     if (this._currentLine.COUNTRYOFBIRTH && this._currentLine.COUNTRYOFBIRTH.length > 0) {
       if (isNaN(myCountry)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
           errType: 'COUNTRY_OF_BIRTH_ERROR',
@@ -1390,6 +1490,8 @@ class Worker {
 
       if (isNaN(mySocialCareIndicator)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.SOCIALCARE_QUAL_ERROR,
           errType: 'SOCIALCARE_QUAL_ERROR',
@@ -1400,6 +1502,8 @@ class Worker {
 
       if (!ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.SOCIALCARE_QUAL_ERROR,
           errType: 'SOCIALCARE_QUAL_ERROR',
@@ -1415,6 +1519,8 @@ class Worker {
         const mySocialCareLevel = parseInt(mySocialCare[1]);
         if (isNaN(mySocialCareLevel)) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.SOCIALCARE_QUAL_ERROR,
             errType: 'SOCIALCARE_QUAL_ERROR',
@@ -1449,6 +1555,8 @@ class Worker {
 
       if (isNaN(myNonSocialCareIndicator)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
           errType: 'NON_SOCIALCARE_QUAL_ERROR',
@@ -1459,6 +1567,8 @@ class Worker {
 
       if (!ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
           errType: 'NON_SOCIALCARE_QUAL_ERROR',
@@ -1474,6 +1584,8 @@ class Worker {
         const myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
         if (isNaN(myNonSocialCareLevel)) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
             errType: 'NON_SOCIALCARE_QUAL_ERROR',
@@ -1599,6 +1711,8 @@ class Worker {
     if (this._currentLine.AMHP && this._currentLine.AMHP.length > 0) {
       if (isNaN(myAmhp)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.AMHP_ERROR,
           errType: 'AMHP_ERROR',
@@ -1608,6 +1722,8 @@ class Worker {
         return false;
       } else if (!amhpValues.includes(parseInt(myAmhp))) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.AMHP_ERROR,
           errType: 'AMHP_ERROR',
@@ -1642,6 +1758,8 @@ class Worker {
 
       if (!myValidatedContractType) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.CONTRACT_TYPE_ERROR,
           errType: `CONTRACT_TYPE_ERROR`,
@@ -1661,6 +1779,8 @@ class Worker {
 
       if (!myValidatedEthnicity) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ETHNICITY_ERROR,
           errType: `ETHNICITY_ERROR`,
@@ -1683,6 +1803,8 @@ class Worker {
 
         if (!myValidatedRecruitment) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.RECSOURCE_ERROR,
             errType: `RECSOURCE_ERROR`,
@@ -1702,6 +1824,8 @@ class Worker {
 
       if (!myValidatedJobRole) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.MAIN_JOB_ROLE_ERROR,
           errType: `MAIN_JOB_ROLE_ERROR`,
@@ -1723,6 +1847,8 @@ class Worker {
 
         if (!myValidatedJobRole) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.MAIN_JOB_ROLE_ERROR,
             errType: `OTHER_JOB_ROLE_ERROR`,
@@ -1759,6 +1885,8 @@ class Worker {
           break;
         default:
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.NURSE_SPEC_ERROR,
             errType: `NMCREG_ERROR`,
@@ -1775,6 +1903,8 @@ class Worker {
 
       if (!myValidatedSpecialist) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.NURSE_SPEC_ERROR,
           errType: `NURSE_SPEC_ERROR`,
@@ -1801,6 +1931,8 @@ class Worker {
 
         if (!myValidatedNationality) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.NATIONALITY_ERROR,
             errType: `NATIONALITY_ERROR`,
@@ -1829,6 +1961,8 @@ class Worker {
 
         if (!myValidatedCountry) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
             errType: `COUNTRY_OF_BIRTH_ERROR`,
@@ -1849,6 +1983,8 @@ class Worker {
 
       if (!myValidatedQualificationLevel) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.SOCIALCARE_QUAL_ERROR,
           errType: `SOCIALCARE_QUAL_ERROR`,
@@ -1868,6 +2004,8 @@ class Worker {
 
       if (!myValidatedQualificationLevel) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
           errType: `NON_SOCIALCARE_QUAL_ERROR`,
@@ -1889,6 +2027,8 @@ class Worker {
 
         if (!myValidatedQualification) {
           this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
             errCode: Worker[`QUAL_ACH${thisQualification.column}_ERROR`],
             errType: `QUAL_ACH${thisQualification.column}_ERROR`,
@@ -1916,6 +2056,8 @@ class Worker {
       errType: `DUPLICATE_ERROR`,
       error: `Duplicate of line ${originalLineNumber}`,
       source: this._currentLine.UNIQUEWORKERID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
     };
   }
   
@@ -1928,6 +2070,8 @@ class Worker {
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
       error: `Unknown establishment/workplace cross reference`,
       source: this._currentLine.LOCALESTID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
     };
   }
   
@@ -1945,6 +2089,8 @@ class Worker {
     // only run once for first line, so check _lineNumber
     if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: 1,
         errCode: Worker.HEADERS_ERROR,
         errType: `HEADERS_ERROR`,
@@ -2325,6 +2471,8 @@ class Worker {
         const validationError = {
           lineNumber: this._lineNumber,
           error: thisError.message,
+          name: this._currentLine.LOCALESTID,
+          worker: this._currentLine.UNIQUEWORKERID,
         };
 
         switch (thisProp) {
@@ -2484,6 +2632,8 @@ class Worker {
         const validationWarning = {
           lineNumber: this._lineNumber,
           warning: thisWarning.message,
+          name: this._currentLine.LOCALESTID,
+          worker: this._currentLine.UNIQUEWORKERID,
         };
 
         switch (thisProp) {
@@ -2644,6 +2794,7 @@ class Worker {
         const validationError = {
           lineNumber: this._lineNumber,
           error: thisError.message,
+          name: this._currentLine.LOCALESTID,
         };
 
         switch (thisProp) {
