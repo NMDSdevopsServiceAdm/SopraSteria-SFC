@@ -294,12 +294,15 @@ class Establishment extends EntityValidator {
             if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid) && this._validations.length == 0) {
                 const propertySuffixLength = 'Property'.length * -1;
                 thisEstablishmentIsValid.forEach(thisInvalidProp => {
-                    this._validations.push(new ValidationMessage(
-                        ValidationMessage.WARNING,
-                        111111111,
-                        'Invalid',
-                        [thisInvalidProp.slice(0,propertySuffixLength)],
-                    ));
+                    // temporarily quashing Services and Capacity property invalid warnings (whilst cache is being worked on)
+                    if (!(thisInvalidProp === 'ServicesProperty' || thisInvalidProp === 'CapacityProperty')) {
+                        this._validations.push(new ValidationMessage(
+                            ValidationMessage.WARNING,
+                            111111111,
+                            'Invalid',
+                            [thisInvalidProp.slice(0,propertySuffixLength)],
+                        ));
+                    }
                 });
             }
 
