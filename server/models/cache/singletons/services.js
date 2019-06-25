@@ -25,12 +25,15 @@ class ServiceCache {
       .map( x => { return { id: x.id, name: x.name, category: x.category }});
   }
 
-  static allMyServices(establishment) {
-    const cqc = establishment ? establishment.isRegulated : false;
-
-    return ALL_SERVICES
-      .filter(x => cqc ? x.iscqcregistered !== cqc : x.iscqcregistered === cqc )
-      .map( x => { return { id: x.id, name: x.name, category: x.category }});
+  static allMyServices(isCqcRegulated=false) {
+    // if not undefined
+    if (isCqcRegulated === true || isCqcRegulated === false) {
+      // for CQC regulated establishments, they can use all services, regardless of whether it's a CQC service of not
+      //  hwoever, for non-CQC regulated establishments, they can only use those services that are not CQC regulated
+      return ALL_SERVICES
+        .filter(x => isCqcRegulated ? true : x.iscqcregistered === false )
+        .map( x => { return { id: x.id, name: x.name, category: x.category }});      
+    }
   }
 }
 

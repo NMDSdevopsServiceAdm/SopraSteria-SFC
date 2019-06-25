@@ -1621,7 +1621,7 @@ class Establishment {
       localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
       mainService: this._mainService,
       services: this._allServices ? this._allServices
-        .filter(thisService => thisService !== this._mainService)   // main service cannot appear in otherServices
+        .filter(thisService => thisService !== this._mainService.id)   // main service cannot appear in otherServices
         .map((thisService, index) => {
           const returnThis = {
             id: thisService,

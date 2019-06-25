@@ -20,12 +20,41 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
     // concrete implementations
     async restoreFromJson(document) {
-        
-        // this._allServices = document.allServices;
-        // this._mainService = document.mainService;
+        // typically, all services (this._allServices) for this `Other Service` property will be set when restoring the establishment and this property from the database
+        //  but during bulk upload, the Establishment will be restored from JSON not database. In those situations, this._allServices will be null, and it
+        //  will be necessary to populate this._allServices from the given JSON document
+        if (this._allServices === null && document.allMyServices && Array.isArray(document.allMyServices)) {
+            // whilst serialising from JSON other services, make a note of main service and all "other" services
+            //  - required in toJSON response and for validation
+            this._allServices = this.mergeServices(
+                document.allMyServices,
+                document.otherServices,
+                document.mainService,
+            );
+
+            console.log("WA DEBUIG - restore other services from JSON - all services: ", this._allServices ? this._allServices.length : 'undefined')
+            console.log("WA DEBUG - restore other services from JSON - main service: ", document.mainService)
+
+            if (document.mainService) this._mainService = document.mainService;            // can be an empty array
+        }
+
+        // if restoring from an Establishment's full JSON presentation, rather than from the establishment/:eid/services endpoint, transform the set of "otherServices" into the required input set of "services"
+        if (document.otherServices) {
+            if (Array.isArray(document.otherServices)) {
+                document.services = [];
+                document.otherServices.forEach(thisServiceCategory => {
+                    thisServiceCategory.services.forEach(thisService => {
+                        document.services.push({
+                            id: thisService.id
+                        });
+                    });
+                });
+
+                console.log("WA DEBUG - have transformed 'otherServices' to 'services': ", document.services)
+            }
+        }
 
         if (document.services) {
-            // can be an empty array
             if (Array.isArray(document.services)) {
                 const validatedServices = await this._validateServices(document.services);
 
@@ -40,6 +69,9 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
                 this.property = null;
             }
         }
+
+
+        
     }
 
     // this method takes all services available to this given establishment and merges those services already registered
@@ -177,11 +209,16 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         if (this._allServices === null || !Array.isArray(this._allServices)) return false;
 
         for (let thisService of servicesDef) {
+            console.log("WA DEBUG - validating this service: ", thisService)
+
+
             if (!this._valid(thisService)) {
                 // first check the given data structure
                 setOfValidatedServicesInvalid = true;
                 break;
             }
+
+            console.log("WA DEBUG - validating this service its a valid service record")
 
             // id overrides name, because id is indexed whereas name is not!
             let referenceService = null;
@@ -194,6 +231,10 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
                     return thisAllService.name === thisService.name;
                 });
             }
+
+
+            console.log("WA DEBUG - validating this service: found reference service: ", referenceService)
+
 
             if (referenceService && referenceService.id) {
                 // found a service match - prevent duplicates by checking if the reference service already exists

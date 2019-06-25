@@ -241,7 +241,7 @@ class Establishment extends EntityValidator {
             this.resetValidations();
 
             // load cache against this establishment
-            // document.allServices = ServiceCache.allMyServices(document || this);
+            document.allMyServices = ServiceCache.allMyServices(document.IsCQCRegulated);
             // document.allCapacities = CapacitiesCache.allMyCapacities(document || this);
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
@@ -848,7 +848,7 @@ class Establishment extends EntityValidator {
 
                 // other services output requires a list of ALL services available to
                 // the Establishment
-                fetchResults.allMyServices = ServiceCache.allMyServices(fetchResults);
+                fetchResults.allMyServices = ServiceCache.allMyServices(fetchResults.isRegulated);
 
 
                 // service capacities output requires a list of ALL service capacities available to
