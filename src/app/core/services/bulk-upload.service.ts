@@ -70,6 +70,7 @@ export class BulkUploadService {
   }
 
   public resetBulkUpload(): void {
+    this.uploadedFiles$.next(null);
     this.validationErrors$.next(null);
     this.serverError$.next(null);
   }
