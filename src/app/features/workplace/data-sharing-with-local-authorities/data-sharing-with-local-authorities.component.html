@@ -38,9 +38,16 @@
       *ngFor="let localAuthorities of localAuthoritiesArray.controls; let i = index"
       [formGroupName]="i"
     >
-      <select class="govuk-select" formControlName="custodianCode" id="localAuthorities-{{ i }}">
+      <select
+        class="govuk-select"
+        formControlName="custodianCode"
+        id="localAuthorities-{{ i }}"
+        name="custodianCode">
         <option [ngValue]="null">Select Local Authority</option>
-        <option *ngFor="let authority of authorities" [value]="authority.custodianCode">{{ authority.name }}</option>
+        <option *ngFor="let authority of selectableAuthorities(i)"
+          [value]="authority.custodianCode">
+          {{ authority.name }}
+        </option>
       </select>
       <button
         class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
