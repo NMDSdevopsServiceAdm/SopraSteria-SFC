@@ -18,13 +18,13 @@
       <td class="govuk-!-padding-top-2">
         <app-report-download-link
           *ngIf="displayDownloadLink(data.establishmentsFile)"
-          [file]="data.establishmentsFile"
+          [fileType]="data.establishmentsFile.fileType"
         ></app-report-download-link>
       </td>
       <td class="govuk-!-padding-top-2">
         <app-report-download-link
           *ngIf="displayDownloadLink(data.workersFile)"
-          [file]="data.workersFile"
+          [fileType]="data.workersFile.fileType"
         ></app-report-download-link>
       </td>
     </tr>
