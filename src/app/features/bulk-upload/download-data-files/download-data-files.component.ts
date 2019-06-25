@@ -4,4 +4,8 @@ import { Component } from '@angular/core';
   selector: 'app-download-data-files',
   templateUrl: './download-data-files.component.html',
 })
-export class DownloadDataFilesComponent {}
+export class DownloadDataFilesComponent {
+  public lastUpdated = new Date();
+
+  constructor() {}
+}
