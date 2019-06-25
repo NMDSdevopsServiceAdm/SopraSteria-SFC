@@ -19,6 +19,7 @@ import { map } from 'rxjs/operators';
 export class BulkUploadService {
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
   public preValidationError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public preValidateFiles$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
