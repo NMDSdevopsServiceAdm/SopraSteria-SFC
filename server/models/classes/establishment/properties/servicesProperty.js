@@ -32,9 +32,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
                 document.mainService,
             );
 
-            console.log("WA DEBUIG - restore other services from JSON - all services: ", this._allServices ? this._allServices.length : 'undefined')
-            console.log("WA DEBUG - restore other services from JSON - main service: ", document.mainService)
-
             if (document.mainService) this._mainService = document.mainService;            // can be an empty array
         }
 
@@ -49,8 +46,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
                         });
                     });
                 });
-
-                console.log("WA DEBUG - have transformed 'otherServices' to 'services': ", document.services)
             }
         }
 
