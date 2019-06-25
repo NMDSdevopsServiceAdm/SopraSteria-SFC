@@ -3,13 +3,13 @@
   text-align: left;
 
   * {
-    color: govuk-colour('white');;
+    color: govuk-colour('white');
   }
 
   a,
   a:link,
   a:visited {
-    color: govuk-colour('white');;
+    color: govuk-colour('white');
   }
   a:hover {
     color: govuk-colour('grey-4');
@@ -36,4 +36,11 @@
       background-color: govuk-colour('grey-3');
     }
   }
+}
+
+.govuk-panel--warning-prompt {
+  @include govuk-font($size: 24, $weight: bold);
+  padding: govuk-spacing(3);
+  background-color: $govuk-error-colour;
+  color: #fff;
 }
