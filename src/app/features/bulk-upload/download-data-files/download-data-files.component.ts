@@ -10,7 +10,6 @@ import { take } from 'rxjs/operators';
   templateUrl: './download-data-files.component.html',
 })
 export class DownloadDataFilesComponent {
-  public lastUpdated = new Date();
   public BulkUploadFileType = BulkUploadFileType;
 
   constructor(private bulkUploadService: BulkUploadService, private establishmentService: EstablishmentService) {}
