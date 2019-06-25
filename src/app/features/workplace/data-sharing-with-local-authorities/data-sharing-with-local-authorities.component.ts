@@ -57,9 +57,7 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
     this.previous = ['/workplace', `${this.establishment.id}`, 'sharing-data'];
 
     this.subscriptions.add(
-      this.localAuthorityService.getAuthorities().subscribe(
-        authorities => (this.authorities = authorities)
-      )
+      this.localAuthorityService.getAuthorities().subscribe(authorities => (this.authorities = authorities))
     );
 
     this.primaryAuthority = this.establishment.primaryAuthority;
@@ -106,14 +104,14 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
   }
 
   public selectableAuthorities(index): LocalAuthorityModel[] {
-    return this.authorities.filter(authority => this.selectedAuthorities(index, authority));
-  }
-
-  private selectedAuthorities(index: number, authority: LocalAuthorityModel) {
-    return !this.localAuthoritiesArray.controls.some(localAuth => {
-      return localAuth !== this.localAuthoritiesArray.controls[index] &&
-        parseInt(localAuth.get('custodianCode').value, 10) === authority.custodianCode;
-    });
+    return this.authorities.filter(
+      authority =>
+        !this.localAuthoritiesArray.controls.some(
+          localAuth =>
+            localAuth !== this.localAuthoritiesArray.controls[index] &&
+            parseInt(localAuth.get('custodianCode').value, 10) === authority.custodianCode
+        )
+    );
   }
 
   protected updateEstablishment(props) {
