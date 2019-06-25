@@ -79,8 +79,8 @@ export class PostValidationActionsComponent {
       .pipe(take(1))
       .subscribe(
         () => {
-          this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
           this.router.navigate(['/dashboard']);
+          this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
         },
         response => {
           this.bulkUploadService.serverError$.next(response.error.message);
