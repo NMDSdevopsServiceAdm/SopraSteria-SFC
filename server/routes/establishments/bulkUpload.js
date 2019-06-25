@@ -1055,9 +1055,9 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     training.imported ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, training.trainingMetadata, `${establishmentId}/latest/${training.trainingMetadata.filename}.metadata.json`)) : true;
 
     // upload the validation data to S3 - these are reuquired for validation report - although one object is likely to be quicker to upload - and only one object is required then to download
-    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/${establishments.establishmentMetadata.filename}.validation.json`));
-    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/${workers.workerMetadata.filename}.validation.json`));
-    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/${training.trainingMetadata.filename}.validation.json`));
+    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvEstablishmentSchemaErrors, `${establishmentId}/validation/establishments.validation.json`));
+    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvWorkerSchemaErrors, `${establishmentId}/validation/workers.validation.json`));
+    s3UploadPromises.push(uploadAsJSON(username, establishmentId, csvTrainingSchemaErrors, `${establishmentId}/validation/training.validation.json`));
     s3UploadPromises.push(uploadAsJSON(username, establishmentId, report, `${establishmentId}/validation/difference.report.json`));
 
     // to false to disable the upload of intermediary objects
@@ -1344,6 +1344,92 @@ router.route('/report').get(async (req, res) => {
     return res.status(503).send({});
   }
 });
+
+router.route('/report/:reportType').get(async (req, res) => {
+  const userAgent = UserAgentParser(req.headers['user-agent']);
+  const windowsTest = /windows/i;
+  const NEWLINE = windowsTest.test(userAgent.os.name) ? "\r\n" : "\n";
+  const reportTypes = ['training', 'establishments', 'workers'];
+  const reportType = req.params.reportType;
+
+  try {
+    if (!reportTypes.includes(reportType)) {
+      throw new Error(`Invalid report type, valid types include - ${reportTypes.join(', ')}`);
+    }
+
+    let establishment =  null;
+
+    try {
+      const entityKey = `${req.establishmentId}/intermediary/establishment.entities.json`;
+      establishment = await downloadContent(entityKey);
+    } catch (err) {
+      throw new Error(`router.route('/report').get - failed to download: `, key);
+    }
+
+    const entities = establishment ? JSON.parse(establishment.data) : null;
+    const reportKey = `${req.establishmentId}/validation/${reportType}.validation.json`;
+    const content = await downloadContent(reportKey);
+    const messages = JSON.parse(content.data);
+    const readable = new Stream.Readable();
+
+    const errorTitle = '* Errors (will cause file(s) to be rejected) *';
+    const errorPadding = '*'.padStart(errorTitle.length, '*');
+    readable.push(`${errorPadding}${NEWLINE}${errorTitle}${NEWLINE}${errorPadding}${NEWLINE}${NEWLINE}`);
+
+    messages
+      .reduce((acc, val) => acc.concat(val), [])
+      .filter(msg => msg.errCode && msg.errType)
+      .sort((a,b) => a.errCode - b.errCode)
+      .map(item => readable.push(getError(NEWLINE, reportType, item)));
+
+    const warningTitle = '* Warnings (files will be accepted but data is incomplete or internally inconsistent) *';
+    const warningPadding = '*'.padStart(warningTitle.length, '*');
+    readable.push(`${NEWLINE}${warningPadding}${NEWLINE}${warningTitle}${NEWLINE}${warningPadding}${NEWLINE}${NEWLINE}`);
+    
+    messages
+      .reduce((acc, val) => acc.concat(val), [])
+      .filter(msg => msg.warnCode && msg.warnType)
+      .sort((a,b) => a.warnCode - b.warnCode)
+      .map(item => readable.push(getError(NEWLINE, reportType, item)));
+
+    const laTitle = '* You are sharing data with the following Local Authorities *';
+    const laPadding = '*'.padStart(laTitle.length, '*');
+    readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}${NEWLINE}`);
+
+    entities ? entities
+      .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
+      .reduce((acc, val) => acc.concat(val), [])
+      .sort((a,b) => a.name > b.name)
+      .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
+
+    readable.push(null);
+
+    res.setHeader('Content-disposition', 'attachment; filename=' + getFileName(reportType));
+    res.set('Content-Type', 'text/plain');
+    return readable.pipe(res);
+  } catch (err) {
+    console.error(err);
+    return res.status(503).send({});
+  }
+});
+
+const getFileName = (reportType) => {
+  if (reportType === 'training') 
+    return 'TrainingResults.txt';
+  else if (reportType === 'establishments')
+    return 'WorkplaceResults.txt';
+  else if (reportType === 'workers')
+    return 'StaffrecordsResults.txt';
+}
+
+const getError = (NEWLINE, reportType, item) => {
+  if (reportType === 'training') 
+    return `${NEWLINE}${item.error || item.warnType}${NEWLINE}For worker with ${item.name} Subsidiary 3 and UNIQUEWORKERID g on line ${item.lineNumber}${NEWLINE}`
+  else if (reportType === 'establishments')
+    return `${NEWLINE}${item.error || item.warnType}${NEWLINE}For establishment called ${item.name} on line ${item.lineNumber}${NEWLINE}`
+  else if (reportType === 'workers')
+    return `${NEWLINE}${item.error || item.warnType}${NEWLINE}For worker with LOCALESTID ${item.name} and UNIQUEWORKERID h on line ${item.lineNumber}${NEWLINE}`
+}
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
