@@ -1,8 +1,8 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('totalStaff').invalid">
         <h1 class="govuk-label-wrapper">
           <label class="govuk-label govuk-label--xl govuk-!-margin-bottom-8" for="totalStaff">
@@ -25,7 +25,9 @@
           aria-describedby="totalStaff-hint"
         />
       </div>
+    </div>
 
+    <div class="govuk-grid-column-full-from-desktop">
       <div class="govuk-button-group">
         <button type="submit" class="govuk-button">
           {{ returnToDash ? 'Save and return' : 'Save and continue' }}
@@ -39,6 +41,6 @@
           Cancel
         </a>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 </div>

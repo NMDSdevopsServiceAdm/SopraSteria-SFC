@@ -50,7 +50,10 @@
         <li>When your account was last updated</li>
       </ul>
     </app-details>
-    <form (ngSubmit)="onSubmit()" [formGroup]="form">
+  </div>
+
+  <form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -77,7 +80,10 @@
           </div>
         </fieldset>
       </div>
-      <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"></app-submit-button>
-    </form>
-  </div>
+    </div>
+
+    <div class="govuk-grid-column-full">
+      <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"> </app-submit-button>
+    </div>
+  </form>
 </div>
