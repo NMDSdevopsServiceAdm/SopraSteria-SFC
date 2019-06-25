@@ -1,42 +1,4 @@
 <ng-container *ngIf="worker">
-  <ng-container *ngIf="trainingRecordCreated">
-    <app-inset-text color="success">
-      Training has been added
-      <a href="#" (click)="closeTrainingCreatedAlert($event)" class="govuk-util__float-right">Close</a>
-    </app-inset-text>
-  </ng-container>
-  <ng-container *ngIf="trainingRecordEdited">
-    <app-inset-text color="success">
-      Training has been saved
-      <a href="#" (click)="closeTrainingEditedAlert($event)" class="govuk-util__float-right">Close</a>
-    </app-inset-text>
-  </ng-container>
-  <ng-container *ngIf="trainingRecordDeleted">
-    <app-inset-text color="success">
-      Training has been deleted
-      <a href="#" (click)="closeTrainingDeletedAlert($event)" class="govuk-util__float-right">Close</a>
-    </app-inset-text>
-  </ng-container>
-
-  <ng-container *ngIf="qualificationCreated">
-    <app-inset-text color="success">
-      Qualification has been added
-      <a href="#" (click)="closeQualificationCreatedAlert($event)" class="govuk-util__float-right">Close</a>
-    </app-inset-text>
-  </ng-container>
-  <ng-container *ngIf="qualificationEdited">
-    <app-inset-text color="success">
-      Qualification has been saved
-      <a href="#" (click)="closeQualificationEditedAlert($event)" class="govuk-util__float-right">Close</a>
-    </app-inset-text>
-  </ng-container>
-  <ng-container *ngIf="qualificationDeleted">
-    <app-inset-text color="success">
-      Qualification has been deleted
-      <a href="#" (click)="closeQualificationDeletedAlert($event)" class="govuk-util__float-right">Close</a>
-    </app-inset-text>
-  </ng-container>
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">
