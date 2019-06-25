@@ -14,11 +14,16 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       field: 'Seq'
     },
-    category: {
+    specialism: {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"Specialism"'
     },
+    other: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      field: '"Other"'
+    }
   }, {
     tableName: 'NurseSpecialism',
     schema: 'cqc',

@@ -12,9 +12,9 @@ exports.RegisteredNurseProperty = class RegisteredNurseProperty extends ChangePr
     }
 
     async restoreFromJson(document) {
-        if (document.registeredNurse) {
-            if (REGISTEREDNURSE_TYPE.includes(document.registeredNurse)) {
-                this.property = document.registeredNurse;
+        if (document.RegisteredNurseValue) {
+            if (REGISTEREDNURSE_TYPE.includes(document.RegisteredNurseValue)) {
+                this.property = document.RegisteredNurseValue;
             } else {
                 this.property = null;
             }

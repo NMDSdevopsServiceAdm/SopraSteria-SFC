@@ -2,17 +2,16 @@ var express = require('express');
 var router = express.Router();
 const models = require('../models/index');
 
-/* GET ALL ethnicities*/
 router.route('/').get(async function (req, res) {
   try {
-    let results = await models.workerTrainingCategories.findAll({
-        order: [
-          ["seq", "ASC"]
-        ]
-      });
+    let results = await models.workerNurseSpecialism.findAll({
+      order: [
+        ["seq", "ASC"]
+      ]
+    });
 
     res.send({
-      trainingCategories: trainingCategoriesJSON(results)
+      workerNurseSpecialisms: nurseSpecialismsJSON(results)
     });
   } catch (err) {
     console.error(err);
@@ -20,19 +19,18 @@ router.route('/').get(async function (req, res) {
   }
 });
 
-function trainingCategoriesJSON(givenCategories){
-  let categories=[];
+function nurseSpecialismsJSON(givenSpecialisms){
+  let specialisms = [];
 
-  //Go through any results found from DB and map to JSON
-  givenCategories.forEach(thisCategory => {
-    categories.push({
-      id: thisCategory.id,
-      seq: thisCategory.seq,
-      category: thisCategory.category,
+  givenSpecialisms.forEach(thisSpecialism => {
+    specialisms.push({
+      id: thisSpecialism.id,
+      seq: thisSpecialism.seq,
+      specialism: thisSpecialism.specialism,
     });
   });
 
-  return categories;
+  return specialisms;
 };
 
 module.exports = router;

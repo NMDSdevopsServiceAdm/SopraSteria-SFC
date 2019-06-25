@@ -1,4 +1,7 @@
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
+const models = require('../../../index');
+
+const OTHER_MAX_LENGTH=120;
 
 exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePropertyPrototype {
     constructor() {
@@ -102,7 +105,6 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
                     other: (specialismDef.other && referenceSpecialism.other) ? specialismDef.other : undefined,
                 };
             }
-
         } else {
             return false;
         }

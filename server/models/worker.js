@@ -840,9 +840,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"CompletedChangedBy"'
     },
-
-////////////////////////////////////////
-
     NurseSpecialismFKValue : {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -873,11 +870,10 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"NurseSpecialismFKChangedBy"'
     },
-    /////////////
 
     RegisteredNurseValue: {
       type: DataTypes.ENUM,
-      allowNull: false,
+      allowNull: true,
       values: ['Adult nurse', 'Mental health nurse', 'Learning disabiliies', `Children's nurse`, 'Enrolled nurse'],
       field: '"RegisteredNurseValue"'
     },
