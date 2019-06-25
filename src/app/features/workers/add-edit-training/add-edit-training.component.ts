@@ -245,9 +245,9 @@ export class AddEditTrainingComponent implements OnInit {
       })
       .then(() => {
         if (this.trainingRecordId) {
-          this.workerService.setTrainingRecordEdited();
+          this.workerService.alert = { type: 'success', message: 'Training has been saved' };
         } else {
-          this.workerService.setTrainingRecordCreated();
+          this.workerService.alert = { type: 'success', message: 'Training has been added' };
         }
       });
   }
