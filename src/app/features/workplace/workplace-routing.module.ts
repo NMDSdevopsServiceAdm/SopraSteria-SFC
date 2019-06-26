@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
-
+import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
@@ -40,9 +40,14 @@ const routes: Routes = [
     resolve: { establishment: WorkplaceResolver },
     data: { title: 'Workplace' },
     children: [
+      // {
+      //   path: '',
+      //   redirectTo: 'type-of-employer',
+      // },
       {
         path: '',
-        redirectTo: 'type-of-employer',
+        component: ViewWorkplaceComponent,
+        data: { title: 'View Work Place' },
       },
       {
         path: 'start',

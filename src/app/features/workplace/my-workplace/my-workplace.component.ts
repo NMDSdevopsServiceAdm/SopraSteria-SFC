@@ -9,4 +9,11 @@ export class MyWorkplaceComponent {
   @Input() public myWorkplace: MyWorkplace;
   public workplacePermission: ParentPermissions = ParentPermissions.Workplace;
   public workplaceAndStaffPermission: ParentPermissions = ParentPermissions.WorkplaceAndStaff;
+
+  public checkPermission() {
+    return (
+      this.workplacePermission === this.myWorkplace.parentPermissions ||
+      this.workplaceAndStaffPermission === this.myWorkplace.parentPermissions
+    );
+  }
 }
