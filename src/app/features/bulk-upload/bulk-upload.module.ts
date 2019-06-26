@@ -7,16 +7,18 @@ import { BulkUploadRoutingModule } from '@features/bulk-upload/bulk-upload-routi
 import { SharedModule } from '@shared/shared.module';
 
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
+import { BulkUploadWelcomePageComponent } from './bulk-upload-welcome-page/bulk-upload-welcome-page.component';
 import { CheckWorkplaceReferencesComponent } from './check-workplace-references/check-workplace-references.component';
 import { DownloadDataFilesComponent } from './download-data-files/download-data-files.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
 import { FilesUploadProgressComponent } from './files-upload-progress/files-upload-progress.component';
 import { FilesUploadComponent } from './files-upload/files-upload.component';
+import { ReportDownloadLinkComponent } from './report-download-link/report-download-link.component';
 import { SelectedFilesListComponent } from './selected-files-list/selected-files-list.component';
 import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.component';
 import { UploadWarningDialogComponent } from './upload-warning-dialog/upload-warning-dialog.component';
 import { UploadedFilesListComponent } from './uploaded-files-list/uploaded-files-list.component';
-import { ReportDownloadLinkComponent } from './report-download-link/report-download-link.component';
+import { WorkplaceReferencesPageComponent } from './workplace-references-page/workplace-references-page.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, BulkUploadRoutingModule, OverlayModule],
@@ -32,6 +34,8 @@ import { ReportDownloadLinkComponent } from './report-download-link/report-downl
     UploadedFilesListComponent,
     UploadWarningDialogComponent,
     ReportDownloadLinkComponent,
+    BulkUploadWelcomePageComponent,
+    WorkplaceReferencesPageComponent,
   ],
   providers: [DialogService],
   entryComponents: [UploadWarningDialogComponent],
