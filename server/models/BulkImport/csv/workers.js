@@ -163,6 +163,10 @@ class Worker {
   static get QUAL_ACH03_WARNING() { return 5550; }
   static get QUAL_ACH03_NOTES_WARNING() { return 5560; }
 
+  get headers() {
+    return this._headers_v1.join(",");
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -170,7 +174,7 @@ class Worker {
   get currentLine() {
     return this._currentLine;
   }
-      
+
   get local() {
     return this._localId;
   }
@@ -354,7 +358,7 @@ class Worker {
       return true;
     }
   }
-    
+
   _validateStatus() {
     const statusValues = ['DELETE', 'UPDATE', 'UNCHECKED', 'NOCHANGE', 'NEW','CHGSUB'];
     const myStatus = this._currentLine.STATUS ? this._currentLine.STATUS.toUpperCase() : this._currentLine.STATUS;
@@ -410,7 +414,7 @@ class Worker {
         });
         return false;
       } else if (myNINumber.length > 0 && myNINumber.length == LENGTH && !niRegex.test(myNINumber)) {
-  
+
         this._validationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Worker.NINUMBER_ERROR,
@@ -454,17 +458,17 @@ class Worker {
       } else {
         this._postCode = myPostcode;
         return true;
-      }      
+      }
     }
   }
-  
+
   _validateDOB() {
     const myDOB = this._currentLine.DOB;
 
     if (myDOB.length > 0) {
       const dobRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
       const myDobRealDate = moment.utc(myDOB, "DD/MM/YYYY");
-  
+
       if (!myDobRealDate.isValid()) {
         this._validationErrors.push({
           lineNumber: this._lineNumber,
@@ -474,16 +478,16 @@ class Worker {
           source: this._currentLine.DOB,
         });
         return false;
-  
+
       } else if (myDOB.length > 0 && dobRegex.test(myDOB)) {
-  
+
         const MIN_AGE = 14;
         const MAX_AGE = 100;
         const MIN_DATE = moment().subtract(MIN_AGE, 'years');
         const MAX_DATE = moment().subtract(MAX_AGE, 'years');
-  
+
         if (MIN_DATE.isBefore(myDobRealDate, 'year') || MAX_DATE.isAfter(myDobRealDate, 'year')) {
-  
+
           this._validationErrors.push({
             lineNumber: this._lineNumber,
             errCode: Worker.DOB_ERROR,
@@ -493,7 +497,7 @@ class Worker {
           });
           return false;
         }
-  
+
         this._DOB = myDobRealDate;
         return true;
       } else {
@@ -648,7 +652,7 @@ class Worker {
   }
 
   _validateDisabled() {
-    const disabledValues = [0,1,2,3]; 
+    const disabledValues = [0,1,2,3];
     const myDisabled = parseInt(this._currentLine.DISABLED, 10);
 
     // optional
@@ -871,7 +875,7 @@ class Worker {
             break;
         }
         return true;
-      }  
+      }
     } else {
       return true;
     }
@@ -1001,7 +1005,7 @@ class Worker {
         }
 
         return true;
-      }  
+      }
     } else {
       return true;
     }
@@ -1071,7 +1075,7 @@ class Worker {
       else {
         this._hourlyRate = myHourlyRate;
         return true;
-      }  
+      }
     } else {
       return true;
     }
@@ -1115,12 +1119,12 @@ class Worker {
             source: this._currentLine.MAINJRDESC,
           });
           return false;
-        } 
+        }
         else {
           this._mainJobDesc = myMainJobDesc;
           return true;
         }
-  
+
       } else {
         return true;
       }
@@ -1153,7 +1157,7 @@ class Worker {
           this._contHours = myContHours;
         }
         return true;
-      }  
+      }
     } else {
       return true;
     }
@@ -1183,7 +1187,7 @@ class Worker {
           this._avgHours = myAvgHours;
         }
         return true;
-      }  
+      }
     } else {
       return true;
     }
@@ -1194,7 +1198,7 @@ class Worker {
     if ( this._currentLine.OTHERJOBROLE &&  this._currentLine.OTHERJOBROLE.length > 0) {
       const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
       const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
-  
+
       const localValidationErrors = [];
       const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
       if (!isValid) {
@@ -1217,7 +1221,7 @@ class Worker {
         const myJobDescriptions = [];
         this._otherJobs = listOfotherJobs.map((thisJob, index) => {
           const thisJobIndex = parseInt(thisJob, 10);
-  
+
           // if the job is one of the many "other" job roles, then need to validate the "other description"
           const otherJobs = [23, 27];   // these are the original budi codes
           if (otherJobs.includes(thisJobIndex)) {
@@ -1246,18 +1250,18 @@ class Worker {
           } else {
             myJobDescriptions.push(null);
           }
-  
+
           return thisJobIndex;
         });
-  
+
         this._otherJobsOther = myJobDescriptions;
       }
-  
+
       if (localValidationErrors.length > 0) {
         localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
         return false;
       }
-  
+
       return true;
     } else {
       return true;
@@ -1422,7 +1426,7 @@ class Worker {
             source: this._currentLine.SCQUAL,
           });
         }
-        this._socialCareQualificationlevel = mySocialCareLevel;  
+        this._socialCareQualificationlevel = mySocialCareLevel;
       }
 
       if (localValidationErrors.length > 0) {
@@ -1541,7 +1545,7 @@ class Worker {
             source: qualificationDesc,
           });
         } else {
-          myQualificationDesc = qualificationDesc; 
+          myQualificationDesc = qualificationDesc;
         }
       }
 
@@ -1564,7 +1568,7 @@ class Worker {
 
   // NOTE - the CSV format expects the user to create additional columns if a worker has more than three qualifications.
   //        This approach (adding columns) differs to the approach of "semi colon" delimited data.
-  // https://trello.com/c/ttV4g8mZ. 
+  // https://trello.com/c/ttV4g8mZ.
   _validationQualificationRecords() {
     // Note - ASC WDS does not support qualifications in progress (not yet achieved)
 
@@ -1691,7 +1695,7 @@ class Worker {
           });
         } else {
           this._recSource = myValidatedRecruitment;
-        }  
+        }
       }
     }
   };
@@ -1768,7 +1772,7 @@ class Worker {
       }
     }
   }
-  
+
   _transformNursingSpecialist() {
     if (this._nursingSpecialist) {
       const myValidatedSpecialist = BUDI.nursingSpecialist(BUDI.TO_ASC, this._nursingSpecialist);
@@ -1809,7 +1813,7 @@ class Worker {
           });
         } else {
           this._nationality = myValidatedNationality;
-        }  
+        }
       }
     }
   };
@@ -1918,7 +1922,7 @@ class Worker {
       source: this._currentLine.UNIQUEWORKERID,
     };
   }
-  
+
   // add unchecked establishment reference validation error
   uncheckedEstablishment() {
     return {
@@ -1930,7 +1934,7 @@ class Worker {
       source: this._currentLine.LOCALESTID,
     };
   }
-  
+
   preValidate() {
     return this._validateHeaders();
   }
@@ -1997,7 +2001,7 @@ class Worker {
     status = !this._validateNonSocialCareQualification() ? false : status;
     status = !this._validationQualificationRecords() ? false : status;
     status = !this._validateAmhp() ? false : status;
-    
+
     return status;
   };
 
@@ -2137,12 +2141,12 @@ class Worker {
       if (this._startInsect === 999) {
         changeProperties.socialCareStartDate = {
           value : 'No'
-        } 
+        }
       } else {
         changeProperties.socialCareStartDate = {
           value : 'Yes',
           year : this._startInsect
-        } 
+        }
       }
     }
 
@@ -2204,7 +2208,7 @@ class Worker {
         };
       }
     }
-    
+
     if (this._salaryInt) {
       changeProperties.annualHourlyPay = {
         value: this._salaryInt
@@ -2302,7 +2306,7 @@ class Worker {
         notes: thisQual.desc ? thisQual.desc : undefined,
       };
 
-      myMappedQuals.push(changeProperties);  
+      myMappedQuals.push(changeProperties);
     }) : true;
 
     return myMappedQuals;
@@ -2478,7 +2482,7 @@ class Worker {
       }) : true;
     });
 
-  
+
     warnings.forEach(thisWarning => {
       thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
         const validationWarning = {
@@ -2636,7 +2640,7 @@ class Worker {
     });
   }
 
-  
+
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
   addQualificationAPIValidation(columnIndex, errors, warnings) {
     errors.forEach(thisError => {
@@ -2671,7 +2675,7 @@ class Worker {
       }) : true;
     });
 
-  
+
     warnings.forEach(thisWarning => {
       thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
         const validationWarning = {
@@ -2706,7 +2710,196 @@ class Worker {
     });
   }
 
+  _csvQuote(toCsv) {
+    if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+      return '"' + toCsv.replace(/"/g, '""') + '"';
+    } else {
+      return toCsv;
+    }
+  }
 
+
+  // takes the given Worker entity and writes it out to CSV string (one line)
+  toCSV(establishmentId, entity) {
+    // ["LOCALESTID","UNIQUEWORKERID","CHGUNIQUEWRKID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
+    //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
+    //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
+    const columns = [];
+    columns.push(establishmentId);
+    columns.push(entity.nameOrId);   // todo - this will be local identifier
+    columns.push('TBC');
+    columns.push('TBC');
+    columns.push(entity.nameOrId);
+
+    columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g,'') : '');  // remove whitespace
+    columns.push(entity.postcode ? entity.postcode : '',);
+
+    const dobParts = entity.dasteOfBirth ? entity.dasteOfBirth.split('-') : null;
+    dobParts ? columns.push(`${dobParts[2]}/${dobParts[1]}/${dobParts[0]}`) : columns.push(''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
+
+    switch (entity.gender) {
+      case null:
+          columns.push('');
+      case 'Female':
+        columns.push(2);
+        break;
+      case 'Male':
+        columns.push(1);
+        break;
+      case 'Other':
+        columns.push(4);
+        break;
+      case 'Don\'t know':
+        columns.push(3);
+        break;
+    }
+
+    // "ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY"
+    columns.push('');
+    columns.push('');
+    columns.push('');
+    columns.push('');
+    columns.push('');
+
+    // disabled
+    switch (entity.disabiliity) {
+      case null:
+          columns.push('');
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(0);
+        break;
+      case 'Undisclosed':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(3);
+        break;
+    }
+    switch (entity.careCerticate) {
+      case null:
+          columns.push('');
+      case 'Yes, completed':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Yes, in progress or partially completed':
+        columns.push(3);
+        break;
+    }
+
+    // "RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE"
+    columns.push('');
+    columns.push('');
+    columns.push('');
+    columns.push('');
+
+    // EMPLSTATUS/;contract - mandatory
+    switch (entity.contract) {
+      case 'Permanent':
+        columns.push(1);
+        break;
+      case 'Temporary':
+        columns.push(2);
+        break;
+      case 'Pool/Bank':
+        columns.push(3);
+        break;
+      case 'Agency':
+        columns.push(4);
+        break;
+      case 'Other':
+        columns.push(7);
+        break;
+    }
+
+    // "ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS"
+    columns.push('');
+    columns.push('');
+    columns.push('');
+    columns.push('');
+    columns.push('');
+    columns.push('');
+    columns.push('');
+    columns.push('');
+    columns.push('');
+
+    // "OTHERJOBROLE","OTHERJRDESC"
+    columns.push('OTHERJOBROLE');
+    columns.push('OTHERJRDESC');
+
+    // "NMCREG","NURSESPEC"
+    columns.push('');
+    columns.push('');
+
+    // "AMHP"
+    switch (entity.approvedMentalHealthWorker) {
+      case null:
+        columns.push('');
+        break;
+      case 'yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+
+    // "SCQUAL","NONSCQUAL"
+    switch (entity.socialCareQualification) {
+      case null:
+        columns.push('');
+        break;
+      case 'Yes':
+        columns.push('1;'.concat(entity.socialCareQualificationLevel ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.socialCareQualificationLevel.qualificationId) : ''));
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+    switch (entity.nonSocialCareQualification) {
+      case null:
+        columns.push('');
+        break;
+      case 'Yes':
+        columns.push('1;'.concat(entity.nonSocialCareQualificationLevel ? BUDI.qualificationLevels(BUDI.FROM_ASC, entity.nonSocialCareQualificationLevel.qualificationId) : ''));
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+
+
+    // and now for qualifications - up to 3 - https://trello.com/c/ahBZTUMC
+    const MAX_QUALIFICATIONS = 3;
+    const myQualifications = entity.qualifications.slice(0, MAX_QUALIFICATIONS);
+
+    for(let index = 0; index < MAX_QUALIFICATIONS; index++) {
+      if (index < myQualifications.length) {
+        const thisQual = myQualifications[index];
+        const mappedQualification = BUDI.qualifications(BUDI.FROM_ASC, thisQual.qualification.id);
+        if (mappedQualification) {
+          columns.push(`${mappedQualification};${thisQual.year ? thisQual.year : ''}`);
+          columns.push(thisQual.notes ? thisQual.notes : '');
+        }
+      }
+    };
+
+    return columns.join(',');
+  }
 };
 
 module.exports.Worker = Worker;

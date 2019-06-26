@@ -248,7 +248,7 @@ class BUDI {
             type: 'Other',
           };
           break;
-  
+
         default:
           // return null
       }
@@ -348,7 +348,7 @@ class BUDI {
       { "ASC": 5, "BUDI": 37},
       { "ASC": 30, "BUDI": 38},
       { "ASC": 1, "BUDI": 39},
-      { "ASC": 34, "BUDI": 40},      
+      { "ASC": 34, "BUDI": 40},
     ];
 
     if (direction == BUDI.TO_ASC) {
@@ -1108,7 +1108,7 @@ class BUDI {
       const found = fixedMapping.find(thisQualification => thisQualification.BUDI == originalCode);
       return found ? found.ASC : null;
     } else {
-      const found = fixedMapping.find(thisQualification => thisSpecialist.ASC == originalCode)
+      const found = fixedMapping.find(thisQualification => thisQualification.ASC == originalCode)
       return found ? found.BUDI : null;
     }
   }
@@ -1150,7 +1150,7 @@ class BUDI {
       return null;
     }
   }
-  
+
   // more to come
 }
 

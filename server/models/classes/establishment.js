@@ -3,7 +3,7 @@
  *
  * The encapsulation of a Establishment, including all properties, all specific validation (not API, but object validation),
  * saving & restoring of data to database (via sequelize model), construction and deletion.
- * 
+ *
  * Also includes representation as JSON, in one or more presentations.
  */
 const uuid = require('uuid');
@@ -40,12 +40,12 @@ class RegistrationException {
       this.errCode = errCode;
       this.errMessage = errMessage;
     };
-  
+
     toString() {
       return `${this.errCode}: ${this.errMessage}`;
     };
 };
-  
+
 const responseErrors = {
     unknownNMDSsequence: {
       errCode: -500,
@@ -95,7 +95,7 @@ class Establishment extends EntityValidator {
         // all known workers for this establishment - an associative object (property key is the worker's key)
         this._workerEntities = {};
         this._readyForDeletionWorkers = null;
-        
+
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
         this._logLevel = Establishment.LOG_INFO;
@@ -148,6 +148,10 @@ class Establishment extends EntityValidator {
     get mainService() {
         return this._properties.get('MainServiceFK') ? this._properties.get('MainServiceFK').property : null;
     };
+    get employerType() {
+        return this._properties.get('EmployerType') ? this._properties.get('EmployerType').property : null;
+    };
+
     get nmdsId() {
         return this._nmdsId;
     }
@@ -229,6 +233,14 @@ class Establishment extends EntityValidator {
         }
     }
 
+    get workers() {
+        if (this._workerEntities) {
+            return Object.values(this._workerEntities);
+        } else {
+            return [];
+        }
+    }
+
 
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
@@ -255,7 +267,7 @@ class Establishment extends EntityValidator {
 
                             // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
                             this.associateWorker(workerKey, newWorker);
-                            promises.push(newWorker.load(thisWorker, true));    
+                            promises.push(newWorker.load(thisWorker, true));
                         }
 
                     });
@@ -318,7 +330,7 @@ class Establishment extends EntityValidator {
                     thisWorker.establishmentId = this._id;
                     return thisWorker;
                 });
-    
+
                 await Promise.all(workersAsArray.map(thisWorkerToSave => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true)));
 
                 // and now all the associated Workers marked for deletion
@@ -359,15 +371,15 @@ class Establishment extends EntityValidator {
                         attributes: ['id', 'name', 'nmdsIdLetter']
                     }]
                 });
-        
+
                 let nmdsLetter = null;
                 if (cssrResults && cssrResults.postcode === this._postcode && cssrResults.theAuthority && cssrResults.theAuthority.id && Number.isInteger(cssrResults.theAuthority.id)) {
                     nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
                 } else {
                     // No direct match so do the fuzzy match
-                    const [firstHalfOfPostcode] = `postcode`.split(' '); 
+                    const [firstHalfOfPostcode] = `postcode`.split(' ');
                     const fuzzyCssrNmdsIdMatch = await models.sequelize.query(`select "Cssr"."NmdsIDLetter" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."NmdsIDLetter" limit 1`, { type: models.sequelize.QueryTypes.SELECT });
-        
+
                     if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
                         nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
                     }
@@ -377,10 +389,10 @@ class Establishment extends EntityValidator {
                 if (nmdsLetter === null) {
                     nmdsLetter = 'W';
                 }
-        
+
                 let nextNmdsIdSeqNumber = 0;
                 const nextNmdsIdSeqNumberResults = await models.sequelize.query('SELECT nextval(\'cqc."NmdsID_seq"\')', { type: models.sequelize.QueryTypes.SELECT });
-                
+
                 if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
                     nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
                 } else {
@@ -490,10 +502,10 @@ class Establishment extends EntityValidator {
                     if (associatedEntities) {
                         await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
                     }
-                    
+
                     this._log(Establishment.LOG_INFO, `Created Establishment with uid (${this.uid}), id (${this._id}) and name (${this.name})`);
                 });
-                
+
             } catch (err) {
                 // need to handle duplicate Establishment
                 if (err.name && err.name === 'SequelizeUniqueConstraintError') {
@@ -585,7 +597,7 @@ class Establishment extends EntityValidator {
                         if (wdfAudit) {
                             wdfAudit.establishmentFk = this._id;
                             allAuditEvents.push(wdfAudit);
-                        }    
+                        }
                         await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                         // now - work through any additional models having processed all properties (first delete and then re-create)
@@ -648,7 +660,7 @@ class Establishment extends EntityValidator {
                         throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, `Failed to update resulting establishment record with id: ${this._id}`, `Failed to update resulting establishment record with id: ${this._id}`);
                     }
                 });
-                
+
             } catch (err) {
                 throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update establishment record with id: ${this._id}`);
             }
@@ -691,7 +703,7 @@ class Establishment extends EntityValidator {
             }
 
             const fetchResults = await models.establishment.findOne(fetchQuery);
-            
+
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
@@ -749,7 +761,7 @@ class Establishment extends EntityValidator {
                     raw: true
                 });
 
-                const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
+                const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([
                     models.services.findAll({
                         where: {
                             id: establishmentServices.map(su => su.serviceId)
@@ -764,9 +776,9 @@ class Establishment extends EntityValidator {
                     models.services.findOne({
                         where: {
                             id : fetchResults.MainServiceFKValue
-                        },                    
+                        },
                         attributes: ['id', 'name'],
-                        raw: true   
+                        raw: true
                     }),
                     models.serviceUsers.findAll({
                         where: {
@@ -814,7 +826,7 @@ class Establishment extends EntityValidator {
                     })
                 ]);
 
-                // For services merge any other data into resultset 
+                // For services merge any other data into resultset
                 fetchResults.serviceUsers = establishmentServiceUserResults.map((suResult)=>{
                     const serviceUser = serviceUsers.find(element => { return suResult.serviceUserId === element.id});
                     if(suResult.other) {
@@ -837,7 +849,7 @@ class Establishment extends EntityValidator {
                     } else {
                         return otherService;
                     }
-                });                
+                });
 
                 fetchResults.capacity = capacity;
                 fetchResults.jobs = jobs;
@@ -870,7 +882,7 @@ class Establishment extends EntityValidator {
                             ['category', 'ASC'],
                             ['name', 'ASC']
                         ]
-                    });  
+                    });
                 }
 
 
@@ -895,7 +907,7 @@ class Establishment extends EntityValidator {
                         }
                     ]
                 });
-        
+
                 const allAssociatedServiceIndices = [];
                 if (allCapacitiesResults && allCapacitiesResults.id) {
                     // merge tha main and other service ids
@@ -908,7 +920,7 @@ class Establishment extends EntityValidator {
                         allCapacitiesResults.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
                     }
                 }
-        
+
                 // now fetch all the questions for the given set of combined services
                 if (allAssociatedServiceIndices.length > 0) {
                     fetchResults.allServiceCapacityQuestions = await models.serviceCapacity.findAll({
@@ -953,11 +965,11 @@ class Establishment extends EntityValidator {
                         }
                     ]
                 });
-                
+
                 if (cssrResults && cssrResults.postcode === fetchResults.postcode &&
                     cssrResults.theAuthority && cssrResults.theAuthority.id &&
                     Number.isInteger(cssrResults.theAuthority.id)) {
-                    
+
                     fetchResults.primaryAuthorityCssr = {
                         id: cssrResults.theAuthority.id,
                         name: cssrResults.theAuthority.name
@@ -965,8 +977,8 @@ class Establishment extends EntityValidator {
 
                 } else {
                     //  using just the first half of the postcode
-                    const [firstHalfOfPostcode] = fetchResults.postcode.split(' '); 
-                    
+                    const [firstHalfOfPostcode] = fetchResults.postcode.split(' ');
+
                     // must escape the string to prevent SQL injection
                     const fuzzyCssrIdMatch = await models.sequelize.query(
                         `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like \'${escape(firstHalfOfPostcode)}%\' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
@@ -981,7 +993,7 @@ class Establishment extends EntityValidator {
                         }
                     }
                 }
- 
+
                 if (fetchResults.auditEvents) {
                     this._auditEvents = fetchResults.auditEvents;
                 }
@@ -1002,7 +1014,7 @@ class Establishment extends EntityValidator {
                     if (myWorkerSet && Array.isArray(myWorkerSet)) {
                         await Promise.all(myWorkerSet.map(async thisWorker => {
                             const newWorker = new Worker(this._id);
-                            await newWorker.restore(thisWorker.uid, false);
+                            await newWorker.restore(thisWorker.uid, false, associatedEntities);
 
                             // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
                             // without whitespace
@@ -1062,7 +1074,7 @@ class Establishment extends EntityValidator {
                         establishmentFk: this._id,
                         username: deletedBy,
                         type: 'deleted'}];
-                       
+
                     await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
                     // if deleting this establishment, and if requested, then delete all the associated entities (workers) too
@@ -1079,19 +1091,19 @@ class Establishment extends EntityValidator {
 
                 } else {
                     const nameId = this._properties.get('NameOrId');
-                    throw new EstablishmentExceptions.EstablishmentDeleteException(null, 
-                                                                        this.uid, 
+                    throw new EstablishmentExceptions.EstablishmentDeleteException(null,
+                                                                        this.uid,
                                                                         nameId ? nameId.property : null,
                                                                         err,
                                                                         `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
                 }
-                                                                        
+
             });
         } catch (err) {
             console.log('throwing error');
             console.log(err);
-            throw new EstablishmentExceptions.EstablishmentDeleteException(null, 
-                this.uid, 
+            throw new EstablishmentExceptions.EstablishmentDeleteException(null,
+                this.uid,
                 nameId ? nameId.property : null,
                 err,
                 `Failed to update (archive) estabalishment record with uid: ${this._uid}`);
@@ -1380,7 +1392,7 @@ class Establishment extends EntityValidator {
         myWdf['vacancies'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Vacancies')) ? 'Yes' : 'No';
         myWdf['starters'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Starters')) ? 'Yes' : 'No';
         myWdf['leavers'] = this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Leavers')) ? 'Yes' : 'No';
-        
+
         return myWdf;
     }
 

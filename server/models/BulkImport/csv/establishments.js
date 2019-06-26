@@ -35,7 +35,7 @@ class Establishment {
     this._utilisations = null;
 
     this._totalPermTemp = null;
-  
+
     this._alljobs = null;
     this._vacancies = null;
     this._starters = null;
@@ -92,6 +92,11 @@ class Establishment {
   static get LEAVERS_WARNING() { return 2320; }
 
   static get REASONS_FOR_LEAVING_WARNING() { return 2360; }
+
+
+  get headers() {
+    return this._headers_v1.join(",");
+  }
 
   get lineNumber() {
     return this._lineNumber;
@@ -209,7 +214,7 @@ class Establishment {
         error: `Local Identifier (LOCALESTID) must be no more than ${MAX_LENGTH} characters`,
         source: myLocalId,
       });
-      return false;      
+      return false;
     } else {
       this._localId = myLocalId;
       return true;
@@ -499,7 +504,7 @@ class Establishment {
         this._localAuthorities = listOfLAs.map(thisLA => parseInt(thisLA, 10));
         return true;
       }
-  
+
     } else {
       return true;
     }
@@ -598,11 +603,11 @@ class Establishment {
       return true;
     }
   }
-  
+
   _validateAllServices() {
     // all services must have at least one value (main service) or a semi colon delimited list of integers; treat consistently as a list of
     const myAllServices = this._currentLine.ALLSERVICES;
-    if (!myAllServices || myAllServices.length == 0) {    
+    if (!myAllServices || myAllServices.length == 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
@@ -834,7 +839,7 @@ class Establishment {
         source: this._currentLine.UTILISATION,
       });
     }
-    
+
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
@@ -1042,7 +1047,7 @@ class Establishment {
       const allReasonsCounts = this._currentLine.REASONNOS.split(';');
 
       const localValidationErrors = [];
-  
+
       if (!allReasons || allReasons.length==0) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
@@ -1104,12 +1109,12 @@ class Establishment {
           source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
         });
       }
-  
+
       if (localValidationErrors.length > 0) {
         localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
         return false;
       }
-  
+
       this._reasonsForLeaving = allReasons.map((thisReason, index) => {
         return {
           id: parseInt(thisReason, 10),
@@ -1118,7 +1123,7 @@ class Establishment {
       });
 
       return true;
-  
+
     } else {
       return true;
     }
@@ -1238,7 +1243,7 @@ class Establishment {
             errType: `LOCAL_AUTHORITIES_ERROR`,
             error: `Local Authorities (SHARELA): ${thisLA} is unknown`,
             source: this._currentLine.SHARELA,
-          }); 
+          });
         }
       });
 
@@ -1274,7 +1279,7 @@ class Establishment {
               source: this._currentLine.CAPACITY,
             });
           }
-            
+
         }
       });
 
@@ -1353,7 +1358,7 @@ class Establishment {
   _transformAllVacanciesStartersLeavers() {
     // vacancies, starters and leavers is either an array of counts against positional indexes to _allJobs
     //  or a single value of 999
-    
+
     // if a single value of 999, then map to "Don't know"
     // if a full set of 0 (e.g. 0, or 0;0 or 0;0;0, ...), then map to "None"
     const DONT_KNOW=999;
@@ -1367,7 +1372,7 @@ class Establishment {
         .map((thisJob, index) => {
           return {
             jobId: this._alljobs[index],
-            total: thisJob  
+            total: thisJob
           };
         })
         .filter(thisJob => thisJob.total !== 0);
@@ -1382,7 +1387,7 @@ class Establishment {
         .map((thisJob, index) => {
           return {
             jobId: this._alljobs[index],
-            total: thisJob  
+            total: thisJob
           };
         })
         .filter(thisJob => thisJob.total !== 0);
@@ -1397,7 +1402,7 @@ class Establishment {
         .map((thisJob, index) => {
           return {
             jobId: this._alljobs[index],
-            total: thisJob  
+            total: thisJob
           };
         })
         .filter(thisJob => thisJob.total !== 0);
@@ -1519,7 +1524,7 @@ class Establishment {
     status = !this._validateJobRoleTotals() ? false : status;
 
     status = !this._validateReasonsForLeaving() ? false : status;
-    
+
     return status;
   }
 
@@ -1598,7 +1603,7 @@ class Establishment {
             ...thisValidation,
           };
         });
-    
+
   };
 
   // returns an API representation of this Establishment
@@ -1778,7 +1783,7 @@ class Establishment {
             validationError.errCode = Establishment.LOCATION_ID_ERROR;
             validationError.errType = 'LOCATION_ID_ERROR';
             validationError.source  = `${this._currentLine.LOCATIONID}`;
-            break;   
+            break;
           case 'NMDSID':
               // where to map NMDSID error?????
           default:
@@ -1790,7 +1795,7 @@ class Establishment {
         this._validationErrors.push(validationError);
       }) : true;
     });
-  
+
     warnings.forEach(thisWarning => {
       thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
         const validationWarning = {
@@ -1874,7 +1879,7 @@ class Establishment {
             validationWarning.warnCode = Establishment.LOCATION_ID_WARNING;
             validationWarning.warnType = 'LOCATION_ID_WARNING';
             validationWarning.source  = `${this._currentLine.LOCATIONID}`;
-            break;   
+            break;
           case 'NMDSID':
               // where to map NMDSID error?????
           default:
@@ -1887,7 +1892,55 @@ class Establishment {
       }) : true;
     });
 
+  };
+
+  _csvQuote(toCsv) {
+    if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+      return '"' + toCsv.replace(/"/g, '""') + '"';
+    } else {
+      return toCsv;
+    }
   }
+
+  // takes the given establishment entity and writes it out to CSV string (one line)
+  toCSV(entity) {
+    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
+    const columns = [];
+    columns.push(this._csvQuote(entity.name));   // todo - this will be local identifier
+    columns.push('TBC');
+    columns.push(this._csvQuote(entity.name));
+    columns.push(this._csvQuote(entity.address));
+    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(entity.postcode);
+
+    switch (entity.employerType.value) {
+      case 'Private Sector':
+        columns.push(6);
+        break;
+      case 'Voluntary / Charity':
+        columns.push(7);
+        break;
+      case 'Other':
+        columns.push(8);
+        break;
+      case 'Local Authority (generic/other)':
+        columns.push(3);
+        break;
+      case 'Local Authority (adult services)':
+        columns.push(1);
+        break;
+    }
+    if (entity.employerType.other) {
+      columns.push(this._csvQuote(entity.employerType.other))
+    } else {
+      columns.push('');
+    }
+
+    return columns.join(',');
+  };
+
 };
 
 module.exports.Establishment = Establishment;
