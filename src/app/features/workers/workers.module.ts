@@ -39,6 +39,8 @@ import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from './national-insurance-number/national-insurance-number.component';
 import { NationalityComponent } from './nationality/nationality.component';
+import { NursingCategoryComponent } from './nursing-category/nursing-category.component';
+import { NursingSpecialismComponent } from './nursing-specialism/nursing-specialism.component';
 import { OtherJobRolesComponent } from './other-job-roles/other-job-roles.component';
 import { OtherQualificationsLevelComponent } from './other-qualifications-level/other-qualifications-level.component';
 import { OtherQualificationsComponent } from './other-qualifications/other-qualifications.component';
@@ -67,7 +69,7 @@ import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule, OverlayModule],
+  imports: [CommonModule, OverlayModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
   declarations: [
     AddEditQualificationComponent,
     AddEditTrainingComponent,
@@ -75,19 +77,20 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     ApprenticeshipTrainingComponent,
     AverageWeeklyHoursComponent,
     BasicRecordComponent,
+    BasicRecordsSaveSuccessComponent,
     BritishCitizenshipComponent,
     CareCertificateComponent,
     CheckStaffRecordComponent,
     ContractWithZeroHoursComponent,
     CountryOfBirthComponent,
-    CreateStaffRecordStartScreenComponent,
     CreateBasicRecordsComponent,
     CreateBasicRecordsStartScreenComponent,
+    CreateStaffRecordStartScreenComponent,
     DateOfBirthComponent,
     DaysOfSicknessComponent,
+    DeleteQualificationDialogComponent,
     DeleteSuccessComponent,
     DeleteTrainingDialogComponent,
-    DeleteQualificationDialogComponent,
     DeleteWorkerDialogComponent,
     DisabilityComponent,
     EditWorkerComponent,
@@ -99,28 +102,29 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     MentalHealthProfessionalComponent,
     NationalInsuranceNumberComponent,
     NationalityComponent,
+    NursingCategoryComponent,
+    NursingSpecialismComponent,
     OtherJobRolesComponent,
-    OtherQualificationsLevelComponent,
     OtherQualificationsComponent,
+    OtherQualificationsLevelComponent,
     PersonalDetailsComponent,
+    QualificationFormComponent,
     QualificationsAndTrainingComponent,
+    QualificationsComponent,
     RecruitedFromComponent,
     SalaryComponent,
-    SocialCareQualificationLevelComponent,
     SocialCareQualificationComponent,
+    SocialCareQualificationLevelComponent,
     StaffDetailsComponent,
     StaffRecordComponent,
     StaffRecordSummaryComponent,
+    TotalStaffComponent,
     TrainingComponent,
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
     YearArrivedUkComponent,
-    QualificationsComponent,
-    QualificationFormComponent,
-    TotalStaffComponent,
-    BasicRecordsSaveSuccessComponent,
   ],
-  providers: [WorkerResolver, DialogService],
-  entryComponents: [DeleteTrainingDialogComponent, DeleteQualificationDialogComponent, DeleteWorkerDialogComponent],
+  providers: [DialogService, WorkerResolver],
+  entryComponents: [DeleteQualificationDialogComponent, DeleteTrainingDialogComponent, DeleteWorkerDialogComponent],
 })
 export class WorkersModule {}

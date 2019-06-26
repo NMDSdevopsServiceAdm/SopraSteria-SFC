@@ -30,10 +30,11 @@ export class EmploymentComponent extends StaffRecordSummaryComponent implements 
   }
 
   get displayMentalHealthProfessional() {
-    return (
-      this.worker.mainJob.title === 'Social Worker' ||
-      (this.worker.otherJobs && this.worker.otherJobs.find(j => j.title === 'Social Worker'))
-    );
+    return this.workerService.hasJobRole(this.worker, 27);
+  }
+
+  get displayNursingQuestions() {
+    return this.workerService.hasJobRole(this.worker, 23);
   }
 
   get displayDaysSickness() {

@@ -41,6 +41,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.contractsAvailable = Object.values(Contracts);
+
     this.subscriptions.add(
       this.jobService.getJobs().subscribe(jobs => {
         this.jobsAvailable = jobs;
@@ -49,6 +50,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
         }
       })
     );
+
     this.previous = ['/worker', 'start-screen'];
   }
 
@@ -117,7 +119,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       },
     };
 
-    // TODO:Removing Other Jobs should be handled by the Server
+    // TODO: Removing Other Jobs should be handled by the Server
     // https://trello.com/c/x3N7dQJP
     if (this.worker && this.worker.otherJobs) {
       (props as any).otherJobs = this.worker.otherJobs.filter(j => j.jobId !== parseInt(mainJob.value, 10));
@@ -127,14 +129,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   onSuccess() {
-    const { mainJob } = this.form.value;
-
-    // TODO: Use returned Worker Object once API has been updated to respond
-    //       with all properties
-    this.next =
-      parseInt(mainJob, 10) === 27
-        ? ['/worker', this.worker.uid, 'mental-health-professional']
-        : ['/worker', this.worker.uid, 'main-job-start-date'];
+    this.next = ['/worker', this.worker.uid, 'main-job-start-date'];
   }
 
   selectedJobRole(id: number) {
