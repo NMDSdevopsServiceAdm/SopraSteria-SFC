@@ -4,6 +4,7 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const csv = require('csvtojson');
 const Stream = require('stream');
+const moment = require('moment');
 const dbmodels = require('../../models');
 
 const UserAgentParser = require('ua-parser-js');
@@ -526,6 +527,8 @@ router.route('/validate').post(async (req, res) => {
     const importedWorkers = await csv().fromString(req.body.workers.csv);
     const importedTraining = await csv().fromString(req.body.training.csv);
 
+    console.log('importedTraining', importedTraining)
+
     if (establishmentRegex.test(req.body.establishments.csv.substring(0,50))) {
       let key = req.body.establishments.filename;
       establishmentMetadata.filename = key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3];
@@ -545,6 +548,8 @@ router.route('/validate').post(async (req, res) => {
       trainingMetadata.fileType = 'Training';
     }
 
+    console.log('trainingMetadata', trainingMetadata)
+
     const validationResponse = await validateBulkUploadFiles(
       false,
       username,
@@ -554,43 +559,45 @@ router.route('/validate').post(async (req, res) => {
       { imported: importedWorkers, workerMetadata: workerMetadata },
       { imported: importedTraining, trainingMetadata: trainingMetadata })
 
+    console.log('validationResponse', validationResponse)
+
     // handle parsing errors
     if (!validationResponse.status) {
       return res.status(400).send({
-        report: validationResponse.report,
-        establishments: {
-          filename: null,
-          records: importedEstablishments.length,
-          deleted: validationResponse.metaData.establishments.deleted,
-          errors: validationResponse.validation.establishments
-            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          warnings: validationResponse.validation.establishments
-            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          data: {
-            csv: validationResponse.data.csv.establishments,
-            entities: validationResponse.data.entities.establishments,
-          },
-        },
-        workers: {
-          filename: null,
-          records: importedWorkers.length,
-          deleted: validationResponse.metaData.workers.deleted,
-          errors: validationResponse.validation.workers
-            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          warnings: validationResponse.validation.workers
-            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
-            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-          data: {
-            csv: validationResponse.data.csv.workers,
-            entities: {
-              workers: validationResponse.data.entities.workers,
-              qualifications: validationResponse.data.entities.qualifications,
-            }
-          },
-        },
+        // report: validationResponse.report,
+        // establishments: {
+        //   filename: null,
+        //   records: importedEstablishments.length,
+        //   deleted: validationResponse.metaData.establishments.deleted,
+        //   errors: validationResponse.validation.establishments
+        //     .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+        //     .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+        //   warnings: validationResponse.validation.establishments
+        //     .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+        //     .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+        //   data: {
+        //     csv: validationResponse.data.csv.establishments,
+        //     entities: validationResponse.data.entities.establishments,
+        //   },
+        // },
+        // workers: {
+        //   filename: null,
+        //   records: importedWorkers.length,
+        //   deleted: validationResponse.metaData.workers.deleted,
+        //   errors: validationResponse.validation.workers
+        //     .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+        //     .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+        //   warnings: validationResponse.validation.workers
+        //     .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+        //     .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+        //   data: {
+        //     csv: validationResponse.data.csv.workers,
+        //     entities: {
+        //       workers: validationResponse.data.entities.workers,
+        //       qualifications: validationResponse.data.entities.qualifications,
+        //     }
+        //   },
+        // },
         training: {
           filename: null,
           records: importedTraining.length,
@@ -605,7 +612,7 @@ router.route('/validate').post(async (req, res) => {
             entities: validationResponse.data.entities.training,
           },
         },
-        all: validationResponse.data.resulting,
+        // all: validationResponse.data.resulting,
       });
 
     } else {
@@ -875,6 +882,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   let status = true;
   const csvEstablishmentSchemaErrors = [], csvWorkerSchemaErrors = [], csvTrainingSchemaErrors = [];
   const myEstablishments = [], myWorkers = [], myTrainings = [];
+  const workersKeyed = []
 
   // rather than an array of entities, entities will be known by their line number within the source, e.g:
   // establishments: {
@@ -952,6 +960,12 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           const workerKey = thisWorker.uniqueWorker ? thisWorker.uniqueWorker.replace(/\s/g, "") : null;
           const foundEstablishmentByLineNumber = allEstablishmentsByKey[establishmentKeyNoWhitespace];
           const knownEstablishment = foundEstablishmentByLineNumber ? myAPIEstablishments[foundEstablishmentByLineNumber] : null;
+
+          //key workers, to be used in training
+          const workerKeyNoWhitespace = (thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID).replace(/\s/g, "");
+          workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
+          // console.log('thisWorker', thisWorker)
+
           if (knownEstablishment) {
             knownEstablishment.associateWorker(workerKey, myAPIWorkers[thisWorker.lineNumber]);
           } else {
@@ -981,9 +995,10 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     // having parsed all establishments, workers and training, need to cross-check all training records' establishment reference (LOCALESTID) against all parsed establishments
     // having parsed all establishments, workers and training, need to cross-check all training records' worker reference (UNIQUEWORKERID) against all parsed workers
     myTrainings.forEach(thisTraingRecord => {
-      const establishmentKeyNoWhitespace = thisTraingRecord.localeStId.replace(/\s/g, "");
-      const workerKeyNoWhitespace = (thisTraingRecord.localeStId + thisTraingRecord.uniqueWorkerId).replace(/\s/g, "");
 
+      const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, "");
+      const workerKeyNoWhitespace = (thisTraingRecord.localeStId + thisTraingRecord.uniqueWorkerId).replace(/\s/g, "");
+      
       if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
         // not found the associated establishment
         csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedEstablishment());
@@ -1002,6 +1017,14 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         // find the associated Worker entity and forward reference this training record
         const foundWorkerByLineNumber = allWorkersByKey[workerKeyNoWhitespace];
         const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
+
+        const trainingCompletedDate = moment.utc(thisTraingRecord._currentLine.DATECOMPLETED, "DD-MM-YYYY")
+        const workerDob = moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, "DD-MM-YYYY")
+
+        if (trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
+          csvTrainingSchemaErrors.push(thisTraingRecord.dobTrainingMismatch());
+        }
+
         if (knownWorker) {
           knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
         } else {
