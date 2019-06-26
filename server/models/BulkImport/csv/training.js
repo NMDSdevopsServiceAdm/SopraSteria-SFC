@@ -76,6 +76,8 @@ class Training {
 
     if (!myLocaleStId || myLocaleStId.length == 0) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.LOCALESTID_ERROR,
         errType: `LOCALESTID_ERROR`,
@@ -85,6 +87,8 @@ class Training {
       return false;
     } else if (myLocaleStId.length > MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.LOCALESTID_ERROR,
         errType: `LOCALESTID_ERROR`,
@@ -104,6 +108,8 @@ class Training {
 
     if (!myUniqueId || myUniqueId.length == 0) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
@@ -113,6 +119,8 @@ class Training {
       return false;
     } else if (myUniqueId.length > MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
@@ -136,6 +144,8 @@ class Training {
     if (myDateCompleted) {
       if (!dateFormatRegex.test(myDateCompleted)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.DATE_COMPLETED_ERROR,
           errType: `DATE_COMPLETED_ERROR`,
@@ -145,6 +155,8 @@ class Training {
         return false;
       } else if (!actualDate.isValid()) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.DATE_COMPLETED_ERROR,
           errType: `DATE_COMPLETED_ERROR`,
@@ -172,6 +184,8 @@ class Training {
     if (myDateExpiry) {
       if (!dateFormatRegex.test(myDateExpiry)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.EXPIRY_DATE_ERROR,
           errType: `EXPIRY_DATE_ERROR`,
@@ -181,6 +195,8 @@ class Training {
         return false;
       } else if (!actualDate.isValid()) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.EXPIRY_DATE_ERROR,
           errType: `EXPIRY_DATE_ERROR`,
@@ -204,6 +220,8 @@ class Training {
 
     if (!myDescription || myDescription.length == 0) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
@@ -213,6 +231,8 @@ class Training {
       return false;
     } else if (myDescription.length > MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
@@ -230,6 +250,8 @@ class Training {
     const myCategory = parseInt(this._currentLine.CATEGORY);
     if (Number.isNaN(myCategory)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.CATEGORY_ERROR,
         errType: `CATEGORY_ERROR`,
@@ -248,6 +270,8 @@ class Training {
     const ALLOWED_VALUES = [0,1,999];
     if (Number.isNaN(myAccredited)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.ACCREDITED_ERROR,
         errType: `ACCREDITED_ERROR`,
@@ -257,6 +281,8 @@ class Training {
       return false;
     } else if (!ALLOWED_VALUES.includes(myAccredited)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.ACCREDITED_ERROR,
         errType: `ACCREDITED_ERROR`,
@@ -285,6 +311,8 @@ class Training {
       const mappedCategory = BUDI.trainingCaterogy(BUDI.TO_ASC, this._category);
       if (mappedCategory === null) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.CATEGORY_ERROR,
           errType: `CATEGORY_ERROR`,
@@ -304,6 +332,8 @@ class Training {
     if (myNotes && myNotes.length > 0) {
       if (myNotes.length > MAX_LENGTH) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.NOTES_ERROR,
           errType: `NOTES_ERROR`,
@@ -332,6 +362,8 @@ class Training {
     // only run once for first line, so check _lineNumber
     if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: 1,
         errCode: Training.HEADERS_ERROR,
         errType: `HEADERS_ERROR`,
@@ -352,6 +384,8 @@ class Training {
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
       error: `Unknown establishment/workplace cross reference`,
       source: this._currentLine.LOCALESTID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
     };
   }
 
@@ -364,6 +398,8 @@ class Training {
       errType: `UNCHECKED_WORKER_ERROR`,
       error: `Unknown worker/staff cross reference`,
       source: this._currentLine.UNIQUEWORKERID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
     };
   }
 
@@ -436,6 +472,8 @@ class Training {
         const validationError = {
           lineNumber: this._lineNumber,
           error: thisError.message,
+          name: this._currentLine.LOCALESTID,
+          worker: this._currentLine.UNIQUEWORKERID,
         };
 
         switch (thisProp) {
@@ -484,6 +522,8 @@ class Training {
         const validationWarning = {
           lineNumber: this._lineNumber,
           warning: thisWarning.message,
+          name: this._currentLine.LOCALESTID,
+          worker: this._currentLine.UNIQUEWORKERID,
         };
 
         switch (thisProp) {
