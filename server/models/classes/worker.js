@@ -588,8 +588,12 @@ class Worker extends EntityValidator {
                         model: models.job,
                         as: 'otherJobs',
                         attributes: ['id', 'title']
+                    },
+                    {
+                        model: models.workerNurseSpecialism,
+                        as: 'nurseSpecialism',
+                        attributes: ['id', 'specialism']
                     }
-
                 ]
             };
 
