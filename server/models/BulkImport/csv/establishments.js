@@ -222,12 +222,14 @@ class Establishment {
 
     // must be present and must be one of the preset values (case insensitive)
     if (!statusValues.includes(myStatus)) {
+      
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STATUS_ERROR,
         errType: `STATUS_ERROR`,
         error: `Status (STATUS) must be one of: ${statusValues}`,
         source: this._currentLine.STATUS,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -249,6 +251,7 @@ class Establishment {
         errType: `NAME_ERROR`,
         error: 'Establishment Name (ESTNAME) must be defined',
         source: myName,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (myName.length > MAX_LENGTH) {
@@ -258,6 +261,7 @@ class Establishment {
         errType: `NAME_ERROR`,
         error: `Establishment Name (ESTNAME) must be no more than ${MAX_LENGTH} characters`,
         source: myName,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -287,6 +291,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: 'First line of address (ADDRESS1) must be defined',
         source: myAddress1,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myAddress1.length > MAX_LENGTH) {
       localValidationErrors.push({
@@ -295,6 +300,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress1,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -305,6 +311,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `Second line of address (ADDRESS2) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress2,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -315,6 +322,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `Third line of address (ADDRESS3) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress3,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -325,6 +333,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `{Post town} (POSTTOWN) must be no more than ${MAX_LENGTH} characters`,
         source: myTown,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -338,6 +347,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: 'Postcode (POSTCODE) must be defined',
         source: myPostcode,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myPostcode.length > POSTCODE_MAX_LENGTH) {
       localValidationErrors.push({
@@ -346,6 +356,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `Postcode (POSTCODE) must be no more than ${POSTCODE_MAX_LENGTH} characters`,
         source: myPostcode,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (!postcodeRegex.test(myPostcode)) {
       localValidationErrors.push({
@@ -354,6 +365,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `Postcode (POSTCODE) unexpected format`,
         source: myPostcode,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -384,6 +396,7 @@ class Establishment {
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: "Establishment Type (ESTTYPE) must be an integer",
         source: this._currentLine.ESTTYPE,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myEstablishmentType < 1 || myEstablishmentType > 8) {
       localValidationErrors.push({
@@ -392,6 +405,7 @@ class Establishment {
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: "Establishment Type (ESTTYPE) between 1 and 8 only",
         source: this._currentLine.ESTTYPE,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -404,6 +418,7 @@ class Establishment {
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: `Establishment Type (ESTTYPE) is 'Other (8)'; must define the Other (OTHERTYPE)`,
         source: myOtherEstablishmentType,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myEstablishmentType == 8 && (myOtherEstablishmentType.length > MAX_LENGTH)) {
       localValidationErrors.push({
@@ -412,6 +427,7 @@ class Establishment {
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: `Establishment Type (ESTTYPE) is 'Other (8)', but OTHERTYPE must be no more than ${MAX_LENGTH} characters`,
         source: myOtherEstablishmentType,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myEstablishmentType == 8) {
       this._establishmentTypeOther = myOtherEstablishmentType;
@@ -436,6 +452,7 @@ class Establishment {
         errType: `SHARE_WITH_ERROR`,
         error: "Share with CQC (PERMCQC) must be an integer",
         source: this._currentLine.PERMCQC,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (!ALLOWED_VALUES.includes(myShareWithCqc)) {
@@ -445,6 +462,7 @@ class Establishment {
         errType: `SHARE_WITH_ERROR`,
         error: "Share with CQC (PERMCQC) must be 0 or 1",
         source: myShareWithCqc,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -463,6 +481,7 @@ class Establishment {
         errType: `SHARE_WITH_ERROR`,
         error: "Share with LA (PERMLA) must be an integer",
         source: this._currentLine.PERMLA,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (!ALLOWED_VALUES.includes(myShareWithLa)) {
@@ -472,6 +491,7 @@ class Establishment {
         errType: `SHARE_WITH_ERROR`,
         error: "Share with LA (PERMLA) must be 0 or 1",
         source: myShareWithLa,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -493,6 +513,7 @@ class Establishment {
           errType: `LOCAL_AUTHORITIES_ERROR`,
           error: "Local Authorities (SHARELA) must be a semi-colon delimited list of integers",
           source: this._currentLine.SHARELA,
+          name: this._currentLine.LOCALESTID,
         });
         return false;
       } else {
@@ -515,6 +536,7 @@ class Establishment {
         errType: `REGTYPE_ERROR`,
         error: "Registration Type (REGTYPE) must be given and must be either 0 or 2",
         source: this._currentLine.REGTYPE,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -534,6 +556,7 @@ class Establishment {
         errType: `PROV_ID_ERROR`,
         error: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
         source: myprovID,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     }
@@ -544,6 +567,7 @@ class Establishment {
         errType: `PROV_ID_ERROR`,
         error: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
         source: myprovID,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (this._regType) {
@@ -564,6 +588,7 @@ class Establishment {
         errType: `LOCATION_ID_ERROR`,
         error: "Location ID (LOCATIONID) must be given as this workplace is CQC regulated",
         source: myLocationID,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     }
@@ -574,6 +599,7 @@ class Establishment {
         errType: `LOCATION_ID_ERROR`,
         error: "Location ID (LOCATIONID) must be in the format 'n-nnnnnnnnn'",
         source: myLocationID,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (this._regType) {
@@ -591,6 +617,7 @@ class Establishment {
         errType: `MAIN_SERVICE_ERROR`,
         error: "Main Service (MAINSERVICE) must be an integer",
         source: this._currentLine.MAINSERVICE,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -609,6 +636,7 @@ class Establishment {
         errType: `ALL_SERVICES_ERROR`,
         error: "All Services (ALLSERVICES) must be defined and must include at least the main service (MAINSERVICE)",
         source: this._currentLine.ALLSERVICES,
+        name: this._currentLine.LOCALESTID,
       });
 
       return false; // no point continuing validation because all services is empty
@@ -628,6 +656,7 @@ class Establishment {
         errType: `ALL_SERVICES_ERROR`,
         error: "All Services (ALLSERVICES) must be a semi-colon delimited list of integers",
         source: this._currentLine.ALLSERVICES,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (listOfServices.length != listOfServiceDescriptions.length) {
       localValidationErrors.push({
@@ -636,6 +665,7 @@ class Establishment {
         errType: `ALL_SERVICES_ERROR`,
         error: "All Services (ALLSERVICES) count and Service Description (SERVICEDESC) count must equal",
         source: this._currentLine.SERVICEDESC,
+        name: this._currentLine.LOCALESTID,
       });
     } else {
       const myServiceDescriptions = [];
@@ -654,6 +684,7 @@ class Establishment {
               errType: `ALL_SERVICES_ERROR`,
               error: `All Services (ALLSERVICES:${index+1}) is an 'other' service and consequently (SERVICEDESC:${index+1}) must be defined`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
+              name: this._currentLine.LOCALESTID,
             });
             myServiceDescriptions.push(null);
           } else if (myServiceOther.length > MAX_LENGTH) {
@@ -663,6 +694,7 @@ class Establishment {
               errType: `ALL_SERVICES_ERROR`,
               error: `All Services (ALLSERVICES:${index+1}) is an 'other' service and (SERVICEDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
+              name: this._currentLine.LOCALESTID,
             });
           } else {
             myServiceDescriptions.push(listOfServiceDescriptions[index]);
@@ -700,6 +732,7 @@ class Establishment {
         errType: `SERVICE_USERS_ERROR`,
         error: "Service Users (SERVICEUSERS) must be a semi-colon delimited list of integers",
         source: this._currentLine.SERVICEUSERS,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (listOfServiceUsers.length != listOfServiceUsersDescriptions.length) {
       localValidationErrors.push({
@@ -708,6 +741,7 @@ class Establishment {
         errType: `SERVICE_USERS_ERROR`,
         error: "Service Users (SERVICEUSERS) count and Service Users Description (OTHERUSERDESC) count must equal",
         source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
+        name: this._currentLine.LOCALESTID,
       });
     } else {
       const myServiceUsersDescriptions = [];
@@ -726,6 +760,7 @@ class Establishment {
               errType: `SERVICE_USERS_ERROR`,
               error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and consequently (OTHERUSERDESC:${index+1}) must be defined`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+              name: this._currentLine.LOCALESTID,
             });
             myServiceUsersDescriptions.push(null);
           } else if (myServiceUserOther.length > MAX_LENGTH) {
@@ -735,6 +770,7 @@ class Establishment {
               errType: `SERVICE_USERS_ERROR`,
               error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and (OTHERUSERDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+              name: this._currentLine.LOCALESTID,
             });
           } else {
             myServiceUsersDescriptions.push(listOfServiceUsersDescriptions[index]);
@@ -773,6 +809,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Capacities (CAPACITY) must be a semi-colon delimited list of integers",
         source: this._currentLine.CAPACITY,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (listOfUtilisations.length === 0) {
@@ -782,6 +819,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Utilisations (UTILISATION) must be a semi-colon delimited list of integers",
         source: this._currentLine.UTILISATION,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (listOfCapacities.length != listOfUtilisations.length) {
@@ -791,6 +829,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Number of Capacities (CAPACITY) and Utilisations (UTILISATION) must be equal",
         source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -802,6 +841,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Number of Capacities/Utilisations (CAPACITY/UTILISATION) must equal the number of all services (ALLSERVICES)",
         source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION} - ${this._currentLine.ALLSERVICES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -819,6 +859,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: `All capacities (CAPACITY) must be integers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.CAPACITY,
+        name: this._currentLine.LOCALESTID,
       });
     }
     const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => {
@@ -832,6 +873,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: `All utilisations (UTILISATION) must be integers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.UTILISATION,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -872,6 +914,7 @@ class Establishment {
         errType: `TOTAL_PERM_TEMP_ERROR`,
         error: "Total Permanent and Temporary (TOTALPERMTEMP) must be an integer",
         source: this._currentLine.PERMCQC,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (myTotalPermTemp < 0 || myTotalPermTemp > MAX_TOTAL) {
@@ -881,6 +924,7 @@ class Establishment {
         errType: `TOTAL_PERM_TEMP_ERROR`,
         error: `Total Permanent and Temporary (TOTALPERMTEMP) must be 0 or more, but less than ${MAX_TOTAL}`,
         source: myTotalPermTemp,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -903,6 +947,7 @@ class Establishment {
         errType: `ALL_JOBS_ERROR`,
         error: "All Job Roles (ALLJOBROLES) must be defined",
         source: this._currentLine.ALLJOBROLES,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (this._totalPermTemp > 0) {
       // must have at least one job role
@@ -913,6 +958,7 @@ class Establishment {
           errType: `ALL_JOBS_ERROR`,
           error: "All Job Roles (ALLJOBROLES) must be defined",
           source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID,
         });
       }
       // all jobs are integers
@@ -924,6 +970,7 @@ class Establishment {
           errType: `ALL_JOBS_ERROR`,
           error: "All Job Roles (ALLJOBROLES)  must be integers",
           source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID,
         });
       }
     }
@@ -964,6 +1011,7 @@ class Establishment {
         errType: `VACANCIES_ERROR`,
         error: "Vacancies (VACANCIES) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
         source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (!((starters.length === 1 && starters[0] === DONT_KNOW) || (starters.length === allJobsCount))) {
@@ -973,6 +1021,7 @@ class Establishment {
         errType: `STARTERS_ERROR`,
         error: "Starters (STARTERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
         source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (!((leavers.length === 1 && leavers[0] === DONT_KNOW) || (leavers.length === allJobsCount))) {
@@ -982,6 +1031,7 @@ class Establishment {
         errType: `LEAVERS_ERROR`,
         error: "Leavers (LEAVERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
         source: `${this._currentLine.LEAVERS} - ${this._currentLine.ALLJOBROLES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -995,6 +1045,7 @@ class Establishment {
         errType: `VACANCIES_ERROR`,
         error: `Vacancies (VACANCIES) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.VACANCIES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (!starters.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
@@ -1004,6 +1055,7 @@ class Establishment {
         errType: `STARTERS_ERROR`,
         error: `Starters (STARTERS) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.STARTERS}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (!leavers.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
@@ -1013,6 +1065,7 @@ class Establishment {
         errType: `LEAVERS_ERROR`,
         error: `Leavers (LEAVERS) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.LEAVERS}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -1050,6 +1103,7 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: "Reasons for Leaving (REASONS) must be defined as a semi-colon delimited set of reasons",
           source: this._currentLine.REASONS,
+          name: this._currentLine.LOCALESTID,
         });
       }
       if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount)))) {
@@ -1059,6 +1113,7 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: `Reasons for Leaving (REASONS) values must be integers`,
           source: `${this._currentLine.REASONS}`,
+          name: this._currentLine.LOCALESTID,
         });
       }
 
@@ -1069,6 +1124,7 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: "Reasons for Leaving Counts (REASONNOS) must be defined as a semi-colon delimited set of reasons",
           source: this._currentLine.REASONNOS,
+          name: this._currentLine.LOCALESTID,
         });
       }
       const MIN_COUNT = 0;
@@ -1079,6 +1135,7 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: `Reasons for Leaving Counts (REASONNOS) values must be integers and ${MIN_COUNT} or more`,
           source: `${this._currentLine.REASONNOS}`,
+          name: this._currentLine.LOCALESTID,
         });
       }
 
@@ -1090,6 +1147,7 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: `Reasons for Leaving (REASON) and Reasons for Leaving Counts (REASONNOS) must have the same number of semi-colon delimited values`,
           source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
+          name: this._currentLine.LOCALESTID,
         });
       }
 
@@ -1102,6 +1160,7 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: `Sum of Reasons for Leaving Counts (REASONNOS) must equal the sum of leavers (LEAVERS)`,
           source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
+          name: this._currentLine.LOCALESTID,
         });
       }
 
@@ -1149,6 +1208,7 @@ class Establishment {
           errType: `MAIN_SERVICE_ERROR`,
           error: `Main Service (MAINSERVICE): ${this._mainService} is unknown`,
           source: this._currentLine.MAINSERVICE,
+          name: this._currentLine.LOCALESTID,
         });
       }
     }
@@ -1170,6 +1230,7 @@ class Establishment {
             errType: `ALL_SERVICES_ERROR`,
             error: `All Services (ALLSERVICES): ${thisService} is unknown`,
             source: this._currentLine.ALLSERVICES,
+            name: this._currentLine.LOCALESTID,
           });
         }
       });
@@ -1194,6 +1255,7 @@ class Establishment {
             errType: `SERVICE_USERS_ERROR`,
             error: `Service Users (SERVICEUSERS): ${thisService} is unknown`,
             source: this._currentLine.SERVICEUSERS,
+            name: this._currentLine.LOCALESTID,
           });
         }
       });
@@ -1214,6 +1276,7 @@ class Establishment {
           errType: `ESTABLISHMENT_TYPE_ERROR`,
           error: `Establishment Type (ESTTYPE): ${this._establishmentType} is unknown`,
           source: this._currentLine.ESTTYPE,
+          name: this._currentLine.LOCALESTID,
         });
       } else {
         this._establishmentType = mappedType.type;
@@ -1238,7 +1301,8 @@ class Establishment {
             errType: `LOCAL_AUTHORITIES_ERROR`,
             error: `Local Authorities (SHARELA): ${thisLA} is unknown`,
             source: this._currentLine.SHARELA,
-          });
+            name: this._currentLine.LOCALESTID,
+          }); 
         }
       });
 
@@ -1272,6 +1336,7 @@ class Establishment {
               errType: `CAPACITY_UTILISATION_ERROR`,
               error: `Capacities (CAPACITY): position ${index+1} is unexpected capacity (no expected capacity for given service: ${this._allServices[index]})`,
               source: this._currentLine.CAPACITY,
+              name: this._currentLine.LOCALESTID,
             });
           }
 
@@ -1308,6 +1373,7 @@ class Establishment {
               errType: `CAPACITY_UTILISATION_ERROR`,
               error: `Utilisations (UTILISATION): position ${index+1} is unknown utilisation`,
               source: this._currentLine.UTILISATION,
+              name: this._currentLine.LOCALESTID,
             });
           }
         }
@@ -1333,6 +1399,7 @@ class Establishment {
             errType: `ALL_JOBS_ERROR`,
             error: `All Job Roles (ALLJOBROLES): ${thisJob} is unknown`,
             source: this._currentLine.ALLJOBROLES,
+            name: this._currentLine.LOCALESTID,
           });
         }
       });
@@ -1424,6 +1491,7 @@ class Establishment {
             errType: `REASONS_FOR_LEAVING_ERROR`,
             error: `Reason for Leaving (REASONS): ${thisReason.id} is unknown`,
             source: this._currentLine.REASONS,
+            name: this._currentLine.LOCALESTID,
           });
         }
       });
@@ -1450,7 +1518,8 @@ class Establishment {
         errCode: Establishment.HEADERS_ERROR,
         errType: `HEADERS_ERROR`,
         error: `Establishment headers (HEADERS) can contain, ${this._headers_v1}`,
-        source: headers
+        source: headers,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     }
@@ -1466,6 +1535,7 @@ class Establishment {
       errType: `DUPLICATE_ERROR`,
       error: `Duplicate of line ${originalLineNumber}`,
       source: this._currentLine.LOCALESTID,
+      name: this._currentLine.LOCALESTID,
     };
   }
 
@@ -1477,6 +1547,7 @@ class Establishment {
       errType: `EXPECT_JUST_ONE_ERROR`,
       error: 'Expect just one establishment',
       source: '',
+      name: this._currentLine.LOCALESTID,
     };
   }
 
@@ -1488,6 +1559,7 @@ class Establishment {
       errType: `MISSING_PRIMARY_ERROR`,
       error: `Missing the primary establishment: ${name}`,
       source: '',
+      name: this._currentLine.LOCALESTID,
     };
   }
 
@@ -1700,6 +1772,7 @@ class Establishment {
         const validationError = {
           lineNumber: this._lineNumber,
           error: thisError.message,
+          name: this._currentLine.LOCALESTID,
         };
 
         switch (thisProp) {
@@ -1796,6 +1869,7 @@ class Establishment {
         const validationWarning = {
           lineNumber: this._lineNumber,
           warning: thisWarning.message,
+          name: this._currentLine.LOCALESTID,
         };
 
         switch (thisProp) {
