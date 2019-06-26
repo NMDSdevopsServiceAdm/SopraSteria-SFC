@@ -157,6 +157,16 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     return file.errors > 0 || file.warnings > 0;
   }
 
+  public getValidationError(file: ValidatedFile): ErrorDefinition {
+    return {
+      name: this.getFileId(file),
+      message: this.i18nPluralPipe.transform(file.errors, {
+        '=1': 'There was # error in the file',
+        other: 'There were # errors in the file',
+      }),
+    };
+  }
+
   /**
    * Set validate success update uploaded files
    * And then set total warnings and/or errors and status
@@ -177,16 +187,6 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     });
     this.bulkUploadService.validationErrors$.next(validationErrors);
     this.validationComplete = true;
-  }
-
-  private getValidationError(file: ValidatedFile): ErrorDefinition {
-    return {
-      name: this.getFileId(file),
-      message: this.i18nPluralPipe.transform(file.errors, {
-        '=1': 'There was # error in the file',
-        other: 'There were # errors in the file',
-      }),
-    };
   }
 
   private getFileId(file: ValidatedFile): string {
