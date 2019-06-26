@@ -972,6 +972,11 @@ module.exports = function(sequelize, DataTypes) {
       targetKey: 'id',
       as: 'ethnicity'
     });
+    Worker.belongsTo(models.workerNurseSpecialism, {
+      foreignKey: 'NurseSpecialismFKValue',
+      targetKey: 'id',
+      as: 'nurseSpecialism'
+    });
     Worker.belongsTo(models.nationality, {
       foreignKey: 'NationalityOtherFK',
       targetKey: 'id',
