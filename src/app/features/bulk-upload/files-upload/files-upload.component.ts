@@ -159,14 +159,20 @@ export class FilesUploadComponent implements OnInit {
         null,
         () => this.cancelUpload(),
         () => {
+          this.resetFileInputElement();
+          this.bulkUploadService.preValidateFiles$.next(true);
           this.filesUploading = false;
           this.filesUploaded = true;
         }
       );
   }
 
-  public removeFiles(): void {
+  private resetFileInputElement(): void {
     this.renderer.selectRootElement('#fileUpload').value = '';
+  }
+
+  public removeFiles(): void {
+    this.resetFileInputElement();
     this.fileUpload.setValidators(Validators.required);
     this.form.reset();
     this.submitted = false;

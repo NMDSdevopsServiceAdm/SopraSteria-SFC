@@ -20,9 +20,7 @@
     <ng-container *ngFor="let file of uploadedFiles">
       <tr *ngIf="file.errors">
         <td class="govuk-error-table__message-cell" colspan="5">
-          <p class="govuk-error-message govuk-error-table__message">
-            Check the file before validating.
-          </p>
+          <p class="govuk-error-message govuk-error-table__message" [innerText]="getValidationError(file).message"></p>
         </td>
       </tr>
       <tr [id]="getFileId(file)" class="govuk-table__row" [class.govuk-error-table__row]="file.errors">
@@ -36,6 +34,9 @@
               {{ file.warnings }}
               {{ file.warnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}
             </strong>
+          </p>
+          <p *ngIf="displayDownloadReportLink(file)" class="govuk-!-margin-bottom-0 govuk-!-margin-top-2">
+            <app-report-download-link [fileType]="file.fileType"></app-report-download-link>
           </p>
         </td>
         <td class="govuk-table__cell" [class.govuk-error-table__cell]="file.errors">
@@ -65,19 +66,12 @@
 
 <ng-container *ngIf="validationComplete">
   <p *ngIf="hasErrors">
-    Review the <strong>{{ totalErrors }}</strong> errors in the report.
+    Review the <strong>{{ totalErrors }}</strong> errors.
   </p>
 
   <p *ngIf="hasWarnings && !hasErrors">
     Review the <strong>{{ totalWarnings }}</strong>
-    {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }} in the report or complete the upload to
-    import the data.
-  </p>
-
-  <p *ngIf="hasWarnings || hasErrors">
-    <button (click)="downloadReport()" class="govuk-button govuk-button--link govuk-!-padding-0">
-      Download the report
-    </button>
+    {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }} or complete the upload to import the data.
   </p>
 
   <p *ngIf="!hasWarnings && !hasErrors">
@@ -88,7 +82,7 @@
     *ngIf="!hasErrors"
     type="button"
     class="govuk-button govuk-button--primary govuk-!-margin-top-2"
-    (click)="completeUpload()"
+    (click)="beginCompleteUpload()"
   >
     Complete upload
   </button>

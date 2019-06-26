@@ -32,6 +32,8 @@ const qualificationInSocialCareProperty = require('./properties/qualificationInS
 const otherQualificationProperty = require('./properties/otherQualificationProperty').WorkerOtherQualificationProperty;
 const highestQualificationProperty = require('./properties/highestQualificationProperty').WorkerHighestQualificationProperty;
 const completedProperty = require('./properties/completedProperty').WorkerCompletedProperty;
+const registeredNurseProperty = require('./properties/registeredNurseProperty').RegisteredNurseProperty;
+const nurseSpecialismProperty = require('./properties/nurseSpecialismProperty').NurseSpecialismProperty;
 
 class WorkerPropertyManager {
     constructor() {
@@ -67,6 +69,8 @@ class WorkerPropertyManager {
         this._thisManager.registerProperty(socialCareQualificationProperty);
         this._thisManager.registerProperty(otherQualificationProperty);
         this._thisManager.registerProperty(highestQualificationProperty);
+        this._thisManager.registerProperty(registeredNurseProperty);
+        this._thisManager.registerProperty(nurseSpecialismProperty);
     }
 
     get manager() {

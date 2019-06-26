@@ -4,6 +4,7 @@ import { FormGroup } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
+  ReportTypeRequestItem,
   UploadedFilesResponse,
   ValidatedFile,
   ValidatedFilesResponse,
@@ -19,6 +20,7 @@ import { map } from 'rxjs/operators';
 export class BulkUploadService {
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
   public preValidationError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public preValidateFiles$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public selectedFiles$: BehaviorSubject<File[]> = new BehaviorSubject(null);
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
@@ -57,8 +59,8 @@ export class BulkUploadService {
     return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
   }
 
-  public getReport(establishmentId: number): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report`, {
+  public getReport(establishmentId: number, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report/${reportType}`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
@@ -69,6 +71,7 @@ export class BulkUploadService {
   }
 
   public resetBulkUpload(): void {
+    this.uploadedFiles$.next(null);
     this.validationErrors$.next(null);
     this.serverError$.next(null);
   }
