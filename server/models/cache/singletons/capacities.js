@@ -29,7 +29,7 @@ class CapacitiesCache {
 
   static allMyCapacities(allAssociatedServiceIndices) {
     return ALL_CAPACITIES
-      .filter(x => allAssociatedServiceIndices && allAssociatedServiceIndices.length > 0 && allAssociatedServiceIndices.indexOf(x) < 0);
+      .filter(x => allAssociatedServiceIndices && allAssociatedServiceIndices.length > 0 && allAssociatedServiceIndices.includes(x.dataValues.id));
   }
 }
 

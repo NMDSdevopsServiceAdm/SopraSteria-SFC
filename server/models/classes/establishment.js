@@ -242,7 +242,18 @@ class Establishment extends EntityValidator {
 
             // load cache against this establishment
             document.allMyServices = ServiceCache.allMyServices(document.IsCQCRegulated);
-            // document.allCapacities = CapacitiesCache.allMyCapacities(document || this);
+
+            const allAssociatedServiceIndices = [];
+
+            if (document.mainService) {
+                allAssociatedServiceIndices.push(document.mainService.id);
+            }
+
+            if (document && document.otherServices) {
+                document.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+            }
+
+            document.allCapacities = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
@@ -755,7 +766,7 @@ class Establishment extends EntityValidator {
                 });
 
                 const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
-                    ServiceCache.allMyOtherServices(establishmentServices),
+                    ServiceCache.allMyOtherServices(establishmentServices.map(x => x)),
                     models.services.findOne({
                         where: {
                             id : fetchResults.MainServiceFKValue
@@ -874,6 +885,11 @@ class Establishment extends EntityValidator {
                 });
         
                 const allAssociatedServiceIndices = [];
+
+                // console.log('allCapacitiesResults.mainService', allCapacitiesResults.mainService)
+                // console.log('allCapacitiesResults.otherServices', allCapacitiesResults.otherServices)
+
+
                 if (allCapacitiesResults && allCapacitiesResults.id) {
                     // merge tha main and other service ids
                     if (allCapacitiesResults.mainService.id) {
@@ -885,8 +901,11 @@ class Establishment extends EntityValidator {
                         allCapacitiesResults.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
                     }
                 }
+
+                // console.log('allAssociatedServiceIndices', allAssociatedServiceIndices)
         
                 // now fetch all the questions for the given set of combined services
+                
                 if (allAssociatedServiceIndices.length > 0) {
                     fetchResults.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices)
                 } else {
