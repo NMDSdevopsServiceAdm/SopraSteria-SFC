@@ -9,7 +9,7 @@ export class WorkplaceResolver implements Resolve<any> {
   constructor(private router: Router, private establishmentService: EstablishmentService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.establishmentService.getEstablishment(parseInt(route.paramMap.get('establishmentid'), 10)).pipe(
+    return this.establishmentService.getEstablishment(route.paramMap.get('establishmentid')).pipe(
       catchError(() => {
         this.router.navigate(['/dashboard'], { fragment: 'workplace' });
         return of(null);

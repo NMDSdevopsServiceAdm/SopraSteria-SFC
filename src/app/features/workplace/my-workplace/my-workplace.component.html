@@ -1,6 +1,10 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-third">
-    <p>{{ myWorkplace.name }}</p>
+    <p>
+      <a [routerLink]="['/workplace', myWorkplace.uid]">
+        {{ myWorkplace.name }}
+      </a>
+    </p>
     <p class="govuk-!-margin-bottom-1"><strong>Last updated</strong></p>
     <p class="govuk-!-margin-bottom-0">{{ myWorkplace.updated | date: 'd MMMM y' }}</p>
   </div>

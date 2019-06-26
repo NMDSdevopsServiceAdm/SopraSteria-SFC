@@ -22,6 +22,7 @@ import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
+import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { WorkplaceResolver } from './workplace.resolver';
 import { StartComponent } from './start/start.component';
@@ -46,6 +47,7 @@ import { StartComponent } from './start/start.component';
     TypeOfEmployerComponent,
     VacanciesComponent,
     ViewMyWorkplacesComponent,
+    ViewWorkplaceComponent,
     StartComponent,
   ],
   providers: [WorkplaceResolver],

@@ -1,0 +1,29 @@
+<app-dashboard-header></app-dashboard-header>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">
+      <span class="govuk-caption-xl">Waverley Grange</span>
+      <!-- {{ worker.nameOrId }} -->
+      Puttenham Hill House
+    </h1>
+  </div>
+
+  <div class="govuk-grid-column-one-third">
+    <a class="govuk-button govuk-button--link" role="button" href="#" (click)="deleteWorker($event)">
+      <img src="/assets/images/bin.svg" />Delete workspace
+    </a>
+  </div>
+
+  <div class="govuk-grid-column-full">
+    <app-tabs>
+      <app-tab [title]="'Workplace'">
+        <!-- <app-workplace-tab></app-workplace-tab> -->
+      </app-tab>
+
+      <app-tab [title]="'Staff records'">
+        <!-- <app-staff-records-tab></app-staff-records-tab> -->
+      </app-tab>
+    </app-tabs>
+  </div>
+</div>
