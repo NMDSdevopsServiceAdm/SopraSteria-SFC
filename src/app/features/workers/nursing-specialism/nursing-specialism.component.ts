@@ -18,8 +18,8 @@ export class NursingSpecialismComponent extends QuestionComponent {
     'Learning Disability',
     'Mental Health',
     'Community Care',
-    'Other',
-    'Not Applicable',
+    'Others',
+    'Not applicable',
     `Don't know`,
   ];
 
