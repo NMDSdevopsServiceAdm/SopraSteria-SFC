@@ -2,12 +2,10 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BulkUploadGuard } from '@core/guards/bulk-upload/bulk-upload.guard';
 import {
-  BulkUploadWelcomePageComponent,
-} from '@features/bulk-upload//bulk-upload-welcome-page/bulk-upload-welcome-page.component';
-import {
   WorkplaceReferencesPageComponent,
 } from '@features/bulk-upload//workplace-references-page/workplace-references-page.component';
 import { BulkUploadPageComponent } from '@features/bulk-upload/bulk-upload-page/bulk-upload-page.component';
+import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
 
 const routes: Routes = [
   {
@@ -16,8 +14,8 @@ const routes: Routes = [
     canActivate: [BulkUploadGuard],
   },
   {
-    path: 'welcome',
-    component: BulkUploadWelcomePageComponent,
+    path: 'start',
+    component: BulkUploadStartPageComponent,
   },
   {
     path: 'workplace-references',
