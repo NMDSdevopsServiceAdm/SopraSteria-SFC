@@ -35,7 +35,7 @@ class Establishment {
     this._utilisations = null;
 
     this._totalPermTemp = null;
-  
+
     this._alljobs = null;
     this._vacancies = null;
     this._starters = null;
@@ -209,7 +209,7 @@ class Establishment {
         error: `Local Identifier (LOCALESTID) must be no more than ${MAX_LENGTH} characters`,
         source: myLocalId,
       });
-      return false;      
+      return false;
     } else {
       this._localId = myLocalId;
       return true;
@@ -520,7 +520,7 @@ class Establishment {
         this._localAuthorities = listOfLAs.map(thisLA => parseInt(thisLA, 10));
         return true;
       }
-  
+
     } else {
       return true;
     }
@@ -625,11 +625,11 @@ class Establishment {
       return true;
     }
   }
-  
+
   _validateAllServices() {
     // all services must have at least one value (main service) or a semi colon delimited list of integers; treat consistently as a list of
     const myAllServices = this._currentLine.ALLSERVICES;
-    if (!myAllServices || myAllServices.length == 0) {    
+    if (!myAllServices || myAllServices.length == 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
@@ -876,7 +876,7 @@ class Establishment {
         name: this._currentLine.LOCALESTID,
       });
     }
-    
+
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
@@ -1088,14 +1088,14 @@ class Establishment {
 
   _validateReasonsForLeaving() {
     // only if the sum of "LEAVERS" is greater than 0
-    const sumOfLeavers = this._leavers ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
+    const sumOfLeavers = this._leavers && Array.isArray(this._leavers) && this._leavers[0] !== 999 ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
 
     if (sumOfLeavers > 0) {
       const allReasons = this._currentLine.REASONS.split(';');
       const allReasonsCounts = this._currentLine.REASONNOS.split(';');
 
       const localValidationErrors = [];
-  
+
       if (!allReasons || allReasons.length==0) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
@@ -1106,7 +1106,7 @@ class Establishment {
           name: this._currentLine.LOCALESTID,
         });
       }
-      if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount)))) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
@@ -1163,12 +1163,12 @@ class Establishment {
           name: this._currentLine.LOCALESTID,
         });
       }
-  
+
       if (localValidationErrors.length > 0) {
         localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
         return false;
       }
-  
+
       this._reasonsForLeaving = allReasons.map((thisReason, index) => {
         return {
           id: parseInt(thisReason, 10),
@@ -1177,7 +1177,7 @@ class Establishment {
       });
 
       return true;
-  
+
     } else {
       return true;
     }
@@ -1339,7 +1339,7 @@ class Establishment {
               name: this._currentLine.LOCALESTID,
             });
           }
-            
+
         }
       });
 
@@ -1420,7 +1420,7 @@ class Establishment {
   _transformAllVacanciesStartersLeavers() {
     // vacancies, starters and leavers is either an array of counts against positional indexes to _allJobs
     //  or a single value of 999
-    
+
     // if a single value of 999, then map to "Don't know"
     // if a full set of 0 (e.g. 0, or 0;0 or 0;0;0, ...), then map to "None"
     const DONT_KNOW=999;
@@ -1434,7 +1434,7 @@ class Establishment {
         .map((thisJob, index) => {
           return {
             jobId: this._alljobs[index],
-            total: thisJob  
+            total: thisJob
           };
         })
         .filter(thisJob => thisJob.total !== 0);
@@ -1449,7 +1449,7 @@ class Establishment {
         .map((thisJob, index) => {
           return {
             jobId: this._alljobs[index],
-            total: thisJob  
+            total: thisJob
           };
         })
         .filter(thisJob => thisJob.total !== 0);
@@ -1464,7 +1464,7 @@ class Establishment {
         .map((thisJob, index) => {
           return {
             jobId: this._alljobs[index],
-            total: thisJob  
+            total: thisJob
           };
         })
         .filter(thisJob => thisJob.total !== 0);
@@ -1591,7 +1591,7 @@ class Establishment {
     status = !this._validateJobRoleTotals() ? false : status;
 
     status = !this._validateReasonsForLeaving() ? false : status;
-    
+
     return status;
   }
 
@@ -1670,7 +1670,7 @@ class Establishment {
             ...thisValidation,
           };
         });
-    
+
   };
 
   // returns an API representation of this Establishment
@@ -1851,7 +1851,7 @@ class Establishment {
             validationError.errCode = Establishment.LOCATION_ID_ERROR;
             validationError.errType = 'LOCATION_ID_ERROR';
             validationError.source  = `${this._currentLine.LOCATIONID}`;
-            break;   
+            break;
           case 'NMDSID':
               // where to map NMDSID error?????
           default:
@@ -1863,7 +1863,7 @@ class Establishment {
         this._validationErrors.push(validationError);
       }) : true;
     });
-  
+
     warnings.forEach(thisWarning => {
       thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
         const validationWarning = {
@@ -1948,7 +1948,7 @@ class Establishment {
             validationWarning.warnCode = Establishment.LOCATION_ID_WARNING;
             validationWarning.warnType = 'LOCATION_ID_WARNING';
             validationWarning.source  = `${this._currentLine.LOCATIONID}`;
-            break;   
+            break;
           case 'NMDSID':
               // where to map NMDSID error?????
           default:
