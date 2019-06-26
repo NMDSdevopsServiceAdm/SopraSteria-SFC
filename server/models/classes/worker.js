@@ -573,7 +573,7 @@ class Worker extends EntityValidator {
     // loads the Worker (with given id) from DB, but only if it belongs to the given Establishment
     // returns true on success; false if no Worker
     // Can throw WorkerRestoreException exception.
-    async restore(workerUid, showHistory=false, associatedEntities=false) {
+    async restore(workerUid, showHistory=false, associatedEntities=false, associatedLevel) {
         if (!workerUid) {
             throw new WorkerExceptions.WorkerRestoreException(null,
                 null,
