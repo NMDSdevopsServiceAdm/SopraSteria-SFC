@@ -19,12 +19,12 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.establishment = this.authService.establishment;
-    this.getMyEstablishments();
+    this.getEstablishments();
   }
 
-  private getMyEstablishments(): void {
+  private getEstablishments(): void {
     this.subscriptions.add(
-      this.userService.getMyEstablishments().subscribe((workplaces: GetWorkplacesResponse) => {
+      this.userService.getEstablishments().subscribe((workplaces: GetWorkplacesResponse) => {
         if (workplaces.subsidaries) {
           this.workplaces = workplaces.subsidaries.establishments;
           this.workplacesCount = workplaces.subsidaries.count;

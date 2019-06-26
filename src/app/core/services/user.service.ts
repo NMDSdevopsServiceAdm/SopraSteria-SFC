@@ -43,7 +43,7 @@ export class UserService {
     this._userDetails$.next(userDetails);
   }
 
-  public getMyEstablishments(): Observable<GetWorkplacesResponse> {
+  public getEstablishments(): Observable<GetWorkplacesResponse> {
     return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`);
   }
 }
