@@ -21,3 +21,8 @@
     }
   }
 }
+
+.govuk-summary-list__error {
+  border-left: $govuk-border-width-form-element-error solid $shiraz;
+  padding-left: $govuk-gutter-half;
+}
