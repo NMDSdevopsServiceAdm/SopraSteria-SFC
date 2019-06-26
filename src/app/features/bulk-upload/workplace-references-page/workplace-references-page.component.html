@@ -1,0 +1,12 @@
+<!-- TODO: Implement UI -->
+
+<h1>Workplace References Page</h1>
+
+<button (click)="updateReferences()">Update References</button>
+
+<ng-container *ngIf="referencesUpdated">
+  <p>Settings updated</p>
+  <p>
+    <a [routerLink]="['/bulk-upload']">Go to Bulk Upload</a>
+  </p>
+</ng-container>
