@@ -77,6 +77,10 @@ export interface Worker {
     qualificationId: number;
     title?: string;
   };
+  registeredNurse: string;
+  nurseSpecialism: {
+    specialism: string;
+  };
   created?: string;
   updated?: string;
   completed?: boolean;
