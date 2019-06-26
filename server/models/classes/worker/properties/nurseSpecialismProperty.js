@@ -5,7 +5,7 @@ const OTHER_MAX_LENGTH=120;
 
 exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePropertyPrototype {
     constructor() {
-        super('NurseSpecialismFK');
+        super('NurseSpecialism', 'NurseSpecialismFK');
     }
 
     static clone() {
@@ -27,7 +27,7 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
         if (document.nurseSpecialism) {
             return {
                 id: document.nurseSpecialism.id,
-                name: document.nurseSpecialism.name,
+                specialism: document.nurseSpecialism.specialism,
                 other: document.nurseSpecialism.other ? document.nurseSpecialism.other : undefined,
             }
         }
@@ -64,7 +64,7 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
     _valid(thisSpecialism) {
         if (!thisSpecialism) return false;
 
-        if (!(thisSpecialism.id || thisSpecialism.name)) return false;
+        if (!(thisSpecialism.id || thisSpecialism.specialism)) return false;
 
         if (thisSpecialism.id && !(Number.isInteger(thisSpecialism.id))) return false;
 
@@ -72,39 +72,30 @@ exports.NurseSpecialismProperty = class NurseSpecialismProperty extends ChangePr
     }
 
     async _validateSpecialism(specialismDef) {
-        let results = await models.workerNurseSpecialism.findAll({
-            order: [
-                ["id", "ASC"]
-            ]
-        });
-
-        if (!results && !Array.isArray(results)) return false;
-
-        if (!this._valid(specialismDef)) {
-            return false;
-        }
+        if (!this._valid(specialismDef)) return false;
 
         let referenceSpecialism = null;
         if (specialismDef.id) {
-            referenceSpecialism = results.find(thisAllSpecialism => {
-                return thisAllSpecialism.id === specialismDef.id;
+            referenceSpecialism = await models.workerNurseSpecialism.findOne({
+                where: {
+                    id: specialismDef.id
+                },
+                attributes: ['id', 'specialism'],
             });
         } else {
-            referenceSpecialism = results.find(thisAllSpecialism => {
-                return thisAllSpecialism.name === specialismDef.name;
+            referenceSpecialism = await models.workerNurseSpecialism.findOne({
+                where: {
+                    specialism: specialismDef.specialism
+                },
+                attributes: ['id', 'specialism'],
             });
         }
 
         if (referenceSpecialism && referenceSpecialism.id) {
-            if (referenceSpecialism.other && specialismDef.other && specialismDef.other.length && specialismDef.other.length > OTHER_MAX_LENGTH) {
-                return false;
-            } else {
-                return {
-                    id: referenceSpecialism.id,
-                    name: referenceSpecialism.name,
-                    other: (specialismDef.other && referenceSpecialism.other) ? specialismDef.other : undefined,
-                };
-            }
+            return {
+                id: referenceSpecialism.id,
+                specialism: referenceSpecialism.specialism
+            };
         } else {
             return false;
         }
