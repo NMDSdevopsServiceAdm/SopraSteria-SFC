@@ -4,6 +4,7 @@ import { FormGroup } from '@angular/forms';
 import {
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
+  ReportTypeRequestItem,
   UploadedFilesResponse,
   ValidatedFile,
   ValidatedFilesResponse,
@@ -58,8 +59,8 @@ export class BulkUploadService {
     return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
   }
 
-  public getReport(establishmentId: number): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report`, {
+  public getReport(establishmentId: number, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report/${reportType}`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
