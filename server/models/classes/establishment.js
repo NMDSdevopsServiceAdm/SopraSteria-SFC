@@ -673,7 +673,7 @@ class Establishment extends EntityValidator {
     // loads the Establishment (with given id or uid) from DB, but only if it belongs to the known User
     // returns true on success; false if no User
     // Can throw EstablishmentRestoreException exception.
-    async restore(id, showHistory=false, associatedEntities=false) {
+    async restore(id, showHistory=false, associatedEntities=false, associatedLevel=1) {
         if (!id) {
             throw new EstablishmentExceptions.EstablishmentRestoreException(null,
                 null,
@@ -1003,6 +1003,9 @@ class Establishment extends EntityValidator {
 
                 // certainly for bulk upload, but also expected for cross-entity validations, restore all associated entities (workers)
                 if (associatedEntities) {
+                    // restoring associated entities can be resource expensive, especially if doing deep restore of associated entities
+                    //  - that is especially true if restoring the training and qualification records for each of the Workers.
+                    //  Only pass down the restoration of Worker's associated entities if the association level is more than one level
                     const myWorkerSet = await models.worker.findAll({
                         attributes: ['uid'],
                         where: {
@@ -1014,7 +1017,7 @@ class Establishment extends EntityValidator {
                     if (myWorkerSet && Array.isArray(myWorkerSet)) {
                         await Promise.all(myWorkerSet.map(async thisWorker => {
                             const newWorker = new Worker(this._id);
-                            await newWorker.restore(thisWorker.uid, false, associatedEntities);
+                            await newWorker.restore(thisWorker.uid, false, associatedLevel > 1 ? associatedEntities : false, associatedLevel);
 
                             // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
                             // without whitespace

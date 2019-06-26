@@ -659,7 +659,7 @@ async function uploadAsJSON(username, establishmentId, content, key) {
 
   try {
     const objData = await s3.putObject(params).promise();
-    console.log(`${key} has been uploaded!`);
+    //console.log(`${key} has been uploaded!`);
 
   } catch (err) {
     console.error('uploadAsJSON: ', err);
@@ -683,7 +683,7 @@ async function uploadAsCSV(username, establishmentId, content, key) {
 
   try {
     const objData = await s3.putObject(params).promise();
-    console.log(`${key} has been uploaded!`);
+    //console.log(`${key} has been uploaded!`);
 
   } catch (err) {
     console.error('uploadAsCSV: ', err);
@@ -1158,7 +1158,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
-const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent) => {
+const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent, assocationLevel) => {
   try {
     const thisUser = new UserEntity(primaryEstablishmentId);;
     await thisUser.restore(null, loggedInUsername, false);
@@ -1174,13 +1174,13 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
     // first add the primary establishment entity
     const primaryEstablishment = new EstablishmentEntity(loggedInUsername);
     currentEntities.push(primaryEstablishment);
-    restoreEntityPromises.push(primaryEstablishment.restore(myEstablishments.primary.uid, false, true));
+    restoreEntityPromises.push(primaryEstablishment.restore(myEstablishments.primary.uid, false, true, assocationLevel));
 
     if (myEstablishments.subsidaries && myEstablishments.subsidaries.establishments && Array.isArray(myEstablishments.subsidaries.establishments)) {
       myEstablishments.subsidaries.establishments.forEach(thisSubsidairy => {
         const newSub = new EstablishmentEntity(loggedInUsername);
         currentEntities.push(newSub);
-        restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true));
+        restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel));
       });
     }
 
@@ -1419,21 +1419,21 @@ router.route('/report/:reportType').get(async (req, res) => {
       .filter(msg => msg.errCode && msg.errType)
       .sort((a,b) => a.lineNumber - b.lineNumber)
       .reduce((result, item) => ({ ...result, [item['error']]: [...(result[item['error']] || []), item]}), {});
- 
+
     printLine(readable, reportType, errors, NEWLINE)
 
     const warningTitle = '* Warnings (files will be accepted but data is incomplete or internally inconsistent) *';
     const warningPadding = '*'.padStart(warningTitle.length, '*');
     readable.push(`${NEWLINE}${warningPadding}${NEWLINE}${warningTitle}${NEWLINE}${warningPadding}${NEWLINE}`);
-    
+
     const warnings =  messages
       .reduce((acc, val) => acc.concat(val), [])
       .filter(msg => msg.warnCode && msg.warnType)
       .sort((a,b) => a.lineNumber - b.lineNumber)
       .reduce((result, item) => ({ ...result, [item['warning']]: [...(result[item['warning']] || []), item]}), {});
-    
+
     printLine(readable, reportType, warnings, NEWLINE)
-    
+
     const laTitle = '* You are sharing data with the following Local Authorities *';
     const laPadding = '*'.padStart(laTitle.length, '*');
     readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
@@ -1458,8 +1458,8 @@ router.route('/report/:reportType').get(async (req, res) => {
 const printLine = (readable, reportType, errors, sep) => {
   Object.keys(errors).forEach(key => {
     readable.push(`${sep}${key}${sep}`);
-      errors[key].forEach(item => { 
-        if (reportType === 'training') 
+      errors[key].forEach(item => {
+        if (reportType === 'training')
           return readable.push(`For worker with ${item.name} Subsidiary 3 and UNIQUEWORKERID ${item.worker} on line ${item.lineNumber}${sep}`)
         else if (reportType === 'establishments')
           return readable.push(`For establishment called ${item.name} on line ${item.lineNumber}${sep}`)
@@ -1470,7 +1470,7 @@ const printLine = (readable, reportType, errors, sep) => {
 }
 
 const getFileName = (reportType) => {
-  if (reportType === 'training') 
+  if (reportType === 'training')
     return 'TrainingResults.txt';
   else if (reportType === 'establishments')
     return 'WorkplaceResults.txt';
@@ -1530,7 +1530,7 @@ router.route('/complete').post(async (req, res) => {
     // completing bulk upload must always work on the current set of known entities and not rely
     //  on any aspect of the current entities at the time of validation; there may be minutes/hours
     //  validating a bulk upload and completing it.
-    const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent);
+    const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1);    // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
 
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
@@ -1686,7 +1686,8 @@ router.route('/download/:downloadType').get(async (req, res) => {
     if (ALLOWED_DOWNLOAD_TYPES.includes(downloadType)) {
 
       try {
-        const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent);
+        const ENTITY_RESTORE_LEVEL=2;
+        const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL);
         [establishments, workers, training] = await exportToCsv(NEWLINE, myCurrentEstablishments);
 
       } catch(err) {
