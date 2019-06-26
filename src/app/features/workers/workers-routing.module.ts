@@ -106,6 +106,16 @@ const routes: Routes = [
         data: { title: 'Staff Details' },
       },
       {
+        path: 'main-job-start-date',
+        component: MainJobStartDateComponent,
+        data: { title: 'Main Job Role Start Date' },
+      },
+      {
+        path: 'other-job-roles',
+        component: OtherJobRolesComponent,
+        data: { title: 'Other Job Roles' },
+      },
+      {
         path: 'nursing-category',
         component: NursingCategoryComponent,
         data: { title: 'Nursing Category' },
@@ -119,16 +129,6 @@ const routes: Routes = [
         path: 'mental-health-professional',
         component: MentalHealthProfessionalComponent,
         data: { title: 'Mental Health Professional' },
-      },
-      {
-        path: 'main-job-start-date',
-        component: MainJobStartDateComponent,
-        data: { title: 'Main Job Role Start Date' },
-      },
-      {
-        path: 'other-job-roles',
-        component: OtherJobRolesComponent,
-        data: { title: 'Other Job Roles' },
       },
       {
         path: 'national-insurance-number',
