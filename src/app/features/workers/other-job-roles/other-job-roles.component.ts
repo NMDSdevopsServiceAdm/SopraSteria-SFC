@@ -130,9 +130,13 @@ export class OtherJobRolesComponent extends QuestionComponent {
   }
 
   onSuccess() {
-    this.next = this.worker.otherJobs.some(j => j.jobId === 27)
-      ? ['/worker', this.worker.uid, 'mental-health-professional']
-      : ['/worker', this.worker.uid, 'national-insurance-number'];
+    if (this.workerService.hasJobRole(this.worker, 23)) {
+      this.next = ['/worker', this.worker.uid, 'nursing-category'];
+    } else if (this.workerService.hasJobRole(this.worker, 27)) {
+      this.next = ['/worker', this.worker.uid, 'mental-health-professional'];
+    } else {
+      this.next = ['/worker', this.worker.uid, 'national-insurance-number'];
+    }
   }
 
   onChange(control) {

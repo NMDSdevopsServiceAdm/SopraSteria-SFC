@@ -30,6 +30,7 @@ export class StaffRecordSummaryComponent {
   }
 
   setReturn() {
+    console.log(this.return);
     this.workerService.setReturnTo(this.return);
   }
 }

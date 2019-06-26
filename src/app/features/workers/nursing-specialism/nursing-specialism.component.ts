@@ -13,13 +13,13 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class NursingSpecialismComponent extends QuestionComponent {
   public nursingSpecialism = [
-    'Older people (including dementia, elderly care and end of life care)',
+    'Older people (Including dementia, elderly care and end of life care)',
     'Adults',
-    'Learning disability',
-    'Mental health',
-    'Community care',
+    'Learning Disability',
+    'Mental Health',
+    'Community Care',
     'Other',
-    'Not applicable',
+    'Not Applicable',
     `Don't know`,
   ];
 

@@ -13,11 +13,11 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class NursingCategoryComponent extends QuestionComponent {
   public nursingCategories = [
-    'Adult nurse',
-    'Mental health nurse',
-    'Learning disabilies nurse',
-    `Children's nurse`,
-    'Enrolled nurse',
+    'Adult Nurse',
+    'Mental Health Nurse',
+    'Learning Disabilities Nurse',
+    `Children's Nurse`,
+    'Enrolled Nurse',
   ];
 
   constructor(
