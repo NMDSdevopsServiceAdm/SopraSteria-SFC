@@ -93,6 +93,11 @@ class Establishment {
 
   static get REASONS_FOR_LEAVING_WARNING() { return 2360; }
 
+
+  get headers() {
+    return this._headers_v1.join(",");
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -1961,7 +1966,55 @@ class Establishment {
       }) : true;
     });
 
+  };
+
+  _csvQuote(toCsv) {
+    if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+      return '"' + toCsv.replace(/"/g, '""') + '"';
+    } else {
+      return toCsv;
+    }
   }
+
+  // takes the given establishment entity and writes it out to CSV string (one line)
+  toCSV(entity) {
+    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
+    const columns = [];
+    columns.push(this._csvQuote(entity.name));   // todo - this will be local identifier
+    columns.push('TBC');
+    columns.push(this._csvQuote(entity.name));
+    columns.push(this._csvQuote(entity.address));
+    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(entity.postcode);
+
+    switch (entity.employerType.value) {
+      case 'Private Sector':
+        columns.push(6);
+        break;
+      case 'Voluntary / Charity':
+        columns.push(7);
+        break;
+      case 'Other':
+        columns.push(8);
+        break;
+      case 'Local Authority (generic/other)':
+        columns.push(3);
+        break;
+      case 'Local Authority (adult services)':
+        columns.push(1);
+        break;
+    }
+    if (entity.employerType.other) {
+      columns.push(this._csvQuote(entity.employerType.other))
+    } else {
+      columns.push('');
+    }
+
+    return columns.join(',');
+  };
+
 };
 
 module.exports.Establishment = Establishment;

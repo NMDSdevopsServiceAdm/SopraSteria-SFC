@@ -37,6 +37,10 @@ class Training {
   static get ACCREDITED_WARNING() { return 2060; }
   static get NOTES_WARNING() { return 2070; }
 
+  get headers() {
+    return this._headers_v1.join(",");
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -69,7 +73,7 @@ class Training {
   get notes() {
     return this._notes;
   }
-  
+
   _validateLocaleStId() {
     const myLocaleStId = this._currentLine.LOCALESTID;
     const MAX_LENGTH = 50;
@@ -344,7 +348,7 @@ class Training {
       } else {
         this._notes = myNotes;
         return true;
-      }  
+      }
     }
   }
 
@@ -516,7 +520,7 @@ class Training {
       }) : true;
     });
 
-  
+
     warnings.forEach(thisWarning => {
       thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
         const validationWarning = {
@@ -566,6 +570,58 @@ class Training {
         this._validationErrors.push(validationWarning);
       }) : true;
     });
+  }
+
+  _csvQuote(toCsv) {
+    if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+      return '"' + toCsv.replace(/"/g, '""') + '"';
+    } else {
+      return toCsv;
+    }
+  }
+
+  // input is date in ISO format YYYY-MM-DDYhh:mm:ss.000
+  _fromDateToCsv(convertThis) {
+    if (convertThis) {
+      const datePart = convertThis.toISOString().substring(0,10);
+      const dateParts = datePart.split('-');
+
+      return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+    } else {
+      return '';
+    }
+  }
+
+  // takes the given Training entity and writes it out to CSV string (one line)
+  toCSV(establishmentId, workerId, entity) {
+    // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
+    const columns = [];
+    columns.push(this._csvQuote(establishmentId));
+    columns.push(this._csvQuote(workerId));
+
+    columns.push(BUDI.trainingCaterogy(BUDI.FROM_ASC, entity.category.id));
+    columns.push(entity.title ? this._csvQuote(entity.title) : '');
+
+    columns.push(this._fromDateToCsv(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+    columns.push(this._fromDateToCsv(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+
+    switch (entity.accredited) {
+      case null:
+        columns.push('');
+        break;
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(0);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+    columns.push(entity.notes ? this._csvQuote(entity.notes) : '');
+
+    return columns.join(',');
   }
 
 };
