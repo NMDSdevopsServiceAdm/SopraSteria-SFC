@@ -1,7 +1,4 @@
-<!-- TODO: Implement UI -->
-
-<h1>Workplace References Page</h1>
-
+<!-- TODO check if needed
 <button (click)="updateReferences()">Update References</button>
 
 <ng-container *ngIf="referencesUpdated">
@@ -10,3 +7,70 @@
     <a [routerLink]="['/bulk-upload']">Go to Bulk Upload</a>
   </p>
 </ng-container>
+TODO check if needed -->
+
+<app-dashboard-header></app-dashboard-header>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ primaryEstablishment }}</p>
+    <h1 class="govuk-heading-l">Workplace references</h1>
+    <p>You must create unique references for each workplace.</p>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds govuk-!-margin-top-6">
+    <form
+      *ngIf="workplaces && workplaces.length"
+      novalidate
+      (ngSubmit)="onSubmit()"
+      [formGroup]="form"
+      id="server-error"
+    >
+      <dl class="govuk-summary-list">
+        <div class="govuk-summary-list__row">
+          <dt class="govuk-summary-list__key govuk-!-width-two-thirds">
+            Workplace
+          </dt>
+          <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-util__bold">
+            Workplace reference
+          </dd>
+        </div>
+        <div class="govuk-summary-list__row" *ngFor="let workplace of workplaces">
+          <dt class="govuk-summary-list__key govuk-!-width-two-thirds govuk-util__normal"
+            [class.govuk-summary-list__error]="form.get('name-' + workplace.uid).errors && submitted">
+          <span
+            id="name-{{ workplace.uid }}-error"
+            class="govuk-error-message"
+            *ngIf="form.get('name-' + workplace.uid).errors && submitted"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('name-' + workplace.uid) }}
+          </span>
+            {{ workplace.name }}
+          </dt>
+          <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-util__normal govuk-!-padding-right-0">
+            <input
+              class="govuk-input"
+              [class.govuk-input--error]="form.get('name-' + workplace.uid).errors && submitted"
+              id="name-{{ workplace.uid }}"
+              name="name-{{ workplace.uid }}"
+              type="text"
+              formControlName="name-{{ workplace.uid }}"
+            />
+          </dd>
+        </div>
+      </dl>
+      <div class="govuk-button-group">
+        <button type="button" class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0" (click)="onSubmit()">
+          Save and continue
+        </button>
+        <span class="govuk-visually-hidden">or</span>
+        <button type="button" class="govuk-button govuk-button--link govuk-!-margin-bottom-0" (click)="onSubmit()">
+          Save and exit
+        </button>
+      </div>
+    </form>
+    <p *ngIf="workplaces && !workplaces.length">There are no workplaces.</p>
+  </div>
+</div>
