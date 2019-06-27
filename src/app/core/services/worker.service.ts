@@ -1,5 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Alert } from '@core/model/alert.model';
 import {
   AvailableQualificationsResponse,
   QualificationRequest,
@@ -41,13 +42,10 @@ export class WorkerService {
   private lastDeleted$ = new BehaviorSubject<string>(null);
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private totalStaffReturn$ = new BehaviorSubject<boolean>(false);
+  private _alert$: BehaviorSubject<Alert> = new BehaviorSubject<Alert>(null);
+  public alert$: Observable<Alert> = this._alert$.asObservable();
+
   public createStaffResponse = null;
-  public trainingRecordCreated = null;
-  public trainingRecordEdited = null;
-  public trainingRecordDeleted$ = new BehaviorSubject<boolean>(false);
-  public qualificationDeleted$ = new BehaviorSubject<boolean>(false);
-  public qualificationCreated = null;
-  public qualificationEdited = null;
 
   // All workers store
   private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
@@ -69,6 +67,18 @@ export class WorkerService {
 
   public get totalStaffReturn() {
     return this.totalStaffReturn$.value as boolean;
+  }
+
+  public get alert(): Alert {
+    return this._alert$.value as Alert;
+  }
+
+  public set alert(alert: Alert) {
+    this._alert$.next(alert);
+  }
+
+  public hasJobRole(worker: Worker, id: number) {
+    return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.some(j => j.jobId === id));
   }
 
   setLastDeleted(name: string) {
@@ -212,62 +222,6 @@ export class WorkerService {
     return this.http.get<any>(
       `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`
     );
-  }
-
-  setTrainingRecordDeleted(bool) {
-    this.trainingRecordDeleted$.next(bool);
-  }
-
-  setQualificationDeleted(bool) {
-    this.qualificationDeleted$.next(bool);
-  }
-
-  getTrainingRecordCreated() {
-    return this.trainingRecordCreated;
-  }
-
-  setTrainingRecordCreated() {
-    this.trainingRecordCreated = true;
-  }
-
-  resetTrainingRecordCreated() {
-    this.trainingRecordCreated = null;
-  }
-
-  getTrainingRecordEdited() {
-    return this.trainingRecordEdited;
-  }
-
-  setTrainingRecordEdited() {
-    this.trainingRecordEdited = true;
-  }
-
-  resetTrainingRecordEdited() {
-    this.trainingRecordEdited = null;
-  }
-
-  getQualificationCreated() {
-    return this.qualificationCreated;
-  }
-
-  setQualificationCreated() {
-    this.qualificationCreated = true;
-  }
-
-  resetQualificationCreated() {
-    this.qualificationCreated = null;
-  }
-
-  getQualificationEdited() {
-    return this.qualificationEdited;
-  }
-
-  setQualificationEdited() {
-    this.qualificationEdited = true;
-  }
-
-  resetQualificationEdited() {
-    this.qualificationEdited = null;
   }
 
   setCreateStaffResponse(success: number) {

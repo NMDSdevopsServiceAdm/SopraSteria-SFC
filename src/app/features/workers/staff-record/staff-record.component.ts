@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { ReportsService } from '@core/services/reports.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -17,12 +18,6 @@ import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-work
   styleUrls: ['./staff-record.component.scss'],
 })
 export class StaffRecordComponent implements OnInit, OnDestroy {
-  public trainingRecordCreated = false;
-  public trainingRecordEdited = false;
-  public trainingRecordDeleted = false;
-  public qualificationCreated = false;
-  public qualificationEdited = false;
-  public qualificationDeleted = false;
   public returnToRecord: URLStructure;
   public returnToQuals: URLStructure;
   public worker: Worker;
@@ -31,6 +26,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
+    private alertService: AlertService,
     private dialogService: DialogService,
     private workerService: WorkerService,
     private reportsService: ReportsService
@@ -54,25 +50,11 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       this.reportDetails['displayWDFReport'] = true;
     }
 
-    this.trainingRecordCreated = this.workerService.getTrainingRecordCreated();
-    this.trainingRecordEdited = this.workerService.getTrainingRecordEdited();
     this.subscriptions.add(
-      this.workerService.trainingRecordDeleted$.subscribe(bool => {
-        if (bool) {
-          window.scrollTo(0, 0);
+      this.workerService.alert$.subscribe(alert => {
+        if (alert) {
+          this.alertService.addAlert(alert);
         }
-        this.trainingRecordDeleted = bool;
-      })
-    );
-
-    this.qualificationCreated = this.workerService.getQualificationCreated();
-    this.qualificationEdited = this.workerService.getQualificationEdited();
-    this.subscriptions.add(
-      this.workerService.qualificationDeleted$.subscribe(bool => {
-        if (bool) {
-          window.scrollTo(0, 0);
-        }
-        this.qualificationDeleted = bool;
       })
     );
 
@@ -80,12 +62,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.workerService.resetTrainingRecordCreated();
-    this.workerService.resetTrainingRecordEdited();
-    this.workerService.setTrainingRecordDeleted(false);
-    this.workerService.resetQualificationCreated();
-    this.workerService.resetQualificationEdited();
-    this.workerService.setQualificationDeleted(false);
     this.subscriptions.unsubscribe();
   }
 
@@ -96,39 +72,5 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   deleteWorker(event) {
     event.preventDefault();
     this.dialogService.open(DeleteWorkerDialogComponent, this.worker);
-  }
-
-  closeTrainingCreatedAlert(event) {
-    event.preventDefault();
-    this.workerService.resetTrainingRecordCreated();
-    this.trainingRecordCreated = false;
-  }
-
-  closeTrainingEditedAlert(event) {
-    event.preventDefault();
-    this.workerService.resetTrainingRecordEdited();
-    this.trainingRecordEdited = false;
-  }
-
-  closeTrainingDeletedAlert(event) {
-    event.preventDefault();
-    this.workerService.setTrainingRecordDeleted(false);
-  }
-
-  closeQualificationCreatedAlert(event) {
-    event.preventDefault();
-    this.workerService.resetQualificationCreated();
-    this.qualificationCreated = false;
-  }
-
-  closeQualificationEditedAlert(event) {
-    event.preventDefault();
-    this.workerService.resetQualificationEdited();
-    this.qualificationEdited = false;
-  }
-
-  closeQualificationDeletedAlert(event) {
-    event.preventDefault();
-    this.workerService.setQualificationDeleted(false);
   }
 }

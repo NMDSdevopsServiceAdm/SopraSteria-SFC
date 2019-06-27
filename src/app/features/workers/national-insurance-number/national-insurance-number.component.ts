@@ -35,9 +35,14 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
     }
 
     this.next = ['/worker', this.worker.uid, 'date-of-birth'];
-    this.previous = this.worker.otherJobs.some(j => j.jobId === 27)
-      ? ['/worker', this.worker.uid, 'mental-health-professional']
-      : ['/worker', this.worker.uid, 'other-job-roles'];
+
+    if (this.workerService.hasJobRole(this.worker, 27)) {
+      this.previous = ['/worker', this.worker.uid, 'mental-health-professional'];
+    } else if (this.workerService.hasJobRole(this.worker, 23)) {
+      this.previous = ['/worker', this.worker.uid, 'nursing-specialism'];
+    } else {
+      this.previous = ['/worker', this.worker.uid, 'other-job-roles'];
+    }
   }
 
   public setupFormErrorsMap(): void {

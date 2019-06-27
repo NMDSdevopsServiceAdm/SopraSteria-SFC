@@ -49,10 +49,7 @@ export class MainJobStartDateComponent extends QuestionComponent {
     }
 
     this.next = ['/worker', this.worker.uid, 'other-job-roles'];
-    this.previous =
-      this.worker.mainJob.jobId === 27
-        ? ['/worker', this.worker.uid, 'mental-health-professional']
-        : ['/worker', this.worker.uid, 'staff-details'];
+    this.previous = ['/worker', this.worker.uid, 'staff-details'];
   }
 
   public setupFormErrorsMap(): void {

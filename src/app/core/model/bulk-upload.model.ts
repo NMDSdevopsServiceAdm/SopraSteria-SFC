@@ -43,7 +43,7 @@ export interface UploadedFilesResponse {
 export interface ValidatedFile {
   errors: number;
   filename: string;
-  fileType: string;
+  fileType: ValidatedFileType;
   key: string;
   records: number;
   size: number;
@@ -51,4 +51,9 @@ export interface ValidatedFile {
   status?: FileValidateStatus;
   warnings: number;
   username: string;
+  deleted?: number;
 }
+
+export type ValidatedFileType = 'Establishment' | 'Training' | 'Worker';
+
+export type ReportTypeRequestItem = 'establishments' | 'training' | 'workers';

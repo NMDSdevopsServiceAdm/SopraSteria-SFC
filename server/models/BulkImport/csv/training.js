@@ -37,6 +37,10 @@ class Training {
   static get ACCREDITED_WARNING() { return 2060; }
   static get NOTES_WARNING() { return 2070; }
 
+  get headers() {
+    return this._headers_v1.join(",");
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -69,13 +73,15 @@ class Training {
   get notes() {
     return this._notes;
   }
-  
+
   _validateLocaleStId() {
     const myLocaleStId = this._currentLine.LOCALESTID;
     const MAX_LENGTH = 50;
 
     if (!myLocaleStId || myLocaleStId.length == 0) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.LOCALESTID_ERROR,
         errType: `LOCALESTID_ERROR`,
@@ -85,6 +91,8 @@ class Training {
       return false;
     } else if (myLocaleStId.length > MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.LOCALESTID_ERROR,
         errType: `LOCALESTID_ERROR`,
@@ -104,6 +112,8 @@ class Training {
 
     if (!myUniqueId || myUniqueId.length == 0) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
@@ -113,6 +123,8 @@ class Training {
       return false;
     } else if (myUniqueId.length > MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
@@ -136,6 +148,8 @@ class Training {
     if (myDateCompleted) {
       if (!dateFormatRegex.test(myDateCompleted)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.DATE_COMPLETED_ERROR,
           errType: `DATE_COMPLETED_ERROR`,
@@ -145,6 +159,8 @@ class Training {
         return false;
       } else if (!actualDate.isValid()) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.DATE_COMPLETED_ERROR,
           errType: `DATE_COMPLETED_ERROR`,
@@ -172,6 +188,8 @@ class Training {
     if (myDateExpiry) {
       if (!dateFormatRegex.test(myDateExpiry)) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.EXPIRY_DATE_ERROR,
           errType: `EXPIRY_DATE_ERROR`,
@@ -181,6 +199,8 @@ class Training {
         return false;
       } else if (!actualDate.isValid()) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.EXPIRY_DATE_ERROR,
           errType: `EXPIRY_DATE_ERROR`,
@@ -204,6 +224,8 @@ class Training {
 
     if (!myDescription || myDescription.length == 0) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
@@ -213,6 +235,8 @@ class Training {
       return false;
     } else if (myDescription.length > MAX_LENGTH) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
@@ -230,6 +254,8 @@ class Training {
     const myCategory = parseInt(this._currentLine.CATEGORY);
     if (Number.isNaN(myCategory)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.CATEGORY_ERROR,
         errType: `CATEGORY_ERROR`,
@@ -248,6 +274,8 @@ class Training {
     const ALLOWED_VALUES = [0,1,999];
     if (Number.isNaN(myAccredited)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.ACCREDITED_ERROR,
         errType: `ACCREDITED_ERROR`,
@@ -257,6 +285,8 @@ class Training {
       return false;
     } else if (!ALLOWED_VALUES.includes(myAccredited)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.ACCREDITED_ERROR,
         errType: `ACCREDITED_ERROR`,
@@ -285,6 +315,8 @@ class Training {
       const mappedCategory = BUDI.trainingCaterogy(BUDI.TO_ASC, this._category);
       if (mappedCategory === null) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.CATEGORY_ERROR,
           errType: `CATEGORY_ERROR`,
@@ -304,6 +336,8 @@ class Training {
     if (myNotes && myNotes.length > 0) {
       if (myNotes.length > MAX_LENGTH) {
         this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Training.NOTES_ERROR,
           errType: `NOTES_ERROR`,
@@ -314,7 +348,7 @@ class Training {
       } else {
         this._notes = myNotes;
         return true;
-      }  
+      }
     }
   }
 
@@ -332,6 +366,8 @@ class Training {
     // only run once for first line, so check _lineNumber
     if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
       this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
         lineNumber: 1,
         errCode: Training.HEADERS_ERROR,
         errType: `HEADERS_ERROR`,
@@ -352,6 +388,8 @@ class Training {
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
       error: `Unknown establishment/workplace cross reference`,
       source: this._currentLine.LOCALESTID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
     };
   }
 
@@ -364,6 +402,8 @@ class Training {
       errType: `UNCHECKED_WORKER_ERROR`,
       error: `Unknown worker/staff cross reference`,
       source: this._currentLine.UNIQUEWORKERID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
     };
   }
 
@@ -436,6 +476,8 @@ class Training {
         const validationError = {
           lineNumber: this._lineNumber,
           error: thisError.message,
+          name: this._currentLine.LOCALESTID,
+          worker: this._currentLine.UNIQUEWORKERID,
         };
 
         switch (thisProp) {
@@ -478,12 +520,14 @@ class Training {
       }) : true;
     });
 
-  
+
     warnings.forEach(thisWarning => {
       thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
         const validationWarning = {
           lineNumber: this._lineNumber,
           warning: thisWarning.message,
+          name: this._currentLine.LOCALESTID,
+          worker: this._currentLine.UNIQUEWORKERID,
         };
 
         switch (thisProp) {
@@ -526,6 +570,58 @@ class Training {
         this._validationErrors.push(validationWarning);
       }) : true;
     });
+  }
+
+  _csvQuote(toCsv) {
+    if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+      return '"' + toCsv.replace(/"/g, '""') + '"';
+    } else {
+      return toCsv;
+    }
+  }
+
+  // input is date in ISO format YYYY-MM-DDYhh:mm:ss.000
+  _fromDateToCsv(convertThis) {
+    if (convertThis) {
+      const datePart = convertThis.toISOString().substring(0,10);
+      const dateParts = datePart.split('-');
+
+      return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+    } else {
+      return '';
+    }
+  }
+
+  // takes the given Training entity and writes it out to CSV string (one line)
+  toCSV(establishmentId, workerId, entity) {
+    // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
+    const columns = [];
+    columns.push(this._csvQuote(establishmentId));
+    columns.push(this._csvQuote(workerId));
+
+    columns.push(BUDI.trainingCaterogy(BUDI.FROM_ASC, entity.category.id));
+    columns.push(entity.title ? this._csvQuote(entity.title) : '');
+
+    columns.push(this._fromDateToCsv(entity.completed)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+    columns.push(this._fromDateToCsv(entity.expires)); // in UK date format dd/mm/yyyy (Training stores as `Javascript date`)
+
+    switch (entity.accredited) {
+      case null:
+        columns.push('');
+        break;
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(0);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+    columns.push(entity.notes ? this._csvQuote(entity.notes) : '');
+
+    return columns.join(',');
   }
 
 };

@@ -31,7 +31,7 @@ export class TrainingComponent implements OnInit {
     dialog.afterClosed.pipe(take(1)).subscribe(confirm => {
       if (confirm) {
         this.workerService.deleteTrainingRecord(this.worker.uid, trainingRecord.uid).subscribe(() => {
-          this.workerService.setTrainingRecordDeleted(true);
+          this.workerService.alert = { type: 'success', message: 'Training has been deleted' };
           this.fetchAllRecords();
         });
       }

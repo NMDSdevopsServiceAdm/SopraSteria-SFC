@@ -840,6 +840,68 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"CompletedChangedBy"'
     },
+    NurseSpecialismFKValue : {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"NurseSpecialismFKValue"'
+    },
+    NurseSpecialismFKOther : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NurseSpecialismFKOther"'
+    },
+    NurseSpecialismFKSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NurseSpecialismFKSavedAt"'
+    },
+    NurseSpecialismFKChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"NurseSpecialismFKChangedAt"'
+    },
+    NurseSpecialismFKSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NurseSpecialismFKSavedBy"'
+    },
+    NurseSpecialismFKChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"NurseSpecialismFKChangedBy"'
+    },
+
+    RegisteredNurseValue: {
+      type: DataTypes.ENUM,
+      allowNull: true,
+      values: ['Adult nurse', 'Mental health nurse', 'Learning disabiliies', `Children's nurse`, 'Enrolled nurse'],
+      field: '"RegisteredNurseValue"'
+    },
+    RegisteredNurseSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"RegisteredNurseSavedAt"'
+    },
+    RegisteredNurseChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"RegisteredNurseChangedAt"'
+    },
+    RegisteredNurseSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"RegisteredNurseSavedBy"'
+    },
+    RegisteredNurseChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"RegisteredNurseChangedBy"'
+    },
+
+///////////////////////////////////////////////////
+
+
+
     created: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -909,6 +971,11 @@ module.exports = function(sequelize, DataTypes) {
       foreignKey: 'EthnicityFkValue',
       targetKey: 'id',
       as: 'ethnicity'
+    });
+    Worker.belongsTo(models.workerNurseSpecialism, {
+      foreignKey: 'NurseSpecialismFKValue',
+      targetKey: 'id',
+      as: 'nurseSpecialism'
     });
     Worker.belongsTo(models.nationality, {
       foreignKey: 'NationalityOtherFK',
