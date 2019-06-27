@@ -33,6 +33,10 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
+// service cache 
+const ServiceCache = require('../cache/singletons/services').ServiceCache;
+const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCache;
+
 // Errors for initialise and registration error - this needs to be refactored out DB
 class RegistrationException {
     constructor(originalError, errCode, errMessage) {
@@ -247,6 +251,22 @@ class Establishment extends EntityValidator {
     async load(document, associatedEntities=false) {
         try {
             this.resetValidations();
+
+            // inject all services against this establishment
+            document.allMyServices = ServiceCache.allMyServices(document.IsCQCRegulated);
+
+            // inject all capacities against this establishment - note, "other services" can be represented by the JSON document attribute "services" or "otherServices"
+            const allAssociatedServiceIndices = [];
+            if (document.mainService) {
+                allAssociatedServiceIndices.push(document.mainService.id);
+            }
+            if (document && document.otherServices && Array.isArray(document.otherServices)) {
+                document.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+            }
+            if (document && document.services && Array.isArray(document.services)) {
+                document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+            }
+            document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
@@ -761,18 +781,8 @@ class Establishment extends EntityValidator {
                     raw: true
                 });
 
-                const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([
-                    models.services.findAll({
-                        where: {
-                            id: establishmentServices.map(su => su.serviceId)
-                        },
-                        attributes: ['id', 'name', 'category'],
-                        order: [
-                            ['category', 'ASC'],
-                            ['name', 'ASC']
-                        ],
-                        raw: true,
-                    }),
+                const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
+                    ServiceCache.allMyOtherServices(establishmentServices.map(x => x)),
                     models.services.findOne({
                         where: {
                             id : fetchResults.MainServiceFKValue
@@ -864,27 +874,8 @@ class Establishment extends EntityValidator {
                 };
 
                 // other services output requires a list of ALL services available to
-                //  the Establishment
-                if (fetchResults.isRegulated) {
-                    // other services for CQC regulated is ALL including non-CQC
-                    fetchResults.allMyServices = await models.services.findAll({
-                        order: [
-                            ['category', 'ASC'],
-                            ['name', 'ASC']
-                        ]
-                    });
-                } else {
-                    fetchResults.allMyServices = await models.services.findAll({
-                        where: {
-                            iscqcregistered: false
-                        },
-                        order: [
-                            ['category', 'ASC'],
-                            ['name', 'ASC']
-                        ]
-                    });
-                }
-
+                // the Establishment
+                fetchResults.allMyServices = ServiceCache.allMyServices(fetchResults.isRegulated);
 
                 // service capacities output requires a list of ALL service capacities available to
                 //  the Establishment
@@ -909,6 +900,11 @@ class Establishment extends EntityValidator {
                 });
 
                 const allAssociatedServiceIndices = [];
+
+                // console.log('allCapacitiesResults.mainService', allCapacitiesResults.mainService)
+                // console.log('allCapacitiesResults.otherServices', allCapacitiesResults.otherServices)
+
+
                 if (allCapacitiesResults && allCapacitiesResults.id) {
                     // merge tha main and other service ids
                     if (allCapacitiesResults.mainService.id) {
@@ -923,26 +919,7 @@ class Establishment extends EntityValidator {
 
                 // now fetch all the questions for the given set of combined services
                 if (allAssociatedServiceIndices.length > 0) {
-                    fetchResults.allServiceCapacityQuestions = await models.serviceCapacity.findAll({
-                        where: {
-                            serviceId: allAssociatedServiceIndices
-                        },
-                        attributes: ['id', 'seq', 'question'],
-                        order: [
-                            ['seq', 'ASC']
-                        ],
-                        include: [
-                            {
-                                model: models.services,
-                                as: 'service',
-                                attributes: ['id', 'category', 'name'],
-                                order: [
-                                    ['category', 'ASC'],
-                                    ['name', 'ASC']
-                                ]
-                            }
-                        ]
-                    });
+                    fetchResults.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices)
                 } else {
                     fetchResults.allServiceCapacityQuestions = null;
                 }
