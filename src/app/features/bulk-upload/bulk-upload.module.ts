@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DialogService } from '@core/services/dialog.service';
 import { BulkUploadRoutingModule } from '@features/bulk-upload/bulk-upload-routing.module';
 import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
+import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-references-page/staff-references-page.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
@@ -19,7 +20,6 @@ import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.
 import { UploadWarningDialogComponent } from './upload-warning-dialog/upload-warning-dialog.component';
 import { UploadedFilesListComponent } from './uploaded-files-list/uploaded-files-list.component';
 import { WorkplaceReferencesPageComponent } from './workplace-references-page/workplace-references-page.component';
-import { BulkUploadReferencesHeaderComponent } from './bulk-upload-references-header/bulk-upload-references-header.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, BulkUploadRoutingModule, OverlayModule],
@@ -37,7 +37,7 @@ import { BulkUploadReferencesHeaderComponent } from './bulk-upload-references-he
     ReportDownloadLinkComponent,
     BulkUploadStartPageComponent,
     WorkplaceReferencesPageComponent,
-    BulkUploadReferencesHeaderComponent,
+    StaffReferencesPageComponent,
   ],
   providers: [DialogService],
   entryComponents: [UploadWarningDialogComponent],

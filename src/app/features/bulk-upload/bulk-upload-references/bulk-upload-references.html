@@ -10,10 +10,14 @@
 TODO check if needed -->
 
 <app-dashboard-header></app-dashboard-header>
-<app-bulk-upload-references-header
-  [primaryEstablishment]="primaryEstablishment"
-  [page]="bulkUploadReferencePageEnum.Establishment"
-></app-bulk-upload-references-header>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ primaryEstablishment }}</p>
+    <h1 class="govuk-heading-l">{{ referenceType }} references</h1>
+    <p>{{ referenceTypeInfo }}</p>
+  </div>
+</div>
+
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds govuk-!-margin-top-6">
