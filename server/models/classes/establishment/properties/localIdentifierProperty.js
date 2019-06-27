@@ -4,7 +4,7 @@ const MAX_LENGTH=120;
 
 exports.LocalIdentifierProperty = class LocalIdentifierProperty extends ChangePropertyPrototype {
     constructor() {
-        super('LocalIdenfifier');
+        super('LocalIdentifier');
     }
 
     static clone() {

@@ -647,7 +647,7 @@ class User {
                 {
                     model: models.login,
                     attributes: ['username', 'lastLogin']
-                  }
+                }
             ],
             attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy'],
             order: [
@@ -887,7 +887,7 @@ class User {
 
         // first - get the user's primary establishment (every user will have a primary establishment)
         const fetchResults = await models.establishment.findOne({
-            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'parentPermissions', 'NameValue', 'updated'],
+            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifier', 'parentPermissions', 'NameValue', 'updated'],
             include: [
                 {
                     model: models.services,
@@ -910,7 +910,7 @@ class User {
             if (myRole === 'Edit' && isParent) {
                 // get all subsidaries associated with this parent
                 allSubResults = await models.establishment.findAll({
-                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'parentPermissions', 'NameValue', 'updated'],
+                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifier', 'parentPermissions', 'NameValue', 'updated'],
                     include: [
                         {
                             model: models.services,
@@ -942,6 +942,7 @@ class User {
                 isParent: primaryEstablishmentRecord.isParent,
                 parentUid: primaryEstablishmentRecord.parentUid,
                 name: primaryEstablishmentRecord.NameValue,
+                localIdentifier: primaryEstablishmentRecord.LocalIdentifier,
                 mainService: primaryEstablishmentRecord.mainService.name,
                 dataOwner: primaryEstablishmentRecord.dataOwner,
                 parentPermissions: isParent ? undefined : primaryEstablishmentRecord.parentPermissions,
@@ -957,6 +958,7 @@ class User {
                         updated: thisSub.updated,
                         parentUid: thisSub.parentUid,
                         name: thisSub.NameValue,
+                        localIdentifier: primaryEstablishmentRecord.LocalIdentifier,                        
                         mainService: thisSub.mainService.name,
                         dataOwner: thisSub.dataOwner,
                         parentPermissions: thisSub.parentPermissions,    

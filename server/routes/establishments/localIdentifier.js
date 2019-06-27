@@ -26,7 +26,6 @@ router.route('/').get(async (req, res) => {
     } else {
       return res.status(404).send('Not Found');
     }
-
   } catch (err) {
     const thisError = new Establishment.EstablishmentExceptions.EstablishmentRestoreException(
       thisEstablishment.id,
@@ -45,7 +44,6 @@ router.route('/').put(async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
-
   try {
     if (await thisEstablishment.restore(establishmentId)) {
 
@@ -56,7 +54,7 @@ router.route('/').put(async (req, res) => {
       if (isValidEstablishment) {
         await thisEstablishment.save(req.username);
 
-        return res.status(200).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
+        return res.status(202).json(thisEstablishment.toJSON(false, false, false, true, false, filteredProperties));
       } else {
         return res.status(400).send('Unexpected Input.');
       }
@@ -65,8 +63,10 @@ router.route('/').put(async (req, res) => {
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    
     if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
+      console.error("Establishment::localidentifier PUT: ", err.message);
+      return res.status(400).send(err.safe);
+    } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException && err.message == 'Duplicate LocalIdentifier') {
       console.error("Establishment::localidentifier PUT: ", err.message);
       return res.status(400).send(err.safe);
     } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {

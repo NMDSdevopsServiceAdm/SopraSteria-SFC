@@ -514,6 +514,12 @@ class Establishment extends EntityValidator {
                     }
                 }
 
+                if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+                    if(err.parent.constraint && ( err.parent.constraint === 'establishment_LocalIdentifier_unq')){
+                        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
+                    }
+                }
+
                 // and foreign key constaint to Location
                 if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
                     throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Unknown Location', 'Unknown Location');
@@ -662,6 +668,12 @@ class Establishment extends EntityValidator {
                 });
 
             } catch (err) {
+                if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+                    if(err.parent.constraint && ( err.parent.constraint === 'establishment_LocalIdentifier_unq')){
+                        throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
+                    }
+                }
+
                 throw new EstablishmentExceptions.EstablishmentSaveException(null, this.uid, this.name, err, `Failed to update establishment record with id: ${this._id}`);
             }
 
