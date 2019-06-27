@@ -13,7 +13,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public formErrorsMap: ErrorDetails[] = []; // TODO move to child
-  public primaryEstablishment: string;
+  public primaryEstablishmentName: string;
   public return: URLStructure;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
@@ -42,7 +42,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
       this.userService.getEstablishments().subscribe((workplaces: GetWorkplacesResponse) => {
         console.log(workplaces);
         if (workplaces) {
-          this.primaryEstablishment = workplaces.primary ? workplaces.primary.name : null;
+          this.primaryEstablishmentName = workplaces.primary ? workplaces.primary.name : null;
           this.workplaces = workplaces.subsidaries ? workplaces.subsidaries.establishments : [];
           if (this.workplaces.length) {
             this.updateForm();
