@@ -21,6 +21,8 @@ export class ReportDownloadLinkComponent {
       .pipe(take(1))
       .subscribe(
         response => {
+          // TODO: Possibly extract this out into a helper function
+          //       to get the filename from a response header
           const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
           const header = response.headers.get('content-disposition');
           const filenameMatches = header && header.match(filenameRegEx);

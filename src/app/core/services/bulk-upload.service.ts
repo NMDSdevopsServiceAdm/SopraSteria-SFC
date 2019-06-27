@@ -69,9 +69,12 @@ export class BulkUploadService {
 
   public getDataCSV(establishmentId: number, type: BulkUploadFileType): Observable<any> {
     let url: string;
+    // TODO: Would love for this ENUM to be consistent across BE endpoints,
+    //       we currently have Establishment, establishments, Workplace,
+    //       Staff, workers, Training, training cross multiple endpoints and types
     switch (type) {
       case BulkUploadFileType.Establishment:
-        url = 'establishment';
+        url = 'establishments';
         break;
       case BulkUploadFileType.Worker:
         url = 'workers';
