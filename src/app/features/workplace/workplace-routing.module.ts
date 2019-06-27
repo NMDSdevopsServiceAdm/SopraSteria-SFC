@@ -7,9 +7,7 @@ import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
-import {
-  DataSharingWithLocalAuthoritiesComponent,
-} from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
+import { DataSharingWithLocalAuthoritiesComponent } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
@@ -40,10 +38,6 @@ const routes: Routes = [
     resolve: { establishment: WorkplaceResolver },
     data: { title: 'Workplace' },
     children: [
-      // {
-      //   path: '',
-      //   redirectTo: 'type-of-employer',
-      // },
       {
         path: '',
         component: ViewWorkplaceComponent,
