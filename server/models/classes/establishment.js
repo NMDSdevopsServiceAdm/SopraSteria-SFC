@@ -240,20 +240,21 @@ class Establishment extends EntityValidator {
         try {
             this.resetValidations();
 
-            // load cache against this establishment
+            // inject all services against this establishment
             document.allMyServices = ServiceCache.allMyServices(document.IsCQCRegulated);
 
+            // inject all capacities against this establishment - note, "other services" can be represented by the JSON document attribute "services" or "otherServices"
             const allAssociatedServiceIndices = [];
-
             if (document.mainService) {
                 allAssociatedServiceIndices.push(document.mainService.id);
             }
-
-            if (document && document.otherServices) {
+            if (document && document.otherServices && Array.isArray(document.otherServices)) {
                 document.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
             }
-
-            document.allCapacities = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
+            if (document && document.services && Array.isArray(document.services)) {
+                document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+            }
+            document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
