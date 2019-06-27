@@ -42,12 +42,12 @@ export class WorkplaceSummaryComponent {
 
   constructor(private i18nPluralPipe: I18nPluralPipe, private establishmentService: EstablishmentService) {
     this.pluralMap['How many beds do you currently have?'] = {
-      '=1': '# bed',
-      other: '# beds',
-    };
-    this.pluralMap['How many of those beds are currently used?'] = {
       '=1': '# bed available',
       other: '# beds available',
+    };
+    this.pluralMap['How many of those beds are currently used?'] = {
+      '=1': '# bed used',
+      other: '# beds used',
     };
     this.pluralMap['How many places do you currently have?'] = {
       '=1': '# place',

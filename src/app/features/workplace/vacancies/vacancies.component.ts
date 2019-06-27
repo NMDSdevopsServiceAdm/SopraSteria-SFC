@@ -68,8 +68,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
           this.vacanciesArray.removeAt(1);
         }
 
-        this.vacanciesArray.controls[0].get('jobRole').clearValidators();
-        this.vacanciesArray.controls[0].get('total').clearValidators();
+        this.clearValidators(0);
         this.vacanciesArray.reset([], { emitEvent: false });
 
         this.form.get('vacanciesKnown').setValue(value, { emitEvent: false });
@@ -116,13 +115,14 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
         this.vacanciesArray.push(this.createVacancyControl(vacancy.jobId, vacancy.total))
       );
     } else {
+      this.vacanciesArray.push(this.createVacancyControl());
       if (
         this.establishment.vacancies === jobOptionsEnum.NONE ||
         this.establishment.vacancies === jobOptionsEnum.DONT_KNOW
       ) {
         this.form.get('vacanciesKnown').setValue(this.establishment.vacancies);
+        this.clearValidators(0);
       }
-      this.vacanciesArray.push(this.createVacancyControl());
     }
   }
 
@@ -220,5 +220,10 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private clearValidators(index: number) {
+    this.vacanciesArray.controls[index].get('jobRole').clearValidators();
+    this.vacanciesArray.controls[index].get('total').clearValidators();
   }
 }

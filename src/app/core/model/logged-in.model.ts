@@ -23,4 +23,5 @@ export interface LoggedInSession {
   lastLoggedIn: string;
   mainService: LoggedInMainService;
   role: Roles;
+  isFirstBulkUpload: boolean;
 }

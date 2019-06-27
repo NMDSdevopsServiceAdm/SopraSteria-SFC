@@ -77,6 +77,10 @@ export class WorkerService {
     this._alert$.next(alert);
   }
 
+  public hasJobRole(worker: Worker, id: number) {
+    return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.some(j => j.jobId === id));
+  }
+
   setLastDeleted(name: string) {
     this.lastDeleted$.next(name);
   }

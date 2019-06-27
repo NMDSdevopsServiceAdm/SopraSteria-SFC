@@ -4,6 +4,7 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const csv = require('csvtojson');
 const Stream = require('stream');
+const moment = require('moment');
 const dbmodels = require('../../models');
 
 const UserAgentParser = require('ua-parser-js');
@@ -875,6 +876,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   let status = true;
   const csvEstablishmentSchemaErrors = [], csvWorkerSchemaErrors = [], csvTrainingSchemaErrors = [];
   const myEstablishments = [], myWorkers = [], myTrainings = [];
+  const workersKeyed = []
 
   // rather than an array of entities, entities will be known by their line number within the source, e.g:
   // establishments: {
@@ -952,6 +954,12 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           const workerKey = thisWorker.uniqueWorker ? thisWorker.uniqueWorker.replace(/\s/g, "") : null;
           const foundEstablishmentByLineNumber = allEstablishmentsByKey[establishmentKeyNoWhitespace];
           const knownEstablishment = foundEstablishmentByLineNumber ? myAPIEstablishments[foundEstablishmentByLineNumber] : null;
+
+          //key workers, to be used in training
+          const workerKeyNoWhitespace = (thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID).replace(/\s/g, "");
+          workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
+          // console.log('thisWorker', thisWorker)
+
           if (knownEstablishment) {
             knownEstablishment.associateWorker(workerKey, myAPIWorkers[thisWorker.lineNumber]);
           } else {
@@ -981,9 +989,10 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     // having parsed all establishments, workers and training, need to cross-check all training records' establishment reference (LOCALESTID) against all parsed establishments
     // having parsed all establishments, workers and training, need to cross-check all training records' worker reference (UNIQUEWORKERID) against all parsed workers
     myTrainings.forEach(thisTraingRecord => {
-      const establishmentKeyNoWhitespace = thisTraingRecord.localeStId.replace(/\s/g, "");
-      const workerKeyNoWhitespace = (thisTraingRecord.localeStId + thisTraingRecord.uniqueWorkerId).replace(/\s/g, "");
 
+      const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, "");
+      const workerKeyNoWhitespace = (thisTraingRecord.localeStId + thisTraingRecord.uniqueWorkerId).replace(/\s/g, "");
+      
       if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
         // not found the associated establishment
         csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedEstablishment());
@@ -1002,6 +1011,14 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         // find the associated Worker entity and forward reference this training record
         const foundWorkerByLineNumber = allWorkersByKey[workerKeyNoWhitespace];
         const knownWorker = foundWorkerByLineNumber ? myAPIWorkers[foundWorkerByLineNumber] : null;
+
+        const trainingCompletedDate = moment.utc(thisTraingRecord._currentLine.DATECOMPLETED, "DD-MM-YYYY")
+        const workerDob = moment.utc(workersKeyed[workerKeyNoWhitespace].DOB, "DD-MM-YYYY")
+
+        if (trainingCompletedDate.diff(workerDob, 'years') < 14 ) {
+          csvTrainingSchemaErrors.push(thisTraingRecord.dobTrainingMismatch());
+        }
+
         if (knownWorker) {
           knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
         } else {
