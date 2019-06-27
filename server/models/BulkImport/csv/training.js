@@ -425,7 +425,6 @@ class Training {
   // returns true on success, false is any attribute of Training fails
   validate() {
     let status = true;
-    status = this._validateHeaders() ? false : status;
     status = !this._validateLocaleStId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateDateCompleted() ? false : status;
