@@ -12,13 +12,13 @@ import { Subscription } from 'rxjs';
 export class BulkUploadReferences implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public form: FormGroup;
-  public formErrorsMap: ErrorDetails[] = []; // TODO move to child
+  public formErrorsMap: ErrorDetails[] = []; // TODO look at generic error messages
   public primaryEstablishmentName: string;
   public return: URLStructure;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
-  public workplaces: Workplace[];
+  public workplaces: Workplace[]; // TODO rename workplaces variable to something generic
 
   constructor(
     protected authService: AuthService,
