@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     LocalIdentifier: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
       unique: true,      
       field: '"LocalIdentifier"'
     },    

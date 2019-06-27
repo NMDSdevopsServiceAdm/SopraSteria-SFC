@@ -24,6 +24,7 @@ exports.LocalIdentifierProperty = class LocalIdentifierProperty extends ChangePr
     restorePropertyFromSequelize(document) {
         return document.LocalIdentifier;
     }
+    
     savePropertyToSequelize() {
         return {
             LocalIdentifier: this.property
