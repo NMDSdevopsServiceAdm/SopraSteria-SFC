@@ -223,7 +223,7 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
   }
 
   private clearValidators(index: number) {
-    this.vacanciesArray.controls[index].get('jobId').clearValidators();
+    this.vacanciesArray.controls[index].get('jobRole').clearValidators();
     this.vacanciesArray.controls[index].get('total').clearValidators();
   }
 }
