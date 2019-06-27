@@ -4,10 +4,10 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogService } from '@core/services/dialog.service';
 import { BulkUploadRoutingModule } from '@features/bulk-upload/bulk-upload-routing.module';
+import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
-import { BulkUploadWelcomePageComponent } from './bulk-upload-welcome-page/bulk-upload-welcome-page.component';
 import { CheckWorkplaceReferencesComponent } from './check-workplace-references/check-workplace-references.component';
 import { DownloadDataFilesComponent } from './download-data-files/download-data-files.component';
 import { FileValidateStatusComponent } from './file-validate-status/file-validate-status.component';
@@ -34,7 +34,7 @@ import { WorkplaceReferencesPageComponent } from './workplace-references-page/wo
     UploadedFilesListComponent,
     UploadWarningDialogComponent,
     ReportDownloadLinkComponent,
-    BulkUploadWelcomePageComponent,
+    BulkUploadStartPageComponent,
     WorkplaceReferencesPageComponent,
   ],
   providers: [DialogService],
