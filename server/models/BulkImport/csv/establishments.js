@@ -227,7 +227,7 @@ class Establishment {
 
     // must be present and must be one of the preset values (case insensitive)
     if (!statusValues.includes(myStatus)) {
-      
+
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STATUS_ERROR,
@@ -1307,7 +1307,7 @@ class Establishment {
             error: `Local Authorities (SHARELA): ${thisLA} is unknown`,
             source: this._currentLine.SHARELA,
             name: this._currentLine.LOCALESTID,
-          }); 
+          });
         }
       });
 
@@ -1551,7 +1551,7 @@ class Establishment {
       errCode: Establishment.EXPECT_JUST_ONE_ERROR,
       errType: `EXPECT_JUST_ONE_ERROR`,
       error: 'Expect just one establishment',
-      source: ''
+      source: '',
     };
   }
 
@@ -1562,7 +1562,7 @@ class Establishment {
       errCode: Establishment.MISSING_PRIMARY_ERROR,
       errType: `MISSING_PRIMARY_ERROR`,
       error: `Missing the primary establishment: ${name}`,
-      source: ''
+      source: '',
     };
   }
 
