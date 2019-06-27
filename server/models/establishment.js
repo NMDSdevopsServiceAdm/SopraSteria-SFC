@@ -15,6 +15,12 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"EstablishmentUID"'
     },
+    LocalIdentifier: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      unique: true,      
+      field: '"LocalIdentifier"'
+    },    
     address: {
       type: DataTypes.TEXT,
       allowNull: false,
