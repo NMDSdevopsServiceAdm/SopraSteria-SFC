@@ -10,14 +10,10 @@
 TODO check if needed -->
 
 <app-dashboard-header></app-dashboard-header>
-
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ primaryEstablishment }}</p>
-    <h1 class="govuk-heading-l">Workplace references</h1>
-    <p>You must create unique references for each workplace.</p>
-  </div>
-</div>
+<app-bulk-upload-references-header
+  [primaryEstablishment]="primaryEstablishment"
+  [page]="bulkUploadReferencePageEnum.Establishment"
+></app-bulk-upload-references-header>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds govuk-!-margin-top-6">
@@ -38,15 +34,17 @@ TODO check if needed -->
           </dd>
         </div>
         <div class="govuk-summary-list__row" *ngFor="let workplace of workplaces">
-          <dt class="govuk-summary-list__key govuk-!-width-two-thirds govuk-util__normal"
-            [class.govuk-summary-list__error]="form.get('name-' + workplace.uid).errors && submitted">
-          <span
-            id="name-{{ workplace.uid }}-error"
-            class="govuk-error-message"
-            *ngIf="form.get('name-' + workplace.uid).errors && submitted"
+          <dt
+            class="govuk-summary-list__key govuk-!-width-two-thirds govuk-util__normal"
+            [class.govuk-summary-list__error]="form.get('name-' + workplace.uid).errors && submitted"
           >
-            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('name-' + workplace.uid) }}
-          </span>
+            <span
+              id="name-{{ workplace.uid }}-error"
+              class="govuk-error-message"
+              *ngIf="form.get('name-' + workplace.uid).errors && submitted"
+            >
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('name-' + workplace.uid) }}
+            </span>
             {{ workplace.name }}
           </dt>
           <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-util__normal govuk-!-padding-right-0">

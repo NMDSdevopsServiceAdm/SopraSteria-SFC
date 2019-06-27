@@ -1,6 +1,7 @@
 import { OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
@@ -12,7 +13,8 @@ import { Subscription } from 'rxjs';
 export class BulkUploadReferences implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public form: FormGroup;
-  public formErrorsMap: ErrorDetails[] = [];
+  public bulkUploadReferencePageEnum = BulkUploadFileType;
+  public formErrorsMap: ErrorDetails[] = []; // TODO move to child
   public primaryEstablishment: string;
   public return: URLStructure;
   public serverError: string;

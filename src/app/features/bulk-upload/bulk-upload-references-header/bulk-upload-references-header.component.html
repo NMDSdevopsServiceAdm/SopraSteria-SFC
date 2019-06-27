@@ -1,0 +1,11 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ primaryEstablishment }}</p>
+    <h1 class="govuk-heading-l">{{ page }} references</h1>
+    <p>
+      You must create unique references for each
+      <ng-container *ngIf="page === bulkUploadReferencePageEnum.Establishment">workplace</ng-container>
+      <ng-container *ngIf="page === bulkUploadReferencePageEnum.Worker">member of staff</ng-container>
+    </p>
+  </div>
+</div>
