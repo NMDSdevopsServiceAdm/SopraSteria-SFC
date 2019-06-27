@@ -235,8 +235,6 @@ class Training {
     const myDescription = this._currentLine.DESCRIPTION;
     const MAX_LENGTH = 120;
 
-    console.log('myDescription', myDescription)
-
     if (!myDescription || myDescription.length == 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,

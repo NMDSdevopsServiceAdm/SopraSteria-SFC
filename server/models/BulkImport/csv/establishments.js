@@ -1572,6 +1572,7 @@ class Establishment {
   validate() {
     let status = true;
 
+    status = !this._validateHeaders() ? false : status;
     status = !this._validateLocalisedId() ? false : status;
     status = !this._validateStatus() ? false : status;
     status = !this._validateEstablishmentName() ? false : status;

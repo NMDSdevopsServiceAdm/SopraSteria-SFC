@@ -2110,6 +2110,7 @@ class Worker {
   validate() {
     let status = true;
 
+    status = !this._validateHeaders() ? false : status;
     status = !this._validateContractType() ? false : status;
     status = !this._validateLocalId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;

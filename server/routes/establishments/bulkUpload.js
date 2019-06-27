@@ -527,8 +527,6 @@ router.route('/validate').post(async (req, res) => {
     const importedWorkers = await csv().fromString(req.body.workers.csv);
     const importedTraining = await csv().fromString(req.body.training.csv);
 
-    console.log('importedTraining', importedTraining)
-
     if (establishmentRegex.test(req.body.establishments.csv.substring(0,50))) {
       let key = req.body.establishments.filename;
       establishmentMetadata.filename = key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3];
@@ -548,8 +546,6 @@ router.route('/validate').post(async (req, res) => {
       trainingMetadata.fileType = 'Training';
     }
 
-    console.log('trainingMetadata', trainingMetadata)
-
     const validationResponse = await validateBulkUploadFiles(
       false,
       username,
@@ -559,45 +555,43 @@ router.route('/validate').post(async (req, res) => {
       { imported: importedWorkers, workerMetadata: workerMetadata },
       { imported: importedTraining, trainingMetadata: trainingMetadata })
 
-    console.log('validationResponse', validationResponse)
-
     // handle parsing errors
     if (!validationResponse.status) {
       return res.status(400).send({
-        // report: validationResponse.report,
-        // establishments: {
-        //   filename: null,
-        //   records: importedEstablishments.length,
-        //   deleted: validationResponse.metaData.establishments.deleted,
-        //   errors: validationResponse.validation.establishments
-        //     .filter(thisVal => thisVal.hasOwnProperty('errCode'))
-        //     .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-        //   warnings: validationResponse.validation.establishments
-        //     .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
-        //     .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-        //   data: {
-        //     csv: validationResponse.data.csv.establishments,
-        //     entities: validationResponse.data.entities.establishments,
-        //   },
-        // },
-        // workers: {
-        //   filename: null,
-        //   records: importedWorkers.length,
-        //   deleted: validationResponse.metaData.workers.deleted,
-        //   errors: validationResponse.validation.workers
-        //     .filter(thisVal => thisVal.hasOwnProperty('errCode'))
-        //     .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-        //   warnings: validationResponse.validation.workers
-        //     .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
-        //     .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
-        //   data: {
-        //     csv: validationResponse.data.csv.workers,
-        //     entities: {
-        //       workers: validationResponse.data.entities.workers,
-        //       qualifications: validationResponse.data.entities.qualifications,
-        //     }
-        //   },
-        // },
+        report: validationResponse.report,
+        establishments: {
+          filename: null,
+          records: importedEstablishments.length,
+          deleted: validationResponse.metaData.establishments.deleted,
+          errors: validationResponse.validation.establishments
+            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+          warnings: validationResponse.validation.establishments
+            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+          data: {
+            csv: validationResponse.data.csv.establishments,
+            entities: validationResponse.data.entities.establishments,
+          },
+        },
+        workers: {
+          filename: null,
+          records: importedWorkers.length,
+          deleted: validationResponse.metaData.workers.deleted,
+          errors: validationResponse.validation.workers
+            .filter(thisVal => thisVal.hasOwnProperty('errCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+          warnings: validationResponse.validation.workers
+            .filter(thisVal => thisVal.hasOwnProperty('warnCode'))
+            .sort((thisVal, thatVal) => thisVal.lineNumber > thatVal.lineNumber),
+          data: {
+            csv: validationResponse.data.csv.workers,
+            entities: {
+              workers: validationResponse.data.entities.workers,
+              qualifications: validationResponse.data.entities.qualifications,
+            }
+          },
+        },
         training: {
           filename: null,
           records: importedTraining.length,
@@ -612,7 +606,7 @@ router.route('/validate').post(async (req, res) => {
             entities: validationResponse.data.entities.training,
           },
         },
-        // all: validationResponse.data.resulting,
+        all: validationResponse.data.resulting,
       });
 
     } else {
