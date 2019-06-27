@@ -18,7 +18,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
-  public workplaces: Workplace[]; // TODO rename workplaces variable to something generic
+  public workplaces: Workplace[] = []; // TODO rename workplaces variable to something generic
 
   constructor(
     protected authService: AuthService,
@@ -47,8 +47,6 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
           if (this.workplaces.length) {
             this.updateForm();
           }
-        } else {
-          this.workplaces = [];
         }
       })
     );
