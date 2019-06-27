@@ -39,7 +39,7 @@ TODO check if needed -->
         <div class="govuk-summary-list__row" *ngFor="let workplace of workplaces">
           <dt
             class="govuk-summary-list__key govuk-!-width-two-thirds govuk-util__normal"
-            [class.govuk-summary-list__error]="form.get('name-' + workplace.uid).errors && submitted"
+            [class.govuk-form-group--error]="form.get('name-' + workplace.uid).errors && submitted"
           >
             <span
               id="name-{{ workplace.uid }}-error"
