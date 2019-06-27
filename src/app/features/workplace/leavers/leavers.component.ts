@@ -215,7 +215,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   }
 
   private clearValidators(index: number) {
-    this.leavers.controls[index].get('jobId').clearValidators();
+    this.leavers.controls[index].get('jobRole').clearValidators();
     this.leavers.controls[index].get('total').clearValidators();
   }
 }
