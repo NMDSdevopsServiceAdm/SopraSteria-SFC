@@ -204,16 +204,11 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
         if (this._allServices === null || !Array.isArray(this._allServices)) return false;
 
         for (let thisService of servicesDef) {
-            console.log("WA DEBUG - validating this service: ", thisService)
-
-
             if (!this._valid(thisService)) {
                 // first check the given data structure
                 setOfValidatedServicesInvalid = true;
                 break;
             }
-
-            console.log("WA DEBUG - validating this service its a valid service record")
 
             // id overrides name, because id is indexed whereas name is not!
             let referenceService = null;
@@ -226,10 +221,6 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
                     return thisAllService.name === thisService.name;
                 });
             }
-
-
-            console.log("WA DEBUG - validating this service: found reference service: ", referenceService)
-
 
             if (referenceService && referenceService.id) {
                 // found a service match - prevent duplicates by checking if the reference service already exists
