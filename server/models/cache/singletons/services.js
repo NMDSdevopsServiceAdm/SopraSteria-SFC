@@ -21,7 +21,7 @@ class ServiceCache {
 
   static allMyOtherServices(services) {
     return ALL_SERVICES
-      .filter(x => services && services.length > 0 && services.indexOf(x) < 0)
+      .filter(x => services && services.length > 0 && services.indexOf(x.id) < 0)
       .map( x => { return { id: x.id, name: x.name, category: x.category }});
   }
 
