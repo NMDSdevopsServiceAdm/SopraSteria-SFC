@@ -30,7 +30,7 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.dateOfBirth != 'No'">
-         {{ worker.dateOfBirth ? dob : '-' }}
+        {{ worker.dateOfBirth ? dob : '-' }}
       </ng-container>
     </dd>
 
@@ -82,12 +82,12 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.gender != 'No'">
-        {{ worker.gender || '-' }}
+        {{ worker.gender | closedEndedAnswer }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.gender || '-' }}
+      {{ worker.gender | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'gender']" (click)="setReturn()">
@@ -108,7 +108,7 @@
       Disability
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.disability || '-' }}
+      {{ worker.disability | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'disability']" (click)="setReturn()">
@@ -129,7 +129,7 @@
       Ethnicity
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.ethnicity?.ethnicity || '-' }}
+      {{ worker.ethnicity?.ethnicity | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'ethnicity']" (click)="setReturn()">
@@ -157,7 +157,7 @@
         {{
           worker.nationality?.other?.nationality !== null
             ? worker.nationality?.other?.nationality
-            : worker.nationality?.value || '-'
+            : (worker.nationality?.value | closedEndedAnswer)
         }}
       </ng-container>
     </dd>
@@ -166,7 +166,7 @@
       {{
         worker.nationality?.other?.nationality !== null
           ? worker.nationality?.other?.nationality
-          : worker.nationality?.value || '-'
+          : (worker.nationality?.value | closedEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -188,7 +188,7 @@
       British citizenship
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.britishCitizenship || '-' }}
+      {{ worker.britishCitizenship | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'british-citizenship']" (click)="setReturn()">
@@ -212,7 +212,7 @@
       {{
         worker.countryOfBirth?.other?.country !== null
           ? worker.countryOfBirth?.other?.country
-          : worker.countryOfBirth?.value || '-'
+          : (worker.countryOfBirth?.value | closedEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">

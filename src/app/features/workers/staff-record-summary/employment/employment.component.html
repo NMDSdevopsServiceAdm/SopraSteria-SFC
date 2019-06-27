@@ -5,7 +5,7 @@
       Year arrived in the UK
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.yearArrived?.year ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
+      {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'year-arrived-uk']" (click)="setReturn()">
@@ -185,7 +185,7 @@
         {{
           worker.recruitedFrom?.from?.from !== null
             ? worker.recruitedFrom?.from?.from
-            : worker.recruitedFrom?.value || '-'
+            : (worker.recruitedFrom?.value | openEndedAnswer)
         }}
       </ng-container>
     </dd>
@@ -194,7 +194,7 @@
       {{
         worker.recruitedFrom?.from?.from !== null
           ? worker.recruitedFrom?.from?.from
-          : worker.recruitedFrom?.value || '-'
+          : (worker.recruitedFrom?.value | openEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -217,7 +217,9 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{
-        worker.socialCareStartDate?.year ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-'
+        worker.socialCareStartDate?.year
+          ? worker.socialCareStartDate?.year
+          : (worker.socialCareStartDate?.value | openEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -243,12 +245,12 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.daysSick != 'No'">
-        {{ worker.daysSick?.days !== '' ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
+        {{ worker.daysSick?.days ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.daysSick?.days !== '' ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
+      {{ worker.daysSick?.days ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'days-of-sickness']" (click)="setReturn()">
@@ -273,12 +275,12 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.zeroHoursContract != 'No'">
-        {{ worker.zeroHoursContract || '-' }}
+        {{ worker.zeroHoursContract | closedEndedAnswer }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.zeroHoursContract || '-' }}
+      {{ worker.zeroHoursContract | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'contract-with-zero-hours']" (click)="setReturn()">
@@ -325,9 +327,9 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{
-        worker.weeklyHoursContracted?.hours !== null
+        worker.weeklyHoursContracted?.hours
           ? worker.weeklyHoursContracted?.hours
-          : worker.weeklyHoursContracted?.value || '-'
+          : (worker.weeklyHoursContracted?.value | openEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -354,12 +356,12 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.annualHourlyPay != 'No'">
-        {{ worker.annualHourlyPay?.rate ? salary : worker.annualHourlyPay?.value || '-' }}
+        {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.annualHourlyPay?.rate ? salary : worker.annualHourlyPay?.value || '-' }}
+      {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'salary']" (click)="setReturn()">
