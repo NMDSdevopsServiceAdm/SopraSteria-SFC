@@ -1868,24 +1868,24 @@ class Worker {
     }
   }
 
-
+  // ['Adult Nurse', 'Mental Health Nurse', 'Learning Disabilities Nurse', `Children's Nurse`, 'Enrolled Nurse'
   _transformRegisteredNurse() {
     if (this._registeredNurse) {
       switch (this._registeredNurse) {
         case 1:
-          this._registeredNurse = 'Adult nurse';
+          this._registeredNurse = 'Adult Nurse';
           break;
         case 2:
-          this._registeredNurse = 'Mental health nurse';
+          this._registeredNurse = 'Mental Health Nurse';
           break;
         case 3:
-          this._registeredNurse = 'Learning disabilities nurse';
+          this._registeredNurse = 'Learning Disabilities Nurse';
           break;
         case 4:
-          this._registeredNurse = 'Children\'s nurse';
+          this._registeredNurse = 'Children\'s Nurse';
           break;
         case 5:
-          this._registeredNurse = 'Enrolled nurse';
+          this._registeredNurse = 'Enrolled Nurse';
           break;
         default:
           this._validationErrors.push({
