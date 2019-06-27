@@ -1411,20 +1411,22 @@ router.route('/report/:reportType').get(async (req, res) => {
     let entities =  null;
     let messages =  null;
 
+    const entityKey = `${req.establishmentId}/intermediary/establishment.entities.json`;
+
     try {
-      const entityKey = `${req.establishmentId}/intermediary/establishment.entities.json`;
       const establishment = await downloadContent(entityKey);
       entities = establishment ? JSON.parse(establishment.data) : null;
     } catch (err) {
-      throw new Error(`router.route('/report').get - failed to download: `, key);
+      throw new Error(`router.route('/report').get - failed to download: `, entityKey);
     }
 
+    const reportKey = `${req.establishmentId}/validation/${reportType}.validation.json`;
+    
     try {
-      const reportKey = `${req.establishmentId}/validation/${reportType}.validation.json`;
       const content = await downloadContent(reportKey);
       messages = content ? JSON.parse(content.data) : null;
     } catch (err) {
-      throw new Error(`router.route('/report').get - failed to download: `, key);
+      throw new Error(`router.route('/report').get - failed to download: `, reportKey);
     }
 
     const errorTitle = '* Errors (will cause file(s) to be rejected) *';
