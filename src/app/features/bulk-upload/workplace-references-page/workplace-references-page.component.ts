@@ -16,6 +16,8 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   public referencesUpdated = false;
   public referenceType = BulkUploadFileType.Establishment;
   public referenceTypeInfo = 'You must create unique references for each workplace.';
+  public columnOneLabel = 'Workplace';
+  public columnTwoLabel = 'Workplace reference';
 
   constructor(
     protected authService: AuthService,

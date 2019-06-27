@@ -16,6 +16,8 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   public referencesUpdated = false;
   public referenceType = BulkUploadFileType.Worker;
   public referenceTypeInfo = 'You must create unique references for each member of staff.';
+  public columnOneLabel = 'Name';
+  public columnTwoLabel = 'Staff reference';
 
   constructor(
     protected authService: AuthService,

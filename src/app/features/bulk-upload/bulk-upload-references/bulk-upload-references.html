@@ -20,7 +20,7 @@ TODO check if needed -->
 
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds govuk-!-margin-top-6">
+  <div class="govuk-grid-column-full govuk-!-margin-top-6">
     <form
       *ngIf="workplaces && workplaces.length"
       novalidate
@@ -30,11 +30,11 @@ TODO check if needed -->
     >
       <dl class="govuk-summary-list">
         <div class="govuk-summary-list__row">
-          <dt class="govuk-summary-list__key govuk-!-width-two-thirds">
-            Workplace
+          <dt class="govuk-summary-list__key">
+            {{ columnOneLabel }}
           </dt>
           <dd class="govuk-summary-list__value govuk-!-width-one-third govuk-util__bold">
-            Workplace reference
+            {{ columnTwoLabel }}
           </dd>
         </div>
         <div class="govuk-summary-list__row" *ngFor="let workplace of workplaces">
