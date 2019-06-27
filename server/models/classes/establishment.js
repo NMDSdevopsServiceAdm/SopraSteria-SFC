@@ -33,7 +33,7 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
-// service cache 
+// service cache
 const ServiceCache = require('../cache/singletons/services').ServiceCache;
 const CapacitiesCache = require('../cache/singletons/capacities').CapacitiesCache;
 
@@ -326,15 +326,12 @@ class Establishment extends EntityValidator {
             if (thisEstablishmentIsValid && Array.isArray(thisEstablishmentIsValid) && this._validations.length == 0) {
                 const propertySuffixLength = 'Property'.length * -1;
                 thisEstablishmentIsValid.forEach(thisInvalidProp => {
-                    // temporarily quashing Services and Capacity property invalid warnings (whilst cache is being worked on)
-                    if (!(thisInvalidProp === 'ServicesProperty' || thisInvalidProp === 'CapacityProperty')) {
-                        this._validations.push(new ValidationMessage(
-                            ValidationMessage.WARNING,
-                            111111111,
-                            'Invalid',
-                            [thisInvalidProp.slice(0,propertySuffixLength)],
-                        ));
-                    }
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.WARNING,
+                        111111111,
+                        'Invalid',
+                        [thisInvalidProp.slice(0,propertySuffixLength)],
+                    ));
                 });
             }
 
@@ -781,7 +778,7 @@ class Establishment extends EntityValidator {
                     raw: true
                 });
 
-                const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([ 
+                const [otherServices, mainService, serviceUsers, capacity, jobs, localAuthorities] = await Promise.all([
                     ServiceCache.allMyOtherServices(establishmentServices.map(x => x)),
                     models.services.findOne({
                         where: {
