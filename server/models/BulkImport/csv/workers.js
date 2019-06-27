@@ -294,7 +294,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
-        error: "Local Identifier must be defined",
+        error: "LOCALESTID has not been supplied",
         source: this._currentLine.LOCALESTID,
       });
       return false;
@@ -305,7 +305,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
-        error: `Local Identifier (LOCALESTID) must be no more than ${MAX_LENGTH} characters`,
+        error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.LOCALESTID,
       });
       return false;
@@ -329,7 +329,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
-        error: "Unique Worker Local Identifier must be defined",
+        error: "UNIQUEWORKERID has not been supplied",
         source: this._currentLine.UNIQUEWORKERID,
       });
       return false;
@@ -340,7 +340,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
-        error: `Unique Worker Identifier (UNIQUEWORKERID) must be no more than ${MAX_LENGTH} characters`,
+        error: `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.UNIQUEWORKERID,
       });
       return false;
@@ -375,6 +375,19 @@ class Worker {
     const statusValues = ['DELETE', 'UPDATE', 'UNCHECKED', 'NOCHANGE', 'NEW','CHGSUB'];
     const myStatus = this._currentLine.STATUS ? this._currentLine.STATUS.toUpperCase() : this._currentLine.STATUS;
 
+    if (!myStatus) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.STATUS_ERROR,
+        errType: `STATUS_ERROR`,
+        error: `You have not supplied a correct status`,
+        source: this._currentLine.STATUS,
+      });
+      return false;
+    }
+
     // must be present and must be one of the preset values (case insensitive)
     if (!statusValues.includes(myStatus)) {
       this._validationErrors.push({
@@ -383,7 +396,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.STATUS_ERROR,
         errType: `STATUS_ERROR`,
-        error: `Status (STATUS) must be one of: ${statusValues}`,
+        error: `The status you have supplied is incorrect`,
         source: this._currentLine.STATUS,
       });
       return false;
@@ -2058,7 +2071,7 @@ class Worker {
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: `DUPLICATE_ERROR`,
-      error: `Duplicate of line ${originalLineNumber}`,
+      error: `UNIQUEWORKERID is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
@@ -2072,7 +2085,7 @@ class Worker {
       lineNumber: this._lineNumber,
       errCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
-      error: `Unknown establishment/workplace cross reference`,
+      error: `LOCALESTID does not exist in Workplace File`,
       source: this._currentLine.LOCALESTID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
