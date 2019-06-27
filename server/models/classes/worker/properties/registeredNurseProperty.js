@@ -1,6 +1,6 @@
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
-const REGISTEREDNURSE_TYPE = ['Adult nurse', 'Mental health nurse', 'Learning disabiliies', `Children's nurse`, 'Enrolled nurse'];
+const REGISTEREDNURSE_TYPE = ['Adult Nurse', 'Mental Health Nurse', 'Learning Disabilities Nurse', `Children's Nurse`, 'Enrolled Nurse'];
 
 exports.RegisteredNurseProperty = class RegisteredNurseProperty extends ChangePropertyPrototype {
     constructor() {
