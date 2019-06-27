@@ -29,6 +29,7 @@ class Training {
   static get CATEGORY_ERROR() { return 1050; }
   static get ACCREDITED_ERROR() { return 1060; }
   static get NOTES_ERROR() { return 1070; }
+  static get WORKER_DOB_TRAINING_WARNING() { return 1080; }
 
   static get DATE_COMPLETED_WARNING() { return 2020; }
   static get EXPIRY_DATE_WARNING() { return 2030; }
@@ -36,6 +37,7 @@ class Training {
   static get CATEGORY_WARNING() { return 2050; }
   static get ACCREDITED_WARNING() { return 2060; }
   static get NOTES_WARNING() { return 2070; }
+  
 
   get headers() {
     return this._headers_v1.join(",");
@@ -85,7 +87,7 @@ class Training {
         lineNumber: this._lineNumber,
         errCode: Training.LOCALESTID_ERROR,
         errType: `LOCALESTID_ERROR`,
-        error: "Locale ST ID (LOCALESTID) must be defined (not empty)",
+        error: "LOCALESTID has not been supplied",
         source: this._currentLine.LOCALESTID,
       });
       return false;
@@ -96,7 +98,7 @@ class Training {
         lineNumber: this._lineNumber,
         errCode: Training.LOCALESTID_ERROR,
         errType: `LOCALESTID_ERROR`,
-        error: `Locale ST ID (LOCALESTID) must be no more than ${MAX_LENGTH} characters`,
+        error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.LOCALESTID,
       });
       return false;
@@ -117,7 +119,7 @@ class Training {
         lineNumber: this._lineNumber,
         errCode: Training.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
-        error: "Unique Worker ID (UNIQUEWORKERID) must be defined (not empty)",
+        error: "UNIQUEWORKERID has not been supplied",
         source: this._currentLine.UNIQUEWORKERID,
       });
       return false;
@@ -128,7 +130,7 @@ class Training {
         lineNumber: this._lineNumber,
         errCode: Training.UNIQUE_WORKER_ID_ERROR,
         errType: `UNIQUE_WORKER_ID_ERROR`,
-        error: `Unique Worker ID (UNIQUEWORKERID) must be no more than ${MAX_LENGTH} characters`,
+        error: `UNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.UNIQUEWORKERID,
       });
       return false;
@@ -142,7 +144,6 @@ class Training {
     // optional
     const myDateCompleted = this._currentLine.DATECOMPLETED;
     const dateFormatRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/;
-
     const actualDate = moment.utc(myDateCompleted, "DD/MM/YYYY");
 
     if (myDateCompleted) {
@@ -153,7 +154,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.DATE_COMPLETED_ERROR,
           errType: `DATE_COMPLETED_ERROR`,
-          error: "Date Completed (DATECOMPLETED) must use the format dd/mm/yyyy",
+          error: "DATECOMPLETED is incorrectly formatted",
           source: this._currentLine.DATECOMPLETED,
         });
         return false;
@@ -164,7 +165,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.DATE_COMPLETED_ERROR,
           errType: `DATE_COMPLETED_ERROR`,
-          error: "Date Completed (DATECOMPLETED) must be a valid date (e.g. 29/02/2019 is not a valid date because 2019 is not a leap year)",
+          error: "DATECOMPLETED is invalid",
           source: this._currentLine.DATECOMPLETED,
         });
         return false;
@@ -182,8 +183,9 @@ class Training {
     // optional
     const myDateExpiry = this._currentLine.EXPIRYDATE;
     const dateFormatRegex =  /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[012])\/\d{4}$/;
-
     const actualDate = moment.utc(myDateExpiry, "DD/MM/YYYY");
+    const myDateCompleted = this._currentLine.DATECOMPLETED;
+    const actualDateCompleted = moment.utc(myDateCompleted, "DD/MM/YYYY");
 
     if (myDateExpiry) {
       if (!dateFormatRegex.test(myDateExpiry)) {
@@ -193,7 +195,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.EXPIRY_DATE_ERROR,
           errType: `EXPIRY_DATE_ERROR`,
-          error: "Expiry Date (EXPIRYDATE) must use the format dd/mm/yyyy",
+          error: "DATECOMPLETED is incorrectly formatted",
           source: this._currentLine.EXPIRYDATE,
         });
         return false;
@@ -204,10 +206,21 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.EXPIRY_DATE_ERROR,
           errType: `EXPIRY_DATE_ERROR`,
-          error: "Expiry Date  (EXPIRYDATE) must be a valid date (e.g. 29/02/2019 is not a valid date because 2019 is not a leap year)",
+          error: "EXPIRYDATE is invalid",
           source: this._currentLine.EXPIRYDATE,
         });
         return false;
+      } else if (actualDate.isBefore(actualDateCompleted, 'day')) {
+          this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
+            lineNumber: this._lineNumber,
+            errCode: Training.EXPIRY_DATE_ERROR,
+            errType: `EXPIRY_DATE_ERROR`,
+            error: "EXPIRYDATE is before DATECOMPLETED",
+            source: this._currentLine.EXPIRYDATE,
+          });
+          return false;
       } else {
 
         this._expiry = actualDate;
@@ -229,7 +242,7 @@ class Training {
         lineNumber: this._lineNumber,
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
-        error: "Description (DESCRIPTION) must be defined (not empty)",
+        error: "DESCRIPTION has not been supplied",
         source: this._currentLine.DESCRIPTION,
       });
       return false;
@@ -240,7 +253,7 @@ class Training {
         lineNumber: this._lineNumber,
         errCode: Training.DESCRIPTION_ERROR,
         errType: `DESCRIPTION_ERROR`,
-        error: `Description (DESCRIPTION) must be no more than ${MAX_LENGTH} characters`,
+        error: `DESCRIPTION is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.DESCRIPTION,
       });
       return false;
@@ -252,14 +265,14 @@ class Training {
 
   _validateCategory() {
     const myCategory = parseInt(this._currentLine.CATEGORY);
-    if (Number.isNaN(myCategory)) {
+    if (Number.isNaN(myCategory) || !BUDI.trainingCaterogy(BUDI.TO_ASC, this._currentLine.CATEGORY)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.CATEGORY_ERROR,
         errType: `CATEGORY_ERROR`,
-        error: "Category (CATEGORY) must be an integer",
+        error: "CATEGORY is invalid", 
         source: this._currentLine.CATEGORY,
       });
       return false;
@@ -272,25 +285,14 @@ class Training {
   _validateAccredited() {
     const myAccredited = parseInt(this._currentLine.ACCREDITED);
     const ALLOWED_VALUES = [0,1,999];
-    if (Number.isNaN(myAccredited)) {
+    if (Number.isNaN(myAccredited) || !ALLOWED_VALUES.includes(myAccredited)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Training.ACCREDITED_ERROR,
         errType: `ACCREDITED_ERROR`,
-        error: "Accredited (ACCREDITED) must be an integer",
-        source: this._currentLine.ACCREDITED,
-      });
-      return false;
-    } else if (!ALLOWED_VALUES.includes(myAccredited)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Training.ACCREDITED_ERROR,
-        errType: `ACCREDITED_ERROR`,
-        error: `Accredited (ACCREDITED) must be one of: ${ALLOWED_VALUES}`,
+        error: "ACCREDITED is invalid",
         source: this._currentLine.ACCREDITED,
       });
       return false;
@@ -320,7 +322,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.CATEGORY_ERROR,
           errType: `CATEGORY_ERROR`,
-          error: `Training Category (CATEGORY): ${this._category} is unknown`,
+          error: "CATEGORY is invalid",
           source: this._currentLine.CATEGORY,
         });
       } else {
@@ -341,7 +343,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.NOTES_ERROR,
           errType: `NOTES_ERROR`,
-          error: `Notes (NOTES) must be no more than ${MAX_LENGTH} characters`,
+          error: `Notes is longer than ${MAX_LENGTH} characters`,
           source: this._currentLine.NOTES,
         });
         return false;
@@ -380,13 +382,26 @@ class Training {
   }
 
   // add unchecked establishment reference validation error
+  dobTrainingMismatch() {
+    return {
+      origin: 'Training',
+      lineNumber: this._lineNumber,
+      errCode: Training.WORKER_DOB_TRAINING_WARNING,
+      errType: `WORKER_DOB_TRAINING_WARNING`,
+      error: `DATECOMPLETED is before staff record’s 14th birthday`,
+      source: this._currentLine.LOCALESTID,
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+    };
+  }
+
   uncheckedEstablishment() {
     return {
       origin: 'Training',
       lineNumber: this._lineNumber,
       errCode: Training.UNCHECKED_ESTABLISHMENT_ERROR,
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
-      error: `Unknown establishment/workplace cross reference`,
+      error: `LOCALESTID does not exist in Workplace File`,
       source: this._currentLine.LOCALESTID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
@@ -400,7 +415,7 @@ class Training {
       lineNumber: this._lineNumber,
       errCode: Training.UNCHECKED_WORKER_ERROR,
       errType: `UNCHECKED_WORKER_ERROR`,
-      error: `Unknown worker/staff cross reference`,
+      error: `UNIQUEWORKERID and LOCALESTID does not match staff record file details`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
@@ -410,7 +425,6 @@ class Training {
   // returns true on success, false is any attribute of Training fails
   validate() {
     let status = true;
-
     status = !this._validateLocaleStId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateDateCompleted() ? false : status;

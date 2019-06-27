@@ -1551,8 +1551,7 @@ class Establishment {
       errCode: Establishment.EXPECT_JUST_ONE_ERROR,
       errType: `EXPECT_JUST_ONE_ERROR`,
       error: 'Expect just one establishment',
-      source: '',
-      name: this._currentLine.LOCALESTID,
+      source: ''
     };
   }
 
@@ -1563,8 +1562,7 @@ class Establishment {
       errCode: Establishment.MISSING_PRIMARY_ERROR,
       errType: `MISSING_PRIMARY_ERROR`,
       error: `Missing the primary establishment: ${name}`,
-      source: '',
-      name: this._currentLine.LOCALESTID,
+      source: ''
     };
   }
 
