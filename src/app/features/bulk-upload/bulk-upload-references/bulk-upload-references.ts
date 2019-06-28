@@ -18,42 +18,34 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
-  public workplaces: Workplace[] = []; // TODO rename workplaces variable to something generic
+  public references: Workplace[] = []; // TODO update to Workplace[] | StaffRecord[]
 
   constructor(
     protected authService: AuthService,
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
-    protected userService: UserService
+    protected userService: UserService,
   ) {}
 
   ngOnInit() {
     this.setupForm();
-    this.getEstablishments();
+    this.getReferences();
+    this.setPrimaryEstablishmentName();
+  }
+
+  private setPrimaryEstablishmentName(): void {
+    this.primaryEstablishmentName = this.authService.establishment.name;
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({});
   }
 
-  private getEstablishments(): void {
-    this.subscriptions.add(
-      this.userService.getEstablishments().subscribe((workplaces: GetWorkplacesResponse) => {
-        console.log(workplaces);
-        if (workplaces) {
-          this.primaryEstablishmentName = workplaces.primary ? workplaces.primary.name : null;
-          this.workplaces = workplaces.subsidaries ? workplaces.subsidaries.establishments : [];
-          if (this.workplaces.length) {
-            this.updateForm();
-          }
-        }
-      })
-    );
-  }
+  protected getReferences(): void {}
 
-  private updateForm(): void {
-    this.workplaces.forEach((workplace: Workplace) => {
+  protected updateForm(): void {
+    this.references.forEach((workplace: Workplace) => {
       this.form.addControl(`name-${workplace.uid}`, new FormControl(null, [Validators.required]));
 
       this.formErrorsMap.push({

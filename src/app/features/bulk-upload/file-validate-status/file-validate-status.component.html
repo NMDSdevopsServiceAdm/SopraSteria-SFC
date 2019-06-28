@@ -8,7 +8,8 @@
   <ng-template [ngIf]="status" [ngIfElse]="idle">
     <img
       *ngIf="status !== statusEnum.Validating"
-      [attr.src]="'/assets/images/'+ getIconByStatus(status) +'-icon-white.svg'"
+      [attr.src]="'/assets/images/' + getIconByStatus(status) + '-icon-white.svg'"
+      alt=""
       class="govuk-!-padding-right-1"
     />
     {{ status }}

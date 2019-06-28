@@ -939,7 +939,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         delete myAPIWorkers[thisWorker.lineNumber];
       } else {
         // does not yet exist - check this worker can be associated with a known establishment
-        const establishmentKeyNoWhitespace = thisWorker.local.replace(/\s/g, "");
+        const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, "") : '';
         if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
           // not found the associated establishment
           csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
