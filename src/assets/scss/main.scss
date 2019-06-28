@@ -21,21 +21,23 @@ body {
 // Custom Components
 @import 'components/auto-suggest';
 @import 'components/buttons';
-@import 'components/doh-logo';
 @import 'components/checkboxes';
+@import 'components/doh-logo';
 @import 'components/fieldset';
 @import 'components/footer';
+@import 'components/form-group';
+@import 'components/grid';
 @import 'components/header';
 @import 'components/input';
 @import 'components/inset-text';
 @import 'components/panel';
 @import 'components/progress';
 @import 'components/radios';
-@import 'components/summary-list';
 @import 'components/select';
+@import 'components/summary-list';
+@import 'components/tables';
 @import 'components/tabs';
 @import 'components/tag';
-@import 'components/tables';
 
 // Removing focus outline used for skip functionality
 main:focus {
