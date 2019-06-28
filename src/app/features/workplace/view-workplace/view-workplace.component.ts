@@ -16,6 +16,7 @@ export class ViewWorkplaceComponent implements OnInit {
   public parentEstablishment: LoggedInEstablishment;
   public workplace: Establishment;
   public summaryReturnUrl: URLStructure;
+  public staffPermission = ParentPermissions.WorkplaceAndStaff;
 
   constructor(private establishmentService: EstablishmentService, private authService: AuthService) {}
 
@@ -31,7 +32,7 @@ export class ViewWorkplaceComponent implements OnInit {
     };
   }
 
-  public checkPermission() {
-    return this.workplace.parentPermissions === ParentPermissions.WorkplaceAndStaff;
+  public checkPermission(permission: ParentPermissions) {
+    return this.workplace.parentPermissions === permission;
   }
 }

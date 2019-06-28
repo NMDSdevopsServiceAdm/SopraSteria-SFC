@@ -9,8 +9,8 @@
   </div>
 
   <div class="govuk-grid-column-one-third">
-    <a class="govuk-button govuk-button--link" role="button" href="#" (click)="deleteWorker($event)">
-      <img src="/assets/images/bin.svg" />Delete workspace
+    <a class="govuk-button govuk-button--link" role="button" href="#">
+      <img src="/assets/images/bin.svg" />Delete Workspace
     </a>
   </div>
 
@@ -20,7 +20,7 @@
         <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
       </app-tab>
 
-      <app-tab [title]="'Staff records'" *ngIf="checkPermission()">
+      <app-tab [title]="'Staff records'" *ngIf="checkPermission(staffPermission)">
         <!-- <app-staff-records-sub-tab></app-staff-records-sub-tab> -->
       </app-tab>
     </app-tabs>

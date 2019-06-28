@@ -11,7 +11,7 @@ import { DataSharingWithLocalAuthoritiesComponent } from './data-sharing-with-lo
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
-import { MyWorkplaceComponent } from './my-workplace/my-workplace.component';
+import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
@@ -36,7 +36,7 @@ import { StartComponent } from './start/start.component';
     DataSharingWithLocalAuthoritiesComponent,
     EditWorkplaceComponent,
     LeaversComponent,
-    MyWorkplaceComponent,
+    WorkplaceInfoPanelComponent,
     OtherServicesComponent,
     ServicesCapacityComponent,
     ServiceUsersComponent,
