@@ -35,13 +35,13 @@
       <th class="govuk-table__header" scope="col">Staff name</th>
       <th class="govuk-table__header" scope="col">Job role</th>
       <th class="govuk-table__header" scope="col">Last updated</th>
-      <th *ngIf="!displayWDFReport" class="govuk-table__header" scope="col"></th>
+      <th *ngIf="!displayWDFReport" class="govuk-table__header" scope="col">Edit</th>
       <th *ngIf="displayWDFReport" class="govuk-table__header" scope="col">WDF</th>
     </tr>
   </thead>
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let worker of workers">
-      <td class="govuk-table__cell" scope="row">
+      <td class="govuk-table__cell">
         <a [routerLink]="['/worker', worker.uid]">{{ worker.nameOrId }}</a>
       </td>
       <td class="govuk-table__cell">{{ worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title }}</td>
