@@ -19,14 +19,13 @@
       <div class="govuk-grid-column-one-half">
         <p class="govuk-!-margin-bottom-1">
           <strong>
-            <ng-container *ngIf="workplace.parentPermissions === workplaceAndStaffPermission">
+            <ng-container
+              *ngIf="!workplace.parentPermissions || workplace.parentPermissions === workplaceAndStaffPermission"
+            >
               Workplace and staff records
             </ng-container>
             <ng-container *ngIf="workplace.parentPermissions === workplacePermission">
               Workplace
-            </ng-container>
-            <ng-container *ngIf="!workplace.parentPermissions">
-              Workplace and staff records
             </ng-container>
           </strong>
         </p>
