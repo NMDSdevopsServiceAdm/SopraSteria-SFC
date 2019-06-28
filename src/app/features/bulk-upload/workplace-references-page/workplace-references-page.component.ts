@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -38,16 +39,28 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   }
    **/
 
+  protected init() {
+    this.serverErrorsMap = [
+      {
+        name: 503,
+        message: 'Service unavailable.',
+      },
+    ];
+  }
+
   protected getReferences(): void {
     this.subscriptions.add(
-      this.userService.getEstablishments().subscribe((workplaces: GetWorkplacesResponse) => {
-        if (workplaces) {
-          this.references = workplaces.subsidaries ? workplaces.subsidaries.establishments : [];
-          if (this.references.length) {
-            this.updateForm();
+      this.userService.getEstablishments().subscribe(
+        (workplaces: GetWorkplacesResponse) => {
+          if (workplaces) {
+            this.references = workplaces.subsidaries ? workplaces.subsidaries.establishments : [];
+            if (this.references.length) {
+              this.updateForm();
+            }
           }
-        }
-      })
+        },
+        (error: HttpErrorResponse) => this.onError(error)
+      )
     );
   }
 }

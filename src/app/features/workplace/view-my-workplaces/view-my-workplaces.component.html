@@ -1,3 +1,8 @@
+<app-error-summary
+  *ngIf="serverError"
+  [serverError]="serverError"
+></app-error-summary>
+
 <app-dashboard-header></app-dashboard-header>
 
 <p *ngIf="establishment?.name" class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment?.name }}</p>

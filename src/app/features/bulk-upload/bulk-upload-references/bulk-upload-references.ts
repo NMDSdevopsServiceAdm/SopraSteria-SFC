@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -30,10 +31,13 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.init();
     this.setupForm();
     this.getReferences();
     this.setPrimaryEstablishmentName();
   }
+
+  protected init() {}
 
   private setPrimaryEstablishmentName(): void {
     this.primaryEstablishmentName = this.authService.establishment.name;
@@ -66,6 +70,11 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
         ],
       });
     });
+  }
+
+  protected onError(error: HttpErrorResponse): void {
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+    this.errorSummaryService.scrollToErrorSummary();
   }
 
   protected uniqueValidator(control: AbstractControl): { [key: string]: boolean } | null  {
