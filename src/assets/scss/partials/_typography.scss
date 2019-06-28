@@ -1,0 +1,17 @@
+a[target='_blank'] {
+  position: relative;
+  padding-right: 23px;
+
+  &:before {
+    content: '';
+    width: 13px;
+    height: 13px;
+    background: url('/assets/images/window.svg') no-repeat center;
+    background-size: 13px auto;
+    display: block;
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    margin-top: -5px;
+  }
+}
