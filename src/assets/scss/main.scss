@@ -36,3 +36,8 @@ body {
 @import 'components/tabs';
 @import 'components/tag';
 @import 'components/tables';
+
+// Removing focus outline used for skip functionality
+main:focus {
+  outline: none;
+}
