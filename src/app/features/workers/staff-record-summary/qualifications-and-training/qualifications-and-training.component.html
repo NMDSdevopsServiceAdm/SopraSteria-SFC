@@ -41,12 +41,12 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.qualificationInSocialCare != 'No'">
-        {{ worker.qualificationInSocialCare || '-' }}
+        {{ worker.qualificationInSocialCare | closedEndedAnswer }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.qualificationInSocialCare || '-' }}
+      {{ worker.qualificationInSocialCare | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'social-care-qualification']" (click)="setReturn()">
@@ -71,12 +71,12 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.socialCareQualification != 'No'">
-        {{ worker.socialCareQualification?.title || '-' }}
+        {{ worker.socialCareQualification?.title | closedEndedAnswer }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.socialCareQualification?.title || '-' }}
+      {{ worker.socialCareQualification?.title | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a
@@ -105,12 +105,12 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.otherQualification != 'No'">
-        {{ worker.otherQualification || '-' }}
+        {{ worker.otherQualification | closedEndedAnswer }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.otherQualification || '-' }}
+      {{ worker.otherQualification | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-qualifications']" (click)="setReturn()">
@@ -161,7 +161,7 @@
       Completing apprenticeship training
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.apprenticeshipTraining || '-' }}
+      {{ worker.apprenticeshipTraining | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'apprenticeship-training']" (click)="setReturn()">

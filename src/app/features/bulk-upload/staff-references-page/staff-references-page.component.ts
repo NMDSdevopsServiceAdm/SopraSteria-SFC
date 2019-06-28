@@ -11,13 +11,13 @@ import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-referenc
   selector: 'app-workplace-references-page',
   templateUrl: '../bulk-upload-references/bulk-upload-references.html',
 })
-export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
+export class StaffReferencesPageComponent extends BulkUploadReferences {
   // TODO check if needed
   public referencesUpdated = false;
-  public referenceType = BulkUploadFileType.Establishment;
-  public referenceTypeInfo = 'You must create unique references for each workplace.';
-  public columnOneLabel = 'Workplace';
-  public columnTwoLabel = 'Workplace reference';
+  public referenceType = BulkUploadFileType.Worker;
+  public referenceTypeInfo = 'You must create unique references for each member of staff.';
+  public columnOneLabel = 'Name';
+  public columnTwoLabel = 'Staff reference';
 
   constructor(
     protected authService: AuthService,

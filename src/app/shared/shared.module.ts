@@ -26,6 +26,8 @@ import { TotalStaffPanelComponent } from './components/total-staff-panel/total-s
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
+import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
+import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
@@ -53,6 +55,8 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    OpenEndedAnswerPipe,
+    ClosedEndedAnswerPipe,
   ],
   exports: [
     AlertComponent,
@@ -77,6 +81,8 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    OpenEndedAnswerPipe,
+    ClosedEndedAnswerPipe,
   ],
 })
 export class SharedModule {}
