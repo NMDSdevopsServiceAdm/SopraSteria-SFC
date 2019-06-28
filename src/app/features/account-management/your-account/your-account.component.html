@@ -15,7 +15,7 @@
           {{ user?.fullname }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/account-management/change-your-details']" class="govuk-link">
+          <a [routerLink]="['/account-management/change-your-details']">
             Change
             <span class="govuk-visually-hidden"> user details</span>
           </a>
@@ -58,7 +58,7 @@
           {{ user?.username }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/account-management/change-password']" class="govuk-link">
+          <a [routerLink]="['/account-management/change-password']">
             Change
             <span class="govuk-visually-hidden"> login details</span>
           </a>
@@ -85,7 +85,7 @@
           {{ user?.securityQuestion }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/account-management/change-user-security']" class="govuk-link">
+          <a [routerLink]="['/account-management/change-user-security']">
             Change
             <span class="govuk-visually-hidden"> security details</span>
           </a>
