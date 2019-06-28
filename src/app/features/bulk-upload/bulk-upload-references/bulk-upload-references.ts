@@ -18,41 +18,33 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
-  public references: Workplace[] = [];
+  public references: Workplace[] = []; // TODO update to Workplace[] | StaffRecord[]
 
   constructor(
     protected authService: AuthService,
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
-    protected userService: UserService
+    protected userService: UserService,
   ) {}
 
   ngOnInit() {
     this.setupForm();
     this.getReferences();
+    this.setPrimaryEstablishmentName();
+  }
+
+  private setPrimaryEstablishmentName(): void {
+    this.primaryEstablishmentName = this.authService.establishment.name;
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({});
   }
 
-  private getReferences(): void {
-    this.subscriptions.add(
-      this.userService.getEstablishments().subscribe((workplaces: GetWorkplacesResponse) => {
-        console.log(workplaces);
-        if (workplaces) {
-          this.primaryEstablishmentName = workplaces.primary ? workplaces.primary.name : null;
-          this.references = workplaces.subsidaries ? workplaces.subsidaries.establishments : [];
-          if (this.references.length) {
-            this.updateForm();
-          }
-        }
-      })
-    );
-  }
+  protected getReferences(): void {}
 
-  private updateForm(): void {
+  protected updateForm(): void {
     this.references.forEach((workplace: Workplace) => {
       this.form.addControl(`name-${workplace.uid}`, new FormControl(null, [Validators.required]));
 
