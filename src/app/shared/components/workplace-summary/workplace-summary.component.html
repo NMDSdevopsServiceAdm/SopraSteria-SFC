@@ -314,12 +314,7 @@
             </ul>
           </ng-container>
           <ng-container *ngIf="!isArray(workplace.vacancies)">
-            <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
-              <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
-            </ng-container>
-            <ng-container *ngIf="workplace.wdf.vacancies != 'No'">
-              {{ workplace.vacancies }}
-            </ng-container>
+            {{ workplace.vacancies }}
           </ng-container>
         </ng-template>
       </ng-container>
