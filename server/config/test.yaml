@@ -30,3 +30,7 @@ notify:
 bulkupload:
     region: eu-west-2
     bucketname: sfc-bulkupload-staging
+
+public:
+    download:
+        baseurl: https://sfc-public-staging.s3.eu-west-2.amazonaws.com/public/download
