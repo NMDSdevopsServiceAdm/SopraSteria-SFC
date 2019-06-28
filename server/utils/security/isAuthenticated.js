@@ -37,19 +37,20 @@ exports.isAuthorised = (req, res , next) => {
 
 // this util middleware will block if the given request is not authorised but will also extract
 //  the EstablishmentID token, and make it available on the request
-exports.hasAuthorisedEstablishment = (req, res, next) => {
-  const token = getToken(req.headers[AUTH_HEADER]);
+exports.hasAuthorisedEstablishment = async (req, res, next) => {
+  try {
+    const token = getToken(req.headers[AUTH_HEADER]);
+    if (token) {
+      const claim = jwt.verify(token, Token_Secret);
 
-  if (token) {
-    jwt.verify(token, Token_Secret, function (err, claim) {
-      if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
+      if (claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send({
           sucess: false,
           message: 'token is invalid'
         });
       } else {
 
-        // must provide the establishment ID and it must be a number
+        // must provide the establishment ID/UID
         if (!claim.EstblishmentId || isNaN(parseInt(claim.EstblishmentId))) {
           console.error('hasAuthorisedEstablishment - missing establishment id parameter');
           return res.status(400).send(`Unknown Establishment ID`);
@@ -81,26 +82,34 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
         //  then follow up by checking against any of the known subsidaries of this parent establishment
         //  including that of the given establishment (only known by it's UID)
         if (isAuthorised === false && claim.isParent) {
-          models.establishment.findOne({
-            attributes: ['id', 'parentPermissions', 'dataOwner'],
-            where: {
+
+          try {
+            console.log("WA DEBUG - looking up requested establishment's permissions for this parent: ", claim.EstblishmentId, req.params.id)
+            let findEstablishmentWhereClause = {
               parentId: claim.EstblishmentId,
-              uid: req.params.id,
+            };
+
+            if (establishmentIdIsUID) {
+              findEstablishmentWhereClause.uid = req.params.id;
+            } else {
+              findEstablishmentWhereClause.id = req.params.id;
             }
-          })
-          .then(record => record.get())
-          .then(establishment => {
+
+            const referencedEstablishment = await models.establishment.findOne({
+              attributes: ['id', 'parentPermissions', 'dataOwner'],
+              where: findEstablishmentWhereClause
+            });
             // this is a known subsidairy of this given parent establishment
 
             // but, to be able to access the subsidary, then the permissions must not be null
-            if (establishment.dataOwmer === 'Workplace' && establishment.parentPermissions === null) {
+            if (referencedEstablishment.dataOwmer === 'Workplace' && referencedEstablishment.parentPermissions === null) {
               console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
               // failed to find establishment by UUID - being a subsidairy of this known parent
               return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
             }
 
-            req.establishmentId = establishment.id;
-            req.parentPermissions = establishment.parentPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
+            req.establishmentId = referencedEstablishment.id;
+            req.parentPermissions = referencedEstablishment.parentPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
 
             // we now know the
             establishmentIdIsUID = false;
@@ -114,13 +123,14 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
               uid: claim.EstablishmentUID
             };
 
-            next();
-          })
-          .catch(err => {
+            return next();
+
+          } catch (err) {
             // failed to find establishment by UUID - being a subsidairy of this known parent
             console.error(`Failed to find subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID})`);
             return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
-          });
+          }
+
         } else if (isAuthorised === false) {
           console.error(`hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId}/${claim.EstablishmentUID})`);
           return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
@@ -158,10 +168,24 @@ exports.hasAuthorisedEstablishment = (req, res, next) => {
           }
         }
       }
-    });
-  } else {
-    // not authenticated
-    res.status(401).send('Requires authorisation');
+    } else {
+      // not authenticated
+      res.status(401).send('Requires authorisation');
+    }
+
+  } catch (err) {
+    if (err.name && err.name === 'TokenExpiredError') {
+      return res.status(403).send({
+        sucess: false,
+        message: 'token expired'
+      });
+    } else {
+      console.error("hasAuthorisedEstablishment: caught err: ", err.name, typeof err);
+      return res.status(403).send({
+        sucess: false,
+        message: 'token is invalid'
+      });
+    }
   }
 }
 
