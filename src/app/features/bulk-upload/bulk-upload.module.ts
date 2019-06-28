@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DialogService } from '@core/services/dialog.service';
 import { BulkUploadRoutingModule } from '@features/bulk-upload/bulk-upload-routing.module';
 import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
+import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-references-page/staff-references-page.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { BulkUploadPageComponent } from './bulk-upload-page/bulk-upload-page.component';
@@ -36,6 +37,7 @@ import { WorkplaceReferencesPageComponent } from './workplace-references-page/wo
     ReportDownloadLinkComponent,
     BulkUploadStartPageComponent,
     WorkplaceReferencesPageComponent,
+    StaffReferencesPageComponent,
   ],
   providers: [DialogService],
   entryComponents: [UploadWarningDialogComponent],

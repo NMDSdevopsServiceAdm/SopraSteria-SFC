@@ -1,12 +1,12 @@
-export interface MyWorkplacesResponse {
-  primary: MyWorkplace;
+export interface GetWorkplacesResponse {
+  primary: Workplace;
   subsidaries?: {
     count: number;
-    establishments: Array<MyWorkplace>;
+    establishments: Workplace[];
   };
 }
 
-export interface MyWorkplace {
+export interface Workplace {
   dataOwner: string;
   mainService: string;
   name: string;
