@@ -302,9 +302,9 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{
-        worker.weeklyHoursAverage?.hours !== null
+        worker.weeklyHoursAverage?.hours
           ? worker.weeklyHoursAverage?.hours
-          : worker.weeklyHoursAverage?.value || '-'
+          : (worker.weeklyHoursAverage?.value | openEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
