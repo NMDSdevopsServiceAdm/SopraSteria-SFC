@@ -13,6 +13,12 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"WorkerUID"'
     },
+    LocalIdentifier: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      unique: true,      
+      field: '"LocalIdentifier"'
+    },        
     establishmentFk : {
       type: DataTypes.INTEGER,
       allowNull: false,
