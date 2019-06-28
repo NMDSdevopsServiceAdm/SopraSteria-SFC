@@ -1,10 +1,5 @@
 @import '~src/assets/scss/partials/colors';
 
-.govuk__reference-grid-container {
-  grid-template-columns: 40% 30% auto;
-  border-bottom: solid 1px $alto;
-}
-
 .govuk__reference-grid-error {
   grid-column-start: 1;
   grid-column-end: 4;
