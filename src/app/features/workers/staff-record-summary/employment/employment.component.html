@@ -245,12 +245,12 @@
         <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.daysSick != 'No'">
-        {{ worker.daysSick?.days ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
+        {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.daysSick?.days ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
+      {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'days-of-sickness']" (click)="setReturn()">
@@ -302,7 +302,7 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{
-        worker.weeklyHoursAverage?.hours
+        isNumber(worker.weeklyHoursAverage?.hours)
           ? worker.weeklyHoursAverage?.hours
           : (worker.weeklyHoursAverage?.value | openEndedAnswer)
       }}
@@ -327,7 +327,7 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{
-        worker.weeklyHoursContracted?.hours
+        isNumber(worker.weeklyHoursContracted?.hours)
           ? worker.weeklyHoursContracted?.hours
           : (worker.weeklyHoursContracted?.value | openEndedAnswer)
       }}

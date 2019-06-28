@@ -3,6 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { WorkerService } from '@core/services/worker.service';
+import { isNumber } from 'lodash';
 import * as moment from 'moment';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
@@ -23,6 +24,10 @@ export class EmploymentComponent extends StaffRecordSummaryComponent implements 
 
   constructor(location: Location, workerService: WorkerService, private decimalPipe: DecimalPipe) {
     super(location, workerService);
+  }
+
+  isNumber(number: number) {
+    return isNumber(number);
   }
 
   get displayYearArrived() {
