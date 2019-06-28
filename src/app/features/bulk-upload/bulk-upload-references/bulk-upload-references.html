@@ -9,6 +9,13 @@
 </ng-container>
 TODO check if needed -->
 
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [serverError]="serverError"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+></app-error-summary>
+
 <app-dashboard-header></app-dashboard-header>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
