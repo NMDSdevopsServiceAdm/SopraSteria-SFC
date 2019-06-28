@@ -92,6 +92,7 @@ export interface Establishment {
   share: Share;
   localAuthorities: LocalAuthority[];
   primaryAuthority: PrimaryAuthority;
+  parentPermissions?: string;
   vacancies: Vacancy[] | string;
   totalVacancies: number;
   starters: Starter[] | string;
