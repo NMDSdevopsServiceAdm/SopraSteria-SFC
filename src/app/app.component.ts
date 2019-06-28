@@ -1,10 +1,12 @@
 import 'core-js';
 
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, enableProdMode, OnInit, ViewChild } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TitleService } from '@core/services/title.service';
 import { Angulartics2GoogleGlobalSiteTag } from 'angulartics2/gst';
 import { filter } from 'rxjs/operators';
+
+enableProdMode();
 
 @Component({
   selector: 'app-root',
