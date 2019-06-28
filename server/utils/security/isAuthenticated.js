@@ -84,7 +84,6 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
         if (isAuthorised === false && claim.isParent) {
 
           try {
-            console.log("WA DEBUG - looking up requested establishment's permissions for this parent: ", claim.EstblishmentId, req.params.id)
             let findEstablishmentWhereClause = {
               parentId: claim.EstblishmentId,
             };
