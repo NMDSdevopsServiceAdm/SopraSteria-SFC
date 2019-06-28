@@ -41,7 +41,7 @@
   </thead>
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let worker of workers">
-      <td class="govuk-table__cell">
+      <td class="govuk-table__cell" scope="row">
         <a [routerLink]="['/worker', worker.uid]">{{ worker.nameOrId }}</a>
       </td>
       <td class="govuk-table__cell">{{ worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title }}</td>
