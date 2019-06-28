@@ -375,19 +375,6 @@ class Worker {
     const statusValues = ['DELETE', 'UPDATE', 'UNCHECKED', 'NOCHANGE', 'NEW','CHGSUB'];
     const myStatus = this._currentLine.STATUS ? this._currentLine.STATUS.toUpperCase() : this._currentLine.STATUS;
 
-    if (!myStatus) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.STATUS_ERROR,
-        errType: `STATUS_ERROR`,
-        error: `You have not supplied a correct status`,
-        source: this._currentLine.STATUS,
-      });
-      return false;
-    }
-
     // must be present and must be one of the preset values (case insensitive)
     if (!statusValues.includes(myStatus)) {
       this._validationErrors.push({
@@ -396,7 +383,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.STATUS_ERROR,
         errType: `STATUS_ERROR`,
-        error: `The status you have supplied is incorrect`,
+        error: `Status (STATUS) must be one of: ${statusValues}`,
         source: this._currentLine.STATUS,
       });
       return false;
