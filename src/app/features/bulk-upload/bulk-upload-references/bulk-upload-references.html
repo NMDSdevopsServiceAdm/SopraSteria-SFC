@@ -28,7 +28,9 @@ TODO check if needed -->
       [formGroup]="form"
       id="server-error"
     >
-      <div class="govuk__grid govuk__reference-grid-container govuk__align-items-center">
+      <div
+        class="govuk__grid govuk__reference-grid-container govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk__align-items-center"
+      >
         <p class="govuk-!-margin-bottom-0"><strong>{{ columnOneLabel }}</strong></p>
         <p class="govuk-!-margin-bottom-0">
           <strong>{{ columnTwoLabel }}</strong>
@@ -36,23 +38,21 @@ TODO check if needed -->
       </div>
 
       <div
-        class="govuk-form-group govuk-!-margin-bottom-0 govuk__grid govuk__reference-grid-container"
+        class="govuk-form-group govuk-!-margin-bottom-0 govuk__grid govuk__reference-grid-container govuk-!-padding-top-2 govuk-!-padding-bottom-2 govuk__align-items-center"
         *ngFor="let reference of references"
         [class.govuk-form-group--error]="form.get('name-' + reference.uid).errors && submitted"
-        [ngClass]="form.get('name-' + reference.uid).errors && submitted ? 'govuk__align-items-end' : 'govuk__align-items-center'"
+        [ngClass]="form.get('name-' + reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'"
       >
-        <div class="govuk__grid" [class.govuk__reference-grid-has-error]="form.get('name-' + reference.uid).errors && submitted">
-          <label class="govuk-label govuk-!-margin-bottom-0" for="name-{{ reference.uid }}">
-            {{ reference.name }}
-          </label>
-          <span
-            id="name-{{ reference.uid }}-error"
-            class="govuk-error-message govuk__reference-grid-error-msg"
-            *ngIf="form.get('name-' + reference.uid).errors && submitted"
-          >
-            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('name-' + reference.uid) }}
-          </span>
-        </div>
+        <label class="govuk-label govuk-!-margin-bottom-0" for="name-{{ reference.uid }}">
+          {{ reference.name }}
+        </label>
+        <span
+          id="name-{{ reference.uid }}-error"
+          class="govuk-error-message govuk__grid-row-start-1 govuk__reference-grid-error"
+          *ngIf="form.get('name-' + reference.uid).errors && submitted"
+        >
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('name-' + reference.uid) }}
+        </span>
         <input
           class="govuk-input"
           [class.govuk-input--error]="form.get('name-' + reference.uid).errors && submitted"

@@ -1,0 +1,28 @@
+.govuk__grid {
+  display: grid;
+  column-gap: $govuk-gutter-half;
+}
+
+.govuk__grid-one-row {
+  grid-template-rows: auto;
+}
+
+.govuk__grid-row-start-1 {
+  grid-row-start: 1;
+}
+
+.govuk__grid-two-rows {
+  grid-template-rows: auto auto;
+}
+
+.govuk__align-items-center {
+  align-items: center;
+}
+
+.govuk__align-items-end {
+  align-items: end;
+}
+
+.govuk__justify-self-end {
+  justify-self: end;
+}
