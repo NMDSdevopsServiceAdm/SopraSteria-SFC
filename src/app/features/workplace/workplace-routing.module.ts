@@ -41,7 +41,7 @@ const routes: Routes = [
       {
         path: '',
         component: ViewWorkplaceComponent,
-        data: { title: 'View Work Place' },
+        data: { title: 'View Workplace' },
       },
       {
         path: 'start',

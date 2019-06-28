@@ -24,7 +24,6 @@ import { ViewWorkplaceComponent } from './view-workplace/view-workplace.componen
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { WorkplaceResolver } from './workplace.resolver';
 import { StartComponent } from './start/start.component';
-import { WorkplaceSubTabComponent } from './view-workplace/workplace-sub-tab/workplace-sub-tab.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkplaceRoutingModule],
@@ -47,7 +46,6 @@ import { WorkplaceSubTabComponent } from './view-workplace/workplace-sub-tab/wor
     VacanciesComponent,
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
-    WorkplaceSubTabComponent,
     StartComponent,
   ],
   providers: [WorkplaceResolver],

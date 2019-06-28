@@ -4,7 +4,7 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">
       <span *ngIf="parentEstablishment?.name" class="govuk-caption-xl">{{ parentEstablishment.name }}</span>
-      {{ subWorkPlace.name }}
+      {{ workplace.name }}
     </h1>
   </div>
 
@@ -17,7 +17,7 @@
   <div class="govuk-grid-column-full">
     <app-tabs>
       <app-tab [title]="'Workplace'">
-        <app-workplace-sub-tab [workplace]="subWorkPlace"></app-workplace-sub-tab>
+        <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
       </app-tab>
 
       <app-tab [title]="'Staff records'" *ngIf="checkPermission()">
