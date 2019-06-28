@@ -62,13 +62,14 @@
       </td>
       <td *ngIf="displayWDFReport" class="govuk-table__cell">
         <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
-        <ng-container *ngIf="worker.wdfEligible"
-          ><img class="govuk-util__relative-top-1" src="/assets/images/tick-icon.svg" /> Meeting criteria</ng-container
-        >
-        <ng-container *ngIf="!worker.wdfEligible"
-          ><img class="govuk-util__relative-top-1" src="/assets/images/cross-icon.svg" /> Not meeting
-          criteria</ng-container
-        >
+        <ng-container *ngIf="worker.wdfEligible">
+          <img class="govuk-util__relative-top-1" src="/assets/images/tick-icon.svg" alt="" />
+          Meeting criteria
+        </ng-container>
+        <ng-container *ngIf="!worker.wdfEligible">
+          <img class="govuk-util__relative-top-1" src="/assets/images/cross-icon.svg" alt="" />
+          Not meeting criteria
+        </ng-container>
       </td>
     </tr>
   </tbody>
