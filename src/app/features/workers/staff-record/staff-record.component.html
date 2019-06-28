@@ -45,7 +45,7 @@
   </div>
 
   <app-tabs>
-    <app-tab title="Staff Record">
+    <app-tab [title]="'Staff Record'">
       <app-basic-record [worker]="worker" [return]="returnToRecord" [reportDetails]="reportDetails"></app-basic-record>
       <app-personal-details
         [worker]="worker"
@@ -54,7 +54,7 @@
       ></app-personal-details>
       <app-employment [worker]="worker" [return]="returnToRecord" [reportDetails]="reportDetails"></app-employment>
     </app-tab>
-    <app-tab title="Qualifications and training">
+    [<app-tab [title]="'Qualifications and training'">
       <app-qualifications-and-training
         [worker]="worker"
         [return]="returnToQuals"
