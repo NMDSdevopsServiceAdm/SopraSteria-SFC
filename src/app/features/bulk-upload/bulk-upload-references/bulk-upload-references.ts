@@ -18,7 +18,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
-  public workplaces: Workplace[] = []; // TODO rename workplaces variable to something generic
+  public references: Workplace[] = [];
 
   constructor(
     protected authService: AuthService,
@@ -30,21 +30,21 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setupForm();
-    this.getEstablishments();
+    this.getReferences();
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({});
   }
 
-  private getEstablishments(): void {
+  private getReferences(): void {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe((workplaces: GetWorkplacesResponse) => {
         console.log(workplaces);
         if (workplaces) {
           this.primaryEstablishmentName = workplaces.primary ? workplaces.primary.name : null;
-          this.workplaces = workplaces.subsidaries ? workplaces.subsidaries.establishments : [];
-          if (this.workplaces.length) {
+          this.references = workplaces.subsidaries ? workplaces.subsidaries.establishments : [];
+          if (this.references.length) {
             this.updateForm();
           }
         }
@@ -53,7 +53,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   }
 
   private updateForm(): void {
-    this.workplaces.forEach((workplace: Workplace) => {
+    this.references.forEach((workplace: Workplace) => {
       this.form.addControl(`name-${workplace.uid}`, new FormControl(null, [Validators.required]));
 
       this.formErrorsMap.push({

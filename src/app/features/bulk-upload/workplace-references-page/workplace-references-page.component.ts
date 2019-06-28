@@ -10,6 +10,7 @@ import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-referenc
 @Component({
   selector: 'app-workplace-references-page',
   templateUrl: '../bulk-upload-references/bulk-upload-references.html',
+  styleUrls: ['../bulk-upload-references/bulk-upload-references.scss'],
 })
 export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   // TODO check if needed
