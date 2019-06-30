@@ -12,7 +12,7 @@
   </div>
 </div>
 
-<app-status *ngIf="createStaffResponse" title="&#10003; Success.">
+<app-status *ngIf="createStaffResponse" [title]="'&#10003; Success.'">
   {{
     createStaffResponse
       | i18nPlural
