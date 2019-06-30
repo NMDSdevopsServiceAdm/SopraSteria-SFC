@@ -22,7 +22,12 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.setKeyboardFocus();
     if (this.form) {
-      this.subscriptions.add(this.errorSummaryService.syncFormErrorsEvent.subscribe(() => this.getFormErrors()));
+      this.subscriptions.add(
+        this.errorSummaryService.syncFormErrorsEvent.subscribe(() => {
+          this.getFormErrors();
+          this.setKeyboardFocus();
+        })
+      );
       this.subscriptions.add(this.form.valueChanges.subscribe(() => this.getFormErrors()));
     }
   }
