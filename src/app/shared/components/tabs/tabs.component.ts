@@ -34,6 +34,7 @@ export class TabsComponent implements AfterContentInit {
 
   public onKeyUp(event: KeyboardEvent) {
     switch (event.key) {
+      case 'Right':
       case 'ArrowRight':
         if (this.currentTab === this.tabs.length - 1) {
           this.selectTab(event, 0);
@@ -41,6 +42,7 @@ export class TabsComponent implements AfterContentInit {
           this.selectTab(event, this.currentTab + 1);
         }
         break;
+      case 'Left':
       case 'ArrowLeft':
         if (this.currentTab === 0) {
           this.selectTab(event, this.tabs.length - 1);
