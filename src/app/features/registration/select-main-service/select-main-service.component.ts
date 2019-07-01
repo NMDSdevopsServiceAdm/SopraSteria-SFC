@@ -36,7 +36,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     private registrationService: RegistrationService,
     private router: Router,
     private workplaceService: WorkplaceService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.setupForm();
@@ -195,7 +195,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   }
 
   private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
+    this.backService.setBackLink({ url: ['/registration/select-workplace-address'] });
   }
 
   ngOnDestroy() {

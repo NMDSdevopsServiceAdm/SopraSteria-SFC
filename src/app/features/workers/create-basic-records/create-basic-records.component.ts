@@ -130,7 +130,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.renderer
         .selectRootElement(`#staffRecord_${index}`, true)
-        .scrollIntoView({ behavior: 'smooth'});
+        .scrollIntoView({ behavior: 'smooth' });
     });
   }
 
