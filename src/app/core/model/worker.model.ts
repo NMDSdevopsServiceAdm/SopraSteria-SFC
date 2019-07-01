@@ -85,3 +85,11 @@ export interface Worker {
   updated?: string;
   completed?: boolean;
 }
+
+export interface WorkersResponse {
+  workers: Worker[];
+}
+
+export interface WorkerEditResponse {
+  uid: string;
+}

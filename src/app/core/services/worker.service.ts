@@ -13,12 +13,8 @@ import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { Worker } from '../model/worker.model';
+import { Worker, WorkerEditResponse, WorkersResponse } from '../model/worker.model';
 import { EstablishmentService } from './establishment.service';
-
-interface WorkersResponse {
-  workers: Array<Worker>;
-}
 
 export interface Reason {
   id: number;
@@ -27,10 +23,6 @@ export interface Reason {
 
 interface LeaveReasonsResponse {
   reasons: Array<Reason>;
-}
-
-export interface WorkerEditResponse {
-  uid: string;
 }
 
 @Injectable({

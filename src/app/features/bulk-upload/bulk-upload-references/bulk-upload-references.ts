@@ -5,9 +5,9 @@ import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
+import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 export class BulkUploadReferences implements OnInit, OnDestroy {
@@ -15,7 +15,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public form: FormGroup;
   public formErrorsMap: ErrorDetails[] = []; // TODO look at generic error messages
   public primaryEstablishmentName: string;
-  public references: Workplace[] = []; // TODO update to Workplace[] | StaffRecord[]
+  public references: Array<Workplace | Worker> = [];
   public referenceType: string;
   public return: URLStructure;
   public serverError: string;
@@ -27,7 +27,6 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
-    protected userService: UserService
   ) {}
 
   ngOnInit() {
@@ -35,6 +34,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     this.setupForm();
     this.getReferences();
     this.setPrimaryEstablishmentName();
+    this.setServerErrors();
   }
 
   protected init() {}
@@ -50,7 +50,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   protected getReferences(): void {}
 
   protected updateForm(): void {
-    this.references.forEach((reference: Workplace) => {
+    this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
         `name-${reference.uid}`,
         new FormControl(null, [Validators.required, this.uniqueValidator.bind(this)])
@@ -70,6 +70,15 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
         ],
       });
     });
+  }
+
+  private setServerErrors() {
+    this.serverErrorsMap = [
+      {
+        name: 503,
+        message: 'Service unavailable.',
+      },
+    ];
   }
 
   protected onError(error: HttpErrorResponse): void {

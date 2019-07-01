@@ -27,9 +27,9 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
-    protected userService: UserService
+    private userService: UserService
   ) {
-    super(authService, router, formBuilder, errorSummaryService, userService);
+    super(authService, router, formBuilder, errorSummaryService);
   }
 
   /** TODO check if needed
@@ -39,21 +39,12 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   }
    **/
 
-  protected init() {
-    this.serverErrorsMap = [
-      {
-        name: 503,
-        message: 'Service unavailable.',
-      },
-    ];
-  }
-
   protected getReferences(): void {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
-        (workplaces: GetWorkplacesResponse) => {
-          if (workplaces) {
-            this.references = workplaces.subsidaries ? workplaces.subsidaries.establishments : [];
+        (references: GetWorkplacesResponse) => {
+          if (references) {
+            this.references = references.subsidaries ? references.subsidaries.establishments : [];
             if (this.references.length) {
               this.updateForm();
             }
