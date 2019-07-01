@@ -30,7 +30,6 @@ export class TabsComponent implements AfterContentInit {
     if (activeTabs.length === 0) {
       this.selectTab(null, 0);
     }
-    console.log(this.tablist);
   }
 
   public onKeyUp(event: KeyboardEvent) {
