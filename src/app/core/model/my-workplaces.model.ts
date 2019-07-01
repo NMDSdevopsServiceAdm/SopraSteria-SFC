@@ -7,13 +7,17 @@ export interface GetWorkplacesResponse {
 }
 
 export interface Workplace {
-  dataOwner: string;
+  dataOwner: WorkplaceDataOwner;
   mainService: string;
   name: string;
-  parentPermissions: string;
+  parentPermissions: ParentPermissions;
   parentUid: string;
   uid: string;
   updated: string;
+}
+
+export enum WorkplaceDataOwner {
+  Parent = 'Parent',
 }
 
 export enum ParentPermissions {
