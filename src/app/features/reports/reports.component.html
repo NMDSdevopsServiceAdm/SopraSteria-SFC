@@ -31,19 +31,19 @@
         <legend *ngIf="label">Update eligibility date</legend>
         <label class="date mb-0"
           >Date
-          <input type="text" formControlName="date" class="form-control" placeholder="2019-03-01" />
+          <input type="text" [formControlName]="'date'" class="form-control" placeholder="2019-03-01" />
         </label>
         <label class="hour mb-0"
           >Hour
-          <input type="text" formControlName="hour" class="form-control" placeholder="12" />
+          <input type="text" [formControlName]="'hour'" class="form-control" placeholder="12" />
         </label>
         <label class="minute mb-0"
           >Minute
-          <input type="text" formControlName="minute" class="form-control" placeholder="30" />
+          <input type="text" [formControlName]="'minute'" class="form-control" placeholder="30" />
         </label>
         <label class="second mb-0"
           >Second
-          <input type="text" formControlName="second" class="form-control" placeholder="00.000" />
+          <input type="text" [formControlName]="'second'" class="form-control" placeholder="00.000" />
         </label>
       </fieldset>
     </div>

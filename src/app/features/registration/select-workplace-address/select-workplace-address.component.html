@@ -29,7 +29,7 @@
         <select
           class="govuk-select"
           [class.govuk-select--error]="submitted && getAddress.errors"
-          formControlName="address"
+          [formControlName]="'address'"
           id="address"
           name="address"
           (change)="onLocationChange($event.target.value)"

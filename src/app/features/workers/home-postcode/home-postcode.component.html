@@ -18,7 +18,7 @@
     <input
       class="govuk-input govuk-input--width-10"
       [class.govuk-input--error]="submitted && form.get('postcode').invalid"
-      formControlName="postcode"
+      [formControlName]="'postcode'"
       id="postcode"
       name="postcode"
       type="text"

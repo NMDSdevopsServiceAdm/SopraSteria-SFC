@@ -27,7 +27,7 @@
         </span>
         <input
           class="govuk-input"
-          formControlName="fullName"
+          [formControlName]="'fullName'"
           id="fullName"
           name="fullName"
           [class.govuk-input--error]="submitted && getFullName.errors"
@@ -50,7 +50,7 @@
         </span>
         <input
           class="govuk-input"
-          formControlName="jobTitle"
+          [formControlName]="'jobTitle'"
           id="jobTitle"
           name="jobTitle"
           [class.govuk-input--error]="submitted && getJobTitle.errors"
@@ -76,7 +76,7 @@
         </span>
         <input
           class="govuk-input"
-          formControlName="email"
+          [formControlName]="'email'"
           id="email"
           name="email"
           [class.govuk-input--error]="submitted && getEmail.errors"
@@ -99,7 +99,7 @@
          </span>
         <input
           class="govuk-input"
-          formControlName="phone"
+          [formControlName]="'phone'"
           id="phone"
           name="phone"
           [class.govuk-input--error]="submitted && getPhone.errors"

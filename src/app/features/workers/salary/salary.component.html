@@ -11,7 +11,7 @@
       <div class="govuk-radios__item">
         <input
           class="govuk-radios__input"
-          formControlName="terms"
+          [formControlName]="'terms'"
           id="terms-conditional-1"
           name="terms"
           type="radio"
@@ -52,7 +52,7 @@
             <input
               class="govuk-input govuk-date-input__input govuk-input--width-4"
               [class.govuk-input--error]="submitted && form.get('hourlyRate').invalid"
-              formControlName="hourlyRate"
+              [formControlName]="'hourlyRate'"
               id="hourlyRate"
               name="hourlyRate"
               type="number"
@@ -66,7 +66,7 @@
       <div class="govuk-radios__item">
         <input
           class="govuk-radios__input"
-          formControlName="terms"
+          [formControlName]="'terms'"
           id="terms-conditional-2"
           name="terms"
           type="radio"
@@ -107,7 +107,7 @@
             <input
               class="govuk-input govuk-date-input__input govuk-input--width-5"
               [class.govuk-input--error]="submitted && form.get('annualRate').invalid"
-              formControlName="annualRate"
+              [formControlName]="'annualRate'"
               id="annualRate"
               name="annualRate"
               type="number"
@@ -121,7 +121,7 @@
       <div class="govuk-radios__item">
         <input
           class="govuk-radios__input"
-          formControlName="terms"
+          [formControlName]="'terms'"
           id="terms-3"
           name="terms"
           type="radio"

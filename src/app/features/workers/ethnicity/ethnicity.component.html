@@ -14,7 +14,7 @@
     <select
       class="govuk-select"
       [class.govuk-select--error]="submitted && form.get('ethnicity').invalid"
-      formControlName="ethnicity"
+      [formControlName]="'ethnicity'"
       id="ethnicity"
       name="ethnicity"
     >

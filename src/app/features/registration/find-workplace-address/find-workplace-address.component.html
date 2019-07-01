@@ -26,7 +26,7 @@
         </span>
         <input
           class="govuk-input govuk-input--width-10"
-          formControlName="postcode"
+          [formControlName]="'postcode'"
           id="postcode"
           name="postcode"
           [class.govuk-input--error]="submitted && getPostcode.errors"

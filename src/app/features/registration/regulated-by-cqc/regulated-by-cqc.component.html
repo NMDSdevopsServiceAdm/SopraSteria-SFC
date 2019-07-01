@@ -31,7 +31,7 @@
                 name="regulatedByCQC"
                 type="radio"
                 value="yes"
-                formControlName="regulatedByCQC"
+                [formControlName]="'regulatedByCQC'"
               />
               <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
                 Yes
@@ -64,7 +64,7 @@
                     id="regulatedPostcode"
                     name="regulatedPostcode"
                     type="text"
-                    formControlName="regulatedPostcode"
+                    [formControlName]="'regulatedPostcode'"
                     [class.govuk-input--error]="submitted && (regulatedPostcode.errors || group.errors)"
                     spellcheck="false"
                   />
@@ -87,7 +87,7 @@
                     id="locationId"
                     name="locationId"
                     type="text"
-                    formControlName="locationId"
+                    [formControlName]="'locationId'"
                     [class.govuk-input--error]="submitted && (locationId.errors || group.errors)"
                     spellcheck="false"
                   />
@@ -104,7 +104,7 @@
                 name="regulatedByCQC"
                 type="radio"
                 value="no"
-                formControlName="regulatedByCQC"
+                [formControlName]="'regulatedByCQC'"
               />
               <label class="govuk-label govuk-radios__label" for="regulatedByCQC-2">
                 No
@@ -140,7 +140,7 @@
                   id="nonRegulatedPostcode"
                   name="nonRegulatedPostcode"
                   type="text"
-                  formControlName="nonRegulatedPostcode"
+                  [formControlName]="'nonRegulatedPostcode'"
                   [class.govuk-input--error]="submitted && nonRegulatedPostcode.errors"
                   spellcheck="false"
                 />

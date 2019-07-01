@@ -38,7 +38,7 @@
         </span>
         <input
           class="govuk-input"
-          formControlName="username"
+          [formControlName]="'username'"
           id="username"
           name="username"
           [class.govuk-input--error]="submitted && getUsername.errors"
@@ -66,7 +66,7 @@
           <input
             aria-describedby="createPasswordInput-hint"
             class="govuk-input"
-            formControlName="createPasswordInput"
+            [formControlName]="'createPasswordInput'"
             id="createPasswordInput"
             name="createPasswordInput"
             [class.govuk-input--error]="submitted && getPassword.errors"
@@ -92,7 +92,7 @@
           </span>
           <input
             class="govuk-input"
-            formControlName="confirmPasswordInput"
+            [formControlName]="'confirmPasswordInput'"
             id="confirmPasswordInput"
             name="confirmPasswordInput"
             [class.govuk-input--error]="submitted && getConfirmPassword.errors"

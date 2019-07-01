@@ -17,7 +17,7 @@
     <div class="govuk-checkboxes__item">
       <input
         class="govuk-checkboxes__input"
-        formControlName="primaryAuthority"
+        [formControlName]="'primaryAuthority'"
         id="primaryAuthority"
         type="checkbox"
         aria-describedby="primaryAuthority-hint"
@@ -40,7 +40,7 @@
     >
       <select
         class="govuk-select"
-        formControlName="custodianCode"
+        [formControlName]="'custodianCode'"
         id="localAuthorities-{{ i }}"
         name="custodianCode">
         <option [ngValue]="null">Select Local Authority</option>

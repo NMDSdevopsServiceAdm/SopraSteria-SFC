@@ -66,7 +66,7 @@ TODO check if needed -->
           id="name-{{ reference.uid }}"
           name="name-{{ reference.uid }}"
           type="text"
-          formControlName="name-{{ reference.uid }}"
+          [formControlName]="'name-' + reference.uid"
         />
         <p class="govuk-!-margin-bottom-0 govuk__justify-self-end"><a href="">Staff references</a></p>
       </div>

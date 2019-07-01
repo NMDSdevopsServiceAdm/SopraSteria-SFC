@@ -30,7 +30,7 @@
       <input
         aria-describedby="createPasswordInput-hint"
         class="govuk-input"
-        formControlName="createPasswordInput"
+        [formControlName]="'createPasswordInput'"
         id="createPasswordInput"
         name="createPasswordInput"
         [ngClass]="{ 'govuk-input--error': submitted && getPasswordInput.errors }"
@@ -56,7 +56,7 @@
       </span>
       <input
         class="govuk-input"
-        formControlName="confirmPasswordInput"
+        [formControlName]="'confirmPasswordInput'"
         id="confirmPasswordInput"
         name="confirmPasswordInput"
         [class.govuk-input--error]="submitted && getConfirmPasswordInput.errors"

@@ -32,7 +32,7 @@
               id="doingWhat"
               name="doingWhat"
               rows="6"
-              formControlName="doingWhat"
+              [formControlName]="'doingWhat'"
             ></textarea>
           </div>
           <app-character-count [max]="doingWhatCharacterLimit" [control]="form.get('doingWhat')"></app-character-count>
@@ -58,7 +58,7 @@
               id="tellUs"
               name="tellUs"
               rows="6"
-              formControlName="tellUs"
+              [formControlName]="'tellUs'"
             ></textarea>
           </div>
           <app-character-count [max]="tellUsCharactersLimit" [control]="form.get('tellUs')"></app-character-count>
@@ -86,7 +86,7 @@
             name="fullname"
             type="text"
             aria-describedby="fullname-hint"
-            formControlName="fullname"
+            [formControlName]="'fullname'"
           />
         </div>
 
@@ -115,7 +115,7 @@
             aria-describedby="email-hint"
             autocomplete="email"
             spellcheck="false"
-            formControlName="email"
+            [formControlName]="'email'"
           />
         </div>
 

@@ -6,7 +6,7 @@
     <label class="govuk-label" for="reason">
       Select a reason
     </label>
-    <select class="govuk-select" formControlName="reason" id="reason" name="reason">
+    <select class="govuk-select" [formControlName]="'reason'" id="reason" name="reason">
       <option [ngValue]="null">Select Reason</option>
       <option *ngFor="let reason of reasons" [value]="reason.id">
         {{ reason.reason }}
@@ -26,7 +26,7 @@
       <textarea
         class="govuk-textarea"
         [class.govuk-textarea--error]="submitted && form.get('details').invalid"
-        formControlName="details"
+        [formControlName]="'details'"
         id="details"
         name="details"
         rows="5"

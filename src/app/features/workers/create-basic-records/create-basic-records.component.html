@@ -60,7 +60,7 @@
             <input
               class="govuk-input govuk-input--width-20"
               [class.govuk-input--error]="staffRecord.get('nameOrId').invalid && staffRecord.get('nameOrId').touched"
-              formControlName="nameOrId"
+              [formControlName]="'nameOrId'"
               id="nameOrId-{{ i }}"
               type="text"
             />
@@ -87,7 +87,7 @@
               [class.govuk-select--error]="
                 staffRecord.get('mainJobRole').invalid && staffRecord.get('mainJobRole').touched
               "
-              formControlName="mainJobRole"
+              [formControlName]="'mainJobRole'"
               id="mainJobRole-{{ i }}"
             >
               <option [ngValue]="null">Select Main Job Role</option>
@@ -120,7 +120,7 @@
             </span>
             <input
               class="govuk-input govuk-input--width-20"
-              formControlName="otherJobRole"
+              [formControlName]="'otherJobRole'"
               id="otherJobRole-conditional"
               name="otherJobRole"
               type="text"
@@ -149,7 +149,7 @@
               <div class="govuk-radios__item" *ngFor="let contract of contracts; let idx = index">
                 <input
                   class="govuk-radios__input"
-                  formControlName="contract"
+                  [formControlName]="'contract'"
                   id="contract-{{ i }}-{{ idx }}"
                   type="radio"
                   [value]="contract"

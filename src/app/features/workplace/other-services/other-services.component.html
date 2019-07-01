@@ -55,7 +55,7 @@
                     id="additionalOtherService-{{ service.id }}"
                     name="additionalOtherService"
                     type="text"
-                    formControlName="additionalOtherService{{ service.id }}"
+                    [formControlName]="'additionalOtherService' + service.id"
                     [class.govuk-input--error]="submitted && form.get('additionalOtherService' + service.id).errors"
                     spellcheck="false"
                   />

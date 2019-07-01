@@ -32,7 +32,7 @@
         </span>
         <input
           class="govuk-input"
-          formControlName="securityQuestionInput"
+          [formControlName]="'securityQuestionInput'"
           id="securityQuestionInput"
           name="securityQuestionInput"
           [class.govuk-input--error]="submitted && getSecurityQuestionInput.errors"
@@ -59,7 +59,7 @@
         </span>
         <input
           class="govuk-input"
-          formControlName="securityAnswerInput"
+          [formControlName]="'securityAnswerInput'"
           id="securityAnswerInput"
           name="securityAnswerInput"
           [class.govuk-input--error]="submitted && getSecurityAnswerInput.errors"

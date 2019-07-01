@@ -38,7 +38,7 @@
     <select
       class="govuk-select"
       [class.govuk-select--error]="submitted && form.get('qualification').invalid"
-      formControlName="qualification"
+      [formControlName]="'qualification'"
       id="qualification"
       name="qualification"
     >

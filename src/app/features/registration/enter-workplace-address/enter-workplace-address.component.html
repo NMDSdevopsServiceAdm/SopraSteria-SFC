@@ -20,7 +20,7 @@
         </span>
         <input
           class="govuk-input govuk-!-width-one-quarter"
-          formControlName="postcode"
+          [formControlName]="'postcode'"
           id="postcode"
           name="postcode"
           [class.govuk-input--error]="submitted && getPostcode.errors"
@@ -43,7 +43,7 @@
         </span>
         <input
           class="govuk-input govuk-!-width-three-quarters"
-          formControlName="address1"
+          [formControlName]="'address1'"
           id="address1"
           name="address1"
           [class.govuk-input--error]="submitted && getAddress1.errors"
@@ -66,7 +66,7 @@
         </span>
         <input
           class="govuk-input govuk-!-width-three-quarters"
-          formControlName="address2"
+          [formControlName]="'address2'"
           id="address2"
           name="address2"
           [class.govuk-input--error]="submitted && getAddress2.errors"
@@ -89,7 +89,7 @@
         </span>
         <input
           class="govuk-input govuk-!-width-one-half"
-          formControlName="townOrCity"
+          [formControlName]="'townOrCity'"
           id="townOrCity"
           name="townOrCity"
           [class.govuk-input--error]="submitted && getTownCity.errors"
@@ -112,7 +112,7 @@
         </span>
         <input
           class="govuk-input govuk-!-width-one-half"
-          formControlName="county"
+          [formControlName]="'county'"
           id="county"
           name="county"
           [class.govuk-input--error]="submitted && getCounty.errors"
@@ -136,7 +136,7 @@
         </span>
         <input
           class="govuk-input govuk-!-width-three-quarters"
-          formControlName="workplaceName"
+          [formControlName]="'workplaceName'"
           id="workplaceName"
           name="workplaceName"
           [class.govuk-input--error]="submitted && getWorkplaceName.errors"
