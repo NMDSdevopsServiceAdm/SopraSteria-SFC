@@ -1,22 +1,33 @@
-<app-error-summary
-  *ngIf="submitted && form.invalid"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
->
-</app-error-summary>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
     <h1 class="govuk-heading-l">What is your workplace address?</h1>
+  </div>
+</div>
 
-    <p class="govuk-!-margin-bottom-2">
-      <strong>Postcode</strong>
-    </p>
-    <p class="govuk-!-margin-bottom-6">
-      <strong>{{ enteredPostcode }}</strong>
-      <a [routerLink]="['/registration/find-workplace-address']" class="govuk-!-margin-left-6">Change</a>
-    </p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half-from-desktop">
+    <dl class="govuk-summary-list govuk-summary-list--no-border">
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Postcode
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ enteredPostcode }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="['/registration/find-workplace-address']">
+            Change<span class="govuk-visually-hidden"> postcode</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</div>
 
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
     <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress.errors">
         <label class="govuk-label" for="address">
@@ -35,10 +46,7 @@
           (change)="onLocationChange($event.target.value)"
         >
           <option [value]="">{{ locationAddresses.length }} addresses found</option>
-          <option
-            *ngFor="let location of locationAddresses"
-            [value]="location.addressLine1"
-          >
+          <option *ngFor="let location of locationAddresses" [value]="location.addressLine1">
             {{ getLocationName(location) }}
           </option>
         </select>
