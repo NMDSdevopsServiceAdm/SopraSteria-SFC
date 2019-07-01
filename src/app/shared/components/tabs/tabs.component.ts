@@ -21,14 +21,14 @@ export class TabsComponent implements AfterContentInit {
     if (hash) {
       const activeTab = this.tabs.toArray().findIndex(tab => tab.slug === hash);
       if (activeTab) {
-        this.selectTab(null, activeTab);
+        this.selectTab(null, activeTab, false);
       }
     }
 
     const activeTabs = this.tabs.filter(tab => tab.active);
 
     if (activeTabs.length === 0) {
-      this.selectTab(null, 0);
+      this.selectTab(null, 0, false);
     }
   }
 
@@ -62,7 +62,7 @@ export class TabsComponent implements AfterContentInit {
     }
   }
 
-  public selectTab(event: Event, index: number) {
+  public selectTab(event: Event, index: number, focus: boolean = true) {
     if (event) {
       event.preventDefault();
     }
@@ -73,9 +73,12 @@ export class TabsComponent implements AfterContentInit {
     this.unselectTabs();
     tab.active = true;
     this.location.replaceState(`${this.location.path()}#${tab.slug}`);
-    setTimeout(() => {
-      this.tablist.nativeElement.querySelector('.govuk-tabs__tab--selected').focus();
-    });
+
+    if (focus) {
+      setTimeout(() => {
+        this.tablist.nativeElement.querySelector('.govuk-tabs__tab--selected').focus();
+      });
+    }
   }
 
   private unselectTabs() {
