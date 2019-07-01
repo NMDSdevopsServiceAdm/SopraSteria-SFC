@@ -64,6 +64,7 @@ const routes: Routes = [
   {
     path: 'basic-records-start-screen',
     component: CreateBasicRecordsStartScreenComponent,
+    data: { title: 'Create Basic Records Start' },
   },
   {
     path: 'create-basic-records',
