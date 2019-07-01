@@ -1,4 +1,4 @@
-<div tabindex="-1" #top>
+<div tabindex="-1" #top class="govuk-util__no-focus">
   <a class="govuk-skip-link" href="#main-content" (click)="skip($event)">Skip to main content</a>
   <app-header></app-header>
 
@@ -13,7 +13,13 @@
     <app-back-link></app-back-link>
     <app-alert></app-alert>
 
-    <main id="main-content" class="govuk-main-wrapper app-main-class" #content role="main" tabindex="-1">
+    <main
+      id="main-content"
+      class="govuk-main-wrapper app-main-class govuk-util__no-focus"
+      #content
+      role="main"
+      tabindex="-1"
+    >
       <router-outlet></router-outlet>
     </main>
   </div>
