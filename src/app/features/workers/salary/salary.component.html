@@ -37,15 +37,15 @@
           <span *ngIf="submitted && form.get('hourlyRate').errors" id="hourlyRate-error" class="govuk-error-message">
             <ng-container *ngIf="form.get('hourlyRate').hasError('required')">
               <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('hourlyRate', 'required') }}
+              <span [innerHTML]="getFormErrorMessage('hourlyRate', 'required')"></span>
             </ng-container>
             <ng-container *ngIf="form.get('hourlyRate').hasError('min')">
               <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('hourlyRate', 'min') }}
+              <span [innerHTML]="getFormErrorMessage('hourlyRate', 'min')"></span>
             </ng-container>
             <ng-container *ngIf="form.get('hourlyRate').hasError('max')">
               <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('hourlyRate', 'max') }}
+              <span [innerHTML]="getFormErrorMessage('hourlyRate', 'max')"></span>
             </ng-container>
           </span>
           <span class="govuk-input__currency">
