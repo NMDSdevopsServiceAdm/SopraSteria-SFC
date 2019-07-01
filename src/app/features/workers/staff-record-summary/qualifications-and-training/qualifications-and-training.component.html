@@ -1,4 +1,30 @@
-<h2 class="govuk-heading-m">Qualifications and training</h2>
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+  <div class="govuk-grid-column-one-half-from-desktop">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-8">Qualifications and training</h2>
+  </div>
+  <div class="govuk-grid-column-one-half-from-desktop govuk-util__align-right">
+    <a
+      class="govuk-button govuk-button--secondary govuk-!-margin-right-4"
+      [routerLink]="['/worker', worker.uid, 'add-qualification']"
+      role="button"
+      draggable="false"
+    >
+      Add a qualification
+    </a>
+    <a
+      class="govuk-button govuk-button--secondary"
+      [routerLink]="['/worker', worker.uid, 'add-training']"
+      role="button"
+      draggable="false"
+    >
+      Add training
+    </a>
+    <p class="govuk-caption-m">
+      Adding additional qualifications or training is optional.
+    </p>
+  </div>
+</div>
+
 <dl class="govuk-summary-list govuk-summary-list--top-border">
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">

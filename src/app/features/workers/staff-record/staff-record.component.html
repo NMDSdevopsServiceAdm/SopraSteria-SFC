@@ -54,34 +54,12 @@
       ></app-personal-details>
       <app-employment [worker]="worker" [return]="returnToRecord" [reportDetails]="reportDetails"></app-employment>
     </app-tab>
-    [<app-tab [title]="'Qualifications and training'">
+    <app-tab [title]="'Qualifications and training'">
       <app-qualifications-and-training
         [worker]="worker"
         [return]="returnToQuals"
         [reportDetails]="reportDetails"
       ></app-qualifications-and-training>
-      <p>
-        <img src="/assets/images/icon-information.svg" alt="" />
-        Adding additional qualifications or training is optional.
-      </p>
-      <p>
-        <a
-          [routerLink]="['/worker', worker.uid, 'add-qualification']"
-          role="button"
-          draggable="false"
-          class="govuk-button govuk-button--secondary govuk-!-margin-right-8"
-        >
-          Add a qualification
-        </a>
-        <a
-          [routerLink]="['/worker', worker.uid, 'add-training']"
-          role="button"
-          draggable="false"
-          class="govuk-button govuk-button--secondary"
-        >
-          Add training
-        </a>
-      </p>
       <app-qualifications [worker]="worker"></app-qualifications>
       <app-training [worker]="worker"></app-training>
     </app-tab>
