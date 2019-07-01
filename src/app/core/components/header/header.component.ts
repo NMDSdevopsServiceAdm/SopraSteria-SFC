@@ -8,12 +8,11 @@ import { IdleService } from '@core/services/idle.service';
 })
 export class HeaderComponent implements OnInit {
   public fullname: string;
-  public showDropdown: boolean;
+  public showDropdown = false;
 
   constructor(private authService: AuthService, private idleService: IdleService) {}
 
   ngOnInit() {
-    this.showDropdown = false;
     this.fullname = this.authService.fullname ? this.authService.fullname.split(' ')[0] : null;
   }
 
