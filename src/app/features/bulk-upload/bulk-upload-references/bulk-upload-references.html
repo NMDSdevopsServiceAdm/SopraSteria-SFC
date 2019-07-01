@@ -38,6 +38,8 @@ TODO check if needed -->
       <div
         class="govuk__grid govuk__grid-container"
       >
+        <h2 class="govuk-heading-m govuk__reference-subsidiary-name">Collingwood Grange</h2>
+        <p class="govuk-!-margin-0 govuk__justify-self-end"><strong>8</strong> workplaces remaining</p>
         <p class="govuk-!-margin-bottom-0"><strong>{{ columnOneLabel }}</strong></p>
         <p class="govuk-!-margin-bottom-0">
           <strong>{{ columnTwoLabel }}</strong>
@@ -51,7 +53,7 @@ TODO check if needed -->
         [ngClass]="form.get('name-' + reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'"
       >
         <label class="govuk-label govuk-!-margin-bottom-0" for="name-{{ reference.uid }}">
-          {{ reference.name }}
+          {{ reference.name ? reference.name : reference.nameOrId }}
         </label>
         <span
           id="name-{{ reference.uid }}-error"
