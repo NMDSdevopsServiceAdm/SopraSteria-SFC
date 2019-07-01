@@ -52,12 +52,12 @@
                     Enter your postcode
                   </label>
                   <span
-                    id="regulatedPostcode-error"
+                    id="group-regulatedPostcode-error"
                     class="govuk-error-message"
                     *ngIf="submitted && regulatedPostcode.errors"
                   >
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('regulatedPostcode', 'maxlength') }}
+                    {{ getFormErrorMessage('group.regulatedPostcode', 'maxlength') }}
                   </span>
                   <input
                     class="govuk-input govuk-!-width-one-third"
@@ -78,9 +78,9 @@
                   <label class="govuk-label" for="locationId">
                     Enter your location ID number
                   </label>
-                  <span id="locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
+                  <span id="group-locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('locationId', 'maxlength') }}
+                    {{ getFormErrorMessage('group.locationId', 'maxlength') }}
                   </span>
                   <input
                     class="govuk-input govuk-!-width-one-third"
