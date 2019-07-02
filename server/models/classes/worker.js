@@ -847,7 +847,7 @@ class Worker extends EntityValidator {
                         attributes: ['id', 'title']
                         }
                 ],
-                attributes: ['uid', 'LocalIdentifier', 'NameOrIdValue', 'ContractValue', "CompletedValue", 'MainJobFkOther', 'lastWdfEligibility', "created", "updated", "updatedBy"],
+                attributes: ['uid', 'LocalIdentifierValue', 'NameOrIdValue', 'ContractValue', "CompletedValue", 'MainJobFkOther', 'lastWdfEligibility', "created", "updated", "updatedBy"],
                 order: [
                     ['updated', 'DESC']
                 ]
@@ -861,7 +861,7 @@ class Worker extends EntityValidator {
                 fetchResults.forEach(thisWorker => {
                     allWorkers.push({
                         uid: thisWorker.uid,
-                        localIdentifier: thisWorker.LocalIdentifier ? thisWorker.LocalIdentifier : undefined ,
+                        localIdentifier: thisWorker.LocalIdentifierValue ? thisWorker.LocalIdentifierValue : undefined ,
                         nameOrId: thisWorker.NameOrIdValue,
                         contract: thisWorker.ContractValue,
                         mainJob: {

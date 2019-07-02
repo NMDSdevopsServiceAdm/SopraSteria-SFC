@@ -7,28 +7,27 @@ exports.LocalIdentifierProperty = class LocalIdentifierProperty extends ChangePr
        super('LocalIdentifier');
    }
 
-    static clone() {
+   static clone() {
        return new LocalIdentifierProperty();
    }
 
     async restoreFromJson(document) {
        if (document.localIdentifier) {
            if (document.localIdentifier.length <= MAX_LENGTH) {
-               this.property = document.localIdentifier;
+              this.property = document.localIdentifier;
            } else {
-             
               this.property = null;
            }
        }
    }
 
     restorePropertyFromSequelize(document) {
-       return document.LocalIdentifier;
+       return document.LocalIdentifierValue;
    }
 
     savePropertyToSequelize() {
        return {
-           LocalIdentifier: this.property
+           LocalIdentifierValue: this.property
        };
    }
 
