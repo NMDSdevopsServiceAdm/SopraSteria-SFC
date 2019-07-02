@@ -97,9 +97,9 @@ export class WorkerService {
     return this.http.get<Worker>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`);
   }
 
-  public getAllWorkersByUid(uid: string): Observable<Worker[]> {
+  public getAllWorkersByUid(establishmentUid: string): Observable<Worker[]> {
     return this.http
-      .get<WorkersResponse>(`/api/establishment/${uid}/worker`)
+      .get<WorkersResponse>(`/api/establishment/${establishmentUid}/worker`)
       .pipe(map(w => w.workers));
   }
 
