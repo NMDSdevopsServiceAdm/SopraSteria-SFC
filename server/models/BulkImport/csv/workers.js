@@ -2246,7 +2246,8 @@ class Worker {
   toAPI() {
     const changeProperties = {
     // the minimum to create a new worker
-      nameOrId : this._uniqueWorkerId,
+      nameOrId : this._displayId,
+      localIdentifier: this.__uniqueWorkerId,
       contract : this._contractType,
       mainJob : {
         jobId: this._mainJobRole,
@@ -2877,7 +2878,7 @@ class Worker {
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     const columns = [];
     columns.push(establishmentId);
-    columns.push(entity.nameOrId);   // todo - this will be local identifier
+    columns.push(entity.localIdentifier);   // todo - this will be local identifier
     columns.push('TBC');
     columns.push('TBC');
     columns.push(entity.nameOrId);

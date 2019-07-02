@@ -1619,6 +1619,7 @@ class Establishment {
   toJSON() {
     return {
       name: this._name,
+      localIdentifier: this._localId,
       address: this._address,
       postcode: this._postcode,
       employerType: this._establishmentType,
@@ -1688,6 +1689,7 @@ class Establishment {
 
     const changeProperties = {
       name: this._name,
+      localIdentifier: this._localId,
       employerType: {
         value: this._establishmentType,
         other: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
@@ -1978,7 +1980,7 @@ class Establishment {
   toCSV(entity) {
     // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
-    columns.push(this._csvQuote(entity.name));   // todo - this will be local identifier
+    columns.push(this._csvQuote(entity.localIdentifier));  
     columns.push('TBC');
     columns.push(this._csvQuote(entity.name));
     columns.push(this._csvQuote(entity.address));
