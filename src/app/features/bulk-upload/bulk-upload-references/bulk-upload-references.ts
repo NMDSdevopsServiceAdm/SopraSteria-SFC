@@ -57,12 +57,12 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   protected updateForm(): void {
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
-        `name-${reference.uid}`,
+        reference.uid,
         new FormControl(null, [Validators.required, this.uniqueValidator.bind(this)])
       );
 
       this.formErrorsMap.push({
-        item: `name-${reference.uid}`,
+        item: reference.uid,
         type: [
           {
             name: 'required',
