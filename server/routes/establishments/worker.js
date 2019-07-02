@@ -193,7 +193,10 @@ router.route('/:workerId').put(async (req, res) => {
         }
 
     } catch (err) {
-        if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
+        if (err instanceof Workers.WorkerExceptions.WorkerSaveException && err.message == 'Duplicate LocalIdentifier') {
+            console.error("Worker::localidentifier PUT: ", err.message);
+            return res.status(400).send(err.safe);
+        } else if (err instanceof Workers.WorkerExceptions.WorkerJsonException) {
             console.error("Worker PUT: ", err.message);
             return res.status(400).send(err.safe);
         } else if (err instanceof Workers.WorkerExceptions.WorkerSaveException) {

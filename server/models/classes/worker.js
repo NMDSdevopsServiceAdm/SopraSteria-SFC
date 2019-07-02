@@ -407,11 +407,18 @@ class Worker extends EntityValidator {
             } catch (err) {
                 // if the name/Id property is known, use it in the error message
                 const nameId = this._properties.get('NameOrId');
-                throw new WorkerExceptions.WorkerSaveException(null,
-                                                               this.uid,
-                                                               nameId ? nameId.property : null,
-                                                               err,
-                                                               null);
+
+                if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+                    if(err.parent.constraint && ( err.parent.constraint === 'worker_LocalIdentifier_unq')){
+                        throw new WorkerExceptions.WorkerSaveException(null, this._uid, nameId ? nameId.property : null, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
+                    }
+                } else {
+                    throw new WorkerExceptions.WorkerSaveException(null,
+                                                                this.uid,
+                                                                nameId ? nameId.property : null,
+                                                                err,
+                                                                null);
+                }
             }
         } else {
             // we are updating an existing worker
@@ -546,11 +553,18 @@ class Worker extends EntityValidator {
             } catch (err) {
                 // if the name/Id property is known, use it in the error message
                 const nameId = this._properties.get('NameOrId');
-                throw new WorkerExceptions.WorkerSaveException(null,
-                                                               this.uid,
-                                                               nameId ? nameId.property : null,
-                                                               err,
-                                                               `Failed to update worker record with uid: ${this._uid}`);
+
+                if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+                    if(err.parent.constraint && ( err.parent.constraint === 'worker_LocalIdentifier_unq')){
+                        throw new WorkerExceptions.WorkerSaveException(null, this._uid, nameId ? nameId.property : null, 'Duplicate LocalIdentifier', 'Duplicate LocalIdentifier');
+                    }
+                } else {
+                    throw new WorkerExceptions.WorkerSaveException(null,
+                                                                this.uid,
+                                                                nameId ? nameId.property : null,
+                                                                err,
+                                                                `Failed to update worker record with uid: ${this._uid}`);
+                }
             }
 
         }
@@ -833,7 +847,7 @@ class Worker extends EntityValidator {
                         attributes: ['id', 'title']
                         }
                 ],
-                attributes: ['uid', 'NameOrIdValue', 'ContractValue', "CompletedValue", 'MainJobFkOther', 'lastWdfEligibility', "created", "updated", "updatedBy"],
+                attributes: ['uid', 'LocalIdentifierValue', 'NameOrIdValue', 'ContractValue', "CompletedValue", 'MainJobFkOther', 'lastWdfEligibility', "created", "updated", "updatedBy"],
                 order: [
                     ['updated', 'DESC']
                 ]
@@ -847,6 +861,7 @@ class Worker extends EntityValidator {
                 fetchResults.forEach(thisWorker => {
                     allWorkers.push({
                         uid: thisWorker.uid,
+                        localIdentifier: thisWorker.LocalIdentifierValue ? thisWorker.LocalIdentifierValue : null ,
                         nameOrId: thisWorker.NameOrIdValue,
                         contract: thisWorker.ContractValue,
                         mainJob: {
