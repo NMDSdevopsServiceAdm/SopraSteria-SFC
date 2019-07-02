@@ -92,15 +92,15 @@
           <span *ngIf="submitted && form.get('annualRate').errors" id="annualRate-error" class="govuk-error-message">
             <ng-container *ngIf="form.get('annualRate').hasError('required')">
               <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('annualRate', 'required') }}
+              <span [innerHTML]="getFormErrorMessage('annualRate', 'required')"></span>
             </ng-container>
             <ng-container *ngIf="form.get('annualRate').hasError('min')">
               <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('annualRate', 'min') }}
+              <span [innerHTML]="getFormErrorMessage('annualRate', 'min')"></span>
             </ng-container>
             <ng-container *ngIf="form.get('annualRate').hasError('max')">
               <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('annualRate', 'max') }}
+              <span [innerHTML]="getFormErrorMessage('annualRate', 'max')"></span>
             </ng-container>
           </span>
           <span class="govuk-input__currency">
