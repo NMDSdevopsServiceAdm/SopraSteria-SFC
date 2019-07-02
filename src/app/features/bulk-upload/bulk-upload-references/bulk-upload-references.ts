@@ -1,7 +1,6 @@
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
-import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -32,7 +31,6 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
-    protected bulkUploadService: BulkUploadService,
   ) {}
 
   ngOnInit() {
@@ -102,19 +100,14 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected saveAndContinue(): void {}
-  protected saveAndExit(): void {}
+  protected save(saveAndContinue: boolean): void {}
 
   public onSubmit(saveAndContinue: boolean): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      if (saveAndContinue) {
-        this.saveAndContinue();
-      } else {
-        this.saveAndExit();
-      }
+      this.save(saveAndContinue);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

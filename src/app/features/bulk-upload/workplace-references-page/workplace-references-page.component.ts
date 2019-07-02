@@ -28,15 +28,15 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   private workPlaceReferences: WorkPlaceReference[] = [];
 
   constructor(
-    protected authService: AuthService,
-    protected router: Router,
-    protected formBuilder: FormBuilder,
-    protected errorSummaryService: ErrorSummaryService,
-    protected bulkUploadService: BulkUploadService,
+    private bulkUploadService: BulkUploadService,
+    private establishmentService: EstablishmentService,
     private userService: UserService,
-    private establishmentService: EstablishmentService
+    protected authService: AuthService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder,
+    protected router: Router,
   ) {
-    super(authService, router, formBuilder, errorSummaryService, bulkUploadService);
+    super(authService, router, formBuilder, errorSummaryService);
   }
 
   /** TODO check if needed
@@ -77,7 +77,7 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     );
   }
 
-  protected saveAndContinue(): void {
+  protected save(saveAndContinue: boolean): void {
     const requests = [];
     const payloads = Object.keys(this.form.value).map(key => ({
       uid: key,
@@ -89,7 +89,13 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     this.subscriptions.add(
       forkJoin(...requests)
         .pipe(take(1))
-        .subscribe()
+        .subscribe(() => {
+          if (saveAndContinue) {
+            this.router.navigate(['/bulk-upload/staff-references', this.workPlaceReferences[0].uid]);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        })
     );
   }
 }
