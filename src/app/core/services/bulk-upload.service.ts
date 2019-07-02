@@ -46,28 +46,28 @@ export class BulkUploadService {
     return parts[parts.length - 1].toUpperCase();
   }
 
-  public preValidateFiles(establishmentId: number): Observable<ValidatedFile[]> {
+  public preValidateFiles(establishmentId: string): Observable<ValidatedFile[]> {
     return this.http.put<ValidatedFile[]>(`/api/establishment/${establishmentId}/bulkupload/uploaded`, null);
   }
 
-  public getUploadedFiles(establishmentId: number): Observable<ValidatedFile[]> {
+  public getUploadedFiles(establishmentId: string): Observable<ValidatedFile[]> {
     return this.http
       .get<UploadedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/uploaded`)
       .pipe(map(response => response.files));
   }
 
-  public validateFiles(establishmentId: number): Observable<ValidatedFilesResponse> {
+  public validateFiles(establishmentId: string): Observable<ValidatedFilesResponse> {
     return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
   }
 
-  public getReport(establishmentId: number, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
+  public getReport(establishmentId: string, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
     return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report/${reportType}`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
   }
 
-  public getDataCSV(establishmentId: number, type: BulkUploadFileType): Observable<any> {
+  public getDataCSV(establishmentId: string, type: BulkUploadFileType): Observable<any> {
     let url: string;
     // TODO: Would love for this ENUM to be consistent across BE endpoints,
     //       we currently have Establishment, establishments, Workplace,
@@ -89,7 +89,7 @@ export class BulkUploadService {
     });
   }
 
-  public complete(establishmentId: number) {
+  public complete(establishmentId: string) {
     return this.http.post(`/api/establishment/${establishmentId}/bulkupload/complete`, null);
   }
 

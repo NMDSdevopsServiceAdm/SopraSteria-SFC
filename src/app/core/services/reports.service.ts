@@ -11,7 +11,7 @@ export class ReportsService {
   public reportDetails$: Observable<WDFReport> = this._reportDetails$.asObservable();
   constructor(private http: HttpClient) {}
 
-  getWDFReport(establishmentId: number, updatedEffectiveFrom?: string): Observable<WDFReport> {
+  getWDFReport(establishmentId: string, updatedEffectiveFrom?: string): Observable<WDFReport> {
     let params: HttpParams;
 
     if (updatedEffectiveFrom) {

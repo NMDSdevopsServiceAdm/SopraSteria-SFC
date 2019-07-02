@@ -1,5 +1,5 @@
 export interface WDFReport {
-  establishmentId: number;
+  establishmentId: string;
   timestamp: Date;
   effectiveFrom: Date;
   wdf: {

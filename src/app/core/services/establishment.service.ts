@@ -41,14 +41,14 @@ export class EstablishmentService {
   private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   public establishment$: Observable<Establishment> = this._establishment$.asObservable();
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
-  public previousEstablishmentId: number;
+  public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
 
   constructor(private http: HttpClient) {}
 
-  private _establishmentId: number = null;
+  private _establishmentId: string = null;
 
-  public checkIfSameLoggedInUser(establishmentId: number): void {
+  public checkIfSameLoggedInUser(establishmentId: string): void {
     if (!this.previousEstablishmentId || this.previousEstablishmentId !== establishmentId) {
       this.previousEstablishmentId = establishmentId;
       this.isSameLoggedInUser = false;
@@ -65,7 +65,7 @@ export class EstablishmentService {
     this._establishment$.next(establishment);
   }
 
-  public set establishmentId(value: number) {
+  public set establishmentId(value: string) {
     this._establishmentId = value;
     localStorage.setItem('establishmentId', value.toString());
   }
@@ -82,7 +82,7 @@ export class EstablishmentService {
       return this._establishmentId;
     }
 
-    this._establishmentId = parseFloat(localStorage.getItem('establishmentId'));
+    this._establishmentId = localStorage.getItem('establishmentId');
 
     if (isDevMode()) {
       if (!this._establishmentId) {
@@ -101,16 +101,16 @@ export class EstablishmentService {
     this.returnTo$.next(returnTo);
   }
 
-  getEstablishment(id: number) {
+  getEstablishment(id: string) {
     return this.http.get<any>(`/api/establishment/${id}`);
   }
 
-  getCapacity(establishmentId, all = false) {
+  getCapacity(establishmentId: string, all = false) {
     const params = new HttpParams().set('all', `${all}`);
     return this.http.get<any>(`/api/establishment/${establishmentId}/capacity`, { params });
   }
 
-  updateCapacity(establishmentId, data) {
+  updateCapacity(establishmentId: string, data) {
     return this.http.post<any>(`/api/establishment/${establishmentId}/capacity`, data);
   }
 
@@ -134,27 +134,27 @@ export class EstablishmentService {
     return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`);
   }
 
-  updateServiceUsers(establishmentId, data) {
+  updateServiceUsers(establishmentId: string, data) {
     return this.http.post<any>(`/api/establishment/${establishmentId}/serviceUsers`, data);
   }
 
-  updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest) {
+  updateTypeOfEmployer(establishmentId: string, data: EmployerTypeRequest) {
     return this.http.post<EmployerTypeResponse>(`/api/establishment/${establishmentId}/employerType`, data);
   }
 
-  updateOtherServices(establishmentId, data: PostServicesModel) {
+  updateOtherServices(establishmentId: string, data: PostServicesModel) {
     return this.http.post<PostServicesModel>(`/api/establishment/${establishmentId}/services`, data);
   }
 
-  updateDataSharing(establishmentId, data: DataSharingRequest): Observable<any> {
+  updateDataSharing(establishmentId: string, data: DataSharingRequest): Observable<any> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
   }
 
-  updateLocalAuthorities(establishmentId, data) {
+  updateLocalAuthorities(establishmentId: string, data) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
   }
 
-  updateJobs(establishmentId, data: UpdateJobsRequest): Observable<Establishment> {
+  updateJobs(establishmentId: string, data: UpdateJobsRequest): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/jobs`, data);
   }
 }
