@@ -39,6 +39,10 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   }
    **/
 
+  protected init(): void {
+    this.getReferences();
+  }
+
   protected getReferences(): void {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
