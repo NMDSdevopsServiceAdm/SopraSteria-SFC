@@ -97,12 +97,19 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public onSubmit(): void {
+  protected saveAndContinue(): void {}
+  protected saveAndExit(): void {}
+
+  public onSubmit(saveAndContinue: boolean): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      console.log('form valid');
+      if (saveAndContinue) {
+        this.saveAndContinue();
+      } else {
+        this.saveAndExit();
+      }
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
