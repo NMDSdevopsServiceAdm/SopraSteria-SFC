@@ -16,7 +16,6 @@ import { isNull } from 'util';
   templateUrl: './create-basic-records.component.html',
 })
 export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
-
   public contracts: Array<string> = [];
   public jobs: Job[] = [];
   public totalStaff: number;
@@ -128,9 +127,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.closeStaffRecords();
     this.staffRecordsControl.controls[index].patchValue({ active: true });
     setTimeout(() => {
-      this.renderer
-        .selectRootElement(`#staffRecord_${index}`, true)
-        .scrollIntoView({ behavior: 'smooth'});
+      this.renderer.selectRootElement(`#staffRecord_${index}`, true).scrollIntoView({ behavior: 'smooth' });
     });
   }
 
@@ -182,8 +179,8 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
         contract: contract.value,
         mainJob: {
           jobId: parseInt(mainJobRole.value, 10),
-          ...(otherJobRole.value && { other: otherJobRole.value })
-        }
+          ...(otherJobRole.value && { other: otherJobRole.value }),
+        },
       };
 
       if (!isNull(uid.value)) {
