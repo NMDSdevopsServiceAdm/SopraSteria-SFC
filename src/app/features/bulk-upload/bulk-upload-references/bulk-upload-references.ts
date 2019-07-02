@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
@@ -13,10 +14,11 @@ import { Subscription } from 'rxjs';
 export class BulkUploadReferences implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public form: FormGroup;
-  public formErrorsMap: ErrorDetails[] = []; // TODO look at generic error messages
+  public formErrorsMap: ErrorDetails[] = [];
   public primaryEstablishmentName: string;
   public references: Array<Workplace | Worker> = [];
   public referenceType: string;
+  public referenceTypeEnum = BulkUploadFileType;
   public return: URLStructure;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
@@ -32,7 +34,6 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   ngOnInit() {
     this.init();
     this.setupForm();
-    this.getReferences();
     this.setPrimaryEstablishmentName();
     this.setServerErrors();
   }
@@ -40,14 +41,14 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   protected init() {}
 
   private setPrimaryEstablishmentName(): void {
-    this.primaryEstablishmentName = this.authService.establishment.name;
+    this.primaryEstablishmentName = this.authService.establishment ? this.authService.establishment.name : null;
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({});
   }
 
-  protected getReferences(): void {}
+  protected getReferences(establishmentUid?: string): void {}
 
   protected updateForm(): void {
     this.references.forEach((reference: Workplace | Worker) => {
