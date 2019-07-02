@@ -27,3 +27,8 @@ export enum ParentPermissions {
   Workplace = 'Workplace',
   WorkplaceAndStaff = 'Workplace and Staff',
 }
+
+export interface WorkPlaceReference {
+  name: string;
+  uid: string;
+}
