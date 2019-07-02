@@ -28,15 +28,15 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   private establishmentUid: string;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
+    private bulkUploadService: BulkUploadService,
     protected authService: AuthService,
-    protected router: Router,
-    protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder,
+    protected router: Router,
     protected workerService: WorkerService,
-    protected bulkUploadService: BulkUploadService,
-    private activatedRoute: ActivatedRoute
   ) {
-    super(authService, router, formBuilder, errorSummaryService, bulkUploadService);
+    super(authService, router, formBuilder, errorSummaryService);
   }
 
   /** TODO check if needed
