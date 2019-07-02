@@ -10,7 +10,7 @@
 TODO check if needed -->
 
 <app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
+  *ngIf="(submitted && form.invalid) || serverError"
   [serverError]="serverError"
   [formErrorsMap]="formErrorsMap"
   [form]="form"
@@ -31,7 +31,7 @@ TODO check if needed -->
       class="govuk-!-margin-top-6"
       *ngIf="references.length"
       novalidate
-      (ngSubmit)="onSubmit()"
+      (ngSubmit)="onSubmit(true)"
       [formGroup]="form"
       id="server-error"
     >
@@ -71,6 +71,7 @@ TODO check if needed -->
           name="name-{{ reference.uid }}"
           type="text"
           formControlName="name-{{ reference.uid }}"
+          [value]="reference.localIdentifier"
         />
         <p class="govuk-!-margin-bottom-0 govuk__justify-self-end"><a href="">Staff references</a></p>
       </div>
@@ -84,12 +85,12 @@ TODO check if needed -->
           <button
             type="button"
             class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
-            (click)="onSubmit()"
+            (click)="onSubmit(true)"
           >
             Save and continue
           </button>
           <span class="govuk-visually-hidden">or</span>
-          <button type="button" class="govuk-button govuk-button--link govuk-!-margin-bottom-0" (click)="onSubmit()">
+          <button type="button" class="govuk-button govuk-button--link govuk-!-margin-bottom-0" (click)="onSubmit(false)">
             Save and exit
           </button>
         </div>
