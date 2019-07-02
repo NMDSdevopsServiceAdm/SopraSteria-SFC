@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Establishment, UpdateJobsRequest } from '@core/model/establishment.model';
+import { Establishment, LocalIdentifierRequest, UpdateJobsRequest } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -156,5 +156,9 @@ export class EstablishmentService {
 
   updateJobs(establishmentId, data: UpdateJobsRequest): Observable<Establishment> {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/jobs`, data);
+  }
+
+  public updateLocalIdentifier(establishmentUid: string, localIdentifier: LocalIdentifierRequest): Observable<any> {
+    return this.http.post<any>(`/api/establishment/${establishmentUid}/localIdentifier`, localIdentifier);
   }
 }

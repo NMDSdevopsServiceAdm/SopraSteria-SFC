@@ -1,5 +1,6 @@
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component } from '@angular/core';
@@ -9,6 +10,8 @@ import { GetWorkplacesResponse, Workplace, WorkPlaceReference } from '@core/mode
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserService } from '@core/services/user.service';
+import { forkJoin } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-workplace-references-page',
@@ -22,6 +25,7 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   public referenceTypeInfo = 'You must create unique references for each workplace.';
   public columnOneLabel = 'Workplace';
   public columnTwoLabel = 'Workplace reference';
+  private workPlaceReferences: WorkPlaceReference[] = [];
 
   constructor(
     protected authService: AuthService,
@@ -29,7 +33,8 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected bulkUploadService: BulkUploadService,
-    private userService: UserService
+    private userService: UserService,
+    private establishmentService: EstablishmentService
   ) {
     super(authService, router, formBuilder, errorSummaryService, bulkUploadService);
   }
@@ -46,12 +51,12 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   }
 
   private generateWorkPlaceReferences(references: GetWorkplacesResponse): WorkPlaceReference[] {
-    return references.subsidaries.establishments.map((establishment => {
+    return references.subsidaries.establishments.map(establishment => {
       return {
         name: establishment.name,
-        uid: establishment.uid
+        uid: establishment.uid,
       };
-    }));
+    });
   }
 
   protected getReferences(): void {
@@ -62,7 +67,8 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
             this.references = references.subsidaries ? references.subsidaries.establishments : [];
             if (this.references.length) {
               this.updateForm();
-              this.bulkUploadService.workPlaceReferences$.next(this.generateWorkPlaceReferences(references));
+              this.workPlaceReferences = this.generateWorkPlaceReferences(references);
+              this.bulkUploadService.workPlaceReferences$.next(this.workPlaceReferences);
             }
           }
         },
@@ -72,6 +78,18 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   }
 
   protected saveAndContinue(): void {
-    console.log('saveAndContinue fired');
+    const requests = [];
+    const payloads = Object.keys(this.form.value).map(key => ({
+      uid: key,
+      value: { localIdentifier: this.form.value[key] },
+    }));
+
+    payloads.forEach(item => requests.push(this.establishmentService.updateLocalIdentifier(item.uid, item.value)));
+
+    this.subscriptions.add(
+      forkJoin(...requests)
+        .pipe(take(1))
+        .subscribe()
+    );
   }
 }
