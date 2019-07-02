@@ -1,15 +1,16 @@
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '@core/services/auth.service';
+import { BulkUploadFileType } from '@core/model/bulk-upload.model';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BulkUploadFileType } from '@core/model/bulk-upload.model';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { Workplace } from '@core/model/my-workplaces.model';
+import { Subscription } from 'rxjs';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { AuthService } from '@core/services/auth.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { Subscription } from 'rxjs';
+import { Workplace } from '@core/model/my-workplaces.model';
 
 export class BulkUploadReferences implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
@@ -23,12 +24,15 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
+  public establishmentName: string;
+  public remainingEstablishments: number;
 
   constructor(
     protected authService: AuthService,
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
+    protected bulkUploadService: BulkUploadService,
   ) {}
 
   ngOnInit() {

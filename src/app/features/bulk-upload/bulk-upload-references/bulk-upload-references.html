@@ -39,8 +39,10 @@ TODO check if needed -->
         class="govuk__grid govuk__grid-container"
       >
         <ng-container *ngIf="referenceType === referenceTypeEnum.Worker">
-          <h2 class="govuk-heading-m govuk__reference-subsidiary-name">Collingwood Grange</h2>
-          <p class="govuk-!-margin-0 govuk__justify-self-end"><strong>8</strong> workplaces remaining</p>
+          <h2 class="govuk-heading-m govuk__reference-subsidiary-name">{{ establishmentName }}</h2>
+          <p class="govuk-!-margin-0 govuk__justify-self-end">
+            <strong>{{ remainingEstablishments }}</strong> workplaces remaining
+          </p>
         </ng-container>
         <p class="govuk-!-margin-bottom-0"><strong>{{ columnOneLabel }}</strong></p>
         <p class="govuk-!-margin-bottom-0">
