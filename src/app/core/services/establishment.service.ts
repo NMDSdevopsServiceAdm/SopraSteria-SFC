@@ -101,7 +101,7 @@ export class EstablishmentService {
     this.returnTo$.next(returnTo);
   }
 
-  getEstablishment(id: string) {
+  getEstablishment(id: number) {
     return this.http.get<any>(`/api/establishment/${id}`);
   }
 
