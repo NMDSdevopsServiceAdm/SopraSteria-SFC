@@ -861,7 +861,7 @@ class Worker extends EntityValidator {
                 fetchResults.forEach(thisWorker => {
                     allWorkers.push({
                         uid: thisWorker.uid,
-                        localIdentifier: thisWorker.LocalIdentifierValue ? thisWorker.LocalIdentifierValue : undefined ,
+                        localIdentifier: thisWorker.LocalIdentifierValue ? thisWorker.LocalIdentifierValue : null ,
                         nameOrId: thisWorker.NameOrIdValue,
                         contract: thisWorker.ContractValue,
                         mainJob: {
