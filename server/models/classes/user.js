@@ -3,7 +3,7 @@
  *
  * The encapsulation of a User, including all properties, all specific validation (not API, but object validation),
  * saving & restoring of data to database (via sequelize model), construction and deletion.
- * 
+ *
  * Also includes representation as JSON, in one or more presentations.
  */
 const uuid = require('uuid');
@@ -46,7 +46,7 @@ class User {
 
         // change properties
         this._isNew = false;
-        
+
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
         this._logLevel = User.LOG_INFO;
@@ -141,7 +141,7 @@ class User {
         if (this._uid === null) {
             this._isNew = true;
             this._uid = uuid.v4();
-            
+
             if (!this._isEstablishmentIdValid)
                 throw new UserExceptions.UserSaveException(null,
                                                            this._uid,
@@ -348,7 +348,7 @@ class User {
                             },
                             {transaction: thisTransaction}
                         );
-                        
+
                         // also need to complete on the originating add user tracking record
                         const trackingResponse = await models.addUserTracking.update(
                             {
@@ -401,7 +401,7 @@ class User {
                     }
                     this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
                 });
-                
+
             } catch (err) {
                 // need to handle duplicate username
                 if (err.name && err.name === 'SequelizeUniqueConstraintError') {
@@ -515,7 +515,7 @@ class User {
                     }
 
                 });
-                
+
             } catch (err) {
                 throw new UserExceptions.UserSaveException(null, this.uid, this.fullname, err, `Failed to update user record with id: ${this._id}`);
             }
@@ -544,7 +544,7 @@ class User {
             //  User records associated to the given
             //   establishment
             let fetchQuery = null;
-            
+
             if (uname) {
                 // fetch by username
                 fetchQuery = {
@@ -652,7 +652,7 @@ class User {
             attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy'],
             order: [
                 ['updated', 'DESC']
-            ]           
+            ]
         });
 
         if (fetchResults) {
@@ -775,7 +775,7 @@ class User {
                 attributes: ['id'],
             });
             if (referenceEstablishment && referenceEstablishment.id && referenceEstablishment.id === establishmentId) return true;
-    
+
         } catch (err) {
             console.error(err);
         }
@@ -792,7 +792,7 @@ class User {
                 allExistAndValid = false;
                 this._log(User.LOG_ERROR, 'User::hasMandatoryProperties - missing or invalid fullname');
             }
-    
+
             const jobTitle = this._properties.get('JobTitle');
             if (!(jobTitle && jobTitle.isInitialised && jobTitle.valid)) {
                 allExistAndValid = false;
@@ -850,7 +850,7 @@ class User {
                 allExistAndValid = false;
                 this._log(User.LOG_ERROR, 'User::hasDefaultNewUserProperties - missing or invalid Username');
             }
-    
+
             // password must exist
             if (!(this._password !== null && this.isPasswordValid)) {
                 allExistAndValid = false;
@@ -887,7 +887,7 @@ class User {
 
         // first - get the user's primary establishment (every user will have a primary establishment)
         const fetchResults = await models.establishment.findOne({
-            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifier', 'parentPermissions', 'NameValue', 'updated'],
+            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
             include: [
                 {
                     model: models.services,
@@ -910,7 +910,7 @@ class User {
             if (myRole === 'Edit' && isParent) {
                 // get all subsidaries associated with this parent
                 allSubResults = await models.establishment.findAll({
-                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifier', 'parentPermissions', 'NameValue', 'updated'],
+                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
                     include: [
                         {
                             model: models.services,
@@ -935,6 +935,7 @@ class User {
         }
 
         // before returning, need to format the response
+        // explicit casting of local identifier to null if not yet set
         const myEstablishments = {
             primary: {
                 uid: primaryEstablishmentRecord.uid,
@@ -942,13 +943,13 @@ class User {
                 isParent: primaryEstablishmentRecord.isParent,
                 parentUid: primaryEstablishmentRecord.parentUid,
                 name: primaryEstablishmentRecord.NameValue,
-                localIdentifier: primaryEstablishmentRecord.LocalIdentifier,
+                localIdentifier: primaryEstablishmentRecord.LocalIdentifierValue ? primaryEstablishmentRecord.LocalIdentifierValue : null,
                 mainService: primaryEstablishmentRecord.mainService.name,
                 dataOwner: primaryEstablishmentRecord.dataOwner,
                 parentPermissions: isParent ? undefined : primaryEstablishmentRecord.parentPermissions,
             }
         };
-        
+
         if (allSubResults && allSubResults.length > 0) {
             myEstablishments.subsidaries = {
                 count: allSubResults.length,
@@ -958,10 +959,10 @@ class User {
                         updated: thisSub.updated,
                         parentUid: thisSub.parentUid,
                         name: thisSub.NameValue,
-                        localIdentifier: primaryEstablishmentRecord.LocalIdentifier,                        
+                        localIdentifier: primaryEstablishmentRecord.LocalIdentifierValue ? primaryEstablishmentRecord.LocalIdentifierValue : null,
                         mainService: thisSub.mainService.name,
                         dataOwner: thisSub.dataOwner,
-                        parentPermissions: thisSub.parentPermissions,    
+                        parentPermissions: thisSub.parentPermissions,
                     };
                 })
             };
