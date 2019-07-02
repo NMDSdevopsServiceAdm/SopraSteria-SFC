@@ -48,6 +48,13 @@
           <span id="nationalityName-hint" class="govuk-hint">
             Optional
           </span>
+          <span
+            id="nationalityName-error"
+            class="govuk-error-message"
+            *ngIf="submitted && form.get('nationalityName').errors"
+          >
+            {{ getFormErrorMessage('nationalityName', 'validNationality') }}
+          </span>
           <div class="govuk-input--width-20">
             <app-auto-suggest
               [formGroup]="form"
