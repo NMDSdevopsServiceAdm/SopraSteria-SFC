@@ -1,0 +1,14 @@
+<app-reports-header title="Workforce Development Fund"></app-reports-header>
+
+<app-eligibility-display-overview *ngIf="report" [report]="report"> </app-eligibility-display-overview>
+
+<app-update-warning *ngIf="report" [effectiveFrom]="report.effectiveFrom"></app-update-warning>
+
+<app-tabs [displayWDFReport]="true">
+  <app-tab [title]="'Workplace'">
+    <app-workplace-tab [displayWDFReport]="true"></app-workplace-tab>
+  </app-tab>
+  <app-tab [title]="'Staff records'">
+    <app-staff-records-tab [displayWDFReport]="true"></app-staff-records-tab>
+  </app-tab>
+</app-tabs>

@@ -1,0 +1,11 @@
+<app-dashboard-header></app-dashboard-header>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment?.name }}</span>
+    <h1 class="govuk-heading-ls">{{ title }}</h1>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <a [routerLink]="['/reports/wdf']">Workforce Development Fund</a>
+  </div>
+</div>
