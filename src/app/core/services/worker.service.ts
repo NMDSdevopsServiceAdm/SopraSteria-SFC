@@ -97,7 +97,13 @@ export class WorkerService {
     return this.http.get<Worker>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`);
   }
 
-  getAllWorkers() {
+  public getAllWorkersByUid(uid: string): Observable<Worker[]> {
+    return this.http
+      .get<WorkersResponse>(`/api/establishment/${uid}/worker`)
+      .pipe(map(w => w.workers));
+  }
+
+  public getAllWorkers(): Observable<Worker[]> {
     return this.http
       .get<WorkersResponse>(`/api/establishment/${this.establishmentService.establishmentId}/worker`)
       .pipe(map(w => w.workers));
