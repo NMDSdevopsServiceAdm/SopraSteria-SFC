@@ -8,6 +8,7 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 })
 export class QualificationsAndTrainingComponent extends StaffRecordSummaryComponent implements OnInit {
   @Input() reportDetails;
+  @Input() showAddButtons = false;
 
   ngOnInit() {
     if (this.reportDetails != null && this.reportDetails.hasOwnProperty('displayWDFReport')) {
