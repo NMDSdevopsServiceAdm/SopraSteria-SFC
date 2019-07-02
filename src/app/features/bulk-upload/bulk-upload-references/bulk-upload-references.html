@@ -1,14 +1,3 @@
-<!-- TODO check if needed
-<button (click)="updateReferences()">Update References</button>
-
-<ng-container *ngIf="referencesUpdated">
- <p>Settings updated</p>
- <p>
-   <a [routerLink]="['/bulk-upload']">Go to Bulk Upload</a>
- </p>
-</ng-container>
-TODO check if needed -->
-
 <app-error-summary
   *ngIf="(submitted && form.invalid) || serverError"
   [serverError]="serverError"

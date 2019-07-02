@@ -19,8 +19,6 @@ import { take } from 'rxjs/operators';
   styleUrls: ['../bulk-upload-references/bulk-upload-references.scss'],
 })
 export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
-  // TODO check if needed
-  public referencesUpdated = false;
   public referenceType = BulkUploadFileType.Establishment;
   public referenceTypeInfo = 'You must create unique references for each workplace.';
   public columnOneLabel = 'Workplace';
@@ -38,13 +36,6 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   ) {
     super(authService, router, formBuilder, errorSummaryService);
   }
-
-  /** TODO check if needed
-   public updateReferences() {
-    this.referencesUpdated = true;
-    this.authService.isFirstBulkUpload = false;
-  }
-   **/
 
   protected init(): void {
     this.getReferences();

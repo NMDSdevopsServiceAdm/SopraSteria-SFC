@@ -19,8 +19,6 @@ import { filter, findIndex } from 'lodash';
   styleUrls: ['../bulk-upload-references/bulk-upload-references.scss'],
 })
 export class StaffReferencesPageComponent extends BulkUploadReferences {
-  // TODO check if needed
-  public referencesUpdated = false;
   public referenceType = BulkUploadFileType.Worker;
   public referenceTypeInfo = 'You must create unique references for each member of staff.';
   public columnOneLabel = 'Name';
@@ -38,13 +36,6 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   ) {
     super(authService, router, formBuilder, errorSummaryService);
   }
-
-  /** TODO check if needed
-   public updateReferences() {
-    this.referencesUpdated = true;
-    this.authService.isFirstBulkUpload = false;
-  }
-   **/
 
   protected init(): void {
     this.subscriptions.add(
