@@ -1,13 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-workplace-references-page',
@@ -27,7 +28,8 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService,
-    protected workerService: WorkerService
+    protected workerService: WorkerService,
+    private activatedRoute: ActivatedRoute
   ) {
     super(authService, router, formBuilder, errorSummaryService);
   }
@@ -39,9 +41,15 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   }
    **/
 
-  protected getReferences(): void {
+  protected init(): void {
     this.subscriptions.add(
-      this.workerService.getAllWorkers().subscribe(
+      this.activatedRoute.params.pipe(take(1)).subscribe(params => this.getReferences(params.uid))
+    );
+  }
+
+  protected getReferences(establishmentUid: string): void {
+    this.subscriptions.add(
+      this.workerService.getAllWorkersByUid(establishmentUid).subscribe(
         (references: Worker[]) => {
           if (references) {
             this.references = references;
