@@ -5,9 +5,9 @@ const Establishment = require('../../models/classes/establishment');
 const filteredProperties = ['LocalIdentifier'];
 
 /*
-    New endpoint `[GET]/[PUT] api/establishment/:eid/localIdentifier` - to retrieve and update the property "localIdentifier". 
-    Returns 400 if the given localidentifier is not unqiue. 
-    Returns 503 on service error. 
+    New endpoint `[GET]/[PUT] api/establishment/:eid/localIdentifier` - to retrieve and update the property "localIdentifier".
+    Returns 400 if the given localidentifier is not unqiue.
+    Returns 503 on service error.
     Otherwise returns 200 for GET and 202 for PUT.
 */
 
@@ -40,7 +40,7 @@ router.route('/').get(async (req, res) => {
   }
 });
 
-router.route('/').put(async (req, res) => {
+router.route('/').post(async (req, res) => {
   const establishmentId = req.establishmentId;
   const thisEstablishment = new Establishment.Establishment(req.username);
 
@@ -58,7 +58,7 @@ router.route('/').put(async (req, res) => {
       } else {
         return res.status(400).send('Unexpected Input.');
       }
-        
+
     } else {
       return res.status(404).send('Not Found');
     }

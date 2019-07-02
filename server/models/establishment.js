@@ -15,12 +15,6 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"EstablishmentUID"'
     },
-    LocalIdentifier: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      unique: true,      
-      field: '"LocalIdentifier"'
-    },    
     address: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -387,6 +381,32 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"LeaversChangedBy"'
     },
+    LocalIdentifierValue: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      unique: true,
+      field: '"LocalIdentifierValue"'
+    },
+    LocalIdentifierSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocalIdentifierSavedAt"'
+    },
+    LocalIdentifierChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocalIdentifierChangedAt"'
+    },
+    LocalIdentifierSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocalIdentifierSavedBy"'
+    },
+    LocalIdentifierChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocalIdentifierChangedBy"'
+    },
     archived: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -427,7 +447,7 @@ module.exports = function(sequelize, DataTypes) {
       where: {
         archived: false
       }
-    },  
+    },
     tableName: '"Establishment"',
     schema: 'cqc',
     createdAt: false,
