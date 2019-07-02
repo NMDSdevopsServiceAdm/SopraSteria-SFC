@@ -13,18 +13,22 @@ const routes: Routes = [
     path: '',
     component: BulkUploadPageComponent,
     canActivate: [BulkUploadGuard],
+    data: { title: 'Home' },
   },
   {
     path: 'start',
     component: BulkUploadStartPageComponent,
+    data: { title: 'Start' },
   },
   {
     path: 'workplace-references',
     component: WorkplaceReferencesPageComponent,
+    data: { title: 'Workplace references' },
   },
   {
-    path: 'staff-references',
+    path: 'staff-references/:uid',
     component: StaffReferencesPageComponent,
+    data: { title: 'Staff references' },
   },
 ];
 
