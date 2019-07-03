@@ -1,5 +1,6 @@
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
+import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
@@ -29,14 +30,16 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     private establishmentService: EstablishmentService,
     private userService: UserService,
     protected authService: AuthService,
+    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router
+    protected router: Router,
   ) {
     super(authService, router, formBuilder, errorSummaryService);
   }
 
   protected init(): void {
+    this.backService.setBackLink({ url: ['/dashboard']});
     this.getReferences();
   }
 

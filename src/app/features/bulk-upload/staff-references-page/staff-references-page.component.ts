@@ -2,6 +2,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WorkPlaceReference } from '@core/model/my-workplaces.model';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
+import { BackService } from '@core/services/back.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { Component } from '@angular/core';
@@ -29,6 +30,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
     private activatedRoute: ActivatedRoute,
     private bulkUploadService: BulkUploadService,
     protected authService: AuthService,
+    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
@@ -38,6 +40,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   }
 
   protected init(): void {
+    this.backService.setBackLink({ url: ['/bulk-upload/workplace-references'] });
     this.getEstablishmentUid();
     this.getEstablishmentInfo();
   }
@@ -76,6 +79,23 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
         },
         (error: HttpErrorResponse) => this.onError(error)
       )
+    );
+  }
+
+  protected save(saveAndContinue: boolean): void {
+    this.subscriptions.add(
+      this.workerService.updateLocalIdentifiers(this.establishmentUid, this.generateRequest())
+        .pipe(take(1))
+        .subscribe(
+          () => {
+            if (saveAndContinue) {
+              // this.router.navigate(['/bulk-upload/staff-references', this.workPlaceReferences[0].uid]);
+            } else {
+              this.router.navigate(['/bulk-upload/workplace-references']);
+            }
+          },
+          (error: HttpErrorResponse) => this.onError(error)
+        )
     );
   }
 }
