@@ -2062,12 +2062,6 @@ class Establishment {
     }
 
     columns.push(allJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';'));
-
-    console.log("WA DEBUG - all jobs: ", allJobs)
-    console.log("WA DEBUG - starters: ", entity.starters)
-    console.log("WA DEBUG - leavers: ", entity.leavers)
-    console.log("WA DEBUG - vacancies: ", entity.vacancies)
-
     if (entity.starters && !Array.isArray(entity.starters)) {
       if (entity.starters === 'None') {
         columns.push(allJobs.map(thisJob => 0).join(';'));
