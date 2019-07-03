@@ -206,7 +206,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.EXPIRY_DATE_ERROR,
           errType: `EXPIRY_DATE_ERROR`,
-          error: "DATECOMPLETED is incorrectly formatted",
+          error: "EXPIRYDATE is incorrectly formatted",
           source: this._currentLine.EXPIRYDATE,
         });
         return false;
