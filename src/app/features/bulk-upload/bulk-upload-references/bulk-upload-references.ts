@@ -82,7 +82,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
         message: 'Service unavailable.',
       },
       {
-        name: 404,
+        name: 400,
         message: `Unable to update ${this.referenceType.toLowerCase()} references.`,
       },
     ];
