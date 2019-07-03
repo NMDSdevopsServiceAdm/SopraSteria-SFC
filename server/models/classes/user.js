@@ -576,11 +576,8 @@ class User {
                 };
             }
 
-            console.log("WA DEBUG - restoring user: ", fetchQuery)
-
             const fetchResults = await models.user.findOne(fetchQuery);
             if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
-              console.log("WA DEBUG - restored User")
                 // update self - don't use setters because they modify the change state
                 this._isNew = false;
                 this._id = fetchResults.id;
@@ -907,7 +904,6 @@ class User {
             // now, if the primary establishment is a parent
             //  and if the user's role against their primary parent is Edit
             //  fetch all other establishments associated with this parent
-            console.log("WA DEBUG - my role: ", myRole)
             if ((myRole === 'Edit' || myRole === 'Admin') && isParent) {
                 // get all subsidaries associated with this parent
                 allSubResults = await models.establishment.findAll({
