@@ -32,7 +32,7 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     protected authService: AuthService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router,
+    protected router: Router
   ) {
     super(authService, router, formBuilder, errorSummaryService);
   }
@@ -80,13 +80,16 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     this.subscriptions.add(
       forkJoin(...requests)
         .pipe(take(1))
-        .subscribe(() => {
-          if (saveAndContinue) {
-            this.router.navigate(['/bulk-upload/staff-references', this.workPlaceReferences[0].uid]);
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
-        })
+        .subscribe(
+          () => {
+            if (saveAndContinue) {
+              this.router.navigate(['/bulk-upload/staff-references', this.workPlaceReferences[0].uid]);
+            } else {
+              this.router.navigate(['/dashboard']);
+            }
+          },
+          (error: HttpErrorResponse) => this.onError(error)
+        )
     );
   }
 }
