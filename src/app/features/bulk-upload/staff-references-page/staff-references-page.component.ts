@@ -38,13 +38,20 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   }
 
   protected init(): void {
+    this.getEstablishmentUid();
+    this.getEstablishmentInfo();
+  }
+
+  private getEstablishmentUid(): void {
     this.subscriptions.add(
       this.activatedRoute.params.pipe(take(1)).subscribe(params => {
         this.establishmentUid = params.uid;
         this.getReferences(this.establishmentUid);
       })
     );
+  }
 
+  private getEstablishmentInfo(): void {
     this.subscriptions.add(
       this.bulkUploadService.workPlaceReferences$
         .pipe(take(1))
