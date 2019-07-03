@@ -11,6 +11,7 @@ import {
   ValidatedFilesResponse,
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { WorkPlaceReference } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -26,6 +27,7 @@ export class BulkUploadService {
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
+  public workPlaceReferences$: BehaviorSubject<WorkPlaceReference[]> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 

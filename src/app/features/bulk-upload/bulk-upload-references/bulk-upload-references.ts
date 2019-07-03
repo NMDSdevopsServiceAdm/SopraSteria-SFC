@@ -1,22 +1,27 @@
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '@core/services/auth.service';
+import { BulkUploadFileType } from '@core/model/bulk-upload.model';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { OnDestroy, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { Workplace } from '@core/model/my-workplaces.model';
+import { Subscription } from 'rxjs';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { AuthService } from '@core/services/auth.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { Subscription } from 'rxjs';
+import { Workplace } from '@core/model/my-workplaces.model';
 
 export class BulkUploadReferences implements OnInit, OnDestroy {
+  protected maxLength = 120;
   protected subscriptions: Subscription = new Subscription();
+  public establishmentName: string;
   public form: FormGroup;
-  public formErrorsMap: ErrorDetails[] = []; // TODO look at generic error messages
+  public formErrorsMap: ErrorDetails[] = [];
   public primaryEstablishmentName: string;
   public references: Array<Workplace | Worker> = [];
   public referenceType: string;
+  public referenceTypeEnum = BulkUploadFileType;
+  public remainingEstablishments: number;
   public return: URLStructure;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
@@ -26,13 +31,12 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     protected authService: AuthService,
     protected router: Router,
     protected formBuilder: FormBuilder,
-    protected errorSummaryService: ErrorSummaryService,
+    protected errorSummaryService: ErrorSummaryService
   ) {}
 
   ngOnInit() {
     this.init();
     this.setupForm();
-    this.getReferences();
     this.setPrimaryEstablishmentName();
     this.setServerErrors();
   }
@@ -40,28 +44,36 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   protected init() {}
 
   private setPrimaryEstablishmentName(): void {
-    this.primaryEstablishmentName = this.authService.establishment.name;
+    this.primaryEstablishmentName = this.authService.establishment ? this.authService.establishment.name : null;
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({});
   }
 
-  protected getReferences(): void {}
+  protected getReferences(establishmentUid?: string): void {}
 
   protected updateForm(): void {
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
-        `name-${reference.uid}`,
-        new FormControl(null, [Validators.required, this.uniqueValidator.bind(this)])
+        reference.uid,
+        new FormControl(reference.localIdentifier, [
+          Validators.required,
+          Validators.maxLength(this.maxLength),
+          this.uniqueValidator.bind(this),
+        ])
       );
 
       this.formErrorsMap.push({
-        item: `name-${reference.uid}`,
+        item: reference.uid,
         type: [
           {
             name: 'required',
             message: `Enter the missing ${this.referenceType.toLowerCase()} reference.`,
+          },
+          {
+            name: 'maxlength',
+            message: `The reference must be ${this.maxLength} characters or less.`,
           },
           {
             name: 'unique',
@@ -78,6 +90,10 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
         name: 503,
         message: 'Service unavailable.',
       },
+      {
+        name: 400,
+        message: `Unable to update ${this.referenceType.toLowerCase()} references.`,
+      },
     ];
   }
 
@@ -86,7 +102,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     this.errorSummaryService.scrollToErrorSummary();
   }
 
-  protected uniqueValidator(control: AbstractControl): { [key: string]: boolean } | null  {
+  protected uniqueValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const formValues: string[] = Object.values(this.form.value);
     const isDuplicate: boolean = formValues.includes(control.value);
     return isDuplicate ? { unique: true } : null;
@@ -97,12 +113,14 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public onSubmit(): void {
+  protected save(saveAndContinue: boolean): void {}
+
+  public onSubmit(saveAndContinue: boolean): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      console.log('form valid');
+      this.save(saveAndContinue);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

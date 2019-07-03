@@ -6,6 +6,7 @@ export interface Worker {
   nameOrId: string;
   contract: Contracts;
   mainJob: JobRole;
+  localIdentifier: string;
   approvedMentalHealthWorker?: string;
   otherJobs?: JobRole[];
   mainJobStartDate?: string;

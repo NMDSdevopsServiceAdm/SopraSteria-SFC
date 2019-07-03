@@ -113,3 +113,7 @@ export enum jobOptionsEnum {
   DONT_KNOW = "Don't know",
   NONE = 'None',
 }
+
+export interface LocalIdentifierRequest {
+  localIdentifier: string;
+}
