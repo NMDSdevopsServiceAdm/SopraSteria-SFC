@@ -28,7 +28,7 @@ notify:
 
 bulkupload:
     region: eu-west-2
-    bucketname: sfc-bulkupload-staging
+    bucketname: sfc-bulkupload-demo
 
 public:
     download:
