@@ -2068,6 +2068,55 @@ class Establishment {
     console.log("WA DEBUG - leavers: ", entity.leavers)
     console.log("WA DEBUG - vacancies: ", entity.vacancies)
 
+    if (entity.starters && !Array.isArray(entity.starters)) {
+      if (entity.starters === 'None') {
+        columns.push(allJobs.map(thisJob => 0).join(';'));
+      } else {
+        columns.push(999);
+      }
+    } else {
+      columns.push(allJobs.map(thisJob => {
+        const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.id === thisJob.id);
+        if (isThisJobAStarterJob) {
+          return isThisJobAStarterJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+    if (entity.leavers && !Array.isArray(entity.leavers)) {
+      if (entity.leavers === 'None') {
+        columns.push(allJobs.map(thisJob => 0).join(';'));
+      } else {
+        columns.push(999);
+      }
+    } else {
+      columns.push(allJobs.map(thisJob => {
+        const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.id === thisJob.id);
+        if (isThisJobALeaverJob) {
+          return isThisJobALeaverJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+    if (entity.vacancies && !Array.isArray(entity.vacancies)) {
+      if (entity.vacancies === 'None') {
+        columns.push(allJobs.map(thisJob => 0).join(';'));
+      } else {
+        columns.push(999);
+      }
+    } else {
+      columns.push(allJobs.map(thisJob => {
+        const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.id === thisJob.id);
+        if (isThisJobAVacancyJob) {
+          return isThisJobAVacancyJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+
     // reasons for leaving - currently can't be mapped
     columns.push('');
     columns.push('');
