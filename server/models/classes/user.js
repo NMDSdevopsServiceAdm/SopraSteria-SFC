@@ -956,7 +956,7 @@ class User {
                         updated: thisSub.updated,
                         parentUid: thisSub.parentUid,
                         name: thisSub.NameValue,
-                        localIdentifier: primaryEstablishmentRecord.LocalIdentifierValue ? primaryEstablishmentRecord.LocalIdentifierValue : null,
+                        localIdentifier: thisSub.LocalIdentifierValue ? thisSub.LocalIdentifierValue : null,
                         mainService: thisSub.mainService.name,
                         dataOwner: thisSub.dataOwner,
                         parentPermissions: thisSub.parentPermissions,
