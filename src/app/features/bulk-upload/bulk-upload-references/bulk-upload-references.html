@@ -28,7 +28,8 @@
         <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName">
           <h2 class="govuk-heading-m govuk__reference-subsidiary-name">{{ establishmentName }}</h2>
           <p class="govuk-!-margin-0 govuk__justify-self-end">
-            <strong>{{ remainingEstablishments }}</strong> workplaces remaining
+            <strong>{{ remainingEstablishments }}</strong>
+            {{ remainingEstablishments | i18nPlural: { '=1': 'workplace', other: 'workplaces' } }} remaining
           </p>
         </ng-container>
         <p class="govuk-!-margin-bottom-0"><strong>{{ columnOneLabel }}</strong></p>
@@ -70,7 +71,7 @@
       </div>
     </form>
 
-    <p *ngIf="!references.length">There are no workplaces.</p>
+    <p *ngIf="!references.length">There are no {{ referenceType.toLowerCase() }} references to update.</p>
 
     <div class="govuk-grid-row" *ngIf="references.length">
       <div class="govuk-grid-column-full">

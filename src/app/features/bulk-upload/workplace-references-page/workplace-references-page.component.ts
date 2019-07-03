@@ -1,3 +1,4 @@
+import { I18nPluralPipe } from '@angular/common';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { BackService } from '@core/services/back.service';
@@ -17,6 +18,7 @@ import { take } from 'rxjs/operators';
   selector: 'app-workplace-references-page',
   templateUrl: '../bulk-upload-references/bulk-upload-references.html',
   styleUrls: ['../bulk-upload-references/bulk-upload-references.scss'],
+  providers: [I18nPluralPipe],
 })
 export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   public referenceType = BulkUploadFileType.Establishment;
