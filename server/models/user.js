@@ -17,7 +17,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     establishmentId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       field: '"EstablishmentID"'
     },
     archived: {
@@ -186,7 +186,7 @@ module.exports = function(sequelize, DataTypes) {
     UserRoleValue: {
       type: DataTypes.ENUM,
       allowNull: false,
-      values: ['Read', 'Edit'],
+      values: ['Read', 'Edit', 'Admin'],
       default: 'Edit',
       field: '"UserRoleValue"'
     },
@@ -209,12 +209,6 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true,
       field: '"UserRoleChangedBy"'
-    },
-    isAdmin: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      default: false,
-      field: '"AdminUser"'
     },
     tribalId: {
       type: DataTypes.INTEGER,

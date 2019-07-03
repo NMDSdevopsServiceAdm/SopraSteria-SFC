@@ -301,7 +301,6 @@ class User {
                     uid: this.uid,
                     updatedBy: savedBy.toLowerCase(),
                     isPrimary: this._isPrimary,
-                    isAdmin: false,
                     archived: false,
                     attributes: ['id', 'created', 'updated'],
                 };
@@ -549,7 +548,6 @@ class User {
                 // fetch by username
                 fetchQuery = {
                     where: {
-                        establishmentId: this._establishmentId,
                         archived: false,
                     },
                     include: [
@@ -566,7 +564,6 @@ class User {
                 // fetch by username
                 fetchQuery = {
                     where: {
-                        establishmentId: this._establishmentId,
                         uid: uid,
                         archived: false,
                     },
@@ -906,8 +903,8 @@ class User {
 
             // now, if the primary establishment is a parent
             //  and if the user's role against their primary parent is Edit
-            //  fetch all other establishments associated with this parnet
-            if (myRole === 'Edit' && isParent) {
+            //  fetch all other establishments associated with this parent
+            if ((myRole === 'Edit' || myRole === 'Admin') && isParent) {
                 // get all subsidaries associated with this parent
                 allSubResults = await models.establishment.findAll({
                     attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
