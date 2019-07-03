@@ -2033,10 +2033,31 @@ class Establishment {
     columns.push(otherServices.map(thisService => BUDI.services(BUDI.FROM_ASC, thisService.id)).join(';'));
 
     // capacities and utilisations - these are semi colon delimited in the order of ALLSERVICES (so main service and other services) - empty if not a capacity or a utilisation
-    const capacities = entity.capacities;
-    //console.log("WA DEBUG - capacities: ", capacities)
-    columns.push('CAPACITIES');
-    columns.push('UTILISATIONS');
+    const entityCapacities = entity.capacities ? entity.capacities.map(thisCap => {
+        const isCapacity = BUDI.serviceFromCapacityId(thisCap.reference.id);
+        const isUtilisation = BUDI.serviceFromUtilisationId(thisCap.reference.id);
+
+        return {
+          isUtilisation: isUtilisation !== null ? true : false,
+          isCapacity: isCapacity !== null ? true : false,
+          serviceId: isCapacity !== null ? isCapacity : isUtilisation,
+          answer: thisCap.answer,
+        };
+      }) : [];
+
+    // for CSV output, the capacities need to be separated from utilisations
+
+    // the capacities must be written out in the same sequence of semi-colon delimited values as ALLSERVICES
+    columns.push(otherServices.map(thisService => {
+      // capacities only
+      const matchedCapacityForGivenService = entityCapacities.find(thisCap => thisCap.isCapacity && thisCap.serviceId == thisService.id);
+      return matchedCapacityForGivenService ? matchedCapacityForGivenService.answer : ''
+    }).join(';'));
+    columns.push(otherServices.map(thisService => {
+      // capacities only
+      const matchedUtilisationForGivenService = entityCapacities.find(thisCap => thisCap.isUtilisation && thisCap.serviceId == thisService.id);
+      return matchedUtilisationForGivenService ? matchedUtilisationForGivenService.answer : ''
+    }).join(';'));
 
     // all service "other" descriptions
     columns.push(otherServices.map(thisService => thisService.other && thisService.other.length > 0 ? thisService.other : '').join(';'));

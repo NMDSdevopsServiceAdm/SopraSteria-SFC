@@ -1152,6 +1152,44 @@ class BUDI {
     }
   }
 
+  static serviceFromCapacityId(serviceCapacityId) {
+    if (ALL_CAPACITIES) {
+      const foundCapacity = ALL_CAPACITIES.find(thisCapacity => {
+        if (thisCapacity.serviceCapacityId === serviceCapacityId) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      // foundCapacity will be undefined if not found
+      return foundCapacity ? foundCapacity.serviceId : null;
+
+    } else {
+      return null;
+    }
+  }
+
+
+  static serviceFromUtilisationId(serviceCapacityId) {
+    if (ALL_UTILISATIONS) {
+      const foundCapacity = ALL_UTILISATIONS.find(thisCapacity => {
+        if (thisCapacity.serviceCapacityId === serviceCapacityId) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      // foundCapacity will be undefined if not found
+      return foundCapacity ? foundCapacity.serviceId : null;
+
+    } else {
+      return null;
+    }
+  }
+
+
   // more to come
 }
 
