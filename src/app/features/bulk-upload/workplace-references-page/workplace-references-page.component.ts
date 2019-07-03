@@ -1,4 +1,3 @@
-import { LocalIdentifierRequest } from '@core/model/establishment.model';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { EstablishmentService } from '@core/services/establishment.service';

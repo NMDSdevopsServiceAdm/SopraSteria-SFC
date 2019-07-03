@@ -1,5 +1,5 @@
 import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { LocalIdentifierRequest } from '@core/model/establishment.model';
+import { LocalIdentifiersRequest } from '@core/model/establishment.model';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -114,7 +114,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  protected generateRequest(): LocalIdentifierRequest {
+  protected generateRequest(): LocalIdentifiersRequest {
     return  {
       localIdentifier: Object.keys(this.form.value).map(key => ({
         uid: key,
