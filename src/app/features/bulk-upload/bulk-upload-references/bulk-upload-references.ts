@@ -12,25 +12,26 @@ import { Worker } from '@core/model/worker.model';
 import { Workplace } from '@core/model/my-workplaces.model';
 
 export class BulkUploadReferences implements OnInit, OnDestroy {
+  protected maxLength = 120;
   protected subscriptions: Subscription = new Subscription();
+  public establishmentName: string;
   public form: FormGroup;
   public formErrorsMap: ErrorDetails[] = [];
   public primaryEstablishmentName: string;
   public references: Array<Workplace | Worker> = [];
   public referenceType: string;
   public referenceTypeEnum = BulkUploadFileType;
+  public remainingEstablishments: number;
   public return: URLStructure;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
-  public establishmentName: string;
-  public remainingEstablishments: number;
 
   constructor(
     protected authService: AuthService,
     protected router: Router,
     protected formBuilder: FormBuilder,
-    protected errorSummaryService: ErrorSummaryService,
+    protected errorSummaryService: ErrorSummaryService
   ) {}
 
   ngOnInit() {
@@ -56,7 +57,11 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
         reference.uid,
-        new FormControl(null, [Validators.required, this.uniqueValidator.bind(this)])
+        new FormControl(reference.localIdentifier, [
+          Validators.required,
+          Validators.maxLength(this.maxLength),
+          this.uniqueValidator.bind(this),
+        ])
       );
 
       this.formErrorsMap.push({
@@ -65,6 +70,10 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
           {
             name: 'required',
             message: `Enter the missing ${this.referenceType.toLowerCase()} reference.`,
+          },
+          {
+            name: 'maxlength',
+            message: `The reference must be ${this.maxLength} characters or less.`,
           },
           {
             name: 'unique',
@@ -93,7 +102,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     this.errorSummaryService.scrollToErrorSummary();
   }
 
-  protected uniqueValidator(control: AbstractControl): { [key: string]: boolean } | null  {
+  protected uniqueValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const formValues: string[] = Object.values(this.form.value);
     const isDuplicate: boolean = formValues.includes(control.value);
     return isDuplicate ? { unique: true } : null;
