@@ -21,6 +21,7 @@ export interface Workplace {
 
 export enum WorkplaceDataOwner {
   Parent = 'Parent',
+  Workplace = 'Workplace',
 }
 
 export enum ParentPermissions {

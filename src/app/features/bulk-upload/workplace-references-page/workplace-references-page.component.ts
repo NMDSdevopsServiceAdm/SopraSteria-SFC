@@ -54,13 +54,18 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
         (references: GetWorkplacesResponse) => {
-          if (references) {
-            this.references = references.subsidaries ? references.subsidaries.establishments : [];
-            if (this.references.length) {
-              this.updateForm();
-              this.workPlaceReferences = this.generateWorkPlaceReferences(references);
-              this.bulkUploadService.workPlaceReferences$.next(this.workPlaceReferences);
-            }
+          if (references.subsidaries) {
+            this.references = references.subsidaries.establishments;
+          }
+
+          if (references.primary) {
+            this.references.unshift(references.primary);
+          }
+
+          if (this.references.length) {
+            this.updateForm();
+            this.workPlaceReferences = this.generateWorkPlaceReferences(references);
+            this.bulkUploadService.workPlaceReferences$.next(this.workPlaceReferences);
           }
         },
         (error: HttpErrorResponse) => this.onError(error)
