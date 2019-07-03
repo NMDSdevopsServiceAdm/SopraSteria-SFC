@@ -116,7 +116,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
 
   protected generateRequest(): LocalIdentifiersRequest {
     return  {
-      localIdentifier: Object.keys(this.form.value).map(key => ({
+      localIdentifiers: Object.keys(this.form.value).map(key => ({
         uid: key,
         value: this.form.value[key],
       }))
