@@ -1,3 +1,4 @@
+import { LocalIdentifierRequest } from '@core/model/establishment.model';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -10,7 +11,6 @@ import { GetWorkplacesResponse, Workplace, WorkPlaceReference } from '@core/mode
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserService } from '@core/services/user.service';
-import { forkJoin } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -74,16 +74,8 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   }
 
   protected save(saveAndContinue: boolean): void {
-    const requests = [];
-    const payloads = Object.keys(this.form.value).map(key => ({
-      uid: key,
-      value: { localIdentifier: this.form.value[key] },
-    }));
-
-    payloads.forEach(item => requests.push(this.establishmentService.updateLocalIdentifier(item.uid, item.value)));
-
     this.subscriptions.add(
-      forkJoin(...requests)
+      this.establishmentService.updateLocalIdentifiers(this.generateRequest())
         .pipe(take(1))
         .subscribe(
           () => {

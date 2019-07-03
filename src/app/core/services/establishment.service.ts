@@ -158,7 +158,7 @@ export class EstablishmentService {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/jobs`, data);
   }
 
-  public updateLocalIdentifier(establishmentUid: string, localIdentifier: LocalIdentifierRequest): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentUid}/localIdentifier`, localIdentifier);
+  public updateLocalIdentifiers(request: LocalIdentifierRequest): Observable<any> {
+    return this.http.put<any>(`/api/establishment/${this.establishmentId}/localIdentifier`, request);
   }
 }
