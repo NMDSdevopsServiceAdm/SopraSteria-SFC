@@ -14,3 +14,11 @@ a[target='_blank'] {
     bottom: 2px;
   }
 }
+
+.govuk-fieldset__legend {
+  overflow: visible;
+
+  &.govuk-fieldset__legend--xl {
+    @include govuk-responsive-margin(8, 'bottom');
+  }
+}
