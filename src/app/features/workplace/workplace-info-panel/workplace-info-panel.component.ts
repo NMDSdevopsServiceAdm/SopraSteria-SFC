@@ -11,6 +11,7 @@ export class WorkplaceInfoPanelComponent {
   get canAccessWorkplace() {
     return (
       this.workplace.dataOwner === WorkplaceDataOwner.Parent ||
+      this.workplace.dataOwner === WorkplaceDataOwner.Workplace ||
       this.workplace.parentPermissions === ParentPermissions.Workplace ||
       this.workplace.parentPermissions === ParentPermissions.WorkplaceAndStaff
     );

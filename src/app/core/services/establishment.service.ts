@@ -1,10 +1,10 @@
+import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Establishment, LocalIdentifiersRequest, LocalIdentifiersResponse, UpdateJobsRequest } from '@core/model/establishment.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { Establishment, LocalIdentifierRequest, UpdateJobsRequest } from '@core/model/establishment.model';
-import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
-import { URLStructure } from '@core/model/url.model';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { URLStructure } from '@core/model/url.model';
 
 import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
@@ -158,7 +158,10 @@ export class EstablishmentService {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/jobs`, data);
   }
 
-  public updateLocalIdentifier(establishmentUid: string, localIdentifier: LocalIdentifierRequest): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentUid}/localIdentifier`, localIdentifier);
+  public updateLocalIdentifiers(request: LocalIdentifiersRequest): Observable<LocalIdentifiersResponse> {
+    return this.http.put<LocalIdentifiersResponse>(
+      `/api/establishment/${this.establishmentId}/localIdentifier`,
+      request
+    );
   }
 }

@@ -10,7 +10,6 @@ import { GetWorkplacesResponse, Workplace, WorkPlaceReference } from '@core/mode
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserService } from '@core/services/user.service';
-import { forkJoin } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -54,13 +53,18 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe(
         (references: GetWorkplacesResponse) => {
-          if (references) {
-            this.references = references.subsidaries ? references.subsidaries.establishments : [];
-            if (this.references.length) {
-              this.updateForm();
-              this.workPlaceReferences = this.generateWorkPlaceReferences(references);
-              this.bulkUploadService.workPlaceReferences$.next(this.workPlaceReferences);
-            }
+          if (references.subsidaries) {
+            this.references = references.subsidaries.establishments;
+          }
+
+          if (references.primary) {
+            this.references.unshift(references.primary);
+          }
+
+          if (this.references.length) {
+            this.updateForm();
+            this.workPlaceReferences = this.generateWorkPlaceReferences(references);
+            this.bulkUploadService.workPlaceReferences$.next(this.workPlaceReferences);
           }
         },
         (error: HttpErrorResponse) => this.onError(error)
@@ -69,16 +73,8 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   }
 
   protected save(saveAndContinue: boolean): void {
-    const requests = [];
-    const payloads = Object.keys(this.form.value).map(key => ({
-      uid: key,
-      value: { localIdentifier: this.form.value[key] },
-    }));
-
-    payloads.forEach(item => requests.push(this.establishmentService.updateLocalIdentifier(item.uid, item.value)));
-
     this.subscriptions.add(
-      forkJoin(...requests)
+      this.establishmentService.updateLocalIdentifiers(this.generateRequest())
         .pipe(take(1))
         .subscribe(
           () => {
