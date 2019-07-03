@@ -1,6 +1,6 @@
 a[target='_blank'] {
   position: relative;
-  padding-right: 23px;
+  padding-right: 18px;
 
   &:before {
     content: '';
@@ -10,8 +10,8 @@ a[target='_blank'] {
     background-size: 13px auto;
     display: block;
     position: absolute;
-    right: 5px;
-    bottom: 2px;
+    right: 0;
+    bottom: 1px;
   }
 }
 
@@ -20,5 +20,9 @@ a[target='_blank'] {
 
   &.govuk-fieldset__legend--xl {
     @include govuk-responsive-margin(8, 'bottom');
+  }
+
+  &.govuk-fieldset__legend--l {
+    @include govuk-responsive-margin(6, 'bottom');
   }
 }
