@@ -1,82 +1,88 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-xl">What is their country of birth?</h1>
-  </div>
-</div>
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-form-group">
-    <div class="govuk-radios govuk-radios--conditional">
-      <div class="govuk-radios__item">
-        <input
-          class="govuk-radios__input"
-          formControlName="countryOfBirthKnown"
-          id="countryOfBirthKnown-1"
-          name="countryOfBirthKnown"
-          type="radio"
-          value="United Kingdom"
-        />
-        <label class="govuk-label govuk-radios__label" for="countryOfBirthKnown-1">
-          United Kingdom
-        </label>
-      </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              What is their country of birth?
+            </h1>
+          </legend>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                formControlName="countryOfBirthKnown"
+                id="countryOfBirthKnown-1"
+                name="countryOfBirthKnown"
+                type="radio"
+                value="United Kingdom"
+              />
+              <label class="govuk-label govuk-radios__label" for="countryOfBirthKnown-1">
+                United Kingdom
+              </label>
+            </div>
 
-      <div class="govuk-radios__item">
-        <input
-          class="govuk-radios__input"
-          formControlName="countryOfBirthKnown"
-          id="countryOfBirthKnown-conditional-2"
-          name="countryOfBirthKnown"
-          type="radio"
-          value="Other"
-          data-aria-controls="conditional-countryOfBirthKnown-conditional-2"
-        />
-        <label class="govuk-label govuk-radios__label" for="countryOfBirthKnown-conditional-2">
-          Other
-        </label>
-      </div>
-      <div
-        class="govuk-radios__conditional"
-        [class.govuk-radios__conditional--hidden]="form.get('countryOfBirthKnown').value !== 'Other'"
-        id="conditional-countryOfBirthKnown-conditional-2"
-      >
-        <div class="govuk-form-group">
-          <label class="govuk-label" for="countryOfBirthName">
-            Country
-          </label>
-          <span id="countryOfBirthName-hint" class="govuk-hint">
-            Optional
-          </span>
-          <span
-            id="countryOfBirthName-error"
-            class="govuk-error-message"
-            *ngIf="submitted && form.get('countryOfBirthName').errors"
-          >
-            {{ getFormErrorMessage('countryOfBirthName', 'validCountryOfBirth') }}
-          </span>
-          <div class="govuk-input--width-20">
-            <app-auto-suggest
-              [formGroup]="form"
-              [dataProvider]="countryOfBirthNameFilter"
-              formControlName="countryOfBirthName"
-            ></app-auto-suggest>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                formControlName="countryOfBirthKnown"
+                id="countryOfBirthKnown-conditional-2"
+                name="countryOfBirthKnown"
+                type="radio"
+                value="Other"
+                data-aria-controls="conditional-countryOfBirthKnown-conditional-2"
+              />
+              <label class="govuk-label govuk-radios__label" for="countryOfBirthKnown-conditional-2">
+                Other
+              </label>
+            </div>
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="form.get('countryOfBirthKnown').value !== 'Other'"
+              id="conditional-countryOfBirthKnown-conditional-2"
+            >
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="countryOfBirthName">
+                  Country
+                </label>
+                <span id="countryOfBirthName-hint" class="govuk-hint">
+                  Optional
+                </span>
+                <span
+                  id="countryOfBirthName-error"
+                  class="govuk-error-message"
+                  *ngIf="submitted && form.get('countryOfBirthName').errors"
+                >
+                  {{ getFormErrorMessage('countryOfBirthName', 'validCountryOfBirth') }}
+                </span>
+                <div class="govuk-input--width-20">
+                  <app-auto-suggest
+                    [formGroup]="form"
+                    [dataProvider]="countryOfBirthNameFilter"
+                    formControlName="countryOfBirthName"
+                  ></app-auto-suggest>
+                </div>
+              </div>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                formControlName="countryOfBirthKnown"
+                id="countryOfBirthKnown-3"
+                name="countryOfBirthKnown"
+                type="radio"
+                value="Don't know"
+              />
+              <label class="govuk-label govuk-radios__label" for="countryOfBirthKnown-3">
+                Don't know
+              </label>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div class="govuk-radios__item">
-        <input
-          class="govuk-radios__input"
-          formControlName="countryOfBirthKnown"
-          id="countryOfBirthKnown-3"
-          name="countryOfBirthKnown"
-          type="radio"
-          value="Don't know"
-        />
-        <label class="govuk-label govuk-radios__label" for="countryOfBirthKnown-3">
-          Don't know
-        </label>
+        </fieldset>
       </div>
     </div>
   </div>
