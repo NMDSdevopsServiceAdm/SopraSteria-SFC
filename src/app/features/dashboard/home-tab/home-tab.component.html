@@ -19,9 +19,9 @@
     <ul class="govuk-list">
       <li *ngIf="role === editRole"><a [routerLink]="['/bulk-upload']">Bulk upload</a></li>
       <li *ngIf="isParent"><a [routerLink]="['/workplace/view-my-workplaces']">View my workplaces</a></li>
+      <li><a [routerLink]="['/reports']">View reports</a></li>
       <!--
         TODO uncomment once relevant sections have been developed
-        <li><a [routerLink]="['/reports']">View reports</a></li>
         <li><a [routerLink]="['/']">Request to become a parent</a></li>
         <li><a [routerLink]="['/']">Link to parent</a></li>
       -->

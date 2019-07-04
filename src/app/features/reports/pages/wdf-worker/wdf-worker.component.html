@@ -1,0 +1,32 @@
+<ng-container *ngIf="worker">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
+        <span class="govuk-caption-xl">Staff record summary</span>
+        {{ worker.nameOrId }}
+      </h1>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <p>Last updated on {{ worker.updated | date: 'longDate' }}</p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <p *ngIf="worker.wdf.isEligible"><img src="/assets/images/tick-icon.svg" alt="" /> Meeting criteria</p>
+      <p *ngIf="!worker.wdf.isEligible"><img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria</p>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-!-margin-bottom-4">
+      <app-wdf-update-warning *ngIf="report" [report]="report"></app-wdf-update-warning>
+    </div>
+  </div>
+
+  <p class="govuk-!-margin-bottom-8">
+    Check the information you have provided on this staff record is correct.
+  </p>
+
+  <app-staff-record-summary [worker]="worker" [wdfReportEnabled]="true"></app-staff-record-summary>
+
+  <button type="button" class="govuk-button" (click)="saveAndComplete()">Save and complete</button>
+</ng-container>

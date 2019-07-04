@@ -13,10 +13,14 @@ export class WorkplaceSummaryComponent {
   public capacityMessages = [];
   public pluralMap = [];
   private _workplace: any;
-  @Input() displayWDFReport: boolean;
+  @Input() wdfReportEnabled = false;
 
   @Input()
   set workplace(workplace: any) {
+    if (!workplace.employerType) {
+      return;
+    }
+
     this._workplace = workplace;
     this.capacityMessages = [];
 

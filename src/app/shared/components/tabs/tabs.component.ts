@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { AfterContentInit, Component, ContentChildren, ElementRef, Input, QueryList, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, ContentChildren, ElementRef, QueryList, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { TabComponent } from './tab.component';
@@ -11,7 +11,7 @@ import { TabComponent } from './tab.component';
 export class TabsComponent implements AfterContentInit {
   private currentTab: number;
   @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
-  @Input() displayWDFReport: boolean;
+
   @ViewChild('tablist') tablist: ElementRef;
 
   constructor(private location: Location, private route: ActivatedRoute) {}

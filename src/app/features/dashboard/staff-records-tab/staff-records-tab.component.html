@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-one-half">
     <h2 class="govuk-heading-m">Staff records ({{ workers?.length }})</h2>
   </div>
-  <div *ngIf="!displayWDFReport" class="govuk-grid-column-one-half govuk-util__align-right">
+  <div class="govuk-grid-column-one-half govuk-util__align-right">
     <a class="govuk-button govuk-button--secondary" role="button" routerLink="/worker/basic-records-start-screen">
       Add a basic record
     </a>
@@ -29,48 +29,4 @@
   [returnToDash]="true"
 ></app-total-staff-panel>
 
-<table class="govuk-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Staff name</th>
-      <th class="govuk-table__header" scope="col">Job role</th>
-      <th class="govuk-table__header" scope="col">Last updated</th>
-      <th *ngIf="!displayWDFReport" class="govuk-table__header" scope="col">Edit</th>
-      <th *ngIf="displayWDFReport" class="govuk-table__header" scope="col">WDF</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
-    <tr class="govuk-table__row" *ngFor="let worker of workers">
-      <td class="govuk-table__cell" scope="row">
-        <a [routerLink]="['/worker', worker.uid]">{{ worker.nameOrId }}</a>
-      </td>
-      <td class="govuk-table__cell">{{ worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title }}</td>
-      <td class="govuk-table__cell">
-        <span class="govuk-visually-hidden">last updated</span> {{ lastUpdated(worker.updated) }}
-      </td>
-      <td *ngIf="!displayWDFReport" class="govuk-table__cell">
-        <a
-          *ngIf="!worker.completed"
-          class="govuk-util__float-right"
-          [routerLink]="[
-            '/worker',
-            worker.uid,
-            worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
-          ]"
-          >Provide more information <span class="govuk-visually-hidden"> for {{ worker.nameOrId }}</span></a
-        >
-      </td>
-      <td *ngIf="displayWDFReport" class="govuk-table__cell">
-        <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
-        <ng-container *ngIf="worker.wdfEligible">
-          <img class="govuk-util__relative-top-1" src="/assets/images/tick-icon.svg" alt="" />
-          Meeting criteria
-        </ng-container>
-        <ng-container *ngIf="!worker.wdfEligible">
-          <img class="govuk-util__relative-top-1" src="/assets/images/cross-icon.svg" alt="" />
-          Not meeting criteria
-        </ng-container>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<app-staff-summary *ngIf="workers" [workers]="workers"></app-staff-summary>

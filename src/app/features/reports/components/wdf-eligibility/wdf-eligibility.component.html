@@ -1,0 +1,13 @@
+<div *ngIf="criteria" class="govuk-util__light-bg govuk-!-padding-4 govuk-!-margin-top-4 govuk-!-margin-bottom-6">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third" *ngFor="let criterion of criteria">
+      <h2 class="govuk-heading-s govuk-!-margin-bottom-3">{{ criterion.label }}</h2>
+      <p class="govuk-!-margin-bottom-0" *ngIf="criterion.truthy">
+        <img class="govuk-util__relative-top-1" src="/assets/images/tick-icon.svg" alt="" /> Meeting criteria
+      </p>
+      <p class="govuk-!-margin-bottom-0" *ngIf="!criterion.truthy">
+        <img class="govuk-util__relative-top-1" src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,9 +1,8 @@
-import * as moment from 'moment';
-import { Component, OnDestroy, OnInit, Input } from '@angular/core';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-staff-records-tab',
@@ -16,7 +15,6 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
   public incomplete = 0;
   public totalStaff: number;
   public workers: Worker[];
-  @Input() displayWDFReport;
 
   constructor(private establishmentService: EstablishmentService, private workerService: WorkerService) {}
 
@@ -35,13 +33,6 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
     );
 
     this.createStaffResponse = this.workerService.getCreateStaffResponse();
-  }
-
-  private lastUpdated(timestamp: string): string {
-    const lastUpdated: moment.Moment = moment(timestamp);
-    const isToday: boolean = moment().isSame(lastUpdated, 'day');
-
-    return isToday ? 'Today' : lastUpdated.format('D MMMM YYYY');
   }
 
   ngOnDestroy() {

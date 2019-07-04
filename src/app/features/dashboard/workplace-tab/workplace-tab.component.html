@@ -9,9 +9,5 @@
 </ng-template>
 
 <ng-template #summary>
-  <app-workplace-summary
-    [workplace]="workplace"
-    [return]="summaryReturnUrl"
-    [displayWDFReport]="displayWDFReport"
-  ></app-workplace-summary>
+  <app-workplace-summary *ngIf="workplace" [workplace]="workplace" [return]="summaryReturnUrl"></app-workplace-summary>
 </ng-template>

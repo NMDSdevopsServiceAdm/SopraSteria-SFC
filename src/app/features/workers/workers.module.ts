@@ -51,13 +51,6 @@ import {
 } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
-import { BasicRecordComponent } from './staff-record-summary/basic-record/basic-record.component';
-import { EmploymentComponent } from './staff-record-summary/employment/employment.component';
-import { PersonalDetailsComponent } from './staff-record-summary/personal-details/personal-details.component';
-import {
-  QualificationsAndTrainingComponent,
-} from './staff-record-summary/qualifications-and-training/qualifications-and-training.component';
-import { StaffRecordSummaryComponent } from './staff-record-summary/staff-record-summary.component';
 import { QualificationsComponent } from './staff-record/qualifications/qualifications.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TrainingComponent } from './staff-record/training/training.component';
@@ -76,7 +69,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     AdultSocialCareStartedComponent,
     ApprenticeshipTrainingComponent,
     AverageWeeklyHoursComponent,
-    BasicRecordComponent,
     BasicRecordsSaveSuccessComponent,
     BritishCitizenshipComponent,
     CareCertificateComponent,
@@ -94,7 +86,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DeleteWorkerDialogComponent,
     DisabilityComponent,
     EditWorkerComponent,
-    EmploymentComponent,
     EthnicityComponent,
     GenderComponent,
     HomePostcodeComponent,
@@ -107,9 +98,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     OtherJobRolesComponent,
     OtherQualificationsComponent,
     OtherQualificationsLevelComponent,
-    PersonalDetailsComponent,
     QualificationFormComponent,
-    QualificationsAndTrainingComponent,
     QualificationsComponent,
     RecruitedFromComponent,
     SalaryComponent,
@@ -117,7 +106,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     SocialCareQualificationLevelComponent,
     StaffDetailsComponent,
     StaffRecordComponent,
-    StaffRecordSummaryComponent,
     TotalStaffComponent,
     TrainingComponent,
     WeeklyContractedHoursComponent,

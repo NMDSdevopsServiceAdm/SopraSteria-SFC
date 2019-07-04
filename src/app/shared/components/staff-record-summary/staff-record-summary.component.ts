@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
@@ -8,28 +8,34 @@ import { WorkerService } from '@core/services/worker.service';
   selector: 'app-staff-record-summary',
   templateUrl: './staff-record-summary.component.html',
 })
-export class StaffRecordSummaryComponent {
-  public returnTo: URLStructure;
+export class StaffRecordSummaryComponent implements OnInit {
   @Input() set worker(value: Worker) {
     this._worker = value;
-    this.returnTo = { url: ['/worker', this.worker.uid, 'check-answers'] };
   }
   @Input() return: URLStructure;
-  private _worker: Worker;
+  @Input() wdfReportEnabled = false;
 
-  get worker(): Worker {
-    return this._worker;
-  }
+  public returnTo: URLStructure;
+  private _worker: Worker;
 
   constructor(private location: Location, public workerService: WorkerService) {}
 
+  ngOnInit() {
+    this.returnTo = this.wdfReportEnabled
+      ? { url: ['/reports', 'wdf', 'worker', this.worker.uid] }
+      : { url: ['/worker', this.worker.uid, 'check-answers'] };
+  }
+
   goBack(event) {
     event.preventDefault();
-
     this.location.back();
   }
 
   setReturn() {
     this.workerService.setReturnTo(this.return);
+  }
+
+  get worker(): Worker {
+    return this._worker;
   }
 }

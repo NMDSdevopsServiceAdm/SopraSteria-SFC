@@ -25,7 +25,7 @@
     <dt class="govuk-summary-list__key">
       Date of birth
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.dateOfBirth === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -34,7 +34,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.dateOfBirth ? dob : '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -77,7 +77,7 @@
       Gender
     </dt>
 
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.gender === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -86,7 +86,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.gender | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -149,7 +149,7 @@
     <dt class="govuk-summary-list__key">
       Nationality
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.nationality === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -162,7 +162,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{
         worker.nationality?.other?.nationality !== null
           ? worker.nationality?.other?.nationality

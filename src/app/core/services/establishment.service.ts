@@ -1,10 +1,15 @@
-import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Establishment, LocalIdentifiersRequest, LocalIdentifiersResponse, UpdateJobsRequest } from '@core/model/establishment.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, isDevMode } from '@angular/core';
-import { map } from 'rxjs/operators';
+import {
+  Establishment,
+  LocalIdentifiersRequest,
+  LocalIdentifiersResponse,
+  UpdateJobsRequest,
+} from '@core/model/establishment.model';
+import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
@@ -39,7 +44,6 @@ interface EmployerTypeRequest {
 })
 export class EstablishmentService {
   private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-  public establishment$: Observable<Establishment> = this._establishment$.asObservable();
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   public previousEstablishmentId: number;
   public isSameLoggedInUser: boolean;
@@ -55,6 +59,17 @@ export class EstablishmentService {
     } else {
       this.isSameLoggedInUser = true;
     }
+  }
+
+  public get establishment$() {
+    if (this._establishment$.value !== null) {
+      return this._establishment$.asObservable();
+    }
+    return this.getEstablishment(this.establishmentId.toString()).pipe(
+      tap(establishment => {
+        this.setState(establishment);
+      })
+    );
   }
 
   public get establishment() {
