@@ -300,7 +300,19 @@
     <dt class="govuk-summary-list__key">
       Average weekly working hours
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.weeklyHoursAverage === 'No'">
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.weeklyHoursAverage != 'No'">
+        {{
+          isNumber(worker.weeklyHoursAverage?.hours)
+            ? worker.weeklyHoursAverage?.hours
+            : (worker.weeklyHoursAverage?.value | openEndedAnswer)
+        }}
+      </ng-container>
+    </dd>
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{
         isNumber(worker.weeklyHoursAverage?.hours)
           ? worker.weeklyHoursAverage?.hours
@@ -325,7 +337,19 @@
     <dt class="govuk-summary-list__key">
       Contracted weekly hours
     </dt>
-    <dd class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.weeklyHoursContracted === 'No'">
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.weeklyHoursContracted != 'No'">
+        {{
+          isNumber(worker.weeklyHoursContracted?.hours)
+            ? worker.weeklyHoursContracted?.hours
+            : (worker.weeklyHoursContracted?.value | openEndedAnswer)
+        }}
+      </ng-container>
+    </dd>
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{
         isNumber(worker.weeklyHoursContracted?.hours)
           ? worker.weeklyHoursContracted?.hours
