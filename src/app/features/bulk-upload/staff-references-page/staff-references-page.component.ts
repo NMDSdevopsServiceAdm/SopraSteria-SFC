@@ -83,11 +83,9 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
     this.subscriptions.add(
       this.workerService.getAllWorkersByUid(establishmentUid).subscribe(
         (references: Worker[]) => {
-          if (references) {
+          if (references && references.length) {
             this.references = references;
-            if (this.references.length) {
-              this.updateForm();
-            }
+            this.updateForm();
           }
         },
         (error: HttpErrorResponse) => this.onError(error)
