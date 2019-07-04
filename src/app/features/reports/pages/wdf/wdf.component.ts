@@ -15,16 +15,16 @@ import { take } from 'rxjs/operators';
   templateUrl: './wdf.component.html',
 })
 export class WdfComponent implements OnInit {
+  public workplace: Establishment;
+  public workers: Array<Worker>;
+  public report: WDFReport;
+  public returnUrl: URLStructure;
+
   constructor(
     private reportService: ReportService,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService
   ) {}
-
-  public workplace: Establishment;
-  public workers: Array<Worker>;
-  public report: WDFReport;
-  public returnUrl: URLStructure;
 
   ngOnInit() {
     this.returnUrl = { url: ['/reports', 'wdf'] };
