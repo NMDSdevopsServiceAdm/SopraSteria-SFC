@@ -1,5 +1,5 @@
 import { DecimalPipe, Location } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { WorkerService } from '@core/services/worker.service';
@@ -13,16 +13,16 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
   templateUrl: './employment.component.html',
   providers: [DecimalPipe],
 })
-export class EmploymentComponent extends StaffRecordSummaryComponent implements OnInit {
-  @Input() reportDetails;
+export class EmploymentComponent extends StaffRecordSummaryComponent {
+  @Input() wdfReportEnabled = false;
 
-  ngOnInit() {
-    if (this.reportDetails != null && this.reportDetails.hasOwnProperty('displayWDFReport')) {
-      this.reportDetails['displayWDFReport'] = true;
-    }
-  }
+  constructor(
+    location: Location,
 
-  constructor(location: Location, workerService: WorkerService, private decimalPipe: DecimalPipe) {
+    workerService: WorkerService,
+
+    private decimalPipe: DecimalPipe
+  ) {
     super(location, workerService);
   }
 

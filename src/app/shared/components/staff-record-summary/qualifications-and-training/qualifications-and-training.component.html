@@ -31,7 +31,7 @@
       Started or completed Care Certificate
     </dt>
 
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.careCertificate === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -40,7 +40,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.careCertificate || '-' }}
     </dd>
 
@@ -62,7 +62,7 @@
     <dt class="govuk-summary-list__key">
       Any social care qualification
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.qualificationInSocialCare === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -71,7 +71,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.qualificationInSocialCare | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -92,7 +92,7 @@
     <dt class="govuk-summary-list__key">
       Highest level of social care qualification
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.socialCareQualification === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -101,7 +101,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.socialCareQualification?.title | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -122,7 +122,7 @@
     <dt class="govuk-summary-list__key">
       Non-social care qualification
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.otherQualification === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -131,7 +131,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.otherQualification | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -152,7 +152,7 @@
     <dt class="govuk-summary-list__key">
       Highest level of non-social care qualification
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.highestQualification === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -161,7 +161,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.highestQualification?.title || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">

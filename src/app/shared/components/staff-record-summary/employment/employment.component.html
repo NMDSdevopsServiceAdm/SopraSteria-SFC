@@ -25,7 +25,7 @@
     <dt class="govuk-summary-list__key">
       Date started
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.mainJobStartDate === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -34,7 +34,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.mainJobStartDate ? mainStartDate : '-' }}
     </dd>
 
@@ -77,7 +77,7 @@
     <dt class="govuk-summary-list__key">
       Other job roles
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.otherJobs === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -100,7 +100,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
         -
       </ng-template>
@@ -177,7 +177,7 @@
     <dt class="govuk-summary-list__key">
       Recruited from
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.recruitedFrom === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -190,7 +190,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{
         worker.recruitedFrom?.from?.from !== null
           ? worker.recruitedFrom?.from?.from
@@ -240,7 +240,7 @@
     <dt class="govuk-summary-list__key">
       Sickness in last 12 months
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.daysSick === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -249,7 +249,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -270,7 +270,7 @@
     <dt class="govuk-summary-list__key">
       Zero hours contract
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.zeroHoursContract === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -279,7 +279,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.zeroHoursContract | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
@@ -351,7 +351,7 @@
       Salary
     </dt>
 
-    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.annualHourlyPay === 'No'">
         <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
@@ -360,7 +360,7 @@
       </ng-container>
     </dd>
 
-    <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
       {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">

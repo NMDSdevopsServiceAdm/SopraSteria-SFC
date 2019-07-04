@@ -1,74 +1,7 @@
-<app-dashboard-header></app-dashboard-header>
+<app-reports-header></app-reports-header>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment?.name }}</span>
-    <h1 class="govuk-heading-ls">
-      <ng-container *ngIf="!displayWDFReport">Reports</ng-container>
-      <ng-container *ngIf="displayWDFReport">Workforce Development Fund</ng-container>
-    </h1>
-  </div>
-  <div class="govuk-grid-column-one-third">
-    <p (click)="displayWDF($event)">Workforce Development Fund</p>
+<div class="govuk-grid-row govuk-!-margin-bottom-9">
+  <div class="govuk-grid-column-full">
+    <a [routerLink]="['/reports', 'wdf']">Workforce Development Fund</a>
   </div>
 </div>
-
-<p *ngIf="!displayWDFReport" (click)="displayWDF($event)">Workforce Development Fund</p>
-
-<app-eligibility-display-overview [eligibility]="eligibility" *ngIf="displayWDFReport">
-</app-eligibility-display-overview>
-
-<!-- Below form is for testing purposes only -->
-<form
-  novalidate
-  (ngSubmit)="updateEffectiveFrom()"
-  [formGroup]="updateEligibilityForm"
-  *ngIf="displayWDFReport && reportDetails.customEffectiveFrom"
->
-  <div class="form-group mb-0">
-    <div class="field-group mb-0">
-      <fieldset>
-        <legend *ngIf="label">Update eligibility date</legend>
-        <label class="date mb-0"
-          >Date
-          <input type="text" formControlName="date" class="form-control" placeholder="2019-03-01" />
-        </label>
-        <label class="hour mb-0"
-          >Hour
-          <input type="text" formControlName="hour" class="form-control" placeholder="12" />
-        </label>
-        <label class="minute mb-0"
-          >Minute
-          <input type="text" formControlName="minute" class="form-control" placeholder="30" />
-        </label>
-        <label class="second mb-0"
-          >Second
-          <input type="text" formControlName="second" class="form-control" placeholder="00.000" />
-        </label>
-      </fieldset>
-    </div>
-  </div>
-
-  <button class="btn btn-secondary">Send</button>
-</form>
-
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half">
-    <div class="govuk-warning-text govuk-!-margin-bottom-2" *ngIf="displayWDFReport">
-      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-      <span class="govuk-warning-text__text">
-        You must update your ASC-WDS data before the 31 March {{ effectiveFromDateNextYear }} to qualify for WDF.
-      </span>
-    </div>
-  </div>
-</div>
-
-<app-tabs *ngIf="displayWDFReport" [displayWDFReport]="displayWDFReport">
-  <app-tab [title]="'Workplace'">
-    <app-workplace-tab [displayWDFReport]="displayWDFReport"></app-workplace-tab>
-  </app-tab>
-
-  <app-tab [title]="'Staff records'">
-    <app-staff-records-tab [displayWDFReport]="displayWDFReport"></app-staff-records-tab>
-  </app-tab>
-</app-tabs>

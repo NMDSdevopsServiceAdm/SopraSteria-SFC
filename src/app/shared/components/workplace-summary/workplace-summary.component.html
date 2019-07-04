@@ -28,7 +28,7 @@
       Employer type
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="displayWDFReport">
+      <ng-container *ngIf="wdfReportEnabled">
         <ng-container *ngIf="workplace.wdf.employerType === 'No'">
           <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
@@ -37,7 +37,7 @@
         </ng-container>
       </ng-container>
 
-      <ng-container *ngIf="!displayWDFReport">
+      <ng-container *ngIf="!wdfReportEnabled">
         {{ !!workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value || '-' }}
       </ng-container>
     </dd>
@@ -60,7 +60,7 @@
       Main service
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="displayWDFReport">
+      <ng-container *ngIf="wdfReportEnabled">
         <ng-container *ngIf="workplace.wdf.mainService === 'No'">
           <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
@@ -69,7 +69,7 @@
         </ng-container>
       </ng-container>
 
-      <ng-container *ngIf="!displayWDFReport">
+      <ng-container *ngIf="!wdfReportEnabled">
         {{ workplace.mainService?.name || '-' }}
       </ng-container>
     </dd>
@@ -96,7 +96,7 @@
         -
       </ng-template>
       <ng-template #otherServices>
-        <ng-container *ngIf="displayWDFReport">
+        <ng-container *ngIf="wdfReportEnabled">
           <ng-container *ngIf="workplace.wdf.otherService === 'No'">
             <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
           </ng-container>
@@ -112,7 +112,7 @@
           </ng-container>
         </ng-container>
 
-        <ng-container *ngIf="!displayWDFReport">
+        <ng-container *ngIf="!wdfReportEnabled">
           <ul class="govuk-list">
             <ng-container *ngFor="let categories of workplace.otherServices">
               <li *ngFor="let service of categories.services">
@@ -143,7 +143,7 @@
       Service capacity
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="displayWDFReport">
+      <ng-container *ngIf="wdfReportEnabled">
         <ng-container *ngIf="workplace.wdf.capacities === 'No'">
           <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
@@ -159,7 +159,7 @@
         </ng-container>
       </ng-container>
 
-      <ng-container *ngIf="!displayWDFReport">
+      <ng-container *ngIf="!wdfReportEnabled">
         <ng-template [ngIf]="!workplace.capacities?.length" [ngIfElse]="capacities">
           -
         </ng-template>
@@ -189,7 +189,7 @@
       Service users
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="displayWDFReport">
+      <ng-container *ngIf="wdfReportEnabled">
         <ng-container *ngIf="workplace.wdf.serviceUsers === 'No'">
           <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
@@ -208,7 +208,7 @@
         </ng-container>
       </ng-container>
 
-      <ng-container *ngIf="!displayWDFReport">
+      <ng-container *ngIf="!wdfReportEnabled">
         <ng-template [ngIf]="!workplace.serviceUsers?.length" [ngIfElse]="serviceUsers">
           -
         </ng-template>
@@ -276,7 +276,7 @@
       Current staff vacancies
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="displayWDFReport">
+      <ng-container *ngIf="wdfReportEnabled">
         <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
           <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
@@ -303,7 +303,7 @@
         </ng-container>
       </ng-container>
 
-      <ng-container *ngIf="!displayWDFReport">
+      <ng-container *ngIf="!wdfReportEnabled">
         <ng-template [ngIf]="!workplace.vacancies?.length" [ngIfElse]="vacancies">
           -
         </ng-template>
@@ -344,7 +344,7 @@
         </ul>
       </ng-container>
       <ng-container *ngIf="!isArray(workplace.starters)">
-        <ng-container *ngIf="displayWDFReport">
+        <ng-container *ngIf="wdfReportEnabled">
           <ng-container *ngIf="workplace.wdf.starters === 'No'">
             <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
           </ng-container>
@@ -366,7 +366,7 @@
           </ng-container>
         </ng-container>
 
-        <ng-container *ngIf="!displayWDFReport">
+        <ng-container *ngIf="!wdfReportEnabled">
           <ng-template [ngIf]="!workplace.starters?.length" [ngIfElse]="starters">
             -
           </ng-template>
@@ -402,7 +402,7 @@
       Staff leavers
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-container *ngIf="displayWDFReport">
+      <ng-container *ngIf="wdfReportEnabled">
         <ng-container *ngIf="workplace.wdf.leavers === 'No'">
           <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
@@ -424,7 +424,7 @@
         </ng-container>
       </ng-container>
 
-      <ng-container *ngIf="!displayWDFReport">
+      <ng-container *ngIf="!wdfReportEnabled">
         <ng-template [ngIf]="!workplace.leavers?.length" [ngIfElse]="leavers">
           -
         </ng-template>

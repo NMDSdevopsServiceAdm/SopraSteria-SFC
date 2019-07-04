@@ -1,19 +1,18 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { EligibilityDisplayOverviewComponent } from './eligibility-display-overview.component';
+import { WdfEligibilityComponent } from '@features/reports/wdf-eligibility/wdf-eligibility.component';
 
 describe('EligibilityDisplayOverviewComponent', () => {
-  let component: EligibilityDisplayOverviewComponent;
-  let fixture: ComponentFixture<EligibilityDisplayOverviewComponent>;
+  let component: WdfEligibilityComponent;
+  let fixture: ComponentFixture<WdfEligibilityComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EligibilityDisplayOverviewComponent],
+      declarations: [WdfEligibilityComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EligibilityDisplayOverviewComponent);
+    fixture = TestBed.createComponent(WdfEligibilityComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

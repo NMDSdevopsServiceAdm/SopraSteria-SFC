@@ -16,6 +16,14 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
+import { BasicRecordComponent } from './components/staff-record-summary/basic-record/basic-record.component';
+import { EmploymentComponent } from './components/staff-record-summary/employment/employment.component';
+import { PersonalDetailsComponent } from './components/staff-record-summary/personal-details/personal-details.component';
+import {
+  QualificationsAndTrainingComponent,
+} from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
+import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
+import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StartButtonComponent } from './components/start-button/start-button.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
@@ -55,6 +63,12 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     WorkplaceSummaryComponent,
     OpenEndedAnswerPipe,
     ClosedEndedAnswerPipe,
+    StaffSummaryComponent,
+    StaffRecordSummaryComponent,
+    BasicRecordComponent,
+    EmploymentComponent,
+    PersonalDetailsComponent,
+    QualificationsAndTrainingComponent,
   ],
   exports: [
     AlertComponent,
@@ -80,6 +94,12 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     WorkplaceSummaryComponent,
     OpenEndedAnswerPipe,
     ClosedEndedAnswerPipe,
+    StaffSummaryComponent,
+    StaffRecordSummaryComponent,
+    BasicRecordComponent,
+    EmploymentComponent,
+    PersonalDetailsComponent,
+    QualificationsAndTrainingComponent,
   ],
 })
 export class SharedModule {}
