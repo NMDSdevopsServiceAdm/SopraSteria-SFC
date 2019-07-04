@@ -76,6 +76,7 @@ router.route('/').post(async (req, res) => {
       return res.status(503).send(err.safe);
     } else {
       console.error("Unexpected exception: ", err);
+      return res.status(503).send(err.safe);
     }
   }
 });
@@ -204,10 +205,10 @@ router.route('/').put(async (req, res) => {
   } catch (err) {
     if (err.name && err.name === 'SequelizeUniqueConstraintError') {
       if(err.parent.constraint && ( err.parent.constraint === 'establishment_LocalIdentifier_unq')){
-          console.error("Establishment::localidentifier PUT: ", err.message);
           return res.status(400).send({duplicateValue: err.fields.LocalIdentifierValue});
       }
     }
+    console.error("Establishment::localidentifier PUT: ", err.message);
     return res.status(503).send(err.message);
   }
 });
