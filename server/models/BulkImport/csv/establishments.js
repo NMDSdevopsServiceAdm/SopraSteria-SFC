@@ -1967,7 +1967,7 @@ class Establishment {
   };
 
   _csvQuote(toCsv) {
-    if (toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+    if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
       return '"' + toCsv.replace(/"/g, '""') + '"';
     } else {
       return toCsv;
