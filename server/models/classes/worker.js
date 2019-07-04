@@ -213,6 +213,33 @@ class Worker extends EntityValidator {
     get apprenticeship() {
       return this._properties.get('ApprenticeshipTraining') ? this._properties.get('ApprenticeshipTraining').property : null;
     };
+    get zeeroContractHours() {
+      return this._properties.get('ZeroHoursContract') ? this._properties.get('ZeroHoursContract').property : null;
+    };
+    get daysSick() {
+      return this._properties.get('DaysSick') ? this._properties.get('DaysSick').property : null;
+    };
+    get annualHourlyPay() {
+      return this._properties.get('AnnualHourlyPay') ? this._properties.get('AnnualHourlyPay').property : null;
+    };
+    get mainJob() {
+      return this._properties.get('MainJob') ? this._properties.get('MainJob').property : null;
+    };
+    get contractedHours() {
+      return this._properties.get('WeeklyHoursContracted') ? this._properties.get('WeeklyHoursContracted').property : null;
+    };
+    get averageHours() {
+      return this._properties.get('WeeklyHoursAverage') ? this._properties.get('WeeklyHoursAverage').property : null;
+    };
+    get otherJobs() {
+      return this._properties.get('OtherJobs') ? this._properties.get('OtherJobs').property : null;
+    };
+    get registeredNurse() {
+      return this._properties.get('RegisteredNurse') ? this._properties.get('RegisteredNurse').property : null;
+    };
+    get nurseSpecialism() {
+      return this._properties.get('NurseSpecialism') ? this._properties.get('NurseSpecialism').property : null;
+    };
 
     // takes the given JSON document and creates a Worker's set of extendable properties
     // Returns true if the resulting Worker is valid; otherwise false
