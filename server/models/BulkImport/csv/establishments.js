@@ -1692,7 +1692,7 @@ class Establishment {
         value: this._establishmentType,
         other: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
       },
-      localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
+      localAuthorities: this._localAuthorities ? this._localAuthorities : [],
       mainService: this._mainService,
       services: this._allServices ? this._allServices
         .filter(thisService => thisService !== this._mainService.id)   // main service cannot appear in otherServices
@@ -1708,7 +1708,7 @@ class Establishment {
           }
 
           return returnThis;
-        }) : undefined,
+        }) : [],
       serviceUsers: this._allServiceUsers ? this._allServiceUsers
         .map((thisService, index) => {
           const returnThis = {
@@ -1720,11 +1720,11 @@ class Establishment {
           }
 
           return returnThis;
-        }) : undefined,
+        }) : [],
       numberOfStaff: this._totalPermTemp,
-      vacancies: this._vacancies ? this._vacancies : undefined,
-      starters: this._starters ? this._starters : undefined,
-      leavers: this.leavers ? this.leavers : undefined,
+      vacancies: this._vacancies ? this._vacancies : 'None',
+      starters: this._starters ? this._starters : 'None',
+      leavers: this.leavers ? this.leavers : 'None',
     };
 
     // share options
@@ -1756,10 +1756,10 @@ class Establishment {
 
     // clean up empty properties
     if (changeProperties.capacities.length == 0) {
-      changeProperties.capacities = undefined;
+      changeProperties.capacities = [];
     }
     if (changeProperties.services && changeProperties.services.length == 0) {
-      changeProperties.services = undefined;
+      changeProperties.services = [];
     }
 
     return {
