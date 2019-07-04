@@ -1,21 +1,18 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <app-error-summary
-      *ngIf="(form.invalid || serverError) && submitted"
-      [formErrorsMap]="formErrorsMap"
-      [serverError]="serverError"
-      [form]="form"
-    >
-    </app-error-summary>
-  </div>
-</div>
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+>
+</app-error-summary>
 
 <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-      <h1 class="govuk-heading-xl">Staff who have left in the last 12 months</h1>
-      <p class="govuk-hint">This should only be for permanent or temporary staff</p>
+      <h1 class="govuk-fieldset__heading">Staff who have left in the last 12 months</h1>
     </legend>
+
+    <p class="govuk-hint">This should only be for permanent or temporary staff.</p>
 
     <ng-container formArrayName="leavers">
       <div class="govuk-grid-row">

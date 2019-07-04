@@ -73,6 +73,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
 
   public onRegulatedByCQCTruthy(): void {
     this.group.setValidators([CustomValidators.checkMultipleInputValues]);
+    this.nonRegulatedPostcode.setValue('');
     this.group.updateValueAndValidity();
 
     this.nonRegulatedPostcode.setValidators(Validators.maxLength(8));
@@ -81,6 +82,8 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
 
   public onRegulatedByCQCFalsy(): void {
     this.group.clearValidators();
+    this.regulatedPostcode.setValue('');
+    this.locationId.setValue('');
     this.group.updateValueAndValidity();
 
     this.nonRegulatedPostcode.setValidators([Validators.required, Validators.maxLength(8)]);
@@ -112,7 +115,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'regulatedPostcode',
+        item: 'group.regulatedPostcode',
         type: [
           {
             name: 'maxlength',
@@ -121,7 +124,7 @@ export class RegulatedByCqcComponent implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'locationId',
+        item: 'group.locationId',
         type: [
           {
             name: 'maxlength',

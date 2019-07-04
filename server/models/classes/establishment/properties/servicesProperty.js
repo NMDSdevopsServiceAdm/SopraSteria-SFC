@@ -20,8 +20,36 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
     // concrete implementations
     async restoreFromJson(document) {
+        // typically, all services (this._allServices) for this `Other Service` property will be set when restoring the establishment and this property from the database
+        //  but during bulk upload, the Establishment will be restored from JSON not database. In those situations, this._allServices will be null, and it
+        //  will be necessary to populate this._allServices from the given JSON document
+        if (this._allServices === null && document.allMyServices && Array.isArray(document.allMyServices)) {
+            // whilst serialising from JSON other services, make a note of main service and all "other" services
+            //  - required in toJSON response and for validation
+            this._allServices = this.mergeServices(
+                document.allMyServices,
+                document.otherServices,
+                document.mainService,
+            );
+
+            if (document.mainService) this._mainService = document.mainService;            // can be an empty array
+        }
+
+        // if restoring from an Establishment's full JSON presentation, rather than from the establishment/:eid/services endpoint, transform the set of "otherServices" into the required input set of "services"
+        if (document.otherServices) {
+            if (Array.isArray(document.otherServices)) {
+                document.services = [];
+                document.otherServices.forEach(thisServiceCategory => {
+                    thisServiceCategory.services.forEach(thisService => {
+                        document.services.push({
+                            id: thisService.id
+                        });
+                    });
+                });
+            }
+        }
+
         if (document.services) {
-            // can be an empty array
             if (Array.isArray(document.services)) {
                 const validatedServices = await this._validateServices(document.services);
 
@@ -36,6 +64,9 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
                 this.property = null;
             }
         }
+
+
+        
     }
 
     // this method takes all services available to this given establishment and merges those services already registered

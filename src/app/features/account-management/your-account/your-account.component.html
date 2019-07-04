@@ -1,105 +1,94 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <span class="govuk-caption-m govuk-!-margin-bottom-2">Account</span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">{{ user?.fullname }}</h1>
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-7">Account details</h2>
+<span class="govuk-caption-l">User Account</span>
+<h1 class="govuk-heading-l">{{ user?.fullname }}</h1>
+<h2 class="govuk-heading-m">Account details</h2>
 
-    <hr class="govuk-section-break govuk-section-break--visible" />
-
-    <dl class="govuk-summary-list govuk-summary-list--no-border basic-records govuk-!-margin-bottom-0">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Fullname
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ user?.fullname }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/account-management/change-your-details']" class="govuk-link">
-            Change
-            <span class="govuk-visually-hidden"> user details</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Job title
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ user?.jobTitle }}
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Email address
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ user?.emailAddress }}
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Contact phone
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ user?.contactNumber }}
-        </dd>
-      </div>
-    </dl>
-
-    <hr class="govuk-section-break govuk-section-break--visible" />
-
-    <dl class="govuk-summary-list govuk-summary-list--no-border basic-records govuk-!-margin-bottom-0">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Username
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ user?.username }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/account-management/change-password']" class="govuk-link">
-            Change
-            <span class="govuk-visually-hidden"> login details</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Password
-        </dt>
-        <dd class="govuk-summary-list__value">
-          ******
-        </dd>
-      </div>
-    </dl>
-
-    <hr class="govuk-section-break govuk-section-break--visible" />
-
-    <dl class="govuk-summary-list govuk-summary-list--no-border basic-records govuk-!-margin-bottom-0">
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Security question
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ user?.securityQuestion }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/account-management/change-user-security']" class="govuk-link">
-            Change
-            <span class="govuk-visually-hidden"> security details</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Security answer
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ user?.securityAnswer }}
-        </dd>
-      </div>
-    </dl>
-    <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-bottom-9" />
+<dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--top-border govuk-!-margin-bottom-0">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Fullname
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ user?.fullname }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/account-management/change-your-details']">
+        Change
+        <span class="govuk-visually-hidden"> user details</span>
+      </a>
+    </dd>
   </div>
-</div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Job title
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ user?.jobTitle }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Email address
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ user?.emailAddress }}
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Contact phone
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ user?.contactNumber }}
+    </dd>
+  </div>
+</dl>
+
+<dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--top-border govuk-!-margin-bottom-0">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Username
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ user?.username }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/account-management/change-password']">
+        Change
+        <span class="govuk-visually-hidden"> login details</span>
+      </a>
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Password
+    </dt>
+    <dd class="govuk-summary-list__value">
+      ******
+    </dd>
+  </div>
+</dl>
+
+<dl class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--wrap-border">
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Security question
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ user?.securityQuestion }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/account-management/change-user-security']">
+        Change
+        <span class="govuk-visually-hidden"> security details</span>
+      </a>
+    </dd>
+  </div>
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Security answer
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ user?.securityAnswer }}
+    </dd>
+  </div>
+</dl>

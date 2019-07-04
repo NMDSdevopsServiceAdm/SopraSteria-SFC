@@ -7,17 +7,16 @@
 </app-error-summary>
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-l">Care Quality Commission regulation</h1>
-
+  <div class="govuk-grid-column-two-thirds-from-desktop">
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
-        <fieldset class="govuk-fieldset" aria-describedby="regulatedByCQC-error">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-            <h2 class="govuk-fieldset__heading">
-              Are you regulated by the Care Quality Commission (CQC)?
-            </h2>
-          </legend>
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            Are you regulated by the Care Quality Commission (CQC)?
+          </h1>
+        </legend>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
           <span *ngIf="submitted && regulatedByCQC.errors" id="regulatedByCQC-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('regulatedByCQC', 'required') }}
           </span>
@@ -52,12 +51,12 @@
                     Enter your postcode
                   </label>
                   <span
-                    id="regulatedPostcode-error"
+                    id="group-regulatedPostcode-error"
                     class="govuk-error-message"
                     *ngIf="submitted && regulatedPostcode.errors"
                   >
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('regulatedPostcode', 'maxlength') }}
+                    {{ getFormErrorMessage('group.regulatedPostcode', 'maxlength') }}
                   </span>
                   <input
                     class="govuk-input govuk-!-width-one-third"
@@ -71,16 +70,16 @@
                 </div>
 
                 <!-- divider -->
-                <div class="govuk-radios__divider">Or</div>
+                <div class="govuk-radios__divider govuk-!-margin-top-4">or</div>
 
                 <!-- location Id -->
                 <div class="govuk-form-group">
                   <label class="govuk-label" for="locationId">
                     Enter your location ID number
                   </label>
-                  <span id="locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
+                  <span id="group-locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('locationId', 'maxlength') }}
+                    {{ getFormErrorMessage('group.locationId', 'maxlength') }}
                   </span>
                   <input
                     class="govuk-input govuk-!-width-one-third"
@@ -147,9 +146,10 @@
               </div>
             </div>
           </div>
-        </fieldset>
-      </div>
-      <button class="govuk-button govuk-!-margin-top-2" type="submit">Continue</button>
+        </div>
+      </fieldset>
+
+      <button class="govuk-button" type="submit">Continue</button>
     </form>
   </div>
 </div>

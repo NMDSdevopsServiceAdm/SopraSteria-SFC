@@ -10,17 +10,13 @@
     <div class="govuk-grid-column-one-third">
       <ng-container *ngIf="!reportDetails?.displayWDFReport">
         <a class="govuk-button govuk-button--link" role="button" href="#" (click)="deleteWorker($event)">
-          <img src="/assets/images/bin.svg" />Delete staff record
+          <img src="/assets/images/bin.svg" alt="" />Delete staff record
         </a>
         <a
           *ngIf="!worker.completed"
           class="govuk-button"
           role="button"
-          [routerLink]="[
-            '/worker',
-            worker.uid,
-            worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
-          ]"
+          [routerLink]="['/worker', worker.uid, 'main-job-start-date']"
         >
           Complete Full Record
         </a>
@@ -31,10 +27,10 @@
 
   <div class="row m-0" *ngIf="reportDetails?.displayWDFReport">
     <p class="main-body-text col-12 m-0 p-0 tick-icon" *ngIf="worker.wdf.isEligible">
-      <img src="/assets/images/tick-icon.svg" /> Meeting criteria
+      <img src="/assets/images/tick-icon.svg" alt="" /> Meeting criteria
     </p>
     <p class="main-body-text col-12 m-0 p-0 cross-icon" *ngIf="!worker.wdf.isEligible">
-      <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+      <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
     </p>
   </div>
   <div class="row m-0" *ngIf="reportDetails?.displayWDFReport">
@@ -49,40 +45,22 @@
   </div>
 
   <app-tabs>
-    <app-tab title="Staff Record">
-      <app-basic-record [worker]="worker" [return]="returnTo" [reportDetails]="reportDetails"></app-basic-record>
+    <app-tab [title]="'Staff Record'">
+      <app-basic-record [worker]="worker" [return]="returnToRecord" [reportDetails]="reportDetails"></app-basic-record>
       <app-personal-details
         [worker]="worker"
         [return]="returnToRecord"
         [reportDetails]="reportDetails"
       ></app-personal-details>
-      <app-employment [worker]="worker" [return]="returnTo" [reportDetails]="reportDetails"></app-employment>
+      <app-employment [worker]="worker" [return]="returnToRecord" [reportDetails]="reportDetails"></app-employment>
     </app-tab>
-    <app-tab title="Qualifications and training">
+    <app-tab [title]="'Qualifications and training'">
       <app-qualifications-and-training
         [worker]="worker"
         [return]="returnToQuals"
         [reportDetails]="reportDetails"
+        [showAddButtons]="true"
       ></app-qualifications-and-training>
-      <p><img src="/assets/images/icon-information.svg" /> Adding additional qualifications or training is optional.</p>
-      <p>
-        <a
-          [routerLink]="['/worker', worker.uid, 'add-qualification']"
-          role="button"
-          draggable="false"
-          class="govuk-button govuk-button--secondary govuk-!-margin-right-8"
-        >
-          Add a qualification
-        </a>
-        <a
-          [routerLink]="['/worker', worker.uid, 'add-training']"
-          role="button"
-          draggable="false"
-          class="govuk-button govuk-button--secondary"
-        >
-          Add training
-        </a>
-      </p>
       <app-qualifications [worker]="worker"></app-qualifications>
       <app-training [worker]="worker"></app-training>
     </app-tab>

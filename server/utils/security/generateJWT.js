@@ -15,7 +15,7 @@ exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, isParent, use
     iss: config.get('jwt.iss')
   };
 
-  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});   
+  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});
 };
 
 // this re-generates the login JWT
@@ -25,12 +25,13 @@ exports.regenerateLoginToken = (ttlMinutes, req) => {
     EstblishmentId: req.establishment.id,
     EstablishmentUID: req.establishment.uid ? req.establishment.uid : null,
     role: req.role,
+    isParent: req.isParent,
     sub: req.username,
     aud: config.get('jwt.aud.login'),
     iss: config.get('jwt.iss')
   };
 
-  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});   
+  return jwt.sign(JSON.parse(JSON.stringify(claims)), Token_Secret, {expiresIn: `${ttlMinutes}m`});
 };
 
 // this generates the password reset JWT

@@ -136,7 +136,7 @@ const config = convict({
           doc: 'The server certificate (authority - ca)',
           format: String,
           default: 'TBC',
-        }  
+        }
       }
     },
     pool: {
@@ -272,6 +272,15 @@ const config = convict({
       doc: 'The duration in seconds for the upload signed URL to expire',
       format: 'int',
       default: 300,
+    },
+  },
+  public: {
+    download: {
+      baseurl: {
+        doc: 'The baseurl to S3 bucket where public download content will be stored',
+        format: '*',
+        default: 'https://sfc-public-dev.s3.eu-west-2.amazonaws.com/public/download',
+      },
     },
   },
 });

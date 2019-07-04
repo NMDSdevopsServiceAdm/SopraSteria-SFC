@@ -24,4 +24,8 @@ bulkupload:
     region: eu-west-2
     bucketname: sfc-bulkupload-dev
 
+public:
+    download:
+        baseurl: https://sfc-public-dev.s3.eu-west-2.amazonaws.com/public/download
+
 # no notify definition - not used in development

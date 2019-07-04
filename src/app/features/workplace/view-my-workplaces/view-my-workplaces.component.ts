@@ -1,34 +1,69 @@
-import { Component, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { LoggedInEstablishment } from '@core/model/logged-in.model';
+import { Workplace, GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { AuthService } from '@core/services/auth.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
-import { MyWorkplace, MyWorkplacesResponse } from '@core/model/my-workplaces.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-view-my-workplaces',
   templateUrl: './view-my-workplaces.component.html',
 })
-export class ViewMyWorkplacesComponent implements OnInit {
+export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription = new Subscription();
   public establishment: LoggedInEstablishment | null;
-  public myWorkplaces: Array<MyWorkplace> = [];
-  public myWorkplacesCount: number;
+  public serverError: string;
+  public serverErrorsMap: ErrorDefinition[] = [];
+  public workplaces: Workplace[] = [];
+  public workplacesCount: number;
 
-  constructor(private authService: AuthService, private userService: UserService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+    private errorSummaryService: ErrorSummaryService
+  ) {}
 
   ngOnInit() {
     this.establishment = this.authService.establishment;
-    this.getMyEstablishments();
+    this.getEstablishments();
+    this.setupServerErrorsMap();
   }
 
-  private getMyEstablishments(): void {
-    this.userService.getMyEstablishments().subscribe((myWorkplaces: MyWorkplacesResponse) => {
-      if (myWorkplaces.subsidaries) {
-        this.myWorkplaces = myWorkplaces.subsidaries.establishments;
-        this.myWorkplacesCount = myWorkplaces.subsidaries.count;
-      } else {
-        this.myWorkplaces = [];
-        this.myWorkplacesCount = 0;
-      }
-    });
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 503,
+        message: 'Service unavailable.',
+      },
+    ];
+  }
+
+  private getEstablishments(): void {
+    this.subscriptions.add(
+      this.userService.getEstablishments().subscribe(
+        (workplaces: GetWorkplacesResponse) => {
+          if (workplaces.subsidaries) {
+            this.workplaces = workplaces.subsidaries.establishments;
+            this.workplacesCount = workplaces.subsidaries.count;
+          }
+
+          if (workplaces.primary) {
+            this.workplaces.unshift(workplaces.primary);
+            this.workplacesCount += 1;
+          }
+        },
+        (error: HttpErrorResponse) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.errorSummaryService.scrollToErrorSummary();
+        }
+      )
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }

@@ -9,7 +9,7 @@
     <dd class="govuk-summary-list__actions">
       <!--
       TODO uncomment once workplace name question section is created
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
         <ng-container *ngIf="!workplace.name">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -30,7 +30,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.employerType === 'No'">
-          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.employerType === 'Yes'">
           {{ !!workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value || '-' }}
@@ -42,7 +42,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'type-of-employer']" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id, 'type-of-employer']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.employerType?.value">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -62,7 +62,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.mainService === 'No'">
-          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.mainService === 'Yes'">
           {{ workplace.mainService?.name || '-' }}
@@ -74,7 +74,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <!-- <a class="govuk-link" [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
+      <!-- <a [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
         <ng-container *ngIf="!workplace.mainService">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -98,7 +98,7 @@
       <ng-template #otherServices>
         <ng-container *ngIf="displayWDFReport">
           <ng-container *ngIf="workplace.wdf.otherService === 'No'">
-            <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+            <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
           </ng-container>
           <ng-container *ngIf="workplace.wdf.otherService === 'Yes'">
             <ul class="govuk-list">
@@ -125,7 +125,7 @@
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'other-services']" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id, 'other-services']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.otherServices?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -145,7 +145,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.capacities === 'No'">
-          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.capacities === 'Yes'">
           <ng-template [ngIf]="!workplace.capacities?.length" [ngIfElse]="capacities">
@@ -171,7 +171,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'capacity-of-services']" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id, 'capacity-of-services']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.capacities?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -191,7 +191,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.serviceUsers === 'No'">
-          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
         <ng-container *ngIf="workplace.wdf.serviceUsers === 'Yes'">
           <ng-template [ngIf]="!workplace.serviceUsers?.length" [ngIfElse]="serviceUsers">
@@ -223,7 +223,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'service-users']" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id, 'service-users']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.serviceUsers?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -258,7 +258,7 @@
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'sharing-data']" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id, 'sharing-data']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.share?.enabled">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -278,7 +278,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
-          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.vacancies === 'Yes'">
@@ -293,7 +293,7 @@
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.vacancies)">
               <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
-                <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+                <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
               </ng-container>
               <ng-container *ngIf="workplace.wdf.vacancies != 'No'">
                 {{ workplace.vacancies }}
@@ -314,18 +314,13 @@
             </ul>
           </ng-container>
           <ng-container *ngIf="!isArray(workplace.vacancies)">
-            <ng-container *ngIf="workplace.wdf.vacancies === 'No'">
-              <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
-            </ng-container>
-            <ng-container *ngIf="workplace.wdf.vacancies != 'No'">
-              {{ workplace.vacancies }}
-            </ng-container>
+            {{ workplace.vacancies }}
           </ng-container>
         </ng-template>
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'vacancies']" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id, 'vacancies']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.vacancies?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -351,7 +346,7 @@
       <ng-container *ngIf="!isArray(workplace.starters)">
         <ng-container *ngIf="displayWDFReport">
           <ng-container *ngIf="workplace.wdf.starters === 'No'">
-            <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+            <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
           </ng-container>
 
           <ng-container *ngIf="workplace.wdf.starters === 'Yes'">
@@ -389,7 +384,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'starters']" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id, 'starters']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.starters?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -409,7 +404,7 @@
     <dd class="govuk-summary-list__value">
       <ng-container *ngIf="displayWDFReport">
         <ng-container *ngIf="workplace.wdf.leavers === 'No'">
-          <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+          <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.leavers === 'Yes'">
@@ -446,7 +441,7 @@
       </ng-container>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id, 'leavers']" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id, 'leavers']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.leavers?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -470,7 +465,7 @@
     </dd>
     <dd class="govuk-summary-list__actions">
 
-      <a class="govuk-link" [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
+      <a [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
         <ng-container *ngIf="!workplace.volunteers">
           Provide information
           <span class="govuk-visually-hidden"> for</span>

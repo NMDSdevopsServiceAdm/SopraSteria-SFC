@@ -5,10 +5,10 @@
       Year arrived in the UK
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.yearArrived?.year ? worker.yearArrived?.year : worker.yearArrived?.value || '-' }}
+      {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'year-arrived-uk']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'year-arrived-uk']" (click)="setReturn()">
         <ng-container *ngIf="!worker.yearArrived">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -27,7 +27,7 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.mainJobStartDate === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.mainJobStartDate != 'No'">
         {{ worker.mainJobStartDate ? mainStartDate : '-' }}
@@ -38,9 +38,8 @@
       {{ worker.mainJobStartDate ? mainStartDate : '-' }}
     </dd>
 
-
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'main-job-start-date']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'main-job-start-date']" (click)="setReturn()">
         <ng-container *ngIf="!worker.mainJobStartDate">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -61,7 +60,7 @@
       {{ worker.approvedMentalHealthWorker || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'mental-health-professional']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'mental-health-professional']" (click)="setReturn()">
         <ng-container *ngIf="!worker.approvedMentalHealthWorker">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -78,13 +77,13 @@
     <dt class="govuk-summary-list__key">
       Other job roles
     </dt>
-    <dd *ngIf="reportDetails?.displayWDFReport"  class="govuk-summary-list__value">
+    <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.otherJobs === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.otherJobs != 'No'">
         <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
-            -
+          -
         </ng-template>
         <ng-template #otherJobs>
           <ul>
@@ -119,7 +118,7 @@
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'other-job-roles']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'other-job-roles']" (click)="setReturn()">
         <ng-container *ngIf="!worker.otherJobs?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -132,20 +131,62 @@
     </dd>
   </div>
 
+  <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
+    <dt class="govuk-summary-list__key">
+      Nursing and Midwifery Council Category
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.registeredNurse || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'nursing-category']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.registeredNurse">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.registeredNurse">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> nursing and midwifery council category</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
+    <dt class="govuk-summary-list__key">
+      Nurse specialism in current role
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.nurseSpecialism?.specialism || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'nursing-specialism']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.registeredNurse">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.registeredNurse">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> nursing and midwifery council category</span>
+      </a>
+    </dd>
+  </div>
+
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">
       Recruited from
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.recruitedFrom === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.recruitedFrom != 'No'">
-          {{
-            worker.recruitedFrom?.from?.from !== null
-              ? worker.recruitedFrom?.from?.from
-              : worker.recruitedFrom?.value || '-'
-          }}
+        {{
+          worker.recruitedFrom?.from?.from !== null
+            ? worker.recruitedFrom?.from?.from
+            : (worker.recruitedFrom?.value | openEndedAnswer)
+        }}
       </ng-container>
     </dd>
 
@@ -153,11 +194,11 @@
       {{
         worker.recruitedFrom?.from?.from !== null
           ? worker.recruitedFrom?.from?.from
-          : worker.recruitedFrom?.value || '-'
+          : (worker.recruitedFrom?.value | openEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'recruited-from']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'recruited-from']" (click)="setReturn()">
         <ng-container *ngIf="!worker.recruitedFrom">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -176,11 +217,13 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{
-        worker.socialCareStartDate?.year ? worker.socialCareStartDate?.year : worker.socialCareStartDate?.value || '-'
+        worker.socialCareStartDate?.year
+          ? worker.socialCareStartDate?.year
+          : (worker.socialCareStartDate?.value | openEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'adult-social-care-started']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'adult-social-care-started']" (click)="setReturn()">
         <ng-container *ngIf="!worker.socialCareStartDate">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -199,18 +242,18 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.daysSick === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.daysSick != 'No'">
-        {{ worker.daysSick?.days !== '' ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
+        {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.daysSick?.days !== '' ? worker.daysSick?.days : worker.daysSick?.value || '-' }}
+      {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'days-of-sickness']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'days-of-sickness']" (click)="setReturn()">
         <ng-container *ngIf="!worker.daysSick">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -229,18 +272,18 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.zeroHoursContract === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.zeroHoursContract != 'No'">
-        {{ worker.zeroHoursContract || '-' }}
+        {{ worker.zeroHoursContract | closedEndedAnswer }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.zeroHoursContract || '-' }}
+      {{ worker.zeroHoursContract | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'contract-with-zero-hours']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'contract-with-zero-hours']" (click)="setReturn()">
         <ng-container *ngIf="!worker.zeroHoursContract">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -259,13 +302,13 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{
-        worker.weeklyHoursAverage?.hours !== null
+        isNumber(worker.weeklyHoursAverage?.hours)
           ? worker.weeklyHoursAverage?.hours
-          : worker.weeklyHoursAverage?.value || '-'
+          : (worker.weeklyHoursAverage?.value | openEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'average-weekly-hours']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'average-weekly-hours']" (click)="setReturn()">
         <ng-container *ngIf="!worker.weeklyHoursAverage">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -284,13 +327,13 @@
     </dt>
     <dd class="govuk-summary-list__value">
       {{
-        worker.weeklyHoursContracted?.hours !== null
+        isNumber(worker.weeklyHoursContracted?.hours)
           ? worker.weeklyHoursContracted?.hours
-          : worker.weeklyHoursContracted?.value || '-'
+          : (worker.weeklyHoursContracted?.value | openEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'weekly-contracted-hours']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'weekly-contracted-hours']" (click)="setReturn()">
         <ng-container *ngIf="!worker.weeklyHoursContracted">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -310,18 +353,18 @@
 
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.annualHourlyPay === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.annualHourlyPay != 'No'">
-        {{ worker.annualHourlyPay?.rate ? salary : worker.annualHourlyPay?.value || '-' }}
+        {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.annualHourlyPay?.rate ? salary : worker.annualHourlyPay?.value || '-' }}
+      {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'salary']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'salary']" (click)="setReturn()">
         <ng-container *ngIf="!worker.annualHourlyPay">
           Provide information
           <span class="govuk-visually-hidden"> for</span>

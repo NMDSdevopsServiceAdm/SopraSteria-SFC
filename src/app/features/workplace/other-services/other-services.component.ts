@@ -1,13 +1,14 @@
-import { BackService } from '@core/services/back.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Service, ServiceGroup } from '@core/model/services.model';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { filter } from 'lodash';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
+
 import { Question } from '../question/question.component';
-import { Router } from '@angular/router';
-import { Service, ServiceGroup } from '@core/model/services.model';
 
 @Component({
   selector: 'app-other-services',
@@ -25,7 +26,7 @@ export class OtherServicesComponent extends Question {
     protected router: Router,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService,
+    protected establishmentService: EstablishmentService
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
 
@@ -83,7 +84,7 @@ export class OtherServicesComponent extends Question {
       this.allOtherServices.forEach((service: Service) => {
         this.form.get('otherServices').value.push(service.id);
 
-        if (service.other) {
+        if (service.other && this.form.get(`additionalOtherService${service.id}`)) {
           this.form.get(`additionalOtherService${service.id}`).setValue(service.other);
         }
       });

@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">Confirm your workplace details</h1>
-    <h2 class="govuk-heading-m govuk-!-margin-bottom-7">Are these details correct?</h2>
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l">Confirm your workplace details</h1>
+    <p class="govuk-heading-m">Are these details correct?</p>
 
     <dl class="govuk-summary-list">
       <div class="govuk-summary-list__row" *ngIf="locationAddress.locationId">
@@ -12,7 +12,7 @@
           {{ locationAddress.locationId }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/regulated-by-cqc']" class="govuk-link">
+          <a [routerLink]="['/registration/regulated-by-cqc']">
             Change
             <span class="govuk-visually-hidden"> location ID</span>
           </a>
@@ -53,7 +53,7 @@
           </ng-template>
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/select-main-service']" class="govuk-link">
+          <a [routerLink]="['/registration/select-main-service']">
             Change
             <span class="govuk-visually-hidden"> main service</span>
           </a>
@@ -62,7 +62,7 @@
     </dl>
 
     <p class="govuk-!-margin-bottom-6">
-      <a class="govuk-link" [routerLink]="['/registration/select-workplace-address']">
+      <a [routerLink]="['/registration/select-workplace-address']">
         This is not my workplace
       </a>
     </p>

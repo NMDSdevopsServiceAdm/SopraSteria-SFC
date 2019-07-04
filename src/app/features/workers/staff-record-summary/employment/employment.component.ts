@@ -3,6 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { DATE_DISPLAY_DEFAULT } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { WorkerService } from '@core/services/worker.service';
+import { isNumber } from 'lodash';
 import * as moment from 'moment';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
@@ -25,15 +26,20 @@ export class EmploymentComponent extends StaffRecordSummaryComponent implements 
     super(location, workerService);
   }
 
+  isNumber(number: number) {
+    return isNumber(number);
+  }
+
   get displayYearArrived() {
     return this.worker.countryOfBirth && this.worker.countryOfBirth.value !== 'United Kingdom';
   }
 
   get displayMentalHealthProfessional() {
-    return (
-      this.worker.mainJob.title === 'Social Worker' ||
-      (this.worker.otherJobs && this.worker.otherJobs.find(j => j.title === 'Social Worker'))
-    );
+    return this.workerService.hasJobRole(this.worker, 27);
+  }
+
+  get displayNursingQuestions() {
+    return this.workerService.hasJobRole(this.worker, 23);
   }
 
   get displayDaysSickness() {

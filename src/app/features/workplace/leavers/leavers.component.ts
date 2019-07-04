@@ -67,8 +67,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
           this.leavers.removeAt(1);
         }
 
-        this.leavers.controls[0].get('jobRole').clearValidators();
-        this.leavers.controls[0].get('total').clearValidators();
+        this.clearValidators(0);
         this.leavers.reset([], { emitEvent: false });
 
         this.form.get('leaversKnown').setValue(value, { emitEvent: false });
@@ -113,13 +112,14 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
         this.leavers.push(this.createLeaverControl(leaver.jobId, leaver.total))
       );
     } else {
+      this.leavers.push(this.createLeaverControl());
       if (
         this.establishment.leavers === jobOptionsEnum.NONE ||
         this.establishment.leavers === jobOptionsEnum.DONT_KNOW
       ) {
         this.form.get('leaversKnown').setValue(this.establishment.leavers);
+        this.clearValidators(0);
       }
-      this.leavers.push(this.createLeaverControl());
     }
   }
 
@@ -212,5 +212,10 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
     } else {
       this.next = ['/workplace', `${this.establishment.id}`, 'check-answers'];
     }
+  }
+
+  private clearValidators(index: number) {
+    this.leavers.controls[index].get('jobRole').clearValidators();
+    this.leavers.controls[index].get('total').clearValidators();
   }
 }

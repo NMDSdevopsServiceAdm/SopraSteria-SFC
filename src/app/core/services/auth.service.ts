@@ -1,10 +1,11 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Params, Router, UrlSegment } from '@angular/router';
+import { Router } from '@angular/router';
+import { LoggedInEstablishment, LoggedInMainService, LoggedInSession } from '@core/model/logged-in.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
+
 import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
-import { LoggedInEstablishment, LoggedInMainService, LoggedInSession } from '@core/model/logged-in.model';
 
 @Injectable({
   providedIn: 'root',
@@ -56,6 +57,18 @@ export class AuthService {
       return false;
     }
   }
+  public get isFirstBulkUpload(): boolean {
+    if (this._session) {
+      return this._session.isFirstBulkUpload;
+    } else {
+      return true;
+    }
+  }
+
+  public set isFirstBulkUpload(isFirstBulkUpload) {
+    this._session.isFirstBulkUpload = isFirstBulkUpload;
+  }
+
   public get lastLoggedIn() {
     return this._session ? this._session.lastLoggedIn : null;
   }

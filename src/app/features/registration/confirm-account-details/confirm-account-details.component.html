@@ -7,10 +7,11 @@
 </app-error-summary>
 
 <div class="govuk-grid-row" id="server-error">
-  <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Confirm your account details</h1>
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <span class="govuk-caption-l">User account</span>
+    <h2 class="govuk-heading-l">Confirm your account details</h2>
 
-    <dl class="govuk-summary-list basic-records govuk-!-margin-bottom-8">
+    <dl class="govuk-summary-list govuk-!-margin-bottom-8">
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
           Full name
@@ -19,7 +20,7 @@
           {{ userDetails?.fullname }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/change-your-details']" class="govuk-link">
+          <a [routerLink]="['/registration/change-your-details']">
             Change
             <span class="govuk-visually-hidden"> full name</span>
           </a>
@@ -33,7 +34,7 @@
           {{ userDetails?.jobTitle }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/change-your-details']" class="govuk-link">
+          <a [routerLink]="['/registration/change-your-details']">
             Change
             <span class="govuk-visually-hidden"> job title</span>
           </a>
@@ -47,7 +48,7 @@
           {{ userDetails?.emailAddress }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/change-your-details']" class="govuk-link">
+          <a [routerLink]="['/registration/change-your-details']">
             Change
             <span class="govuk-visually-hidden"> email address</span>
           </a>
@@ -61,7 +62,7 @@
           {{ userDetails?.contactNumber }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/change-your-details']" class="govuk-link">
+          <a [routerLink]="['/registration/change-your-details']">
             Change
             <span class="govuk-visually-hidden"> contact phone</span>
           </a>
@@ -75,7 +76,7 @@
           {{ loginCredentials.username }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/create-username']" class="govuk-link">
+          <a [routerLink]="['/registration/create-username']">
             Change
             <span class="govuk-visually-hidden"> username</span>
           </a>
@@ -89,7 +90,7 @@
           {{ securityDetails?.securityQuestion }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/security-question']" class="govuk-link">
+          <a [routerLink]="['/registration/security-question']">
             Change
             <span class="govuk-visually-hidden"> security question</span>
           </a>
@@ -103,7 +104,7 @@
           {{ securityDetails?.securityAnswer }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/security-question']" class="govuk-link">
+          <a [routerLink]="['/registration/security-question']">
             Change
             <span class="govuk-visually-hidden"> security answer</span>
           </a>
@@ -111,7 +112,7 @@
       </div>
     </dl>
 
-    <form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <form (ngSubmit)="onSubmit()" [formGroup]="form" id="form">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="termsAndConditions-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
@@ -121,8 +122,9 @@
           </legend>
           <span id="termsAndConditions-hint" class="govuk-hint">
             Check the box to confirm you agree to the
-            <a [routerLink]="['/public/terms-and-conditions']" target="_blank">terms and conditions</a>.
-            You must agree to them before you can submit your application.
+            <a [routerLink]="['/public', 'terms-and-conditions']" target="_blank">
+              terms and conditions<span class="govuk-visually-hidden"> (opens in a new window)</span> </a
+            >. You must agree to them before you can submit your application.
           </span>
           <span *ngIf="submitted && form.invalid" id="termsAndConditions-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
@@ -145,6 +147,7 @@
           </div>
         </fieldset>
       </div>
+
       <button type="submit" class="govuk-button">
         Submit
       </button>

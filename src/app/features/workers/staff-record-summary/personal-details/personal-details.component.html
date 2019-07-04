@@ -8,7 +8,7 @@
       {{ worker.nationalInsuranceNumber || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'national-insurance-number']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'national-insurance-number']" (click)="setReturn()">
         <ng-container *ngIf="!worker.nationalInsuranceNumber">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -27,10 +27,10 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.dateOfBirth === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.dateOfBirth != 'No'">
-         {{ worker.dateOfBirth ? dob : '-' }}
+        {{ worker.dateOfBirth ? dob : '-' }}
       </ng-container>
     </dd>
 
@@ -38,7 +38,7 @@
       {{ worker.dateOfBirth ? dob : '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'date-of-birth']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'date-of-birth']" (click)="setReturn()">
         <ng-container *ngIf="!worker.dateOfBirth">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -59,7 +59,7 @@
       {{ worker.postcode || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'home-postcode']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'home-postcode']" (click)="setReturn()">
         <ng-container *ngIf="!worker.postcode">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -79,18 +79,18 @@
 
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.gender === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.gender != 'No'">
-        {{ worker.gender || '-' }}
+        {{ worker.gender | closedEndedAnswer }}
       </ng-container>
     </dd>
 
     <dd *ngIf="!reportDetails?.displayWDFReport" class="govuk-summary-list__value">
-      {{ worker.gender || '-' }}
+      {{ worker.gender | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'gender']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'gender']" (click)="setReturn()">
         <ng-container *ngIf="!worker.gender">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -108,10 +108,10 @@
       Disability
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.disability || '-' }}
+      {{ worker.disability | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'disability']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'disability']" (click)="setReturn()">
         <ng-container *ngIf="!worker.disability">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -129,10 +129,10 @@
       Ethnicity
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.ethnicity?.ethnicity || '-' }}
+      {{ worker.ethnicity?.ethnicity | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'ethnicity']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'ethnicity']" (click)="setReturn()">
         <ng-container *ngIf="!worker.ethnicity">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -151,13 +151,13 @@
     </dt>
     <dd *ngIf="reportDetails?.displayWDFReport" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.nationality === 'No'">
-        <img src="/assets/images/cross-icon.svg" /> Not meeting criteria
+        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
       </ng-container>
       <ng-container *ngIf="worker.wdf.nationality != 'No'">
         {{
           worker.nationality?.other?.nationality !== null
             ? worker.nationality?.other?.nationality
-            : worker.nationality?.value || '-'
+            : (worker.nationality?.value | closedEndedAnswer)
         }}
       </ng-container>
     </dd>
@@ -166,11 +166,11 @@
       {{
         worker.nationality?.other?.nationality !== null
           ? worker.nationality?.other?.nationality
-          : worker.nationality?.value || '-'
+          : (worker.nationality?.value | closedEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'nationality']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'nationality']" (click)="setReturn()">
         <ng-container *ngIf="!worker.nationality">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -188,10 +188,10 @@
       British citizenship
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.britishCitizenship || '-' }}
+      {{ worker.britishCitizenship | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'british-citizenship']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'british-citizenship']" (click)="setReturn()">
         <ng-container *ngIf="!worker.britishCitizenship">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -212,11 +212,11 @@
       {{
         worker.countryOfBirth?.other?.country !== null
           ? worker.countryOfBirth?.other?.country
-          : worker.countryOfBirth?.value || '-'
+          : (worker.countryOfBirth?.value | closedEndedAnswer)
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a class="govuk-link" [routerLink]="['/worker', worker.uid, 'country-of-birth']" (click)="setReturn()">
+      <a [routerLink]="['/worker', worker.uid, 'country-of-birth']" (click)="setReturn()">
         <ng-container *ngIf="!worker.countryOfBirth">
           Provide information
           <span class="govuk-visually-hidden"> for</span>

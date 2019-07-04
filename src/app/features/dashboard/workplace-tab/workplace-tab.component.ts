@@ -20,7 +20,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   constructor(private establishmentService: EstablishmentService, private reportsService: ReportsService) {}
 
   ngOnInit() {
-    const workplaceId = parseInt(localStorage.getItem('establishmentId'), 10);
+    const workplaceId = localStorage.getItem('establishmentId');
 
     this.summaryReturnUrl = { url: ['/dashboard'], fragment: 'workplace' };
 

@@ -35,7 +35,7 @@ class Establishment {
     this._utilisations = null;
 
     this._totalPermTemp = null;
-  
+
     this._alljobs = null;
     this._vacancies = null;
     this._starters = null;
@@ -92,6 +92,11 @@ class Establishment {
   static get LEAVERS_WARNING() { return 2320; }
 
   static get REASONS_FOR_LEAVING_WARNING() { return 2360; }
+
+
+  get headers() {
+    return this._headers_v1.join(",");
+  }
 
   get lineNumber() {
     return this._lineNumber;
@@ -209,7 +214,7 @@ class Establishment {
         error: `Local Identifier (LOCALESTID) must be no more than ${MAX_LENGTH} characters`,
         source: myLocalId,
       });
-      return false;      
+      return false;
     } else {
       this._localId = myLocalId;
       return true;
@@ -222,12 +227,14 @@ class Establishment {
 
     // must be present and must be one of the preset values (case insensitive)
     if (!statusValues.includes(myStatus)) {
+
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.STATUS_ERROR,
         errType: `STATUS_ERROR`,
         error: `Status (STATUS) must be one of: ${statusValues}`,
         source: this._currentLine.STATUS,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -249,6 +256,7 @@ class Establishment {
         errType: `NAME_ERROR`,
         error: 'Establishment Name (ESTNAME) must be defined',
         source: myName,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (myName.length > MAX_LENGTH) {
@@ -258,6 +266,7 @@ class Establishment {
         errType: `NAME_ERROR`,
         error: `Establishment Name (ESTNAME) must be no more than ${MAX_LENGTH} characters`,
         source: myName,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -287,6 +296,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: 'First line of address (ADDRESS1) must be defined',
         source: myAddress1,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myAddress1.length > MAX_LENGTH) {
       localValidationErrors.push({
@@ -295,6 +305,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress1,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -305,6 +316,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `Second line of address (ADDRESS2) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress2,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -315,6 +327,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `Third line of address (ADDRESS3) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress3,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -325,6 +338,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `{Post town} (POSTTOWN) must be no more than ${MAX_LENGTH} characters`,
         source: myTown,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -338,6 +352,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: 'Postcode (POSTCODE) must be defined',
         source: myPostcode,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myPostcode.length > POSTCODE_MAX_LENGTH) {
       localValidationErrors.push({
@@ -346,6 +361,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `Postcode (POSTCODE) must be no more than ${POSTCODE_MAX_LENGTH} characters`,
         source: myPostcode,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (!postcodeRegex.test(myPostcode)) {
       localValidationErrors.push({
@@ -354,6 +370,7 @@ class Establishment {
         errType: `ADDRESS_ERROR`,
         error: `Postcode (POSTCODE) unexpected format`,
         source: myPostcode,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -384,6 +401,7 @@ class Establishment {
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: "Establishment Type (ESTTYPE) must be an integer",
         source: this._currentLine.ESTTYPE,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myEstablishmentType < 1 || myEstablishmentType > 8) {
       localValidationErrors.push({
@@ -392,6 +410,7 @@ class Establishment {
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: "Establishment Type (ESTTYPE) between 1 and 8 only",
         source: this._currentLine.ESTTYPE,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -404,6 +423,7 @@ class Establishment {
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: `Establishment Type (ESTTYPE) is 'Other (8)'; must define the Other (OTHERTYPE)`,
         source: myOtherEstablishmentType,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myEstablishmentType == 8 && (myOtherEstablishmentType.length > MAX_LENGTH)) {
       localValidationErrors.push({
@@ -412,6 +432,7 @@ class Establishment {
         errType: `ESTABLISHMENT_TYPE_ERROR`,
         error: `Establishment Type (ESTTYPE) is 'Other (8)', but OTHERTYPE must be no more than ${MAX_LENGTH} characters`,
         source: myOtherEstablishmentType,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (myEstablishmentType == 8) {
       this._establishmentTypeOther = myOtherEstablishmentType;
@@ -436,6 +457,7 @@ class Establishment {
         errType: `SHARE_WITH_ERROR`,
         error: "Share with CQC (PERMCQC) must be an integer",
         source: this._currentLine.PERMCQC,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (!ALLOWED_VALUES.includes(myShareWithCqc)) {
@@ -445,6 +467,7 @@ class Establishment {
         errType: `SHARE_WITH_ERROR`,
         error: "Share with CQC (PERMCQC) must be 0 or 1",
         source: myShareWithCqc,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -463,6 +486,7 @@ class Establishment {
         errType: `SHARE_WITH_ERROR`,
         error: "Share with LA (PERMLA) must be an integer",
         source: this._currentLine.PERMLA,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (!ALLOWED_VALUES.includes(myShareWithLa)) {
@@ -472,6 +496,7 @@ class Establishment {
         errType: `SHARE_WITH_ERROR`,
         error: "Share with LA (PERMLA) must be 0 or 1",
         source: myShareWithLa,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -493,13 +518,14 @@ class Establishment {
           errType: `LOCAL_AUTHORITIES_ERROR`,
           error: "Local Authorities (SHARELA) must be a semi-colon delimited list of integers",
           source: this._currentLine.SHARELA,
+          name: this._currentLine.LOCALESTID,
         });
         return false;
       } else {
         this._localAuthorities = listOfLAs.map(thisLA => parseInt(thisLA, 10));
         return true;
       }
-  
+
     } else {
       return true;
     }
@@ -515,6 +541,7 @@ class Establishment {
         errType: `REGTYPE_ERROR`,
         error: "Registration Type (REGTYPE) must be given and must be either 0 or 2",
         source: this._currentLine.REGTYPE,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -534,6 +561,7 @@ class Establishment {
         errType: `PROV_ID_ERROR`,
         error: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
         source: myprovID,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     }
@@ -544,6 +572,7 @@ class Establishment {
         errType: `PROV_ID_ERROR`,
         error: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
         source: myprovID,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (this._regType) {
@@ -564,6 +593,7 @@ class Establishment {
         errType: `LOCATION_ID_ERROR`,
         error: "Location ID (LOCATIONID) must be given as this workplace is CQC regulated",
         source: myLocationID,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     }
@@ -574,6 +604,7 @@ class Establishment {
         errType: `LOCATION_ID_ERROR`,
         error: "Location ID (LOCATIONID) must be in the format 'n-nnnnnnnnn'",
         source: myLocationID,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (this._regType) {
@@ -591,6 +622,7 @@ class Establishment {
         errType: `MAIN_SERVICE_ERROR`,
         error: "Main Service (MAINSERVICE) must be an integer",
         source: this._currentLine.MAINSERVICE,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -598,17 +630,18 @@ class Establishment {
       return true;
     }
   }
-  
+
   _validateAllServices() {
     // all services must have at least one value (main service) or a semi colon delimited list of integers; treat consistently as a list of
     const myAllServices = this._currentLine.ALLSERVICES;
-    if (!myAllServices || myAllServices.length == 0) {    
+    if (!myAllServices || myAllServices.length == 0) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
         errCode: Establishment.ALL_SERVICES_ERROR,
         errType: `ALL_SERVICES_ERROR`,
         error: "All Services (ALLSERVICES) must be defined and must include at least the main service (MAINSERVICE)",
         source: this._currentLine.ALLSERVICES,
+        name: this._currentLine.LOCALESTID,
       });
 
       return false; // no point continuing validation because all services is empty
@@ -628,6 +661,7 @@ class Establishment {
         errType: `ALL_SERVICES_ERROR`,
         error: "All Services (ALLSERVICES) must be a semi-colon delimited list of integers",
         source: this._currentLine.ALLSERVICES,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (listOfServices.length != listOfServiceDescriptions.length) {
       localValidationErrors.push({
@@ -636,6 +670,7 @@ class Establishment {
         errType: `ALL_SERVICES_ERROR`,
         error: "All Services (ALLSERVICES) count and Service Description (SERVICEDESC) count must equal",
         source: this._currentLine.SERVICEDESC,
+        name: this._currentLine.LOCALESTID,
       });
     } else {
       const myServiceDescriptions = [];
@@ -654,6 +689,7 @@ class Establishment {
               errType: `ALL_SERVICES_ERROR`,
               error: `All Services (ALLSERVICES:${index+1}) is an 'other' service and consequently (SERVICEDESC:${index+1}) must be defined`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
+              name: this._currentLine.LOCALESTID,
             });
             myServiceDescriptions.push(null);
           } else if (myServiceOther.length > MAX_LENGTH) {
@@ -663,6 +699,7 @@ class Establishment {
               errType: `ALL_SERVICES_ERROR`,
               error: `All Services (ALLSERVICES:${index+1}) is an 'other' service and (SERVICEDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
+              name: this._currentLine.LOCALESTID,
             });
           } else {
             myServiceDescriptions.push(listOfServiceDescriptions[index]);
@@ -700,6 +737,7 @@ class Establishment {
         errType: `SERVICE_USERS_ERROR`,
         error: "Service Users (SERVICEUSERS) must be a semi-colon delimited list of integers",
         source: this._currentLine.SERVICEUSERS,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (listOfServiceUsers.length != listOfServiceUsersDescriptions.length) {
       localValidationErrors.push({
@@ -708,6 +746,7 @@ class Establishment {
         errType: `SERVICE_USERS_ERROR`,
         error: "Service Users (SERVICEUSERS) count and Service Users Description (OTHERUSERDESC) count must equal",
         source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
+        name: this._currentLine.LOCALESTID,
       });
     } else {
       const myServiceUsersDescriptions = [];
@@ -726,6 +765,7 @@ class Establishment {
               errType: `SERVICE_USERS_ERROR`,
               error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and consequently (OTHERUSERDESC:${index+1}) must be defined`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+              name: this._currentLine.LOCALESTID,
             });
             myServiceUsersDescriptions.push(null);
           } else if (myServiceUserOther.length > MAX_LENGTH) {
@@ -735,6 +775,7 @@ class Establishment {
               errType: `SERVICE_USERS_ERROR`,
               error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and (OTHERUSERDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
               source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+              name: this._currentLine.LOCALESTID,
             });
           } else {
             myServiceUsersDescriptions.push(listOfServiceUsersDescriptions[index]);
@@ -773,6 +814,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Capacities (CAPACITY) must be a semi-colon delimited list of integers",
         source: this._currentLine.CAPACITY,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (listOfUtilisations.length === 0) {
@@ -782,6 +824,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Utilisations (UTILISATION) must be a semi-colon delimited list of integers",
         source: this._currentLine.UTILISATION,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (listOfCapacities.length != listOfUtilisations.length) {
@@ -791,6 +834,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Number of Capacities (CAPACITY) and Utilisations (UTILISATION) must be equal",
         source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -802,6 +846,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: "Number of Capacities/Utilisations (CAPACITY/UTILISATION) must equal the number of all services (ALLSERVICES)",
         source: `${this._currentLine.CAPACITY} - ${this._currentLine.UTILISATION} - ${this._currentLine.ALLSERVICES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -819,6 +864,7 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: `All capacities (CAPACITY) must be integers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.CAPACITY,
+        name: this._currentLine.LOCALESTID,
       });
     }
     const areUtilisationsValid = listOfUtilisations.every(thisUtilisation => {
@@ -832,9 +878,10 @@ class Establishment {
         errType: `CAPACITY_UTILISATION_ERROR`,
         error: `All utilisations (UTILISATION) must be integers and less than ${MAX_CAP_UTIL}`,
         source: this._currentLine.UTILISATION,
+        name: this._currentLine.LOCALESTID,
       });
     }
-    
+
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
       return false;
@@ -872,6 +919,7 @@ class Establishment {
         errType: `TOTAL_PERM_TEMP_ERROR`,
         error: "Total Permanent and Temporary (TOTALPERMTEMP) must be an integer",
         source: this._currentLine.PERMCQC,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else if (myTotalPermTemp < 0 || myTotalPermTemp > MAX_TOTAL) {
@@ -881,6 +929,7 @@ class Establishment {
         errType: `TOTAL_PERM_TEMP_ERROR`,
         error: `Total Permanent and Temporary (TOTALPERMTEMP) must be 0 or more, but less than ${MAX_TOTAL}`,
         source: myTotalPermTemp,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     } else {
@@ -903,6 +952,7 @@ class Establishment {
         errType: `ALL_JOBS_ERROR`,
         error: "All Job Roles (ALLJOBROLES) must be defined",
         source: this._currentLine.ALLJOBROLES,
+        name: this._currentLine.LOCALESTID,
       });
     } else if (this._totalPermTemp > 0) {
       // must have at least one job role
@@ -913,6 +963,7 @@ class Establishment {
           errType: `ALL_JOBS_ERROR`,
           error: "All Job Roles (ALLJOBROLES) must be defined",
           source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID,
         });
       }
       // all jobs are integers
@@ -924,6 +975,7 @@ class Establishment {
           errType: `ALL_JOBS_ERROR`,
           error: "All Job Roles (ALLJOBROLES)  must be integers",
           source: this._currentLine.ALLJOBROLES,
+          name: this._currentLine.LOCALESTID,
         });
       }
     }
@@ -964,6 +1016,7 @@ class Establishment {
         errType: `VACANCIES_ERROR`,
         error: "Vacancies (VACANCIES) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
         source: `${this._currentLine.VACANCIES} - ${this._currentLine.ALLJOBROLES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (!((starters.length === 1 && starters[0] === DONT_KNOW) || (starters.length === allJobsCount))) {
@@ -973,6 +1026,7 @@ class Establishment {
         errType: `STARTERS_ERROR`,
         error: "Starters (STARTERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
         source: `${this._currentLine.STARTERS} - ${this._currentLine.ALLJOBROLES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (!((leavers.length === 1 && leavers[0] === DONT_KNOW) || (leavers.length === allJobsCount))) {
@@ -982,6 +1036,7 @@ class Establishment {
         errType: `LEAVERS_ERROR`,
         error: "Leavers (LEAVERS) does not correlate to All Job Roles (ALLJOBROLES); must have same number of semi colon delimited values",
         source: `${this._currentLine.LEAVERS} - ${this._currentLine.ALLJOBROLES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -995,6 +1050,7 @@ class Establishment {
         errType: `VACANCIES_ERROR`,
         error: `Vacancies (VACANCIES) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.VACANCIES}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (!starters.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
@@ -1004,6 +1060,7 @@ class Establishment {
         errType: `STARTERS_ERROR`,
         error: `Starters (STARTERS) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.STARTERS}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
     if (!leavers.every(thisCount => !Number.isNaN(parseInt(thisCount)) && parseInt(thisCount) >= MIN_COUNT && parseInt(thisCount) <= MAX_COUNT)) {
@@ -1013,6 +1070,7 @@ class Establishment {
         errType: `LEAVERS_ERROR`,
         error: `Leavers (LEAVERS) values must be integers and ${MIN_COUNT} or more but less than ${MAX_COUNT}`,
         source: `${this._currentLine.LEAVERS}`,
+        name: this._currentLine.LOCALESTID,
       });
     }
 
@@ -1035,14 +1093,14 @@ class Establishment {
 
   _validateReasonsForLeaving() {
     // only if the sum of "LEAVERS" is greater than 0
-    const sumOfLeavers = this._leavers ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
+    const sumOfLeavers = this._leavers && Array.isArray(this._leavers) && this._leavers[0] !== 999 ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
 
     if (sumOfLeavers > 0) {
       const allReasons = this._currentLine.REASONS.split(';');
       const allReasonsCounts = this._currentLine.REASONNOS.split(';');
 
       const localValidationErrors = [];
-  
+
       if (!allReasons || allReasons.length==0) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
@@ -1050,15 +1108,17 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: "Reasons for Leaving (REASONS) must be defined as a semi-colon delimited set of reasons",
           source: this._currentLine.REASONS,
+          name: this._currentLine.LOCALESTID,
         });
       }
-      if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount)) || parseInt(thisCount) < MIN_COUNT)) {
+      if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount)))) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: `Reasons for Leaving (REASONS) values must be integers`,
           source: `${this._currentLine.REASONS}`,
+          name: this._currentLine.LOCALESTID,
         });
       }
 
@@ -1069,6 +1129,7 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: "Reasons for Leaving Counts (REASONNOS) must be defined as a semi-colon delimited set of reasons",
           source: this._currentLine.REASONNOS,
+          name: this._currentLine.LOCALESTID,
         });
       }
       const MIN_COUNT = 0;
@@ -1079,6 +1140,7 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: `Reasons for Leaving Counts (REASONNOS) values must be integers and ${MIN_COUNT} or more`,
           source: `${this._currentLine.REASONNOS}`,
+          name: this._currentLine.LOCALESTID,
         });
       }
 
@@ -1090,6 +1152,7 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: `Reasons for Leaving (REASON) and Reasons for Leaving Counts (REASONNOS) must have the same number of semi-colon delimited values`,
           source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
+          name: this._currentLine.LOCALESTID,
         });
       }
 
@@ -1102,14 +1165,15 @@ class Establishment {
           errType: `REASONS_FOR_LEAVING_ERROR`,
           error: `Sum of Reasons for Leaving Counts (REASONNOS) must equal the sum of leavers (LEAVERS)`,
           source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
+          name: this._currentLine.LOCALESTID,
         });
       }
-  
+
       if (localValidationErrors.length > 0) {
         localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
         return false;
       }
-  
+
       this._reasonsForLeaving = allReasons.map((thisReason, index) => {
         return {
           id: parseInt(thisReason, 10),
@@ -1118,7 +1182,7 @@ class Establishment {
       });
 
       return true;
-  
+
     } else {
       return true;
     }
@@ -1149,6 +1213,7 @@ class Establishment {
           errType: `MAIN_SERVICE_ERROR`,
           error: `Main Service (MAINSERVICE): ${this._mainService} is unknown`,
           source: this._currentLine.MAINSERVICE,
+          name: this._currentLine.LOCALESTID,
         });
       }
     }
@@ -1170,6 +1235,7 @@ class Establishment {
             errType: `ALL_SERVICES_ERROR`,
             error: `All Services (ALLSERVICES): ${thisService} is unknown`,
             source: this._currentLine.ALLSERVICES,
+            name: this._currentLine.LOCALESTID,
           });
         }
       });
@@ -1194,6 +1260,7 @@ class Establishment {
             errType: `SERVICE_USERS_ERROR`,
             error: `Service Users (SERVICEUSERS): ${thisService} is unknown`,
             source: this._currentLine.SERVICEUSERS,
+            name: this._currentLine.LOCALESTID,
           });
         }
       });
@@ -1214,6 +1281,7 @@ class Establishment {
           errType: `ESTABLISHMENT_TYPE_ERROR`,
           error: `Establishment Type (ESTTYPE): ${this._establishmentType} is unknown`,
           source: this._currentLine.ESTTYPE,
+          name: this._currentLine.LOCALESTID,
         });
       } else {
         this._establishmentType = mappedType.type;
@@ -1238,7 +1306,8 @@ class Establishment {
             errType: `LOCAL_AUTHORITIES_ERROR`,
             error: `Local Authorities (SHARELA): ${thisLA} is unknown`,
             source: this._currentLine.SHARELA,
-          }); 
+            name: this._currentLine.LOCALESTID,
+          });
         }
       });
 
@@ -1272,9 +1341,10 @@ class Establishment {
               errType: `CAPACITY_UTILISATION_ERROR`,
               error: `Capacities (CAPACITY): position ${index+1} is unexpected capacity (no expected capacity for given service: ${this._allServices[index]})`,
               source: this._currentLine.CAPACITY,
+              name: this._currentLine.LOCALESTID,
             });
           }
-            
+
         }
       });
 
@@ -1308,6 +1378,7 @@ class Establishment {
               errType: `CAPACITY_UTILISATION_ERROR`,
               error: `Utilisations (UTILISATION): position ${index+1} is unknown utilisation`,
               source: this._currentLine.UTILISATION,
+              name: this._currentLine.LOCALESTID,
             });
           }
         }
@@ -1333,6 +1404,7 @@ class Establishment {
             errType: `ALL_JOBS_ERROR`,
             error: `All Job Roles (ALLJOBROLES): ${thisJob} is unknown`,
             source: this._currentLine.ALLJOBROLES,
+            name: this._currentLine.LOCALESTID,
           });
         }
       });
@@ -1353,7 +1425,7 @@ class Establishment {
   _transformAllVacanciesStartersLeavers() {
     // vacancies, starters and leavers is either an array of counts against positional indexes to _allJobs
     //  or a single value of 999
-    
+
     // if a single value of 999, then map to "Don't know"
     // if a full set of 0 (e.g. 0, or 0;0 or 0;0;0, ...), then map to "None"
     const DONT_KNOW=999;
@@ -1367,7 +1439,7 @@ class Establishment {
         .map((thisJob, index) => {
           return {
             jobId: this._alljobs[index],
-            total: thisJob  
+            total: thisJob
           };
         })
         .filter(thisJob => thisJob.total !== 0);
@@ -1382,7 +1454,7 @@ class Establishment {
         .map((thisJob, index) => {
           return {
             jobId: this._alljobs[index],
-            total: thisJob  
+            total: thisJob
           };
         })
         .filter(thisJob => thisJob.total !== 0);
@@ -1397,7 +1469,7 @@ class Establishment {
         .map((thisJob, index) => {
           return {
             jobId: this._alljobs[index],
-            total: thisJob  
+            total: thisJob
           };
         })
         .filter(thisJob => thisJob.total !== 0);
@@ -1424,6 +1496,7 @@ class Establishment {
             errType: `REASONS_FOR_LEAVING_ERROR`,
             error: `Reason for Leaving (REASONS): ${thisReason.id} is unknown`,
             source: this._currentLine.REASONS,
+            name: this._currentLine.LOCALESTID,
           });
         }
       });
@@ -1450,7 +1523,8 @@ class Establishment {
         errCode: Establishment.HEADERS_ERROR,
         errType: `HEADERS_ERROR`,
         error: `Establishment headers (HEADERS) can contain, ${this._headers_v1}`,
-        source: headers
+        source: headers,
+        name: this._currentLine.LOCALESTID,
       });
       return false;
     }
@@ -1466,6 +1540,7 @@ class Establishment {
       errType: `DUPLICATE_ERROR`,
       error: `Duplicate of line ${originalLineNumber}`,
       source: this._currentLine.LOCALESTID,
+      name: this._currentLine.LOCALESTID,
     };
   }
 
@@ -1519,7 +1594,7 @@ class Establishment {
     status = !this._validateJobRoleTotals() ? false : status;
 
     status = !this._validateReasonsForLeaving() ? false : status;
-    
+
     return status;
   }
 
@@ -1598,7 +1673,7 @@ class Establishment {
             ...thisValidation,
           };
         });
-    
+
   };
 
   // returns an API representation of this Establishment
@@ -1617,10 +1692,10 @@ class Establishment {
         value: this._establishmentType,
         other: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
       },
-      localAuthorities: this._localAuthorities ? this._localAuthorities : undefined,
+      localAuthorities: this._localAuthorities ? this._localAuthorities : [],
       mainService: this._mainService,
       services: this._allServices ? this._allServices
-        .filter(thisService => thisService !== this._mainService)   // main service cannot appear in otherServices
+        .filter(thisService => thisService !== this._mainService.id)   // main service cannot appear in otherServices
         .map((thisService, index) => {
           const returnThis = {
             id: thisService,
@@ -1633,7 +1708,7 @@ class Establishment {
           }
 
           return returnThis;
-        }) : undefined,
+        }) : [],
       serviceUsers: this._allServiceUsers ? this._allServiceUsers
         .map((thisService, index) => {
           const returnThis = {
@@ -1645,11 +1720,11 @@ class Establishment {
           }
 
           return returnThis;
-        }) : undefined,
+        }) : [],
       numberOfStaff: this._totalPermTemp,
-      vacancies: this._vacancies ? this._vacancies : undefined,
-      starters: this._starters ? this._starters : undefined,
-      leavers: this.leavers ? this.leavers : undefined,
+      vacancies: this._vacancies ? this._vacancies : 'None',
+      starters: this._starters ? this._starters : 'None',
+      leavers: this.leavers ? this.leavers : 'None',
     };
 
     // share options
@@ -1681,10 +1756,10 @@ class Establishment {
 
     // clean up empty properties
     if (changeProperties.capacities.length == 0) {
-      changeProperties.capacities = undefined;
+      changeProperties.capacities = [];
     }
     if (changeProperties.services && changeProperties.services.length == 0) {
-      changeProperties.services = undefined;
+      changeProperties.services = [];
     }
 
     return {
@@ -1700,6 +1775,7 @@ class Establishment {
         const validationError = {
           lineNumber: this._lineNumber,
           error: thisError.message,
+          name: this._currentLine.LOCALESTID,
         };
 
         switch (thisProp) {
@@ -1778,7 +1854,7 @@ class Establishment {
             validationError.errCode = Establishment.LOCATION_ID_ERROR;
             validationError.errType = 'LOCATION_ID_ERROR';
             validationError.source  = `${this._currentLine.LOCATIONID}`;
-            break;   
+            break;
           case 'NMDSID':
               // where to map NMDSID error?????
           default:
@@ -1790,12 +1866,13 @@ class Establishment {
         this._validationErrors.push(validationError);
       }) : true;
     });
-  
+
     warnings.forEach(thisWarning => {
       thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
         const validationWarning = {
           lineNumber: this._lineNumber,
           warning: thisWarning.message,
+          name: this._currentLine.LOCALESTID,
         };
 
         switch (thisProp) {
@@ -1874,7 +1951,7 @@ class Establishment {
             validationWarning.warnCode = Establishment.LOCATION_ID_WARNING;
             validationWarning.warnType = 'LOCATION_ID_WARNING';
             validationWarning.source  = `${this._currentLine.LOCATIONID}`;
-            break;   
+            break;
           case 'NMDSID':
               // where to map NMDSID error?????
           default:
@@ -1887,7 +1964,181 @@ class Establishment {
       }) : true;
     });
 
+  };
+
+  _csvQuote(toCsv) {
+    if (toCsv && toCsv.replace(/ /g, '').match(/[\s,"]/)) {
+      return '"' + toCsv.replace(/"/g, '""') + '"';
+    } else {
+      return toCsv;
+    }
   }
+
+  // takes the given establishment entity and writes it out to CSV string (one line)
+  toCSV(entity) {
+    // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
+    const columns = [];
+    columns.push(this._csvQuote(entity.localIdentifier));   // todo - this will be local identifier
+    columns.push('UNCHECKED');
+    columns.push(this._csvQuote(entity.name));
+    columns.push(this._csvQuote(entity.address));
+    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(entity.postcode);
+
+    switch (entity.employerType.value) {
+      case 'Private Sector':
+        columns.push(6);
+        break;
+      case 'Voluntary / Charity':
+        columns.push(7);
+        break;
+      case 'Other':
+        columns.push(8);
+        break;
+      case 'Local Authority (generic/other)':
+        columns.push(3);
+        break;
+      case 'Local Authority (adult services)':
+        columns.push(1);
+        break;
+    }
+    if (entity.employerType.other) {
+      columns.push(this._csvQuote(entity.employerType.other))
+    } else {
+      columns.push('');
+    }
+
+    // share with CQC/LA, LAs sharing with
+    const shareWith = entity.shareWith;
+    const shareWithLA = entity.shareWithLA;
+    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('CQC') ? 1 : 0);
+    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? 1 : 0);
+    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? shareWithLA.map(thisLA => thisLA.id).join(';') : '')
+
+    // CQC regulated, Prov IDand Location ID
+    columns.push(entity.isRegulated ? 2 : 0);
+    columns.push('');   // we don't have prov id yet
+    columns.push(entity.isRegulated ? entity.locationId : '');
+
+    // main service - this is mandatory in ASC WDS so no need to check for it being available or not
+    const mainService = entity.mainService;
+    const budiMappedMainService = BUDI.services(BUDI.FROM_ASC, mainService.id);
+    columns.push(budiMappedMainService);
+
+    // all services - this is main service and other services
+    const otherServices = entity.otherServices && Array.isArray(entity.otherServices) ? entity.otherServices : [];
+    otherServices.unshift(mainService)
+    columns.push(otherServices.map(thisService => BUDI.services(BUDI.FROM_ASC, thisService.id)).join(';'));
+
+    // capacities and utilisations - these are semi colon delimited in the order of ALLSERVICES (so main service and other services) - empty if not a capacity or a utilisation
+    const entityCapacities = entity.capacities ? entity.capacities.map(thisCap => {
+        const isCapacity = BUDI.serviceFromCapacityId(thisCap.reference.id);
+        const isUtilisation = BUDI.serviceFromUtilisationId(thisCap.reference.id);
+
+        return {
+          isUtilisation: isUtilisation !== null ? true : false,
+          isCapacity: isCapacity !== null ? true : false,
+          serviceId: isCapacity !== null ? isCapacity : isUtilisation,
+          answer: thisCap.answer,
+        };
+      }) : [];
+
+    // for CSV output, the capacities need to be separated from utilisations
+
+    // the capacities must be written out in the same sequence of semi-colon delimited values as ALLSERVICES
+    columns.push(otherServices.map(thisService => {
+      // capacities only
+      const matchedCapacityForGivenService = entityCapacities.find(thisCap => thisCap.isCapacity && thisCap.serviceId == thisService.id);
+      return matchedCapacityForGivenService ? matchedCapacityForGivenService.answer : ''
+    }).join(';'));
+    columns.push(otherServices.map(thisService => {
+      // capacities only
+      const matchedUtilisationForGivenService = entityCapacities.find(thisCap => thisCap.isUtilisation && thisCap.serviceId == thisService.id);
+      return matchedUtilisationForGivenService ? matchedUtilisationForGivenService.answer : ''
+    }).join(';'));
+
+    // all service "other" descriptions
+    columns.push(otherServices.map(thisService => thisService.other && thisService.other.length > 0 ? thisService.other : '').join(';'));
+
+    // service users and their 'other' descriptions
+    const serviceUsers = entity.serviceUsers;
+    columns.push(serviceUsers.map(thisUser => BUDI.serviceUsers(BUDI.FROM_ASC, thisUser.id)).join(';'));
+    columns.push(serviceUsers.map(thisUser => thisUser.other && thisUser.other.length > 0 ? thisUser.other : '').join(';'));
+
+    // total perm/temp staff
+    columns.push(entity.numberOfStaff ? entity.numberOfStaff : 0);
+
+    // all job roles, starters, leavers and vacancies
+    const allJobs = [];
+    if (entity.starters && Array.isArray(entity.starters)) {
+      entity.starters.forEach(thisStarter => allJobs.push(thisStarter));
+    }
+    if (entity.leavers && Array.isArray(entity.leavers)) {
+      entity.leavers.forEach(thisLeaver => allJobs.push(thisLeaver));
+    }
+    if (entity.vacancies && Array.isArray(entity.vacancies)) {
+      entity.vacancies.forEach(thisVacancy => allJobs.push(thisVacancy));
+    }
+
+    columns.push(allJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';'));
+    if (entity.starters && !Array.isArray(entity.starters)) {
+      if (entity.starters === 'None') {
+        columns.push(allJobs.map(thisJob => 0).join(';'));
+      } else {
+        columns.push(999);
+      }
+    } else {
+      columns.push(allJobs.map(thisJob => {
+        const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.id === thisJob.id);
+        if (isThisJobAStarterJob) {
+          return isThisJobAStarterJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+    if (entity.leavers && !Array.isArray(entity.leavers)) {
+      if (entity.leavers === 'None') {
+        columns.push(allJobs.map(thisJob => 0).join(';'));
+      } else {
+        columns.push(999);
+      }
+    } else {
+      columns.push(allJobs.map(thisJob => {
+        const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.id === thisJob.id);
+        if (isThisJobALeaverJob) {
+          return isThisJobALeaverJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+    if (entity.vacancies && !Array.isArray(entity.vacancies)) {
+      if (entity.vacancies === 'None') {
+        columns.push(allJobs.map(thisJob => 0).join(';'));
+      } else {
+        columns.push(999);
+      }
+    } else {
+      columns.push(allJobs.map(thisJob => {
+        const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.id === thisJob.id);
+        if (isThisJobAVacancyJob) {
+          return isThisJobAVacancyJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+
+    // reasons for leaving - currently can't be mapped
+    columns.push('');
+    columns.push('');
+
+    return columns.join(',');
+  };
+
 };
 
 module.exports.Establishment = Establishment;

@@ -29,3 +29,7 @@ notify:
 bulkupload:
     region: eu-west-2
     bucketname: sfc-bulkupload-prod
+
+public:
+    download:
+        baseurl: https://sfc-public-prod.s3.eu-west-2.amazonaws.com/public/download

@@ -32,11 +32,20 @@ export class Dialog<T, R = any> {
     const customInjector = this.createInjector(this.data);
 
     this.overlayRef = this.overlay.create(config);
+
+    const sub = this.overlayRef.backdropClick().subscribe(() => {
+      this.close();
+      sub.unsubscribe();
+    });
+
     const componentPortal = new ComponentPortal(this.componentType, null, customInjector);
 
     this.overlayRef.attach(componentPortal);
     this.focusTrap = this.focusTrapFactory.create(this.overlayRef.overlayElement);
     this.overlayRef.overlayElement.setAttribute('tabindex', '-1');
+    this.overlayRef.overlayElement.setAttribute('aria-modal', 'true');
+    this.overlayRef.overlayElement.setAttribute('aria-labelledby', 'dialogHeading');
+    this.overlayRef.overlayElement.setAttribute('role', 'dialog');
     this.overlayRef.overlayElement.focus();
   }
 

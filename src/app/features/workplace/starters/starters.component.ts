@@ -70,8 +70,7 @@ export class StartersComponent extends Question {
           this.starterRecords.removeAt(1);
         }
 
-        this.starterRecords.controls[0].get('jobId').clearValidators();
-        this.starterRecords.controls[0].get('total').clearValidators();
+        this.clearValidators(0);
         this.starterRecords.reset([], { emitEvent: false });
 
         this.form.get('noRecordsReason').setValue(value, { emitEvent: false });
@@ -116,13 +115,14 @@ export class StartersComponent extends Question {
         this.starterRecords.push(this.createRecordItem(starter.jobId, starter.total))
       );
     } else {
+      this.starterRecords.push(this.createRecordItem());
       if (
         this.establishment.starters === jobOptionsEnum.NONE ||
         this.establishment.starters === jobOptionsEnum.DONT_KNOW
       ) {
         this.form.get('noRecordsReason').setValue(this.establishment.starters);
+        this.clearValidators(0);
       }
-      this.starterRecords.push(this.createRecordItem());
     }
   }
 
@@ -231,5 +231,10 @@ export class StartersComponent extends Question {
 
   public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  private clearValidators(index: number) {
+    this.starterRecords.controls[index].get('jobId').clearValidators();
+    this.starterRecords.controls[index].get('total').clearValidators();
   }
 }

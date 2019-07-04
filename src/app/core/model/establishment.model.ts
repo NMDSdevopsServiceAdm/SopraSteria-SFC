@@ -92,6 +92,7 @@ export interface Establishment {
   share: Share;
   localAuthorities: LocalAuthority[];
   primaryAuthority: PrimaryAuthority;
+  parentPermissions?: string;
   vacancies: Vacancy[] | string;
   totalVacancies: number;
   starters: Starter[] | string;
@@ -111,4 +112,22 @@ export enum jobOptionsEnum {
   // tslint:disable-next-line: quotemark
   DONT_KNOW = "Don't know",
   NONE = 'None',
+}
+
+export interface LocalIdentifiersRequest {
+  localIdentifier: LocalIdentifier[];
+}
+
+export interface LocalIdentifiersResponse {
+  id: number;
+  localIdentifiers: string[];
+  name: string;
+  uid: string;
+  updated: string;
+  updatedBy: string;
+}
+
+export interface LocalIdentifier {
+  uid: string;
+  value: string;
 }

@@ -9,11 +9,11 @@
   <ng-container *ngIf="totalStaff !== totalWorkers">
     <dt>Staff records added</dt>
     <dd>
-      <img *ngIf="totalStaff < totalWorkers" src="/assets/images/flag-orange.svg" alt="warning" /> {{ totalWorkers }}
+      <img *ngIf="totalStaff < totalWorkers" src="/assets/images/flag-orange.svg" alt="Warning" /> {{ totalWorkers }}
     </dd>
     <dt>Staff records missing</dt>
     <dd>
-      <img *ngIf="totalStaff > totalWorkers" src="/assets/images/flag-orange.svg" alt="warning" />
+      <img *ngIf="totalStaff > totalWorkers" src="/assets/images/flag-orange.svg" alt="Warning" />
       {{ totalStaff > totalWorkers ? totalStaff - totalWorkers : 0 }}
     </dd>
   </ng-container>

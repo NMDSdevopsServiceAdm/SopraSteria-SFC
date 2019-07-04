@@ -16,7 +16,6 @@ import { MessagesComponent } from './components/messages/messages.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PhaseBannerComponent } from './components/phase-banner/phase-banner.component';
 import { ProgressComponent } from './components/progress/progress.component';
-import { SkipLinkComponent } from './components/skip-link/skip-link.component';
 import { StartButtonComponent } from './components/start-button/start-button.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
@@ -24,18 +23,16 @@ import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
-import { NumberDigitsMax } from './directives/number-digits-max.directive';
-import { NumberIntOnly } from './directives/number-int-only.directive';
-import { NumberMax } from './directives/number-max.directive';
-import { NumberPositiveOnly } from './directives/number-positive-only.directive';
-import { Number } from './directives/number.directive';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
+import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
+import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
   declarations: [
     AbsoluteNumberPipe,
+    AlertComponent,
     AutoSuggestComponent,
     BackLinkComponent,
     CharacterCountComponent,
@@ -46,15 +43,9 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     FileValueAccessorDirective,
     InsetTextComponent,
     MessagesComponent,
-    Number,
-    NumberDigitsMax,
-    NumberIntOnly,
-    NumberMax,
-    NumberPositiveOnly,
     PanelComponent,
     PhaseBannerComponent,
     ProgressComponent,
-    SkipLinkComponent,
     StartButtonComponent,
     StatusComponent,
     SubmitButtonComponent,
@@ -62,9 +53,11 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
-    AlertComponent,
+    OpenEndedAnswerPipe,
+    ClosedEndedAnswerPipe,
   ],
   exports: [
+    AlertComponent,
     AutoSuggestComponent,
     BackLinkComponent,
     CharacterCountComponent,
@@ -75,15 +68,9 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     FileValueAccessorDirective,
     InsetTextComponent,
     MessagesComponent,
-    Number,
-    NumberDigitsMax,
-    NumberIntOnly,
-    NumberMax,
-    NumberPositiveOnly,
     PanelComponent,
     PhaseBannerComponent,
     ProgressComponent,
-    SkipLinkComponent,
     StartButtonComponent,
     StatusComponent,
     SubmitButtonComponent,
@@ -91,7 +78,8 @@ import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
-    AlertComponent,
+    OpenEndedAnswerPipe,
+    ClosedEndedAnswerPipe,
   ],
 })
 export class SharedModule {}

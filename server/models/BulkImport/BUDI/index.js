@@ -127,7 +127,7 @@ class BUDI {
       { "ASC":9, "BUDI":3},
       { "ASC":10, "BUDI":28},
       { "ASC":11, "BUDI":6},
-      { "ASC":12, "BUDI":26},
+      { "ASC":12, "BUDI":29},
       { "ASC":13, "BUDI":5},
       { "ASC":14, "BUDI":4},
       { "ASC":15, "BUDI":7},
@@ -248,7 +248,7 @@ class BUDI {
             type: 'Other',
           };
           break;
-  
+
         default:
           // return null
       }
@@ -348,7 +348,7 @@ class BUDI {
       { "ASC": 5, "BUDI": 37},
       { "ASC": 30, "BUDI": 38},
       { "ASC": 1, "BUDI": 39},
-      { "ASC": 34, "BUDI": 40},      
+      { "ASC": 34, "BUDI": 40},
     ];
 
     if (direction == BUDI.TO_ASC) {
@@ -944,7 +944,8 @@ class BUDI {
     const fixedMapping = [
       { "BUDI": 1, "ASC": 1},
       { "BUDI": 2, "ASC": 2},
-      { "BUDI": 4, "ASC": 3},
+      { "BUDI": 3, "ASC": 3},
+      { "BUDI": 4, "ASC": 4},
       { "BUDI": 5, "ASC": 5},
       { "BUDI": 6, "ASC": 6},
       { "BUDI": 7, "ASC": 7},
@@ -1108,7 +1109,7 @@ class BUDI {
       const found = fixedMapping.find(thisQualification => thisQualification.BUDI == originalCode);
       return found ? found.ASC : null;
     } else {
-      const found = fixedMapping.find(thisQualification => thisSpecialist.ASC == originalCode)
+      const found = fixedMapping.find(thisQualification => thisQualification.ASC == originalCode)
       return found ? found.BUDI : null;
     }
   }
@@ -1150,7 +1151,45 @@ class BUDI {
       return null;
     }
   }
-  
+
+  static serviceFromCapacityId(serviceCapacityId) {
+    if (ALL_CAPACITIES) {
+      const foundCapacity = ALL_CAPACITIES.find(thisCapacity => {
+        if (thisCapacity.serviceCapacityId === serviceCapacityId) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      // foundCapacity will be undefined if not found
+      return foundCapacity ? foundCapacity.serviceId : null;
+
+    } else {
+      return null;
+    }
+  }
+
+
+  static serviceFromUtilisationId(serviceCapacityId) {
+    if (ALL_UTILISATIONS) {
+      const foundCapacity = ALL_UTILISATIONS.find(thisCapacity => {
+        if (thisCapacity.serviceCapacityId === serviceCapacityId) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      // foundCapacity will be undefined if not found
+      return foundCapacity ? foundCapacity.serviceId : null;
+
+    } else {
+      return null;
+    }
+  }
+
+
   // more to come
 }
 

@@ -1,0 +1,28 @@
+a[target='_blank'] {
+  position: relative;
+  padding-right: 18px;
+
+  &:before {
+    content: '';
+    width: 13px;
+    height: 13px;
+    background: url('/assets/images/window.svg') no-repeat center;
+    background-size: 13px auto;
+    display: block;
+    position: absolute;
+    right: 0;
+    bottom: 1px;
+  }
+}
+
+.govuk-fieldset__legend {
+  overflow: visible;
+
+  &.govuk-fieldset__legend--xl {
+    @include govuk-responsive-margin(8, 'bottom');
+  }
+
+  &.govuk-fieldset__legend--l {
+    @include govuk-responsive-margin(6, 'bottom');
+  }
+}

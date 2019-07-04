@@ -47,9 +47,9 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
         this.form.get('hours').clearValidators();
 
         if (value === 'Yes') {
-          this.form.get('hours').setValidators(
-            [Validators.required, Validators.min(0), Validators.max(this.contractedMaxHours)]
-          );
+          this.form
+            .get('hours')
+            .setValidators([Validators.required, Validators.min(0), Validators.max(this.contractedMaxHours)]);
         }
 
         this.form.get('hours').updateValueAndValidity();
@@ -103,7 +103,7 @@ export class WeeklyContractedHoursComponent extends QuestionComponent {
     return {
       weeklyHoursContracted: {
         value: hoursKnown,
-        ...(hours && {
+        ...(hoursKnown === 'Yes' && {
           hours: hours,
         }),
       },
