@@ -2869,6 +2869,65 @@ class Worker {
     }
   }
 
+  // returns the BUDI mapped nationality
+  _maptoCSVnationality(nationality) {
+    if (nationality) {
+      if (nationality.value === 'British') {
+        return 826;
+      } else if (nationality.value === 'Don\'t know') {
+        return 999;
+      } else {
+        // it's other
+        return BUDI.nationality(BUDI.FROM_ASC, nationality.other.nationalityId);
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped country
+  _maptoCSVcountry(country) {
+    if (country) {
+      if (country.value === 'United Kingdom') {
+        return 826;
+      } else if (country.value === 'Don\'t know') {
+        return 999;
+      } else {
+        // it's other
+        return BUDI.country(BUDI.FROM_ASC, country.other.countryId);
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped recruitment source
+  _maptoCSVrecruitedFrom(source) {
+    if (source) {
+      if (source.value === 'No') {
+        return 16;
+      } else {
+        // it's other
+        return BUDI.recruitment(BUDI.FROM_ASC, source.from.recruitedFromId);
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped started in sector
+  _maptoCSVStartedInSector(started) {
+    if (started) {
+      if (started.value === 'No') {
+        return '';
+      } else {
+        return started.year;
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
 
   // takes the given Worker entity and writes it out to CSV string (one line)
   toCSV(establishmentId, entity) {
@@ -2878,8 +2937,8 @@ class Worker {
     const columns = [];
     columns.push(establishmentId);
     columns.push(entity.nameOrId);   // todo - this will be local identifier
-    columns.push('TBC');
-    columns.push('TBC');
+    columns.push('');
+    columns.push('UNCHECKED');
     columns.push(entity.nameOrId);
 
     columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g,'') : '');  // remove whitespace
@@ -2891,6 +2950,7 @@ class Worker {
     switch (entity.gender) {
       case null:
           columns.push('');
+          break;
       case 'Female':
         columns.push(2);
         break;
@@ -2906,11 +2966,24 @@ class Worker {
     }
 
     // "ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY"
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
+    columns.push(entity.ethnicity ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.ethnicityId) : '');
+    columns.push(entity.nationality ? this._maptoCSVnationality(entity.nationality) : '');
+    switch (entity.britishCitizenship) {
+      case null:
+          columns.push('');
+          break;
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+    columns.push(entity.countryOfBirth ? this._maptoCSVcountry(entity.countryOfBirth) : '');
+    columns.push(entity.yearArrived ? entity.yearArrived.year : '');
 
     // disabled
     switch (entity.disabiliity) {
@@ -2944,10 +3017,26 @@ class Worker {
     }
 
     // "RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE"
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
+    console.log("WA DEBUG - recruitment source, main job start date, started in sector, apprentice: ", entity.recruitmentSource, entity.mainJobStartDate, entity.socialCareStartDate, entity.apprenticeship)
+    columns.push(entity.recruitmentSource ? this._maptoCSVrecruitedFrom(entity.recruitmentSource) : '');
+
+    const mainJobStartDateParts = entity.mainJobStartDate ? entity.mainJobStartDate.split('-') : null;
+    mainJobStartDateParts ? columns.push(`${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}`) : columns.push(''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
+
+    columns.push(this._maptoCSVStartedInSector(entity.socialCareStartDate));
+    switch (entity.apprenticeship) {
+      case null:
+          columns.push('');
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
 
     // EMPLSTATUS/;contract - mandatory
     switch (entity.contract) {
