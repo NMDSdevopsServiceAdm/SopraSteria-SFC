@@ -186,7 +186,60 @@ class Worker extends EntityValidator {
     get nonSocialCareQualificationLevel() {
         return this._properties.get('HighestQualification') ? this._properties.get('HighestQualification').property : null;
     }
-
+    get ethnicity() {
+      return this._properties.get('Ethnicity') ? this._properties.get('Ethnicity').property : null;
+    };
+    get nationality() {
+      return this._properties.get('Nationality') ? this._properties.get('Nationality').property : null;
+    };
+    get countryOfBirth() {
+      return this._properties.get('CountryOfBirth') ? this._properties.get('CountryOfBirth').property : null;
+    };
+    get britishCitizenship() {
+      return this._properties.get('BritishCitizenship') ? this._properties.get('BritishCitizenship').property : null;
+    };
+    get yearArrived() {
+      return this._properties.get('YearArrived') ? this._properties.get('YearArrived').property : null;
+    };
+    get recruitmentSource() {
+      return this._properties.get('RecruitedFrom') ? this._properties.get('RecruitedFrom').property : null;
+    };
+    get mainJobStartDate() {
+      return this._properties.get('MainJobStartDate') ? this._properties.get('MainJobStartDate').property : null;
+    };
+    get socialCareStartDate() {
+      return this._properties.get('SocialCareStartDate') ? this._properties.get('SocialCareStartDate').property : null;
+    };
+    get apprenticeship() {
+      return this._properties.get('ApprenticeshipTraining') ? this._properties.get('ApprenticeshipTraining').property : null;
+    };
+    get zeeroContractHours() {
+      return this._properties.get('ZeroHoursContract') ? this._properties.get('ZeroHoursContract').property : null;
+    };
+    get daysSick() {
+      return this._properties.get('DaysSick') ? this._properties.get('DaysSick').property : null;
+    };
+    get annualHourlyPay() {
+      return this._properties.get('AnnualHourlyPay') ? this._properties.get('AnnualHourlyPay').property : null;
+    };
+    get mainJob() {
+      return this._properties.get('MainJob') ? this._properties.get('MainJob').property : null;
+    };
+    get contractedHours() {
+      return this._properties.get('WeeklyHoursContracted') ? this._properties.get('WeeklyHoursContracted').property : null;
+    };
+    get averageHours() {
+      return this._properties.get('WeeklyHoursAverage') ? this._properties.get('WeeklyHoursAverage').property : null;
+    };
+    get otherJobs() {
+      return this._properties.get('OtherJobs') ? this._properties.get('OtherJobs').property : null;
+    };
+    get registeredNurse() {
+      return this._properties.get('RegisteredNurse') ? this._properties.get('RegisteredNurse').property : null;
+    };
+    get nurseSpecialism() {
+      return this._properties.get('NurseSpecialism') ? this._properties.get('NurseSpecialism').property : null;
+    };
 
     // takes the given JSON document and creates a Worker's set of extendable properties
     // Returns true if the resulting Worker is valid; otherwise false

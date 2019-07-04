@@ -155,6 +155,34 @@ class Establishment extends EntityValidator {
     get employerType() {
         return this._properties.get('EmployerType') ? this._properties.get('EmployerType').property : null;
     };
+    get localIdentifier() {
+      return this._properties.get('LocalIdentifier') ? this._properties.get('LocalIdentifier').property : null;
+    };
+    get shareWith() {
+      return this._properties.get('ShareData') ? this._properties.get('ShareData').property : null;
+    };
+    get shareWithLA() {
+      return this._properties.get('ShareWithLA') ? this._properties.get('ShareWithLA').property : null;
+    }
+    get otherServices() {
+      return this._properties.get('OtherServices') ? this._properties.get('OtherServices').property : null;
+    }
+    get capacities() {
+      return this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').property : null;
+    }
+    get serviceUsers() {
+      return this._properties.get('ServiceUsers') ? this._properties.get('ServiceUsers').property : null;
+    }
+    get starters() {
+      return this._properties.get('Starters') ? this._properties.get('Starters').property : null;
+    }
+    get leavers() {
+      return this._properties.get('Leavers') ? this._properties.get('Leavers').property : null;
+    }
+    get vacancies() {
+      return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
+    }
+
 
     get nmdsId() {
         return this._nmdsId;

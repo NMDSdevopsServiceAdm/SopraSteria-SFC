@@ -1978,8 +1978,8 @@ class Establishment {
   toCSV(entity) {
     // ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"]
     const columns = [];
-    columns.push(this._csvQuote(entity.name));   // todo - this will be local identifier
-    columns.push('TBC');
+    columns.push(this._csvQuote(entity.localIdentifier));   // todo - this will be local identifier
+    columns.push('UNCHECKED');
     columns.push(this._csvQuote(entity.name));
     columns.push(this._csvQuote(entity.address));
     columns.push(''); // address is not store in separate fields in ASC WDS
@@ -2009,6 +2009,132 @@ class Establishment {
     } else {
       columns.push('');
     }
+
+    // share with CQC/LA, LAs sharing with
+    const shareWith = entity.shareWith;
+    const shareWithLA = entity.shareWithLA;
+    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('CQC') ? 1 : 0);
+    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? 1 : 0);
+    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? shareWithLA.map(thisLA => thisLA.id).join(';') : '')
+
+    // CQC regulated, Prov IDand Location ID
+    columns.push(entity.isRegulated ? 2 : 0);
+    columns.push('');   // we don't have prov id yet
+    columns.push(entity.isRegulated ? entity.locationId : '');
+
+    // main service - this is mandatory in ASC WDS so no need to check for it being available or not
+    const mainService = entity.mainService;
+    const budiMappedMainService = BUDI.services(BUDI.FROM_ASC, mainService.id);
+    columns.push(budiMappedMainService);
+
+    // all services - this is main service and other services
+    const otherServices = entity.otherServices;
+    otherServices.unshift(mainService)
+    columns.push(otherServices.map(thisService => BUDI.services(BUDI.FROM_ASC, thisService.id)).join(';'));
+
+    // capacities and utilisations - these are semi colon delimited in the order of ALLSERVICES (so main service and other services) - empty if not a capacity or a utilisation
+    const entityCapacities = entity.capacities ? entity.capacities.map(thisCap => {
+        const isCapacity = BUDI.serviceFromCapacityId(thisCap.reference.id);
+        const isUtilisation = BUDI.serviceFromUtilisationId(thisCap.reference.id);
+
+        return {
+          isUtilisation: isUtilisation !== null ? true : false,
+          isCapacity: isCapacity !== null ? true : false,
+          serviceId: isCapacity !== null ? isCapacity : isUtilisation,
+          answer: thisCap.answer,
+        };
+      }) : [];
+
+    // for CSV output, the capacities need to be separated from utilisations
+
+    // the capacities must be written out in the same sequence of semi-colon delimited values as ALLSERVICES
+    columns.push(otherServices.map(thisService => {
+      // capacities only
+      const matchedCapacityForGivenService = entityCapacities.find(thisCap => thisCap.isCapacity && thisCap.serviceId == thisService.id);
+      return matchedCapacityForGivenService ? matchedCapacityForGivenService.answer : ''
+    }).join(';'));
+    columns.push(otherServices.map(thisService => {
+      // capacities only
+      const matchedUtilisationForGivenService = entityCapacities.find(thisCap => thisCap.isUtilisation && thisCap.serviceId == thisService.id);
+      return matchedUtilisationForGivenService ? matchedUtilisationForGivenService.answer : ''
+    }).join(';'));
+
+    // all service "other" descriptions
+    columns.push(otherServices.map(thisService => thisService.other && thisService.other.length > 0 ? thisService.other : '').join(';'));
+
+    // service users and their 'other' descriptions
+    const serviceUsers = entity.serviceUsers;
+    columns.push(serviceUsers.map(thisUser => BUDI.serviceUsers(BUDI.FROM_ASC, thisUser.id)).join(';'));
+    columns.push(serviceUsers.map(thisUser => thisUser.other && thisUser.other.length > 0 ? thisUser.other : '').join(';'));
+
+    // total perm/temp staff
+    columns.push(entity.numberOfStaff ? entity.numberOfStaff : 0);
+
+    // all job roles, starters, leavers and vacancies
+    const allJobs = [];
+    if (entity.starters && Array.isArray(entity.starters)) {
+      entity.starters.forEach(thisStarter => allJobs.push(thisStarter));
+    }
+    if (entity.leavers && Array.isArray(entity.leavers)) {
+      entity.leavers.forEach(thisLeaver => allJobs.push(thisLeaver));
+    }
+    if (entity.vacancies && Array.isArray(entity.vacancies)) {
+      entity.vacancies.forEach(thisVacancy => allJobs.push(thisVacancy));
+    }
+
+    columns.push(allJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';'));
+    if (entity.starters && !Array.isArray(entity.starters)) {
+      if (entity.starters === 'None') {
+        columns.push(allJobs.map(thisJob => 0).join(';'));
+      } else {
+        columns.push(999);
+      }
+    } else {
+      columns.push(allJobs.map(thisJob => {
+        const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.id === thisJob.id);
+        if (isThisJobAStarterJob) {
+          return isThisJobAStarterJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+    if (entity.leavers && !Array.isArray(entity.leavers)) {
+      if (entity.leavers === 'None') {
+        columns.push(allJobs.map(thisJob => 0).join(';'));
+      } else {
+        columns.push(999);
+      }
+    } else {
+      columns.push(allJobs.map(thisJob => {
+        const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.id === thisJob.id);
+        if (isThisJobALeaverJob) {
+          return isThisJobALeaverJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+    if (entity.vacancies && !Array.isArray(entity.vacancies)) {
+      if (entity.vacancies === 'None') {
+        columns.push(allJobs.map(thisJob => 0).join(';'));
+      } else {
+        columns.push(999);
+      }
+    } else {
+      columns.push(allJobs.map(thisJob => {
+        const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.id === thisJob.id);
+        if (isThisJobAVacancyJob) {
+          return isThisJobAVacancyJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+
+    // reasons for leaving - currently can't be mapped
+    columns.push('');
+    columns.push('');
 
     return columns.join(',');
   };

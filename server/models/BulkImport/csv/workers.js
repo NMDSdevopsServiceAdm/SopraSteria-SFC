@@ -2869,6 +2869,113 @@ class Worker {
     }
   }
 
+  // returns the BUDI mapped nationality
+  _maptoCSVnationality(nationality) {
+    if (nationality) {
+      if (nationality.value === 'British') {
+        return 826;
+      } else if (nationality.value === 'Don\'t know') {
+        return 999;
+      } else {
+        // it's other
+        return BUDI.nationality(BUDI.FROM_ASC, nationality.other.nationalityId);
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped country
+  _maptoCSVcountry(country) {
+    if (country) {
+      if (country.value === 'United Kingdom') {
+        return 826;
+      } else if (country.value === 'Don\'t know') {
+        return 999;
+      } else {
+        // it's other
+        return BUDI.country(BUDI.FROM_ASC, country.other.countryId);
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped recruitment source
+  _maptoCSVrecruitedFrom(source) {
+    if (source) {
+      if (source.value === 'No') {
+        return 16;
+      } else {
+        // it's other
+        return BUDI.recruitment(BUDI.FROM_ASC, source.from.recruitedFromId);
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped started in sector
+  _maptoCSVStartedInSector(started) {
+    if (started) {
+      if (started.value === 'No') {
+        return '';
+      } else {
+        return started.year;
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped days sick
+  _maptoCSVDaysSick(daysSick) {
+    if (daysSick) {
+      if (daysSick.value === 'No') {
+        return 999;
+      } else {
+        return daysSick.days;
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped days sick
+  _maptoCSVslary(annualHourlyPay) {
+    if (annualHourlyPay) {
+      if (annualHourlyPay.value === 'Annually') {
+        return [1, annualHourlyPay.rate, ''];
+      } else {
+        return [3, '', annualHourlyPay.rate];
+      }
+    } else {
+      return ['','',''];  // not specified
+    }
+  }
+
+  _maptoCSVregsiterNurse(registeredNurse) {
+    let mappedValue = '';
+    switch (registeredNurse) {
+      case 'Adult Nurse':
+        mappedValue = '01';
+        break;
+      case 'Mental Health Nurse':
+        mappedValue = '02';
+        break;
+      case 'Learning Disabilities Nurse':
+        mappedValue = '03';
+        break;
+      case `Children's Nurse`:
+        mappedValue = '04';
+        break;
+      case 'Enrolled Nurse':
+        mappedValue = '05';
+        break;
+    }
+
+    return mappedValue;
+  }
 
   // takes the given Worker entity and writes it out to CSV string (one line)
   toCSV(establishmentId, entity) {
@@ -2878,8 +2985,8 @@ class Worker {
     const columns = [];
     columns.push(establishmentId);
     columns.push(entity.nameOrId);   // todo - this will be local identifier
-    columns.push('TBC');
-    columns.push('TBC');
+    columns.push('');
+    columns.push('UNCHECKED');
     columns.push(entity.nameOrId);
 
     columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g,'') : '');  // remove whitespace
@@ -2891,6 +2998,7 @@ class Worker {
     switch (entity.gender) {
       case null:
           columns.push('');
+          break;
       case 'Female':
         columns.push(2);
         break;
@@ -2906,11 +3014,24 @@ class Worker {
     }
 
     // "ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY"
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
+    columns.push(entity.ethnicity ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.ethnicityId) : '');
+    columns.push(entity.nationality ? this._maptoCSVnationality(entity.nationality) : '');
+    switch (entity.britishCitizenship) {
+      case null:
+          columns.push('');
+          break;
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+    columns.push(entity.countryOfBirth ? this._maptoCSVcountry(entity.countryOfBirth) : '');
+    columns.push(entity.yearArrived ? entity.yearArrived.year : '');
 
     // disabled
     switch (entity.disabiliity) {
@@ -2944,10 +3065,24 @@ class Worker {
     }
 
     // "RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE"
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
+    columns.push(entity.recruitmentSource ? this._maptoCSVrecruitedFrom(entity.recruitmentSource) : '');
+    const mainJobStartDateParts = entity.mainJobStartDate ? entity.mainJobStartDate.split('-') : null;
+    mainJobStartDateParts ? columns.push(`${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}`) : columns.push(''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
+    columns.push(this._maptoCSVStartedInSector(entity.socialCareStartDate));
+    switch (entity.apprenticeship) {
+      case null:
+        columns.push('');
+        break;
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
 
     // EMPLSTATUS/;contract - mandatory
     switch (entity.contract) {
@@ -2968,24 +3103,55 @@ class Worker {
         break;
     }
 
-    // "ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS"
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
+    // "ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE"
+    switch (entity.zeeroContractHours) {
+      case null:
+        columns.push('');
+        break;
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+    columns.push(this._maptoCSVDaysSick(entity.daysSick));
+    const salaryMap = this._maptoCSVslary(entity.annualHourlyPay);
+    columns.push(salaryMap[0]);
+    columns.push(salaryMap[1]);
+    columns.push(salaryMap[2]);
+
+    // "MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS"
+    const contractedHoursContract = ['Permanent', 'Temporary'];
+    const averageHoursContract = ['Pool/Bank', 'Agency', 'Other'];
+    columns.push(entity.mainJob ? BUDI.jobRoles(BUDI.FROM_ASC, entity.mainJob.jobId) : '');
+    columns.push(entity.mainJob && entity.mainJob.other ? entity.mainJob.other : '');
+    columns.push(entity.contract && contractedHoursContract.includes(entity.contract) && entity.contractedHours ? entity.contractedHours.hours : '');
+    columns.push(entity.contract && averageHoursContract.includes(entity.contract) &&entity.averageHours ? entity.averageHours.hours : '');
 
     // "OTHERJOBROLE","OTHERJRDESC"
-    columns.push('OTHERJOBROLE');
-    columns.push('OTHERJRDESC');
+    columns.push(entity.otherJobs && entity.otherJobs.value === 'Yes'
+      ? entity.otherJobs.otherJobs.map(thisJob => {
+          return BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId);
+        }).join(';')
+      : '');
+    columns.push(entity.otherJobs && entity.otherJobs.value === 'Yes'
+      ? entity.otherJobs.otherJobs.map(thisJob => {
+          return thisJob.other;
+        }).join(';')
+      : '');
 
     // "NMCREG","NURSESPEC"
-    columns.push('');
-    columns.push('');
+    const NURSE_JOB_ID = 23;
+    columns.push(entity.mainJob && entity.mainJob.jobId === NURSE_JOB_ID && entity.registeredNurse
+      ? this._maptoCSVregsiterNurse(entity.registeredNurse)
+      : '');
+    columns.push(entity.mainJob && entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialism
+      ? BUDI.nursingSpecialist(BUDI.FROM_ASC, entity.nurseSpecialism.id)
+      : '');
 
     // "AMHP"
     switch (entity.approvedMentalHealthWorker) {
