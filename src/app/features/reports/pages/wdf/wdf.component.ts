@@ -6,6 +6,7 @@ import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
+import { sortBy } from 'lodash';
 import { combineLatest } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -36,7 +37,7 @@ export class WdfComponent implements OnInit {
       .pipe(take(1))
       .subscribe(([establishment, workers, report]) => {
         this.workplace = establishment;
-        this.workers = workers;
+        this.workers = sortBy(workers, ['wdfEligible']);
         this.report = report;
       });
   }
