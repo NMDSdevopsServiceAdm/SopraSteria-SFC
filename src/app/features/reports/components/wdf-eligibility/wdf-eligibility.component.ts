@@ -1,15 +1,17 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { WDFReport } from '@core/model/reports.model';
 
 @Component({
   selector: 'app-wdf-eligibility',
   templateUrl: './wdf-eligibility.component.html',
 })
-export class WdfEligibilityComponent {
+export class WdfEligibilityComponent implements OnInit {
   @Input() report: WDFReport;
 
-  get criteria() {
-    return [
+  public criteria: Array<{ label: string; truthy: boolean }>;
+
+  ngOnInit() {
+    this.criteria = [
       {
         label: 'Overall',
         truthy: this.report.wdf.isEligible,
