@@ -51,8 +51,10 @@
       </ul>
     </app-details>
   </div>
+</div>
 
-  <form (ngSubmit)="onSubmit()" [formGroup]="form">
+<form (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="govuk-form-group">
         <fieldset class="govuk-fieldset" [formGroup]="form.get('shareWith')">
@@ -81,9 +83,7 @@
         </fieldset>
       </div>
     </div>
+  </div>
 
-    <div class="govuk-grid-column-full">
-      <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"> </app-submit-button>
-    </div>
-  </form>
-</div>
+  <app-submit-button [return]="!!return" (clicked)="onSubmit($event)"> </app-submit-button>
+</form>
