@@ -18,7 +18,6 @@
   <div class="govuk-grid-column-full">
     <form
       class="govuk-!-margin-top-6"
-      *ngIf="references.length"
       novalidate
       (ngSubmit)="onSubmit(true)"
       [formGroup]="form"
@@ -38,7 +37,8 @@
         </p>
       </div>
 
-      <div
+      <ng-container *ngIf="references.length">
+        <div
         class="govuk-form-group govuk__grid govuk__grid-container"
         *ngFor="let reference of references"
         [class.govuk-form-group--error]="form.get(reference.uid).errors && submitted"
@@ -69,9 +69,31 @@
           <a [routerLink]="['/bulk-upload/staff-references', reference.uid]">Staff references</a>
         </p>
       </div>
+      </ng-container>
     </form>
 
-    <p *ngIf="!references.length">There are no {{ referenceType.toLowerCase() }} references to update.</p>
+    <div class="govuk-grid-row" *ngIf="!references.length">
+      <div class="govuk-grid-column-full">
+        <p>There are no {{ referenceType.toLowerCase() }} references to update.</p>
+        <div class="govuk-button-group">
+          <button
+            type="button"
+            class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
+            (click)="navigateToNextRoute()"
+          >
+            Continue
+          </button>
+          <span class="govuk-visually-hidden">or</span>
+          <a
+            type="button"
+            class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+            [routerLink]="['/bulk-upload/workplace-references']"
+          >
+            Exit
+          </a>
+        </div>
+      </div>
+    </div>
 
     <div class="govuk-grid-row" *ngIf="references.length">
       <div class="govuk-grid-column-full">
