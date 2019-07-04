@@ -3146,7 +3146,6 @@ class Worker {
 
     // "NMCREG","NURSESPEC"
     const NURSE_JOB_ID = 23;
-    console.log("WA DEBUG - main job, registered nurse, nurse specialism: ", entity.mainJob, entity.registeredNurse, entity.nurseSpecialism)
     columns.push(entity.mainJob && entity.mainJob.jobId === NURSE_JOB_ID && entity.registeredNurse
       ? this._maptoCSVregsiterNurse(entity.registeredNurse)
       : '');
