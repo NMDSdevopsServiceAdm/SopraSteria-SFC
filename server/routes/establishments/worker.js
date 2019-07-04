@@ -4,12 +4,14 @@
 
 const express = require('express');
 const router = express.Router({mergeParams: true});
+const Establishment = require('../../models/classes/establishment');
 
 const isLocal = require('../../utils/security/isLocalTest').isLocal;
 const WdfUtils = require('../../utils/wdfEligibilityDate');
 
 // all worker functionality is encapsulated
 const Workers = require('../../models/classes/worker');
+const models = require('../../models');
 
 // parent route defines the "id" parameter
 
@@ -58,6 +60,55 @@ const validateWorker = async (req, res, next) => {
     }
 };
 
+
+const updateLocalIdOnWorker = async (thisGivenWorker, transaction, updatedTimestamp, username, allAuditEvents) => {
+    const updatedWorker = await models.worker.update(
+    {
+        LocalIdentifierValue: thisGivenWorker.value,
+        LocalIdentifierSavedBy: username,
+        LocalIdentifierChangedBy: username,
+        LocalIdentifierSavedAt: updatedTimestamp,
+        LocalIdentifierChangedAt: updatedTimestamp,
+        updated: updatedTimestamp,
+        updatedBy: username,
+    },
+    {
+        returning: true,
+        where: {
+            uid: thisGivenWorker.uid
+        },
+        attributes: ['id', 'updated'],
+        transaction,
+    }
+    );
+
+    if (thisGivenWorker[0] === 1) {
+    const updatedRecord = thisGivenWorker[1][0].get({plain: true});
+    
+    allAuditEvents.push({
+        workerFk: updatedRecord._id,
+        username,
+        type: 'updated'
+    });
+
+    allAuditEvents.push({
+        workerFk: updatedRecord._id,
+        username,
+        type: 'saved',
+        property: 'LocalIdentifier',
+    });
+    allAuditEvents.push({
+        workerFk: updatedRecord._id,
+        username,
+        type: 'changed',
+        property: 'LocalIdentifier',
+        event: {
+        new: thisGivenWorker.value
+        }
+    });
+    }
+}
+    
 router.use('/', validateWorker);
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
@@ -76,6 +127,71 @@ router.route('/').get(async (req, res) => {
         return res.status(503).send('Failed to get workers for establishment having id: '+establishmentId);
     }
 });
+
+// Update all worker ids in one transaction
+router.route('/localIdentifier').put(async (req, res) => {
+    const establishmentId = req.establishmentId;
+    const username = req.username;
+  
+    // validate input
+    const givenLocalIdentifiers = req.body.localIdentifiers;
+    if (!givenLocalIdentifiers || !Array.isArray(givenLocalIdentifiers)) {
+      return res.status(400).send({});
+    }
+  
+    const thisEstablishment = new Establishment.Establishment(username);
+  
+    try {
+      // as a minimum for security purposes, we restore the user's primary establishment
+      if (await thisEstablishment.restore(establishmentId)) {
+  
+        const myWorkers = await Workers.Worker.fetch(establishmentId);
+
+        const myWorkersUIDs = myWorkers.map(worker => worker.uid);
+
+        const updatedTimestamp = new Date();
+        const updatedUids = [];
+        await models.sequelize.transaction(async t => {
+          const dbUpdatePromises = [];
+          const allAuditEvents = [];
+
+          givenLocalIdentifiers.forEach(thisGivenWorker => {
+            if (thisGivenWorker && thisGivenWorker.uid && myWorkersUIDs.includes(thisGivenWorker.uid)) {
+              const updateThisWorker = updateLocalIdOnWorker(thisGivenWorker, t, updatedTimestamp, username, allAuditEvents);
+              dbUpdatePromises.push(updateThisWorker);
+              updatedUids.push(thisGivenWorker.uid);
+            }
+          });
+  
+          await Promise.all(dbUpdatePromises);
+          await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+        });
+  
+        return res.status(200).json({
+          id: thisEstablishment.id,
+          uid: thisEstablishment.uid,
+          name: thisEstablishment.name,
+          updated: updatedTimestamp.toISOString(),
+          updatedBy: req.username,
+          localIdentifiers: updatedUids,
+        });
+  
+      } else {
+        return res.status(404).send('Not Found');
+      }
+    } catch (err) {
+      if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+        if(err.parent.constraint && ( err.parent.constraint === 'worker_LocalIdentifier_unq')){
+            console.error("Worker::localidentifier PUT: ", err.message);
+            return res.status(400).send({duplicateValue: err.fields.LocalIdentifierValue});
+        }
+      }
+      console.log(err);
+      return res.status(503).send(err.message);
+    }
+});
+  
+
 
 // gets requested worker id
 // optional parameter - "history" must equal 1

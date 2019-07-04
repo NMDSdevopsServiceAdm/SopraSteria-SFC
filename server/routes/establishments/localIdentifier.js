@@ -76,6 +76,7 @@ router.route('/').post(async (req, res) => {
       return res.status(503).send(err.safe);
     } else {
       console.error("Unexpected exception: ", err);
+      return res.status(503).send(err.safe);
     }
   }
 });
@@ -202,20 +203,13 @@ router.route('/').put(async (req, res) => {
       return res.status(404).send('Not Found');
     }
   } catch (err) {
-    // TODO - catch duplicate exception
-
-    if (err instanceof Establishment.EstablishmentExceptions.EstablishmentJsonException) {
-      console.error("Establishment::localidentifier PUT: ", err.message);
-      return res.status(400).send(err.safe);
-    } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException && err.message == 'Duplicate LocalIdentifier') {
-      console.error("Establishment::localidentifier PUT: ", err.message);
-      return res.status(400).send(err.safe);
-    } else if (err instanceof Establishment.EstablishmentExceptions.EstablishmentSaveException) {
-      console.error("Establishment::localidentifier PUT: ", err.message);
-      return res.status(503).send(err.safe);
-    } else {
-      console.error("Unexpected exception: ", err);
+    if (err.name && err.name === 'SequelizeUniqueConstraintError') {
+      if(err.parent.constraint && ( err.parent.constraint === 'establishment_LocalIdentifier_unq')){
+          return res.status(400).send({duplicateValue: err.fields.LocalIdentifierValue});
+      }
     }
+    console.error("Establishment::localidentifier PUT: ", err.message);
+    return res.status(503).send(err.message);
   }
 });
 
