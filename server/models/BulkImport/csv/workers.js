@@ -2058,7 +2058,7 @@ class Worker {
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: `DUPLICATE_ERROR`,
-      error: `UNIQUEWORKERID is not unique`,
+      error: `The combination of LOCALESTID with this UNIQUEWORKERID/CHGUNIQUEWORKERID is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
