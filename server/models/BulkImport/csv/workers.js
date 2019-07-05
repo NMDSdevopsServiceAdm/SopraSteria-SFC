@@ -2875,10 +2875,15 @@ class Worker {
       if (nationality.value === 'British') {
         return 826;
       } else if (nationality.value === 'Don\'t know') {
-        return 999;
+        return 998;
       } else {
-        // it's other
-        return BUDI.nationality(BUDI.FROM_ASC, nationality.other.nationalityId);
+        if (nationality.value === 'Other' && nationality.other && nationality.other.nationalityId) {
+          // the other nationality is specific - BUDI lookup
+          return BUDI.nationality(BUDI.FROM_ASC, nationality.other.nationalityId);
+        } else {
+          // other nationality is not specific - fixed BUDI code
+          return 999;
+        }
       }
     } else {
       return '';  // not specified
@@ -2891,10 +2896,17 @@ class Worker {
       if (country.value === 'United Kingdom') {
         return 826;
       } else if (country.value === 'Don\'t know') {
-        return 999;
+        return 998;
       } else {
-        // it's other
-        return BUDI.country(BUDI.FROM_ASC, country.other.countryId);
+        // it's other - other
+        if (country.value === 'Other' && country.other && country.other.countryId){
+          // the other country is specific - BUDI lookup
+          return BUDI.country(BUDI.FROM_ASC, country.other.countryId);
+        }
+        else {
+          // other country is not specific - fixed BUDI code
+          return 999;
+        }
       }
     } else {
       return '';  // not specified
