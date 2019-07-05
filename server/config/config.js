@@ -283,6 +283,14 @@ const config = convict({
       },
     },
   },
+  admin: {
+    url: {
+      doc: 'The URL to redirect users to the admin application',
+      format: 'url',
+      default: 'https://unknown.com',
+      env: 'ADMIN_URL',
+    }
+  }
 });
 
 // Load environment dependent configuration
@@ -316,6 +324,7 @@ if (config.get('aws.secrets.use')) {
     // external APIs
     config.set('slack.url', AWSSecrets.slackUrl());
     config.set('notify.key', AWSSecrets.govNotify());
+    config.set('admin.url', AWSSecrets.adminUrl());
 
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);

@@ -13,11 +13,11 @@ const initialiseSecrets = async (region, wallet) => {
     const mySecretsValue = await secrets.getSecretValue({SecretId: wallet}).promise();
     if (typeof mySecretsValue.SecretString !== 'undefined') {
       const mySecrets = JSON.parse(mySecretsValue.SecretString);
-  
+
       if (typeof mySecrets == 'undefined') {
         throw new Error(`Unexpected parsing of secrets wallet: ${wallet}`);
       }
-  
+
       myLocalSecrets = {
         SLACK_URL: mySecrets.SLACK_URL,
         DB_HOST: mySecrets.DB_HOST,
@@ -27,6 +27,7 @@ const initialiseSecrets = async (region, wallet) => {
         DB_ROOT_CRT: mySecrets.DB_ROOT_CRT,
         DB_APP_USER_KEY: mySecrets.DB_APP_USER_KEY,
         DB_APP_USER_CERT: mySecrets.DB_APP_USER_CERT,
+        ADMIN_URL: mySecrets.ADMIN_URL,
       };
     }
 
@@ -99,6 +100,18 @@ const  govNotify = () => {
   }
 }
 
+const  adminUrl = () => {
+  if (myLocalSecrets !== null) {
+    if (!myLocalSecrets.ADMIN_URL) {
+      throw new Error('Unknown ADMIN_URL secret');
+    } else {
+      return myLocalSecrets.ADMIN_URL;
+    }
+  } else {
+    throw new Error('Unknown secrets');
+  }
+}
+
 const dbAppUserKey = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.DB_APP_USER_KEY) {
@@ -143,3 +156,4 @@ module.exports.govNotify = govNotify;
 module.exports.dbAppUserKey = dbAppUserKey;
 module.exports.dbAppUserCertificate = dbAppUserCertificate;
 module.exports.dbAppRootCertificate = dbAppRootCertificate;
+module.exports.adminUrl = adminUrl;
