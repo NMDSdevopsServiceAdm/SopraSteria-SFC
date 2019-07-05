@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
         attributes: ['id', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
         include: [{
           model: models.establishment,
-          attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId'],
+          attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId', 'lastBulkUploaded'],
           include: [{
             model: models.services,
             as: 'mainService',
@@ -81,7 +81,7 @@ router.post('/', async (req, res) => {
 
         // this is an admin user, find the given establishment
         establishmentUser.user.establishment = await models.establishment.findOne({
-          attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId'],
+          attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId', 'lastBulkUploaded'],
           include: [{
             model: models.services,
             as: 'mainService',
@@ -146,7 +146,6 @@ router.post('/', async (req, res) => {
 
         const response = formatSuccessulLoginResponse(
           establishmentUser.user.FullNameValue,
-          establishmentUser.firstLogin,
           establishmentUser.user.isPrimary,
           establishmentUser.lastLogin,
           establishmentUser.user.UserRoleValue,
@@ -259,11 +258,10 @@ router.post('/', async (req, res) => {
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, firstLoginDate, isPrimary, lastLoggedDate, role, establishment, mainService, expiryDate) => {
+const formatSuccessulLoginResponse = (fullname, isPrimary, lastLoggedDate, role, establishment, mainService, expiryDate) => {
   // note - the mainService can be null
   return {
     fullname,
-    isFirstLogin: firstLoginDate ? false : true,
     isPrimary,
     lastLoggedIn: lastLoggedDate ? lastLoggedDate.toISOString() : null,
     role,
@@ -276,6 +274,7 @@ const formatSuccessulLoginResponse = (fullname, firstLoginDate, isPrimary, lastL
       isParent: establishment.isParent,
       parentUid: establishment.parentUid ? establishment.parentUid : undefined,
       parentName: establishment.parentName ? establishment.parentName : undefined,
+      isFirstBulkUpload: establishment.lastBulkUploaded ? false : true,
     },
     mainService: {
       id: mainService ? mainService.id : null,

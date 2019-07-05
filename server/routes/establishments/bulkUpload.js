@@ -992,7 +992,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
       const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, "");
       const workerKeyNoWhitespace = (thisTraingRecord.localeStId + thisTraingRecord.uniqueWorkerId).replace(/\s/g, "");
-      
+
       if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
         // not found the associated establishment
         csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedEstablishment());
@@ -1421,7 +1421,7 @@ router.route('/report/:reportType').get(async (req, res) => {
     }
 
     const reportKey = `${req.establishmentId}/validation/${reportType}.validation.json`;
-    
+
     try {
       const content = await downloadContent(reportKey);
       messages = content ? JSON.parse(content.data) : null;
@@ -1615,6 +1615,9 @@ router.route('/complete').post(async (req, res) => {
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
         await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
+
+        // confirm success against the primary establishment
+        await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
 
         return res.status(200).send({
           // current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
