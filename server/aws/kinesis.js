@@ -33,7 +33,7 @@ const establishmentPump = async (action, establishment)  => {
 
   try {
     const status = await kinesis.putRecord(params).promise();
-    console.log("establishmentPump status: ", status)
+    // console.log("establishmentPump status: ", status)
 
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
@@ -63,7 +63,7 @@ const workerPump = async (action, worker)  => {
 
   try {
     const status = await kinesis.putRecord(params).promise();
-    console.log("workerPump status: ", status)
+    // console.log("workerPump status: ", status)
 
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
@@ -89,7 +89,7 @@ const userPump = async (action, user)  => {
 
   try {
     const status = await kinesis.putRecord(params).promise();
-    console.log("userPump status: ", status)
+    // console.log("userPump status: ", status)
 
   } catch (err) {
     // trap any errors - stop them from propagating - an error on kinesis stop not interfere with the application
