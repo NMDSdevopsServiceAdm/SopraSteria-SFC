@@ -2015,7 +2015,7 @@ class Establishment {
     const shareWithLA = entity.shareWithLA;
     columns.push(shareWith && shareWith.enabled && shareWith.with.includes('CQC') ? 1 : 0);
     columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? 1 : 0);
-    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? shareWithLA.map(thisLA => thisLA.id).join(';') : '')
+    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? shareWithLA.map(thisLA => thisLA.cssrId).join(';') : '')
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);
