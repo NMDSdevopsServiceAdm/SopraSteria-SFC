@@ -148,11 +148,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
             type: [
               {
                 name: 'min',
-                message: `Year can't be earlier than 100 years ago.`,
+                message: 'This qualification wasn’t available in the year provided. Enter a valid year.',
               },
               {
                 name: 'max',
-                message: `Year can't be in future.`,
+                message: 'This qualification wasn’t available in the year provided. Enter a valid year.',
               },
             ],
           },
