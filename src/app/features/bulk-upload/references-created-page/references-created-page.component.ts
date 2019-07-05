@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-references-created-page',
@@ -6,9 +7,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReferencesCreatedPageComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
+    this.authService.isFirstBulkUpload = false;
   }
 
 }
