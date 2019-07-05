@@ -5,6 +5,7 @@ const uuid = require('uuid');
 const isLocal = require('../utils/security/isLocalTest').isLocal;
 const bcrypt = require('bcrypt-nodejs');
 const slack = require('../utils/slack/slack-logger');
+const sns = require('../aws/sns');
 
 const models = require('../models');
 
@@ -56,7 +57,7 @@ router.get('/service/:name', async (req, res) => {
         message: `Service name '${requestedServiceName}' not found`,
       });
     }
-  
+
   } catch (err) {
     // TODO - improve logging/error reporting
     console.error('registration GET service/:name - failed', err);
@@ -294,7 +295,7 @@ router.route('/')
       if (!passwordCheck(req.body[0].user.password)) {
         return res.status(400).json({
           "success" : 0,
-          "message" : "Invalid Password" 
+          "message" : "Invalid Password"
         });
       }
     }
@@ -382,13 +383,13 @@ router.route('/')
               responseErrors.unexpectedMainService.errMessage
             );
           }
-          
+
           if (serviceResults.other && Estblistmentdata.MainServiceOther && Estblistmentdata.MainServiceOther.length > OTHER_MAX_LENGTH){
             throw new RegistrationException(
               `Other field value of '${Estblistmentdata.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
               responseErrors.unexpectedMainService.errCode,
               responseErrors.unexpectedMainService.errMessage
-            );            
+            );
           }
 
           // now create establishment - using the extended property encapsulation
@@ -411,6 +412,7 @@ router.route('/')
             await newEstablishment.save(Logindata.UserName, 0, t);
             Estblistmentdata.id = newEstablishment.id;
             Estblistmentdata.eUID = newEstablishment.uid;
+            newEstablishment.NmdsId = newEstablishment.nmdsId;
           } else {
             // Establishment properties not valid
             throw new RegistrationException(
@@ -454,6 +456,8 @@ router.route('/')
           delete slackMsg.user.securityAnswer;
           slackMsg.NmdsId = Estblistmentdata.NmdsId;
           slack.info("Registration", JSON.stringify(slackMsg, null, 2));
+          // post through feedback topic - async method but don't wait for a responseThe
+          sns.postToRegistrations(slackMsg);
 
           // gets here on success
           res.status(200);
@@ -464,7 +468,7 @@ router.route('/')
             "establishmentUid" : Estblistmentdata.eUID,
             "primaryUser" : Logindata.UserName,
             "nmdsId": Estblistmentdata.NmdsId ? Estblistmentdata.NmdsId : 'undefined'
-          }); 
+          });
         });
 
       } catch (err) {
@@ -492,7 +496,7 @@ router.route('/')
             defaultError = responseErrors.duplicateUsername;
           }
         }
-      
+
         throw new RegistrationException(
           err,
           defaultError.errCode,
@@ -609,7 +613,7 @@ router.post('/requestPasswordReset', async (req, res) => {
       } else {
         return res.status(200).send();
       }
- 
+
     } else {
       // non-disclosure - if account is not found, return 200 anyway - suggesting that an email has been found
       return res.status(200).send();
@@ -635,7 +639,7 @@ router.post('/validateResetPassword', async (req, res) => {
     console.error('Invalid UUID');
     return res.status(400).send();
   }
-  
+
   try {
     // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
     const passTokenResults = await models.passwordTracking.findOne({
@@ -689,8 +693,8 @@ router.post('/validateResetPassword', async (req, res) => {
         throw new Error(`Failed to find user matching reset token (${givenUuid})`);
       }
 
-      
- 
+
+
     } else {
       // token not found
       console.error(`registration POST /validateResetPassword - reset token (${givenUuid}) not found`);

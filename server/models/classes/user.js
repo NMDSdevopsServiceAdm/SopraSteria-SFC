@@ -13,6 +13,7 @@ const models = require('../index');
 
 // notifications
 const sendAddUserEmail = require('../../utils/email/notify-email').sendAddUser;
+const AWSKinesis = require('../../aws/kinesis');
 
 const UserExceptions = require('./user/userExceptions');
 
@@ -398,6 +399,10 @@ class User {
                         // need to send an email having added an "Add User" tracking record
                         await this.trackNewUser(savedBy.toLowerCase(), t, ttl);
                     }
+
+                    // this is an async method - don't wait for it to return
+                    AWSKinesis.userPump(AWSKinesis.CREATED, this.toJSON());
+
                     this._log(User.LOG_INFO, `Created User with uid (${this.uid}) and id (${this._id})`);
                 });
 
@@ -506,6 +511,9 @@ class User {
                             );
                         });
                         await Promise.all(createModelPromises);
+
+                        // this is an async method - don't wait for it to return
+                        AWSKinesis.userPump(AWSKinesis.UPDATED, this.toJSON());
 
                         this._log(User.LOG_INFO, `Updated User with uid (${this.uid}) and name (${this.fullname})`);
 
@@ -627,7 +635,10 @@ class User {
     // deletes this User from DB
     // Can throw "UserDeleteException"
     async delete() {
-        throw new Error('Not implemented');
+      // this is an async method - don't wait for it to return
+      AWSKinesis.userPump(AWSKinesis.DELETED, this.toJSON());
+
+      throw new Error('Not implemented');
     };
 
     // returns a set of User based on given filter criteria (all if no filters defined) - restricted to the given Establishment

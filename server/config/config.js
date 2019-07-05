@@ -255,7 +255,46 @@ const config = convict({
         format: String,
         default: 'bob'
       }
-    }
+    },
+    kinesis: {
+      enabled: {
+        doc: 'Enables/disables kinesis pump',
+        format: 'Boolean',
+        default: false,
+      },
+      establishments: {
+        doc: 'The name of the kinesis stream into which to pump all establishments',
+        format: String,
+        default: 'kensis-establishments',
+      },
+      workers: {
+        doc: 'The name of the kinesis stream into which to pump all workers',
+        format: String,
+        default: 'kensis-workers',
+      },
+      users: {
+        doc: 'The name of the kinesis stream into which to pump all users',
+        format: String,
+        default: 'kensis-users',
+      },
+    },
+    sns: {
+      enabled: {
+        doc: 'Enables/disables SNS posts',
+        format: 'Boolean',
+        default: false,
+      },
+      registrations: {
+        doc: 'The ARN of the SNS topic for registrations',
+        format: String,
+        default: 'sns-registrations-arn',
+      },
+      feedback: {
+        doc: 'The ARN of the SNS topic for feedback',
+        format: String,
+        default: 'sns-feedback-arn',
+      },
+    },
   },
   bulkupload: {
     region: {

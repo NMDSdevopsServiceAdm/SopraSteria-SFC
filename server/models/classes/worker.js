@@ -21,6 +21,8 @@ const WorkerExceptions = require('./worker/workerExceptions');
 const Training = require('./training').Training;
 const Qualification = require('./qualification').Qualification;
 
+// notifications
+const AWSKinesis = require('../../aws/kinesis');
 
 // Worker properties
 const WorkerProperties = require('./worker/workerProperties').WorkerPropertyManager;
@@ -454,6 +456,9 @@ class Worker extends EntityValidator {
                         await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
                     }
 
+                    // this is an async method - don't wait for it to return
+                    AWSKinesis.workerPump(AWSKinesis.CREATED, this.toJSON());
+
                     this._log(Worker.LOG_INFO, `Created Worker with uid (${this._uid}) and id (${this._id})`);
                 });
 
@@ -589,6 +594,9 @@ class Worker extends EntityValidator {
                         if (associatedEntities) {
                             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
                         }
+
+                        // this is an async method - don't wait for it to return
+                        AWSKinesis.workerPump(AWSKinesis.UPDATED, this.toJSON());
 
                         this._log(Worker.LOG_INFO, `Updated Worker with uid (${this._uid}) and id (${this._id})`);
 
@@ -857,6 +865,9 @@ class Worker extends EntityValidator {
                     if (associatedEntities) {
                         // TODO - to be confirmed
                     }
+
+                    // this is an async method - don't wait for it to return
+                    AWSKinesis.workerPump(AWSKinesis.DELETED, this.toJSON());
 
                     this._log(Worker.LOG_INFO, `Archived Worker with uid (${this._uid}) and id (${this._id})`);
 
