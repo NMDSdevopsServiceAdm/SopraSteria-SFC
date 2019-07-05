@@ -67,6 +67,11 @@ app.use('/public/download', proxy(
     }
 ));
 
+// redirect the admin application
+app.use('/admin', (req, res) => {
+  res.redirect(301, config.get('admin.url'));
+});
+
 /*
  * security - incorproate helmet & xss-clean (de facto/good practice headers) across all endpoints
  */
