@@ -3,6 +3,11 @@ aws:
     secrets:
         use: true
         wallet: demo/api
+  kinesis:
+    enabled: false
+  sns:
+    enabled: false
+
 db:
     pool: 15
     ssl: true
