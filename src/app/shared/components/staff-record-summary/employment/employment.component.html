@@ -27,7 +27,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.mainJobStartDate === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.mainJobStartDate != 'No'">
         {{ worker.mainJobStartDate ? mainStartDate : '-' }}
@@ -79,7 +79,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.otherJobs === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.otherJobs != 'No'">
         <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
@@ -179,7 +179,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.recruitedFrom === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.recruitedFrom != 'No'">
         {{
@@ -242,7 +242,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.daysSick === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.daysSick != 'No'">
         {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
@@ -272,7 +272,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.zeroHoursContract === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.zeroHoursContract != 'No'">
         {{ worker.zeroHoursContract | closedEndedAnswer }}
@@ -302,7 +302,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.weeklyHoursAverage === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.weeklyHoursAverage != 'No'">
         {{
@@ -339,7 +339,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.weeklyHoursContracted === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.weeklyHoursContracted != 'No'">
         {{
@@ -377,7 +377,7 @@
 
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.annualHourlyPay === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.annualHourlyPay != 'No'">
         {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}

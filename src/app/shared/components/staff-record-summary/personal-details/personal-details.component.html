@@ -27,7 +27,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.dateOfBirth === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.dateOfBirth != 'No'">
         {{ worker.dateOfBirth ? dob : '-' }}
@@ -79,7 +79,7 @@
 
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.gender === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.gender != 'No'">
         {{ worker.gender | closedEndedAnswer }}
@@ -151,7 +151,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.nationality === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.nationality != 'No'">
         {{
