@@ -425,6 +425,11 @@ module.exports = function(sequelize, DataTypes) {
       default: 'Online',
       field: '"DataSource"'
     },
+    lastBulkUploaded: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LastBulkUploaded"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,

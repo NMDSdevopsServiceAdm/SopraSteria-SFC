@@ -1423,6 +1423,24 @@ class Establishment extends EntityValidator {
         };
         return myWDF;
     }
+
+    // for the given establishment, updates the last bulk uploaded timestamp
+    static async bulkUploadSuccess(establishmentId) {
+      try {
+        await models.establishment.update(
+          {
+            lastBulkUploaded: new Date()
+          },
+          {
+            where: {
+              id: establishmentId
+            }
+          }
+        );
+      } catch (err) {
+        this._log(Establishment.LOG_ERROR, `bulkUploadSuccess - failed: ${err}`);
+      }
+    }
 };
 
 module.exports.Establishment = Establishment;
