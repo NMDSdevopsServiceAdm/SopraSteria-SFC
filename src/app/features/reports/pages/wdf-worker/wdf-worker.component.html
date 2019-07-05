@@ -11,9 +11,8 @@
     </div>
   </div>
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <p *ngIf="worker.wdf.isEligible"><img src="/assets/images/tick-icon.svg" alt="" /> Meeting criteria</p>
-      <p *ngIf="!worker.wdf.isEligible"><img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria</p>
+    <div class="govuk-grid-column-full govuk-!-margin-bottom-4">
+      <app-eligibility-icon [eligible]="worker.wdf.isEligible"></app-eligibility-icon>
     </div>
   </div>
   <div class="govuk-grid-row">
@@ -22,7 +21,7 @@
     </div>
   </div>
 
-  <p class="govuk-!-margin-bottom-8">
+  <p class="govuk-!-margin-bottom-6">
     Check the information you have provided on this staff record is correct.
   </p>
 

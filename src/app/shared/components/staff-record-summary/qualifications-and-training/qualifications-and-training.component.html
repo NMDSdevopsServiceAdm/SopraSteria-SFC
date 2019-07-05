@@ -33,7 +33,7 @@
 
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.careCertificate === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.careCertificate != 'No'">
         {{ worker.careCertificate || '-' }}
@@ -64,7 +64,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.qualificationInSocialCare === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.qualificationInSocialCare != 'No'">
         {{ worker.qualificationInSocialCare | closedEndedAnswer }}
@@ -94,7 +94,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.socialCareQualification === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.socialCareQualification != 'No'">
         {{ worker.socialCareQualification?.title | closedEndedAnswer }}
@@ -124,7 +124,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.otherQualification === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.otherQualification != 'No'">
         {{ worker.otherQualification | closedEndedAnswer }}
@@ -154,7 +154,7 @@
     </dt>
     <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
       <ng-container *ngIf="worker.wdf.highestQualification === 'No'">
-        <img src="/assets/images/cross-icon.svg" alt="" /> Not meeting criteria
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.highestQualification != 'No'">
         {{ worker.highestQualification?.title || '-' }}
