@@ -100,6 +100,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
 
     if (this.workPlaceReferences.length === this.getWorkplacePosition()) {
       console.warn('NOTHING MORE TO UPDATE, ROUTE TO SUCCESS PAGE');
+      this.router.navigate([ '/bulk-upload/workplace-and-staff-references/created' ]);
     } else {
       console.warn('route to next index');
       this.router.navigate([
