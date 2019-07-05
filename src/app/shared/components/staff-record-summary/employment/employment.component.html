@@ -57,7 +57,7 @@
       Approved Mental Health Professional
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.approvedMentalHealthWorker || '-' }}
+      {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="['/worker', worker.uid, 'mental-health-professional']" (click)="setReturn()">
@@ -157,7 +157,7 @@
       Nurse specialism in current role
     </dt>
     <dd class="govuk-summary-list__value">
-      {{ worker.nurseSpecialism?.specialism || '-' }}
+      {{ worker.nurseSpecialism?.specialism | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="['/worker', worker.uid, 'nursing-specialism']" (click)="setReturn()">
