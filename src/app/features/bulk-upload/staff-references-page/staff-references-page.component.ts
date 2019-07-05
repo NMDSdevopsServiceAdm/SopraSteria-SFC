@@ -105,7 +105,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
       console.warn('route to next index');
       this.router.navigate([
         '/bulk-upload/staff-references',
-        this.workPlaceReferences[this.getWorkplacePosition() + 1].uid,
+        this.workPlaceReferences[this.getWorkplacePosition()].uid,
       ]);
     }
   }
