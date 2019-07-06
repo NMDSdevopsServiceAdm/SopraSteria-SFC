@@ -1,10 +1,10 @@
-import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { LocalIdentifiersRequest } from '@core/model/establishment.model';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { LocalIdentifiersRequest } from '@core/model/establishment.model';
 import { OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -58,11 +58,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
         reference.uid,
-        new FormControl(reference.localIdentifier, [
-          Validators.required,
-          Validators.maxLength(this.maxLength),
-          this.uniqueValidator.bind(this),
-        ])
+        new FormControl(reference.localIdentifier, [Validators.required, Validators.maxLength(this.maxLength)])
       );
 
       this.formErrorsMap.push({
@@ -77,12 +73,32 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
             message: `The reference must be ${this.maxLength} characters or less.`,
           },
           {
-            name: 'unique',
+            name: 'duplicate',
             message: `Enter a different ${this.referenceType.toLowerCase()} reference.`,
           },
         ],
       });
     });
+
+    this.checkFormForDuplicates();
+  }
+
+  private checkFormForDuplicates(): void {
+    this.subscriptions.add(
+      this.form.valueChanges.subscribe(changes => {
+        Object.keys(changes).forEach((key: string) => {
+          const control = this.form.get(key);
+
+          if (control.value && this.getDuplicates().includes(control.value.toLowerCase())) {
+            control.setErrors({ duplicate: true });
+          } else {
+            if (control.errors && control.errors.hasOwnProperty('duplicate')) {
+              control.setErrors(null);
+            }
+          }
+        });
+      })
+    );
   }
 
   private setServerErrors() {
@@ -103,10 +119,13 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     this.errorSummaryService.scrollToErrorSummary();
   }
 
-  protected uniqueValidator(control: AbstractControl): { [key: string]: boolean } | null {
-    const formValues: string[] = Object.values(this.form.value);
-    const isDuplicate: boolean = formValues.includes(control.value);
-    return isDuplicate ? { unique: true } : null;
+  private getDuplicates(): string[] {
+    let formValues: string[] = Object.values(this.form.value);
+    formValues = formValues.map(value => value.toLowerCase());
+
+    return formValues.filter((value: string) => {
+      return formValues.indexOf(value) !== formValues.lastIndexOf(value);
+    });
   }
 
   public getFirstErrorMessage(item: string): string {
@@ -115,11 +134,11 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   }
 
   protected generateRequest(): LocalIdentifiersRequest {
-    return  {
+    return {
       localIdentifiers: Object.keys(this.form.value).map(key => ({
         uid: key,
         value: this.form.value[key],
-      }))
+      })),
     };
   }
 
