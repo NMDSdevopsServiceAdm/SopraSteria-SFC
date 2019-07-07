@@ -42,7 +42,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
 
   protected init(): void {
     // force route reload whenever params change;
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
     this.backService.setBackLink({ url: ['/bulk-upload/workplace-references'] });
     this.getEstablishmentUid();
     this.getEstablishmentInfo();
