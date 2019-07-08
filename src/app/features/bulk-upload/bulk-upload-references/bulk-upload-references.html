@@ -7,7 +7,7 @@
 
 <app-dashboard-header></app-dashboard-header>
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
     <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ primaryEstablishmentName }}</p>
     <h1 class="govuk-heading-l">{{ referenceType }} references</h1>
     <p>{{ referenceTypeInfo }}</p>
@@ -68,43 +68,36 @@
       </ng-container>
     </form>
 
-    <!--
-    TODO this block should be uncommented block once the dev is complete for adding staff records for susidiary establishments -->
     <div class="govuk-grid-row" *ngIf="!references.length">
       <div class="govuk-grid-column-two-thirds-from-desktop">
         <p class="govuk-!-margin-top-4">
-          Before you can create staff referencs for each member of staff, you need to
-          <a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">add staff records</a> for
-          this workplace.
+          {{ referenceType }} records need to be added for this workplace before you can create {{
+          referenceType.toLowerCase() }} references.
         </p>
+        <h3 class="govuk-heading-m">What you can do next?</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li><a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">Add staff records</a>.</li>
+          <li>Continue without adding staff records.</li>
+        </ul>
+        <div class="govuk-button-group">
+          <button
+            type="button"
+            class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
+            (click)="navigateToNextRoute()"
+          >
+            Continue
+          </button>
+          <span class="govuk-visually-hidden">or</span>
+          <a
+            role="button"
+            class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+            [routerLink]="['/bulk-upload/workplace-references']"
+          >
+            Exit
+          </a>
+        </div>
       </div>
     </div>
-
-    <!--
-    TODO this block should be removed once the dev is complete for adding staff records for susidiary establishments
-    -->
-<!--    <div class="govuk-grid-row" *ngIf="!references.length">-->
-<!--      <div class="govuk-grid-column-two-thirds-from-desktop">-->
-<!--        <p class="govuk-!-margin-top-4">There are no {{ referenceType.toLowerCase() }} references to update.</p>-->
-<!--        <div class="govuk-button-group">-->
-<!--          <button-->
-<!--            type="button"-->
-<!--            class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"-->
-<!--            (click)="navigateToNextRoute()"-->
-<!--          >-->
-<!--            Continue-->
-<!--          </button>-->
-<!--          <span class="govuk-visually-hidden">or</span>-->
-<!--          <a-->
-<!--            role="button"-->
-<!--            class="govuk-button govuk-button&#45;&#45;link govuk-!-margin-bottom-0"-->
-<!--            [routerLink]="['/bulk-upload/workplace-references']"-->
-<!--          >-->
-<!--            Exit-->
-<!--          </a>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
 
     <div class="govuk-grid-row" *ngIf="references.length">
       <div class="govuk-grid-column-full">
