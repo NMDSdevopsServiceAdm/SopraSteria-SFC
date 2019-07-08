@@ -1,16 +1,16 @@
-import { BackService } from '@core/services/back.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { filter } from 'lodash';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { LocationAddress } from '@core/model/location.model';
-import { RegistrationService } from '@core/services/registration.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { LocationAddress } from '@core/model/location.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
-import { Subscription } from 'rxjs';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
+import { filter } from 'lodash';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-select-main-service',
@@ -35,7 +35,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private registrationService: RegistrationService,
     private router: Router,
-    private workplaceService: WorkplaceService,
+    private workplaceService: WorkplaceService
   ) {}
 
   ngOnInit() {
@@ -195,7 +195,7 @@ export class SelectMainServiceComponent implements OnInit, OnDestroy {
   }
 
   private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
+    this.backService.setBackLink({ url: ['/registration/select-workplace-address'] });
   }
 
   ngOnDestroy() {

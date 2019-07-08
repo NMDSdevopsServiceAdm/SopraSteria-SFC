@@ -13,6 +13,32 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"WorkerUID"'
     },
+    LocalIdentifierValue: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      unique: true,
+      field: '"LocalIdentifierValue"'
+    },
+    LocalIdentifierSavedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocalIdentifierSavedAt"'
+    },
+    LocalIdentifierChangedAt : {
+      type: DataTypes.DATE,
+      allowNull: true,
+      field: '"LocalIdentifierChangedAt"'
+    },
+    LocalIdentifierSavedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocalIdentifierSavedBy"'
+    },
+    LocalIdentifierChangedBy : {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"LocalIdentifierChangedBy"'
+    },
     establishmentFk : {
       type: DataTypes.INTEGER,
       allowNull: false,

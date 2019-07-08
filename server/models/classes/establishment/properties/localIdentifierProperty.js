@@ -22,12 +22,12 @@ exports.LocalIdentifierProperty = class LocalIdentifierProperty extends ChangePr
     }
 
     restorePropertyFromSequelize(document) {
-        return document.LocalIdentifier;
+        return document.LocalIdentifierValue;
     }
-    
+
     savePropertyToSequelize() {
         return {
-            LocalIdentifier: this.property
+            LocalIdentifierValue: this.property
         };
     }
 
@@ -42,7 +42,7 @@ exports.LocalIdentifierProperty = class LocalIdentifierProperty extends ChangePr
                 localIdentifier: this.property
             };
         }
-        
+
         return {
             localIdentifier: {
                 currentValue: this.property,

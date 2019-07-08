@@ -1,74 +1,80 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-xl">Do you know how many hours they are contracted to work each week?</h1>
-  </div>
-</div>
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
-  <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('hours').invalid">
-    <div class="govuk-radios govuk-radios--conditional">
-      <div class="govuk-radios__item">
-        <input
-          class="govuk-radios__input"
-          formControlName="hoursKnown"
-          id="hoursKnown-conditional-1"
-          name="hoursKnown"
-          type="radio"
-          value="Yes"
-          data-aria-controls="conditional-hoursKnown-conditional-1"
-        />
-        <label class="govuk-label govuk-radios__label" for="hoursKnown-conditional-1">
-          Yes
-        </label>
-      </div>
-      <div
-        class="govuk-radios__conditional govuk-input--width-20"
-        [class.govuk-radios__conditional--hidden]="form.get('hoursKnown').value !== 'Yes'"
-        id="conditional-hoursKnown-conditional-1"
-      >
-        <div class="govuk-form-group">
-          <label class="govuk-label" for="hours">
-            Contracted weekly hours
-          </label>
-          <span *ngIf="submitted && form.get('hours').errors" id="hours-error" class="govuk-error-message">
-            <ng-container *ngIf="form.get('hours').hasError('required')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('hours', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="form.get('hours').hasError('min')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('hours', 'min') }}
-            </ng-container>
-            <ng-container *ngIf="form.get('hours').hasError('max')">
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('hours', 'max') }}
-            </ng-container>
-          </span>
-          <input
-            class="govuk-input govuk-date-input__input govuk-input--width-4"
-            [class.govuk-input--error]="submitted && form.get('hours').invalid"
-            formControlName="hours"
-            id="hours"
-            name="hours"
-            type="number"
-            [pattern]="floatPattern"
-          />
-        </div>
-      </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('hours').invalid">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
+            <h1 class="govuk-fieldset__heading">
+              Do you know how many hours they are contracted to work each week?
+            </h1>
+          </legend>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                formControlName="hoursKnown"
+                id="hoursKnown-conditional-1"
+                name="hoursKnown"
+                type="radio"
+                value="Yes"
+                data-aria-controls="conditional-hoursKnown-conditional-1"
+              />
+              <label class="govuk-label govuk-radios__label" for="hoursKnown-conditional-1">
+                Yes
+              </label>
+            </div>
+            <div
+              class="govuk-radios__conditional govuk-input--width-20"
+              [class.govuk-radios__conditional--hidden]="form.get('hoursKnown').value !== 'Yes'"
+              id="conditional-hoursKnown-conditional-1"
+            >
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="hours">
+                  Contracted weekly hours
+                </label>
+                <span *ngIf="submitted && form.get('hours').errors" id="hours-error" class="govuk-error-message">
+                  <ng-container *ngIf="form.get('hours').hasError('required')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('hours', 'required') }}
+                  </ng-container>
+                  <ng-container *ngIf="form.get('hours').hasError('min')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('hours', 'min') }}
+                  </ng-container>
+                  <ng-container *ngIf="form.get('hours').hasError('max')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('hours', 'max') }}
+                  </ng-container>
+                </span>
+                <input
+                  class="govuk-input govuk-date-input__input govuk-input--width-4"
+                  [class.govuk-input--error]="submitted && form.get('hours').invalid"
+                  formControlName="hours"
+                  id="hours"
+                  name="hours"
+                  type="number"
+                  [pattern]="floatPattern"
+                />
+              </div>
+            </div>
 
-      <div class="govuk-radios__item">
-        <input
-          class="govuk-radios__input"
-          formControlName="hoursKnown"
-          id="hoursKnown-2"
-          name="hoursKnown"
-          type="radio"
-          value="No"
-        />
-        <label class="govuk-label govuk-radios__label" for="hoursKnown-2">
-          No
-        </label>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                formControlName="hoursKnown"
+                id="hoursKnown-2"
+                name="hoursKnown"
+                type="radio"
+                value="No"
+              />
+              <label class="govuk-label govuk-radios__label" for="hoursKnown-2">
+                No
+              </label>
+            </div>
+          </div>
+        </fieldset>
       </div>
     </div>
   </div>

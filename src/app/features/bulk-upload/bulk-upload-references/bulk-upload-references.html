@@ -1,16 +1,5 @@
-<!-- TODO check if needed
-<button (click)="updateReferences()">Update References</button>
-
-<ng-container *ngIf="referencesUpdated">
- <p>Settings updated</p>
- <p>
-   <a [routerLink]="['/bulk-upload']">Go to Bulk Upload</a>
- </p>
-</ng-container>
-TODO check if needed -->
-
 <app-error-summary
-  *ngIf="submitted && (form.invalid || serverError)"
+  *ngIf="(submitted && form.invalid) || serverError"
   [serverError]="serverError"
   [formErrorsMap]="formErrorsMap"
   [form]="form"
@@ -31,13 +20,17 @@ TODO check if needed -->
       class="govuk-!-margin-top-6"
       *ngIf="references.length"
       novalidate
-      (ngSubmit)="onSubmit()"
+      (ngSubmit)="onSubmit(true)"
       [formGroup]="form"
       id="server-error"
     >
-      <div
-        class="govuk__grid govuk__grid-container"
-      >
+      <div class="govuk__grid govuk__grid-container">
+        <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName">
+          <h2 class="govuk-heading-m govuk__reference-subsidiary-name">{{ establishmentName }}</h2>
+          <p class="govuk-!-margin-0 govuk__justify-self-end">
+            <strong>{{ remainingEstablishments }}</strong> workplaces remaining
+          </p>
+        </ng-container>
         <p class="govuk-!-margin-bottom-0"><strong>{{ columnOneLabel }}</strong></p>
         <p class="govuk-!-margin-bottom-0">
           <strong>{{ columnTwoLabel }}</strong>
@@ -47,28 +40,33 @@ TODO check if needed -->
       <div
         class="govuk-form-group govuk__grid govuk__grid-container"
         *ngFor="let reference of references"
-        [class.govuk-form-group--error]="form.get('name-' + reference.uid).errors && submitted"
-        [ngClass]="form.get('name-' + reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'"
+        [class.govuk-form-group--error]="form.get(reference.uid).errors && submitted"
+        [ngClass]="form.get(reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'"
       >
-        <label class="govuk-label govuk-!-margin-bottom-0" for="name-{{ reference.uid }}">
-          {{ reference.name }}
+        <label class="govuk-label govuk-!-margin-bottom-0" for="{{ reference.uid }}">
+          {{ reference.name ? reference.name : reference.nameOrId }}
         </label>
         <span
-          id="name-{{ reference.uid }}-error"
+          id="{{ reference.uid }}-error"
           class="govuk-error-message govuk__grid-row-start-1 govuk__reference-grid-error"
-          *ngIf="form.get('name-' + reference.uid).errors && submitted"
+          *ngIf="form.get(reference.uid).errors && submitted"
         >
-          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('name-' + reference.uid) }}
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(reference.uid) }}
         </span>
         <input
           class="govuk-input"
-          [class.govuk-input--error]="form.get('name-' + reference.uid).errors && submitted"
-          id="name-{{ reference.uid }}"
-          name="name-{{ reference.uid }}"
+          [class.govuk-input--error]="form.get(reference.uid).errors && submitted"
+          id="{{ reference.uid }}"
+          name="{{ reference.uid }}"
           type="text"
-          formControlName="name-{{ reference.uid }}"
+          formControlName="{{ reference.uid }}"
         />
-        <p class="govuk-!-margin-bottom-0 govuk__justify-self-end"><a href="">Staff references</a></p>
+        <p
+          class="govuk-!-margin-bottom-0 govuk__justify-self-end"
+          *ngIf="referenceType === referenceTypeEnum.Establishment && reference.localIdentifier"
+        >
+          <a [routerLink]="['/bulk-upload/staff-references', reference.uid]">Staff references</a>
+        </p>
       </div>
     </form>
 
@@ -80,12 +78,16 @@ TODO check if needed -->
           <button
             type="button"
             class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
-            (click)="onSubmit()"
+            (click)="onSubmit(true)"
           >
             Save and continue
           </button>
           <span class="govuk-visually-hidden">or</span>
-          <button type="button" class="govuk-button govuk-button--link govuk-!-margin-bottom-0" (click)="onSubmit()">
+          <button
+            type="button"
+            class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+            (click)="onSubmit(false)"
+          >
             Save and exit
           </button>
         </div>

@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import { ReportsComponent } from '@features/reports/reports.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 
 const routes: Routes = [
@@ -45,8 +46,9 @@ const routes: Routes = [
   },
   {
     path: 'reports',
-    component: ReportsComponent,
+    loadChildren: '@features/reports/reports.module#ReportsModule',
     canActivate: [AuthGuard],
+    data: { title: 'Reports' },
   },
   {
     path: 'worker',

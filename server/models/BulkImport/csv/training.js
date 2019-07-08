@@ -169,6 +169,17 @@ class Training {
           source: this._currentLine.DATECOMPLETED,
         });
         return false;
+      } else if (actualDate.isAfter(moment())) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Training.DATE_COMPLETED_ERROR,
+          errType: `DATE_COMPLETED_ERROR`,
+          error: "DATECOMPLETED is in the future",
+          source: this._currentLine.DATECOMPLETED,
+        });
+        return false;
       } else {
 
         this._dateCompleted = actualDate;
@@ -195,7 +206,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.EXPIRY_DATE_ERROR,
           errType: `EXPIRY_DATE_ERROR`,
-          error: "DATECOMPLETED is incorrectly formatted",
+          error: "EXPIRYDATE is incorrectly formatted",
           source: this._currentLine.EXPIRYDATE,
         });
         return false;
@@ -343,7 +354,7 @@ class Training {
           lineNumber: this._lineNumber,
           errCode: Training.NOTES_ERROR,
           errType: `NOTES_ERROR`,
-          error: `Notes is longer than ${MAX_LENGTH} characters`,
+          error: `NOTES is longer than ${MAX_LENGTH} characters`,
           source: this._currentLine.NOTES,
         });
         return false;
@@ -496,9 +507,10 @@ class Training {
 
         switch (thisProp) {
           case 'TrainingCategory':
-            validationError.errCode = Training.CATEGORY_ERROR;
-            validationError.errType = 'CATEGORY_ERROR';
-            validationError.source  = `${this._currentLine.CATEGORY}`;
+            // this generates multiple errors, which are already covered in validation above
+            // validationError.errCode = Training.CATEGORY_ERROR;
+            // validationError.errType = 'CATEGORY_ERROR';
+            // validationError.source  = `${this._currentLine.CATEGORY}`;
             break;
           case 'Title':
             validationError.errCode = Training.DESCRIPTION_ERROR;

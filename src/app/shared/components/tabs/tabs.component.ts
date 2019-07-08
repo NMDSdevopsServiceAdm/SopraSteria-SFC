@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { AfterContentInit, Component, ContentChildren, ElementRef, Input, QueryList, ViewChild } from '@angular/core';
+import { AfterContentInit, Component, ContentChildren, ElementRef, QueryList, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { TabComponent } from './tab.component';
@@ -11,7 +11,7 @@ import { TabComponent } from './tab.component';
 export class TabsComponent implements AfterContentInit {
   private currentTab: number;
   @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
-  @Input() displayWDFReport: boolean;
+
   @ViewChild('tablist') tablist: ElementRef;
 
   constructor(private location: Location, private route: ActivatedRoute) {}
@@ -21,20 +21,20 @@ export class TabsComponent implements AfterContentInit {
     if (hash) {
       const activeTab = this.tabs.toArray().findIndex(tab => tab.slug === hash);
       if (activeTab) {
-        this.selectTab(null, activeTab);
+        this.selectTab(null, activeTab, false);
       }
     }
 
     const activeTabs = this.tabs.filter(tab => tab.active);
 
     if (activeTabs.length === 0) {
-      this.selectTab(null, 0);
+      this.selectTab(null, 0, false);
     }
-    console.log(this.tablist);
   }
 
   public onKeyUp(event: KeyboardEvent) {
     switch (event.key) {
+      case 'Right':
       case 'ArrowRight':
         if (this.currentTab === this.tabs.length - 1) {
           this.selectTab(event, 0);
@@ -42,6 +42,7 @@ export class TabsComponent implements AfterContentInit {
           this.selectTab(event, this.currentTab + 1);
         }
         break;
+      case 'Left':
       case 'ArrowLeft':
         if (this.currentTab === 0) {
           this.selectTab(event, this.tabs.length - 1);
@@ -63,7 +64,7 @@ export class TabsComponent implements AfterContentInit {
     }
   }
 
-  public selectTab(event: Event, index: number) {
+  public selectTab(event: Event, index: number, focus: boolean = true) {
     if (event) {
       event.preventDefault();
     }
@@ -74,9 +75,12 @@ export class TabsComponent implements AfterContentInit {
     this.unselectTabs();
     tab.active = true;
     this.location.replaceState(`${this.location.path()}#${tab.slug}`);
-    setTimeout(() => {
-      this.tablist.nativeElement.querySelector('.govuk-tabs__tab--selected').focus();
-    });
+
+    if (focus) {
+      setTimeout(() => {
+        this.tablist.nativeElement.querySelector('.govuk-tabs__tab--selected').focus();
+      });
+    }
   }
 
   private unselectTabs() {

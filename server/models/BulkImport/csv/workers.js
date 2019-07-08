@@ -261,17 +261,16 @@ class Worker {
   }
 
   _validateContractType() {
-    const myContractType = parseInt(this._currentLine.EMPLSTATUS);
+    const myContractType = this._currentLine.EMPLSTATUS;
 
-    //console.log("NM DEBUG: contract type (employment status): ", myContractType)
-    if (Number.isNaN(myContractType)) {
+    if (!myContractType) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.CONTRACT_TYPE_ERROR,
         errType: 'CONTRACT_TYPE_ERROR',
-        error: "Employment Status (EMPLSTATUS) must be an integer",
+        error: "EMPLSTATUS has not been supplied",
         source: this._currentLine.EMPLSTATUS,
       });
       return false;
@@ -361,7 +360,7 @@ class Worker {
         lineNumber: this._lineNumber,
         errCode: Worker.CHANGE_UNIQUE_WORKER_ID_ERROR,
         errType: `CHANGE_UNIQUE_WORKER_ID_ERROR`,
-        error: `Change Unique Local Worker Identifier (CHGUNIQUEWRKID) must be no more than ${MAX_LENGTH} characters`,
+        error: `CHGUNIQUEWORKERID is longer than ${MAX_LENGTH} characters`,
         source: this._currentLine.CHGUNIQUEWRKID,
       });
       return false;
@@ -375,15 +374,26 @@ class Worker {
     const statusValues = ['DELETE', 'UPDATE', 'UNCHECKED', 'NOCHANGE', 'NEW','CHGSUB'];
     const myStatus = this._currentLine.STATUS ? this._currentLine.STATUS.toUpperCase() : this._currentLine.STATUS;
 
-    // must be present and must be one of the preset values (case insensitive)
-    if (!statusValues.includes(myStatus)) {
+    if (myStatus.length === 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.STATUS_ERROR,
         errType: `STATUS_ERROR`,
-        error: `Status (STATUS) must be one of: ${statusValues}`,
+        error: `You have not supplied a correct status`,
+        source: this._currentLine.STATUS,
+      });
+      return false;
+    } else if (!statusValues.includes(myStatus)) {
+      // must be present and must be one of the preset values (case insensitive)
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.STATUS_ERROR,
+        errType: `STATUS_ERROR`,
+        error: `The status you have supplied is incorrect`,
         source: this._currentLine.STATUS,
       });
       return false;
@@ -397,17 +407,28 @@ class Worker {
     const myDisplayId = this._currentLine.DISPLAYID;
     const MAX_LENGTH = 120;
 
-    if (myDisplayId.length >= MAX_LENGTH) {
+    if (!myDisplayId) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        errCode: Worker.DISPLAY_ID_ERROR,
-        errType: `WORKER_DISPLAY_ID_ERROR`,
-        error: `Display ID (DISPLAYID) must be no more than ${MAX_LENGTH} characters`,
+        warnCode: Worker.DISPLAY_ID_WARNING,
+        warnType: `WORKER_DISPLAY_ID_WARNING`,
+        warning: `DISPLAYID is blank for …..`,
         source: this._currentLine.DISPLAYID,
       });
       return false;
+    } else if (myDisplayId.length >= MAX_LENGTH) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.DISPLAY_ID_ERROR,
+          errType: `WORKER_DISPLAY_ID_ERROR`,
+          error: `DISPLAYID is longer than 120 characters`,
+          source: this._currentLine.DISPLAYID,
+        });
+        return false;
     } else {
       this._displayId = myDisplayId;
       return true;
@@ -416,30 +437,17 @@ class Worker {
 
   _validateNINumber() {
     const myNINumber = this._currentLine.NINUMBER;
-    const LENGTH = 9;
     const niRegex = /^\s*[a-zA-Z]{2}(?:\s*\d\s*){6}[a-zA-Z]?\s*$/;
 
     if (myNINumber.length > 0) {
-      if  (myNINumber.length != LENGTH  ) {
+      if (myNINumber.length > 0 && !niRegex.test(myNINumber)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.NINUMBER_ERROR,
           errType: `WORKER_NINUMBER_ERROR`,
-          error: `National Insurance number (NINUMBER) must be ${LENGTH} characters`,
-          source: this._currentLine.NINUMBER,
-        });
-        return false;
-      } else if (myNINumber.length > 0 && myNINumber.length == LENGTH && !niRegex.test(myNINumber)) {
-
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.NINUMBER_ERROR,
-          errType: `WORKER_NINUMBER_ERROR`,
-          error: `Incorret NI format; must be in AB123456C format`,
+          error: `NINUMBER is incorrectly formatted`,
           source: this._currentLine.NINUMBER,
         });
         return false;
@@ -453,85 +461,91 @@ class Worker {
 
   _validatePostCode() {
     const myPostcode = this._currentLine.POSTCODE;
-    const MAX_LENGTH = 10;
     const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
 
-    if (myPostcode.length) {
-      if (myPostcode.length >= MAX_LENGTH) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.LOCAL_ID_ERROR,
-          errType: `POSTCODE_ERROR`,
-          error: `POSTCODE (POSTCODE) must be no more than ${MAX_LENGTH} characters`,
-          source: this._currentLine.POSTCODE,
-        });
-        return false;
-      } else if (myPostcode.length >= MAX_LENGTH && !postcodeRegex.test(myPostcode)) {
-         this._validationErrors.push({
-           worker: this._currentLine.UNIQUEWORKERID,
-           name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.POSTCODE_ERROR,
-          errType: `POSTCODE ERROR`,
-          error: `Postcode (POSTCODE) unexpected format`,
-          source: myPostcode,
-        });
-        return false;
-      } else {
-        this._postCode = myPostcode;
-        return true;
-      }
+    if (!myPostcode) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.POSTCODE_WARNING,
+        warnType: `POSTCODE_WARNING`,
+        warning: `POSTCODE is missing`,
+        source: myPostcode,
+      });
+      return false;
+    } else if (!postcodeRegex.test(myPostcode)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.POSTCODE_ERROR,
+        errType: `POSTCODE ERROR`,
+        error: `POSTCODE is incorrectly formatted`,
+        source: myPostcode,
+      });
+      return false;
+    } else {
+      this._postCode = myPostcode;
+      return true;
     }
   }
 
+  // _validateDOB() {
+  //   if (this._currentLine.DOB.length > 0) {
+  //     const dobRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
+  //     const myDobRealDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
+
+  //   }
+  // }
+
   _validateDOB() {
+    const MINIMUM_AGE=14;
+    const MAXIMUM_AGE=100;
+    const maxDate = moment().subtract(MINIMUM_AGE, 'y');
+    const minDate = moment().subtract(MAXIMUM_AGE, 'y');
+    const dobRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
     const myDOB = this._currentLine.DOB;
+    const myDobRealDate = moment.utc(myDOB, "DD/MM/YYYY");
 
-    if (myDOB.length > 0) {
-      const dobRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
-      const myDobRealDate = moment.utc(myDOB, "DD/MM/YYYY");
-
-      if (!myDobRealDate.isValid()) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.DOB_ERROR,
-          errType: `DOB_ERROR`,
-          error: `Date of birth (DOB) Incorrect`,
-          source: this._currentLine.DOB,
-        });
-        return false;
-
-      } else if (myDOB.length > 0 && dobRegex.test(myDOB)) {
-
-        const MIN_AGE = 14;
-        const MAX_AGE = 100;
-        const MIN_DATE = moment().subtract(MIN_AGE, 'years');
-        const MAX_DATE = moment().subtract(MAX_AGE, 'years');
-
-        if (MIN_DATE.isBefore(myDobRealDate, 'year') || MAX_DATE.isAfter(myDobRealDate, 'year')) {
-
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.DOB_ERROR,
-            errType: `DOB_ERROR`,
-            error: `Date of birth (DOB) Must be between ${MIN_AGE} to ${MAX_AGE} years`,
-            source: this._currentLine.DOB,
-          });
-          return false;
-        }
-
-        this._DOB = myDobRealDate;
-        return true;
-      } else {
-        this._DOB = myDobRealDate;
-        return true;
-      }
+    if (!this._currentLine.DOB) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.DOB_WARNING,
+        warnType: `DOB_WARNING`,
+        warning: `DOB is missing`,
+        source: this._currentLine.DOB,
+      });
+      return false;
+    } 
+    else if (!myDobRealDate.isValid()) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.DOB_WARNING,
+        warnType: `DOB_WARNING`,
+        warning: `The date of birth you have entered is incorrectly formatted and will be ignored`,
+        source: this._currentLine.DOB,
+      });
+      return false;
+    } 
+    else if (myDobRealDate.isBefore(minDate) || myDobRealDate.isAfter(maxDate)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.DOB_WARNING,
+        warnType: `DOB_WARNING`,
+        warning: `The date of birth you have entered is not between a valid range of 14 – 100 years old`,
+        source: this._currentLine.DOB,
+      });
+      return false;
+    } else {
+      this._DOB = myDobRealDate;
+      return true;
     }
   }
 
@@ -540,25 +554,14 @@ class Worker {
     const myGender = parseInt(this._currentLine.GENDER);
 
     if (this._currentLine.GENDER.length > 0) {
-      if (isNaN(myGender)) {
+      if (isNaN(myGender) || !genderValues.includes(parseInt(myGender))) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.GENDER_ERROR,
           errType: 'GENDER_ERROR',
-          error: "GENDER (GENDER) must be an integer",
-          source: this._currentLine.GENDER,
-        });
-        return false;
-      } else if (!genderValues.includes(parseInt(myGender))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.GENDER_ERROR,
-          errType: 'GENDER_ERROR',
-          error: "GENDER (GENDER) must have value 1 (MALE) or 2(FEMALE) or 3(Don't Know) or 4(OTHER)",
+          error: "The code you have entered for GENDER is incorrect",
           source: this._currentLine.GENDER,
         });
         return false;
@@ -590,25 +593,14 @@ class Worker {
 
     // optional
     if (this._currentLine.ETHNICITY && this._currentLine.ETHNICITY.length > 0) {
-      if (isNaN(myEthnicity)) {
+      if (isNaN(myEthnicity) || !ethnicityValues.includes(myEthnicity)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ETHNICITY_ERROR,
           errType: 'ETHNICITY_ERROR',
-          error: "Ethnicity (ETHNICITY) must be an integer",
-          source: this._currentLine.ETHNICITY,
-        });
-        return false;
-      } else if (!ethnicityValues.includes(myEthnicity)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.ETHNICITY_ERROR,
-          errType: 'ETHNICITY_ERROR',
-          error: "Ethnicity (ETHNICITY) must have value between 31 to 47,  98 or 99",
+          error: "The code you have entered for ETHNICITY is incorrect",
           source: this._currentLine.ETHNICITY,
         });
         return false;
@@ -625,47 +617,43 @@ class Worker {
   _validateCitizenShip() {
     const BritishCitizenshipValues = [1,2,999];
     const myBritishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP);
+    const myNationality = parseInt(this._currentLine.NATIONALITY, 10);
 
-    // optional
-    if (this._currentLine.BRITISHCITIZENSHIP && this._currentLine.BRITISHCITIZENSHIP.length > 0) {
-      if (isNaN(myBritishCitizenship)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
-          errType: 'BRITISH_CITIZENSHIP_ERROR',
-          error: "CitizenShip (BRITISHCITIZENSHIP) must be an integer",
-          source: this._currentLine.BRITISHCITIZENSHIP,
-        });
-        return false;
-      } else if (!BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
-          errType: 'BRITISH_CITIZENSHIP_ERROR',
-          error: "British Citizenship (BRITISHCITIZENSHIP) must have value 1(Yes) to 2(No),  999(Unknown) ",
-          source: this._currentLine.BRITISHCITIZENSHIP,
-        });
-        return false;
+    if (myNationality === 826) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.BRITISH_CITIZENSHIP_WARNING,
+        warnType: 'BRITISH_CITIZENSHIP_WARNING',
+        warning: `BRITISHCITIZENSHIP has been ignored as workers nationality is British`,
+        source: this._currentLine.BRITISHCITIZENSHIP,
+      });
+      return false;
+    } else if (isNaN(myBritishCitizenship) || !BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
+        errType: 'BRITISH_CITIZENSHIP_ERROR',
+        error: `BRITISHCITIZENSHIP code is not a valid entry`,
+        source: this._currentLine.BRITISHCITIZENSHIP,
+      });
+      return false;
+    }
+    else {
+      switch (myBritishCitizenship) {
+        case 1:
+          this._britishNationality = 'Yes';
+          break;
+        case 2:
+          this._britishNationality = 'No';
+          break;
+        case 999:
+          this._britishNationality = 'Don\'t know';
+          break;
       }
-      else {
-        switch (myBritishCitizenship) {
-          case 1:
-            this._britishNationality = 'Yes';
-            break;
-          case 2:
-            this._britishNationality = 'No';
-            break;
-          case 999:
-            this._britishNationality = 'Don\'t know';
-            break;
-        }
-        return true;
-      }
-    } else {
       return true;
     }
   }
@@ -675,6 +663,9 @@ class Worker {
   _validateYearOfEntry() {
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
     const yearRegex = /^\d{4}$/;
+    const thisYear = new Date().getFullYear();
+    const myRealDOBDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
+    const myCountry = this._currentLine.COUNTRYOFBIRTH;
 
     if (myYearOfEntry && !yearRegex.test(myYearOfEntry)) {
       this._validationErrors.push({
@@ -682,8 +673,52 @@ class Worker {
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.YEAROFENTRY_ERROR,
-        errType: 'Ethnicity_ERROR',
-        error: "YEAR OF ENTRY (YEAROFENTRY) must be 4 number ",
+        errType: 'YEAROFENTRY_ERROR',
+        error: "YEAROFENTRY is incorrectly formatted",
+        source: this._currentLine.YEAROFENTRY,
+      });
+      return false;
+    } else if (thisYear < myYearOfEntry) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.YEAROFENTRY_ERROR,
+        errType: 'YEAROFENTRY_ERROR',
+        error: "YEAROFENTRY is in the future",
+        source: this._currentLine.YEAROFENTRY,
+      });
+      return false;
+    } else if (myRealDOBDate && myRealDOBDate.year() > myYearOfEntry) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.YEAROFENTRY_ERROR,
+        errType: 'YEAROFENTRY_ERROR',
+        error: "YEAROFENTRY must be greater or equal to DOB",
+        source: this._currentLine.YEAROFENTRY,
+      });
+      return false;
+    } else if (!myCountry) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.YEAROFENTRY_WARNING,
+        warnType: 'YEAROFENTRY_WARNING',
+        warning: "Year of entry has been ignored as Country of Birth is missing",
+        source: this._currentLine.YEAROFENTRY,
+      });
+      return false;
+    } else if (myCountry && parseInt(myCountry) === 826) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.YEAROFENTRY_WARNING,
+        warnType: 'YEAROFENTRY_WARNING',
+        warning: "Year of entry has been ignored as Country of Birth is British",
         source: this._currentLine.YEAROFENTRY,
       });
       return false;
@@ -699,25 +734,14 @@ class Worker {
 
     // optional
     if (this._currentLine.DISABLED && this._currentLine.DISABLED.length > 0) {
-      if (isNaN(myDisabled)) {
+      if (isNaN(myDisabled) || !disabledValues.includes(parseInt(myDisabled))) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.DISABLED_ERROR,
           errType: 'DISABLED_ERROR',
-          error: "Disabled (DISABLED) must be an integer",
-          source: this._currentLine.DISABLED,
-        });
-        return false;
-      } else if (!disabledValues.includes(parseInt(myDisabled))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.DISABLED_ERROR,
-          errType: 'DISABLED_ERROR',
-          error: "Disabled (DISABLED) must have value 0(No Disability) or 1(Has Disability) or 2(Undisclosed) or 3(Dont know)",
+          error: "The code you have entered for DISABLED is incorrect",
           source: this._currentLine.DISABLED,
         });
         return false;
@@ -803,7 +827,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.RESOURCE_ERROR,
           errType: 'RECSOURCE_ERROR',
-          error: "Recruitement Source (RECSOURCE) must be an integer",
+          error: "The code you have entered for RECSOURCE is incorrect",
           source: this._currentLine.RECSOURCE,
         });
         return false;
@@ -817,82 +841,117 @@ class Worker {
   }
 
   _validateStartDate() {
+    const AGE = 14;
     const myStartDate = this._currentLine.STARTDATE;
+    const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
+    const today = moment(new Date());
+    const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
+    const myRealDOBDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
 
-    // optional
-    if (myStartDate && myStartDate.length > 0) {
-      const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
-
-      const today = moment(new Date());
-      const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
-
-      if (!dateRegex.test(myStartDate)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.START_DATE_ERROR,
-          errType: 'STARTDATE_ERROR',
-          error: "Start Date (STARTDATE) should by in dd/mm/yyyy format",
-          source: this._currentLine.STARTDATE,
-        });
-        return false;
-      } else if (!myRealStartDate.isValid()) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.START_DATE_ERROR,
-          errType: 'STARTDATE_ERROR',
-          error: "Start Date (STARTDATE) is invalid date",
-          source: this._currentLine.STARTDATE,
-        });
-        return false;
-      } else if (myRealStartDate.isAfter(today)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.START_DATE_ERROR,
-          errType: 'STARTDATE_ERROR',
-          error: "Start Date (STARTDATE) can not be in future",
-          source: this._currentLine.STARTDATE,
-        });
-        return false;
-      } else {
-        this._startDate = myRealStartDate;
-        return true;
-      }
+    if (!myStartDate) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_DATE_WARNING,
+        warnType: 'START_DATE_WARNING',
+        warnError: "STARTDATE is missing",
+        source: this._currentLine.STARTDATE,
+      });
+      return false;
+    } else if (!dateRegex.test(myStartDate)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_DATE_WARNING,
+        warnType: 'START_DATE_WARNING',
+        warnError: "STARTDATE is incorrectly formatted and will be ignored",
+        source: this._currentLine.STARTDATE,
+      });
+      return false;
+    } else if (myRealStartDate.isAfter(today)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_DATE_WARNING,
+        warnType: 'START_DATE_WARNING',
+        warning: "STARTDATE is in the future and will be ignored",
+        source: this._currentLine.STARTDATE,
+      });
+      return false;
+    } else if (myRealStartDate.diff(myRealDOBDate, 'years', false) < AGE) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_DATE_WARNING,
+        warnType: 'START_DATE_WARNING',
+        warning: "STARTDATE is before workers 14th birthday and will be ignored",
+        source: this._currentLine.STARTINSECT,
+      });
+      return false;
     } else {
+      this._startDate = myRealStartDate;
       return true;
     }
   }
 
   _validateStartInsect() {
-
+    const AGE = 14;
     const myStartInsect = this._currentLine.STARTINSECT;
+    const yearRegex = /^\d{4}|999$/;
+    const myRealDOBDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
 
-    // optional
-    if (myStartInsect && myStartInsect.length > 0) {
-      const yearRegex = /^\d{4}|999$/;
-
-      if (!yearRegex.test(myStartInsect)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.START_INSECT_ERROR,
-          errType: 'START_INSECT_ERROR',
-          error: "Start Insect (STARTINSECT) must be 4 digit number representing the year or 999 if unknown",
-          source: this._currentLine.STARTINSECT,
-        });
-        return false;
-      }
-      else {
-        this._startInsect = parseInt(myStartInsect, 10);
-        return true;
-      }
-    } else {
+    if (!myStartInsect) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_INSECT_WARNING,
+        warnType: 'START_INSECT_WARNING',
+        warning: "STARTINSECT is missing",
+        source: this._currentLine.STARTINSECT,
+      });
+      return false;
+    } else if (!yearRegex.test(myStartInsect)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_INSECT_WARNING,
+        warnType: 'START_INSECT_WARNING',
+        warning: "STARTINSECT is incorrectly formatted and will be ignored",
+        source: this._currentLine.STARTINSECT,
+      });
+      return false;
+    } else if (this._startDate && parseInt(myStartInsect) > this._startDate.year()) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_INSECT_WARNING,
+        warnType: 'START_INSECT_WARNING',
+        warning: "STARTINSECT is after STARTDATE and will be ignored",
+        source: this._currentLine.STARTINSECT,
+      });
+      return false;
+    }
+    else if (myRealDOBDate &&  myRealDOBDate.year() + AGE > parseInt(myStartInsect)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_INSECT_WARNING,
+        warnType: 'START_INSECT_WARNING',
+        warning: "STARTINSECT is before workers 14th birthday and will be ignored",
+        source: this._currentLine.STARTINSECT,
+      });
+      return false;
+    }
+    else {
+      this._startInsect = parseInt(myStartInsect, 10);
       return true;
     }
   }
@@ -948,33 +1007,55 @@ class Worker {
   _validateZeroHourContract() {
     const zeroHourContractValues = [1, 2, 999];
     const myZeroHourContract = parseInt(this._currentLine.ZEROHRCONT, 10);
+    const myContHours = parseFloat(this._currentLine.CONTHOURS);
 
     // optional
     if (this._currentLine.ZEROHRCONT && this._currentLine.ZEROHRCONT.length > 0) {
-      if (isNaN(myZeroHourContract)) {
+      if (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ZERO_HRCONT_ERROR,
           errType: 'ZEROHRCONT_ERROR',
-          error: "Zero Hour Contract (ZEROHRCONT) must be an integer",
+          error: "The code you have entered for ZEROHRCONT is incorrect",
           source: this._currentLine.ZEROHRCONT,
         });
         return false;
-      } else if (!zeroHourContractValues.includes(myZeroHourContract)) {
+      } else if (myContHours > 0 && (myZeroHourContract === 999 || myZeroHourContract === 1)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ZERO_HRCONT_ERROR,
           errType: 'ZEROHRCONT_ERROR',
-          error: "Zero Hour Contract (ZEROHRCONT) value must 1(Yes), 2(No) or 999(Unknown)",
+          error: "The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks",
           source: this._currentLine.ZEROHRCONT,
         });
         return false;
-      }
-      else {
+      } else if (myContHours === 0 &&  myZeroHourContract === 2) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.ZERO_HRCONT_WARNING,
+          warnType: 'ZERO_HRCONT_WARNING',
+          warning: "You have entered “0” in CONTHOURS but not entered “Yes” to the ZEROHRCONT question",
+          source: this._currentLine.ZEROHRCONT,
+        });
+        return false;
+      }  else if (myContHours > 0 &&  !myZeroHourContract) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.ZERO_HRCONT_WARNING,
+          warnType: 'ZERO_HRCONT_WARNING',
+          warning: "You have entered contracted hours but have not said this worker is not on a zero hours contract",
+          source: this._currentLine.ZEROHRCONT,
+        });
+        return false;
+      } else {
         switch (myZeroHourContract) {
           case 1:
             this._zeroHourContract = 'Yes';
@@ -1000,30 +1081,18 @@ class Worker {
     if (this._currentLine.DAYSSICK && this._currentLine.DAYSSICK.length > 0) {
       const MAX_VALUE = 365.0;
       const DONT_KNOW_VALUE = 999;
-      if (isNaN(myDaysSick)) {
+      if (isNaN(myDaysSick) || myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.DAYSICK_ERROR,
-          errType: 'DAYSSICK_ERROR',
-          error: "Day Sick (DAYSSICK) must be an integer or decimal",
+          warnCode: Worker.DAYSICK_ERROR,
+          warnType: 'DAYSSICK_ERROR',
+          warning: "DAYSSICK is out of validation range and will be ignored",
           source: this._currentLine.DAYSSICK,
         });
         return false;
-      } else if (myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.DAYSICK_ERROR,
-          errType: 'DAYSSICK_ERROR',
-          error: `Day Sick (DAYSSICK) value must less than ${parseInt(MAX_VALUE,10)} otherwise ${DONT_KNOW_VALUE}`,
-          source: this._currentLine.DAYSSICK,
-        });
-        return false;
-      }
-      else {
+      } else {
         switch (myDaysSick) {
           case 999:
             this._daysSick = 'No';
@@ -1458,26 +1527,32 @@ class Worker {
   _validateCountryOfBirth() {
     const myCountry = parseInt(this._currentLine.COUNTRYOFBIRTH, 10);
 
-    // optional
-    if (this._currentLine.COUNTRYOFBIRTH && this._currentLine.COUNTRYOFBIRTH.length > 0) {
-      if (isNaN(myCountry)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
-          errType: 'COUNTRY_OF_BIRTH_ERROR',
-          error: "Country of Birth (COUNTRYOFBIRTH) must be an integer",
-          source: this._currentLine.COUNTRYOFBIRTH,
-        });
-        return false;
-      }
-      else {
-        this._countryOfBirth = myCountry;
-        return true;
-      }
-
-    } else {
+    if (myCountry === 826) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.COUNTRY_OF_BIRTH_WARNING,
+        warnType: 'COUNTRY_OF_BIRTH_WARNING',
+        warning: "Country of birth has been ignored as …..was born in UK",
+        source: this._currentLine.COUNTRYOFBIRTH,
+      });
+      return false;
+    }
+    else if (isNaN(myCountry)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
+        errType: 'COUNTRY_OF_BIRTH_ERROR',
+        error: "Country of Birth (COUNTRYOFBIRTH) must be an integer",
+        source: this._currentLine.COUNTRYOFBIRTH,
+      });
+      return false;
+    }
+    else {
+      this._countryOfBirth = myCountry;
       return true;
     }
   }
@@ -1767,7 +1842,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.CONTRACT_TYPE_ERROR,
           errType: `CONTRACT_TYPE_ERROR`,
-          error: `Employment Status (EMPLSTATUS): ${this._contractType} is unknown`,
+          error: `The code you have entered for EMPLSTATUS is incorrect`,
           source: this._currentLine.EMPLSTATUS,
         });
       } else {
@@ -1940,7 +2015,7 @@ class Worker {
             lineNumber: this._lineNumber,
             errCode: Worker.NATIONALITY_ERROR,
             errType: `NATIONALITY_ERROR`,
-            error: `Nationality (NATIONALITY): ${this._nationality} is unknown`,
+            error: `Nationality code (${this._nationality}) is not a valid entry`,
             source: this._currentLine.NURSESPEC,
           });
         } else {
@@ -1970,7 +2045,7 @@ class Worker {
             lineNumber: this._lineNumber,
             errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
             errType: `COUNTRY_OF_BIRTH_ERROR`,
-            error: `Country of Birth (COUNTRYOFBIRTH): ${this._countryOfBirth} is unknown`,
+            error: `Country of birth code (${this._countryOfBirth}) is not a valid entry`,
             source: this._currentLine.COUNTRYOFBIRTH,
           });
         } else {
@@ -2058,7 +2133,7 @@ class Worker {
       lineNumber: this._lineNumber,
       errCode: Worker.DUPLICATE_ERROR,
       errType: `DUPLICATE_ERROR`,
-      error: `UNIQUEWORKERID is not unique`,
+      error: `The combination of LOCALESTID with this UNIQUEWORKERID/CHGUNIQUEWORKERID is not unique`,
       source: this._currentLine.UNIQUEWORKERID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
@@ -2072,7 +2147,7 @@ class Worker {
       lineNumber: this._lineNumber,
       errCode: Worker.UNCHECKED_ESTABLISHMENT_ERROR,
       errType: `UNCHECKED_ESTABLISHMENT_ERROR`,
-      error: `LOCALESTID does not exist in Workplace File`,
+      error: `The LOCALESTID set for this staff record does not exist in your workplace file`,
       source: this._currentLine.LOCALESTID,
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
@@ -2481,9 +2556,9 @@ class Worker {
 
         switch (thisProp) {
           case 'WorkerNameOrId':
-            validationError.errCode = Worker.UNIQUE_WORKER_ID_ERROR;
-            validationError.errType = 'UNIQUE_WORKER_ID_ERROR';
-            validationError.source  = `${this._currentLine.UNIQUEWORKERID}`;
+            // validationError.errCode = Worker.UNIQUE_WORKER_ID_ERROR;
+            // validationError.errType = 'UNIQUE_WORKER_ID_ERROR';
+            // validationError.source  = `${this._currentLine.UNIQUEWORKERID}`;
             break;
           case 'WorkerMainJob':
             validationError.errCode = Worker.MAIN_JOB_ROLE_ERROR;
@@ -2491,9 +2566,9 @@ class Worker {
             validationError.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
             break;
           case 'WorkerContract':
-            validationError.errCode = Worker.CONTRACT_TYPE_ERROR;
-            validationError.errType = 'CONTRACT_TYPE_ERROR';
-            validationError.source  = `${this._currentLine.EMPLSTATUS}`;
+            // validationError.errCode = Worker.CONTRACT_TYPE_ERROR;
+            // validationError.errType = 'CONTRACT_TYPE_ERROR';
+            // validationError.source  = `${this._currentLine.EMPLSTATUS}`;
             break;
           case 'WorkerAnnualHourlyPay':
             // note - the Worker entity wraps the pay type (interval) and rate, with a single rate for hourly and annually
@@ -2522,9 +2597,9 @@ class Worker {
             validationError.source  = `${this._currentLine.CARECERT}`;
             break;
           case 'WorkerCountry':
-            validationError.errCode = Worker.COUNTRY_OF_BIRTH_ERROR;
-            validationError.errType = 'COUNTRY_OF_BIRTH_ERROR';
-            validationError.source  = `${this._currentLine.COUNTRYOFBIRTH}`;
+            // validationError.errCode = Worker.COUNTRY_OF_BIRTH_ERROR;
+            // validationError.errType = 'COUNTRY_OF_BIRTH_ERROR';
+            // validationError.source  = `${this._currentLine.COUNTRYOFBIRTH}`;
             break;
           case 'WorkerDateOfBirth':
             validationError.errCode = Worker.DOB_ERROR;
@@ -2569,9 +2644,9 @@ class Worker {
             validationError.source  = `${this._currentLine.NINUMBER}`;
             break;
           case 'WorkerNationality':
-            validationError.errCode = Worker.NATIONALITY_ERROR;
-            validationError.errType = 'NATIONALITY_ERROR';
-            validationError.source  = `${this._currentLine.NATIONALITY}`;
+            // validationError.errCode = Worker.NATIONALITY_ERROR;
+            // validationError.errType = 'NATIONALITY_ERROR';
+            // validationError.source  = `${this._currentLine.NATIONALITY}`;
             break;
           case 'WorkerOtherJobs':
             // the Worker entity combines OTHERJOBROLE and OTHERJRDESC
@@ -2652,9 +2727,9 @@ class Worker {
             validationWarning.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
             break;
           case 'WorkerContract':
-            validationWarning.warnCode = Worker.CONTRACT_TYPE_WARNING;
-            validationWarning.warnType = 'CONTRACT_TYPE_WARNING';
-            validationWarning.source  = `${this._currentLine.EMPLSTATUS}`;
+            // validationWarning.warnCode = Worker.CONTRACT_TYPE_WARNING;
+            // validationWarning.warnType = 'CONTRACT_TYPE_WARNING';
+            // validationWarning.source  = `${this._currentLine.EMPLSTATUS}`;
             break;
           case 'WorkerAnnualHourlyPay':
             // note - the Worker entity wraps the pay type (interval) and rate, with a single rate for hourly and annually
@@ -2683,14 +2758,14 @@ class Worker {
             validationWarning.source  = `${this._currentLine.CARECERT}`;
             break;
           case 'WorkerCountry':
-            validationWarning.warnCode = Worker.COUNTRY_OF_BIRTH_WARNING;
-            validationWarning.warnType = 'COUNTRY_OF_BIRTH_ERROR';
-            validationWarning.source  = `${this._currentLine.COUNTRYOFBIRTH}`;
+            // validationWarning.warnCode = Worker.COUNTRY_OF_BIRTH_WARNING;
+            // validationWarning.warnType = 'COUNTRY_OF_BIRTH_ERROR';
+            // validationWarning.source  = `${this._currentLine.COUNTRYOFBIRTH}`;
             break;
           case 'WorkerDateOfBirth':
-            validationWarning.warnCode = Worker.DOB_WARNING;
-            validationWarning.warnType = 'DOB_WARNING';
-            validationWarning.source  = `${this._currentLine.DOB}`;
+            // validationWarning.warnCode = Worker.DOB_WARNING;
+            // validationWarning.warnType = 'DOB_WARNING';
+            // validationWarning.source  = `${this._currentLine.DOB}`;
             break;
           case 'WorkerDaysSick':
             validationWarning.warnCode = Worker.DAYSICK_WARNING;
@@ -2728,9 +2803,9 @@ class Worker {
             validationWarning.source  = `${this._currentLine.NINUMBER}`;
             break;
           case 'WorkerNationality':
-            validationWarning.warnCode = Worker.NATIONALITY_WARNING;
-            validationWarning.warnType = 'NATIONALITY_WARNING';
-            validationWarning.source  = `${this._currentLine.NATIONALITY}`;
+            // validationWarning.warnCode = Worker.NATIONALITY_WARNING;
+            // validationWarning.warnType = 'NATIONALITY_WARNING';
+            // validationWarning.source  = `${this._currentLine.NATIONALITY}`;
             break;
           case 'WorkerOtherJobs':
             validationWarning.warnCode = Worker.OTHER_JOB_ROLE_WARNING;
@@ -2869,6 +2944,125 @@ class Worker {
     }
   }
 
+  // returns the BUDI mapped nationality
+  _maptoCSVnationality(nationality) {
+    if (nationality) {
+      if (nationality.value === 'British') {
+        return 826;
+      } else if (nationality.value === 'Don\'t know') {
+        return 998;
+      } else {
+        if (nationality.value === 'Other' && nationality.other && nationality.other.nationalityId) {
+          // the other nationality is specific - BUDI lookup
+          return BUDI.nationality(BUDI.FROM_ASC, nationality.other.nationalityId);
+        } else {
+          // other nationality is not specific - fixed BUDI code
+          return 999;
+        }
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped country
+  _maptoCSVcountry(country) {
+    if (country) {
+      if (country.value === 'United Kingdom') {
+        return 826;
+      } else if (country.value === 'Don\'t know') {
+        return 998;
+      } else {
+        // it's other - other
+        if (country.value === 'Other' && country.other && country.other.countryId){
+          // the other country is specific - BUDI lookup
+          return BUDI.country(BUDI.FROM_ASC, country.other.countryId);
+        }
+        else {
+          // other country is not specific - fixed BUDI code
+          return 999;
+        }
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped recruitment source
+  _maptoCSVrecruitedFrom(source) {
+    if (source) {
+      if (source.value === 'No') {
+        return 16;
+      } else {
+        // it's other
+        return BUDI.recruitment(BUDI.FROM_ASC, source.from.recruitedFromId);
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped started in sector
+  _maptoCSVStartedInSector(started) {
+    if (started) {
+      if (started.value === 'No') {
+        return '';
+      } else {
+        return started.year;
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped days sick
+  _maptoCSVDaysSick(daysSick) {
+    if (daysSick) {
+      if (daysSick.value === 'No') {
+        return 999;
+      } else {
+        return daysSick.days;
+      }
+    } else {
+      return '';  // not specified
+    }
+  }
+
+  // returns the BUDI mapped days sick
+  _maptoCSVslary(annualHourlyPay) {
+    if (annualHourlyPay) {
+      if (annualHourlyPay.value === 'Annually') {
+        return [1, annualHourlyPay.rate, ''];
+      } else {
+        return [3, '', annualHourlyPay.rate];
+      }
+    } else {
+      return ['','',''];  // not specified
+    }
+  }
+
+  _maptoCSVregsiterNurse(registeredNurse) {
+    let mappedValue = '';
+    switch (registeredNurse) {
+      case 'Adult Nurse':
+        mappedValue = '01';
+        break;
+      case 'Mental Health Nurse':
+        mappedValue = '02';
+        break;
+      case 'Learning Disabilities Nurse':
+        mappedValue = '03';
+        break;
+      case `Children's Nurse`:
+        mappedValue = '04';
+        break;
+      case 'Enrolled Nurse':
+        mappedValue = '05';
+        break;
+    }
+
+    return mappedValue;
+  }
 
   // takes the given Worker entity and writes it out to CSV string (one line)
   toCSV(establishmentId, entity) {
@@ -2878,8 +3072,8 @@ class Worker {
     const columns = [];
     columns.push(establishmentId);
     columns.push(entity.nameOrId);   // todo - this will be local identifier
-    columns.push('TBC');
-    columns.push('TBC');
+    columns.push('');
+    columns.push('UNCHECKED');
     columns.push(entity.nameOrId);
 
     columns.push(entity.nationalInsuranceNumber ? entity.nationalInsuranceNumber.replace(/\s+/g,'') : '');  // remove whitespace
@@ -2891,6 +3085,7 @@ class Worker {
     switch (entity.gender) {
       case null:
           columns.push('');
+          break;
       case 'Female':
         columns.push(2);
         break;
@@ -2906,11 +3101,24 @@ class Worker {
     }
 
     // "ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY"
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
+    columns.push(entity.ethnicity ? BUDI.ethnicity(BUDI.FROM_ASC, entity.ethnicity.ethnicityId) : '');
+    columns.push(entity.nationality ? this._maptoCSVnationality(entity.nationality) : '');
+    switch (entity.britishCitizenship) {
+      case null:
+          columns.push('');
+          break;
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+    columns.push(entity.countryOfBirth ? this._maptoCSVcountry(entity.countryOfBirth) : '');
+    columns.push(entity.yearArrived ? entity.yearArrived.year : '');
 
     // disabled
     switch (entity.disabiliity) {
@@ -2944,10 +3152,24 @@ class Worker {
     }
 
     // "RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE"
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
+    columns.push(entity.recruitmentSource ? this._maptoCSVrecruitedFrom(entity.recruitmentSource) : '');
+    const mainJobStartDateParts = entity.mainJobStartDate ? entity.mainJobStartDate.split('-') : null;
+    mainJobStartDateParts ? columns.push(`${mainJobStartDateParts[2]}/${mainJobStartDateParts[1]}/${mainJobStartDateParts[0]}`) : columns.push(''); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
+    columns.push(this._maptoCSVStartedInSector(entity.socialCareStartDate));
+    switch (entity.apprenticeship) {
+      case null:
+        columns.push('');
+        break;
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
 
     // EMPLSTATUS/;contract - mandatory
     switch (entity.contract) {
@@ -2968,24 +3190,55 @@ class Worker {
         break;
     }
 
-    // "ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS"
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
-    columns.push('');
+    // "ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE"
+    switch (entity.zeeroContractHours) {
+      case null:
+        columns.push('');
+        break;
+      case 'Yes':
+        columns.push(1);
+        break;
+      case 'No':
+        columns.push(2);
+        break;
+      case 'Don\'t know':
+        columns.push(999);
+        break;
+    }
+    columns.push(this._maptoCSVDaysSick(entity.daysSick));
+    const salaryMap = this._maptoCSVslary(entity.annualHourlyPay);
+    columns.push(salaryMap[0]);
+    columns.push(salaryMap[1]);
+    columns.push(salaryMap[2]);
+
+    // "MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS"
+    const contractedHoursContract = ['Permanent', 'Temporary'];
+    const averageHoursContract = ['Pool/Bank', 'Agency', 'Other'];
+    columns.push(entity.mainJob ? BUDI.jobRoles(BUDI.FROM_ASC, entity.mainJob.jobId) : '');
+    columns.push(entity.mainJob && entity.mainJob.other ? entity.mainJob.other : '');
+    columns.push(entity.contract && contractedHoursContract.includes(entity.contract) && entity.contractedHours ? entity.contractedHours.hours : '');
+    columns.push(entity.contract && averageHoursContract.includes(entity.contract) &&entity.averageHours ? entity.averageHours.hours : '');
 
     // "OTHERJOBROLE","OTHERJRDESC"
-    columns.push('OTHERJOBROLE');
-    columns.push('OTHERJRDESC');
+    columns.push(entity.otherJobs && entity.otherJobs.value === 'Yes'
+      ? entity.otherJobs.otherJobs.map(thisJob => {
+          return BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId);
+        }).join(';')
+      : '');
+    columns.push(entity.otherJobs && entity.otherJobs.value === 'Yes'
+      ? entity.otherJobs.otherJobs.map(thisJob => {
+          return thisJob.other;
+        }).join(';')
+      : '');
 
     // "NMCREG","NURSESPEC"
-    columns.push('');
-    columns.push('');
+    const NURSE_JOB_ID = 23;
+    columns.push(entity.mainJob && entity.mainJob.jobId === NURSE_JOB_ID && entity.registeredNurse
+      ? this._maptoCSVregsiterNurse(entity.registeredNurse)
+      : '');
+    columns.push(entity.mainJob && entity.mainJob.jobId === NURSE_JOB_ID && entity.nurseSpecialism
+      ? BUDI.nursingSpecialist(BUDI.FROM_ASC, entity.nurseSpecialism.id)
+      : '');
 
     // "AMHP"
     switch (entity.approvedMentalHealthWorker) {

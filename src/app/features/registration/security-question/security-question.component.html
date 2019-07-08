@@ -1,65 +1,66 @@
-<app-error-summary
-  *ngIf="submitted && form.invalid"
-  [formErrorsMap]="formErrorsMap"
-  [form]="form"
->
-</app-error-summary>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half">
-    <h1 class="govuk-heading-xl">Security question</h1>
-    <p class="govuk-!-margin-bottom-8">You will need this if you forget your username or if you speak to Skills for Care about your account.</p>
-
+  <div class="govuk-grid-column-two-thirds-from-desktop">
     <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getSecurityQuestion.errors">
-        <label class="govuk-label" for="securityQuestion">
-          Enter a security question
-        </label>
-        <span *ngIf="submitted && getSecurityQuestion.errors" id="securityQuestion-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getSecurityQuestion.hasError('required')">
-            {{ getFormErrorMessage('securityQuestion', 'required') }}
-          </span>
-          <span *ngIf="getSecurityQuestion.hasError('maxlength')">
-            {{ getFormErrorMessage('securityQuestion', 'maxlength') }}
-          </span>
-        </span>
-        <input
-          class="govuk-input"
-          formControlName="securityQuestion"
-          id="securityQuestion"
-          name="securityQuestion"
-          [class.govuk-input--error]="submitted && getSecurityQuestion.errors"
-          type="text"
-        />
-      </div>
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">User account</span>
+          <h1 class="govuk-fieldset__heading">
+            Security question
+          </h1>
+        </legend>
 
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getSecurityAnswer.errors">
-        <label class="govuk-label" for="securityAnswer">
-          Enter the answer to the security question
-        </label>
-        <span *ngIf="submitted && getSecurityAnswer.errors" id="securityAnswer-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          <span *ngIf="getSecurityAnswer.hasError('required')">
-            {{ getFormErrorMessage('securityAnswer', 'required') }}
-          </span>
-          <span *ngIf="getSecurityAnswer.hasError('maxlength')">
-            {{ getFormErrorMessage('securityAnswer', 'maxlength') }}
-          </span>
-        </span>
-        <input
-          class="govuk-input"
-          formControlName="securityAnswer"
-          id="securityAnswer"
-          name="securityAnswer"
-          [class.govuk-input--error]="submitted && getSecurityAnswer.errors"
-          type="text"
-        />
-      </div>
+        <p>You will need this if you forget your username or if you speak to Skills for Care about your account.</p>
 
-      <button type="submit" class="govuk-button">
-        {{ callToActionLabel }}
-      </button>
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getSecurityQuestion.errors">
+          <label class="govuk-label" for="securityQuestion">
+            Enter a security question
+          </label>
+          <span *ngIf="submitted && getSecurityQuestion.errors" id="securityQuestion-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            <span *ngIf="getSecurityQuestion.hasError('required')">
+              {{ getFormErrorMessage('securityQuestion', 'required') }}
+            </span>
+            <span *ngIf="getSecurityQuestion.hasError('maxlength')">
+              {{ getFormErrorMessage('securityQuestion', 'maxlength') }}
+            </span>
+          </span>
+          <input
+            class="govuk-input govuk-input--width-20"
+            formControlName="securityQuestion"
+            id="securityQuestion"
+            name="securityQuestion"
+            [class.govuk-input--error]="submitted && getSecurityQuestion.errors"
+            type="text"
+          />
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getSecurityAnswer.errors">
+          <label class="govuk-label" for="securityAnswer">
+            Enter the answer to the security question
+          </label>
+          <span *ngIf="submitted && getSecurityAnswer.errors" id="securityAnswer-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span>
+            <span *ngIf="getSecurityAnswer.hasError('required')">
+              {{ getFormErrorMessage('securityAnswer', 'required') }}
+            </span>
+            <span *ngIf="getSecurityAnswer.hasError('maxlength')">
+              {{ getFormErrorMessage('securityAnswer', 'maxlength') }}
+            </span>
+          </span>
+          <input
+            class="govuk-input govuk-input--width-20"
+            formControlName="securityAnswer"
+            id="securityAnswer"
+            name="securityAnswer"
+            [class.govuk-input--error]="submitted && getSecurityAnswer.errors"
+            type="text"
+          />
+        </div>
+      </fieldset>
+
+      <button type="submit" class="govuk-button">{{ callToActionLabel }}</button>
     </form>
   </div>
 </div>

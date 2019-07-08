@@ -18,6 +18,7 @@ const ValidationMessage = require('./validations/validationMessage').ValidationM
 const Worker = require('./worker').Worker;
 
 // notifications
+const AWSKinesis = require('../../aws/kinesis');
 
 // temp formatters
 const ServiceFormatters = require('../api/services');
@@ -155,6 +156,34 @@ class Establishment extends EntityValidator {
     get employerType() {
         return this._properties.get('EmployerType') ? this._properties.get('EmployerType').property : null;
     };
+    get localIdentifier() {
+      return this._properties.get('LocalIdentifier') ? this._properties.get('LocalIdentifier').property : null;
+    };
+    get shareWith() {
+      return this._properties.get('ShareData') ? this._properties.get('ShareData').property : null;
+    };
+    get shareWithLA() {
+      return this._properties.get('ShareWithLA') ? this._properties.get('ShareWithLA').property : null;
+    }
+    get otherServices() {
+      return this._properties.get('OtherServices') ? this._properties.get('OtherServices').property : null;
+    }
+    get capacities() {
+      return this._properties.get('CapacityServices') ? this._properties.get('CapacityServices').property : null;
+    }
+    get serviceUsers() {
+      return this._properties.get('ServiceUsers') ? this._properties.get('ServiceUsers').property : null;
+    }
+    get starters() {
+      return this._properties.get('Starters') ? this._properties.get('Starters').property : null;
+    }
+    get leavers() {
+      return this._properties.get('Leavers') ? this._properties.get('Leavers').property : null;
+    }
+    get vacancies() {
+      return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
+    }
+
 
     get nmdsId() {
         return this._nmdsId;
@@ -515,6 +544,9 @@ class Establishment extends EntityValidator {
                     });
                     await Promise.all(createModelPromises);
 
+                    // this is an async method - don't wait for it to return
+                    AWSKinesis.establishmentPump(AWSKinesis.CREATED, this.toJSON());
+
                     // if requested, propagate the saving of this establishment down to each of the associated entities
                     if (associatedEntities) {
                         await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
@@ -675,6 +707,9 @@ class Establishment extends EntityValidator {
                         if (associatedEntities) {
                             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
                         }
+
+                        // this is an async method - don't wait for it to return
+                        AWSKinesis.establishmentPump(AWSKinesis.UPDATED, this.toJSON());
 
                         this._log(Establishment.LOG_INFO, `Updated Establishment with uid (${this.uid}) and name (${this.name})`);
 
@@ -1076,6 +1111,9 @@ class Establishment extends EntityValidator {
                         }
                     }
 
+                    // this is an async method - don't wait for it to return
+                    AWSKinesis.establishmentPump(AWSKinesis.DELETED, this.toJSON());
+
                     this._log(Establishment.LOG_INFO, `Archived Establishment with uid (${this._uid}) and id (${this._id})`);
 
                 } else {
@@ -1394,6 +1432,24 @@ class Establishment extends EntityValidator {
             ... await this.isWdfEligible(effectiveFrom)
         };
         return myWDF;
+    }
+
+    // for the given establishment, updates the last bulk uploaded timestamp
+    static async bulkUploadSuccess(establishmentId) {
+      try {
+        await models.establishment.update(
+          {
+            lastBulkUploaded: new Date()
+          },
+          {
+            where: {
+              id: establishmentId
+            }
+          }
+        );
+      } catch (err) {
+        this._log(Establishment.LOG_ERROR, `bulkUploadSuccess - failed: ${err}`);
+      }
     }
 };
 

@@ -8,6 +8,7 @@ import { IdleService } from '@core/services/idle.service';
 })
 export class HeaderComponent implements OnInit {
   public fullname: string;
+  public showDropdown = false;
 
   constructor(private authService: AuthService, private idleService: IdleService) {}
 
@@ -15,11 +16,15 @@ export class HeaderComponent implements OnInit {
     this.fullname = this.authService.fullname ? this.authService.fullname.split(' ')[0] : null;
   }
 
-  isLoggedIn() {
+  public isLoggedIn(): boolean {
     return this.authService.isLoggedIn;
   }
 
-  signOut(event) {
+  public toggleMenu(): void {
+    this.showDropdown = !this.showDropdown;
+  }
+
+  public signOut(event): void {
     event.preventDefault();
     this.idleService.clear();
     this.authService.logout();

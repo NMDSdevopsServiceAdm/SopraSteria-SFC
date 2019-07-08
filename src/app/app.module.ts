@@ -40,10 +40,6 @@ import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import {
-  EligibilityDisplayOverviewComponent,
-} from '@features/reports/eligibility-display-overview/eligibility-display-overview.component';
-import { ReportsComponent } from '@features/reports/reports.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
@@ -58,7 +54,6 @@ import { AppComponent } from './app.component';
   declarations: [
     AppComponent,
     DashboardComponent,
-    EligibilityDisplayOverviewComponent,
     FooterComponent,
     ForgotYourPasswordComponent,
     ForgotYourPasswordConfirmationComponent,
@@ -69,7 +64,6 @@ import { AppComponent } from './app.component';
     LogoutComponent,
     PageNotFoundComponent,
     ProblemWithTheServiceComponent,
-    ReportsComponent,
     ResetPasswordComponent,
     ResetPasswordConfirmationComponent,
     ResetPasswordEditComponent,

@@ -6,6 +6,7 @@ export interface Worker {
   nameOrId: string;
   contract: Contracts;
   mainJob: JobRole;
+  localIdentifier: string;
   approvedMentalHealthWorker?: string;
   otherJobs?: JobRole[];
   mainJobStartDate?: string;
@@ -84,4 +85,12 @@ export interface Worker {
   created?: string;
   updated?: string;
   completed?: boolean;
+}
+
+export interface WorkersResponse {
+  workers: Worker[];
+}
+
+export interface WorkerEditResponse {
+  uid: string;
 }

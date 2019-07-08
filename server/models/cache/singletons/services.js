@@ -7,7 +7,7 @@ class ServiceCache {
 
   static async initialize() {
     const services = await dbmodels.services.findAll({
-      attributes: ['id', 'name', 'category', 'iscqcregistered'],
+      attributes: ['id', 'name', 'category', 'iscqcregistered', 'isMain', 'other'],
       group: ['id', 'name' ],
       order: [
         ['category', 'ASC'],
@@ -32,7 +32,7 @@ class ServiceCache {
       //  hwoever, for non-CQC regulated establishments, they can only use those services that are not CQC regulated
       return ALL_SERVICES
         .filter(x => isCqcRegulated ? true : x.iscqcregistered === false )
-        .map( x => { return { id: x.id, name: x.name, category: x.category }});      
+        .map( x => { return { id: x.id, name: x.name, category: x.category, other: x.other }});
     }
   }
 }
