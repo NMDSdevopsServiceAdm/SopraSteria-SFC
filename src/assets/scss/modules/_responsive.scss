@@ -5,6 +5,20 @@
   outline: 0 !important;
 }
 
+
+@media(max-width: 800px){
+  .govuk-grid-column-two-thirds-from-desktop {
+      width: 100% !important;
+  }
+  #staff-records {
+    .govuk-list--definition {
+      .govuk-util__float-right {
+        float: none !important;
+      }
+    }
+  }
+}
+
 @include govuk-media-query($until: desktop) {
 
   .has-divider {

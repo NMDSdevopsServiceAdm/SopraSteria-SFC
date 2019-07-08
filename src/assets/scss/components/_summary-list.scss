@@ -24,3 +24,9 @@
     }
   }
 }
+
+.govuk-summary-list__row {
+  .govuk-summary-list__key.govuk-summary-list__key___remove-pad-right {
+    padding-right: 0;
+  }
+}
