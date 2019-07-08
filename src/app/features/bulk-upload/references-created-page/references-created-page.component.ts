@@ -12,7 +12,7 @@ export class ReferencesCreatedPageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.authService.isFirstBulkUpload = false;
+    this.authService.isFirstBulkUpload = true;
   }
 
 }

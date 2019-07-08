@@ -59,14 +59,14 @@ export class AuthService {
   }
   public get isFirstBulkUpload(): boolean {
     if (this._session) {
-      return this._session.isFirstBulkUpload;
+      return this._session.establishment.isFirstBulkUpload;
     } else {
       return true;
     }
   }
 
   public set isFirstBulkUpload(isFirstBulkUpload) {
-    this._session.isFirstBulkUpload = isFirstBulkUpload;
+    this._session.establishment.isFirstBulkUpload = isFirstBulkUpload;
   }
 
   public get lastLoggedIn() {
