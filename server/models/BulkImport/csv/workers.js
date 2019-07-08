@@ -1301,17 +1301,43 @@ class Worker {
     const myContHours = parseFloat(this._currentLine.CONTHOURS);
     const digitRegex = /^\d+(\.[0,5]{1})?$/;  // e.g. 15 or 0.5 or 1.0 or 100.5
     const MAX_VALUE = 75;
+    const EMPL_STATUSES = [3,4,7];
+    const myEmplStatus = this._currentLine.EMPLSTATUS;
 
     // optional
     if (this._currentLine.CONTHOURS && this._currentLine.CONTHOURS.length > 0) {
-      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) || myContHours > MAX_VALUE) {
+      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.CONT_HOURS_ERROR,
-          errType: 'CONT_HOURS_ERROR',
-          error: `Contract Hours (CONTHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5 and less than or equal to ${MAX_VALUE}`,
+          warnCode: Worker.CONT_HOURS_WARNING,
+          warnType: 'CONT_HOURS_WARNING',
+          warning: `The code you have entered for CONTHOURS is incorrect and will be ignored`,
+          source: this._currentLine.CONTHOURS,
+        });
+        return false;
+      }
+      else if (myContHours > MAX_VALUE) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.CONT_HOURS_WARNING,
+          warnType: 'CONT_HOURS_WARNING',
+          warning: `CONTHOURS is greater than 75 and will be ignored`,
+          source: this._currentLine.CONTHOURS,
+        });
+        return false;
+      }
+      else if (myEmplStatus && EMPL_STATUSES.includes(parseFloat(myEmplStatus)) ) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.CONT_HOURS_WARNING,
+          warnType: 'CONT_HOURS_WARNING',
+          warning: `CONTHOURS will be ignored as EMPLSTATUS is ${this._currentLine.EMPLSTATUS}`,
           source: this._currentLine.CONTHOURS,
         });
         return false;
@@ -1333,17 +1359,43 @@ class Worker {
     const myAvgHours = parseFloat(this._currentLine.AVGHOURS);
     const digitRegex = /^\d+(\.[0,5]{1})?$/;  // e.g. 15 or 0.5 or 1.0 or 100.5
     const MAX_VALUE = 75;
+    const EMPL_STATUSES = [1,2];
+    const myEmplStatus = this._currentLine.EMPLSTATUS;
 
     // optional
     if (this._currentLine.AVGHOURS && this._currentLine.AVGHOURS.length > 0) {
-      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) || myAvgHours > MAX_VALUE) {
+      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.AVG_HOURS_ERROR,
-          errType: 'AVG_HOURS_ERROR',
-          error: `Additional Hours (AVGHOURS) must be decimal to the nearest 0.5 e.g. 12, 12.0 or 12.5 and less than or equal to ${MAX_VALUE}`,
+          warnCode: Worker.AVG_HOURS_WARNING,
+          warnType: 'AVG_HOURS_ERROR',
+          warning: `The code you have entered for CONTHOURS is incorrect and will be ignored`,
+          source: this._currentLine.AVGHOURS,
+        });
+        return false;
+      }
+      else if (myAvgHours > MAX_VALUE) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.AVG_HOURS_WARNING,
+          warnType: 'AVG_HOURS_ERROR',
+          warning: `AVGHOURS is greater than 75 and will be ignored`,
+          source: this._currentLine.AVGHOURS,
+        });
+        return false;
+      }
+      else if (myEmplStatus && EMPL_STATUSES.includes(parseFloat(myEmplStatus)) ) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.AVG_HOURS_WARNING,
+          warnType: 'AVG_HOURS_ERROR',
+          warning: `AVGHOURS will be ignored as staff record is ${myEmplStatus}`,
           source: this._currentLine.AVGHOURS,
         });
         return false;
