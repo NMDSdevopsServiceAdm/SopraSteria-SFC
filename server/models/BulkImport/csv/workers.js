@@ -491,14 +491,6 @@ class Worker {
     }
   }
 
-  // _validateDOB() {
-  //   if (this._currentLine.DOB.length > 0) {
-  //     const dobRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
-  //     const myDobRealDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
-
-  //   }
-  // }
-
   _validateDOB() {
     const MINIMUM_AGE=14;
     const MAXIMUM_AGE=100;
@@ -619,42 +611,44 @@ class Worker {
     const myBritishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP);
     const myNationality = parseInt(this._currentLine.NATIONALITY, 10);
 
-    if (myNationality === 826) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.BRITISH_CITIZENSHIP_WARNING,
-        warnType: 'BRITISH_CITIZENSHIP_WARNING',
-        warning: `BRITISHCITIZENSHIP has been ignored as workers nationality is British`,
-        source: this._currentLine.BRITISHCITIZENSHIP,
-      });
-      return false;
-    } else if (isNaN(myBritishCitizenship) || !BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
-        errType: 'BRITISH_CITIZENSHIP_ERROR',
-        error: `BRITISHCITIZENSHIP code is not a valid entry`,
-        source: this._currentLine.BRITISHCITIZENSHIP,
-      });
-      return false;
-    }
-    else {
-      switch (myBritishCitizenship) {
-        case 1:
-          this._britishNationality = 'Yes';
-          break;
-        case 2:
-          this._britishNationality = 'No';
-          break;
-        case 999:
-          this._britishNationality = 'Don\'t know';
-          break;
+    if (this._currentLine.BRITISHCITIZENSHIP) {
+      if (myNationality === 826) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.BRITISH_CITIZENSHIP_WARNING,
+          warnType: 'BRITISH_CITIZENSHIP_WARNING',
+          warning: `BRITISHCITIZENSHIP has been ignored as workers nationality is British`,
+          source: this._currentLine.BRITISHCITIZENSHIP,
+        });
+        return false;
+      } else if (isNaN(myBritishCitizenship) || !BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
+          errType: 'BRITISH_CITIZENSHIP_ERROR',
+          error: `BRITISHCITIZENSHIP code is not a valid entry`,
+          source: this._currentLine.BRITISHCITIZENSHIP,
+        });
+        return false;
       }
-      return true;
+      else {
+        switch (myBritishCitizenship) {
+          case 1:
+            this._britishNationality = 'Yes';
+            break;
+          case 2:
+            this._britishNationality = 'No';
+            break;
+          case 999:
+            this._britishNationality = 'Don\'t know';
+            break;
+        }
+        return true;
+      }
     }
   }
 
@@ -1548,33 +1542,35 @@ class Worker {
   _validateCountryOfBirth() {
     const myCountry = parseInt(this._currentLine.COUNTRYOFBIRTH, 10);
 
-    if (myCountry === 826) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.COUNTRY_OF_BIRTH_WARNING,
-        warnType: 'COUNTRY_OF_BIRTH_WARNING',
-        warning: "Country of birth has been ignored as …..was born in UK",
-        source: this._currentLine.COUNTRYOFBIRTH,
-      });
-      return false;
-    }
-    else if (isNaN(myCountry)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
-        errType: 'COUNTRY_OF_BIRTH_ERROR',
-        error: "Country of Birth (COUNTRYOFBIRTH) must be an integer",
-        source: this._currentLine.COUNTRYOFBIRTH,
-      });
-      return false;
-    }
-    else {
-      this._countryOfBirth = myCountry;
-      return true;
+    if (this._currentLine.COUNTRYOFBIRTH) {
+      if (myCountry === 826) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.COUNTRY_OF_BIRTH_WARNING,
+          warnType: 'COUNTRY_OF_BIRTH_WARNING',
+          warning: "Country of birth has been ignored as …..was born in UK",
+          source: this._currentLine.COUNTRYOFBIRTH,
+        });
+        return false;
+      }
+      else if (isNaN(myCountry)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
+          errType: 'COUNTRY_OF_BIRTH_ERROR',
+          error: "Country of Birth (COUNTRYOFBIRTH) must be an integer",
+          source: this._currentLine.COUNTRYOFBIRTH,
+        });
+        return false;
+      }
+      else {
+        this._countryOfBirth = myCountry;
+        return true;
+      }
     }
   }
 
