@@ -56,7 +56,7 @@
             id="{{ reference.uid }}"
             name="{{ reference.uid }}"
             type="text"
-            formControlName="{{ reference.uid }}"
+            [formControlName]="reference.uid"
           />
           <p
             class="govuk-!-margin-bottom-0 govuk__justify-self-end"
