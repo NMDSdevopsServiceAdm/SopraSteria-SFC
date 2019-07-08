@@ -38,4 +38,12 @@ Database connection parameters can be overridden using environment variables:
 * `DB_USER` - database username
 * `DB_PASS` - database password
 
-This launches the backend up on default port 3000 (or P1 of your designation). Open web browser and try: `http://localhost:<port>/api/postcodes/<your  postcode without spaces>
+This launches the backend up on default port 3000 (or P1 of your designation). Open web browser and try: `http://localhost:<port>/api/postcodes/<your  postcode without spaces>`
+
+# Accessibility
+
+1. Ensure all images have a contextual and useful `alt` tag. If no context is needed, use `alt=""`.
+2. Ensure that content follows semantic markup, for instance using definition lists, labels and fieldsets.
+3. Anchors with `target="_blank"` require `<span class="govuk-visually-hidden"> (opens in a new window)</span>` to be placed after the text content and before the closing anchor tag.
+4. All Angular Directives must be wrapped in square brackets `[]`.
+5. Dialogs `h1` element should contain the id `id="dialogHeading"`
