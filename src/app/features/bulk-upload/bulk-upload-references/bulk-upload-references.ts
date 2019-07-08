@@ -147,10 +147,8 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public onSubmit(saveAndContinue: boolean): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
-    console.warn('onSubmit fired', this.submitted, this.form.valid);
 
     if (this.form.valid) {
-      console.warn('form is invalid');
       this.save(saveAndContinue);
     } else {
       this.errorSummaryService.scrollToErrorSummary();

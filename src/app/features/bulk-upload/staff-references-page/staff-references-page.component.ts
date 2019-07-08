@@ -41,19 +41,16 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   }
 
   protected init(): void {
-    // force route reload whenever params change;
-    // this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    this.backService.setBackLink({ url: ['/bulk-upload/workplace-references'] });
     this.getEstablishmentUid();
-    this.getEstablishmentInfo();
   }
 
   private getEstablishmentUid(): void {
     this.subscriptions.add(
-      this.activatedRoute.params.pipe(take(1)).subscribe(params => {
+      this.activatedRoute.params.subscribe(params => {
         this.establishmentUid = params.uid;
-        console.log('%c init fired, establishmentUid ', 'background:orange; color:white', this.establishmentUid);
+        this.backService.setBackLink({ url: ['/bulk-upload/workplace-references'] });
         this.getReferences(this.establishmentUid);
+        this.getEstablishmentInfo();
       })
     );
   }
@@ -94,15 +91,9 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   }
 
   protected navigateToNextRoute(): void {
-    console.log('currentWorkplaceIndex()', this.getWorkplacePosition());
-    console.log('workPlaceReferences.length', this.workPlaceReferences.length);
-    console.log('%c establishmentUid ', 'background:orange; color:white', this.establishmentUid);
-
     if (this.workPlaceReferences.length === this.getWorkplacePosition()) {
-      console.warn('NOTHING MORE TO UPDATE, ROUTE TO SUCCESS PAGE');
-      this.router.navigate([ '/bulk-upload/workplace-and-staff-references/created' ]);
+      this.router.navigate(['/bulk-upload/workplace-and-staff-references/created']);
     } else {
-      console.warn('route to next index');
       this.router.navigate([
         '/bulk-upload/staff-references',
         this.workPlaceReferences[this.getWorkplacePosition()].uid,
