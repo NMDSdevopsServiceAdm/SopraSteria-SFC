@@ -1,11 +1,13 @@
-<app-dashboard-header></app-dashboard-header>
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
 
-<div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-l govuk-!-margin-bottom-2">{{ (establishment$ | async)?.name }}</span>
-    <h1 class="govuk-heading-ls">{{ title }}</h1>
+    <h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-4">
+    <span class="govuk-caption-xl">{{ (establishment$ | async)?.name }}</span>{{ title }}</h1>
   </div>
+
+  <app-dashboard-header></app-dashboard-header>
   <div class="govuk-grid-column-one-third">
     <a [routerLink]="['/reports', 'wdf']">Workforce Development Fund</a>
   </div>
+
 </div>

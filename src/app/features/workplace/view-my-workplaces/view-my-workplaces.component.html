@@ -3,19 +3,28 @@
   [serverError]="serverError"
 ></app-error-summary>
 
-<app-dashboard-header></app-dashboard-header>
 
-<p *ngIf="establishment?.name" class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment?.name }}</p>
-<ng-container *ngIf="workplaces.length; else noWorkPlaces">
-  <h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-7">My workplaces ({{ workplacesCount }})</h1>
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
 
-  <ul class="govuk-list">
-    <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let workplace of workplaces">
-      <app-workplace-info-panel [workplace]="workplace"></app-workplace-info-panel>
-    </li>
-  </ul>
-</ng-container>
+  <div class="govuk-grid-column-two-thirds">
+  	<ng-container *ngIf="workplaces.length; else noWorkPlaces">
+      <h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-4">
+      <span *ngIf="establishment?.name" class="govuk-caption-xl">{{ establishment?.name }}</span>My workplaces ({{ workplacesCount }})</h1>
+      <ul class="govuk-list">
+	    <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let workplace of workplaces">
+	      <app-workplace-info-panel [workplace]="workplace"></app-workplace-info-panel>
+	    </li>
+	  </ul>
+	</ng-container>
+  </div>
 
-<ng-template #noWorkPlaces>
-  <p>There are no workplaces.</p>
-</ng-template>
+
+  <ng-template #noWorkPlaces>
+    <p>There are no workplaces.</p>
+  </ng-template>
+
+  <app-dashboard-header></app-dashboard-header>
+
+</div>
+
+

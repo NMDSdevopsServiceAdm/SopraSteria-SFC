@@ -5,13 +5,17 @@
   [form]="form"
 ></app-error-summary>
 
-<app-dashboard-header></app-dashboard-header>
-<div class="govuk-grid-row">
+
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
+
   <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ primaryEstablishmentName }}</p>
-    <h1 class="govuk-heading-l">{{ referenceType }} references</h1>
+    <h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-4">
+    <span *ngIf="primaryEstablishmentName" class="govuk-caption-xl">{{ primaryEstablishmentName }}</span>{{ referenceType }} references</h1>
     <p>{{ referenceTypeInfo }}</p>
   </div>
+
+  <app-dashboard-header></app-dashboard-header>
+
 </div>
 
 <div class="govuk-grid-row">
