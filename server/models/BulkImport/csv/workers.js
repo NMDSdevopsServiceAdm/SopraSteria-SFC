@@ -1238,14 +1238,14 @@ class Worker {
     const myMainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
 
     // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
-    if (isNaN(myMainJobRole)) {
+    if (!myMainJobRole || isNaN(myMainJobRole)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         errCode: Worker.MAIN_JOB_ROLE_ERROR,
         errType: 'MAIN_JOB_ROLE_ERROR',
-        error: "Main Job Role (MAINJOBROLE) must be an integer",
+        error: "MAINJOBROLE has not been supplied",
         source: this._currentLine.MAINJOBROLE,
       });
       return false;
@@ -1263,29 +1263,42 @@ class Worker {
     // main job description is optional, but even then, only relevant if main job is 23 or 27
     const ALLOWED_JOBS = [23, 27];
 
-    if (ALLOWED_JOBS.includes(this._mainJobRole)) {
-      if (this._currentLine.MAINJRDESC && this._currentLine.MAINJRDESC.length > 0) {
-        if (myMainJobDesc.length >= MAX_LENGTH) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.MAIN_JOB_DESC_ERROR,
-            errType: 'MAIN_JOB_DESC_ERROR',
-            error: `Main Job Description (MAINJRDESC) must be no more than ${MAX_LENGTH} characters`,
-            source: this._currentLine.MAINJRDESC,
-          });
-          return false;
-        }
-        else {
-          this._mainJobDesc = myMainJobDesc;
-          return true;
-        }
-
-      } else {
-        return true;
-      }
+    if (ALLOWED_JOBS.includes(this._mainJobRole) && this._currentLine.MAINJRDESC.length < 0) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.MAIN_JOB_DESC_ERROR,
+        errType: 'MAIN_JOB_DESC_ERROR',
+        error: `MAINJRDESC has not been supplied`,
+        source: this._currentLine.MAINJRDESC,
+      });
+      return false;
+    } else if (myMainJobDesc.length >= MAX_LENGTH) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.MAIN_JOB_DESC_ERROR,
+        errType: 'MAIN_JOB_DESC_ERROR',
+        error: `MAINJRDESC is longer than 120 characters`,
+        source: this._currentLine.MAINJRDESC,
+      });
+      return false;
+    }
+    else if (!ALLOWED_JOBS.includes(this._mainJobRole) && this._currentLine.MAINJRDESC && this._currentLine.MAINJRDESC.length > 0) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.MAIN_JOB_DESC_WARNING,
+        warnType: 'MAIN_JOB_DESC_WARNING',
+        warning: `MAINJRDESC will be ignored as not required for MAINJOBROLE`,
+        source: this._currentLine.MAINJRDESC,
+      });
+      return false;
     } else {
+      this._mainJobDesc = myMainJobDesc;
       return true;
     }
   }
@@ -1356,7 +1369,7 @@ class Worker {
 
   _validateOtherJobs() {
     // other jobs (optional) is a semi colon delimited list of integers
-    if ( this._currentLine.OTHERJOBROLE &&  this._currentLine.OTHERJOBROLE.length > 0) {
+    if ( this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
       const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
       const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
 
@@ -1367,7 +1380,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.OTHER_JOB_ROLE_ERROR,
           errType: `OTHER_JOB_ROLE_ERROR`,
-          error: "Other Job Roles (OTHERJOBROLE) must be a semi-colon delimited list of integers",
+          error: "The code you have entered for OTHERJOBROLE is incorrect",
           source: this._currentLine.OTHERJOBROLE,
         });
       } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
@@ -1375,7 +1388,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.OTHER_JOB_ROLE_ERROR,
           errType: `OTHER_JOB_ROLE_ERROR`,
-          error: "Other Job Roles (OTHERJOBROLE) count and Other Job Roles Descriptions (OTHERJRDESC) count must equal",
+          error: "OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)",
           source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
         });
       } else {
@@ -1393,7 +1406,7 @@ class Worker {
                 lineNumber: this._lineNumber,
                 errCode: Worker.OTHER_JR_DESC_ERROR,
                 errType: `OTHER_JR_DESC_ERROR`,
-                error: `Other Job Role (OTHERJOBROLE:${index+1}) is an 'other' job and consequently (OTHERJRDESC:${index+1}) must be defined`,
+                error: `OTHERJRDESC (${index+1}) has not been supplied`,
                 source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
               });
               myJobDescriptions.push(null);
@@ -1402,12 +1415,20 @@ class Worker {
                 lineNumber: this._lineNumber,
                 errCode: Worker.OTHER_JR_DESC_ERROR,
                 errType: `OTHER_JR_DESC_ERROR`,
-                error: `Other Job Role (OTHERJOBROLE:${index+1}) is an 'other' job and (OTHERJRDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
+                error: `OTHERJRDESC is longer than 120 characters`,
                 source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
               });
             } else {
               myJobDescriptions.push(listOfotherJobsDescriptions[index]);
             }
+          } else if(listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
+            localValidationErrors.push({
+              lineNumber: this._lineNumber,
+              warnCode: Worker.OTHER_JR_DESC_WARNING,
+              warnType: `OTHER_JR_DESC_WARNING`,
+              warning: `OTHERJRDESC will be ignored as not required for OTHERJOBROLE`,
+              source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+          })
           } else {
             myJobDescriptions.push(null);
           }
@@ -1908,7 +1929,7 @@ class Worker {
           lineNumber: this._lineNumber,
           errCode: Worker.MAIN_JOB_ROLE_ERROR,
           errType: `MAIN_JOB_ROLE_ERROR`,
-          error: `Main Job Role (MAINJOBROLE): ${this._mainJobRole} is unknown`,
+          error: `The code you have entered for MAINJOBROLE is incorrect`,
           source: this._currentLine.MAINJOBROLE,
         });
       } else {
@@ -1929,9 +1950,9 @@ class Worker {
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: Worker.MAIN_JOB_ROLE_ERROR,
+            errCode: Worker.OTHER_JOB_ROLE_ERROR,
             errType: `OTHER_JOB_ROLE_ERROR`,
-            error: `Other Job Role (OTHERJOBROLE): ${thisJob} is unknown`,
+            error: `The code you have entered for OTHERJOBROLE is incorrect`,
             source: this._currentLine.OTHERJOBROLE,
           });
         } else {
@@ -2561,9 +2582,9 @@ class Worker {
             // validationError.source  = `${this._currentLine.UNIQUEWORKERID}`;
             break;
           case 'WorkerMainJob':
-            validationError.errCode = Worker.MAIN_JOB_ROLE_ERROR;
-            validationError.errType = 'MAIN_JOB_ROLE_ERROR';
-            validationError.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
+            // validationError.errCode = Worker.MAIN_JOB_ROLE_ERROR;
+            // validationError.errType = 'MAIN_JOB_ROLE_ERROR';
+            // validationError.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
             break;
           case 'WorkerContract':
             // validationError.errCode = Worker.CONTRACT_TYPE_ERROR;
@@ -2722,9 +2743,9 @@ class Worker {
             validationWarning.source  = `${this._currentLine.UNIQUEWORKERID}`;
             break;
           case 'WorkerMainJob':
-            validationWarning.warnCode = Worker.MAIN_JOB_ROLE_WARNING;
-            validationWarning.warnType = 'MAIN_JOB_ROLE_WARNING';
-            validationWarning.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
+            // validationWarning.warnCode = Worker.MAIN_JOB_ROLE_WARNING;
+            // validationWarning.warnType = 'MAIN_JOB_ROLE_WARNING';
+            // validationWarning.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
             break;
           case 'WorkerContract':
             // validationWarning.warnCode = Worker.CONTRACT_TYPE_WARNING;

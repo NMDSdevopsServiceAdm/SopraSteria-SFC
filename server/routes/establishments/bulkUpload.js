@@ -1023,7 +1023,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
         } else {
           // this should never happen
-          console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
+          console.error(`FATAL: failed to associate worker (line number: ${thisTraingRecord.lineNumber}/unique id (${thisTraingRecord.uniqueWorker})) with a known establishment.`);
         }
 
       }
