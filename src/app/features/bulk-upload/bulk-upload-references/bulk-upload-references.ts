@@ -108,13 +108,23 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
       },
       {
         name: 400,
-        message: `Unable to update ${this.referenceType.toLowerCase()} references.`,
+        message: `Unable to update ${this.referenceType.toLowerCase()} reference.`,
       },
     ];
   }
 
-  protected onError(error: HttpErrorResponse): void {
-    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+  /**
+   * Handle BE api error
+   * If 400 error capture the value update serverErrorsMap
+   * In order for the error summary component to show the server error
+   * @param response HttpErrorResponse
+   */
+  protected onError(response: HttpErrorResponse): void {
+    if (response.status === 400) {
+      this.serverErrorsMap[1].message += ` '${response.error.duplicateValue}' has previously been used.`;
+    }
+
+    this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
   }
 
