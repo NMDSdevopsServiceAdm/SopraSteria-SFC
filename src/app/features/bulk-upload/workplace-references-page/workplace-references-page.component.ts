@@ -1,4 +1,5 @@
 import { I18nPluralPipe } from '@angular/common';
+import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { BackService } from '@core/services/back.service';
@@ -45,11 +46,11 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
     this.getReferences();
   }
 
-  private generateWorkPlaceReferences(references: GetWorkplacesResponse): WorkPlaceReference[] {
-    return references.subsidaries.establishments.map(establishment => {
+  private generateWorkPlaceReferences(references: Array<Workplace | Worker>): WorkPlaceReference[] {
+    return references.map(reference => {
       return {
-        name: establishment.name,
-        uid: establishment.uid,
+        name: reference['name'] || reference['nameOrId'],
+        uid: reference.uid,
       };
     });
   }
@@ -68,7 +69,7 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
 
           if (this.references.length) {
             this.setupForm();
-            this.workPlaceReferences = this.generateWorkPlaceReferences(references);
+            this.workPlaceReferences = this.generateWorkPlaceReferences(this.references);
             this.bulkUploadService.workPlaceReferences$.next(this.workPlaceReferences);
           }
         },
