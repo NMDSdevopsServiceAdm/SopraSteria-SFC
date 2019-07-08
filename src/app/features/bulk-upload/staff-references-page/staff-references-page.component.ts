@@ -1,4 +1,4 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { WorkPlaceReference } from '@core/model/my-workplaces.model';
 import { AuthService } from '@core/services/auth.service';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
@@ -41,14 +41,28 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   }
 
   protected init(): void {
+    this.subscribeToRouteChange();
     this.getEstablishmentUid();
+  }
+
+  private subscribeToRouteChange(): void {
+    this.subscriptions.add(
+      this.router.events.subscribe(event => {
+        if (event instanceof NavigationEnd) {
+          this.setBackLink();
+        }
+      })
+    );
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink({ url: ['/bulk-upload/workplace-references'] });
   }
 
   private getEstablishmentUid(): void {
     this.subscriptions.add(
       this.activatedRoute.params.subscribe(params => {
         this.establishmentUid = params.uid;
-        this.backService.setBackLink({ url: ['/bulk-upload/workplace-references'] });
         this.getReferences(this.establishmentUid);
         this.getEstablishmentInfo();
       })
@@ -60,6 +74,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
       this.bulkUploadService.workPlaceReferences$
         .pipe(take(1))
         .subscribe((workPlaceReferences: WorkPlaceReference[]) => {
+          this.setBackLink();
           this.establishmentName = filter(workPlaceReferences, ['uid', this.establishmentUid])[0].name;
           this.workPlaceReferences = workPlaceReferences;
           this.remainingEstablishments = workPlaceReferences.length - this.getWorkplacePosition();
