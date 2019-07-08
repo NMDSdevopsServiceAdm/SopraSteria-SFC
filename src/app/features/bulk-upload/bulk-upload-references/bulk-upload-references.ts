@@ -23,6 +23,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public referenceType: string;
   public referenceTypeEnum = BulkUploadFileType;
   public remainingEstablishments: number;
+  public renderForm = false;
   public return: URLStructure;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
@@ -37,7 +38,6 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.init();
-    this.setupForm();
     this.setPrimaryEstablishmentName();
     this.setServerErrors();
   }
@@ -48,13 +48,11 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     this.primaryEstablishmentName = this.authService.establishment ? this.authService.establishment.name : null;
   }
 
-  private setupForm(): void {
-    this.form = this.formBuilder.group({});
-  }
-
   protected getReferences(establishmentUid?: string): void {}
 
-  protected updateForm(): void {
+  protected setupForm(): void {
+    this.form = this.formBuilder.group({});
+
     this.references.forEach((reference: Workplace | Worker) => {
       this.form.addControl(
         reference.uid,
@@ -80,6 +78,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
       });
     });
 
+    this.renderForm = true;
     this.checkFormForDuplicates();
   }
 

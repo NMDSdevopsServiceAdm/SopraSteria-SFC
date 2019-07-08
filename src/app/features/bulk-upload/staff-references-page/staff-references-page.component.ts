@@ -82,7 +82,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
         (references: Worker[]) => {
           if (references && references.length) {
             this.references = references;
-            this.updateForm();
+            this.setupForm();
           }
         },
         (error: HttpErrorResponse) => this.onError(error)

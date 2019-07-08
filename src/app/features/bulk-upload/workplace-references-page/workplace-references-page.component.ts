@@ -67,7 +67,7 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
           }
 
           if (this.references.length) {
-            this.updateForm();
+            this.setupForm();
             this.workPlaceReferences = this.generateWorkPlaceReferences(references);
             this.bulkUploadService.workPlaceReferences$.next(this.workPlaceReferences);
           }
