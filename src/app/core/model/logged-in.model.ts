@@ -7,7 +7,7 @@ export interface LoggedInMainService {
 
 export interface LoggedInEstablishment {
   id: number;
-  isFirstBulkUpload: boolean;
+  isFirstBulkUpload: boolean; // test
   isParent: boolean;
   isRegulated: boolean;
   name: string;
