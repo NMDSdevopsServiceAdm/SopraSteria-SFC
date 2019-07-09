@@ -49,11 +49,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
             this.workplaces = workplaces.subsidaries.establishments;
             this.workplacesCount = workplaces.subsidaries.count;
           }
-
-          if (workplaces.primary) {
-            this.workplaces.unshift(workplaces.primary);
-            this.workplacesCount += 1;
-          }
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
