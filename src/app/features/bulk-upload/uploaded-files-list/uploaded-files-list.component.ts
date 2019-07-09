@@ -35,13 +35,13 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   public validationComplete = false;
 
   constructor(
-    private alertService: AlertService,
     private authService: AuthService,
     private bulkUploadService: BulkUploadService,
-    private dialogService: DialogService,
     private establishmentService: EstablishmentService,
     private i18nPluralPipe: I18nPluralPipe,
     private router: Router,
+    private alertService: AlertService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit() {
