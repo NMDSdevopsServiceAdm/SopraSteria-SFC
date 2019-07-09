@@ -18,7 +18,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public workplaces: Workplace[] = [];
-  public workplacesCount: number;
+  public workplacesCount = 0;
 
   constructor(
     private authService: AuthService,
