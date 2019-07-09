@@ -1498,68 +1498,122 @@ class Worker {
 
   _validateRegisteredNurse() {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
+    const NURSING_ROLE = 16;
 
-    // optional
-    if (this._currentLine.NMCREG && this._currentLine.NMCREG.length > 0) {
-      // only check is main job or other job includes job role "16" (nurse)
-      const NURSING_ROLE = 16;
-
-      if ((this._mainJobRole && this._mainJobRole == NURSING_ROLE) ||
-          (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) {
-        if (isNaN(myRegisteredNurse)) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.NMCREG_ERROR,
-            errType: 'NMCREG_ERROR',
-            error: "Registered Nursing (NMCREG) must be an integer",
-            source: this._currentLine.NMCREG,
-          });
-          return false;
-        }
-        else {
-          this._registeredNurse = myRegisteredNurse;
-          return true;
-        }
-      } else {
-        return true;
-      }
+    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (!myRegisteredNurse || isNaN(myRegisteredNurse) )) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NMCREG_WARNING,
+        warnType: 'NMCREG_WARNING',
+        warning: "NMCREG has not been supplied",
+        source: this._currentLine.NMCREG,
+      });
+      return false;
+    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NMCREG) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NMCREG_WARNING,
+        warnType: 'NMCREG_WARNING',
+        warning: "NMCREG will be ignored as this is not required for the MAINJOBROLE",
+        source: this._currentLine.NMCREG,
+      });
+      return false;
     } else {
+      this._registeredNurse = myRegisteredNurse;
       return true;
     }
   }
 
   _validateNursingSpecialist() {
     const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
+    const NURSING_ROLE = 16;
 
-    // optional
-    if (this._currentLine.NURSESPEC && this._currentLine.NURSESPEC.length > 0) {
-      // only check is main job or other job includes job role "16" (nurse)
-      const NURSING_ROLE = 16;
+    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (!myNursingSpecialist || isNaN(myNursingSpecialist) )) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NURSE_SPEC_WARNING,
+        warnType: 'NURSE_SPEC_WARNING',
+        warning: "NURSESPEC has not been supplied",
+        source: this._currentLine.NURSESPEC,
+      });
+      return false;
+    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NURSESPEC) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NURSE_SPEC_WARNING,
+        warnType: 'NURSE_SPEC_WARNING',
+        warning: "NURSESPEC will be ignored as this is not required for the MAINJOBROLE",
+        source: this._currentLine.NURSESPEC,
+      });
+      return false;
+    } 
+    else {
+      this._nursingSpecialist = myNursingSpecialist;
+      return true;
+    }
+  }
 
-      if ((this._mainJobRole && this._mainJobRole == NURSING_ROLE) ||
-          (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) {
-        if (isNaN(myNursingSpecialist)) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.NURSE_SPEC_ERROR,
-            errType: 'NURSE_SPEC_ERROR',
-            error: "Nursing Specialist (NURSESPEC) must be an integer",
-            source: this._currentLine.NURSESPEC,
-          });
-          return false;
-        }
-        else {
-          this._nursingSpecialist = myNursingSpecialist;
-          return true;
-        }
-      } else {
-        return true;
+  _validateAmhp() {
+    const amhpValues = [1,2,999];
+    const myAmhp = parseInt(this._currentLine.AMHP);
+    const MAIN_JOB_ROLE = 6;
+
+    if (this._mainJobRole && this._mainJobRole === MAIN_JOB_ROLE && (!myAmhp || isNaN(myAmhp) )) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.AMHP_WARNING,
+        warnType: 'AMHP_WARNING',
+        warning: "AMHP has not been supplied",
+        source: this._currentLine.AMHP,
+      });
+      return false;
+    }
+    else if (this._mainJobRole && this._mainJobRole !== MAIN_JOB_ROLE && this._currentLine.AMHP) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.AMHP_WARNING,
+        warnType: 'AMHP_WARNING',
+        warning: "The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE",
+        source: this._currentLine.AMHP,
+      });
+      return false;
+    }
+    else if (myAmhp && !amhpValues.includes(myAmhp)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.AMHP_WARNING,
+        warnType: 'AMHP_WARNING',
+        warning: "The code you have entered for AMHP is incorrect and will be ignored",
+        source: this._currentLine.AMHP,
+      });
+      return false;
+    }
+    else {
+      switch (myAmhp) {
+        case 1:
+          this._amhp = 'Yes';
+          break;
+        case 2:
+          this._amhp = 'No';
+          break;
+        case 999:
+          this._amhp = 'Don\'t know';
+          break;
       }
-    } else {
       return true;
     }
   }
@@ -1852,53 +1906,6 @@ class Worker {
     this._qualifications = myProcessedQualifications.filter(thisQualification => thisQualification !== null && thisQualification !== false);
   }
 
-  _validateAmhp() {
-    const amhpValues = [1,2,999];
-    const myAmhp = parseInt(this._currentLine.AMHP);
-
-    if (this._currentLine.AMHP && this._currentLine.AMHP.length > 0) {
-      if (isNaN(myAmhp)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.AMHP_ERROR,
-          errType: 'AMHP_ERROR',
-          error: "AMHP (AMHP) must be an integer",
-          source: this._currentLine.AMHP,
-        });
-        return false;
-      } else if (!amhpValues.includes(parseInt(myAmhp))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.AMHP_ERROR,
-          errType: 'AMHP_ERROR',
-          error: "AMHP (AMHP) must have value 1(Yes) to 2(No),  999(Unknown) ",
-          source: this._currentLine.AMHP,
-        });
-        return false;
-      }
-      else {
-        switch (myAmhp) {
-          case 1:
-            this._amhp = 'Yes';
-            break;
-          case 2:
-            this._amhp = 'No';
-            break;
-          case 999:
-            this._amhp = 'Don\'t know';
-            break;
-        }
-        return true;
-      }
-    } else {
-      return true;
-    }
-  }
-
   //transform related
   _transformContractType() {
     if (this._contractType) {
@@ -2014,34 +2021,32 @@ class Worker {
 
   // ['Adult Nurse', 'Mental Health Nurse', 'Learning Disabilities Nurse', `Children's Nurse`, 'Enrolled Nurse'
   _transformRegisteredNurse() {
-    if (this._registeredNurse) {
-      switch (this._registeredNurse) {
-        case 1:
-          this._registeredNurse = 'Adult Nurse';
-          break;
-        case 2:
-          this._registeredNurse = 'Mental Health Nurse';
-          break;
-        case 3:
-          this._registeredNurse = 'Learning Disabilities Nurse';
-          break;
-        case 4:
-          this._registeredNurse = 'Children\'s Nurse';
-          break;
-        case 5:
-          this._registeredNurse = 'Enrolled Nurse';
-          break;
-        default:
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.NURSE_SPEC_ERROR,
-            errType: `NMCREG_ERROR`,
-            error: `Registered Nurse (NMCREG): ${this._registeredNurse} is unknown`,
-            source: this._currentLine.NMCREG,
-          });
-      }
+    switch (this._registeredNurse) {
+      case 1:
+        this._registeredNurse = 'Adult Nurse';
+        break;
+      case 2:
+        this._registeredNurse = 'Mental Health Nurse';
+        break;
+      case 3:
+        this._registeredNurse = 'Learning Disabilities Nurse';
+        break;
+      case 4:
+        this._registeredNurse = 'Children\'s Nurse';
+        break;
+      case 5:
+        this._registeredNurse = 'Enrolled Nurse';
+        break;
+      default:
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.NMCREG_WARNING,
+          warnType: `NMCREG_WARNING`,
+          warning: `The code you have entered for NMCREG is incorrect and will be ignored`,
+          source: this._currentLine.NMCREG,
+        });
     }
   }
 
@@ -2054,9 +2059,9 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.NURSE_SPEC_ERROR,
-          errType: `NURSE_SPEC_ERROR`,
-          error: `Nursing Specialist (NURSESPEC): ${this._nursingSpecialist} is unknown`,
+          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnType: `NURSE_SPEC_WARNING`,
+          warning: `The code you have entered for NURSESPEC is incorrect and will be ignored`,
           source: this._currentLine.NURSESPEC,
         });
       } else {
@@ -2651,9 +2656,9 @@ class Worker {
             validationError.source  = `${this._currentLine.APPRENTICE}`;
             break;
           case 'WorkerApprovedMentalHealthWorker':
-            validationError.errCode = Worker.AMHP_ERROR;
-            validationError.errType = 'AMHP_ERROR';
-            validationError.source  = `${this._currentLine.AMHP}`;
+            // validationError.errCode = Worker.AMHP_ERROR;
+            // validationError.errType = 'AMHP_ERROR';
+            // validationError.source  = `${this._currentLine.AMHP}`;
             break;
           case 'WorkerBritishCitizenship':
             validationError.errCode = Worker.BRITISH_CITIZENSHIP_ERROR;
@@ -2814,7 +2819,7 @@ class Worker {
           case 'WorkerApprovedMentalHealthWorker':
             validationWarning.warnCode = Worker.AMHP_WARNING;
             validationWarning.warnType = 'AMHP_WARNING';
-            validationWarning.source  = `${this._currentLine.AMHP}`;
+            // validationWarning.source  = `${this._currentLine.AMHP}`;
             break;
           case 'WorkerBritishCitizenship':
             validationWarning.warnCode = Worker.BRITISH_CITIZENSHIP_WARNING;
@@ -2922,6 +2927,10 @@ class Worker {
             validationWarning.warnCode = Worker.ZERO_HRCONT_WARNING;
             validationWarning.warnType = 'ZERO_HRCONT_WARNING';
             validationWarning.source  = `${this._currentLine.ZEROHRCONT}`;
+            break;
+          case 'RegisteredNurse':
+            break;
+          case 'NurseSpecialism':
             break;
           default:
             validationWarning.warnCode = thisWarning.code;
