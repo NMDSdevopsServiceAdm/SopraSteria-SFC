@@ -7,12 +7,12 @@ export interface LoggedInMainService {
 
 export interface LoggedInEstablishment {
   id: number;
-  isFirstBulkUpload: boolean;
-  isParent: boolean;
-  isRegulated: boolean;
   name: string;
+  isRegulated: boolean;
   nmdsId: string;
+  isParent: boolean;
   parentName: string;
+  isFirstBulkUpload: boolean;
 }
 
 export interface LoggedInSession {
