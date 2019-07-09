@@ -25,7 +25,7 @@ export class BreadcrumbService {
       });
   }
 
-  public display() {
+  public show() {
     this._display$.next(true);
   }
 }
