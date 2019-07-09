@@ -302,7 +302,6 @@ class Establishment extends EntityValidator {
             // CQC reugulated/location ID
             if (document.hasOwnProperty('isRegulated')) {
                 this._isRegulated = document.isRegulated;
-                console.log("WA DEBUG - updating establishment - ", this._isRegulated)
             }
             if (document.locationId) {
                 // Note - the if more validation to do on location ID - so this really should be a managed property
