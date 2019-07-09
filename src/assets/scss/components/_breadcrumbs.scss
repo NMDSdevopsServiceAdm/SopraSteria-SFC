@@ -27,4 +27,8 @@
   @include govuk-link-common;
   @include govuk-link-style-default;
   @include govuk-link-print-friendly;
+
+  &:visited {
+    @include govuk-link-style-no-visited-state;
+  }
 }
