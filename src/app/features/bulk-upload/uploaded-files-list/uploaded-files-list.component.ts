@@ -10,6 +10,7 @@ import {
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { AlertService } from '@core/services/alert.service';
+import { AuthService } from '@core/services/auth.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -34,12 +35,13 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   public validationComplete = false;
 
   constructor(
+    private alertService: AlertService,
+    private authService: AuthService,
     private bulkUploadService: BulkUploadService,
+    private dialogService: DialogService,
     private establishmentService: EstablishmentService,
     private i18nPluralPipe: I18nPluralPipe,
     private router: Router,
-    private alertService: AlertService,
-    private dialogService: DialogService
   ) {}
 
   ngOnInit() {
@@ -145,6 +147,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       .subscribe(
         () => {
           this.router.navigate(['/dashboard']);
+          this.authService.isFirstBulkUpload = false;
           this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
         },
         response => {

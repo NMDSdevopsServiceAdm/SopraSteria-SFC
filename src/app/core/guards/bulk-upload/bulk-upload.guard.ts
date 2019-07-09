@@ -10,7 +10,7 @@ export class BulkUploadGuard implements CanActivate {
   constructor(private authService: AuthService, private bulkUploadService: BulkUploadService, private router: Router) {}
 
   canActivate() {
-    if (!this.authService.isFirstBulkUpload) {
+    if (this.authService.isFirstBulkUpload) {
       this.router.navigate(['bulk-upload', 'start']);
       return false;
     }
