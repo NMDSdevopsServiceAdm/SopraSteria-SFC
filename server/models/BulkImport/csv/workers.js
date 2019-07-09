@@ -7,6 +7,7 @@ class Worker {
     this._lineNumber = lineNumber;
     this._validationErrors = [];
     this._headers_v1 = ["LOCALESTID","UNIQUEWORKERID","CHGUNIQUEWRKID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED","CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS","OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
+    this._headers_v1_without_chgUnique = ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED","CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS","OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     this._contractType= null;
 
     this._localId = null;
@@ -108,6 +109,8 @@ class Worker {
   static get SOCIALCARE_QUAL_ERROR() { return 1360; }
   static get NON_SOCIALCARE_QUAL_ERROR() { return 1370; }
 
+  static get YEAROFENTRY_ERROR() { return 1380; }
+
   static get AMHP_ERROR() { return 1380; }
 
 
@@ -148,6 +151,8 @@ class Worker {
 
   static get AMHP_WARNING() { return 3380; }
 
+  static get YEAROFENTRY_WARNING() { return 3380; }
+
   static get QUAL_ACH01_ERROR() { return 5010; }
   static get QUAL_ACH01_NOTES_ERROR() { return 5020; }
   static get QUAL_ACH02_ERROR() { return 5030; }
@@ -164,7 +169,7 @@ class Worker {
   static get QUAL_ACH03_NOTES_WARNING() { return 5560; }
 
   get headers() {
-    return this._headers_v1.join(",");
+    return this._headers_v1_without_chgUnique.join(",");
   }
 
   get lineNumber() {
@@ -414,7 +419,7 @@ class Worker {
         lineNumber: this._lineNumber,
         warnCode: Worker.DISPLAY_ID_WARNING,
         warnType: `WORKER_DISPLAY_ID_WARNING`,
-        warning: `DISPLAYID is blank for …..`,
+        warning: `DISPLAYID is blank`,
         source: this._currentLine.DISPLAYID,
       });
       return false;
@@ -519,7 +524,7 @@ class Worker {
         source: this._currentLine.DOB,
       });
       return false;
-    } 
+    }
     else if (!myDobRealDate.isValid()) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -531,7 +536,7 @@ class Worker {
         source: this._currentLine.DOB,
       });
       return false;
-    } 
+    }
     else if (myDobRealDate.isBefore(minDate) || myDobRealDate.isAfter(maxDate)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -619,42 +624,44 @@ class Worker {
     const myBritishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP);
     const myNationality = parseInt(this._currentLine.NATIONALITY, 10);
 
-    if (myNationality === 826) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.BRITISH_CITIZENSHIP_WARNING,
-        warnType: 'BRITISH_CITIZENSHIP_WARNING',
-        warning: `BRITISHCITIZENSHIP has been ignored as workers nationality is British`,
-        source: this._currentLine.BRITISHCITIZENSHIP,
-      });
-      return false;
-    } else if (isNaN(myBritishCitizenship) || !BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
-        errType: 'BRITISH_CITIZENSHIP_ERROR',
-        error: `BRITISHCITIZENSHIP code is not a valid entry`,
-        source: this._currentLine.BRITISHCITIZENSHIP,
-      });
-      return false;
-    }
-    else {
-      switch (myBritishCitizenship) {
-        case 1:
-          this._britishNationality = 'Yes';
-          break;
-        case 2:
-          this._britishNationality = 'No';
-          break;
-        case 999:
-          this._britishNationality = 'Don\'t know';
-          break;
+    if (this._currentLine.BRITISHCITIZENSHIP && this._currentLine.BRITISHCITIZENSHIP.length > 0) {
+      if (myNationality === 826) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.BRITISH_CITIZENSHIP_WARNING,
+          warnType: 'BRITISH_CITIZENSHIP_WARNING',
+          warning: `BRITISHCITIZENSHIP has been ignored as workers nationality is British`,
+          source: this._currentLine.BRITISHCITIZENSHIP,
+        });
+        return false;
+      } else if (isNaN(myBritishCitizenship) || !BritishCitizenshipValues.includes(parseInt(myBritishCitizenship))) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.BRITISH_CITIZENSHIP_ERROR,
+          errType: 'BRITISH_CITIZENSHIP_ERROR',
+          error: `BRITISHCITIZENSHIP code is not a valid entry`,
+          source: this._currentLine.BRITISHCITIZENSHIP,
+        });
+        return false;
       }
-      return true;
+      else {
+        switch (myBritishCitizenship) {
+          case 1:
+            this._britishNationality = 'Yes';
+            break;
+          case 2:
+            this._britishNationality = 'No';
+            break;
+          case 999:
+            this._britishNationality = 'Don\'t know';
+            break;
+        }
+        return true;
+      }
     }
   }
 
@@ -667,65 +674,68 @@ class Worker {
     const myRealDOBDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
     const myCountry = this._currentLine.COUNTRYOFBIRTH;
 
-    if (myYearOfEntry && !yearRegex.test(myYearOfEntry)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.YEAROFENTRY_ERROR,
-        errType: 'YEAROFENTRY_ERROR',
-        error: "YEAROFENTRY is incorrectly formatted",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else if (thisYear < myYearOfEntry) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.YEAROFENTRY_ERROR,
-        errType: 'YEAROFENTRY_ERROR',
-        error: "YEAROFENTRY is in the future",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else if (myRealDOBDate && myRealDOBDate.year() > myYearOfEntry) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.YEAROFENTRY_ERROR,
-        errType: 'YEAROFENTRY_ERROR',
-        error: "YEAROFENTRY must be greater or equal to DOB",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else if (!myCountry) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.YEAROFENTRY_WARNING,
-        warnType: 'YEAROFENTRY_WARNING',
-        warning: "Year of entry has been ignored as Country of Birth is missing",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else if (myCountry && parseInt(myCountry) === 826) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.YEAROFENTRY_WARNING,
-        warnType: 'YEAROFENTRY_WARNING',
-        warning: "Year of entry has been ignored as Country of Birth is British",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else {
-      this._yearOfEntry = parseInt(myYearOfEntry, 10);
-      return true;
+    if (this._currentLine.YEAROFENTRY && this._currentLine.YEAROFENTRY.length > 0) {
+      if (myYearOfEntry && !yearRegex.test(myYearOfEntry)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.YEAROFENTRY_ERROR,
+          errType: 'YEAROFENTRY_ERROR',
+          error: "YEAROFENTRY is incorrectly formatted",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else if (thisYear < myYearOfEntry) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.YEAROFENTRY_ERROR,
+          errType: 'YEAROFENTRY_ERROR',
+          error: "YEAROFENTRY is in the future",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else if (myRealDOBDate && myRealDOBDate.year() > myYearOfEntry) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.YEAROFENTRY_ERROR,
+          errType: 'YEAROFENTRY_ERROR',
+          error: "YEAROFENTRY must be greater or equal to DOB",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else if (!myCountry) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.YEAROFENTRY_WARNING,
+          warnType: 'YEAROFENTRY_WARNING',
+          warning: "Year of entry has been ignored as Country of Birth is missing",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else if (myCountry && parseInt(myCountry) === 826) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.YEAROFENTRY_WARNING,
+          warnType: 'YEAROFENTRY_WARNING',
+          warning: "Year of entry has been ignored as Country of Birth is British",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else {
+        this._yearOfEntry = parseInt(myYearOfEntry, 10);
+        return true;
+      }
     }
+
   }
 
   _validateDisabled() {
@@ -846,7 +856,7 @@ class Worker {
     const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
     const today = moment(new Date());
     const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
-    const myRealDOBDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
+    const myRealDOBDate = this._currentLine.DOB && this._currentLine.DOB.length > 1 ? moment.utc(this._currentLine.DOB, "DD/MM/YYYY") : null;
 
     if (!myStartDate) {
       this._validationErrors.push({
@@ -855,7 +865,7 @@ class Worker {
         lineNumber: this._lineNumber,
         warnCode: Worker.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
-        warnError: "STARTDATE is missing",
+        warning: "STARTDATE is missing",
         source: this._currentLine.STARTDATE,
       });
       return false;
@@ -866,7 +876,7 @@ class Worker {
         lineNumber: this._lineNumber,
         warnCode: Worker.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
-        warnError: "STARTDATE is incorrectly formatted and will be ignored",
+        warning: "STARTDATE is incorrectly formatted and will be ignored",
         source: this._currentLine.STARTDATE,
       });
       return false;
@@ -881,7 +891,7 @@ class Worker {
         source: this._currentLine.STARTDATE,
       });
       return false;
-    } else if (myRealStartDate.diff(myRealDOBDate, 'years', false) < AGE) {
+    } else if (myRealDOBDate && myRealStartDate.diff(myRealDOBDate, 'years', false) < AGE) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1297,7 +1307,7 @@ class Worker {
 
     // optional
     if (this._currentLine.CONTHOURS && this._currentLine.CONTHOURS.length > 0) {
-      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) || myContHours > MAX_VALUE) {
+      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) || (Math.floor(myContHours) !== 999 && myContHours > MAX_VALUE)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1329,7 +1339,7 @@ class Worker {
 
     // optional
     if (this._currentLine.AVGHOURS && this._currentLine.AVGHOURS.length > 0) {
-      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) || myAvgHours > MAX_VALUE) {
+      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) || (Math.floor(myAvgHours) !== 999 && myAvgHours > MAX_VALUE)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1527,33 +1537,35 @@ class Worker {
   _validateCountryOfBirth() {
     const myCountry = parseInt(this._currentLine.COUNTRYOFBIRTH, 10);
 
-    if (myCountry === 826) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.COUNTRY_OF_BIRTH_WARNING,
-        warnType: 'COUNTRY_OF_BIRTH_WARNING',
-        warning: "Country of birth has been ignored as …..was born in UK",
-        source: this._currentLine.COUNTRYOFBIRTH,
-      });
-      return false;
-    }
-    else if (isNaN(myCountry)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
-        errType: 'COUNTRY_OF_BIRTH_ERROR',
-        error: "Country of Birth (COUNTRYOFBIRTH) must be an integer",
-        source: this._currentLine.COUNTRYOFBIRTH,
-      });
-      return false;
-    }
-    else {
-      this._countryOfBirth = myCountry;
-      return true;
+    if (this._currentLine.COUNTRYOFBIRTH && this._currentLine.COUNTRYOFBIRTH.length > 0) {
+      if (myCountry === 826) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.COUNTRY_OF_BIRTH_WARNING,
+          warnType: 'COUNTRY_OF_BIRTH_WARNING',
+          warning: "Country of birth has been ignored as worker was born in UK",
+          source: this._currentLine.COUNTRYOFBIRTH,
+        });
+        return false;
+      }
+      else if (isNaN(myCountry)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.COUNTRY_OF_BIRTH_ERROR,
+          errType: 'COUNTRY_OF_BIRTH_ERROR',
+          error: "Country of Birth (COUNTRYOFBIRTH) must be an integer",
+          source: this._currentLine.COUNTRYOFBIRTH,
+        });
+        return false;
+      }
+      else {
+        this._countryOfBirth = myCountry;
+        return true;
+      }
     }
   }
 
@@ -1658,19 +1670,11 @@ class Worker {
 
       this._nonSocialCareQualification = myNonSocialCareIndicator;
 
-      // if the social care indicator is "1" (yes) - then get the next value which must be the level
+      // if the social care indicator is "1" (yes) - then get the next value which must be the level - optional only for non-social care!
       if (myNonSocialCareIndicator == 1) {
-        const myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
+        let myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
         if (isNaN(myNonSocialCareLevel)) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-            errType: 'NON_SOCIALCARE_QUAL_ERROR',
-            error: "Non-Social Care Qualification (NONSCQUAL) level (after semi colon) must be an integer",
-            source: this._currentLine.NONSCQUAL,
-          });
+          myNonSocialCareLevel = 999; // "Don't know"
         }
         this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
       }
@@ -2166,7 +2170,10 @@ class Worker {
   _validateHeaders() {
     const headers = Object.keys(this._currentLine);
     // only run once for first line, so check _lineNumber
-    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+
+    // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
+    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers) &&
+        JSON.stringify(this._headers_v1_without_chgUnique) !== JSON.stringify(headers)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -3072,7 +3079,7 @@ class Worker {
     const columns = [];
     columns.push(establishmentId);
     columns.push(entity.nameOrId);   // todo - this will be local identifier
-    columns.push('');
+    //columns.push('');              // not on download
     columns.push('UNCHECKED');
     columns.push(entity.nameOrId);
 
@@ -3124,6 +3131,7 @@ class Worker {
     switch (entity.disabiliity) {
       case null:
           columns.push('');
+          break;
       case 'Yes':
         columns.push(1);
         break;
@@ -3140,6 +3148,7 @@ class Worker {
     switch (entity.careCerticate) {
       case null:
           columns.push('');
+          break;
       case 'Yes, completed':
         columns.push(1);
         break;

@@ -21,8 +21,9 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
     async restoreFromJson(document) {
         // typically, all capacities (this._allCapacities) for this `Capacities` property will be set when restoring the establishment and this property from the database.
         //  But during bulk upload, the Establishment will be restored from JSON not database. In those situations, this._allCapacities will be null, and it
-        //  will be necessary to populate this._allCapacities from the given JSON document
-        if (this._allCapacities === null && document.allServiceCapacityQuestions && Array.isArray(document.allServiceCapacityQuestions)) {
+        //  will be necessary to populate this._allCapacities from the given JSON document.  When restoring fully from JSON, then the
+        //  all capacities as given fromt he JSON (load) document must take precedence over any stored.
+        if (document.allServiceCapacityQuestions && Array.isArray(document.allServiceCapacityQuestions) && document.mainService) {
             this._allCapacities = document.allServiceCapacityQuestions;
             this._mainService = document.mainService;
         }
@@ -120,7 +121,7 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
               }
             });
           }
-        
+
           return questions;
     };
 
@@ -130,7 +131,7 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
             // first find any questions associated with the main service ID (if any)
             if (mainServiceId) {
                 const mainServiceQuestions = questions.filter(thisQuestion => thisQuestion.service.id === mainServiceId);
-                
+
                 if (mainServiceQuestions) {
                     // there exists within the set of questions, one or more relating to the main service
                     mainServiceQuestions.forEach(thisMainServiceQuestion => {
@@ -138,14 +139,14 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
                         reorderedQuestions.push(thisMainServiceQuestion);
                     });
                 }
-            
+
                 const nonMainServiceQuestions = questions.filter(thisQuestion => thisQuestion.service.id !== mainServiceId);
                 if (nonMainServiceQuestions) {
                     reorderedQuestions = reorderedQuestions.concat(nonMainServiceQuestions);
                 }
             }
         }
-      
+
         return reorderedQuestions;
     }
 
@@ -170,7 +171,7 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
                     this._allCapacities,
                 );
         }
-        
+
         return {
             capacities : {
                 currentValue: CapacityFormatters.capacitiesJSON(this.property),
@@ -240,7 +241,7 @@ exports.CapacityProperty = class CapacityProperty extends ChangePropertyPrototyp
                             id: referenceCapacity.id,
                             seq: referenceCapacity.seq,
                         },
-                    });    
+                    });
                 }
             } else {
                 setOfValidatedCapacitiesInvalid = true;
