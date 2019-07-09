@@ -7,70 +7,97 @@
 
 <app-dashboard-header></app-dashboard-header>
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
     <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ primaryEstablishmentName }}</p>
     <h1 class="govuk-heading-l">{{ referenceType }} references</h1>
     <p>{{ referenceTypeInfo }}</p>
   </div>
 </div>
 
-<div class="govuk-grid-row">
+<div class="govuk-grid-row" *ngIf="renderForm">
   <div class="govuk-grid-column-full">
-    <form
-      class="govuk-!-margin-top-6"
-      *ngIf="references.length"
-      novalidate
-      (ngSubmit)="onSubmit(true)"
-      [formGroup]="form"
-      id="server-error"
-    >
+    <form class="govuk-!-margin-top-6" novalidate (ngSubmit)="onSubmit(true)" [formGroup]="form" id="server-error">
       <div class="govuk__grid govuk__grid-container">
         <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName">
           <h2 class="govuk-heading-m govuk__reference-subsidiary-name">{{ establishmentName }}</h2>
           <p class="govuk-!-margin-0 govuk__justify-self-end">
-            <strong>{{ remainingEstablishments }}</strong> workplaces remaining
+            <strong>{{ remainingEstablishments }}</strong>
+            {{ remainingEstablishments | i18nPlural: { '=1': 'workplace', other: 'workplaces' } }} remaining
           </p>
         </ng-container>
-        <p class="govuk-!-margin-bottom-0"><strong>{{ columnOneLabel }}</strong></p>
-        <p class="govuk-!-margin-bottom-0">
-          <strong>{{ columnTwoLabel }}</strong>
-        </p>
+        <ng-container *ngIf="references.length">
+          <p class="govuk-!-margin-bottom-0"><strong>{{ columnOneLabel }}</strong></p>
+          <p class="govuk-!-margin-bottom-0">
+            <strong>{{ columnTwoLabel }}</strong>
+          </p>
+        </ng-container>
       </div>
 
-      <div
-        class="govuk-form-group govuk__grid govuk__grid-container"
-        *ngFor="let reference of references"
-        [class.govuk-form-group--error]="form.get(reference.uid).errors && submitted"
-        [ngClass]="form.get(reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'"
-      >
-        <label class="govuk-label govuk-!-margin-bottom-0" for="{{ reference.uid }}">
-          {{ reference.name ? reference.name : reference.nameOrId }}
-        </label>
-        <span
-          id="{{ reference.uid }}-error"
-          class="govuk-error-message govuk__grid-row-start-1 govuk__reference-grid-error"
-          *ngIf="form.get(reference.uid).errors && submitted"
+      <ng-container *ngIf="references.length">
+        <div
+          class="govuk-form-group govuk__grid govuk__grid-container"
+          *ngFor="let reference of references"
+          [class.govuk-form-group--error]="form.get(reference.uid).errors && submitted"
+          [ngClass]="form.get(reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'"
         >
-          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(reference.uid) }}
-        </span>
-        <input
-          class="govuk-input"
-          [class.govuk-input--error]="form.get(reference.uid).errors && submitted"
-          id="{{ reference.uid }}"
-          name="{{ reference.uid }}"
-          type="text"
-          formControlName="{{ reference.uid }}"
-        />
-        <p
-          class="govuk-!-margin-bottom-0 govuk__justify-self-end"
-          *ngIf="referenceType === referenceTypeEnum.Establishment && reference.localIdentifier"
-        >
-          <a [routerLink]="['/bulk-upload/staff-references', reference.uid]">Staff references</a>
-        </p>
-      </div>
+          <label class="govuk-label govuk-!-margin-bottom-0" for="{{ reference.uid }}">
+            {{ reference.name ? reference.name : reference.nameOrId }}
+          </label>
+          <span
+            id="{{ reference.uid }}-error"
+            class="govuk-error-message govuk__grid-row-start-1 govuk__reference-grid-error"
+            *ngIf="form.get(reference.uid).errors && submitted"
+          >
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(reference.uid) }}
+          </span>
+          <input
+            class="govuk-input"
+            [class.govuk-input--error]="form.get(reference.uid).errors && submitted"
+            id="{{ reference.uid }}"
+            name="{{ reference.uid }}"
+            type="text"
+            [formControlName]="reference.uid"
+          />
+          <p
+            class="govuk-!-margin-bottom-0 govuk__justify-self-end"
+            *ngIf="referenceType === referenceTypeEnum.Establishment && reference.localIdentifier"
+          >
+            <a [routerLink]="['/bulk-upload/staff-references', reference.uid]">Staff references</a>
+          </p>
+        </div>
+      </ng-container>
     </form>
 
-    <p *ngIf="!references.length">There are no workplaces.</p>
+    <div class="govuk-grid-row" *ngIf="!references.length">
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <p class="govuk-!-margin-top-4">
+          {{ referenceType }} records need to be added for this workplace before you can create {{
+          referenceType.toLowerCase() }} references.
+        </p>
+        <h3 class="govuk-heading-m">What you can do next?</h3>
+        <ul class="govuk-list govuk-list--bullet">
+          <li><a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">Add staff records</a>.</li>
+          <li>Continue without adding staff records.</li>
+        </ul>
+        <div class="govuk-button-group">
+          <button
+            type="button"
+            class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
+            (click)="navigateToNextRoute()"
+          >
+            Continue
+          </button>
+          <span class="govuk-visually-hidden">or</span>
+          <a
+            role="button"
+            class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+            [routerLink]="['/bulk-upload/workplace-references']"
+          >
+            Exit
+          </a>
+        </div>
+      </div>
+    </div>
 
     <div class="govuk-grid-row" *ngIf="references.length">
       <div class="govuk-grid-column-full">
