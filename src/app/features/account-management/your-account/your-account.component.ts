@@ -1,9 +1,9 @@
-import { AuthService } from '@core/services/auth.service';
-import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
+import { AuthService } from '@core/services/auth.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-your-account-summary',
@@ -18,13 +18,13 @@ export class YourAccountComponent implements OnInit, OnDestroy {
   constructor(
     private authService: AuthService,
     private userService: UserService,
-    protected backService: BackService
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
+    this.breadcrumbService.show();
     this.establishment = this.authService.establishment.id;
     this.getUsername();
-    this.setBackLink();
   }
 
   private getUsername() {
@@ -43,10 +43,6 @@ export class YourAccountComponent implements OnInit, OnDestroy {
         this.userService.updateState(userDetails);
       })
     );
-  }
-
-  private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/dashboard'] });
   }
 
   ngOnDestroy() {

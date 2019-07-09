@@ -81,16 +81,14 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
   }
 
   protected setBackLink(): void {
-    const url: string = this.registrationInProgress
-      ? '/registration/confirm-account-details'
-      : '/account-management/your-account';
+    const url: string = this.registrationInProgress ? '/registration/confirm-account-details' : '/account-management';
     this.backService.setBackLink({ url: [url] });
   }
 
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(userDetails).subscribe(
-        () => this.router.navigate(['/account-management/your-account']),
+        () => this.router.navigate(['/account-management']),
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         }

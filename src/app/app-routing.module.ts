@@ -69,7 +69,7 @@ const routes: Routes = [
     path: 'account-management',
     loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
     canActivate: [AuthGuard],
-    data: { title: 'Account Management' },
+    data: { title: 'User Account' },
   },
   {
     path: 'dashboard',
