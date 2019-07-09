@@ -107,7 +107,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
 
   protected navigateToNextRoute(): void {
     if (this.workPlaceReferences.length === this.getWorkplacePosition()) {
-      this.router.navigate(['/bulk-upload/workplace-and-staff-references/created']);
+      this.router.navigate(['/bulk-upload/workplace-and-staff-references/success']);
     } else {
       this.router.navigate([
         '/bulk-upload/staff-references',

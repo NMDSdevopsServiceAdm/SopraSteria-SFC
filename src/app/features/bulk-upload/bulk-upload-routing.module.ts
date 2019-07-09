@@ -32,7 +32,7 @@ const routes: Routes = [
     data: { title: 'Staff references' },
   },
   {
-    path: 'workplace-and-staff-references/created',
+    path: 'workplace-and-staff-references/success',
     component: ReferencesCreatedPageComponent,
     data: { title: 'Workplace and staff references complete' },
   },
