@@ -24,7 +24,8 @@ export class NestedRoutesService {
         map(() => this.activatedRoute)
       )
       .subscribe(route => {
-        this._routes$.next(this.getNestedRoutes(route));
+        const routes = this.getNestedRoutes(route);
+        this._routes$.next(routes);
       });
   }
 
@@ -41,7 +42,7 @@ export class NestedRoutesService {
         continue;
       }
 
-      if (!child.snapshot.data.hasOwnProperty(ROUTE_DATA_BREADCRUMB)) {
+      if (!child.snapshot.data.hasOwnProperty(ROUTE_DATA_BREADCRUMB) || !child.snapshot.url.length) {
         return this.getNestedRoutes(child, url, routes);
       }
 
