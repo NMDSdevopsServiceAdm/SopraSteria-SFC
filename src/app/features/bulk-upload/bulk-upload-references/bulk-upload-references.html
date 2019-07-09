@@ -37,26 +37,26 @@
         <div
           class="govuk-form-group govuk__grid govuk__grid-container"
           *ngFor="let reference of references"
-          [class.govuk-form-group--error]="form.get(reference.uid).errors && submitted"
-          [ngClass]="form.get(reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'"
+          [class.govuk-form-group--error]="form.get('reference-' + reference.uid).errors && submitted"
+          [ngClass]="form.get('reference-' + reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'"
         >
-          <label class="govuk-label govuk-!-margin-bottom-0" for="{{ reference.uid }}">
+          <label class="govuk-label govuk-!-margin-bottom-0" for="reference-{{ reference.uid }}">
             {{ reference.name ? reference.name : reference.nameOrId }}
           </label>
           <span
-            id="{{ reference.uid }}-error"
+            id="reference-{{ reference.uid }}-error"
             class="govuk-error-message govuk__grid-row-start-1 govuk__reference-grid-error"
-            *ngIf="form.get(reference.uid).errors && submitted"
+            *ngIf="form.get('reference-' + reference.uid).errors && submitted"
           >
-            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(reference.uid) }}
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('reference-' + reference.uid) }}
           </span>
           <input
             class="govuk-input"
-            [class.govuk-input--error]="form.get(reference.uid).errors && submitted"
-            id="{{ reference.uid }}"
-            name="{{ reference.uid }}"
+            [class.govuk-input--error]="form.get('reference-' + reference.uid).errors && submitted"
+            id="reference-{{ reference.uid }}"
+            name="reference-{{ reference.uid }}"
             type="text"
-            [formControlName]="reference.uid"
+            [formControlName]="'reference-' + reference.uid"
           />
           <p
             class="govuk-!-margin-bottom-0 govuk__justify-self-end"
@@ -76,7 +76,9 @@
         </p>
         <h3 class="govuk-heading-m">What you can do next?</h3>
         <ul class="govuk-list govuk-list--bullet">
-          <li><a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">Add staff records</a>.</li>
+          <li>
+            <a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">Add staff records</a>.
+          </li>
           <li>Continue without adding staff records.</li>
         </ul>
         <div class="govuk-button-group">
