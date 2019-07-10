@@ -1511,7 +1511,7 @@ class Worker {
         source: this._currentLine.NMCREG,
       });
       return false;
-    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NMCREG) {
+    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1543,7 +1543,7 @@ class Worker {
         source: this._currentLine.NURSESPEC,
       });
       return false;
-    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NURSESPEC) {
+    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NURSESPEC  && this._currentLine.NURSESPEC.length !== 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1564,9 +1564,9 @@ class Worker {
   _validateAmhp() {
     const amhpValues = [1,2,999];
     const myAmhp = parseInt(this._currentLine.AMHP);
-    const MAIN_JOB_ROLE = 6;
+    const SOCIAL_WORKER_ROLE = 6;
 
-    if (this._mainJobRole && this._mainJobRole === MAIN_JOB_ROLE && (!myAmhp || isNaN(myAmhp) )) {
+    if (this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE && (!myAmhp || isNaN(myAmhp) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1578,7 +1578,7 @@ class Worker {
       });
       return false;
     }
-    else if (this._mainJobRole && this._mainJobRole !== MAIN_JOB_ROLE && this._currentLine.AMHP) {
+    else if (this._mainJobRole && this._mainJobRole !== SOCIAL_WORKER_ROLE && this._currentLine.AMHP) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
