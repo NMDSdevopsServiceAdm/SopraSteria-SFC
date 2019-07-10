@@ -30,7 +30,7 @@ export class NestedRoutesService {
   }
 
   private getNestedRoutes(route: ActivatedRoute, url: string = '', routes: IRoute[] = []): IRoute[] {
-    const ROUTE_DATA_BREADCRUMB = 'title';
+    const nestedRouteProperty = 'title';
     const children = route.children;
 
     if (children.length === 0) {
@@ -42,7 +42,7 @@ export class NestedRoutesService {
         continue;
       }
 
-      if (!child.snapshot.data.hasOwnProperty(ROUTE_DATA_BREADCRUMB) || !child.snapshot.url.length) {
+      if (!child.snapshot.data.hasOwnProperty(nestedRouteProperty) || !child.snapshot.url.length) {
         return this.getNestedRoutes(child, url, routes);
       }
 
@@ -50,9 +50,9 @@ export class NestedRoutesService {
 
       url += `/${routeURL}`;
 
-      if (!find(routes, ['label', child.snapshot.data[ROUTE_DATA_BREADCRUMB]])) {
+      if (!find(routes, ['label', child.snapshot.data[nestedRouteProperty]])) {
         routes.push({
-          title: child.snapshot.data[ROUTE_DATA_BREADCRUMB],
+          title: child.snapshot.data[nestedRouteProperty],
           params: child.snapshot.params,
           url: url,
         });
