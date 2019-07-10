@@ -2575,6 +2575,10 @@ class Worker {
       }
     }
 
+    if(this._changeUniqueWorkerId) {
+      changeProperties.changeLocalIdentifer = this._changeUniqueWorkerId;
+    }
+
     return changeProperties;
   };
 

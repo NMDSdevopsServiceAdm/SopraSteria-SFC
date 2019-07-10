@@ -1585,6 +1585,16 @@ router.route('/complete').post(async (req, res) => {
             const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisUpdatedEstablishment.key);
             const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisUpdatedEstablishment.key);
 
+            if(foundOnloadEstablishment){
+              delete foundOnloadEstablishment.localIdentifier;
+              foundOnloadEstablishment.workers.forEach((worker) => {
+                delete worker.localIdentifier;
+                if(worker.changeLocalIdentifer){
+                  worker._properties.get('LocalIdentifier').property = worker.changeLocalIdentifer;
+                }
+              });
+            }   
+
             // current is already restored, so simply need to load the onboard into the current, and load the associated work entities
             if (foundCurrentEstablishment) {
               updatedEstablishments.push(foundCurrentEstablishment);

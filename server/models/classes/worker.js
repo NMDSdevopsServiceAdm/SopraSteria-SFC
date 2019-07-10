@@ -46,6 +46,7 @@ class Worker extends EntityValidator {
         this._updated = null;
         this._updatedBy = null;
         this._auditEvents = null;
+        this._changeLocalIdentifer = null;
 
         // abstracted properties
         const thisWorkerManager = new WorkerProperties();
@@ -132,6 +133,10 @@ class Worker extends EntityValidator {
     }
     get training() {
         return this._trainingEntities;
+    }
+
+    get changeLocalIdentifer() {
+        return this._changeLocalIdentifer;
     }
 
     get establishmentId() {
@@ -259,6 +264,10 @@ class Worker extends EntityValidator {
             // reason is not a managed property, load it specifically
             if (document.reason) {
                 this._reason = await this.validateReason(document.reason);
+            }
+
+            if(document.changeLocalIdentifer){
+                this._changeLocalIdentifer = document.changeLocalIdentifer;
             }
 
             // allow for deep restoration of entities (associations - namely Qualifications and Training here)
@@ -1004,7 +1013,8 @@ class Worker extends EntityValidator {
 
             // add worker default properties
             const myDefaultJSON = {
-                uid:  this.uid
+                uid:  this.uid,
+                changeLocalIdentifer: this.changeLocalIdentifer ? this.changeLocalIdentifer : undefined,
             };
 
             myDefaultJSON.created = this.created ? this.created.toJSON() : null;
@@ -1029,6 +1039,7 @@ class Worker extends EntityValidator {
         } else {
             return {
                 uid:  this.uid,
+                changeLocalIdentifer: this.changeLocalIdentifer ? this.changeLocalIdentifer : undefined,
                 created: this.created.toJSON(),
                 updated: this.updated.toJSON(),
                 updatedBy: this.updatedBy,
