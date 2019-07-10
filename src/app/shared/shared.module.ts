@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AlertComponent } from '@shared/components/alert/alert.component';
-import { DashboardHeaderComponent } from '@shared/components/dashboard-header/dashboard-header.component';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
@@ -45,7 +44,6 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     AutoSuggestComponent,
     BackLinkComponent,
     CharacterCountComponent,
-    DashboardHeaderComponent,
     DatePickerComponent,
     DetailsComponent,
     ErrorSummaryComponent,
@@ -77,7 +75,6 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     AutoSuggestComponent,
     BackLinkComponent,
     CharacterCountComponent,
-    DashboardHeaderComponent,
     DatePickerComponent,
     DetailsComponent,
     ErrorSummaryComponent,
