@@ -38,7 +38,7 @@ const responseErrors = {
       errMessage: 'Establishment data is invalid'
     }
 };
-  
+
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
@@ -73,11 +73,11 @@ router.route('/:id').post(async (req, res) => {
         MainServiceOther: req.body[0].mainServiceOther,
         IsRegulated: req.body[0].isRegulated
     };
-    
+
     try {
         await models.sequelize.transaction(async t => {
 
-          // Get the main service depending on whether the establishment is or is not cqc registered  
+          // Get the main service depending on whether the establishment is or is not cqc registered
           let serviceResults = null;
           if (establishmentData.IsRegulated) {
             serviceResults = await models.services.findOne({
@@ -105,13 +105,13 @@ router.route('/:id').post(async (req, res) => {
               responseErrors.unexpectedMainServiceId.errMessage
             );
           }
-          
+
           if (serviceResults.other && establishmentData.MainServiceOther && establishmentData.MainServiceOther.length > OTHER_MAX_LENGTH){
             throw new RegistrationException(
               `Other field value of '${establishmentData.MainServiceOther}' greater than length ${OTHER_MAX_LENGTH}`,
               responseErrors.unexpectedMainServiceId.errCode,
               responseErrors.unexpectedMainServiceId.errMessage
-            );            
+            );
           }
 
           const newEstablishment = new Establishment.Establishment();
@@ -130,8 +130,8 @@ router.route('/:id').post(async (req, res) => {
               id: establishmentData.MainServiceId,
               other : establishmentData.MainServiceOther
             }
-          });    
-          
+          });
+
           // no Establishment properties on registration
           if (newEstablishment.hasMandatoryProperties && newEstablishment.isValid) {
             await newEstablishment.save(req.username, 0, t);
@@ -153,7 +153,7 @@ router.route('/:id').post(async (req, res) => {
             "establishmentId" : establishmentData.id,
             "establishmentUid" : establishmentData.eUID,
             "nmdsId": newEstablishment.NmdsId ? newEstablishment.NmdsId : 'undefined'
-          }); 
+          });
 
 
         });
@@ -224,7 +224,7 @@ router.route('/:id').get(async (req, res) => {
 
 router.route('/:id').delete(async (req, res) => {
     const establishmentId = req.establishmentId;
-    const establishmentInstance = new Establishment.Establishment(establishmentId);
+    const establishmentInstance = new Establishment.Establishment(req.username);
 
     try {
         if (await establishmentInstance.restore(establishmentId)) {
@@ -246,8 +246,38 @@ router.route('/:id').delete(async (req, res) => {
 
         console.error('establishment::DELETE/:eID - failed', thisError.message);
         return res.status(503).send(thisError.safe);
-}
-
+    }
 });
+
+router.route('/:id').put(async (req, res) => {
+  const establishmentId = req.establishmentId;
+  const thisEstablishment = new Establishment.Establishment(req.username);
+
+  try {
+      if (await thisEstablishment.restore(establishmentId)) {
+          // TODO: JSON validation
+
+          // by loading after the restore, only those properties defined in the
+          //  PUT body will be updated (peristed)
+          const isValidEstablishment = await thisEstablishment.load(req.body);
+
+          if (isValidEstablishment) {
+              await thisEstablishment.save(req.username);
+              return res.status(200).json(thisEstablishment.toJSON(false, false, false, true));
+          } else {
+              return res.status(400).send('Unexpected Input.');
+          }
+
+      } else {
+          // not found worker
+          return res.status(404).send('Not Found');
+      }
+
+  } catch (err) {
+    console.error("Worker PUT: ", err);
+    return res.status(503).send({});
+  }
+});
+
 
 module.exports = router;

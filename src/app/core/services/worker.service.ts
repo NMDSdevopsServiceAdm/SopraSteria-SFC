@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Alert } from '@core/model/alert.model';
+import { LocalIdentifiersRequest, LocalIdentifiersResponse } from '@core/model/establishment.model';
 import {
   AvailableQualificationsResponse,
   QualificationRequest,
@@ -98,9 +99,7 @@ export class WorkerService {
   }
 
   public getAllWorkersByUid(establishmentUid: string): Observable<Worker[]> {
-    return this.http
-      .get<WorkersResponse>(`/api/establishment/${establishmentUid}/worker`)
-      .pipe(map(w => w.workers));
+    return this.http.get<WorkersResponse>(`/api/establishment/${establishmentUid}/worker`).pipe(map(w => w.workers));
   }
 
   public getAllWorkers(): Observable<Worker[]> {
@@ -230,5 +229,15 @@ export class WorkerService {
     const temp = this.createStaffResponse;
     this.createStaffResponse = null;
     return temp;
+  }
+
+  public updateLocalIdentifiers(
+    establishmentUid: string,
+    request: LocalIdentifiersRequest
+  ): Observable<LocalIdentifiersResponse> {
+    return this.http.put<LocalIdentifiersResponse>(
+      `/api/establishment/${establishmentUid}/worker/localIdentifier`,
+      request
+    );
   }
 }
