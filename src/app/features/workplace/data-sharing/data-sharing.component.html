@@ -63,7 +63,7 @@
           </legend>
           <div class="govuk-checkboxes">
             <div class="govuk-checkboxes__item" *ngIf="establishment.isRegulated">
-              <input class="govuk-checkboxes__input" id="shareWith-cqc" [formControlName]="cqc" type="checkbox" />
+              <input class="govuk-checkboxes__input" id="shareWith-cqc" [formControlName]="'cqc'" type="checkbox" />
               <label class="govuk-label govuk-checkboxes__label" for="shareWith-cqc">
                 Care Quality Commission (CQC)
               </label>
@@ -72,7 +72,7 @@
               <input
                 class="govuk-checkboxes__input"
                 id="shareWith-localAuthorities"
-                [formControlName]="localAuthorities"
+                [formControlName]="'localAuthorities'"
                 type="checkbox"
               />
               <label class="govuk-label govuk-checkboxes__label" for="shareWith-localAuthorities">
