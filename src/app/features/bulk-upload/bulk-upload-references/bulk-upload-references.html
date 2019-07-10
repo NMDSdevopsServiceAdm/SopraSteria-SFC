@@ -5,24 +5,10 @@
   [form]="form"
 ></app-error-summary>
 
-
-<div class="govuk-grid-row govuk-!-margin-bottom-5">
-
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-4">
-    <span *ngIf="primaryEstablishmentName" class="govuk-caption-xl">{{ primaryEstablishmentName }}</span>{{ referenceType }} references</h1>
-    <p>{{ referenceTypeInfo }}</p>
-  </div>
-
-  <app-dashboard-header></app-dashboard-header>
-
-</div>
-
-<div class="govuk-grid-row govuk-!-margin-bottom-5">
-
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-4">
-      <span *ngIf="primaryEstablishmentName" class="govuk-caption-l">{{ primaryEstablishmentName }}</span>
+    <h1 class="govuk-heading-l">
+      <span *ngIf="primaryEstablishmentName" class="govuk-caption-xl">{{ primaryEstablishmentName }}</span>
       {{ referenceType }} references
     </h1>
     <p>{{ referenceTypeInfo }}</p>
@@ -43,7 +29,9 @@
           </p>
         </ng-container>
         <ng-container *ngIf="references.length">
-          <p class="govuk-!-margin-bottom-0"><strong>{{ columnOneLabel }}</strong></p>
+          <p class="govuk-!-margin-bottom-0">
+            <strong>{{ columnOneLabel }}</strong>
+          </p>
           <p class="govuk-!-margin-bottom-0">
             <strong>{{ columnTwoLabel }}</strong>
           </p>
@@ -55,7 +43,9 @@
           class="govuk-form-group govuk__grid govuk__grid-container"
           *ngFor="let reference of references"
           [class.govuk-form-group--error]="form.get('reference-' + reference.uid).errors && submitted"
-          [ngClass]="form.get('reference-' + reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'"
+          [ngClass]="
+            form.get('reference-' + reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'
+          "
         >
           <label class="govuk-label govuk-!-margin-bottom-0" for="reference-{{ reference.uid }}">
             {{ reference.name ? reference.name : reference.nameOrId }}
@@ -88,8 +78,8 @@
     <div class="govuk-grid-row" *ngIf="!references.length">
       <div class="govuk-grid-column-two-thirds-from-desktop">
         <p class="govuk-!-margin-top-4">
-          {{ referenceType }} records need to be added for this workplace before you can create {{
-          referenceType.toLowerCase() }} references.
+          {{ referenceType }} records need to be added for this workplace before you can create
+          {{ referenceType.toLowerCase() }} references.
         </p>
         <h3 class="govuk-heading-m">What you can do next?</h3>
         <ul class="govuk-list govuk-list--bullet">
