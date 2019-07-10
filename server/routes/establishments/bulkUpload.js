@@ -1023,7 +1023,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
         } else {
           // this should never happen
-          console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
+          console.error(`FATAL: failed to associate worker (line number: ${thisTraingRecord.lineNumber}/unique id (${thisTraingRecord.uniqueWorker})) with a known establishment.`);
         }
 
       }
@@ -1078,8 +1078,11 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   // update CSV metadata error/warning counts
   establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+
   workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+
+
   training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
@@ -1453,9 +1456,11 @@ router.route('/report/:reportType').get(async (req, res) => {
 
     printLine(readable, reportType, warnings, NEWLINE)
 
-    const laTitle = '* You are sharing data with the following Local Authorities *';
-    const laPadding = '*'.padStart(laTitle.length, '*');
-    readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
+    if (reportType === 'establishments') {
+      const laTitle = '* You are sharing data with the following Local Authorities *';
+      const laPadding = '*'.padStart(laTitle.length, '*');
+      readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
+    }
 
     entities ? entities
       .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])

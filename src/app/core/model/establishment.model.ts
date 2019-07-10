@@ -115,7 +115,7 @@ export enum jobOptionsEnum {
 }
 
 export interface LocalIdentifiersRequest {
-  localIdentifier: LocalIdentifier[];
+  localIdentifiers: LocalIdentifier[];
 }
 
 export interface LocalIdentifiersResponse {

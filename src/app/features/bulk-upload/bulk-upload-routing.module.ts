@@ -6,6 +6,7 @@ import {
 } from '@features/bulk-upload//workplace-references-page/workplace-references-page.component';
 import { BulkUploadPageComponent } from '@features/bulk-upload/bulk-upload-page/bulk-upload-page.component';
 import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
+import { ReferencesCreatedPageComponent } from '@features/bulk-upload/references-created-page/references-created-page.component';
 import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-references-page/staff-references-page.component';
 
 const routes: Routes = [
@@ -29,6 +30,11 @@ const routes: Routes = [
     path: 'staff-references/:uid',
     component: StaffReferencesPageComponent,
     data: { title: 'Staff references' },
+  },
+  {
+    path: 'workplace-and-staff-references/success',
+    component: ReferencesCreatedPageComponent,
+    data: { title: 'Workplace and staff references complete' },
   },
 ];
 

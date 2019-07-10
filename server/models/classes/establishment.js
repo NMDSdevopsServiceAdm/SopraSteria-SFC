@@ -299,6 +299,15 @@ class Establishment extends EntityValidator {
 
             await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
+            // CQC reugulated/location ID
+            if (document.hasOwnProperty('isRegulated')) {
+                this._isRegulated = document.isRegulated;
+            }
+            if (document.locationId) {
+                // Note - the if more validation to do on location ID - so this really should be a managed property
+                this._locationId = document.locationId;
+            }
+
             // allow for deep restoration of entities (associations - namely Worker here)
             if (associatedEntities) {
                 const promises = [];
@@ -600,6 +609,8 @@ class Establishment extends EntityValidator {
                     const updateDocument = {
                         ...modifedUpdateDocument,
                         source: bulkUploaded ? 'Bulk' : 'Online',
+                        isRegulated: this._isRegulated,                         // to remove when a change managed property
+                        locationId: this._locationId,                           // to remove when a change managed property
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
@@ -1198,7 +1209,7 @@ class Establishment extends EntityValidator {
             if (fullDescription) {
                 myDefaultJSON.address = this.address;
                 myDefaultJSON.postcode = this.postcode;
-                myDefaultJSON.locationRef = this.locationId;
+                myDefaultJSON.locationId = this.locationId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
                 myDefaultJSON.isParent = this.isParent;
