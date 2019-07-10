@@ -1,3 +1,4 @@
+import { AccountModule } from '@features/account/account.module';
 import { ChangeYourDetailsComponent } from '@features/registration/change-your-details/change-your-details.component';
 import { CommonModule } from '@angular/common';
 import { ConfirmAccountDetailsComponent } from '@features/registration/confirm-account-details/confirm-account-details.component';
@@ -18,7 +19,7 @@ import { SharedModule } from '@shared/shared.module';
 import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule],
+  imports: [AccountModule, CommonModule, ReactiveFormsModule, SharedModule, RegistrationRoutingModule],
   declarations: [
     ChangeYourDetailsComponent,
     ConfirmAccountDetailsComponent,
