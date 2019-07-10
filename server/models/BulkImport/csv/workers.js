@@ -820,7 +820,7 @@ class Worker {
   _validateRecSource() {
     const myRecSource = parseInt(this._currentLine.RECSOURCE);
     // optional
-    if (this._currentLine.RECSOURCE && (isNaN(myRecSource) || myRecSource === 0 )) {
+    if (this._currentLine.RECSOURCE && (isNaN(myRecSource))) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -832,7 +832,7 @@ class Worker {
       });
       return false;
     } else {
-      this._recSource = myRecSource;
+      this._recSource = myRecSource ? myRecSource : null;
       return true;
     }
   }
@@ -911,8 +911,6 @@ class Worker {
     const myStartInsect = this._currentLine.STARTINSECT;
     const yearRegex = /^\d{4}|999$/;
     const myRealDOBDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
-    const myStartDate = this._currentLine.STARTDATE;
-    const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
 
     if (!myStartInsect) {
       this._validationErrors.push({
@@ -936,7 +934,7 @@ class Worker {
         source: this._currentLine.STARTINSECT,
       });
       return false;
-    } else if (myRealStartDate && parseInt(myStartInsect) > myRealStartDate.year()) {
+    } else if (this._startDate && parseInt(myStartInsect) > this._startDate.year()) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1964,7 +1962,7 @@ class Worker {
 
   //transform related
   _transformRecruitment() {
-    if (this._recSource) {
+    if (this._recSource || this._recSource === 0) {
       if (this._recSource === 16) {
         this._recSource = 'No';
       } else {
@@ -2760,9 +2758,9 @@ class Worker {
             validationError.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
-            validationError.errCode = Worker.RECSOURCE_ERROR;
-            validationError.errType = 'RECSOURCE_ERROR';
-            validationError.source  = `${this._currentLine.RECSOURCE}`;
+            // validationError.errCode = Worker.RECSOURCE_ERROR;
+            // validationError.errType = 'RECSOURCE_ERROR';
+            // validationError.source  = `${this._currentLine.RECSOURCE}`;
             break;
           case 'WorkerSocialCareStartDate':
             validationError.errCode = Worker.START_INSECT_ERROR;
@@ -2918,9 +2916,9 @@ class Worker {
             validationWarning.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
-            validationWarning.warnCode = Worker.RECSOURCE_ERROR;
-            validationWarning.warnType = 'RECSOURCE_ERROR';
-            validationWarning.source  = `${this._currentLine.RECSOURCE}`;
+            // validationWarning.warnCode = Worker.RECSOURCE_ERROR;
+            // validationWarning.warnType = 'RECSOURCE_ERROR';
+            // validationWarning.source  = `${this._currentLine.RECSOURCE}`;
             break;
           case 'WorkerSocialCareStartDate':
             validationWarning.warnCode = Worker.START_INSECT_WARNING;
