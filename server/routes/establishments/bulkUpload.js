@@ -916,6 +916,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     console.info("API bulkupload - validateBulkUploadFiles: no establishment records");
     status = false;
   }
+  
   establishments.establishmentMetadata.records = myEstablishments.length;
 
   // parse and process Workers CSV
@@ -1043,7 +1044,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
   // prepare the validation difference report which highlights all new, updated and deleted establishments and workers
   const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent);
-
   // bulk upload specific validations - knowing the to load and current set of entities
 
   // firstly, if the logged in account performing this validation is not a parent, then
@@ -1232,8 +1232,10 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
   onloadEntities.forEach(thisOnloadEstablishment => {
     // find a match for this establishment
     // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
-    const foundCurrentEstablishment = currentEntities.find(thisCurrentEstablishment => thisCurrentEstablishment.name === thisOnloadEstablishment.name);
+    const foundCurrentEstablishment = currentEntities.find(thisCurrentEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
+
     if (foundCurrentEstablishment) {
+
       // for updated establishments, need to cross check the set of onload and current workers to identify the new, updated and deleted workers
       const currentWorkers = foundCurrentEstablishment.associatedWorkers;
       const onloadWorkers = thisOnloadEstablishment.associatedWorkers;
@@ -1267,7 +1269,7 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
 
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       updatedEntities.push({
-        name: thisOnloadEstablishment.name,
+        key: thisOnloadEstablishment.key,
         workers: {
           new: newWorkers,
           updated: updatedWorkers,
@@ -1277,7 +1279,7 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
     } else {
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       newEntities.push({
-        name: thisOnloadEstablishment.name,
+        key: thisOnloadEstablishment.key,
       });
     }
   });
@@ -1287,7 +1289,7 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
     if (thisCurrentEstablishment.id !== primaryEstablishmentId) {
       // find a match for this establishment
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
-      const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.name === thisOnloadEstablishment.name);
+      const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
 
       // cannot delete self
       if (!foundOnloadEstablishment) {
@@ -1575,7 +1577,6 @@ router.route('/complete').post(async (req, res) => {
               updatedEstablishments.push(foundOnloadEstablishment);
             }
           });
-
           // now update the updated
           const updateEstablishmentPromises = [];
           validationDiferenceReport.updated.forEach(thisUpdatedEstablishment => {
@@ -1603,7 +1604,6 @@ router.route('/complete').post(async (req, res) => {
               updateEstablishmentPromises.push(foundCurrentEstablishment.delete(theLoggedInUser, t, true));
             }
           });
-
           // wait for all updated::loads and deleted::deletes to complete
           await Promise.all(updateEstablishmentPromises);
 
