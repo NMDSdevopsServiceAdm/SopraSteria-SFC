@@ -150,6 +150,11 @@ class Worker extends EntityValidator {
             return null;
         }
     }
+
+    get key(){
+        return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this._properties.get('LocalIdentifier').property : this.nameOrId).replace(/\s/g, "");
+    }
+
     get contract() {
         return this._properties.get('Contract') ? this._properties.get('Contract').property : null;
     };

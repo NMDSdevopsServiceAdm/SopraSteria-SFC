@@ -1688,6 +1688,7 @@ class Establishment {
 
     const changeProperties = {
       name: this._name,
+      localIdentifier: this._localId, 
       employerType: {
         value: this._establishmentType,
         other: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
