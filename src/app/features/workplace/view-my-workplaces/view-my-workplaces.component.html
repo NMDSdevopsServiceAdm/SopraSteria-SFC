@@ -1,12 +1,14 @@
-<app-error-summary
-  *ngIf="serverError"
-  [serverError]="serverError"
-></app-error-summary>
+<app-error-summary *ngIf="serverError" [serverError]="serverError"></app-error-summary>
 
-<app-dashboard-header></app-dashboard-header>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      <span *ngIf="establishment?.name" class="govuk-caption-xl">{{ establishment?.name }}</span>
+      My workplaces ({{ workplacesCount }})
+    </h1>
+  </div>
+</div>
 
-<p *ngIf="establishment?.name" class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment?.name }}</p>
-<h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-7">My workplaces ({{ workplacesCount }})</h1>
 <ng-container *ngIf="workplaces.length; else noWorkPlaces">
   <ul class="govuk-list">
     <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngFor="let workplace of workplaces">
