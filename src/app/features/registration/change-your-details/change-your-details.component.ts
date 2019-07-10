@@ -7,23 +7,23 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
-import { YourDetailsComponent } from '@features/registration/your-details/your-details.component';
+import { AccountDetailsComponent } from '@features/account/account-details/account-details.component';
 
 @Component({
   selector: 'app-change-your-details',
-  templateUrl: './../your-details/your-details.component.html',
+  templateUrl: './change-your-details.component.html',
 })
-export class ChangeYourDetailsComponent extends YourDetailsComponent {
+export class ChangeYourDetailsComponent extends AccountDetailsComponent {
   public callToActionLabel = 'Save and return';
-  protected registrationInProgress: boolean;
+  // protected registrationInProgress: boolean;
 
   constructor(
+    private registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
-    protected registrationService: RegistrationService,
     protected router: Router,
-    protected userService: UserService
+    protected userService: UserService,
   ) {
     super(backService, errorSummaryService, fb, router, userService);
   }
@@ -43,11 +43,11 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
       })
     );
 
-    this.subscriptions.add(
-      this.registrationService.registrationInProgress$.subscribe(
-        (registrationInProgress: boolean) => (this.registrationInProgress = registrationInProgress)
-      )
-    );
+    // this.subscriptions.add(
+    //   this.registrationService.registrationInProgress$.subscribe(
+    //     (registrationInProgress: boolean) => (this.registrationInProgress = registrationInProgress)
+    //   )
+    // );
   }
 
   private prefillForm(userDetails: UserDetails): void {
@@ -61,38 +61,40 @@ export class ChangeYourDetailsComponent extends YourDetailsComponent {
     }
   }
 
-  protected updateUserDetails(): UserDetails {
-    this.userDetails.emailAddress = this.getEmail.value;
-    this.userDetails.fullname = this.getFullName.value;
-    this.userDetails.jobTitle = this.getJobTitle.value;
-    this.userDetails.contactNumber = this.getPhone.value;
+  // protected updateUserDetails(): UserDetails {
+  //   this.userDetails.emailAddress = this.getEmail.value;
+  //   this.userDetails.fullname = this.getFullName.value;
+  //   this.userDetails.jobTitle = this.getJobTitle.value;
+  //   this.userDetails.contactNumber = this.getPhone.value;
+  //
+  //   return this.userDetails;
+  // }
 
-    return this.userDetails;
-  }
+  protected save(): void {
+    this.userService.updateState(this.setUserDetails());
+    this.router.navigate(['/registration/confirm-account-details']);
 
-  protected onFormValidSubmit(): void {
-    this.userService.updateState(this.updateUserDetails());
-
-    if (this.registrationInProgress) {
-      this.router.navigate(['/registration/confirm-account-details']);
-    } else {
-      this.changeUserDetails(this.userDetails);
-    }
+    // if (this.registrationInProgress) {
+    //   this.router.navigate(['/registration/confirm-account-details']);
+    // } else {
+    //   this.changeUserDetails(this.userDetails);
+    // }
   }
 
   protected setBackLink(): void {
-    const url: string = this.registrationInProgress ? '/registration/confirm-account-details' : '/account-management';
-    this.backService.setBackLink({ url: [url] });
+    // const url: string = this.registrationInProgress ? '/registration/confirm-account-details' : '/account-management';
+    // this.backService.setBackLink({ url: [url] });
+    this.backService.setBackLink({ url: ['/registration/confirm-account-details'] });
   }
 
-  private changeUserDetails(userDetails: UserDetails): void {
-    this.subscriptions.add(
-      this.userService.updateUserDetails(userDetails).subscribe(
-        () => this.router.navigate(['/account-management']),
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-        }
-      )
-    );
-  }
+  // private changeUserDetails(userDetails: UserDetails): void {
+  //   this.subscriptions.add(
+  //     this.userService.updateUserDetails(userDetails).subscribe(
+  //       () => this.router.navigate(['/account-management']),
+  //       (error: HttpErrorResponse) => {
+  //         this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+  //       }
+  //     )
+  //   );
+  // }
 }

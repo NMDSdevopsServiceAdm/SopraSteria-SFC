@@ -167,16 +167,13 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.onFormValidSubmit();
+      this.save();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  protected onFormValidSubmit(): void {
-    this.userService.updateState(this.setUserDetails());
-    this.router.navigate(['/registration/create-username']);
-  }
+  protected save(): void {}
 
   protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/registration/confirm-workplace-details'] });

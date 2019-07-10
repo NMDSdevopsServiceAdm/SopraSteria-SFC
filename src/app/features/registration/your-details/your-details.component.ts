@@ -20,4 +20,14 @@ export class YourDetailsComponent extends AccountDetailsComponent {
   ) {
     super(backService, errorSummaryService, fb, router, userService);
   }
+
+  protected init() {
+    console.log('init fired');
+  }
+
+  protected save() {
+    console.log('save fired in child');
+    this.userService.updateState(this.setUserDetails());
+    this.router.navigate(['/registration/create-username']);
+  }
 }
