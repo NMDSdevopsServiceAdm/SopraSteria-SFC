@@ -108,6 +108,7 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
             }
 
             req.establishmentId = referencedEstablishment.id;
+            req.parentIsOwner = referencedEstablishment.dataOwner === 'Parent' ? true : false;
             req.parentPermissions = referencedEstablishment.parentPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
 
             // we now know the
