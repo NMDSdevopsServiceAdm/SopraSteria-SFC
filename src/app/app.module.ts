@@ -27,7 +27,6 @@ import { NationalityService } from '@core/services/nationality.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { RecruitmentService } from '@core/services/recruitment.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { TitleService } from '@core/services/title.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
@@ -101,7 +100,6 @@ import { AppComponent } from './app.component';
     QualificationService,
     RecruitmentService,
     RegistrationService,
-    TitleService,
     TrainingService,
     WindowRef,
     WorkerService,

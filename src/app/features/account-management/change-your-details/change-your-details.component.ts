@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { UserDetails } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
@@ -28,12 +28,12 @@ export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
   protected registrationInProgress: boolean;
 
   constructor(
-    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected registrationService: RegistrationService,
     protected router: Router,
-    protected userService: UserService
+    protected userService: UserService,
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   // Get fullname
@@ -57,6 +57,8 @@ export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.breadcrumbService.show();
+
     this.form = this.fb.group({
       fullName: ['', [Validators.required, Validators.maxLength(120)]],
       jobTitle: ['', [Validators.required, Validators.maxLength(120)]],
@@ -73,9 +75,7 @@ export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
 
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.setBackLink();
     this.setupSubscriptions();
-    this.setBackLink();
   }
 
   protected setUserDetails(): UserDetails {
@@ -225,14 +225,10 @@ export class ChangeYourDetailsComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/account-management/your-account'] });
-  }
-
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
       this.userService.updateUserDetails(userDetails).subscribe(
-        () => this.router.navigate(['/account-management/your-account']),
+        () => this.router.navigate(['/account-management']),
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
         }
