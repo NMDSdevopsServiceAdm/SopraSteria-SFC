@@ -1,26 +1,26 @@
+import { BackService } from '@core/services/back.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { UserDetails } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
+import { UserDetails } from '@core/model/userDetails.model';
+import { UserService } from '@core/services/user.service';
 
 @Component({
   selector: 'app-account-details',
   templateUrl: './account-details.component.html',
 })
 export class AccountDetailsComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
-  public callToActionLabel = 'Continue';
-  public submitted = false;
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverError: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected userDetails: UserDetails;
+  public callToActionLabel = 'Continue';
+  public form: FormGroup;
+  public submitted = false;
 
   constructor(
     protected backService: BackService,
