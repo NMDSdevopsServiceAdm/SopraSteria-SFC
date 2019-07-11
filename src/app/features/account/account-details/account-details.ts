@@ -1,26 +1,40 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { BackService } from '@core/services/back.service';
+import { OnDestroy, OnInit } from '@angular/core';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { UserDetails } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
+import { UserDetails } from '@core/model/userDetails.model';
+import { UserService } from '@core/services/user.service';
 
-@Component({
-  selector: 'app-account-details',
-  templateUrl: './account-details.component.html',
-})
-export class AccountDetailsComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
-  public callToActionLabel = 'Continue';
-  public submitted = false;
+export class AccountDetails implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverError: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected userDetails: UserDetails;
+  public callToActionLabel = 'Continue';
+  public form: FormGroup;
+  public formControlsMap: any[] = [
+    {
+      label: 'Your full name',
+      name: 'fullName'
+    },
+    {
+      label: 'Your job title',
+      name: 'jobTitle'
+    },
+    {
+      label: 'Your email address',
+      name: 'email'
+    },
+    {
+      label: 'Contact phone number',
+      name: 'phone'
+    },
+  ];
+  public submitted = false;
 
   constructor(
     protected backService: BackService,
@@ -29,26 +43,6 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
     protected router: Router,
     protected userService: UserService
   ) {}
-
-  // Get fullname
-  get getFullName() {
-    return this.form.get('fullName');
-  }
-
-  // Get job title
-  get getJobTitle() {
-    return this.form.get('jobTitle');
-  }
-
-  // Get email
-  get getEmail() {
-    return this.form.get('email');
-  }
-
-  // Get phone
-  get getPhone() {
-    return this.form.get('phone');
-  }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -75,10 +69,10 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
 
   protected setUserDetails(): UserDetails {
     return (this.userDetails = {
-      emailAddress: this.getEmail.value,
-      fullname: this.getFullName.value,
-      jobTitle: this.getJobTitle.value,
-      contactNumber: this.getPhone.value,
+      emailAddress: this.form.get(this.formControlsMap[2].name).value,
+      fullname: this.form.get(this.formControlsMap[0].name).value,
+      jobTitle: this.form.get(this.formControlsMap[1].name).value,
+      contactNumber: this.form.get(this.formControlsMap[3].name).value,
     });
   }
 
@@ -152,13 +146,8 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
     ];
   }
 
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
@@ -167,16 +156,13 @@ export class AccountDetailsComponent implements OnInit, OnDestroy {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.onFormValidSubmit();
+      this.save();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
 
-  protected onFormValidSubmit(): void {
-    this.userService.updateState(this.setUserDetails());
-    this.router.navigate(['/registration/create-username']);
-  }
+  protected save(): void {}
 
   protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/registration/confirm-workplace-details'] });
