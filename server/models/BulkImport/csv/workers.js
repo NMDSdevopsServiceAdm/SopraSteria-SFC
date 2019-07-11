@@ -775,25 +775,14 @@ class Worker {
     const myCareCert = parseInt(this._currentLine.CARECERT);
 
     if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
-      if (isNaN(myCareCert)) {
+      if (isNaN(myCareCert) || !careCertValues.includes(parseInt(myCareCert))) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.CARE_CERT_ERROR,
           errType: 'CARECERT_ERROR',
-          error: "Care Certificate (CARECERT) must be an integer",
-          source: this._currentLine.CARECERT,
-        });
-        return false;
-      } else if (!careCertValues.includes(parseInt(myCareCert))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.CARE_CERT_ERROR,
-          errType: 'CARECERT_ERROR',
-          error: "Care Certificate (CARECERT) must have value 1(YES) or 2(NO) or 3(IN PROGRESS)",
+          error: "The code you have entered for CARECERT is incorrect",
           source: this._currentLine.CARECERT,
         });
         return false;
@@ -972,25 +961,14 @@ class Worker {
 
     // optional
     if (this._currentLine.APPRENTICE && this._currentLine.APPRENTICE.length) {
-      if (isNaN(myApprentice)) {
+      if (isNaN(myApprentice) || !apprenticeValues.includes(myApprentice)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.APPRENCTICE_ERROR,
-          errType: 'APPRENTICE_ERROR',
-          error: "Apprentice (APPRENTICE) must be an integer",
-          source: this._currentLine.APPRENTICE,
-        });
-        return false;
-      } else if (!apprenticeValues.includes(myApprentice)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.APPRENCTICE_ERROR,
-          errType: 'APPRENTICE_ERROR',
-          error: "Apprentice (APPRENTICE) value must 1(Yes), 2(No) or 999(Unknown)",
+          warnCode: Worker.APPRENCTICE_WARNING,
+          warnType: 'APPRENTICE_WARNING',
+          warning: "The code for APPRENTICE is incorrect and will be ignored",
           source: this._currentLine.APPRENTICE,
         });
         return false;
