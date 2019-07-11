@@ -1321,7 +1321,7 @@ class Worker {
 
     // optional
     if (this._currentLine.CONTHOURS && this._currentLine.CONTHOURS.length > 0) {
-      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) || (Math.floor(myContHours) !== 999 && myContHours > MAX_VALUE)) {
+      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) || (Math.floor(myContHours) !== 999)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1442,87 +1442,81 @@ class Worker {
   }
 
   _validateOtherJobs() {
-    // other jobs (optional) is a semi colon delimited list of integers
-    if ( this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
-      const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
-      const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
-      const jobRoles = [23,27];
+    const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
+    const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
+    const localValidationErrors = [];
+    const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
 
-      const localValidationErrors = [];
-      const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
-      if (!isValid) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.OTHER_JOB_ROLE_ERROR,
-          errType: `OTHER_JOB_ROLE_ERROR`,
-          error: "The code you have entered for OTHERJOBROLE is incorrect",
-          source: this._currentLine.OTHERJOBROLE,
-        });
-      } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.OTHER_JOB_ROLE_ERROR,
-          errType: `OTHER_JOB_ROLE_ERROR`,
-          error: "OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)",
-          source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
-        });
-      } else {
-        const myJobDescriptions = [];
-        this._otherJobs = listOfotherJobs.map((thisJob, index) => {
-          const thisJobIndex = parseInt(thisJob, 10);
+    if (!isValid) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.OTHER_JOB_ROLE_ERROR,
+        errType: `OTHER_JOB_ROLE_ERROR`,
+        error: "The code you have entered for OTHERJOBROLE is incorrect",
+        source: this._currentLine.OTHERJOBROLE,
+      });
+    } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.OTHER_JOB_ROLE_ERROR,
+        errType: `OTHER_JOB_ROLE_ERROR`,
+        error: "OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)",
+        source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
+      });
+    } else {
+      const myJobDescriptions = [];
+      this._otherJobs = listOfotherJobs.map((thisJob, index) => {
+        const thisJobIndex = parseInt(thisJob, 10);
 
-          // if the job is one of the many "other" job roles, then need to validate the "other description"
-          const otherJobs = [23, 27];   // these are the original budi codes
-          if (otherJobs.includes(thisJobIndex)) {
-            const myJobOther = listOfotherJobsDescriptions[index];
-            const MAX_LENGTH = 120;
-            if (!myJobOther || myJobOther.length == 0) {
-              localValidationErrors.push({
-                lineNumber: this._lineNumber,
-                errCode: Worker.OTHER_JR_DESC_ERROR,
-                errType: `OTHER_JR_DESC_ERROR`,
-                error: `OTHERJRDESC (${index+1}) has not been supplied`,
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-              });
-              myJobDescriptions.push(null);
-            } else if (myJobOther.length > MAX_LENGTH) {
-              localValidationErrors.push({
-                lineNumber: this._lineNumber,
-                errCode: Worker.OTHER_JR_DESC_ERROR,
-                errType: `OTHER_JR_DESC_ERROR`,
-                error: `OTHERJRDESC is longer than 120 characters`,
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-              });
-            } else {
-              myJobDescriptions.push(listOfotherJobsDescriptions[index]);
-            }
-          } else if(listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
+        // if the job is one of the many "other" job roles, then need to validate the "other description"
+        const otherJobs = [23, 27];   // these are the original budi codes
+        if (otherJobs.includes(thisJobIndex)) {
+          const myJobOther = listOfotherJobsDescriptions[index];
+          const MAX_LENGTH = 120;
+          if (!myJobOther || myJobOther.length == 0) {
             localValidationErrors.push({
               lineNumber: this._lineNumber,
-              warnCode: Worker.OTHER_JR_DESC_WARNING,
-              warnType: `OTHER_JR_DESC_WARNING`,
-              warning: `OTHERJRDESC will be ignored as not required for OTHERJOBROLE`,
+              errCode: Worker.OTHER_JR_DESC_ERROR,
+              errType: `OTHER_JR_DESC_ERROR`,
+              error: `OTHERJRDESC (${index+1}) has not been supplied`,
               source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-          })
-          } else {
+            });
             myJobDescriptions.push(null);
+          } else if (myJobOther.length > MAX_LENGTH) {
+            localValidationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Worker.OTHER_JR_DESC_ERROR,
+              errType: `OTHER_JR_DESC_ERROR`,
+              error: `OTHERJRDESC is longer than 120 characters`,
+              source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+            });
+          } else {
+            myJobDescriptions.push(listOfotherJobsDescriptions[index]);
           }
+        } else if(listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
+          localValidationErrors.push({
+            lineNumber: this._lineNumber,
+            warnCode: Worker.OTHER_JR_DESC_WARNING,
+            warnType: `OTHER_JR_DESC_WARNING`,
+            warning: `OTHERJRDESC will be ignored as not required for OTHERJOBROLE`,
+            source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+        })
+        } else {
+          myJobDescriptions.push(null);
+        }
 
-          return thisJobIndex;
-        });
+        return thisJobIndex;
+      });
 
-        this._otherJobsOther = myJobDescriptions;
-      }
-
-      if (localValidationErrors.length > 0) {
-        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
-        return false;
-      }
-
-      return true;
-    } else {
-      return true;
+      this._otherJobsOther = myJobDescriptions;
     }
+
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+      return false;
+    }
+
+    return true;
   }
 
   _validateRegisteredNurse() {
@@ -1594,6 +1588,7 @@ class Worker {
     const amhpValues = [1,2,999];
     const myAmhp = parseInt(this._currentLine.AMHP);
     const SOCIAL_WORKER_ROLE = 6;
+    console.log('myAmhp', this._mainJobRole)
 
     if (this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE && ( isNaN(myAmhp) )) {
       this._validationErrors.push({
@@ -1619,7 +1614,7 @@ class Worker {
       });
       return false;
     }
-    else if (!amhpValues.includes(myAmhp)) {
+    else if (!isNaN(myAmhp) && (myAmhp === 0 || !amhpValues.includes(myAmhp))) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
