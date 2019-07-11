@@ -25,7 +25,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     protected router: Router,
     protected userService: UserService,
   ) {
-    super(backService, errorSummaryService, fb, router, userService);
+    super(backService, errorSummaryService, fb, router);
   }
 
   protected init() {
