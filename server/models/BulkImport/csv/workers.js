@@ -1533,7 +1533,7 @@ class Worker {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
     const NURSING_ROLE = 16;
 
-    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (!myRegisteredNurse || isNaN(myRegisteredNurse) )) {
+    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (myRegisteredNurse !== 0 && isNaN(myRegisteredNurse) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1565,7 +1565,7 @@ class Worker {
     const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
     const NURSING_ROLE = 16;
 
-    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (!myNursingSpecialist || isNaN(myNursingSpecialist) )) {
+    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (myNursingSpecialist !== 0  && isNaN(myNursingSpecialist) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -2047,7 +2047,7 @@ class Worker {
 
   // ['Adult Nurse', 'Mental Health Nurse', 'Learning Disabilities Nurse', `Children's Nurse`, 'Enrolled Nurse'
   _transformRegisteredNurse() {
-    if (this._registeredNurse) {
+    if (this._registeredNurse || this._registeredNurse === 0) {
       switch (this._registeredNurse) {
         case 1:
           this._registeredNurse = 'Adult Nurse';
@@ -2079,7 +2079,7 @@ class Worker {
   }
 
   _transformNursingSpecialist() {
-    if (this._nursingSpecialist) {
+    if (this._nursingSpecialist || this._nursingSpecialist === 0) {
       const myValidatedSpecialist = BUDI.nursingSpecialist(BUDI.TO_ASC, this._nursingSpecialist);
 
       if (!myValidatedSpecialist) {
