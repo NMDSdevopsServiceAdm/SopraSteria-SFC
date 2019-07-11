@@ -20,17 +20,17 @@
     <form class="govuk-!-margin-top-6" novalidate (ngSubmit)="onSubmit(true)" [formGroup]="form" id="server-error">
       <div class="govuk__grid govuk__grid-container">
         <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName">
-          <h2 class="govuk-heading-m govuk__reference-subsidiary-name">{{ establishmentName }}</h2>
-          <p class="govuk-!-margin-0 govuk__justify-self-end">
+          <h2 class="govuk-heading-m govuk__reference-subsidiary-name govuk__grid-column-1">{{ establishmentName }}</h2>
+          <p class="govuk-!-margin-0 govuk__justify-self-end govuk__grid-column-2">
             <strong>{{ remainingEstablishments }}</strong>
             {{ remainingEstablishments | i18nPlural: { '=1': 'workplace', other: 'workplaces' } }} remaining
           </p>
         </ng-container>
         <ng-container *ngIf="references.length">
-          <p class="govuk-!-margin-bottom-0">
+          <p class="govuk-!-margin-bottom-0 govuk__grid-column-1">
             <strong>{{ columnOneLabel }}</strong>
           </p>
-          <p class="govuk-!-margin-bottom-0">
+          <p class="govuk-!-margin-bottom-0 govuk__grid-column-2">
             <strong>{{ columnTwoLabel }}</strong>
           </p>
         </ng-container>
@@ -41,11 +41,8 @@
           class="govuk-form-group govuk__grid govuk__grid-container"
           *ngFor="let reference of references"
           [class.govuk-form-group--error]="form.get('reference-' + reference.uid).errors && submitted"
-          [ngClass]="
-            form.get('reference-' + reference.uid).errors && submitted ? 'govuk__grid-two-rows' : 'govuk__grid-one-row'
-          "
         >
-          <label class="govuk-label govuk-!-margin-bottom-0" for="reference-{{ reference.uid }}">
+          <label class="govuk-label govuk-!-margin-bottom-0 govuk__grid-column-1" for="reference-{{ reference.uid }}">
             {{ reference.name ? reference.name : reference.nameOrId }}
           </label>
           <span
@@ -56,7 +53,7 @@
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('reference-' + reference.uid) }}
           </span>
           <input
-            class="govuk-input"
+            class="govuk-input govuk__grid-column-2"
             [class.govuk-input--error]="form.get('reference-' + reference.uid).errors && submitted"
             id="reference-{{ reference.uid }}"
             name="reference-{{ reference.uid }}"
@@ -64,7 +61,7 @@
             [formControlName]="'reference-' + reference.uid"
           />
           <p
-            class="govuk-!-margin-bottom-0 govuk__justify-self-end"
+            class="govuk-!-margin-bottom-0 govuk__justify-self-end govuk__grid-column-3"
             *ngIf="referenceType === referenceTypeEnum.Establishment && reference.localIdentifier"
           >
             <a [routerLink]="['/bulk-upload/staff-references', reference.uid]">Staff references</a>
