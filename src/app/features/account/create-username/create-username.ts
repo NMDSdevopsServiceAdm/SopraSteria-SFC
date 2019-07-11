@@ -13,12 +13,12 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 export class CreateUsername implements OnInit, OnDestroy {
-  private formErrorsMap: Array<ErrorDetails>;
-  private loginCredentialsExist = false;
-  private serverErrorsMap: Array<ErrorDefinition>;
-  private subscriptions: Subscription = new Subscription();
-  private userNameMaxLength = 120;
-  private userNameMinLength = 3;
+  protected formErrorsMap: Array<ErrorDetails>;
+  protected loginCredentialsExist = false;
+  protected serverErrorsMap: Array<ErrorDefinition>;
+  protected subscriptions: Subscription = new Subscription();
+  protected userNameMaxLength = 120;
+  protected userNameMinLength = 3;
   public callToActionLabel: string;
   public form: FormGroup;
   public serverError: string;
@@ -59,37 +59,21 @@ export class CreateUsername implements OnInit, OnDestroy {
     this.setupServerErrorsMap();
     this.setCallToActionLabel();
     this.setBackLink();
-    this.setFormSubmissionLink();
+    this.init();
   }
 
-  private setBackLink(): void {
-    const route: string = this.loginCredentialsExist
-      ? '/registration/confirm-account-details'
-      : '/registration/your-details';
-    this.backService.setBackLink({ url: [route] });
-  }
+  protected init(): void {}
 
-  private setFormSubmissionLink(): string {
-    return this.loginCredentialsExist ? '/registration/confirm-account-details' : '/registration/security-question';
-  }
+  protected setBackLink(): void {}
 
-  private setupSubscriptions(): void {
-    this.subscriptions.add(
-      this.registrationService.loginCredentials$.subscribe((loginCredentials: LoginCredentials) => {
-        if (loginCredentials) {
-          this.loginCredentialsExist = true;
-          this.preFillForm(loginCredentials);
-        }
-      })
-    );
-  }
+  protected setupSubscriptions(): void {}
 
   private setCallToActionLabel(): void {
     const label: string = this.loginCredentialsExist ? 'Save and return' : 'Continue';
     this.callToActionLabel = label;
   }
 
-  private preFillForm(loginCredentials: LoginCredentials): void {
+  protected preFillForm(loginCredentials: LoginCredentials): void {
     if (loginCredentials) {
       this.getUsername.setValue(loginCredentials.username);
       this.getPassword.setValue(loginCredentials.password);
@@ -219,20 +203,13 @@ export class CreateUsername implements OnInit, OnDestroy {
       this.save();
     }
   }
-  private save(): void {
-    this.router.navigate([this.setFormSubmissionLink()]).then(() => {
-      this.registrationService.loginCredentials$.next({
-        username: this.getUsername.value,
-        password: this.getPassword.value,
-      });
-    });
-  }
+
+  protected save(): void {}
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
-
 
   /**
    * Unsubscribe hook to ensure no memory leaks
