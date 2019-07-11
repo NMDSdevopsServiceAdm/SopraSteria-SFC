@@ -87,6 +87,12 @@ const routes: Routes = [
     },
   },
   {
+    path: 'create-account',
+    loadChildren: '@features/create-account/create-account.module#CreateAccountModule',
+    // canActivate: [AuthGuard],
+    data: { title: 'Create account' },
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',
