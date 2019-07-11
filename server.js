@@ -42,6 +42,7 @@ var workerLeaveReasons = require('./server/routes/workerReason');
 var serviceUsers = require('./server/routes/serviceUsers');
 var workingTrainingCategories = require('./server/routes/workerTrainingCategories');
 var nurseSpecialism = require('./server/routes/nurseSpecialism');
+var availableQualifications = require('./server/routes/availableQualifications');
 
 // reports
 var ReportsRoute = require('./server/routes/reports/index');
@@ -174,6 +175,7 @@ app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveRea
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
 app.use('/api/trainingCategories', [refCacheMiddleware.refcache, workingTrainingCategories]);
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
+app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 
 // transaction endpoints
 app.use('/api/errors', errors);

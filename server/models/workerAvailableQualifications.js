@@ -47,7 +47,7 @@ module.exports = function(sequelize, DataTypes) {
     multipleLevels: {
       type: DataTypes.BOOLEAN,
       allowNull: true,
-      field: '"From"'
+      field: '"MultipleLevel"'
     },
     socialCareRelevant: {
       type: DataTypes.BOOLEAN,
