@@ -16,16 +16,20 @@
 </div>
 
 <div class="govuk-grid-row" *ngIf="renderForm">
+  <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <h2 class="govuk-heading-m govuk__reference-subsidiary-name govuk-!-margin-0">{{ establishmentName }}</h2>
+    </div>
+    <div class="govuk-grid-column-one-third-from-desktop">
+      <p class="govuk-!-margin-0 govuk-util__align-right">
+        <strong>{{ remainingEstablishments }}</strong>
+        {{ remainingEstablishments | i18nPlural: { '=1': 'workplace', other: 'workplaces' } }} remaining
+      </p>
+    </div>
+  </ng-container>
   <div class="govuk-grid-column-full">
     <form class="govuk-!-margin-top-6" novalidate (ngSubmit)="onSubmit(true)" [formGroup]="form" id="server-error">
       <div class="govuk__grid govuk__grid-container">
-        <ng-container *ngIf="referenceType === referenceTypeEnum.Worker && establishmentName">
-          <h2 class="govuk-heading-m govuk__reference-subsidiary-name govuk__grid-column-1">{{ establishmentName }}</h2>
-          <p class="govuk-!-margin-0 govuk__justify-self-end govuk__grid-column-2">
-            <strong>{{ remainingEstablishments }}</strong>
-            {{ remainingEstablishments | i18nPlural: { '=1': 'workplace', other: 'workplaces' } }} remaining
-          </p>
-        </ng-container>
         <ng-container *ngIf="references.length">
           <p class="govuk-!-margin-bottom-0 govuk__grid-column-1">
             <strong>{{ columnOneLabel }}</strong>
