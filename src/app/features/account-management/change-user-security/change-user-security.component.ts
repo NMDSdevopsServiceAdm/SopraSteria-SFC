@@ -21,6 +21,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
   public submitted: boolean;
   public userDetails: UserDetails;
   private subscriptions: Subscription = new Subscription();
+  private username: string;
 
   constructor(
     private fb: FormBuilder,
@@ -50,6 +51,12 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
+    );
+
+    this.subscriptions.add(
+      this.userService.getUsernameFromEstbId().subscribe(data => {
+        this.username = data.users[0].username;
+      })
     );
 
     this.setUserDetails();
@@ -117,9 +124,9 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private changeUserDetails(userDetails: UserDetails): void {
+  private changeUserDetails(username: string, userDetails: UserDetails): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(userDetails).subscribe(
+      this.userService.updateUserDetails(username, userDetails).subscribe(
         () => this.router.navigate(['/account-management']),
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
@@ -136,7 +143,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     if (this.form.valid) {
       (this.userDetails.securityQuestion = this.form.value.securityQuestionInput),
         (this.userDetails.securityAnswer = this.form.value.securityAnswerInput),
-        this.changeUserDetails(this.userDetails);
+        this.changeUserDetails(this.username, this.userDetails);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

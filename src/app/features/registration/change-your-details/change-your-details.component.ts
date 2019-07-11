@@ -25,11 +25,11 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   }
 
   protected init() {
-    this.setupSubscriptions();
+    this.setupSubscription();
     this.setBackLink();
   }
 
-  private setupSubscriptions(): void {
+  private setupSubscription(): void {
     this.subscriptions.add(
       this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
         if (userDetails) {
