@@ -7,13 +7,13 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
-import { AccountDetailsComponent } from '@features/account/account-details/account-details.component';
+import { AccountDetails } from '@features/account/account-details/account-details';
 
 @Component({
   selector: 'app-change-your-details',
   templateUrl: './change-your-details.component.html',
 })
-export class ChangeYourDetailsComponent extends AccountDetailsComponent {
+export class ChangeYourDetailsComponent extends AccountDetails {
   public callToActionLabel = 'Save and return';
   // protected registrationInProgress: boolean;
 

@@ -1,5 +1,5 @@
 import { BackService } from '@core/services/back.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -8,11 +8,7 @@ import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
 import { UserService } from '@core/services/user.service';
 
-@Component({
-  selector: 'app-account-details',
-  templateUrl: './account-details.component.html',
-})
-export class AccountDetailsComponent implements OnInit, OnDestroy {
+export class AccountDetails implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverError: string;
   protected serverErrorsMap: Array<ErrorDefinition>;

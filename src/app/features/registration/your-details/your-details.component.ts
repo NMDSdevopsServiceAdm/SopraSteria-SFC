@@ -4,13 +4,13 @@ import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
-import { AccountDetailsComponent } from '@features/account/account-details/account-details.component';
+import { AccountDetails } from '@features/account/account-details/account-details';
 
 @Component({
   selector: 'app-your-details',
   templateUrl: './your-details.component.html',
 })
-export class YourDetailsComponent extends AccountDetailsComponent {
+export class YourDetailsComponent extends AccountDetails {
   constructor(
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
