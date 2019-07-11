@@ -6,7 +6,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
-import { UserService } from '@core/services/user.service';
 
 export class AccountDetails implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
@@ -41,7 +40,6 @@ export class AccountDetails implements OnInit, OnDestroy {
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService
   ) {}
 
   ngOnInit() {

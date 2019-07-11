@@ -12,13 +12,13 @@ import { AccountDetails } from '@features/account/account-details/account-detail
 })
 export class YourDetailsComponent extends AccountDetails {
   constructor(
+    private userService: UserService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService
   ) {
-    super(backService, errorSummaryService, fb, router, userService);
+    super(backService, errorSummaryService, fb, router);
   }
 
   protected save() {
