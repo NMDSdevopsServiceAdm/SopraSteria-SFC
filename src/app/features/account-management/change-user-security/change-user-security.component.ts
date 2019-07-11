@@ -109,7 +109,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     if (this.userDetails) {
       this.form.setValue({
         securityQuestionInput: this.userDetails['securityQuestion'],
-        securityAnswerInput: this.userDetails['securityAnswer'],
+        securityAnswerInput: this.userDetails['securityQuestionAnswer'],
       });
     }
   }
@@ -142,7 +142,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
 
     if (this.form.valid) {
       (this.userDetails.securityQuestion = this.form.value.securityQuestionInput),
-        (this.userDetails.securityAnswer = this.form.value.securityAnswerInput),
+        (this.userDetails.securityQuestionAnswer = this.form.value.securityAnswerInput),
         this.changeUserDetails(this.username, this.userDetails);
     } else {
       this.errorSummaryService.scrollToErrorSummary();

@@ -53,10 +53,10 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   private prefillForm(userDetails: UserDetails): void {
     if (userDetails) {
       this.form.setValue({
-        email: userDetails.emailAddress,
+        email: userDetails.email,
         fullName: userDetails.fullname,
         jobTitle: userDetails.jobTitle,
-        phone: userDetails.contactNumber,
+        phone: userDetails.phone,
       });
     }
   }

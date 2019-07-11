@@ -126,7 +126,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
     payload.user.username = this.loginCredentials.username;
     payload.user.password = this.loginCredentials.password;
     payload.user.securityQuestion = this.securityDetails.securityQuestion;
-    payload.user.securityAnswer = this.securityDetails.securityAnswer;
+    payload.user.securityQuestionAnswer = this.securityDetails.securityAnswer;
 
     return [payload];
   }
