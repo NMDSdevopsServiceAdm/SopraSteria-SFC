@@ -16,6 +16,24 @@ export class AccountDetails implements OnInit, OnDestroy {
   protected userDetails: UserDetails;
   public callToActionLabel = 'Continue';
   public form: FormGroup;
+  public formControlsMap: any[] = [
+    {
+      label: 'Your full name',
+      name: 'fullName'
+    },
+    {
+      label: 'Your job title',
+      name: 'jobTitle'
+    },
+    {
+      label: 'Your email address',
+      name: 'email'
+    },
+    {
+      label: 'Contact phone number',
+      name: 'phone'
+    },
+  ];
   public submitted = false;
 
   constructor(
@@ -25,26 +43,6 @@ export class AccountDetails implements OnInit, OnDestroy {
     protected router: Router,
     protected userService: UserService
   ) {}
-
-  // Get fullname
-  get getFullName() {
-    return this.form.get('fullName');
-  }
-
-  // Get job title
-  get getJobTitle() {
-    return this.form.get('jobTitle');
-  }
-
-  // Get email
-  get getEmail() {
-    return this.form.get('email');
-  }
-
-  // Get phone
-  get getPhone() {
-    return this.form.get('phone');
-  }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -71,10 +69,10 @@ export class AccountDetails implements OnInit, OnDestroy {
 
   protected setUserDetails(): UserDetails {
     return (this.userDetails = {
-      emailAddress: this.getEmail.value,
-      fullname: this.getFullName.value,
-      jobTitle: this.getJobTitle.value,
-      contactNumber: this.getPhone.value,
+      emailAddress: this.formControlsMap[2].value,
+      fullname: this.formControlsMap[0].value,
+      jobTitle: this.formControlsMap[1].value,
+      contactNumber: this.formControlsMap[3].value,
     });
   }
 
@@ -148,13 +146,8 @@ export class AccountDetails implements OnInit, OnDestroy {
     ];
   }
 
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
