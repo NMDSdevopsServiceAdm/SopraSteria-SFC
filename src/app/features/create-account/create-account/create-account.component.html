@@ -37,60 +37,70 @@
         </ng-container>
       </fieldset>
 
-      <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-          <h2 class="govuk-fieldset__heading">
-            Permissions
-          </h2>
-        </legend>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('permissions').errors">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-fieldset__heading">
+              Permissions
+            </h2>
+          </legend>
 
-        <div class="govuk-radios govuk-radios--conditional">
-          <div class="govuk-radios__item">
-            <input
-              class="govuk-radios__input"
-              [formControlName]="'permissions'"
-              id="permissions-conditional-1"
-              name="permissions"
-              type="radio"
-              data-aria-controls="conditional-permissions-conditional-1"
-            />
-            <label class="govuk-label govuk-radios__label" for="permissions-conditional-1">
-              Edit
-            </label>
-          </div>
-          <div
-            class="govuk-radios__conditional"
-            [class.govuk-radios__conditional--hidden]="form.get('permissions').value !== 'Edit'"
-            id="conditional-permissions-conditional-1"
-          >
-            <div class="govuk-form-group">
-              <label class="govuk-label" for="primaryUser">
-                Make this user a primary user
-              </label>
+          <span *ngIf="submitted && form.get('permissions').errors" id="permissions-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('permissions') }}
+          </span>
+          <div class="govuk-radios govuk-radios--conditional">
+            <div class="govuk-radios__item">
               <input
-                class="govuk-input govuk-input--width-4"
-                [formControlName]="'primaryUser'"
-                id="primaryUser"
-                name="primaryUser"
-                type="checkbox"
+                class="govuk-radios__input"
+                [class.govuk-input--error]="submitted && form.get('permissions').errors"
+                [formControlName]="'permissions'"
+                id="permissions-conditional-1"
+                name="permissions"
+                value="edit"
+                type="radio"
+                data-aria-controls="conditional-permissions-conditional-1"
               />
+              <label class="govuk-label govuk-radios__label" for="permissions-conditional-1">
+                Edit
+              </label>
+            </div>
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="form.get('permissions').value !== 'edit'"
+              id="conditional-permissions-conditional-1"
+            >
+              <div class="govuk-checkboxes">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    class="govuk-checkboxes__input"
+                    [formControlName]="'primaryUser'"
+                    id="primaryUser"
+                    name="primaryUser"
+                    type="checkbox"
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" for="primaryUser">
+                    Make this user a primary user
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'permissions'"
+                id="permissions-2"
+                name="permissions"
+                value="read"
+                type="radio"
+              />
+              <label class="govuk-label govuk-radios__label" for="permissions-2">
+                Read-only
+              </label>
             </div>
           </div>
-
-          <div class="govuk-radios__item">
-            <input
-              class="govuk-radios__input"
-              [formControlName]="'permissions'"
-              id="permissions-2"
-              name="permissions"
-              type="radio"
-            />
-            <label class="govuk-label govuk-radios__label" for="permissions-2">
-              Read-only
-            </label>
-          </div>
-        </div>
-      </fieldset>
+        </fieldset>
+      </div>
 
       <div class="govuk-button-group">
         <button class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0" type="submit">
