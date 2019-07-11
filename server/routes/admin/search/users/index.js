@@ -9,7 +9,6 @@ router.route('/').post(async function (req, res) {
 
   let searchFilter = null;
 
-  //const usernameSearchField = userSearchFields.username ? userSearchFields.username.replace('*', '%').replace('?', '_') : null;
   const usernameSearchField = userSearchFields.username ? userSearchFields.username.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
   const nameSearchField = userSearchFields.name ? userSearchFields.name.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
 
