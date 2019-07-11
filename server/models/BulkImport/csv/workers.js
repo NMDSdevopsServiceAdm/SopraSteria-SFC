@@ -819,6 +819,7 @@ class Worker {
 
   _validateRecSource() {
     const myRecSource = parseInt(this._currentLine.RECSOURCE);
+    
     // optional
     if (this._currentLine.RECSOURCE && (isNaN(myRecSource))) {
       this._validationErrors.push({
@@ -832,7 +833,7 @@ class Worker {
       });
       return false;
     } else {
-      this._recSource = myRecSource ? myRecSource : null;
+      this._recSource = myRecSource || myRecSource === 0 ? myRecSource : null;
       return true;
     }
   }
@@ -1594,7 +1595,7 @@ class Worker {
     const myAmhp = parseInt(this._currentLine.AMHP);
     const SOCIAL_WORKER_ROLE = 6;
 
-    if (this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE && (!myAmhp || isNaN(myAmhp) )) {
+    if (this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE && ( isNaN(myAmhp) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1618,7 +1619,7 @@ class Worker {
       });
       return false;
     }
-    else if (myAmhp && !amhpValues.includes(myAmhp)) {
+    else if (!amhpValues.includes(myAmhp)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1631,6 +1632,7 @@ class Worker {
       return false;
     }
     else {
+      this._amhp = myAmhp;
       switch (myAmhp) {
         case 1:
           this._amhp = 'Yes';
@@ -2041,32 +2043,34 @@ class Worker {
 
   // ['Adult Nurse', 'Mental Health Nurse', 'Learning Disabilities Nurse', `Children's Nurse`, 'Enrolled Nurse'
   _transformRegisteredNurse() {
-    switch (this._registeredNurse) {
-      case 1:
-        this._registeredNurse = 'Adult Nurse';
-        break;
-      case 2:
-        this._registeredNurse = 'Mental Health Nurse';
-        break;
-      case 3:
-        this._registeredNurse = 'Learning Disabilities Nurse';
-        break;
-      case 4:
-        this._registeredNurse = 'Children\'s Nurse';
-        break;
-      case 5:
-        this._registeredNurse = 'Enrolled Nurse';
-        break;
-      default:
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.NMCREG_WARNING,
-          warnType: `NMCREG_WARNING`,
-          warning: `The code you have entered for NMCREG is incorrect and will be ignored`,
-          source: this._currentLine.NMCREG,
-        });
+    if (this._registeredNurse) {
+      switch (this._registeredNurse) {
+        case 1:
+          this._registeredNurse = 'Adult Nurse';
+          break;
+        case 2:
+          this._registeredNurse = 'Mental Health Nurse';
+          break;
+        case 3:
+          this._registeredNurse = 'Learning Disabilities Nurse';
+          break;
+        case 4:
+          this._registeredNurse = 'Children\'s Nurse';
+          break;
+        case 5:
+          this._registeredNurse = 'Enrolled Nurse';
+          break;
+        default:
+          this._validationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
+            lineNumber: this._lineNumber,
+            warnCode: Worker.NMCREG_WARNING,
+            warnType: `NMCREG_WARNING`,
+            warning: `The code you have entered for NMCREG is incorrect and will be ignored`,
+            source: this._currentLine.NMCREG,
+          });
+      }
     }
   }
 
