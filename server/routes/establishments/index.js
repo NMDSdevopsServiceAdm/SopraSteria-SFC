@@ -26,6 +26,9 @@ const Worker = require('./worker');
 const BulkUpload = require('./bulkUpload');
 const LocalIdentifier = require('./localIdentifier');
 
+const Approve = require('./approve');
+const Reject = require('./reject');
+
 const OTHER_MAX_LENGTH=120;
 
 const responseErrors = {
@@ -39,6 +42,9 @@ const responseErrors = {
     }
 };
 
+// approve/reject establishment (registration) requires an elevated privilede - override the authentication middleware before the default middleware
+router.use('/:id/approve', Authorization.isAuthorisedRegistrationApproval, Approve);
+router.use('/:id/reject', Authorization.isAuthorisedRegistrationApproval, Reject);
 
 // ensure all establishment routes are authorised
 router.use('/:id', Authorization.hasAuthorisedEstablishment);
