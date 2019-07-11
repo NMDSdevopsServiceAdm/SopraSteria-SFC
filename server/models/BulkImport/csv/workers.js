@@ -1321,7 +1321,7 @@ class Worker {
 
     // optional
     if (this._currentLine.CONTHOURS && this._currentLine.CONTHOURS.length > 0) {
-      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) || (Math.floor(myContHours) !== 999)) {
+      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) && Math.floor(myContHours) !== 999) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1390,9 +1390,11 @@ class Worker {
     const EMPL_STATUSES = [1,2];
     const myEmplStatus = this._currentLine.EMPLSTATUS;
 
+    console.log('this._currentLine.AVGHOURS', this._currentLine.AVGHOURS)
+
     // optional
     if (this._currentLine.AVGHOURS && this._currentLine.AVGHOURS.length > 0) {
-      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) || (Math.floor(myAvgHours) !== 999 && myAvgHours > MAX_VALUE)) {
+      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) && (Math.floor(myAvgHours) !== 999)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1417,13 +1419,23 @@ class Worker {
         return false;
       }
       else if (myEmplStatus && EMPL_STATUSES.includes(parseFloat(myEmplStatus)) ) {
+        let contractType = '';
+        switch (myEmplStatus) {
+          case '1':
+            contractType = 'Permanent'
+            break;
+          case '2':
+            contractType = 'Temporary';
+            break;
+        }
+
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           warnCode: Worker.AVG_HOURS_WARNING,
           warnType: 'AVG_HOURS_ERROR',
-          warning: `AVGHOURS will be ignored as staff record is ${myEmplStatus}`,
+          warning: `AVGHOURS will be ignored as staff record is ${contractType}`,
           source: this._currentLine.AVGHOURS,
         });
         return false;
