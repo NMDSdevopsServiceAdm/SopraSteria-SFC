@@ -22,7 +22,6 @@ export class YourDetailsComponent extends AccountDetails {
   }
 
   protected save() {
-    console.log('save fired in child');
     this.userService.updateState(this.setUserDetails());
     this.router.navigate(['/registration/create-username']);
   }
