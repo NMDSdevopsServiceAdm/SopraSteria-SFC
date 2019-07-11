@@ -1390,8 +1390,6 @@ class Worker {
     const EMPL_STATUSES = [1,2];
     const myEmplStatus = this._currentLine.EMPLSTATUS;
 
-    console.log('this._currentLine.AVGHOURS', this._currentLine.AVGHOURS)
-
     // optional
     if (this._currentLine.AVGHOURS && this._currentLine.AVGHOURS.length > 0) {
       if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) && (Math.floor(myAvgHours) !== 999)) {
@@ -1600,7 +1598,6 @@ class Worker {
     const amhpValues = [1,2,999];
     const myAmhp = parseInt(this._currentLine.AMHP);
     const SOCIAL_WORKER_ROLE = 6;
-    console.log('myAmhp', this._mainJobRole)
 
     if (this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE && ( isNaN(myAmhp) )) {
       this._validationErrors.push({
