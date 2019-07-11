@@ -1460,13 +1460,13 @@ router.route('/report/:reportType').get(async (req, res) => {
       const laTitle = '* You are sharing data with the following Local Authorities *';
       const laPadding = '*'.padStart(laTitle.length, '*');
       readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
-    }
 
-    entities ? entities
+      entities ? entities
       .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
       .reduce((acc, val) => acc.concat(val), [])
       .sort((a,b) => a.name > b.name)
       .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
+    }
 
     readable.push(null);
 

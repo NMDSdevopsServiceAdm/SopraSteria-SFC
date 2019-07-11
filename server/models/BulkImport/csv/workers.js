@@ -819,25 +819,20 @@ class Worker {
 
   _validateRecSource() {
     const myRecSource = parseInt(this._currentLine.RECSOURCE);
-
     // optional
-    if (this._currentLine.RECSOURCE && this._currentLine.RECSOURCE.length > 0) {
-      if (isNaN(myRecSource)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.RESOURCE_ERROR,
-          errType: 'RECSOURCE_ERROR',
-          error: "The code you have entered for RECSOURCE is incorrect",
-          source: this._currentLine.RECSOURCE,
-        });
-        return false;
-      } else {
-        this._recSource = myRecSource;
-        return true;
-      }
+    if (this._currentLine.RECSOURCE && (isNaN(myRecSource))) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.RESOURCE_ERROR,
+        errType: 'RECSOURCE_ERROR',
+        error: "The code you have entered for RECSOURCE is incorrect",
+        source: this._currentLine.RECSOURCE,
+      });
+      return false;
     } else {
+      this._recSource = myRecSource ? myRecSource : null;
       return true;
     }
   }
@@ -891,6 +886,17 @@ class Worker {
         warnCode: Worker.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
         warning: "STARTDATE is before workers 14th birthday and will be ignored",
+        source: this._currentLine.STARTINSECT,
+      });
+      return false;
+    } else if (myRealStartDate.isBefore(myYearOfEntry)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_DATE_WARNING,
+        warnType: 'START_DATE_WARNING',
+        warning: "STARTDATE is before year of entry and will be ignored",
         source: this._currentLine.STARTINSECT,
       });
       return false;
@@ -1011,67 +1017,63 @@ class Worker {
     const myZeroHourContract = parseInt(this._currentLine.ZEROHRCONT, 10);
     const myContHours = parseFloat(this._currentLine.CONTHOURS);
 
-    // optional
-    if (this._currentLine.ZEROHRCONT && this._currentLine.ZEROHRCONT.length > 0) {
-      if (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.ZERO_HRCONT_ERROR,
-          errType: 'ZEROHRCONT_ERROR',
-          error: "The code you have entered for ZEROHRCONT is incorrect",
-          source: this._currentLine.ZEROHRCONT,
-        });
-        return false;
-      } else if (myContHours > 0 && (myZeroHourContract === 999 || myZeroHourContract === 1)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.ZERO_HRCONT_ERROR,
-          errType: 'ZEROHRCONT_ERROR',
-          error: "The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks",
-          source: this._currentLine.ZEROHRCONT,
-        });
-        return false;
-      } else if (myContHours === 0 &&  myZeroHourContract === 2) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.ZERO_HRCONT_WARNING,
-          warnType: 'ZERO_HRCONT_WARNING',
-          warning: "You have entered “0” in CONTHOURS but not entered “Yes” to the ZEROHRCONT question",
-          source: this._currentLine.ZEROHRCONT,
-        });
-        return false;
-      }  else if (myContHours > 0 &&  !myZeroHourContract) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.ZERO_HRCONT_WARNING,
-          warnType: 'ZERO_HRCONT_WARNING',
-          warning: "You have entered contracted hours but have not said this worker is not on a zero hours contract",
-          source: this._currentLine.ZEROHRCONT,
-        });
-        return false;
-      } else {
-        switch (myZeroHourContract) {
-          case 1:
-            this._zeroHourContract = 'Yes';
-            break;
-          case 2:
-            this._zeroHourContract = 'No';
-            break;
-          case 999:
-            this._zeroHourContract = 'Don\'t know';
-            break;
-        }
-        return true;
-      }
+    if (myContHours > 0 && !this._currentLine.ZEROHRCONT) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.ZERO_HRCONT_WARNING,
+        warnType: 'ZERO_HRCONT_WARNING',
+        warning: "You have entered contracted hours but have not said this worker is not on a zero hours contract",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
+    }
+    else if (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.ZERO_HRCONT_ERROR,
+        errType: 'ZEROHRCONT_ERROR',
+        error: "The code you have entered for ZEROHRCONT is incorrect",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
+    } else if (myContHours > 0 && (myZeroHourContract === 999 || myZeroHourContract === 1)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.ZERO_HRCONT_ERROR,
+        errType: 'ZEROHRCONT_ERROR',
+        error: "The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
+    } else if (myContHours === 0 &&  myZeroHourContract === 2) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.ZERO_HRCONT_WARNING,
+        warnType: 'ZERO_HRCONT_WARNING',
+        warning: "You have entered “0” in CONTHOURS but not entered “Yes” to the ZEROHRCONT question",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
     } else {
+      switch (myZeroHourContract) {
+        case 1:
+          this._zeroHourContract = 'Yes';
+          break;
+        case 2:
+          this._zeroHourContract = 'No';
+          break;
+        case 999:
+          this._zeroHourContract = 'Don\'t know';
+          break;
+      }
       return true;
     }
   }
@@ -1079,11 +1081,14 @@ class Worker {
   _validateDaysSick() {
     const myDaysSick = parseFloat(this._currentLine.DAYSSICK);
 
-    // optional
     if (this._currentLine.DAYSSICK && this._currentLine.DAYSSICK.length > 0) {
-      const MAX_VALUE = 365.0;
+      const MAX_VALUE = 366.0;
       const DONT_KNOW_VALUE = 999;
-      if (isNaN(myDaysSick) || myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
+
+      const containsHalfDay = this._currentLine.DAYSSICK.indexOf('.') > 0 ?
+        this._currentLine.DAYSSICK.split(".")[1] : 5;
+
+      if (isNaN(myDaysSick) || containsHalfDay !== 5 || myDaysSick < 0 || myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1339,6 +1344,18 @@ class Worker {
         return false;
       }
       else if (myEmplStatus && EMPL_STATUSES.includes(parseFloat(myEmplStatus)) ) {
+        let contractType = '';
+        switch (myEmplStatus) {
+          case '3':
+            contractType = 'Pool/Bank'
+            break;
+          case '4':
+            contractType = 'Agency';
+            break;
+          case '7':
+            contractType = 'Other';
+            break;
+        }
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1346,7 +1363,7 @@ class Worker {
 
           warnCode: Worker.CONT_HOURS_WARNING,
           warnType: 'CONT_HOURS_WARNING',
-          warning: `CONTHOURS will be ignored as EMPLSTATUS is ${this._currentLine.EMPLSTATUS}`,
+          warning: `CONTHOURS will be ignored as EMPLSTATUS is ${contractType}`,
           source: this._currentLine.CONTHOURS,
         });
         return false;
@@ -1380,7 +1397,7 @@ class Worker {
           lineNumber: this._lineNumber,
           warnCode: Worker.AVG_HOURS_WARNING,
           warnType: 'AVG_HOURS_ERROR',
-          warning: `The code you have entered for CONTHOURS is incorrect and will be ignored`,
+          warning: `The code you have entered for AVGHOURS is incorrect and will be ignored`,
           source: this._currentLine.AVGHOURS,
         });
         return false;
@@ -1427,6 +1444,7 @@ class Worker {
     if ( this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
       const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
       const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
+      const jobRoles = [23,27];
 
       const localValidationErrors = [];
       const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
@@ -1944,7 +1962,7 @@ class Worker {
 
   //transform related
   _transformRecruitment() {
-    if (this._recSource) {
+    if (this._recSource || this._recSource === 0) {
       if (this._recSource === 16) {
         this._recSource = 'No';
       } else {
@@ -1957,7 +1975,7 @@ class Worker {
             lineNumber: this._lineNumber,
             errCode: Worker.RECSOURCE_ERROR,
             errType: `RECSOURCE_ERROR`,
-            error: `Recruitement Source (RECSOURCE): ${this._recSource} is unknown`,
+            error: `The code you have entered for RECSOURCE is incorrect`,
             source: this._currentLine.RECSOURCE,
           });
         } else {
@@ -2740,9 +2758,9 @@ class Worker {
             validationError.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
-            validationError.errCode = Worker.RECSOURCE_ERROR;
-            validationError.errType = 'RECSOURCE_ERROR';
-            validationError.source  = `${this._currentLine.RECSOURCE}`;
+            // validationError.errCode = Worker.RECSOURCE_ERROR;
+            // validationError.errType = 'RECSOURCE_ERROR';
+            // validationError.source  = `${this._currentLine.RECSOURCE}`;
             break;
           case 'WorkerSocialCareStartDate':
             validationError.errCode = Worker.START_INSECT_ERROR;
@@ -2898,9 +2916,9 @@ class Worker {
             validationWarning.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
-            validationWarning.warnCode = Worker.RECSOURCE_ERROR;
-            validationWarning.warnType = 'RECSOURCE_ERROR';
-            validationWarning.source  = `${this._currentLine.RECSOURCE}`;
+            // validationWarning.warnCode = Worker.RECSOURCE_ERROR;
+            // validationWarning.warnType = 'RECSOURCE_ERROR';
+            // validationWarning.source  = `${this._currentLine.RECSOURCE}`;
             break;
           case 'WorkerSocialCareStartDate':
             validationWarning.warnCode = Worker.START_INSECT_WARNING;
