@@ -5,6 +5,7 @@
 
 .govuk__grid-container {
   grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
   border-bottom: solid 1px govuk-colour("grey-1");
   margin-bottom: 0;
   padding-top: govuk-spacing(2);
@@ -16,7 +17,7 @@
   grid-row-start: 1;
   grid-row-end: 2;
   grid-column-start: 1;
-  grid-column-end: 3;
+  grid-column-end: 4;
 }
 
 .govuk__align-items-center {
@@ -52,7 +53,7 @@
   grid-column-end: 4;
 }
 
-.govuk__grid-error {
+.govuk-form-group--error {
   .govuk__grid-column-1 {
     grid-row-start: 2;
     grid-row-end: 3;
