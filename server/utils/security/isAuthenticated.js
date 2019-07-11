@@ -253,3 +253,63 @@ exports.isAuthorisedAddUser = (req, res, next) => {
     res.status(401).send('Requires authorisation');
   }
 }
+
+exports.isAuthorisedInternalAdminApp = (req, res, next) => {
+  const token = getToken(req.headers[AUTH_HEADER]);
+
+  if (token) {
+    jwt.verify(token, Token_Secret, function (err, claim) {
+
+      if (err || claim.aud !== config.get('jwt.aud.internalAdminApp') || claim.iss !== thisIss) {
+        console.error('Internal Admin App token is invalid');
+        return res.status(403).send('Invalid token');
+      } else {
+        next();
+      }
+    });
+  } else {
+    // not authenticated
+    res.status(401).send('Requires authorisation');
+  }
+}
+
+exports.isAdmin = (req, res , next) => {
+  const token = getToken(req.headers[AUTH_HEADER]);
+
+  if (token) {
+    // var dec = getverify(token, Token_Secret);
+
+    jwt.verify(token, Token_Secret, function (err, claim) {
+      if (err || claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
+        return res.status(403).send('Invalid Token');
+      } else {
+        if (claim.role !== 'Admin') {
+          return res.status(403).send('You\'re not admin');
+        } else {
+          next();
+        }
+      }
+    });
+  } else {
+    // not authenticated
+    res.status(401).send('Requires authorisation');
+  }
+};
+
+exports.isAuthorisedRegistrationApproval = (req, res, next) => {
+  const token = getToken(req.headers[AUTH_HEADER]);
+
+  if (token) {
+    jwt.verify(token, Token_Secret, function (err, claim) {
+    if (err || claim.aud !== config.get('jwt.aud.internalAdminApp') || claim.iss !== thisIss) {
+      console.error('Internal Admin App token is invalid');
+      return res.status(403).send('Invalid token');
+    } else {
+      next();
+    }
+    });
+  } else {
+    // not authenticated
+    res.status(401).send('Requires authorisation');
+  }
+}

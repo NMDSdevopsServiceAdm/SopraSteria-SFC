@@ -42,6 +42,10 @@ var workerLeaveReasons = require('./server/routes/workerReason');
 var serviceUsers = require('./server/routes/serviceUsers');
 var workingTrainingCategories = require('./server/routes/workerTrainingCategories');
 var nurseSpecialism = require('./server/routes/nurseSpecialism');
+var availableQualifications = require('./server/routes/availableQualifications');
+
+// admin route
+var admin = require('./server/routes/admin');
 
 // reports
 var ReportsRoute = require('./server/routes/reports/index');
@@ -174,6 +178,7 @@ app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveRea
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
 app.use('/api/trainingCategories', [refCacheMiddleware.refcache, workingTrainingCategories]);
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
+app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
@@ -186,6 +191,8 @@ app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
+
+app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
