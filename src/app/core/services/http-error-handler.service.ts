@@ -20,6 +20,11 @@ export class HttpErrorHandler {
       this.router.navigate(['/logged-out']);
       return throwError('403');
     }
+
+    if (error.status >= 500) {
+      this.router.navigate(['/problem-with-the-service']);
+    }
+
     const message = error.error ? error.error.message : 'Server error. Please try again later, sorry.';
 
     if (isDevMode()) {
