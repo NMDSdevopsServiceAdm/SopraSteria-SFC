@@ -44,6 +44,9 @@ var workingTrainingCategories = require('./server/routes/workerTrainingCategorie
 var nurseSpecialism = require('./server/routes/nurseSpecialism');
 var availableQualifications = require('./server/routes/availableQualifications');
 
+// admin route
+var admin = require('./server/routes/admin');
+
 // reports
 var ReportsRoute = require('./server/routes/reports/index');
 
@@ -188,6 +191,8 @@ app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
+
+app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));
