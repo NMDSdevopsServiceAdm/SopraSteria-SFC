@@ -25,11 +25,11 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   }
 
   protected init() {
-    this.setupSubscriptions();
+    this.setupSubscription();
     this.setBackLink();
   }
 
-  private setupSubscriptions(): void {
+  private setupSubscription(): void {
     this.subscriptions.add(
       this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
         if (userDetails) {
@@ -43,10 +43,10 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   private prefillForm(userDetails: UserDetails): void {
     if (userDetails) {
       this.form.setValue({
-        email: userDetails.emailAddress,
+        email: userDetails.email,
         fullName: userDetails.fullname,
         jobTitle: userDetails.jobTitle,
-        phone: userDetails.contactNumber,
+        phone: userDetails.phone,
       });
     }
   }
