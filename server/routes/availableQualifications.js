@@ -6,7 +6,7 @@ const isAuthorisedInternalAdminApp = require('../utils/security/isAuthenticated'
 
 
 // attach middleware authentication
-//router.use('/', isAuthorisedInternalAdminApp);
+router.use('/', isAuthorisedInternalAdminApp);
 
 // update qualification by given id
 router.route('/:id').put(async function (req, res) {
