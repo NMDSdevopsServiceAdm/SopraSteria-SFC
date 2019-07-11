@@ -3,7 +3,7 @@ const router = express.Router();
 const models = require('../../../../models');
 
 
-// update qualification by given id
+// search for establishments using wildcard on postcode and NMDS ID
 router.route('/').post(async function (req, res) {
   const establishmentSearchFields = req.body;
 

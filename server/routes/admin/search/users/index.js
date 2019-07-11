@@ -3,7 +3,7 @@ const router = express.Router();
 const models = require('../../../../models');
 
 
-// update qualification by given id
+// search for users' establishments using wildcard on username and user's name
 router.route('/').post(async function (req, res) {
   const userSearchFields = req.body;
 

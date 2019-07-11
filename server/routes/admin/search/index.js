@@ -1,4 +1,4 @@
-// default route for admin
+// default route for admin/search
 const express = require('express');
 const router = express.Router();
 
