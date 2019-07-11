@@ -1,4 +1,4 @@
-// default route for reports
+// default route for admin
 const express = require('express');
 const router = express.Router();
 
