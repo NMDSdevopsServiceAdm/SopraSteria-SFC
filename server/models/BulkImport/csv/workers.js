@@ -845,7 +845,7 @@ class Worker {
     const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
     const myRealDOBDate = this._currentLine.DOB && this._currentLine.DOB.length > 1 ? moment.utc(this._currentLine.DOB, "DD/MM/YYYY") : null;
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
-    
+
     if (!myStartDate) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -1582,7 +1582,7 @@ class Worker {
         source: this._currentLine.NURSESPEC,
       });
       return false;
-    } 
+    }
     else {
       this._nursingSpecialist = myNursingSpecialist;
       return true;
