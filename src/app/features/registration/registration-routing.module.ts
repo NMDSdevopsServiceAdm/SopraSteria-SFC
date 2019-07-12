@@ -62,7 +62,7 @@ const routes: Routes = [
   {
     path: 'security-question',
     component: SecurityQuestionComponent,
-    // canActivate: [RegisterGuard],
+    canActivate: [RegisterGuard],
     data: { title: 'Security Question' },
   },
   {
