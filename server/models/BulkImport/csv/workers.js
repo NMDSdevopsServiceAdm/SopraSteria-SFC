@@ -1272,7 +1272,7 @@ class Worker {
     // main job description is optional, but even then, only relevant if main job is 23 or 27
     const ALLOWED_JOBS = [23, 27];
 
-    if (ALLOWED_JOBS.includes(this._mainJobRole) && this._currentLine.MAINJRDESC.length < 0) {
+    if (ALLOWED_JOBS.includes(this._mainJobRole) && this._currentLine.MAINJRDESC.length === 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
