@@ -128,7 +128,7 @@
           </span>
           <span *ngIf="submitted && form.invalid" id="termsAndConditions-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
-            {{ getFormErrorMessage('termsAndConditions', 'required') }}
+            {{ getFirstErrorMessage('termsAndConditions') }}
           </span>
           <div class="govuk-checkboxes">
             <div class="govuk-checkboxes__item">
