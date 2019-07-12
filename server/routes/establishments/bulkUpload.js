@@ -247,6 +247,7 @@ router.route('/signedUrl').get(async function (req, res) {
 
 // Prevalidate
 router.route('/uploaded').put(async (req, res) => {
+
   const establishmentId = req.establishmentId;
   const username = req.username;
   const myDownloads = {};
@@ -311,18 +312,48 @@ router.route('/uploaded').put(async (req, res) => {
       status = false;
     }
 
-    const importedEstablishments = myDownloads.establishments ? await csv().fromString(myDownloads.establishments) : null;
-    const importedWorkers = myDownloads.workers ? await csv().fromString(myDownloads.workers) :  null;
-    const importedTraining = myDownloads.trainings ? await csv().fromString(myDownloads.trainings) : null;
+    let workerHeaders, establishmentHeaders, trainingHeaders; 
+    let importedWorkers = null, importedEstablishments = null, importedTraining = null;
+
+    let headerPromises = [];
+
+    if(myDownloads.establishments){
+      headerPromises.push(new Promise( async (resolve, reject) => {
+        importedEstablishments = await csv().fromString(myDownloads.establishments).on('header', (header) => {
+          establishmentHeaders = header;
+          resolve();    
+        });
+      }));
+    }
+
+    if(myDownloads.workers){
+      headerPromises.push(new Promise( async (resolve, reject) => {
+        importedWorkers = await csv().fromString(myDownloads.workers).on('header', (header) => {
+          workerHeaders = header;
+          resolve();    
+        });
+      }));
+    }
+    
+    if(myDownloads.training){
+      trainingHeaders.push(new Promise( async (resolve, reject) => {
+        importedTraining = await csv().fromString(myDownloads.training).on('header', (header) => {
+          trainingHeaders = header;
+          resolve();    
+        });
+      }));
+    }
+
+    await Promise.all(headerPromises);
 
     //////////////////////////////
     const firstRow = 0;
-    const firstLineNumber = 2;
+    const firstLineNumber = 1;
     const metadataS3Promises = [];
 
     if(importedEstablishments){
       const establishmentsCsvValidator = new CsvEstablishmentValidator(importedEstablishments[firstRow], firstLineNumber);
-      if (establishmentsCsvValidator.preValidate()) {
+      if (establishmentsCsvValidator.preValidate(establishmentHeaders)) {
         // count records and update metadata
         establishmentMetadata.records = importedEstablishments.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, establishmentMetadata, `${establishmentId}/latest/${establishmentMetadata.filename}.metadata.json`));
@@ -335,7 +366,7 @@ router.route('/uploaded').put(async (req, res) => {
 
     if(importedWorkers){
       const workerCsvValidator = new CsvWorkerValidator(importedWorkers[firstRow], firstLineNumber);
-      if(workerCsvValidator.preValidate()){
+      if(workerCsvValidator.preValidate(workerHeaders)){
         // count records and update metadata
         workerMetadata.records = importedWorkers.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, workerMetadata, `${establishmentId}/latest/${workerMetadata.filename}.metadata.json`));
@@ -348,7 +379,7 @@ router.route('/uploaded').put(async (req, res) => {
 
     if(importedTraining){
       const trainingCsvValidator = new CsvTrainingValidator(importedTraining[firstRow], firstLineNumber);
-      if(trainingCsvValidator.preValidate()){
+      if(trainingCsvValidator.preValidate(trainingHeaders)){
         // count records and update metadata
         trainingMetadata.records = importedTraining.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, trainingMetadata, `${establishmentId}/latest/${trainingMetadata.filename}.metadata.json`));

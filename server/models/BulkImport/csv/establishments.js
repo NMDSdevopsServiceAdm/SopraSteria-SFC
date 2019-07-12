@@ -1497,8 +1497,8 @@ class Establishment {
     }
   }
 
-  preValidate() {
-    return this._validateHeaders();
+  preValidate(headers) {
+    return this._validateHeaders(headers);
   }
 
   static isContent(data) {
@@ -1506,8 +1506,7 @@ class Establishment {
     return contentRegex.test(data.substring(0,50));
   }
 
-  _validateHeaders() {
-    const headers = Object.keys(this._currentLine);
+  _validateHeaders(headers) {
     // only run once for first line, so check _lineNumber
     if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
       this._validationErrors.push({
