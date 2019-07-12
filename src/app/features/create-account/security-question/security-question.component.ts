@@ -1,12 +1,12 @@
+import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
+import { CreateAccountService } from '@core/services/create-account/create-account.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { finalize } from 'rxjs/operators';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SecurityDetails } from '@core/model/security-details.model';
-import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
 import { SecurityQuestion } from '@features/account/security-question/security-question';
-import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-security-question',
@@ -14,11 +14,11 @@ import { finalize } from 'rxjs/operators';
 })
 export class SecurityQuestionComponent extends SecurityQuestion {
   constructor(
-    private registrationService: RegistrationService,
+    private createAccountService: CreateAccountService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router,
+    protected router: Router
   ) {
     super(backService, errorSummaryService, formBuilder, router);
   }
@@ -27,9 +27,16 @@ export class SecurityQuestionComponent extends SecurityQuestion {
     this.setupSubscription();
   }
 
+  protected setBackLink(): void {
+    const route: string = this.securityDetailsExist
+      ? '/create-account/confirm-account-details'
+      : '/create-account/create-username';
+    this.backService.setBackLink({ url: [route] });
+  }
+
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.registrationService.securityDetails$
+      this.createAccountService.securityDetails$
         .pipe(finalize(() => this.setBackLink()))
         .subscribe((securityDetails: SecurityDetails) => {
           if (securityDetails) {
@@ -40,16 +47,9 @@ export class SecurityQuestionComponent extends SecurityQuestion {
     );
   }
 
-  protected setBackLink(): void {
-    const route: string = this.securityDetailsExist
-      ? '/registration/confirm-account-details'
-      : '/registration/create-username';
-    this.backService.setBackLink({ url: [route] });
-  }
-
   protected save(): void {
-    this.router.navigate(['/registration/confirm-account-details']).then(() => {
-      this.registrationService.securityDetails$.next({
+    this.router.navigate(['/create-account/confirm-account-details']).then(() => {
+      this.createAccountService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,
         securityAnswer: this.getSecurityAnswer.value,
       });
@@ -57,7 +57,6 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   }
 
   protected setCallToActionLabel(): void {
-    const label: string = this.securityDetailsExist ? 'Save and return' : 'Continue';
-    this.callToActionLabel = label;
+    this.callToActionLabel = 'Save and continue';
   }
 }

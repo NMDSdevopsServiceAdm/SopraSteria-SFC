@@ -5,7 +5,6 @@ import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { SecurityQuestion } from '@features/account/security-question/security-question';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -27,19 +26,18 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
-    protected router: Router
+    protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, registrationService, router);
+    super(backService, errorSummaryService, formBuilder, router);
   }
 
   protected init(): void {
     this.breadcrumbService.show();
-    this.setupSubscriptions();
+    this.setupSubscription();
     this.setupServerErrorsMap();
   }
 
-  private setupSubscriptions(): void {
+  protected setupSubscription(): void {
     this.subscriptions.add(
       this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
         if (userDetails) {
