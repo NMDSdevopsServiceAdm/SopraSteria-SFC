@@ -1,13 +1,12 @@
-import { SecurityDetails } from '@core/model/security-details.model';
 import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
-import { RegistrationService } from '@core/services/registration.service';
-import { Router } from '@angular/router';
-import { SecurityQuestion } from '@features/account/security-question/security-question';
 import { finalize } from 'rxjs/operators';
+import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { SecurityDetails } from '@core/model/security-details.model';
+import { SecurityQuestion } from '@features/account/security-question/security-question';
 
 @Component({
   selector: 'app-security-question',
@@ -19,10 +18,9 @@ export class SecurityQuestionComponent extends SecurityQuestion {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
     protected router: Router
   ) {
-    super(backService, errorSummaryService, formBuilder, registrationService, router);
+    super(backService, errorSummaryService, formBuilder, router);
   }
 
   protected init(): void {
@@ -36,7 +34,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
     this.backService.setBackLink({ url: [route] });
   }
 
-  private setupSubscription(): void {
+  protected setupSubscription(): void {
     this.subscriptions.add(
       this.createAccountService.securityDetails$
         .pipe(finalize(() => this.setBackLink()))

@@ -3,7 +3,6 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OnDestroy, OnInit } from '@angular/core';
-import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { Subscription } from 'rxjs';
@@ -31,7 +30,6 @@ export class SecurityQuestion implements OnInit, OnDestroy {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
     protected router: Router
   ) {}
 
@@ -47,7 +45,7 @@ export class SecurityQuestion implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setupForm();
-    this.checkExistingSecurityDetails();
+    this.setupSubscription();
     this.setupFormErrorsMap();
     this.setCallToActionLabel();
     this.init();
@@ -55,16 +53,7 @@ export class SecurityQuestion implements OnInit, OnDestroy {
 
   protected init(): void {}
 
-  private checkExistingSecurityDetails(): void {
-    this.subscriptions.add(
-      this.registrationService.securityDetails$.subscribe((securityDetails: SecurityDetails) => {
-        if (securityDetails) {
-          this.securityDetailsExist = true;
-          this.preFillForm(securityDetails);
-        }
-      })
-    );
-  }
+  protected setupSubscription(): void {}
 
   protected preFillForm(securityDetails: SecurityDetails): void {
     if (securityDetails) {
