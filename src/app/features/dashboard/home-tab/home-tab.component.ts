@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { LoggedInSession } from '@core/model/logged-in.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
@@ -13,6 +14,7 @@ import { take } from 'rxjs/operators';
 })
 export class HomeTabComponent implements OnInit {
   public editRole: Roles = Roles.Edit;
+  public adminRole: Roles = Roles.Admin;
   public role: Roles;
   public establishmentId: number;
   public isParent: boolean;
@@ -21,13 +23,19 @@ export class HomeTabComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
+    private route: ActivatedRoute,
     private authService: AuthService,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService
-  ) {}
+  ) { }
 
   ngOnInit() {
+
     this.establishmentId = this.establishmentService.establishmentId;
+
+    if (this.route.snapshot.queryParamMap.get('est')) {
+      this.establishmentId = parseInt(this.route.snapshot.queryParamMap.get('est'));
+    }
 
     this.subscriptions.add(
       this.authService.auth$.pipe(take(1)).subscribe((loggedInSession: LoggedInSession) => {
