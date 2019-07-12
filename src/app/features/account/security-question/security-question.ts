@@ -50,7 +50,6 @@ export class SecurityQuestion implements OnInit, OnDestroy {
     this.checkExistingSecurityDetails();
     this.setupFormErrorsMap();
     this.setCallToActionLabel();
-    this.setBackLink();
   }
 
   private checkExistingSecurityDetails(): void {
@@ -72,8 +71,6 @@ export class SecurityQuestion implements OnInit, OnDestroy {
   }
 
   protected setCallToActionLabel(): void {}
-
-  protected setBackLink(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
