@@ -10,9 +10,9 @@ import { Subscription } from 'rxjs';
 
 export class SecurityQuestion implements OnInit, OnDestroy {
   private formErrorsMap: Array<ErrorDetails>;
-  private securityDetailsExist = false;
   private securityDetailsMaxLength = 255;
   private subscriptions: Subscription = new Subscription();
+  protected securityDetailsExist = false;
   public callToActionLabel: string;
   public form: FormGroup;
   public submitted = false;
@@ -71,17 +71,9 @@ export class SecurityQuestion implements OnInit, OnDestroy {
     }
   }
 
-  private setCallToActionLabel(): void {
-    const label: string = this.securityDetailsExist ? 'Save and return' : 'Continue';
-    this.callToActionLabel = label;
-  }
+  protected setCallToActionLabel(): void {}
 
-  private setBackLink(): void {
-    const route: string = this.securityDetailsExist
-      ? '/registration/confirm-account-details'
-      : '/registration/create-username';
-    this.backService.setBackLink({ url: [route] });
-  }
+  protected setBackLink(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
@@ -132,14 +124,7 @@ export class SecurityQuestion implements OnInit, OnDestroy {
     }
   }
 
-  private save(): void {
-    this.registrationService.securityDetails$.next({
-      securityQuestion: this.getSecurityQuestion.value,
-      securityAnswer: this.getSecurityAnswer.value,
-    });
-
-    this.router.navigate(['/registration/confirm-account-details']);
-  }
+  protected save(): void {}
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];

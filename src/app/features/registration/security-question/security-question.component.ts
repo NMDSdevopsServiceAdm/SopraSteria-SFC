@@ -20,4 +20,25 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   ) {
     super(backService, errorSummaryService, formBuilder, registrationService, router);
   }
+
+  protected setBackLink(): void {
+    const route: string = this.securityDetailsExist
+      ? '/registration/confirm-account-details'
+      : '/registration/create-username';
+    this.backService.setBackLink({ url: [route] });
+  }
+
+  protected save(): void {
+    this.registrationService.securityDetails$.next({
+      securityQuestion: this.getSecurityQuestion.value,
+      securityAnswer: this.getSecurityAnswer.value,
+    });
+
+    this.router.navigate(['/registration/confirm-account-details']);
+  }
+
+  protected setCallToActionLabel(): void {
+    const label: string = this.securityDetailsExist ? 'Save and return' : 'Continue';
+    this.callToActionLabel = label;
+  }
 }
