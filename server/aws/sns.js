@@ -18,8 +18,6 @@ const postToRegistrations = async (registration)  => {
 
   // remove sensitive/unnecessary data
 
-  console.log("WA DEBUG - registration message: ", registration)
-
   const params = {
     Message: JSON.stringify(registration),
     TopicArn: config.get('aws.sns.registrations'),
