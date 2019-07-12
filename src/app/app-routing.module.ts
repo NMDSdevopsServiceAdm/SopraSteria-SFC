@@ -51,6 +51,18 @@ const routes: Routes = [
     data: { title: 'Reports' },
   },
   {
+    path: 'search-users',
+    loadChildren: '@features/search/search.module#SearchModule',
+    canActivate: [AuthGuard],
+    data: { title: 'Search Users' },
+  },
+  {
+    path: 'search-establishments',
+    loadChildren: '@features/search/search.module#SearchModule',
+    canActivate: [AuthGuard],
+    data: { title: 'Search Establishments' },
+  },
+  {
     path: 'worker',
     loadChildren: '@features/workers/workers.module#WorkersModule',
     canActivate: [AuthGuard],
@@ -107,4 +119,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes, { anchorScrolling: 'enabled' })],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

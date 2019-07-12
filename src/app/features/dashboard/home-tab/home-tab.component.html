@@ -20,6 +20,8 @@
       <li *ngIf="role === editRole"><a [routerLink]="['/bulk-upload']">Bulk upload</a></li>
       <li *ngIf="isParent"><a [routerLink]="['/workplace/view-my-workplaces']">View my workplaces</a></li>
       <li><a [routerLink]="['/reports']">View reports</a></li>
+      <li *ngIf="role === adminRole"><a [routerLink]="['/search-users']">Search Users</a></li>
+      <li *ngIf="role === adminRole"><a [routerLink]="['/search-establishments']">Search Establishments</a></li>
       <!--
         TODO uncomment once relevant sections have been developed
         <li><a [routerLink]="['/']">Request to become a parent</a></li>
