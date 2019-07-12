@@ -334,6 +334,7 @@ router.route('/uploaded').put(async (req, res) => {
     }
 
     if(importedWorkers){
+      console.log("WA DEBUG - imported workers: ", importedWorkers)
       const workerCsvValidator = new CsvWorkerValidator(importedWorkers[firstRow], firstLineNumber);
       if(workerCsvValidator.preValidate()){
         // count records and update metadata

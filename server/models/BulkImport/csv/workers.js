@@ -845,7 +845,7 @@ class Worker {
     const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
     const myRealDOBDate = this._currentLine.DOB && this._currentLine.DOB.length > 1 ? moment.utc(this._currentLine.DOB, "DD/MM/YYYY") : null;
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
-    
+
     if (!myStartDate) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -1582,7 +1582,7 @@ class Worker {
         source: this._currentLine.NURSESPEC,
       });
       return false;
-    } 
+    }
     else {
       this._nursingSpecialist = myNursingSpecialist;
       return true;
@@ -2249,17 +2249,33 @@ class Worker {
   }
 
   preValidate() {
+    console.log("WA DEBUG - prevalidating headers")
     return this._validateHeaders();
   }
 
   static isContent(data) {
-    const contentRegex = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    return contentRegex.test(data.substring(0,50));
+    const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
+    const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMB/;
+
+    console.log("WA DEBUG - checking worker content: 1 - ", contentRegex1.test(data.substring(0,50)))
+    console.log("WA DEBUG - checking worker content: 2 - ", contentRegex2.test(data.substring(0,50)))
+
+    const toReturn = contentRegex1.test(data.substring(0,50)) || contentRegex2.test(data.substring(0,50));
+    console.log("WA DEBUG - checking worker content retrun: ", toReturn)
+    return contentRegex1.test(data.substring(0,50)) || contentRegex2.test(data.substring(0,50));
   }
 
   _validateHeaders() {
     const headers = Object.keys(this._currentLine);
     // only run once for first line, so check _lineNumber
+
+    console.log("WA DEBUG - checking worker headers: 1 - ", JSON.stringify(this._headers_v1) !== JSON.stringify(headers))
+    console.log("WA DEBUG - checking worker headers: 2 - ", JSON.stringify(this._headers_v1_without_chgUnique) !== JSON.stringify(headers))
+
+    console.log(JSON.stringify(this._headers_v1_without_chgUnique));
+    console.log(JSON.stringify(JSON.stringify(headers)));
+    console.log(this._currentLine);
+
 
     // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
     if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers) &&
