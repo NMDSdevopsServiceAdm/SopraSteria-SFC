@@ -11,8 +11,8 @@ import { Subscription } from 'rxjs';
 export class SecurityQuestion implements OnInit, OnDestroy {
   private formErrorsMap: Array<ErrorDetails>;
   private securityDetailsMaxLength = 255;
-  private subscriptions: Subscription = new Subscription();
   protected securityDetailsExist = false;
+  protected subscriptions: Subscription = new Subscription();
   public callToActionLabel: string;
   public form: FormGroup;
   public submitted = false;
@@ -50,8 +50,10 @@ export class SecurityQuestion implements OnInit, OnDestroy {
     this.checkExistingSecurityDetails();
     this.setupFormErrorsMap();
     this.setCallToActionLabel();
-    this.setBackLink();
+    this.init();
   }
+
+  protected init(): void {}
 
   private checkExistingSecurityDetails(): void {
     this.subscriptions.add(
@@ -64,7 +66,7 @@ export class SecurityQuestion implements OnInit, OnDestroy {
     );
   }
 
-  private preFillForm(securityDetails: SecurityDetails): void {
+  protected preFillForm(securityDetails: SecurityDetails): void {
     if (securityDetails) {
       this.getSecurityQuestion.setValue(securityDetails.securityQuestion);
       this.getSecurityAnswer.setValue(securityDetails.securityAnswer);
@@ -72,8 +74,6 @@ export class SecurityQuestion implements OnInit, OnDestroy {
   }
 
   protected setCallToActionLabel(): void {}
-
-  protected setBackLink(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({

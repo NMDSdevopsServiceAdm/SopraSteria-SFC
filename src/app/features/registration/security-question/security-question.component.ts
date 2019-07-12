@@ -21,6 +21,10 @@ export class SecurityQuestionComponent extends SecurityQuestion {
     super(backService, errorSummaryService, formBuilder, registrationService, router);
   }
 
+  protected init(): void {
+    this.setBackLink();
+  }
+
   protected setBackLink(): void {
     const route: string = this.securityDetailsExist
       ? '/registration/confirm-account-details'
