@@ -682,17 +682,7 @@ class Establishment {
         const MAX_LENGTH = 120;
         if (otherServices.includes(thisServiceIndex)) {
           const myServiceOther = listOfServiceDescriptions[index];
-          if (!myServiceOther || myServiceOther.length == 0) {
-            localValidationErrors.push({
-              lineNumber: this._lineNumber,
-              errCode: Establishment.ALL_SERVICES_ERROR,
-              errType: `ALL_SERVICES_ERROR`,
-              error: `All Services (ALLSERVICES:${index+1}) is an 'other' service and consequently (SERVICEDESC:${index+1}) must be defined`,
-              source: `${this._currentLine.SERVICEDESC} - ${listOfServiceDescriptions[index]}`,
-              name: this._currentLine.LOCALESTID,
-            });
-            myServiceDescriptions.push(null);
-          } else if (myServiceOther.length > MAX_LENGTH) {
+          if (myServiceOther.length > MAX_LENGTH) {
             localValidationErrors.push({
               lineNumber: this._lineNumber,
               errCode: Establishment.ALL_SERVICES_ERROR,
@@ -728,8 +718,10 @@ class Establishment {
     const listOfServiceUsers = this._currentLine.SERVICEUSERS.split(';');
     const listOfServiceUsersDescriptions = this._currentLine.OTHERUSERDESC.split(';');
 
+    console.log("WA DEBUG - Number of service users - ", listOfServiceUsers.length, this._currentLine.SERVICEUSERS.length)
+
     const localValidationErrors = [];
-    const isValid = listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService)));
+    const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService))) : true;
     if (!isValid) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
@@ -748,13 +740,13 @@ class Establishment {
         source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
         name: this._currentLine.LOCALESTID,
       });
-    } else {
+    } else if (isValid) {
       const myServiceUsersDescriptions = [];
       this._allServiceUsers = listOfServiceUsers.map((thisService, index) => {
         const thisServiceIndex = parseInt(thisService, 10);
 
         // if the service user is one of the many "other" type of services, then need to validate the "other description"
-        const otherServiceUsers = [9, 21, 45];   // these are the original budi codes
+        const otherServiceUsers = [3, 9, 21];   // these are the original budi codes
         if (otherServiceUsers.includes(thisServiceIndex)) {
           const myServiceUserOther = listOfServiceUsersDescriptions[index];
           const MAX_LENGTH = 120;
@@ -1681,13 +1673,14 @@ class Establishment {
     const fixedProperties = {
       Address: this._address,
       Postcode: this._postcode,
-      LocationId: this._shareWithCqc ? this._locationID : undefined,
+      locationId: this._shareWithCqc ? this._locationID : undefined,
       ProvId: this._shareWithCqc ? this._provID : undefined,        // this will be ignored by Establishment entity
       IsCQCRegulated: this._regType !== null & this._regType === 2 ? true : false,
     };
 
     const changeProperties = {
       name: this._name,
+      isRegulated: this._regType === 2 ? true : false,
       employerType: {
         value: this._establishmentType,
         other: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
@@ -1726,6 +1719,10 @@ class Establishment {
       starters: this._starters ? this._starters : 'None',
       leavers: this.leavers ? this.leavers : 'None',
     };
+
+    if (this._regType === 2) {
+      changeProperties.locationId = this._locationID;
+    }
 
     // share options
     if (this._shareWithCqc || this._shareWithLA) {
@@ -2015,7 +2012,7 @@ class Establishment {
     const shareWithLA = entity.shareWithLA;
     columns.push(shareWith && shareWith.enabled && shareWith.with.includes('CQC') ? 1 : 0);
     columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? 1 : 0);
-    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? shareWithLA.map(thisLA => thisLA.id).join(';') : '')
+    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? shareWithLA.map(thisLA => thisLA.cssrId).join(';') : '')
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);

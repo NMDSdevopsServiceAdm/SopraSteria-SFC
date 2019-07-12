@@ -20,6 +20,7 @@ import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.
 import { UploadWarningDialogComponent } from './upload-warning-dialog/upload-warning-dialog.component';
 import { UploadedFilesListComponent } from './uploaded-files-list/uploaded-files-list.component';
 import { WorkplaceReferencesPageComponent } from './workplace-references-page/workplace-references-page.component';
+import { ReferencesCreatedPageComponent } from './references-created-page/references-created-page.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, BulkUploadRoutingModule, OverlayModule],
@@ -38,6 +39,7 @@ import { WorkplaceReferencesPageComponent } from './workplace-references-page/wo
     BulkUploadStartPageComponent,
     WorkplaceReferencesPageComponent,
     StaffReferencesPageComponent,
+    ReferencesCreatedPageComponent,
   ],
   providers: [DialogService],
   entryComponents: [UploadWarningDialogComponent],

@@ -45,7 +45,7 @@
           Email address
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ userDetails?.emailAddress }}
+          {{ userDetails?.email }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a [routerLink]="['/registration/change-your-details']">
@@ -59,7 +59,7 @@
           Contact phone
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ userDetails?.contactNumber }}
+          {{ userDetails?.phone }}
         </dd>
         <dd class="govuk-summary-list__actions">
           <a [routerLink]="['/registration/change-your-details']">
@@ -123,7 +123,7 @@
           <span id="termsAndConditions-hint" class="govuk-hint">
             Check the box to confirm you agree to the
             <a [routerLink]="['/public', 'terms-and-conditions']" target="_blank">
-              terms and conditions<span class="govuk-visually-hidden"> (opens in a new window)</span> </a
+              terms and conditions<span class="govuk-visually-hidden">, (opens in a new window)</span> </a
             >. You must agree to them before you can submit your application.
           </span>
           <span *ngIf="submitted && form.invalid" id="termsAndConditions-error" class="govuk-error-message">

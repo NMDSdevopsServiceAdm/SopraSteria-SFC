@@ -12,6 +12,9 @@
   }
 }
 .govuk-summary-list--top-border {
+  .govuk-summary-list__value {
+    vertical-align: middle;
+  }
   .govuk-summary-list__row:first-child {
     .govuk-summary-list__key,
     .govuk-summary-list__value,

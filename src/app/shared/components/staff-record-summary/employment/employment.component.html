@@ -1,0 +1,403 @@
+<h2 class="govuk-heading-m">Employment</h2>
+<dl class="govuk-summary-list govuk-summary-list--top-border">
+  <div class="govuk-summary-list__row" *ngIf="displayYearArrived">
+    <dt class="govuk-summary-list__key">
+      Year arrived in the UK
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'year-arrived-uk']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.yearArrived">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.yearArrived">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> year arrived in UK</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Date started
+    </dt>
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.mainJobStartDate === 'No'">
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.mainJobStartDate != 'No'">
+        {{ worker.mainJobStartDate ? mainStartDate : '-' }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
+      {{ worker.mainJobStartDate ? mainStartDate : '-' }}
+    </dd>
+
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'main-job-start-date']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.mainJobStartDate">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.mainJobStartDate">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> job start date</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayMentalHealthProfessional">
+    <dt class="govuk-summary-list__key">
+      Approved Mental Health Professional
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'mental-health-professional']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.approvedMentalHealthWorker">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.approvedMentalHealthWorker">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> approved mental health professional</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Other job roles
+    </dt>
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.otherJobs === 'No'">
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.otherJobs != 'No'">
+        <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
+          -
+        </ng-template>
+        <ng-template #otherJobs>
+          <ul>
+            <li *ngFor="let otherJob of worker.otherJobs">
+              <ng-template [ngIf]="otherJob.other" [ngIfElse]="title">
+                <span>{{ otherJob.other }}</span>
+              </ng-template>
+              <ng-template #title>
+                <span>{{ otherJob.title }}</span>
+              </ng-template>
+            </li>
+          </ul>
+        </ng-template>
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
+        -
+      </ng-template>
+      <ng-template #otherJobs>
+        <ul class="govuk-list">
+          <li *ngFor="let otherJob of worker.otherJobs">
+            <ng-template [ngIf]="otherJob.other" [ngIfElse]="title">
+              <span>{{ otherJob.other }}</span>
+            </ng-template>
+            <ng-template #title>
+              <span>{{ otherJob.title }}</span>
+            </ng-template>
+          </li>
+        </ul>
+      </ng-template>
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'other-job-roles']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.otherJobs?.length">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.otherJobs?.length">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> other job roles</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
+    <dt class="govuk-summary-list__key">
+      Nursing and Midwifery Council Category
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.registeredNurse || '-' }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'nursing-category']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.registeredNurse">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.registeredNurse">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> nursing and midwifery council category</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
+    <dt class="govuk-summary-list__key">
+      Nurse specialism in current role
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ worker.nurseSpecialism?.specialism | closedEndedAnswer }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'nursing-specialism']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.registeredNurse">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.registeredNurse">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> nursing and midwifery council category</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Recruited from
+    </dt>
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.recruitedFrom === 'No'">
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.recruitedFrom != 'No'">
+        {{
+          worker.recruitedFrom?.from?.from !== null
+            ? worker.recruitedFrom?.from?.from
+            : (worker.recruitedFrom?.value | openEndedAnswer)
+        }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
+      {{
+        worker.recruitedFrom?.from?.from !== null
+          ? worker.recruitedFrom?.from?.from
+          : (worker.recruitedFrom?.value | openEndedAnswer)
+      }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'recruited-from']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.recruitedFrom">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.recruitedFrom">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> recruited from</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Worked in adult social care
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{
+        worker.socialCareStartDate?.year
+          ? worker.socialCareStartDate?.year
+          : (worker.socialCareStartDate?.value | openEndedAnswer)
+      }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'adult-social-care-started']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.socialCareStartDate">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.socialCareStartDate">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> adult social care date</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayDaysSickness">
+    <dt class="govuk-summary-list__key">
+      Sickness in last 12 months
+    </dt>
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.daysSick === 'No'">
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.daysSick != 'No'">
+        {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
+      {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'days-of-sickness']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.daysSick">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.daysSick">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> days of sickness</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Zero hours contract
+    </dt>
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.zeroHoursContract === 'No'">
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.zeroHoursContract != 'No'">
+        {{ worker.zeroHoursContract | closedEndedAnswer }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
+      {{ worker.zeroHoursContract | closedEndedAnswer }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'contract-with-zero-hours']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.zeroHoursContract">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.zeroHoursContract">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> contract with zero hours</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayAverageWeeklyHours">
+    <dt class="govuk-summary-list__key">
+      Average weekly working hours
+    </dt>
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.weeklyHoursAverage === 'No'">
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.weeklyHoursAverage != 'No'">
+        {{
+          isNumber(worker.weeklyHoursAverage?.hours)
+            ? worker.weeklyHoursAverage?.hours
+            : (worker.weeklyHoursAverage?.value | openEndedAnswer)
+        }}
+      </ng-container>
+    </dd>
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
+      {{
+        isNumber(worker.weeklyHoursAverage?.hours)
+          ? worker.weeklyHoursAverage?.hours
+          : (worker.weeklyHoursAverage?.value | openEndedAnswer)
+      }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'average-weekly-hours']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.weeklyHoursAverage">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.weeklyHoursAverage">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> average weekly working hours</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row" *ngIf="displayWeeklyContractedHours">
+    <dt class="govuk-summary-list__key">
+      Contracted weekly hours
+    </dt>
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.weeklyHoursContracted === 'No'">
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.weeklyHoursContracted != 'No'">
+        {{
+          isNumber(worker.weeklyHoursContracted?.hours)
+            ? worker.weeklyHoursContracted?.hours
+            : (worker.weeklyHoursContracted?.value | openEndedAnswer)
+        }}
+      </ng-container>
+    </dd>
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
+      {{
+        isNumber(worker.weeklyHoursContracted?.hours)
+          ? worker.weeklyHoursContracted?.hours
+          : (worker.weeklyHoursContracted?.value | openEndedAnswer)
+      }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'weekly-contracted-hours']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.weeklyHoursContracted">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.weeklyHoursContracted">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> contracted weekly hours</span>
+      </a>
+    </dd>
+  </div>
+
+  <div class="govuk-summary-list__row">
+    <dt class="govuk-summary-list__key">
+      Salary
+    </dt>
+
+    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.wdf.annualHourlyPay === 'No'">
+        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
+      </ng-container>
+      <ng-container *ngIf="worker.wdf.annualHourlyPay != 'No'">
+        {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
+      </ng-container>
+    </dd>
+
+    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
+      {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
+    </dd>
+    <dd class="govuk-summary-list__actions">
+      <a [routerLink]="['/worker', worker.uid, 'salary']" (click)="setReturn()">
+        <ng-container *ngIf="!worker.annualHourlyPay">
+          Provide information
+          <span class="govuk-visually-hidden"> for</span>
+        </ng-container>
+        <ng-container *ngIf="worker.annualHourlyPay">
+          Change
+        </ng-container>
+        <span class="govuk-visually-hidden"> salary</span>
+      </a>
+    </dd>
+  </div>
+</dl>

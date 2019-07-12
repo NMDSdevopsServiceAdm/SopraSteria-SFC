@@ -32,9 +32,9 @@ export class UserService {
   /*
    * PUT /api/user/establishment/:establishmentId/:username
    */
-  public updateUserDetails(userDetails: UserDetails): Observable<UserDetails> {
+  public updateUserDetails(username: string, userDetails: UserDetails): Observable<UserDetails> {
     return this.http.put<UserDetails>(
-      `/api/user/establishment/${this.establishmentService.establishmentId}/${userDetails.username}`,
+      `/api/user/establishment/${this.establishmentService.establishmentId}/${username}`,
       userDetails
     );
   }

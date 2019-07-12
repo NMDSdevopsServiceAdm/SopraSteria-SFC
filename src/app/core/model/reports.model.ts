@@ -1,9 +1,9 @@
 export interface WDFReport {
   establishmentId: number;
-  timestamp: Date;
-  effectiveFrom: Date;
+  timestamp: string;
+  effectiveFrom: string;
   wdf: {
-    overallWdfEligibility?: Date;
+    overallWdfEligibility?: string;
     isEligible: boolean;
     workplace: boolean;
     staff: boolean;

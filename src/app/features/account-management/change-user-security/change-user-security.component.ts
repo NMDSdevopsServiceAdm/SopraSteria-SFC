@@ -1,14 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { UserDetails } from '@core/model/userDetails.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
-import { UserDetails } from '@core/model/userDetails.model';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
   selector: 'app-change-user-security',
@@ -22,12 +21,14 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
   public submitted: boolean;
   public userDetails: UserDetails;
   private subscriptions: Subscription = new Subscription();
+  private username: string;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private userService: UserService,
-    private errorSummaryService: ErrorSummaryService
+    private errorSummaryService: ErrorSummaryService,
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   // Get Security Question
@@ -41,6 +42,8 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.breadcrumbService.show();
+
     this.form = this.fb.group({
       securityQuestionInput: ['', [Validators.required, Validators.maxLength(255)]],
       securityAnswerInput: ['', [Validators.required, Validators.maxLength(255)]],
@@ -48,6 +51,12 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
+    );
+
+    this.subscriptions.add(
+      this.userService.getUsernameFromEstbId().subscribe(data => {
+        this.username = data.users[0].username;
+      })
     );
 
     this.setUserDetails();
@@ -100,7 +109,7 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     if (this.userDetails) {
       this.form.setValue({
         securityQuestionInput: this.userDetails['securityQuestion'],
-        securityAnswerInput: this.userDetails['securityAnswer'],
+        securityAnswerInput: this.userDetails['securityQuestionAnswer'],
       });
     }
   }
@@ -115,10 +124,10 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  private changeUserDetails(userDetails: UserDetails): void {
+  private changeUserDetails(username: string, userDetails: UserDetails): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(userDetails).subscribe(
-        () => this.router.navigate(['/account-management/your-account']),
+      this.userService.updateUserDetails(username, userDetails).subscribe(
+        () => this.router.navigate(['/account-management']),
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
@@ -132,9 +141,9 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.userDetails.securityQuestion = this.form.value.securityQuestionInput,
-      this.userDetails.securityAnswer = this.form.value.securityAnswerInput,
-      this.changeUserDetails(this.userDetails);
+      (this.userDetails.securityQuestion = this.form.value.securityQuestionInput),
+        (this.userDetails.securityQuestionAnswer = this.form.value.securityAnswerInput),
+        this.changeUserDetails(this.username, this.userDetails);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

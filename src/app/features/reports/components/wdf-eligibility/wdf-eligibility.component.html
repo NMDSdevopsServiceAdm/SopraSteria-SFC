@@ -1,0 +1,10 @@
+<dl class="govuk-list--definition-heading-grid">
+  <ng-container *ngFor="let criterion of criteria">
+    <dt>
+      {{ criterion.label }}
+    </dt>
+    <dd>
+      <app-eligibility-icon [eligible]="criterion.truthy"></app-eligibility-icon>
+    </dd>
+  </ng-container>
+</dl>

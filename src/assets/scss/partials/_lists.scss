@@ -111,6 +111,47 @@
     }
   }
 }
+
+.govuk-list--definition-heading-grid {
+  @include govuk-media-query($from: tablet) {
+    display: grid;
+    margin: 0;
+    @include govuk-responsive-margin(4, 'bottom');
+
+    grid-template-columns: 1fr;
+    @include govuk-media-query($from: tablet) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  dt {
+    @include govuk-responsive-padding(3);
+
+    margin: 0;
+    position: relative;
+    @include govuk-font(19, $weight: bold);
+    background-color: govuk-colour('grey-3');
+  }
+
+  dd {
+    @include govuk-responsive-padding(3, 'bottom');
+    @include govuk-responsive-padding(3, 'left');
+    @include govuk-responsive-padding(3, 'right');
+    margin: 0;
+    position: relative;
+    background-color: govuk-colour('grey-3');
+  }
+
+  @for $i from 1 through 3 {
+    dt:nth-of-type(#{$i}) {
+      grid-row-start: 1;
+      grid-row-end: 3;
+      grid-column-start: $i;
+      grid-column-end: $i + 1;
+    }
+  }
+}
+
 .govuk-list--download {
   > li {
     min-height: 26px;

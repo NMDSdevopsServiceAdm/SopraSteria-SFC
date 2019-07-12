@@ -1,0 +1,17 @@
+<app-reports-header [title]="'Workplace Development Fund'"></app-reports-header>
+
+<app-wdf-eligibility *ngIf="report" [report]="report"></app-wdf-eligibility>
+
+<app-tabs>
+  <app-tab [title]="'Workplace'">
+    <app-workplace-summary
+      *ngIf="workplace"
+      [workplace]="workplace"
+      [return]="returnUrl"
+      [wdfReportEnabled]="true"
+    ></app-workplace-summary>
+  </app-tab>
+  <app-tab [title]="'Staff records'">
+    <app-staff-summary *ngIf="workers" [workers]="workers" [wdfReportEnabled]="true"></app-staff-summary>
+  </app-tab>
+</app-tabs>

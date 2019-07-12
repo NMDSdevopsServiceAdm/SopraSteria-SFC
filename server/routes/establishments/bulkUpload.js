@@ -992,7 +992,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
       const establishmentKeyNoWhitespace = (thisTraingRecord.localeStId || '').replace(/\s/g, "");
       const workerKeyNoWhitespace = (thisTraingRecord.localeStId + thisTraingRecord.uniqueWorkerId).replace(/\s/g, "");
-      
+
       if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
         // not found the associated establishment
         csvTrainingSchemaErrors.push(thisTraingRecord.uncheckedEstablishment());
@@ -1023,7 +1023,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           knownWorker.associateTraining(myAPITrainings[thisTraingRecord.lineNumber]);
         } else {
           // this should never happen
-          console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
+          console.error(`FATAL: failed to associate worker (line number: ${thisTraingRecord.lineNumber}/unique id (${thisTraingRecord.uniqueWorker})) with a known establishment.`);
         }
 
       }
@@ -1078,8 +1078,11 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   // update CSV metadata error/warning counts
   establishments.establishmentMetadata.errors = csvEstablishmentSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   establishments.establishmentMetadata.warnings = csvEstablishmentSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+
   workers.workerMetadata.errors = csvWorkerSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   workers.workerMetadata.warnings = csvWorkerSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
+
+
   training.trainingMetadata.errors = csvTrainingSchemaErrors.filter(thisError => 'errCode' in thisError).length;
   training.trainingMetadata.warnings = csvTrainingSchemaErrors.filter(thisError => 'warnCode' in thisError).length;
 
@@ -1421,7 +1424,7 @@ router.route('/report/:reportType').get(async (req, res) => {
     }
 
     const reportKey = `${req.establishmentId}/validation/${reportType}.validation.json`;
-    
+
     try {
       const content = await downloadContent(reportKey);
       messages = content ? JSON.parse(content.data) : null;
@@ -1453,15 +1456,17 @@ router.route('/report/:reportType').get(async (req, res) => {
 
     printLine(readable, reportType, warnings, NEWLINE)
 
-    const laTitle = '* You are sharing data with the following Local Authorities *';
-    const laPadding = '*'.padStart(laTitle.length, '*');
-    readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
+    if (reportType === 'establishments') {
+      const laTitle = '* You are sharing data with the following Local Authorities *';
+      const laPadding = '*'.padStart(laTitle.length, '*');
+      readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
 
-    entities ? entities
+      entities ? entities
       .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
       .reduce((acc, val) => acc.concat(val), [])
       .sort((a,b) => a.name > b.name)
       .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
+    }
 
     readable.push(null);
 
@@ -1615,6 +1620,9 @@ router.route('/complete').post(async (req, res) => {
         // gets here having successfully completed upon the bulk upload
         //  clean up the S3 objects
         await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
+
+        // confirm success against the primary establishment
+        await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
 
         return res.status(200).send({
           // current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),

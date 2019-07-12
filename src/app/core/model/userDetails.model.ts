@@ -1,12 +1,12 @@
 export interface UserDetails {
   created?: string;
-  emailAddress: string;
+  email: string;
   fullname: string;
   jobTitle: string;
-  contactNumber: string;
+  phone: string;
   role?: string;
   securityQuestion?: string;
-  securityAnswer?: string;
+  securityQuestionAnswer?: string;
   uid?: string;
   updated?: string;
   updatedBy?: string;

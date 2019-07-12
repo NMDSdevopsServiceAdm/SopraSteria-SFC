@@ -42,11 +42,21 @@ var workerLeaveReasons = require('./server/routes/workerReason');
 var serviceUsers = require('./server/routes/serviceUsers');
 var workingTrainingCategories = require('./server/routes/workerTrainingCategories');
 var nurseSpecialism = require('./server/routes/nurseSpecialism');
+var availableQualifications = require('./server/routes/availableQualifications');
+
+// admin route
+var admin = require('./server/routes/admin');
 
 // reports
 var ReportsRoute = require('./server/routes/reports/index');
 
 var errors = require('./server/routes/errors');
+
+// Kinesis and SNS
+const AWSKinesis = require('./server/aws/kinesis');
+const AWSsns = require('./server/aws/sns');
+AWSKinesis.initialise(config.get('aws.region'));
+AWSsns.initialise(config.get('aws.region'));
 
 // test only routes - helpers to setup and execute automated tests
 var testOnly = require('./server/routes/testOnly');
@@ -66,6 +76,11 @@ app.use('/public/download', proxy(
         }
     }
 ));
+
+// redirect the admin application
+app.use('/admin', (req, res) => {
+  res.redirect(301, config.get('admin.url'));
+});
 
 /*
  * security - incorproate helmet & xss-clean (de facto/good practice headers) across all endpoints
@@ -163,6 +178,7 @@ app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveRea
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
 app.use('/api/trainingCategories', [refCacheMiddleware.refcache, workingTrainingCategories]);
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
+app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 
 // transaction endpoints
 app.use('/api/errors', errors);
@@ -175,6 +191,8 @@ app.use('/api/feedback', [cacheMiddleware.nocache, feedback]);
 app.use('/api/test', [cacheMiddleware.nocache,testOnly]);
 app.use('/api/user', [cacheMiddleware.nocache, user]);
 app.use('/api/reports', [cacheMiddleware.nocache, ReportsRoute]);
+
+app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'dist/index.html'));

@@ -1,8 +1,6 @@
-<app-dashboard-header></app-dashboard-header>
-
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl">
+    <h1 class="govuk-heading-l">
       <span *ngIf="parentEstablishment?.name" class="govuk-caption-xl">{{ parentEstablishment.name }}</span>
       {{ workplace.name }}
     </h1>
@@ -13,7 +11,9 @@
       <img src="/assets/images/bin.svg" />Delete Workplace
     </a>
   </div>
+</div>
 
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-tabs>
       <app-tab [title]="'Workplace'">
