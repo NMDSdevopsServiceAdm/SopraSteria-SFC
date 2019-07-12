@@ -32,7 +32,7 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
     protected formBuilder: FormBuilder,
     protected registrationService: RegistrationService,
     protected router: Router,
-    protected userService: UserService,
+    protected userService: UserService
   ) {}
 
   ngOnInit() {
@@ -53,32 +53,48 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
 
   private setupSubscriptions(): void {
     this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
+      combineLatest(
+        this.userService.userDetails$,
+        this.registrationService.selectedLocationAddress$,
+        this.registrationService.selectedWorkplaceService$,
+        this.registrationService.loginCredentials$,
+        this.registrationService.securityDetails$
+      ).subscribe(([userDetails, locationAddress, workplaceService, loginCredentials, securityDetails]) => {
+        this.userDetails = userDetails;
+        this.locationAddress = locationAddress;
+        this.workplaceService = workplaceService;
+        this.loginCredentials = loginCredentials;
+        this.securityDetails = securityDetails;
+      })
     );
 
-    this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe(
-        (locationAddress: LocationAddress) => (this.locationAddress = locationAddress)
-      )
-    );
-
-    this.subscriptions.add(
-      this.registrationService.selectedWorkplaceService$.subscribe(
-        (workplaceService: Service) => (this.workplaceService = workplaceService)
-      )
-    );
-
-    this.subscriptions.add(
-      this.registrationService.loginCredentials$.subscribe(
-        (loginCredentials: LoginCredentials) => (this.loginCredentials = loginCredentials)
-      )
-    );
-
-    this.subscriptions.add(
-      this.registrationService.securityDetails$.subscribe(
-        (securityDetails: SecurityDetails) => (this.securityDetails = securityDetails)
-      )
-    );
+    // this.subscriptions.add(
+    //   this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
+    // );
+    //
+    // this.subscriptions.add(
+    //   this.registrationService.selectedLocationAddress$.subscribe(
+    //     (locationAddress: LocationAddress) => (this.locationAddress = locationAddress)
+    //   )
+    // );
+    //
+    // this.subscriptions.add(
+    //   this.registrationService.selectedWorkplaceService$.subscribe(
+    //     (workplaceService: Service) => (this.workplaceService = workplaceService)
+    //   )
+    // );
+    //
+    // this.subscriptions.add(
+    //   this.registrationService.loginCredentials$.subscribe(
+    //     (loginCredentials: LoginCredentials) => (this.loginCredentials = loginCredentials)
+    //   )
+    // );
+    //
+    // this.subscriptions.add(
+    //   this.registrationService.securityDetails$.subscribe(
+    //     (securityDetails: SecurityDetails) => (this.securityDetails = securityDetails)
+    //   )
+    // );
   }
 
   private setupFormErrorsMap(): void {
