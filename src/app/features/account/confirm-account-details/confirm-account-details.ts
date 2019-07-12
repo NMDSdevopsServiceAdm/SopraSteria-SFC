@@ -40,7 +40,6 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
     this.setupSubscriptions();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.setBackLink();
     this.init();
   }
 
