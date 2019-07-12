@@ -68,10 +68,7 @@ export class CreateUsername implements OnInit, OnDestroy {
 
   protected setupSubscriptions(): void {}
 
-  private setCallToActionLabel(): void {
-    const label: string = this.loginCredentialsExist ? 'Save and return' : 'Continue';
-    this.callToActionLabel = label;
-  }
+  protected setCallToActionLabel(): void {}
 
   protected preFillForm(loginCredentials: LoginCredentials): void {
     if (loginCredentials) {

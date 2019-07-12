@@ -1,6 +1,7 @@
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
+import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { CreateUsername } from '@features/account/create-username/create-username';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder } from '@angular/forms';
@@ -13,6 +14,7 @@ import { Router } from '@angular/router';
 })
 export class CreateUsernameComponent extends CreateUsername {
   constructor(
+    private createAccountService: CreateAccountService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -22,21 +24,19 @@ export class CreateUsernameComponent extends CreateUsername {
     super(backService, errorSummaryService, formBuilder, registrationService, router);
   }
 
-  protected setCallToActionLabel(): void {
-    const label: string = this.loginCredentialsExist ? 'Save and return' : 'Continue';
-    this.callToActionLabel = label;
+  protected init(): void {
+    this.callToActionLabel = 'Save and continue';
   }
 
   protected setBackLink(): void {
-    const route: string = this.loginCredentialsExist
-      ? '/registration/confirm-account-details'
-      : '/registration/your-details';
+    const route: string = this.loginCredentialsExist ? '/create-account/security-question' : '/create-account';
     this.backService.setBackLink({ url: [route] });
   }
 
   protected setupSubscriptions(): void {
     this.subscriptions.add(
-      this.registrationService.loginCredentials$.subscribe((loginCredentials: LoginCredentials) => {
+      this.createAccountService.loginCredentials$.subscribe((loginCredentials: LoginCredentials) => {
+        console.log(loginCredentials);
         if (loginCredentials) {
           this.loginCredentialsExist = true;
           this.preFillForm(loginCredentials);
@@ -45,13 +45,9 @@ export class CreateUsernameComponent extends CreateUsername {
     );
   }
 
-  protected setFormSubmissionLink(): string {
-    return this.loginCredentialsExist ? '/registration/confirm-account-details' : '/registration/security-question';
-  }
-
   protected save(): void {
-    this.router.navigate([this.setFormSubmissionLink()]).then(() => {
-      this.registrationService.loginCredentials$.next({
+    this.router.navigate(['/create-account/security-question']).then(() => {
+      this.createAccountService.loginCredentials$.next({
         username: this.getUsername.value,
         password: this.getPassword.value,
       });
