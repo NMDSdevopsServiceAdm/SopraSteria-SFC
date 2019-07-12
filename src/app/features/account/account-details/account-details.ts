@@ -162,9 +162,7 @@ export class AccountDetails implements OnInit, OnDestroy {
 
   protected save(): void {}
 
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/confirm-workplace-details'] });
-  }
+  protected setBackLink(): void {}
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();

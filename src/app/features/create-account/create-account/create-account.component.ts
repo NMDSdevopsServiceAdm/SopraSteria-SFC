@@ -44,6 +44,6 @@ export class CreateAccountComponent extends AccountDetails {
 
   protected save() {
     this.createAccountService.accountDetails$.next(this.setUserDetails());
-    this.router.navigate(['/create-account/create-username']); // TODO will build in seperate pr
+    this.router.navigate(['/create-account/create-username']);
   }
 }

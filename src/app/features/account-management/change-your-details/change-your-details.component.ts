@@ -33,6 +33,10 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     this.setupSubscriptions();
   }
 
+  protected setBackLink(): void {
+    this.backService.setBackLink({ url: ['/account-management'] });
+  }
+
   private setupSubscriptions(): void {
     this.subscriptions.add(
       this.userService.userDetails$.subscribe((userDetails: UserDetails) => {

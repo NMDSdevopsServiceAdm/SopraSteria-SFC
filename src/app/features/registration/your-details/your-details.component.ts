@@ -21,6 +21,10 @@ export class YourDetailsComponent extends AccountDetails {
     super(backService, errorSummaryService, fb, router);
   }
 
+  protected setBackLink(): void {
+    this.backService.setBackLink({ url: ['/registration/confirm-workplace-details'] });
+  }
+
   protected save() {
     this.userService.updateState(this.setUserDetails());
     this.router.navigate(['/registration/create-username']);
