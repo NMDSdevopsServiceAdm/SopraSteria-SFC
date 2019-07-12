@@ -11,7 +11,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 
 export class ConfirmAccountDetails implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
@@ -97,14 +97,6 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
 
   private setupServerErrorsMap(): void {
     this.serverErrorsMap = [
-      {
-        name: 503,
-        message: 'Database error.',
-      },
-      {
-        name: 500,
-        message: 'Internal server error.',
-      },
       {
         name: 400,
         message: 'Registration failed.',
