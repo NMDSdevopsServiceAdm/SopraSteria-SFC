@@ -1694,68 +1694,103 @@ class Worker {
 
   _validateSocialCareQualification() {
     const mySocialCare = this._currentLine.SCQUAL ? this._currentLine.SCQUAL.split(';') : null;
+    const mainJobRoles = [6,16,15];
+    const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
+    const mySocialCareIndicator = (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) ?
+      parseInt(mySocialCare[0]) : '';
 
-    // optional
-    if (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) {
-      const localValidationErrors = [];
-
-      const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
-      const mySocialCareIndicator = parseInt(mySocialCare[0]);
-
-      if (isNaN(mySocialCareIndicator)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.SOCIALCARE_QUAL_ERROR,
-          errType: 'SOCIALCARE_QUAL_ERROR',
-          error: "Social Care Qualification (SCQUAL) indicator (before semi colon) must be an integer",
-          source: this._currentLine.SCQUAL,
-        });
-      }
-
-      if (!ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.SOCIALCARE_QUAL_ERROR,
-          errType: 'SOCIALCARE_QUAL_ERROR',
-          error: `Social Care Qualification (SCQUAL) indicator (before semi colon) must be one of: ${ALLOWED_SOCIAL_CARE_VALUES}`,
-          source: this._currentLine.SCQUAL,
-        });
-      }
-
-      this._socialCareQualification = mySocialCareIndicator;
-
-      // if the social care indicator is "1" (yes) - then get the next value which must be the level
-      if (mySocialCareIndicator == 1) {
-        const mySocialCareLevel = parseInt(mySocialCare[1]);
-        if (isNaN(mySocialCareLevel)) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.SOCIALCARE_QUAL_ERROR,
-            errType: 'SOCIALCARE_QUAL_ERROR',
-            error: "Social Care Qualification (SCQUAL) level (after semi colon) must be an integer",
-            source: this._currentLine.SCQUAL,
-          });
-        }
-        this._socialCareQualificationlevel = mySocialCareLevel;
-      }
-
-      if (localValidationErrors.length > 0) {
-        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
-        return false;
-      }
-
-      return true;
-
-    } else {
-      return true;
+    if (isNaN(mySocialCareIndicator)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+        warnType: 'SOCIALCARE_QUAL_WARNING',
+        warning: "SCQUAL is blank",
+        source: this._currentLine.SCQUAL,
+      });
+    } else if (!ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.SOCIALCARE_QUAL_ERROR,
+        errType: 'SOCIALCARE_QUAL_ERROR',
+        error: "The code you have entered for SCQUAL is incorrect",
+        source: this._currentLine.SCQUAL,
+      });
     }
+
+    this._socialCareQualification = mySocialCareIndicator;
+    
+    // if the social care indicator is "1" (yes) - then get the next value which must be the level
+    if (mySocialCareIndicator == 1) {
+      const mySocialCareLevel = parseInt(mySocialCare[1]);
+
+      if (!mySocialCareLevel && mySocialCareLevel !== 0) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.SOCIALCARE_QUAL_ERROR,
+          errType: 'SOCIALCARE_QUAL_ERROR',
+          error: "You must provide a value for SCQUAL level when SCQUAL is set to 1",
+          source: this._currentLine.SCQUAL,
+        });
+      }
+
+      if (ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
+        this._qualifications.forEach(q => {
+          if (q.id > mySocialCareLevel) {
+            this._validationErrors.push({
+              worker: this._currentLine.UNIQUEWORKERID,
+              name: this._currentLine.LOCALESTID,
+              lineNumber: this._lineNumber,
+              warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+              warnType: 'SOCIALCARE_QUAL_WARNING',
+              warning: `SCQUAL level does not match the QUALACH** (${q.column})`,
+              source: this._currentLine.SCQUAL,
+            });
+          }
+        })
+      }
+
+      if ((!mySocialCareLevel && mySocialCareLevel !== 0) && mainJobRoles.includes(this._mainJobRole)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+          warnType: 'SOCIALCARE_QUAL_WARNING',
+          warning: "workers MAINJOBROLE is a regulated profession therefore requires a Social Care qualification",
+          source: this._currentLine.SCQUAL,
+        });
+      }
+      this._socialCareQualificationlevel = mySocialCareLevel;
+    }
+
+    return true;
   }
+
+  _transformSocialCareQualificationLevel() {
+    if (this._socialCareQualificationlevel || this._socialCareQualificationlevel === 0) {
+      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._socialCareQualificationlevel);
+      
+      if (!myValidatedQualificationLevel) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.SOCIALCARE_QUAL_ERROR,
+          warnType: `SOCIALCARE_QUAL_ERROR`,
+          warning: `The level you have entered for SCQUAL is not valid and will be ignored`,
+          source: this._currentLine.SCQUAL,
+        });
+      } else {
+        this._socialCareQualificationlevel = myValidatedQualificationLevel;
+      }
+    }
+  };
 
   _validateNonSocialCareQualification() {
     const myNonSocialCare = this._currentLine.NONSCQUAL ? this._currentLine.NONSCQUAL.split(';') : null;
@@ -2135,26 +2170,7 @@ class Worker {
     }
   };
 
-  _transformSocialCareQualificationLevel() {
-    if (this._socialCareQualificationlevel) {
-      // ASC WDS country of birth is a split enum/index
-      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._socialCareQualificationlevel);
 
-      if (!myValidatedQualificationLevel) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.SOCIALCARE_QUAL_ERROR,
-          errType: `SOCIALCARE_QUAL_ERROR`,
-          error: `Social Care Qualiifcation (SCQUAL): Level ${this._socialCareQualificationlevel} is unknown`,
-          source: this._currentLine.SCQUAL,
-        });
-      } else {
-        this._socialCareQualificationlevel = myValidatedQualificationLevel;
-      }
-    }
-  };
 
   _transformNonSocialCareQualificationLevel() {
     if (this._nonSocialCareQualificationlevel) {
@@ -2301,9 +2317,9 @@ class Worker {
     status = !this._validateOtherJobs() ? false : status;
     status = !this._validateRegisteredNurse() ? false : status;
     status = !this._validateNursingSpecialist() ? false : status;
+    status = !this._validationQualificationRecords() ? false : status;
     status = !this._validateSocialCareQualification() ? false : status;
     status = !this._validateNonSocialCareQualification() ? false : status;
-    status = !this._validationQualificationRecords() ? false : status;
     status = !this._validateAmhp() ? false : status;
 
     return status;
@@ -2745,9 +2761,9 @@ class Worker {
           // in Worker entity, we have separated the social care qualification type and level into separate properties
           case 'WorkerQualificationInSocialCare':
           case 'WorkerSocialCareQualification':
-            validationError.errCode = Worker.SOCIALCARE_QUAL_ERROR;
-            validationError.errType = 'SOCIALCARE_QUAL_ERROR';
-            validationError.source  = `${this._currentLine.SCQUAL}`;
+            // validationError.errCode = Worker.SOCIALCARE_QUAL_ERROR;
+            // validationError.errType = 'SOCIALCARE_QUAL_ERROR';
+            // validationError.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
             // validationError.errCode = Worker.RECSOURCE_ERROR;
@@ -2903,9 +2919,9 @@ class Worker {
           // in Worker entity, we have separated the social care qualification type and level into separate properties
           case 'WorkerQualificationInSocialCare':
           case 'WorkerSocialCareQualification':
-            validationWarning.warnCode = Worker.SOCIALCARE_QUAL_WARNING;
-            validationWarning.warnType = 'SOCIALCARE_QUAL_WARNING';
-            validationWarning.source  = `${this._currentLine.SCQUAL}`;
+            // validationWarning.warnCode = Worker.SOCIALCARE_QUAL_WARNING;
+            // validationWarning.warnType = 'SOCIALCARE_QUAL_WARNING';
+            // validationWarning.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
             // validationWarning.warnCode = Worker.RECSOURCE_ERROR;
@@ -2965,24 +2981,24 @@ class Worker {
 
         switch (thisProp) {
           case 'Qualification':
-            validationError.errCode = Worker[`QUAL_ACH${columnIndex}_WARNING`];
-            validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
-            validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_WARNING`];
+            // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
+            // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
             break;
           case 'Year':
-            validationError.errCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-            validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
-            validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
+            // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
             break;
           case 'Notes':
-            validationError.errCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
-            validationError.errType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
-            validationError.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
+            // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
+            // validationError.errType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
+            // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
             break;
           default:
-            validationError.errCode = thisError.code;
-            validationError.errType = 'Undefined';
-            validationError.source  = thisProp;
+            // validationError.errCode = thisError.code;
+            // validationError.errType = 'Undefined';
+            // validationError.source  = thisProp;
         }
         this._validationErrors.push(validationError);
       }) : true;
@@ -2998,24 +3014,24 @@ class Worker {
 
         switch (thisProp) {
           case 'Qualification':
-            validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-            validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
-            validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
+            // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
             break;
           case 'Year':
-            validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-            validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
-            validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
+            // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
             break;
           case 'Notes':
-            validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
-            validationWarning.warnType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
-            validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
+            // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
+            // validationWarning.warnType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
+            // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
             break;
           default:
-            validationWarning.warnCode = thisWarning.code;
-            validationWarning.warnType = 'Undefined';
-            validationWarning.source  = thisProp;
+            // validationWarning.warnCode = thisWarning.code;
+            // validationWarning.warnType = 'Undefined';
+            // validationWarning.source  = thisProp;
         }
 
         this._validationErrors.push(validationWarning);
