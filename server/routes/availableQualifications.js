@@ -100,9 +100,6 @@ router.route('/').post(async function (req, res) {
       analysisFileCode: qualification.analysisFileCode,
     };
 
-    console.log("WA DEBUG - creation ualification: ", createDocument)
-
-
     await models.workerAvailableQualifications.create(createDocument);
     res.status(200).send({qualification: { id: qualification.id}});
 
