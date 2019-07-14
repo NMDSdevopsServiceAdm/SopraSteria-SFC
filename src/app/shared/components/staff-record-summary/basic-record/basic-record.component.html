@@ -24,9 +24,9 @@
         <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.mainJob != 'No'">
-        <ng-template *ngIf="worker.mainJob.other; else title">
+        <ng-container *ngIf="worker.mainJob.other; else title">
           <span>{{ worker.mainJob.other }}</span>
-        </ng-template>
+        </ng-container>
         <ng-template #title>
           <span>{{ worker.mainJob.title }}</span>
         </ng-template>
@@ -34,9 +34,9 @@
     </dd>
 
     <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-template *ngIf="worker.mainJob.other; else title">
+      <ng-container *ngIf="worker.mainJob.other; else title">
         <span>{{ worker.mainJob.other }}</span>
-      </ng-template>
+      </ng-container>
       <ng-template #title>
         <span>{{ worker.mainJob.title }}</span>
       </ng-template>
