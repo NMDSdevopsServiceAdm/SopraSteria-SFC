@@ -22,7 +22,11 @@
             <label class="govuk-label" for="{{ item.name }}">
               {{ item.label }}
             </label>
-            <span *ngIf="submitted && form.get(item.name).errors" id="{{ item.name }}-error" class="govuk-error-message">
+            <span
+              *ngIf="submitted && form.get(item.name).errors"
+              id="{{ item.name }}-error"
+              class="govuk-error-message"
+            >
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
             </span>
             <input
@@ -107,7 +111,12 @@
           {{ callToActionLabel }}
         </button>
         <span class="govuk-visually-hidden">or</span>
-        <a role="button" class="govuk-button govuk-button--link govuk-!-margin-bottom-0" [routerLink]="['/dashboard']">
+        <a
+          role="button"
+          draggable="false"
+          class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+          [routerLink]="['/dashboard']"
+        >
           Cancel
         </a>
       </div>
