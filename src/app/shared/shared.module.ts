@@ -25,7 +25,6 @@ import {
 } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
-import { StartButtonComponent } from './components/start-button/start-button.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
 import { TabComponent } from './components/tabs/tab.component';
@@ -64,7 +63,6 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     QualificationsAndTrainingComponent,
     StaffRecordSummaryComponent,
     StaffSummaryComponent,
-    StartButtonComponent,
     StatusComponent,
     SubmitButtonComponent,
     TabComponent,
@@ -96,7 +94,6 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     QualificationsAndTrainingComponent,
     StaffRecordSummaryComponent,
     StaffSummaryComponent,
-    StartButtonComponent,
     StatusComponent,
     SubmitButtonComponent,
     TabComponent,
