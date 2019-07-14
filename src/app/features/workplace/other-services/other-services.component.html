@@ -26,7 +26,7 @@
               <ng-container *ngFor="let service of serviceGroup.services; let i = index">
                 <div class="govuk-checkboxes__item">
                   <input
-                    [attr.data-aria-controls]="'otherServices-conditional-' + i"
+                    [attr.aria-controls]="'otherServices-conditional-' + i"
                     class="govuk-checkboxes__input"
                     id="otherServices-{{ service.id }}"
                     name="otherServices"

@@ -44,7 +44,7 @@
               <ng-container *ngFor="let service of item.services; let i = index">
                 <div class="govuk-radios__item">
                   <input
-                    [attr.data-aria-controls]="'workplaceService-conditional-' + i"
+                    [attr.aria-controls]="'workplaceService-conditional-' + i"
                     class="govuk-radios__input"
                     id="workplaceService-{{ service.id }}"
                     [value]="service.id"
