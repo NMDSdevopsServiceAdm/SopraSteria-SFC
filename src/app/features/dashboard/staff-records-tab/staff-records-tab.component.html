@@ -3,10 +3,15 @@
     <h2 class="govuk-heading-m">Staff records ({{ workers?.length }})</h2>
   </div>
   <div class="govuk-grid-column-one-half govuk-util__align-right">
-    <a class="govuk-button govuk-button--secondary" role="button" routerLink="/worker/basic-records-start-screen">
+    <a
+      role="button"
+      draggable="false"
+      class="govuk-button govuk-button--secondary"
+      routerLink="/worker/basic-records-start-screen"
+    >
       Add a basic record
     </a>
-    <a class="govuk-button govuk-!-margin-left-8" role="button" routerLink="/worker/start-screen">
+    <a role="button" draggable="false" class="govuk-button govuk-!-margin-left-8" routerLink="/worker/start-screen">
       Add a full record
     </a>
   </div>
