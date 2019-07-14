@@ -82,13 +82,13 @@
         <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
       </ng-container>
       <ng-container *ngIf="worker.wdf.otherJobs != 'No'">
-        <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
+        <ng-template *ngIf="!worker.otherJobs?.length; else otherJobs">
           -
         </ng-template>
         <ng-template #otherJobs>
           <ul>
             <li *ngFor="let otherJob of worker.otherJobs">
-              <ng-template [ngIf]="otherJob.other" [ngIfElse]="title">
+              <ng-template *ngIf="otherJob.other; else title">
                 <span>{{ otherJob.other }}</span>
               </ng-template>
               <ng-template #title>
@@ -101,13 +101,13 @@
     </dd>
 
     <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-template [ngIf]="!worker.otherJobs?.length" [ngIfElse]="otherJobs">
+      <ng-template *ngIf="!worker.otherJobs?.length; else otherJobs">
         -
       </ng-template>
       <ng-template #otherJobs>
         <ul class="govuk-list">
           <li *ngFor="let otherJob of worker.otherJobs">
-            <ng-template [ngIf]="otherJob.other" [ngIfElse]="title">
+            <ng-template *ngIf="otherJob.other; else title">
               <span>{{ otherJob.other }}</span>
             </ng-template>
             <ng-template #title>

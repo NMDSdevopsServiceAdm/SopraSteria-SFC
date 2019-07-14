@@ -92,7 +92,7 @@
       Other services
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-template [ngIf]="!workplace.otherServices?.length" [ngIfElse]="otherServices">
+      <ng-template *ngIf="!workplace.otherServices?.length; else otherServices">
         -
       </ng-template>
       <ng-template #otherServices>
@@ -148,7 +148,7 @@
           <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
         </ng-container>
         <ng-container *ngIf="workplace.wdf.capacities === 'Yes'">
-          <ng-template [ngIf]="!workplace.capacities?.length" [ngIfElse]="capacities">
+          <ng-template *ngIf="!workplace.capacities?.length; else capacities">
             -
           </ng-template>
           <ng-template #capacities>
@@ -160,7 +160,7 @@
       </ng-container>
 
       <ng-container *ngIf="!wdfReportEnabled">
-        <ng-template [ngIf]="!workplace.capacities?.length" [ngIfElse]="capacities">
+        <ng-template *ngIf="!workplace.capacities?.length; else capacities">
           -
         </ng-template>
         <ng-template #capacities>
@@ -194,7 +194,7 @@
           <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
         </ng-container>
         <ng-container *ngIf="workplace.wdf.serviceUsers === 'Yes'">
-          <ng-template [ngIf]="!workplace.serviceUsers?.length" [ngIfElse]="serviceUsers">
+          <ng-template *ngIf="!workplace.serviceUsers?.length; else serviceUsers">
             -
           </ng-template>
           <ng-template #serviceUsers>
@@ -209,7 +209,7 @@
       </ng-container>
 
       <ng-container *ngIf="!wdfReportEnabled">
-        <ng-template [ngIf]="!workplace.serviceUsers?.length" [ngIfElse]="serviceUsers">
+        <ng-template *ngIf="!workplace.serviceUsers?.length; else serviceUsers">
           -
         </ng-template>
         <ng-template #serviceUsers>
@@ -241,7 +241,7 @@
       Data sharing
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-template [ngIf]="!workplace.share?.enabled && workplace.share?.with?.length === 0" [ngIfElse]="sharing">
+      <ng-template *ngIf="!workplace.share?.enabled && workplace.share?.with?.length === 0; else sharing">
         -
       </ng-template>
       <ng-template #sharing>
@@ -282,7 +282,7 @@
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.vacancies === 'Yes'">
-          <ng-template [ngIf]="!workplace.vacancies?.length" [ngIfElse]="vacancies">
+          <ng-template *ngIf="!workplace.vacancies?.length; else vacancies">
             -
           </ng-template>
           <ng-template #vacancies>
@@ -304,7 +304,7 @@
       </ng-container>
 
       <ng-container *ngIf="!wdfReportEnabled">
-        <ng-template [ngIf]="!workplace.vacancies?.length" [ngIfElse]="vacancies">
+        <ng-template *ngIf="!workplace.vacancies?.length; else vacancies">
           -
         </ng-template>
         <ng-template #vacancies>
@@ -350,7 +350,7 @@
           </ng-container>
 
           <ng-container *ngIf="workplace.wdf.starters === 'Yes'">
-            <ng-template [ngIf]="!workplace.starters?.length" [ngIfElse]="starters">
+            <ng-template *ngIf="!workplace.starters?.length; else starters">
               -
             </ng-template>
             <ng-template #starters>
@@ -367,7 +367,7 @@
         </ng-container>
 
         <ng-container *ngIf="!wdfReportEnabled">
-          <ng-template [ngIf]="!workplace.starters?.length" [ngIfElse]="starters">
+          <ng-template *ngIf="!workplace.starters?.length; else starters">
             -
           </ng-template>
           <ng-template #starters>
@@ -408,7 +408,7 @@
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.leavers === 'Yes'">
-          <ng-template [ngIf]="!workplace.leavers?.length" [ngIfElse]="leavers">
+          <ng-template *ngIf="!workplace.leavers?.length; else leavers">
             -
           </ng-template>
           <ng-template #leavers>
@@ -425,7 +425,7 @@
       </ng-container>
 
       <ng-container *ngIf="!wdfReportEnabled">
-        <ng-template [ngIf]="!workplace.leavers?.length" [ngIfElse]="leavers">
+        <ng-template *ngIf="!workplace.leavers?.length; else leavers">
           -
         </ng-template>
         <ng-template #leavers>
