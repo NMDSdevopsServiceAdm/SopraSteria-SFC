@@ -33,7 +33,7 @@
             <select
               class="govuk-select govuk-!-width-full"
               [class.govuk-select--error]="submitted && record.get('jobId').invalid"
-              formControlName="jobId"
+              [formControlName]="'jobId'"
               id="jobId-{{ i }}"
               name="jobId"
             >
@@ -47,7 +47,7 @@
             <input
               class="govuk-input govuk-!-width-one-half"
               [class.govuk-input--error]="submitted && record.get('total').invalid"
-              formControlName="total"
+              [formControlName]="'total'"
               id="total-{{ i }}"
               name="total"
               type="number"
@@ -87,7 +87,7 @@
             class="govuk-radios__input"
             id="noRecordsReason-{{ i }}"
             name="noRecordsReason"
-            formControlName="noRecordsReason"
+            [formControlName]="'noRecordsReason'"
             type="radio"
             [value]="option.value"
           />

@@ -14,7 +14,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="recruitmentKnown"
+                [formControlName]="'recruitmentKnown'"
                 id="recruitmentKnown-conditional-1"
                 name="recruitmentKnown"
                 type="radio"
@@ -45,7 +45,7 @@
                 <select
                   class="govuk-select"
                   [class.govuk-select--error]="submitted && form.get('recruitedFromId').invalid"
-                  formControlName="recruitedFromId"
+                  [formControlName]="'recruitedFromId'"
                   id="recruitedFromId"
                   name="recruitedFromId"
                 >
@@ -60,7 +60,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="recruitmentKnown"
+                [formControlName]="'recruitmentKnown'"
                 id="recruitmentKnown-2"
                 name="recruitmentKnown"
                 type="radio"

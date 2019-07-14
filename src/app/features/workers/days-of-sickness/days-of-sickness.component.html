@@ -14,7 +14,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="daysKnown"
+                [formControlName]="'daysKnown'"
                 id="daysKnown-conditional-1"
                 name="daysKnown"
                 type="radio"
@@ -51,7 +51,7 @@
                 <input
                   class="govuk-input govuk-date-input__input govuk-input--width-4"
                   [class.govuk-input--error]="submitted && form.get('days').invalid"
-                  formControlName="days"
+                  [formControlName]="'days'"
                   id="days"
                   name="days"
                   type="number"
@@ -63,7 +63,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="daysKnown"
+                [formControlName]="'daysKnown'"
                 id="daysKnown-2"
                 name="daysKnown"
                 type="radio"

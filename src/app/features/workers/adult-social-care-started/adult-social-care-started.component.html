@@ -14,7 +14,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="yearKnown"
+                [formControlName]="'yearKnown'"
                 id="yearKnown-conditional-2"
                 name="yearKnown"
                 type="radio"
@@ -51,7 +51,7 @@
                 <input
                   class="govuk-input govuk-date-input__input govuk-input--width-4"
                   [class.govuk-input--error]="submitted && form.get('year').invalid"
-                  formControlName="year"
+                  [formControlName]="'year'"
                   id="year"
                   name="year"
                   type="number"
@@ -63,7 +63,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="yearKnown"
+                [formControlName]="'yearKnown'"
                 id="yearKnown-2"
                 name="yearKnown"
                 type="radio"

@@ -7,11 +7,16 @@
       role="button"
       draggable="false"
       class="govuk-button govuk-button--secondary"
-      routerLink="/worker/basic-records-start-screen"
+      [routerLink]="['/worker', 'basic-records-start-screen']"
     >
       Add a basic record
     </a>
-    <a role="button" draggable="false" class="govuk-button govuk-!-margin-left-8" routerLink="/worker/start-screen">
+    <a
+      role="button"
+      draggable="false"
+      class="govuk-button govuk-!-margin-left-8"
+      [routerLink]="['/worker', 'start-screen']"
+    >
       Add a full record
     </a>
   </div>

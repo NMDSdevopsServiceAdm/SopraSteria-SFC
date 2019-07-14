@@ -14,7 +14,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="nationalityKnown"
+                [formControlName]="'nationalityKnown'"
                 id="nationalityKnown-1"
                 name="nationalityKnown"
                 type="radio"
@@ -28,7 +28,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="nationalityKnown"
+                [formControlName]="'nationalityKnown'"
                 id="nationalityKnown-conditional-2"
                 name="nationalityKnown"
                 type="radio"
@@ -62,7 +62,7 @@
                   <app-auto-suggest
                     [formGroup]="form"
                     [dataProvider]="nationalityNameFilter"
-                    formControlName="nationalityName"
+                    [formControlName]="'nationalityName'"
                   ></app-auto-suggest>
                 </div>
               </div>
@@ -71,7 +71,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="nationalityKnown"
+                [formControlName]="'nationalityKnown'"
                 id="nationalityKnown-3"
                 name="nationalityKnown"
                 type="radio"

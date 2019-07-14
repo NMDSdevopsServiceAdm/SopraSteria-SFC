@@ -14,7 +14,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="hoursKnown"
+                [formControlName]="'hoursKnown'"
                 id="hoursKnown-conditional-1"
                 name="hoursKnown"
                 type="radio"
@@ -51,7 +51,7 @@
                 <input
                   class="govuk-input govuk-date-input__input govuk-input--width-4"
                   [class.govuk-input--error]="submitted && form.get('hours').invalid"
-                  formControlName="hours"
+                  [formControlName]="'hours'"
                   id="hours"
                   name="hours"
                   type="number"
@@ -63,7 +63,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="hoursKnown"
+                [formControlName]="'hoursKnown'"
                 id="hoursKnown-2"
                 name="hoursKnown"
                 type="radio"

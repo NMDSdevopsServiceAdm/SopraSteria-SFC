@@ -18,7 +18,7 @@
 
         <p class="govuk-!-margin-bottom-6">Enter a new password for account {{ name }}</p>
 
-        <div formGroupName="passwordGroup">
+        <div [formGroupName]="'passwordGroup'">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPasswordInput.errors">
             <label class="govuk-label" for="createPasswordInput">
               Password
@@ -38,10 +38,10 @@
             <input
               aria-describedby="createPasswordInput-hint"
               class="govuk-input"
-              formControlName="createPasswordInput"
+              [class.govuk-input--error]="submitted && getPasswordInput.errors"
+              [formControlName]="'createPasswordInput'"
               id="createPasswordInput"
               name="createPasswordInput"
-              [ngClass]="{ 'govuk-input--error': submitted && getPasswordInput.errors }"
               type="password"
             />
           </div>
@@ -64,10 +64,10 @@
             </span>
             <input
               class="govuk-input"
-              formControlName="confirmPasswordInput"
+              [class.govuk-input--error]="submitted && getConfirmPasswordInput.errors"
+              [formControlName]="'confirmPasswordInput'"
               id="confirmPasswordInput"
               name="confirmPasswordInput"
-              [class.govuk-input--error]="submitted && getConfirmPasswordInput.errors"
               type="password"
             />
           </div>
@@ -81,7 +81,7 @@
 
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
-        <a routerLink="/login" title="Sign in">Back to sign in</a>
+        <a [routerLink]="['/login']">Back to sign in</a>
       </div>
     </div>
   </div>

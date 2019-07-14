@@ -30,7 +30,7 @@
         id="username"
         name="username"
         type="text"
-        formControlName="username"
+        [formControlName]="'username'"
       />
     </div>
 
@@ -50,7 +50,7 @@
         id="password"
         name="password"
         type="password"
-        formControlName="password"
+        [formControlName]="'password'"
       />
     </div>
   </fieldset>
@@ -61,6 +61,6 @@
 </form>
 
 <ul class="govuk-list">
-  <li><a routerLink="/forgot-your-password">Forgot your password?</a></li>
-  <li><a routerLink="/registration/regulated-by-cqc">Create an account</a></li>
+  <li><a [routerLink]="['/forgot-your-password']">Forgot your password?</a></li>
+  <li><a [routerLink]="['/registration', 'regulated-by-cqc']">Create an account</a></li>
 </ul>
