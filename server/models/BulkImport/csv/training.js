@@ -365,8 +365,8 @@ class Training {
     }
   }
 
-  preValidate() {
-    return this._validateHeaders();
+  preValidate(header) {
+    return this._validateHeaders(header);
   }
 
   static isContent(data) {
@@ -374,8 +374,7 @@ class Training {
     return contentRegex.test(data.substring(0,50));
   }
 
-  _validateHeaders() {
-    const headers = Object.keys(this._currentLine);
+  _validateHeaders(header) {
     // only run once for first line, so check _lineNumber
     if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
       this._validationErrors.push({

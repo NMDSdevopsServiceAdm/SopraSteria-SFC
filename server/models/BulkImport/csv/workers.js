@@ -846,7 +846,7 @@ class Worker {
     const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
     const myRealDOBDate = this._currentLine.DOB && this._currentLine.DOB.length > 1 ? moment.utc(this._currentLine.DOB, "DD/MM/YYYY") : null;
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
-    
+
     if (!myStartDate) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -1587,7 +1587,7 @@ class Worker {
         source: this._currentLine.NURSESPEC,
       });
       return false;
-    } 
+    }
     else {
       this._nursingSpecialist = myNursingSpecialist;
       return true;
@@ -2256,19 +2256,20 @@ class Worker {
     };
   }
 
-  preValidate() {
-    return this._validateHeaders();
+  preValidate(headers) {
+    return this._validateHeaders(headers);
   }
 
   static isContent(data) {
-    const contentRegex = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    return contentRegex.test(data.substring(0,50));
+    const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
+    const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMB/;
+
+    const toReturn = contentRegex1.test(data.substring(0,50)) || contentRegex2.test(data.substring(0,50));
+    return contentRegex1.test(data.substring(0,50)) || contentRegex2.test(data.substring(0,50));
   }
 
-  _validateHeaders() {
-    const headers = Object.keys(this._currentLine);
+  _validateHeaders(headers) {
     // only run once for first line, so check _lineNumber
-
     // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
     if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers) &&
         JSON.stringify(this._headers_v1_without_chgUnique) !== JSON.stringify(headers)) {
