@@ -511,7 +511,7 @@ class Worker {
         source: this._currentLine.DOB,
       });
       return false;
-    } 
+    }
     else if (!myDobRealDate.isValid()) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -523,7 +523,7 @@ class Worker {
         source: this._currentLine.DOB,
       });
       return false;
-    } 
+    }
     else if (myDobRealDate.isBefore(minDate) || myDobRealDate.isAfter(maxDate)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -3144,7 +3144,7 @@ class Worker {
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     const columns = [];
     columns.push(establishmentId);
-    columns.push(entity.nameOrId);   // todo - this will be local identifier
+    columns.push(entity.localIdentifier);   // todo - this will be local identifier
     columns.push('');
     columns.push('UNCHECKED');
     columns.push(entity.nameOrId);

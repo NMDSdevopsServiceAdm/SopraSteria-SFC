@@ -900,7 +900,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     // having parsed all establishments, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
     myEstablishments.forEach(thisEstablishment => {
-      const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, "");
+      const keyNoWhitespace = thisEstablishment.key;
       if (allEstablishmentsByKey[keyNoWhitespace]) {
         // this establishment is a duplicate
         csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
@@ -916,7 +916,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     console.info("API bulkupload - validateBulkUploadFiles: no establishment records");
     status = false;
   }
-  
+
   establishments.establishmentMetadata.records = myEstablishments.length;
 
   // parse and process Workers CSV
@@ -1593,7 +1593,7 @@ router.route('/complete').post(async (req, res) => {
                   worker._properties.get('LocalIdentifier').property = worker.changeLocalIdentifer;
                 }
               });
-            }   
+            }
 
             // current is already restored, so simply need to load the onboard into the current, and load the associated work entities
             if (foundCurrentEstablishment) {
