@@ -1,4 +1,4 @@
-import { AccountDetails } from '@core/model/account-details.model';
+import { AccountDetails } from '@core/model/account.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
