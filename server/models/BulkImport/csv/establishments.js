@@ -1646,6 +1646,8 @@ class Establishment {
       capacities: this._capacities,
       utilisations: this._utilisations,
       totalPermTemp: this._totalPermTemp,
+      
+      
       allJobs: this._alljobs,
       counts: {
         vacancies: this._vacancies,
@@ -1679,6 +1681,7 @@ class Establishment {
 
     const changeProperties = {
       name: this._name,
+      localIdentifier: this._localId,
       isRegulated: this._regType === 2 ? true : false,
       employerType: {
         value: this._establishmentType,

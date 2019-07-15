@@ -2612,6 +2612,10 @@ class Worker {
       }
     }
 
+    if(this._changeUniqueWorkerId) {
+      changeProperties.changeLocalIdentifer = this._changeUniqueWorkerId;
+    }
+
     return changeProperties;
   };
 
@@ -3181,7 +3185,7 @@ class Worker {
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     const columns = [];
     columns.push(establishmentId);
-    columns.push(entity.nameOrId);   // todo - this will be local identifier
+    columns.push(entity.localIdentifier);   // todo - this will be local identifier
     //columns.push('');              // not on download
     columns.push('UNCHECKED');
     columns.push(entity.nameOrId);

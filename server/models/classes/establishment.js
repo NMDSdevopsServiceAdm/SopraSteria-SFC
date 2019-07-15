@@ -217,6 +217,10 @@ class Establishment extends EntityValidator {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
     }
 
+    get key(){
+        return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this._properties.get('LocalIdentifier').property : this.name).replace(/\s/g, "");
+    }
+
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
     _initialise() {
         if (this._uid === null) {
