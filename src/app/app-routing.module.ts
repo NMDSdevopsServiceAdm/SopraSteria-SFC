@@ -5,7 +5,6 @@ import {
   ProblemWithTheServiceComponent,
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
-import { RoleGuard } from '@core/guards/role/role.guard';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
@@ -80,7 +79,7 @@ const routes: Routes = [
   {
     path: 'bulk-upload',
     loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
-    canActivate: [AuthGuard, RoleGuard],
+    canActivate: [AuthGuard],
     data: {
       roles: ['Edit'],
       title: 'Bulk Upload',
