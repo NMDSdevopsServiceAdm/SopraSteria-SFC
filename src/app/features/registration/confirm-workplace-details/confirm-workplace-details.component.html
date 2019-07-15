@@ -45,9 +45,9 @@
           Main service provided
         </dt>
         <dd class="govuk-summary-list__value">
-          <ng-template [ngIf]="workplaceService.otherName" [ngIfElse]="showName">
+          <ng-container *ngIf="workplaceService.otherName; else showName">
             {{ workplaceService.otherName }}
-          </ng-template>
+          </ng-container>
           <ng-template #showName>
             {{ workplaceService.name }}
           </ng-template>

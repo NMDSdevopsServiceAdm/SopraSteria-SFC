@@ -61,7 +61,7 @@
                     id="otherSelectedJobRole-{{ job.value.jobId }}"
                     name="otherSelectedJobRole{{ job.value.jobId }}"
                     type="text"
-                    formControlName="otherSelectedJobRole{{ job.value.jobId }}"
+                    [formControlName]="'otherSelectedJobRole' + job.value.jobId"
                     [class.govuk-input--error]="submitted && form.get('otherSelectedJobRole' + job.value.jobId).invalid"
                     spellcheck="false"
                   />

@@ -20,7 +20,7 @@
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
-                  formControlName="type"
+                  [formControlName]="'type'"
                   id="type-{{ item.key }}"
                   name="type"
                   type="radio"
@@ -62,7 +62,7 @@
       role="button"
       draggable="false"
       [routerLink]="['/worker', worker.uid]"
-      fragment="qualifications-and-training"
+      [fragment]="'qualifications-and-training'"
     >
       Cancel
     </a>

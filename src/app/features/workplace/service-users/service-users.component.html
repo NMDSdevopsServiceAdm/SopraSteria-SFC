@@ -67,7 +67,7 @@
                       "
                       id="serviceUsers-{{ service.id }}-otherService"
                       name="serviceUsers-{{ service.id }}-otherService"
-                      formControlName="serviceUsers-{{ service.id }}-otherService"
+                      [formControlName]="'serviceUsers-' + service.id + '-otherService'"
                       type="text"
                     />
                   </div>

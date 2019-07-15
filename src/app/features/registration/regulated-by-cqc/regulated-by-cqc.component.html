@@ -24,13 +24,13 @@
             <!-- regulated -->
             <div class="govuk-radios__item" (click)="onRegulatedByCQCTruthy()">
               <input
-                data-aria-controls="regulatedByCQC-conditional-1"
+                aria-controls="regulatedByCQC-conditional-1"
                 class="govuk-radios__input"
                 id="regulatedByCQC-1"
                 name="regulatedByCQC"
                 type="radio"
                 value="yes"
-                formControlName="regulatedByCQC"
+                [formControlName]="'regulatedByCQC'"
               />
               <label class="govuk-label govuk-radios__label" for="regulatedByCQC-1">
                 Yes
@@ -42,7 +42,7 @@
               class="govuk-radios__conditional"
               [class.govuk-radios__conditional--hidden]="regulatedByCQC.value !== 'yes'"
               id="regulatedByCQC-conditional-1"
-              formGroupName="group"
+              [formGroupName]="'group'"
             >
               <div id="group-error">
                 <!-- regulated postcode -->
@@ -63,7 +63,7 @@
                     id="regulatedPostcode"
                     name="regulatedPostcode"
                     type="text"
-                    formControlName="regulatedPostcode"
+                    [formControlName]="'regulatedPostcode'"
                     [class.govuk-input--error]="submitted && (regulatedPostcode.errors || group.errors)"
                     spellcheck="false"
                   />
@@ -86,7 +86,7 @@
                     id="locationId"
                     name="locationId"
                     type="text"
-                    formControlName="locationId"
+                    [formControlName]="'locationId'"
                     [class.govuk-input--error]="submitted && (locationId.errors || group.errors)"
                     spellcheck="false"
                   />
@@ -97,13 +97,13 @@
             <!-- Non regulated -->
             <div class="govuk-radios__item" (click)="onRegulatedByCQCFalsy()">
               <input
-                data-aria-controls="regulatedByCQC-conditional-2"
+                aria-controls="regulatedByCQC-conditional-2"
                 class="govuk-radios__input"
                 id="regulatedByCQC-2"
                 name="regulatedByCQC"
                 type="radio"
                 value="no"
-                formControlName="regulatedByCQC"
+                [formControlName]="'regulatedByCQC'"
               />
               <label class="govuk-label govuk-radios__label" for="regulatedByCQC-2">
                 No
@@ -139,7 +139,7 @@
                   id="nonRegulatedPostcode"
                   name="nonRegulatedPostcode"
                   type="text"
-                  formControlName="nonRegulatedPostcode"
+                  [formControlName]="'nonRegulatedPostcode'"
                   [class.govuk-input--error]="submitted && nonRegulatedPostcode.errors"
                   spellcheck="false"
                 />

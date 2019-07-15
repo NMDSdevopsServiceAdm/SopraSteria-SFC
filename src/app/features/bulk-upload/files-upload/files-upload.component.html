@@ -12,7 +12,7 @@
       id="fileUpload"
       name="fileUpload"
       type="file"
-      formControlName="fileUpload"
+      [formControlName]="'fileUpload'"
       (change)="onFilesSelection($event)"
       multiple
     />

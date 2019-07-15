@@ -8,7 +8,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <ng-template [ngIf]="pendingFeedback" [ngIfElse]="feedbackSubmitted">
+    <ng-container *ngIf="pendingFeedback; else feedbackSubmitted">
       <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
@@ -37,7 +37,7 @@
                 id="doingWhat"
                 name="doingWhat"
                 rows="6"
-                formControlName="doingWhat"
+                [formControlName]="'doingWhat'"
               ></textarea>
             </div>
             <app-character-count
@@ -66,7 +66,7 @@
                 id="tellUs"
                 name="tellUs"
                 rows="6"
-                formControlName="tellUs"
+                [formControlName]="'tellUs'"
               ></textarea>
             </div>
             <app-character-count [max]="tellUsCharactersLimit" [control]="form.get('tellUs')"></app-character-count>
@@ -94,7 +94,7 @@
               name="fullname"
               type="text"
               aria-describedby="fullname-hint"
-              formControlName="fullname"
+              [formControlName]="'fullname'"
             />
           </div>
 
@@ -123,7 +123,7 @@
               aria-describedby="email-hint"
               autocomplete="email"
               spellcheck="false"
-              formControlName="email"
+              [formControlName]="'email'"
             />
           </div>
         </fieldset>
@@ -132,7 +132,7 @@
           Send
         </button>
       </form>
-    </ng-template>
+    </ng-container>
 
     <ng-template #feedbackSubmitted>
       <h1 class="govuk-heading-xl">Thank You</h1>

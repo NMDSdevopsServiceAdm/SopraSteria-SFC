@@ -18,7 +18,7 @@
         <input
           class="govuk-input govuk-input--width-4"
           [class.govuk-input--error]="submitted && form.get('totalStaff').invalid"
-          formControlName="totalStaff"
+          [formControlName]="'totalStaff'"
           id="totalStaff"
           name="totalStaff"
           type="text"
@@ -36,8 +36,8 @@
       class="govuk-button govuk-button--link govuk-util__float-right"
       role="button"
       draggable="false"
-      routerLink="/dashboard"
-      fragment="staff-records"
+      [routerLink]="['/dashboard']"
+      [fragment]="'staff-records'"
     >
       Cancel
     </a>
