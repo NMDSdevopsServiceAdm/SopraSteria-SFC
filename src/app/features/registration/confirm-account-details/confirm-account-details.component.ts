@@ -64,12 +64,12 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       },
       {
         label: 'Email address',
-        data: this.userDetails.email,
+        data: this.userDetails.emailAddress,
         route: '/registration/change-your-details',
       },
       {
         label: 'Contact phone',
-        data: this.userDetails.phone,
+        data: this.userDetails.contactNumber,
         route: '/registration/change-your-details',
       },
       {
