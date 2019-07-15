@@ -90,7 +90,6 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
         .subscribe(
           () => {
             if (saveAndContinue) {
-              console.log('yeah', this.nextRoute);
               this.router.navigate(this.nextRoute);
             } else {
               this.router.navigate(['/bulk-upload/workplace-references']);
