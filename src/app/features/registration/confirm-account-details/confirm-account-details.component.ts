@@ -112,10 +112,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     this.subscriptions.add(
       this.registrationService.postRegistration(this.generatePayload()).subscribe(
         () => this.router.navigate(['/registration/complete']),
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          this.errorSummaryService.scrollToErrorSummary();
-        }
+        (error: HttpErrorResponse) => this.onError(error)
       )
     );
   }
