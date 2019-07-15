@@ -171,16 +171,6 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     };
   }
 
-  public downloadFile(event: Event, key: string) {
-    event.preventDefault();
-
-    this.bulkUploadService
-      .getUploadedFileSignedURL(this.establishmentService.establishmentId, key)
-      .subscribe(signedURL => {
-        window.open(signedURL);
-      });
-  }
-
   /**
    * Set validate success update uploaded files
    * And then set total warnings and/or errors and status
