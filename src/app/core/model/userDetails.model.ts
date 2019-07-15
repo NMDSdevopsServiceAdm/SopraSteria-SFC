@@ -6,7 +6,7 @@ export interface UserDetails {
   phone: string;
   role?: string;
   securityQuestion?: string;
-  securityQuestionAnswer?: string;
+  securityAnswer?: string;
   uid?: string;
   updated?: string;
   updatedBy?: string;
