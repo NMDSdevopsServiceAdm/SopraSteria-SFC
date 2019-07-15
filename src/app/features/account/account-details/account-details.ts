@@ -18,7 +18,7 @@ export class AccountDetails implements OnInit, OnDestroy {
   public formControlsMap: any[] = [
     {
       label: 'Your full name',
-      name: 'fullName'
+      name: 'fullname'
     },
     {
       label: 'Your job title',
@@ -44,7 +44,7 @@ export class AccountDetails implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.form = this.fb.group({
-      fullName: ['', [Validators.required, Validators.maxLength(120)]],
+      fullname: ['', [Validators.required, Validators.maxLength(120)]],
       jobTitle: ['', [Validators.required, Validators.maxLength(120)]],
       email: [
         '',
@@ -77,7 +77,7 @@ export class AccountDetails implements OnInit, OnDestroy {
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'fullName',
+        item: 'fullname',
         type: [
           {
             name: 'required',
@@ -140,6 +140,10 @@ export class AccountDetails implements OnInit, OnDestroy {
       {
         name: 404,
         message: 'User not found or does not belong to the given establishment.',
+      },
+      {
+        name: 400,
+        message: 'Unable to create user.',
       },
     ];
   }

@@ -3,6 +3,7 @@ import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RadioFieldData } from '@core/model/form-controls.model';
 import { BackService } from '@core/services/back.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { AccountDetails } from '@features/account/account-details/account-details';
@@ -13,47 +14,52 @@ import { AccountDetails } from '@features/account/account-details/account-detail
 })
 export class CreateAccountComponent extends AccountDetails {
   public callToActionLabel = 'Save user account';
-  public permissionsRadios: RadioFieldData[] = [
+  public roleRadios: RadioFieldData[] = [
     {
-      value: 'edit',
-      label: 'Edit'
+      value: 'Edit',
+      label: 'Edit',
     },
     {
-      value: 'read',
-      label: 'Read-only'
+      value: 'Read',
+      label: 'Read-only',
     },
   ];
 
   constructor(
+    private breadcrumbService: BreadcrumbService,
+    private createAccountService: CreateAccountService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
-    protected router: Router,
-    private createAccountService: CreateAccountService
+    protected router: Router
   ) {
     super(backService, errorSummaryService, fb, router);
   }
 
   protected init(): void {
+    this.breadcrumbService.show();
     this.addFormControls();
   }
 
   private addFormControls(): void {
-    this.form.addControl('permissions', new FormControl(null, Validators.required));
+    this.form.addControl('role', new FormControl(null, Validators.required));
 
     this.formErrorsMap.push({
-      item: 'permissions',
+      item: 'role',
       type: [
         {
           name: 'required',
           message: 'Please specify permissions for the new account.',
-        }
+        },
       ],
     });
   }
 
   protected save() {
-    this.createAccountService.accountDetails$.next(this.setUserDetails());
-    this.router.navigate(['/create-account/create-username']);
+    this.subscriptions.add(
+      this.createAccountService.createAccount(this.form.value).subscribe(() => {
+        this.router.navigate(['/create-account/saved']);
+      })
+    );
   }
 }
