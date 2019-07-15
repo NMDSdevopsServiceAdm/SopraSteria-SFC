@@ -465,12 +465,10 @@ router.route('/validate').put(async (req, res) => {
       Bucket: appConfig.get('bulkupload.bucketname').toString(),
       Prefix: `${req.establishmentId}/latest/`
     };
+
     const data = await s3.listObjects(params).promise();
     //  const establishmentsCSV = null;
 
-    const establishmentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
-    const workerRegex = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    const trainingRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
     const createModelPromises = [];
 
     data.Contents.forEach(myFile => {
@@ -483,17 +481,17 @@ router.route('/validate').put(async (req, res) => {
 
     await Promise.all(createModelPromises).then(function(values){
        values.forEach(myfile=>{
-          if (establishmentRegex.test(myfile.data.substring(0,50))) {
+          if (CsvEstablishmentValidator.isContent(myfile.data)) {
             myDownloads.establishments = myfile.data;
             establishmentMetadata.filename = myfile.filename;
             establishmentMetadata.fileType = 'Establishment';
             establishmentMetadata.userName = myfile.username;
-          } else if (workerRegex.test(myfile.data.substring(0,50))) {
+          } else if (CsvWorkerValidator.isContent(myfile.data)) {
             myDownloads.workers = myfile.data;
             workerMetadata.filename = myfile.filename;
             workerMetadata.fileType = 'Worker';
             workerMetadata.userName = myfile.username;
-          } else if (trainingRegex.test(myfile.data.substring(0,50))) {
+          } else if (CsvTrainingValidator.isContent(myfile.data)) {
             myDownloads.trainings = myfile.data;
             trainingMetadata.filename = myfile.filename;
             trainingMetadata.fileType = 'Training';
