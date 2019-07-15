@@ -358,7 +358,7 @@ router.route('/uploaded').put(async (req, res) => {
         establishmentMetadata.records = importedEstablishments.length;
         metadataS3Promises.push(uploadAsJSON(username, establishmentId, establishmentMetadata, `${establishmentId}/latest/${establishmentMetadata.filename}.metadata.json`));
       } else {
-        // reset metadata filetype because this is not an expecteno workers recordd establishment
+        // reset metadata filetype because this is not an expected establishment
         establishmentMetadata.fileType = null;
         status = false;
       }
