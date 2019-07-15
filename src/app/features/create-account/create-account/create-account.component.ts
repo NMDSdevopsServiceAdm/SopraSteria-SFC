@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { RadioField } from '@core/model/form-controls.model';
+import { RadioFieldData } from '@core/model/form-controls.model';
 import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -13,7 +13,7 @@ import { AccountDetails } from '@features/account/account-details/account-detail
 })
 export class CreateAccountComponent extends AccountDetails {
   public callToActionLabel = 'Save user account';
-  public permissionsRadios: RadioField[] = [
+  public permissionsRadios: RadioFieldData[] = [
     {
       value: 'edit',
       label: 'Edit'

@@ -1,4 +1,4 @@
-export interface RadioField {
+export interface RadioFieldData {
   value: string;
   label: string;
 }
