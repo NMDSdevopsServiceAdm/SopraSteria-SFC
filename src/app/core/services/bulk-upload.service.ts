@@ -12,15 +12,18 @@ import {
   ValidatedFilesResponse,
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { WorkPlaceReference } from '@core/model/my-workplaces.model';
+import { Workplace, WorkPlaceReference } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
+
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BulkUploadService {
+  private _workPlaceReferences$: BehaviorSubject<WorkPlaceReference[]> = new BehaviorSubject(null);
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
   public preValidationError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public preValidateFiles$: BehaviorSubject<boolean> = new BehaviorSubject(null);
@@ -28,9 +31,33 @@ export class BulkUploadService {
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
-  public workPlaceReferences$: BehaviorSubject<WorkPlaceReference[]> = new BehaviorSubject(null);
 
-  constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
+  public get workPlaceReferences$() {
+    if (this._workPlaceReferences$.value !== null) {
+      return this._workPlaceReferences$.asObservable();
+    }
+    return this.userService.getEstablishments().pipe(
+      map(response => {
+        const references = [];
+        if (response.primary) {
+          references.push(response.primary);
+        }
+        if (response.subsidaries) {
+          references.push(...response.subsidaries.establishments);
+        }
+        return this.generateWorkPlaceReferences(references) as WorkPlaceReference[];
+      }),
+      tap(references => {
+        this._workPlaceReferences$.next(references);
+      })
+    );
+  }
+
+  constructor(
+    private http: HttpClient,
+    private establishmentService: EstablishmentService,
+    private userService: UserService
+  ) {}
 
   public getPresignedUrls(payload: PresignedUrlsRequest): Observable<PresignedUrlResponseItem[]> {
     return this.http.post<PresignedUrlResponseItem[]>(
@@ -149,5 +176,12 @@ export class BulkUploadService {
         message: 'There is a problem with the service.',
       },
     ];
+  }
+
+  private generateWorkPlaceReferences(references: Array<Workplace>): WorkPlaceReference[] {
+    return references.map(reference => ({
+      name: reference['name'],
+      uid: reference.uid,
+    }));
   }
 }
