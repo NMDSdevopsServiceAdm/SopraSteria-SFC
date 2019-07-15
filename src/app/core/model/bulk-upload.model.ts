@@ -40,7 +40,7 @@ export interface UploadedFilesResponse {
   files: ValidatedFile[];
 }
 
-export interface UploadedFilesRequestDownloadResponse {
+export interface UploadedFilesRequestToDownloadResponse {
   file: {
     filename: string;
     uploaded: Date;

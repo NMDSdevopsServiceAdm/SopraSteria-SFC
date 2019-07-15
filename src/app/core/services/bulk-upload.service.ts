@@ -6,7 +6,7 @@ import {
   PresignedUrlResponseItem,
   PresignedUrlsRequest,
   ReportTypeRequestItem,
-  UploadedFilesRequestDownloadResponse,
+  UploadedFilesRequestToDownloadResponse,
   UploadedFilesResponse,
   ValidatedFile,
   ValidatedFilesResponse,
@@ -61,7 +61,7 @@ export class BulkUploadService {
 
   public getUploadedFileSignedURL(establishmentId: number, key: string): Observable<string> {
     return this.http
-      .get<UploadedFilesRequestDownloadResponse>(`/api/establishment/${establishmentId}/bulkupload/uploaded/${key}`)
+      .get<UploadedFilesRequestToDownloadResponse>(`/api/establishment/${establishmentId}/bulkupload/uploaded/${key}`)
       .pipe(map(response => response.file.signedUrl));
   }
 
