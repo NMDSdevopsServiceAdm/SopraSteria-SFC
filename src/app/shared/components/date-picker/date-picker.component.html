@@ -8,7 +8,7 @@
         <input
           class="govuk-input govuk-date-input__input govuk-input--width-2"
           [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
-          formControlName="day"
+          [formControlName]="'day'"
           id="{{ formGroupName }}-day"
           name="{{ formGroupName }}-day"
           type="number"
@@ -25,7 +25,7 @@
         <input
           class="govuk-input govuk-date-input__input govuk-input--width-2"
           [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
-          formControlName="month"
+          [formControlName]="'month'"
           id="{{ formGroupName }}-month"
           name="{{ formGroupName }}-month"
           type="number"
@@ -42,7 +42,7 @@
         <input
           class="govuk-input govuk-date-input__input govuk-input--width-4"
           [class.govuk-input--error]="submitted && formGroup.get(formGroupName).invalid"
-          formControlName="year"
+          [formControlName]="'year'"
           id="{{ formGroupName }}-year"
           name="{{ formGroupName }}-year"
           type="number"

@@ -1,6 +1,6 @@
 <app-inset-text color="success">
   {{ nameOrId }} has been deleted
-  <a routerLink="/dashboard" fragment="staff-records" class="govuk-util__float-right">
+  <a [routerLink]="['/dashboard']" [fragment]="'staff-records'" class="govuk-util__float-right">
     Cancel
   </a>
 </app-inset-text>

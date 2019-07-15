@@ -92,9 +92,9 @@
       Other services
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-template [ngIf]="!workplace.otherServices?.length" [ngIfElse]="otherServices">
+      <ng-container *ngIf="!workplace.otherServices?.length; else otherServices">
         -
-      </ng-template>
+      </ng-container>
       <ng-template #otherServices>
         <ng-container *ngIf="wdfReportEnabled">
           <ng-container *ngIf="workplace.wdf.otherService === 'No'">
@@ -148,9 +148,9 @@
           <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
         </ng-container>
         <ng-container *ngIf="workplace.wdf.capacities === 'Yes'">
-          <ng-template [ngIf]="!workplace.capacities?.length" [ngIfElse]="capacities">
+          <ng-container *ngIf="!workplace.capacities?.length; else capacities">
             -
-          </ng-template>
+          </ng-container>
           <ng-template #capacities>
             <ul class="govuk-list">
               <li *ngFor="let capacity of capacityMessages">{{ capacity }}</li>
@@ -160,9 +160,9 @@
       </ng-container>
 
       <ng-container *ngIf="!wdfReportEnabled">
-        <ng-template [ngIf]="!workplace.capacities?.length" [ngIfElse]="capacities">
+        <ng-container *ngIf="!workplace.capacities?.length; else capacities">
           -
-        </ng-template>
+        </ng-container>
         <ng-template #capacities>
           <ul class="govuk-list">
             <li *ngFor="let capacity of capacityMessages">{{ capacity }}</li>
@@ -194,9 +194,9 @@
           <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
         </ng-container>
         <ng-container *ngIf="workplace.wdf.serviceUsers === 'Yes'">
-          <ng-template [ngIf]="!workplace.serviceUsers?.length" [ngIfElse]="serviceUsers">
+          <ng-container *ngIf="!workplace.serviceUsers?.length; else serviceUsers">
             -
-          </ng-template>
+          </ng-container>
           <ng-template #serviceUsers>
             <ul class="govuk-list">
               <li *ngFor="let users of workplace.serviceUsers">
@@ -209,9 +209,9 @@
       </ng-container>
 
       <ng-container *ngIf="!wdfReportEnabled">
-        <ng-template [ngIf]="!workplace.serviceUsers?.length" [ngIfElse]="serviceUsers">
+        <ng-container *ngIf="!workplace.serviceUsers?.length; else serviceUsers">
           -
-        </ng-template>
+        </ng-container>
         <ng-template #serviceUsers>
           <ul class="govuk-list">
             <li *ngFor="let users of workplace.serviceUsers">
@@ -241,9 +241,9 @@
       Data sharing
     </dt>
     <dd class="govuk-summary-list__value">
-      <ng-template [ngIf]="!workplace.share?.enabled && workplace.share?.with?.length === 0" [ngIfElse]="sharing">
+      <ng-container *ngIf="!workplace.share?.enabled && workplace.share?.with?.length === 0; else sharing">
         -
-      </ng-template>
+      </ng-container>
       <ng-template #sharing>
         <ul class="govuk-list">
           <ng-container *ngIf="workplace.share.with.includes('CQC')">
@@ -282,9 +282,9 @@
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.vacancies === 'Yes'">
-          <ng-template [ngIf]="!workplace.vacancies?.length" [ngIfElse]="vacancies">
+          <ng-container *ngIf="!workplace.vacancies?.length; else vacancies">
             -
-          </ng-template>
+          </ng-container>
           <ng-template #vacancies>
             <ng-container *ngIf="isArray(workplace.vacancies)">
               <ul class="govuk-list">
@@ -304,9 +304,9 @@
       </ng-container>
 
       <ng-container *ngIf="!wdfReportEnabled">
-        <ng-template [ngIf]="!workplace.vacancies?.length" [ngIfElse]="vacancies">
+        <ng-container *ngIf="!workplace.vacancies?.length; else vacancies">
           -
-        </ng-template>
+        </ng-container>
         <ng-template #vacancies>
           <ng-container *ngIf="isArray(workplace.vacancies)">
             <ul class="govuk-list">
@@ -350,9 +350,9 @@
           </ng-container>
 
           <ng-container *ngIf="workplace.wdf.starters === 'Yes'">
-            <ng-template [ngIf]="!workplace.starters?.length" [ngIfElse]="starters">
+            <ng-container *ngIf="!workplace.starters?.length; else starters">
               -
-            </ng-template>
+            </ng-container>
             <ng-template #starters>
               <ng-container *ngIf="isArray(workplace.starters)">
                 <ul class="govuk-list">
@@ -367,9 +367,9 @@
         </ng-container>
 
         <ng-container *ngIf="!wdfReportEnabled">
-          <ng-template [ngIf]="!workplace.starters?.length" [ngIfElse]="starters">
+          <ng-container *ngIf="!workplace.starters?.length; else starters">
             -
-          </ng-template>
+          </ng-container>
           <ng-template #starters>
             <ng-container *ngIf="isArray(workplace.starters)">
               <ul class="govuk-list">
@@ -408,9 +408,9 @@
         </ng-container>
 
         <ng-container *ngIf="workplace.wdf.leavers === 'Yes'">
-          <ng-template [ngIf]="!workplace.leavers?.length" [ngIfElse]="leavers">
+          <ng-container *ngIf="!workplace.leavers?.length; else leavers">
             -
-          </ng-template>
+          </ng-container>
           <ng-template #leavers>
             <ng-container *ngIf="isArray(workplace.leavers)">
               <ul class="govuk-list">
@@ -425,9 +425,9 @@
       </ng-container>
 
       <ng-container *ngIf="!wdfReportEnabled">
-        <ng-template [ngIf]="!workplace.leavers?.length" [ngIfElse]="leavers">
+        <ng-container *ngIf="!workplace.leavers?.length; else leavers">
           -
-        </ng-template>
+        </ng-container>
         <ng-template #leavers>
           <ng-container *ngIf="isArray(workplace.leavers)">
             <ul class="govuk-list">

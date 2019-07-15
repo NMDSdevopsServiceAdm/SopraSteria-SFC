@@ -44,13 +44,13 @@
               <ng-container *ngFor="let service of item.services; let i = index">
                 <div class="govuk-radios__item">
                   <input
-                    [attr.data-aria-controls]="'workplaceService-conditional-' + i"
+                    [attr.aria-controls]="'workplaceService-conditional-' + i"
                     class="govuk-radios__input"
                     id="workplaceService-{{ service.id }}"
                     [value]="service.id"
                     name="workplaceService"
                     type="radio"
-                    formControlName="workplaceService"
+                    [formControlName]="'workplaceService'"
                   />
                   <label class="govuk-label govuk-radios__label" for="workplaceService-{{ service.id }}">
                     {{ service.name }}
@@ -80,7 +80,7 @@
                       id="otherWorkplaceService-{{ service.id }}"
                       name="otherWorkplaceService"
                       type="text"
-                      formControlName="otherWorkplaceService{{ service.id }}"
+                      [formControlName]="'otherWorkplaceService' + service.id"
                       [class.govuk-input--error]="submitted && form.get('otherWorkplaceService' + service.id).errors"
                       spellcheck="false"
                     />

@@ -10,9 +10,9 @@
         *ngFor="let breadcrumb of breadcrumbs; let i = index"
         [attr.aria-current]="i + 1 === breadcrumbs.length ? 'page' : null"
       >
-        <ng-template [ngIf]="i + 1 !== breadcrumbs.length" [ngIfElse]="final">
+        <ng-container *ngIf="i + 1 !== breadcrumbs.length; else final">
           <a class="govuk-breadcrumbs__link" [routerLink]="breadcrumb.url">{{ breadcrumb.title }}</a>
-        </ng-template>
+        </ng-container>
         <ng-template #final>
           {{ breadcrumb.title }}
         </ng-template>

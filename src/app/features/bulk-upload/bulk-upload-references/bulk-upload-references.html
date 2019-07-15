@@ -88,16 +88,18 @@
           <li>Continue without adding staff records.</li>
         </ul>
         <div class="govuk-button-group">
-          <button
-            type="button"
+          <a
+            role="button"
+            draggable="false"
             class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
-            (click)="navigateToNextRoute()"
+            [routerLink]="nextRoute"
           >
             Continue
-          </button>
+          </a>
           <span class="govuk-visually-hidden">or</span>
           <a
             role="button"
+            draggable="false"
             class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
             [routerLink]="['/bulk-upload/workplace-references']"
           >
