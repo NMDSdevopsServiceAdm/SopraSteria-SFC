@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RadioFieldData } from '@core/model/form-controls.model';
+import { AccountDetails } from '@features/account/account-details/account-details';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { Component } from '@angular/core';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { AccountDetails } from '@features/account/account-details/account-details';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { RadioFieldData } from '@core/model/form-controls.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-account',
@@ -57,9 +58,12 @@ export class CreateAccountComponent extends AccountDetails {
 
   protected save() {
     this.subscriptions.add(
-      this.createAccountService.createAccount(this.form.value).subscribe(() => {
-        this.router.navigate(['/create-account/saved']);
-      })
+      this.createAccountService
+        .createAccount(this.form.value)
+        .subscribe(
+          () => this.router.navigate(['/create-account/saved']),
+          (error: HttpErrorResponse) => this.onError(error)
+        )
     );
   }
 }

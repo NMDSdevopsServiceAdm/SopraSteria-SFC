@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { BackService } from '@core/services/back.service';
 import { OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
@@ -162,6 +163,11 @@ export class AccountDetails implements OnInit, OnDestroy {
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  protected onError(error: HttpErrorResponse): void {
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+    this.errorSummaryService.scrollToErrorSummary();
   }
 
   protected save(): void {}
