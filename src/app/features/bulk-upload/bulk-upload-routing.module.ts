@@ -11,6 +11,9 @@ import {
 } from '@features/bulk-upload/references-created-page/references-created-page.component';
 import { StaffReferencesPageComponent } from '@features/bulk-upload/staff-references-page/staff-references-page.component';
 
+import { StaffReferencesResolver } from './staff-references.resolver';
+import { WorkplacesReferencesResolver } from './workplace-references.resolver';
+
 const routes: Routes = [
   {
     path: '',
@@ -31,7 +34,12 @@ const routes: Routes = [
   {
     path: 'staff-references/:uid',
     component: StaffReferencesPageComponent,
+    resolve: {
+      references: StaffReferencesResolver,
+      workplaces: WorkplacesReferencesResolver,
+    },
     data: { title: 'Staff references' },
+    runGuardsAndResolvers: 'always',
   },
   {
     path: 'workplace-and-staff-references/success',
