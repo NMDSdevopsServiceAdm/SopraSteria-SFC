@@ -1,154 +1,63 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { Subscription } from 'rxjs';
+import { SecurityQuestion } from '@features/account/security-question/security-question';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-security-question',
   templateUrl: './security-question.component.html',
 })
-export class SecurityQuestionComponent implements OnInit, OnDestroy {
-  public callToActionLabel: string;
-  public form: FormGroup;
-  public submitted = false;
-  private formErrorsMap: Array<ErrorDetails>;
-  private securityDetailsExist = false;
-  private securityDetailsMaxLength = 255;
-  private subscriptions: Subscription = new Subscription();
-
+export class SecurityQuestionComponent extends SecurityQuestion {
   constructor(
-    private backService: BackService,
-    private errorSummaryService: ErrorSummaryService,
-    private fb: FormBuilder,
     private registrationService: RegistrationService,
-    private router: Router
-  ) {}
-
-  // Get security question
-  get getSecurityQuestion() {
-    return this.form.get('securityQuestion');
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+  ) {
+    super(backService, errorSummaryService, formBuilder, router);
   }
 
-  // Get security answer
-  get getSecurityAnswer() {
-    return this.form.get('securityAnswer');
+  protected init(): void {
+    this.setupSubscription();
   }
 
-  ngOnInit() {
-    this.setupForm();
-    this.checkExistingSecurityDetails();
-    this.setupFormErrorsMap();
-    this.setCallToActionLabel();
-    this.setBackLink();
-  }
-
-  private checkExistingSecurityDetails(): void {
+  protected setupSubscription(): void {
     this.subscriptions.add(
-      this.registrationService.securityDetails$.subscribe((securityDetails: SecurityDetails) => {
-        if (securityDetails) {
-          this.securityDetailsExist = true;
-          this.preFillForm(securityDetails);
-        }
-      })
+      this.registrationService.securityDetails$
+        .pipe(finalize(() => this.setBackLink()))
+        .subscribe((securityDetails: SecurityDetails) => {
+          if (securityDetails) {
+            this.securityDetailsExist = true;
+            this.preFillForm(securityDetails);
+          }
+        })
     );
   }
 
-  private preFillForm(securityDetails: SecurityDetails): void {
-    if (securityDetails) {
-      this.getSecurityQuestion.setValue(securityDetails.securityQuestion);
-      this.getSecurityAnswer.setValue(securityDetails.securityAnswer);
-    }
-  }
-
-  private setCallToActionLabel(): void {
-    const label: string = this.securityDetailsExist ? 'Save and return' : 'Continue';
-    this.callToActionLabel = label;
-  }
-
-  private setBackLink(): void {
+  protected setBackLink(): void {
     const route: string = this.securityDetailsExist
       ? '/registration/confirm-account-details'
       : '/registration/create-username';
     this.backService.setBackLink({ url: [route] });
   }
 
-  private setupForm(): void {
-    this.form = this.fb.group({
-      securityQuestion: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
-      securityAnswer: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
+  protected save(): void {
+    this.router.navigate(['/registration/confirm-account-details']).then(() => {
+      this.registrationService.securityDetails$.next({
+        securityQuestion: this.getSecurityQuestion.value,
+        securityAnswer: this.getSecurityAnswer.value,
+      });
     });
   }
 
-  private setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'securityQuestion',
-        type: [
-          {
-            name: 'required',
-            message: 'Please enter your security question.',
-          },
-          {
-            name: 'maxlength',
-            message: `The security question must be no longer than ${this.securityDetailsMaxLength} characters.`,
-          },
-        ],
-      },
-      {
-        item: 'securityAnswer',
-        type: [
-          {
-            name: 'required',
-            message: 'Please enter your security answer.',
-          },
-          {
-            name: 'maxlength',
-            message: `The security answer must be no longer than ${this.securityDetailsMaxLength} characters.`,
-          },
-        ],
-      },
-    ];
-  }
-
-  public onSubmit(): void {
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (this.form.valid) {
-      this.save();
-    } else {
-      this.errorSummaryService.scrollToErrorSummary();
-    }
-  }
-
-  private save(): void {
-    this.registrationService.securityDetails$.next({
-      securityQuestion: this.getSecurityQuestion.value,
-      securityAnswer: this.getSecurityAnswer.value,
-    });
-
-    this.router.navigate(['/registration/confirm-account-details']);
-  }
-
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  /**
-   * Unsubscribe hook to ensure no memory leaks
-   */
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  protected setCallToActionLabel(): void {
+    const label: string = this.securityDetailsExist ? 'Save and return' : 'Continue';
+    this.callToActionLabel = label;
   }
 }

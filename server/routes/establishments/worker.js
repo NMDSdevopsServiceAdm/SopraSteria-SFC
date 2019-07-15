@@ -26,13 +26,18 @@ const validateWorker = async (req, res, next) => {
 
     // if the request for this worker is by a user associated with parent, and the requested establishment is
     //  not their primary establishment, then they must have been granted "staff" level permission to access the worker
-    if (req.isParent && req.establishmentId !== req.establishment.id) {
-        // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
-        if (req.parentPermissions === null ||
-            req.parentPermissions !== "Workplace and Staff") {
-                console.error("validateWorker authorisation - parent is requesting a subdiaries worker without required permission");
-                return res.status(403).send('Not Found');
-        }
+    if (req.establishmentId !== req.establishment.id) {
+
+      // TODO - although I can now demonstrate this is working - removing this restriction because bulk upload
+      //        parent/sub permissions need to be refine because at present, the frontend will try and set the local identifiers
+      //        on subs it doesn't technically have permisison on.
+      //   https://trello.com/c/LtgGtQho
+      // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
+      // if (!req.parentIsOwner  &&
+      //     (req.parentPermissions === null || req.parentPermissions !== "Workplace and Staff")) {
+      //         console.error("validateWorker authorisation - parent is requesting a subdiaries worker without required permission");
+      //         return res.status(400).send('Not Found');
+      // }
     }
 
 
@@ -84,7 +89,7 @@ const updateLocalIdOnWorker = async (thisGivenWorker, transaction, updatedTimest
 
     if (thisGivenWorker[0] === 1) {
     const updatedRecord = thisGivenWorker[1][0].get({plain: true});
-    
+
     allAuditEvents.push({
         workerFk: updatedRecord._id,
         username,
@@ -108,7 +113,7 @@ const updateLocalIdOnWorker = async (thisGivenWorker, transaction, updatedTimest
     });
     }
 }
-    
+
 router.use('/', validateWorker);
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
@@ -132,19 +137,19 @@ router.route('/').get(async (req, res) => {
 router.route('/localIdentifier').put(async (req, res) => {
     const establishmentId = req.establishmentId;
     const username = req.username;
-  
+
     // validate input
     const givenLocalIdentifiers = req.body.localIdentifiers;
     if (!givenLocalIdentifiers || !Array.isArray(givenLocalIdentifiers)) {
       return res.status(400).send({});
     }
-  
+
     const thisEstablishment = new Establishment.Establishment(username);
-  
+
     try {
       // as a minimum for security purposes, we restore the user's primary establishment
       if (await thisEstablishment.restore(establishmentId)) {
-  
+
         const myWorkers = await Workers.Worker.fetch(establishmentId);
 
         const myWorkersUIDs = myWorkers.map(worker => worker.uid);
@@ -162,11 +167,11 @@ router.route('/localIdentifier').put(async (req, res) => {
               updatedUids.push(thisGivenWorker.uid);
             }
           });
-  
+
           await Promise.all(dbUpdatePromises);
           await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
         });
-  
+
         return res.status(200).json({
           id: thisEstablishment.id,
           uid: thisEstablishment.uid,
@@ -175,7 +180,7 @@ router.route('/localIdentifier').put(async (req, res) => {
           updatedBy: req.username,
           localIdentifiers: updatedUids,
         });
-  
+
       } else {
         return res.status(404).send('Not Found');
       }
@@ -190,7 +195,7 @@ router.route('/localIdentifier').put(async (req, res) => {
       return res.status(503).send(err.message);
     }
 });
-  
+
 
 
 // gets requested worker id
@@ -237,7 +242,7 @@ router.route('/:workerId').get(async (req, res) => {
 router.route('/').post(async (req, res) => {
     const establishmentId = req.establishmentId;
     const newWorker = new Workers.Worker(establishmentId);
-    
+
     try {
         // TODO: JSON validation
         const isValidWorker = await newWorker.load(req.body);
@@ -278,9 +283,9 @@ router.route('/:workerId').put(async (req, res) => {
     // validating worker id - must be a V4 UUID
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
     if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
-    
+
     const thisWorker = new Workers.Worker(establishmentId);
-    
+
     try {
         // before updating a Worker, we need to be sure the Worker is
         //  available to the given establishment. The best way of doing that
@@ -302,7 +307,7 @@ router.route('/:workerId').put(async (req, res) => {
             } else {
                 return res.status(400).send('Unexpected Input.');
             }
-            
+
         } else {
             // not found worker
             return res.status(404).send('Not Found');
@@ -336,7 +341,7 @@ router.route('/:workerId').delete(async (req, res) => {
     if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
 
     const thisWorker = new Workers.Worker(establishmentId);
-    
+
     try {
         // before deleting a Worker, we need to be sure the Worker is
         //  available to the given establishment. The best way of doing that

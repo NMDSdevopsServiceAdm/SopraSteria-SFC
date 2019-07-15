@@ -6,7 +6,6 @@
 }
 
 @include govuk-media-query($until: desktop) {
-
   .has-divider {
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.16) !important;
     padding-bottom: 20px;
@@ -16,7 +15,6 @@
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
-
 
   .govuk-header {
     padding-top: 0;
@@ -37,7 +35,7 @@
       -ms-transition: height 0.5s linear;
       -o-transition: height 0.5s linear;
       transition: height 0.5s linear;
-      box-shadow: 0 10px 10px 0px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 10px 0px rgba(0, 0, 0, 0.3);
 
       li.govuk-header__navigation-item {
         display: block;
@@ -101,7 +99,6 @@
     .govuk-main-wrapper {
       padding: 20px;
 
-
       select {
         width: 100% !important;
       }
@@ -133,5 +130,4 @@
       max-width: 130px;
     }
   }
-
 }

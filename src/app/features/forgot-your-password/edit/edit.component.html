@@ -18,10 +18,7 @@
 
         <p>Enter your username or email address and we will send you a link to reset your password.</p>
 
-        <div
-          class="govuk-form-group"
-          [ngClass]="{ 'govuk-form-group--error': form.get('usernameOrEmail').errors && submitted }"
-        >
+        <div class="govuk-form-group" [class.govuk-form-group--error]="form.get('usernameOrEmail').errors && submitted">
           <label class="govuk-label" for="usernameOrEmail">
             Username or email address
           </label>
@@ -34,17 +31,17 @@
           </span>
           <input
             class="govuk-input govuk-!-width-full"
-            [ngClass]="{ 'govuk-input--error': form.get('usernameOrEmail').errors && submitted }"
+            [class.govuk-input--error]="form.get('usernameOrEmail').errors && submitted"
             id="usernameOrEmail"
             name="usernameOrEmail"
             type="text"
-            formControlName="usernameOrEmail"
+            [formControlName]="'usernameOrEmail'"
           />
         </div>
       </fieldset>
 
       <button type="submit" class="govuk-button">Send reset link</button>
     </form>
-    <p><a routerLink="/login">Back to sign in</a></p>
+    <p><a [routerLink]="['/login']">Back to sign in</a></p>
   </div>
 </div>

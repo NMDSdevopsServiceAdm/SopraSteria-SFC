@@ -148,6 +148,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
         () => {
           this.authService.isFirstBulkUpload = false;
           this.router.navigate(['/dashboard']);
+          this.authService.isFirstBulkUpload = false;
           this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
         },
         response => {
@@ -168,6 +169,16 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
         other: 'There were # errors in the file',
       }),
     };
+  }
+
+  public downloadFile(event: Event, key: string) {
+    event.preventDefault();
+
+    this.bulkUploadService
+      .getUploadedFileSignedURL(this.establishmentService.establishmentId, key)
+      .subscribe(signedURL => {
+        window.open(signedURL);
+      });
   }
 
   /**

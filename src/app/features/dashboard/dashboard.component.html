@@ -1,8 +1,19 @@
-<app-dashboard-header></app-dashboard-header>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">
+      <span *ngIf="establishment?.parentName" class="govuk-caption-xl">{{ establishment.parentName }}: Parent</span>
+      {{ establishment?.name }}
+    </h1>
+  </div>
 
-<p *ngIf="establishment?.parentName" class="govuk-caption-l govuk-!-margin-bottom-2">{{ establishment.parentName }}</p>
-<p *ngIf="establishment?.isParent" class="govuk-caption-l govuk-!-margin-bottom-2">Parent</p>
-<h1 class="govuk-heading-l govuk-!-padding-top-0 govuk-!-margin-bottom-4">{{ establishment?.name }}</h1>
+  <div class="govuk-grid-column-one-third">
+    <h2 class="govuk-heading-m">Contact Skills for Care</h2>
+    <p>
+      0113 241 0969<br />
+      <a href="mailto:ascwds@skillsforcare.org.uk">ascwds@skillsforcare.org.uk</a>
+    </p>
+  </div>
+</div>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">

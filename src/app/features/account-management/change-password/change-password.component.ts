@@ -1,7 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserDetails } from '@core/model/userDetails.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-change-password',
@@ -12,13 +13,15 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
   public userDetails: UserDetails;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {
+    this.breadcrumbService.show();
+
     this.submitted = false;
 
     this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => this.userDetails = userDetails)
+      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
     );
   }
 

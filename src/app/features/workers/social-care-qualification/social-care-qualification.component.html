@@ -17,7 +17,7 @@
             <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="qualificationInSocialCare"
+                [formControlName]="'qualificationInSocialCare'"
                 id="qualificationInSocialCare-{{ idx }}"
                 name="qualificationInSocialCare"
                 type="radio"

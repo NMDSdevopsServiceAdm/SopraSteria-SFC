@@ -1,8 +1,9 @@
 import 'core-js';
 
 import { Component, ElementRef, enableProdMode, OnInit, ViewChild } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router } from '@angular/router';
-import { TitleService } from '@core/services/title.service';
+import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { Angulartics2GoogleGlobalSiteTag } from 'angulartics2/gst';
 import { filter } from 'rxjs/operators';
 
@@ -13,16 +14,30 @@ enableProdMode();
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
-  private title = 'Skills for Care';
+  private baseTitle = 'Skills for Care';
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
   constructor(
     private router: Router,
-    private titleService: TitleService,
+    private title: Title,
+    private nestedRoutesService: NestedRoutesService,
     private angulartics: Angulartics2GoogleGlobalSiteTag
   ) {
-    this.titleService.init(this.title);
+    this.nestedRoutesService.routes$.subscribe(routes => {
+      if (routes) {
+        const titles = routes.reduce(
+          (titleArray, breadcrumb) => {
+            titleArray.push(breadcrumb.title);
+            return titleArray;
+          },
+          [this.baseTitle]
+        );
+
+        this.title.setTitle(titles.join(' - '));
+      }
+    });
+
     this.angulartics.startTracking();
   }
 

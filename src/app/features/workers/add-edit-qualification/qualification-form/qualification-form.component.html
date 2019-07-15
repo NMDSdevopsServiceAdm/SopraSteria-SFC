@@ -15,7 +15,7 @@
       <select
         class="govuk-select"
         [class.govuk-select--error]="submitted && group.get('qualification').invalid"
-        formControlName="qualification"
+        [formControlName]="'qualification'"
         id="{{ type.key }}-qualification"
         name="qualification"
       >
@@ -39,7 +39,7 @@
       <input
         class="govuk-input govuk-date-input__input govuk-input--width-4"
         [class.govuk-input--error]="submitted && group.get('year').invalid"
-        formControlName="year"
+        [formControlName]="'year'"
         id="{{ type.key }}-year"
         name="year"
         type="number"
@@ -62,7 +62,7 @@
         <textarea
           class="govuk-textarea govuk-grid-column-two-thirds-from-desktop"
           [class.govuk-textarea--error]="submitted && group.get('notes').invalid"
-          formControlName="notes"
+          [formControlName]="'notes'"
           id="{{ type.key }}-notes"
           name="notes"
           rows="5"

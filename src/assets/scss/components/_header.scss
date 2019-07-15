@@ -64,15 +64,16 @@ $govuk-header-nav-item-border-color: #2e3133;
 
     .govuk-header__navigation-item {
       padding: govuk-spacing(2) 0;
-      margin-right: govuk-spacing(2);
+      @include govuk-responsive-margin(3, 'right');
       border-bottom: 0;
 
       &::after {
         content: '|';
-        margin-left: govuk-spacing(2);
+        @include govuk-responsive-margin(3, 'left');
       }
 
       &:last-child {
+        margin-right: 0;
         &::after {
           display: none;
         }
@@ -80,7 +81,6 @@ $govuk-header-nav-item-border-color: #2e3133;
 
       @include mq($from: desktop) {
         display: inline-block;
-        margin-right: govuk-spacing(3);
         padding: govuk-spacing(1) 0;
         border: 0;
       }

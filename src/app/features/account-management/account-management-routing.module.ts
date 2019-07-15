@@ -8,9 +8,8 @@ import { YourAccountComponent } from './your-account/your-account.component';
 
 const routes: Routes = [
   {
-    path: 'your-account',
+    path: '',
     component: YourAccountComponent,
-    data: { title: 'Your Account' },
   },
   {
     path: 'change-password',

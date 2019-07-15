@@ -6,21 +6,13 @@
   [form]="form"
 ></app-error-summary>
 
-<app-dashboard-header></app-dashboard-header>
-
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <p class="govuk-caption-l govuk-!-margin-bottom-0">{{ establishment?.name }}</p>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-7">Bulk upload</h1>
+    <h1 class="govuk-heading-l">
+      <span *ngIf="establishment?.name" class="govuk-caption-xl">{{ establishment?.name }}</span>
+      Bulk upload
+    </h1>
     <p>Bulk upload is used to add and edit large quantities of staff, workplace and training information.</p>
-  </div>
-  <div class="govuk-grid-column-one-third">
-    <!-- TODO uncomment once relevant sections have been developed
-    <ul class="govuk-list">
-      <li><a [routerLink]="['/bulk-upload/home']">View bulk upload codes</a></li>
-      <li><a [routerLink]="['/']">View bulk upload history</a></li>
-    </ul>
-    -->
   </div>
 </div>
 

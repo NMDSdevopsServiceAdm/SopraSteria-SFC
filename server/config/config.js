@@ -219,7 +219,12 @@ const config = convict({
           doc: 'The add user JWT audience',
           format: String,
           default: 'ADS-WDS-add-user'
-        }
+        },
+        internalAdminApp: {
+          doc: 'The JWT audience for the Internal Admin application',
+          format: String,
+          default: 'ADS-WDS-Internal-Admin-App'
+        },
       }
   },
   slack: {
