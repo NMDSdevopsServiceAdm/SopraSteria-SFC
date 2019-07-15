@@ -44,7 +44,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
           this.userDetails = userDetails;
           this.preFillForm({
             securityQuestion: userDetails.securityQuestion,
-            securityAnswer: userDetails.securityQuestionAnswer,
+            securityAnswer: userDetails.securityAnswer,
           });
         }
       })
@@ -80,7 +80,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
 
   protected save(): void {
     this.userDetails.securityQuestion = this.getSecurityQuestion.value;
-    this.userDetails.securityQuestionAnswer = this.getSecurityAnswer.value;
+    this.userDetails.securityAnswer = this.getSecurityAnswer.value;
     this.changeUserDetails(this.username, this.userDetails);
   }
 

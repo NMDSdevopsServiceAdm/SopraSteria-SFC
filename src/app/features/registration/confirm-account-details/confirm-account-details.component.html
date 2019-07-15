@@ -11,102 +11,18 @@
     <span class="govuk-caption-l">User account</span>
     <h2 class="govuk-heading-l">Confirm your account details</h2>
 
-    <dl class="govuk-summary-list govuk-!-margin-bottom-8">
-      <div class="govuk-summary-list__row">
+    <dl *ngIf="accountDetails" class="govuk-summary-list govuk-!-margin-bottom-8">
+      <div class="govuk-summary-list__row" *ngFor="let item of accountDetails">
         <dt class="govuk-summary-list__key">
-          Full name
+          {{ item.label }}
         </dt>
         <dd class="govuk-summary-list__value">
-          {{ userDetails?.fullname }}
+          {{ item.data }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/change-your-details']">
+          <a [routerLink]="[item.route]">
             Change
-            <span class="govuk-visually-hidden"> full name</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Job title
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ userDetails?.jobTitle }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/change-your-details']">
-            Change
-            <span class="govuk-visually-hidden"> job title</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Email address
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ userDetails?.email }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/change-your-details']">
-            Change
-            <span class="govuk-visually-hidden"> email address</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Contact phone
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ userDetails?.phone }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/change-your-details']">
-            Change
-            <span class="govuk-visually-hidden"> contact phone</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Username
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ loginCredentials.username }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/create-username']">
-            Change
-            <span class="govuk-visually-hidden"> username</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Security question
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ securityDetails?.securityQuestion }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/security-question']">
-            Change
-            <span class="govuk-visually-hidden"> security question</span>
-          </a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row">
-        <dt class="govuk-summary-list__key">
-          Security answer
-        </dt>
-        <dd class="govuk-summary-list__value">
-          {{ securityDetails?.securityAnswer }}
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/security-question']">
-            Change
-            <span class="govuk-visually-hidden"> security answer</span>
+            <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>
           </a>
         </dd>
       </div>
