@@ -53,16 +53,16 @@
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('permissions') }}
           </span>
           <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let item of permissionsRadios">
+            <div class="govuk-radios__item" *ngFor="let item of permissionsRadios; let i = index">
               <input
                 class="govuk-radios__input"
                 [formControlName]="'permissions'"
-                id="permissions-1"
+                id="permissions-{{ i }}"
                 name="permissions"
                 value="{{ item.value }}"
                 type="radio"
               />
-              <label class="govuk-label govuk-radios__label" for="permissions-1">
+              <label class="govuk-label govuk-radios__label" for="permissions-{{ i }}">
                 {{ item.label }}
               </label>
             </div>
