@@ -52,54 +52,18 @@
           <span *ngIf="submitted && form.get('permissions').errors" id="permissions-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('permissions') }}
           </span>
-          <div class="govuk-radios govuk-radios--conditional">
-            <div class="govuk-radios__item">
-              <input
-                class="govuk-radios__input"
-                [class.govuk-input--error]="submitted && form.get('permissions').errors"
-                [formControlName]="'permissions'"
-                id="permissions-conditional-1"
-                name="permissions"
-                value="edit"
-                type="radio"
-                aria-controls="conditional-permissions-conditional-1"
-              />
-              <label class="govuk-label govuk-radios__label" for="permissions-conditional-1">
-                Edit
-              </label>
-            </div>
-            <div
-              class="govuk-radios__conditional"
-              [class.govuk-radios__conditional--hidden]="form.get('permissions').value !== 'edit'"
-              id="conditional-permissions-conditional-1"
-            >
-              <div class="govuk-checkboxes">
-                <div class="govuk-checkboxes__item">
-                  <input
-                    class="govuk-checkboxes__input"
-                    [formControlName]="'primaryUser'"
-                    id="primaryUser"
-                    name="primaryUser"
-                    type="checkbox"
-                  />
-                  <label class="govuk-label govuk-checkboxes__label" for="primaryUser">
-                    Make this user a primary user
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div class="govuk-radios__item">
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let item of permissionsRadios">
               <input
                 class="govuk-radios__input"
                 [formControlName]="'permissions'"
-                id="permissions-2"
+                id="permissions-1"
                 name="permissions"
-                value="read"
+                value="{{ item.value }}"
                 type="radio"
               />
-              <label class="govuk-label govuk-radios__label" for="permissions-2">
-                Read-only
+              <label class="govuk-label govuk-radios__label" for="permissions-1">
+                {{ item.label }}
               </label>
             </div>
           </div>
