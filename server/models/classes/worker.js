@@ -146,6 +146,9 @@ class Worker extends EntityValidator {
     set establishmentId(establishmentId) {
         this._establishmentId = establishmentId;
     }
+    get localIdentifier() {
+        return this._properties.get('LocalIdentifier') ? this._properties.get('LocalIdentifier').property : null;
+    }
 
     get nameOrId() {
         // returns the name or id property - if known
