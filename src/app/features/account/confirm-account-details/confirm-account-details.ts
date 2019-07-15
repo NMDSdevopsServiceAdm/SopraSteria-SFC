@@ -1,17 +1,14 @@
-import { OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { AccountDetails } from '@core/model/account-details.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
+import { OnDestroy, OnInit } from '@angular/core';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
+import { Subscription } from 'rxjs';
 import { UserDetails } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
-import { UserService } from '@core/services/user.service';
-import { combineLatest, Subscription } from 'rxjs';
 
 export class ConfirmAccountDetails implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
@@ -19,6 +16,7 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected workplaceService: Service;
+  public accountDetails: AccountDetails[];
   public form: FormGroup;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
@@ -27,17 +25,12 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
   public userDetails: UserDetails;
 
   constructor(
-    protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
-    protected router: Router,
-    protected userService: UserService
   ) {}
 
   ngOnInit() {
     this.setupForm();
-    this.setupSubscriptions();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.init();
@@ -51,51 +44,7 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
     });
   }
 
-  private setupSubscriptions(): void {
-    this.subscriptions.add(
-      combineLatest(
-        this.userService.userDetails$,
-        this.registrationService.selectedLocationAddress$,
-        this.registrationService.selectedWorkplaceService$,
-        this.registrationService.loginCredentials$,
-        this.registrationService.securityDetails$
-      ).subscribe(([userDetails, locationAddress, workplaceService, loginCredentials, securityDetails]) => {
-        this.userDetails = userDetails;
-        this.locationAddress = locationAddress;
-        this.workplaceService = workplaceService;
-        this.loginCredentials = loginCredentials;
-        this.securityDetails = securityDetails;
-      })
-    );
-
-    // this.subscriptions.add(
-    //   this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
-    // );
-    //
-    // this.subscriptions.add(
-    //   this.registrationService.selectedLocationAddress$.subscribe(
-    //     (locationAddress: LocationAddress) => (this.locationAddress = locationAddress)
-    //   )
-    // );
-    //
-    // this.subscriptions.add(
-    //   this.registrationService.selectedWorkplaceService$.subscribe(
-    //     (workplaceService: Service) => (this.workplaceService = workplaceService)
-    //   )
-    // );
-    //
-    // this.subscriptions.add(
-    //   this.registrationService.loginCredentials$.subscribe(
-    //     (loginCredentials: LoginCredentials) => (this.loginCredentials = loginCredentials)
-    //   )
-    // );
-    //
-    // this.subscriptions.add(
-    //   this.registrationService.securityDetails$.subscribe(
-    //     (securityDetails: SecurityDetails) => (this.securityDetails = securityDetails)
-    //   )
-    // );
-  }
+  protected setupSubscriptions(): void {}
 
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [

@@ -1,4 +1,5 @@
 import { BackService } from '@core/services/back.service';
+import { combineLatest } from 'rxjs';
 import { Component } from '@angular/core';
 import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -15,18 +16,78 @@ import { UserService } from '@core/services/user.service';
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   constructor(
-    protected backService: BackService,
+    private backService: BackService,
+    private registrationService: RegistrationService,
+    private router: Router,
+    private userService: UserService,
     protected errorSummaryService: ErrorSummaryService,
-    protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
-    protected router: Router,
-    protected userService: UserService
+    protected formBuilder: FormBuilder
   ) {
-    super(backService, errorSummaryService, formBuilder, registrationService, router, userService);
+    super(errorSummaryService, formBuilder);
   }
 
   protected init() {
+    this.setupSubscriptions();
     this.setBackLink();
+  }
+
+  protected setupSubscriptions(): void {
+    this.subscriptions.add(
+      combineLatest(
+        this.userService.userDetails$,
+        this.registrationService.selectedLocationAddress$,
+        this.registrationService.selectedWorkplaceService$,
+        this.registrationService.loginCredentials$,
+        this.registrationService.securityDetails$
+      ).subscribe(([userDetails, locationAddress, workplaceService, loginCredentials, securityDetails]) => {
+        this.userDetails = userDetails;
+        this.locationAddress = locationAddress;
+        this.workplaceService = workplaceService;
+        this.loginCredentials = loginCredentials;
+        this.securityDetails = securityDetails;
+        this.setAccountDetails();
+      })
+    );
+  }
+
+  private setAccountDetails(): void {
+    this.accountDetails = [
+      {
+        label: 'Full name',
+        data: this.userDetails.fullname,
+        route: '/registration/change-your-details',
+      },
+      {
+        label: 'Job title',
+        data: this.userDetails.jobTitle,
+        route: '/registration/change-your-details',
+      },
+      {
+        label: 'Email address',
+        data: this.userDetails.email,
+        route: '/registration/change-your-details',
+      },
+      {
+        label: 'Contact phone',
+        data: this.userDetails.phone,
+        route: '/registration/change-your-details',
+      },
+      {
+        label: 'Username',
+        data: this.loginCredentials.username,
+        route: '/registration/create-username',
+      },
+      {
+        label: 'Security question',
+        data: this.securityDetails.securityQuestion,
+        route: '/registration/security-question',
+      },
+      {
+        label: 'Security answer',
+        data: this.securityDetails.securityAnswer,
+        route: '/registration/security-question',
+      },
+    ];
   }
 
   protected setBackLink(): void {
