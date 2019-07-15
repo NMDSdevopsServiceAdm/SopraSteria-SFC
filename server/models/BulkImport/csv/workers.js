@@ -358,7 +358,10 @@ class Worker {
   _validateChangeUniqueWorkerId() {
     const myChangeUniqueWorkerId = this._currentLine.CHGUNIQUEWRKID;
     const MAX_LENGTH = 50;
-    if (myChangeUniqueWorkerId.length >= MAX_LENGTH) {
+
+    // CHGUNIQUEWRKID is optional
+
+    if (myChangeUniqueWorkerId && myChangeUniqueWorkerId.length > 0 && myChangeUniqueWorkerId.length >= MAX_LENGTH) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -369,7 +372,7 @@ class Worker {
         source: this._currentLine.CHGUNIQUEWRKID,
       });
       return false;
-    } else {
+    } else if (myChangeUniqueWorkerId && myChangeUniqueWorkerId.length > 0) {
       this._changeUniqueWorkerId = myChangeUniqueWorkerId;
       return true;
     }
@@ -819,7 +822,7 @@ class Worker {
 
   _validateRecSource() {
     const myRecSource = parseInt(this._currentLine.RECSOURCE);
-    
+
     // optional
     if (this._currentLine.RECSOURCE && (isNaN(myRecSource))) {
       this._validationErrors.push({

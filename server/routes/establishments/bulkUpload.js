@@ -365,7 +365,7 @@ router.route('/uploaded').put(async (req, res) => {
     }
 
     if(importedWorkers){
-      console.log("WA DEBUG - imported workers: ", importedWorkers)
+      //console.log("WA DEBUG - imported workers: ", importedWorkers)
       const workerCsvValidator = new CsvWorkerValidator(importedWorkers[firstRow], firstLineNumber);
       if(workerCsvValidator.preValidate(workerHeaders)){
         // count records and update metadata
@@ -466,13 +466,8 @@ router.route('/validate').put(async (req, res) => {
       Prefix: `${req.establishmentId}/latest/`
     };
     const data = await s3.listObjects(params).promise();
-    //  const establishmentsCSV = null;
 
-    const establishmentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
-    const workerRegex = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    const trainingRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
     const createModelPromises = [];
-
     data.Contents.forEach(myFile => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
@@ -483,17 +478,17 @@ router.route('/validate').put(async (req, res) => {
 
     await Promise.all(createModelPromises).then(function(values){
        values.forEach(myfile=>{
-          if (establishmentRegex.test(myfile.data.substring(0,50))) {
+          if (CsvEstablishmentValidator.isContent(myfile.data)) {
             myDownloads.establishments = myfile.data;
             establishmentMetadata.filename = myfile.filename;
             establishmentMetadata.fileType = 'Establishment';
             establishmentMetadata.userName = myfile.username;
-          } else if (workerRegex.test(myfile.data.substring(0,50))) {
+          } else if (CsvWorkerValidator.isContent(myfile.data)) {
             myDownloads.workers = myfile.data;
             workerMetadata.filename = myfile.filename;
             workerMetadata.fileType = 'Worker';
             workerMetadata.userName = myfile.username;
-          } else if (trainingRegex.test(myfile.data.substring(0,50))) {
+          } else if (CsvTrainingValidator.isContent(myfile.data)) {
             myDownloads.trainings = myfile.data;
             trainingMetadata.filename = myfile.filename;
             trainingMetadata.fileType = 'Training';
@@ -565,13 +560,6 @@ router.route('/validate').post(async (req, res) => {
       establishmentMetadata.fileType = 'Establishment';
 
     }
-    if (workerRegex.test(req.body.workers.csv.substring(0,50))) {
-      let key = req.body.workers.filename;
-      workerMetadata.filename = key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3];
-      workerMetadata.fileType = 'Worker';
-
-    }
-
     if (trainingRegex.test(req.body.training.csv.substring(0,50))) {
       let key = req.body.training.filename;
       trainingMetadata.filename = key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3];
@@ -973,6 +961,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
       } else {
         // does not yet exist - check this worker can be associated with a known establishment
         const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, "") : '';
+
         if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
           // not found the associated establishment
           csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
