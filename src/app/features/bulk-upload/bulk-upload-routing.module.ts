@@ -14,7 +14,7 @@ const routes: Routes = [
   {
     path: '',
     component: BulkUploadPageComponent,
-    // canActivate: [BulkUploadGuard],
+    canActivate: [BulkUploadGuard],
     data: { title: 'Home' },
   },
   {
