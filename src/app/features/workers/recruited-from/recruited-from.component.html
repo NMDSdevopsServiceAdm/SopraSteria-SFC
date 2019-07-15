@@ -14,12 +14,12 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="recruitmentKnown"
+                [formControlName]="'recruitmentKnown'"
                 id="recruitmentKnown-conditional-1"
                 name="recruitmentKnown"
                 type="radio"
                 value="Yes"
-                data-aria-controls="conditional-recruitmentKnown-conditional-1"
+                aria-controls="conditional-recruitmentKnown-conditional-1"
               />
               <label class="govuk-label govuk-radios__label" for="recruitmentKnown-conditional-1">
                 Yes
@@ -45,7 +45,7 @@
                 <select
                   class="govuk-select"
                   [class.govuk-select--error]="submitted && form.get('recruitedFromId').invalid"
-                  formControlName="recruitedFromId"
+                  [formControlName]="'recruitedFromId'"
                   id="recruitedFromId"
                   name="recruitedFromId"
                 >
@@ -60,7 +60,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="recruitmentKnown"
+                [formControlName]="'recruitmentKnown'"
                 id="recruitmentKnown-2"
                 name="recruitmentKnown"
                 type="radio"

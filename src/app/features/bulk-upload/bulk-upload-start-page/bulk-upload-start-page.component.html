@@ -13,7 +13,12 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <div class="govuk-!-margin-top-6">
-      <a [routerLink]="['/bulk-upload/workplace-references']" type="submit" class="govuk-button govuk-button--start">
+      <a
+        role="button"
+        draggable="false"
+        class="govuk-button govuk-button--start"
+        [routerLink]="['/bulk-upload/workplace-references']"
+      >
         Start now
       </a>
     </div>

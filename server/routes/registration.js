@@ -412,7 +412,7 @@ router.route('/')
             await newEstablishment.save(Logindata.UserName, 0, t);
             Estblistmentdata.id = newEstablishment.id;
             Estblistmentdata.eUID = newEstablishment.uid;
-            newEstablishment.NmdsId = newEstablishment.nmdsId;
+            Estblistmentdata.NmdsId = newEstablishment.nmdsId;
           } else {
             // Establishment properties not valid
             throw new RegistrationException(
@@ -454,7 +454,8 @@ router.route('/')
           delete slackMsg.user.password;
           delete slackMsg.user.securityQuestion;
           delete slackMsg.user.securityAnswer;
-          slackMsg.NmdsId = Estblistmentdata.NmdsId;
+          slackMsg.nmdsId = Estblistmentdata.NmdsId;
+          slackMsg.establishmentUid = Estblistmentdata.eUID;
           slack.info("Registration", JSON.stringify(slackMsg, null, 2));
           // post through feedback topic - async method but don't wait for a responseThe
           sns.postToRegistrations(slackMsg);

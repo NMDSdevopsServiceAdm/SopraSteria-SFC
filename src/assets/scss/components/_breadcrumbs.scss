@@ -1,0 +1,34 @@
+.govuk-breadcrumbs {
+  font-size: 16px;
+}
+
+.govuk-breadcrumbs__list {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.govuk-breadcrumbs__list-item {
+  margin-left: 9px;
+
+  &::before {
+    border: 0;
+    background: url('/assets/images/chevron.svg') no-repeat;
+    background-size: contain;
+    width: 8px;
+    height: 14px;
+    transform: none;
+    top: 4px;
+    bottom: auto;
+    left: -1px;
+  }
+}
+
+.govuk-breadcrumbs__link {
+  @include govuk-link-common;
+  @include govuk-link-style-default;
+  @include govuk-link-print-friendly;
+
+  &:visited {
+    @include govuk-link-style-no-visited-state;
+  }
+}

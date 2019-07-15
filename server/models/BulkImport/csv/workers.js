@@ -7,6 +7,7 @@ class Worker {
     this._lineNumber = lineNumber;
     this._validationErrors = [];
     this._headers_v1 = ["LOCALESTID","UNIQUEWORKERID","CHGUNIQUEWRKID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED","CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS","OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
+    this._headers_v1_without_chgUnique = ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED","CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS","OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     this._contractType= null;
 
     this._localId = null;
@@ -108,6 +109,8 @@ class Worker {
   static get SOCIALCARE_QUAL_ERROR() { return 1360; }
   static get NON_SOCIALCARE_QUAL_ERROR() { return 1370; }
 
+  static get YEAROFENTRY_ERROR() { return 1380; }
+
   static get AMHP_ERROR() { return 1380; }
 
 
@@ -148,6 +151,8 @@ class Worker {
 
   static get AMHP_WARNING() { return 3380; }
 
+  static get YEAROFENTRY_WARNING() { return 3380; }
+
   static get QUAL_ACH01_ERROR() { return 5010; }
   static get QUAL_ACH01_NOTES_ERROR() { return 5020; }
   static get QUAL_ACH02_ERROR() { return 5030; }
@@ -164,7 +169,7 @@ class Worker {
   static get QUAL_ACH03_NOTES_WARNING() { return 5560; }
 
   get headers() {
-    return this._headers_v1.join(",");
+    return this._headers_v1_without_chgUnique.join(",");
   }
 
   get lineNumber() {
@@ -414,7 +419,7 @@ class Worker {
         lineNumber: this._lineNumber,
         warnCode: Worker.DISPLAY_ID_WARNING,
         warnType: `WORKER_DISPLAY_ID_WARNING`,
-        warning: `DISPLAYID is blank for …..`,
+        warning: `DISPLAYID is blank`,
         source: this._currentLine.DISPLAYID,
       });
       return false;
@@ -611,7 +616,7 @@ class Worker {
     const myBritishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP);
     const myNationality = parseInt(this._currentLine.NATIONALITY, 10);
 
-    if (this._currentLine.BRITISHCITIZENSHIP) {
+    if (this._currentLine.BRITISHCITIZENSHIP && this._currentLine.BRITISHCITIZENSHIP.length > 0) {
       if (myNationality === 826) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -661,65 +666,68 @@ class Worker {
     const myRealDOBDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
     const myCountry = this._currentLine.COUNTRYOFBIRTH;
 
-    if (myYearOfEntry && !yearRegex.test(myYearOfEntry)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.YEAROFENTRY_ERROR,
-        errType: 'YEAROFENTRY_ERROR',
-        error: "YEAROFENTRY is incorrectly formatted",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else if (thisYear < myYearOfEntry) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.YEAROFENTRY_ERROR,
-        errType: 'YEAROFENTRY_ERROR',
-        error: "YEAROFENTRY is in the future",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else if (myRealDOBDate && myRealDOBDate.year() > myYearOfEntry) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.YEAROFENTRY_ERROR,
-        errType: 'YEAROFENTRY_ERROR',
-        error: "YEAROFENTRY must be greater or equal to DOB",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else if (!myCountry) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.YEAROFENTRY_WARNING,
-        warnType: 'YEAROFENTRY_WARNING',
-        warning: "Year of entry has been ignored as Country of Birth is missing",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else if (myCountry && parseInt(myCountry) === 826) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.YEAROFENTRY_WARNING,
-        warnType: 'YEAROFENTRY_WARNING',
-        warning: "Year of entry has been ignored as Country of Birth is British",
-        source: this._currentLine.YEAROFENTRY,
-      });
-      return false;
-    } else {
-      this._yearOfEntry = parseInt(myYearOfEntry, 10);
-      return true;
+    if (this._currentLine.YEAROFENTRY && this._currentLine.YEAROFENTRY.length > 0) {
+      if (myYearOfEntry && !yearRegex.test(myYearOfEntry)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.YEAROFENTRY_ERROR,
+          errType: 'YEAROFENTRY_ERROR',
+          error: "YEAROFENTRY is incorrectly formatted",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else if (thisYear < myYearOfEntry) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.YEAROFENTRY_ERROR,
+          errType: 'YEAROFENTRY_ERROR',
+          error: "YEAROFENTRY is in the future",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else if (myRealDOBDate && myRealDOBDate.year() > myYearOfEntry) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.YEAROFENTRY_ERROR,
+          errType: 'YEAROFENTRY_ERROR',
+          error: "YEAROFENTRY must be greater or equal to DOB",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else if (!myCountry) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.YEAROFENTRY_WARNING,
+          warnType: 'YEAROFENTRY_WARNING',
+          warning: "Year of entry has been ignored as Country of Birth is missing",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else if (myCountry && parseInt(myCountry) === 826) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.YEAROFENTRY_WARNING,
+          warnType: 'YEAROFENTRY_WARNING',
+          warning: "Year of entry has been ignored as Country of Birth is British",
+          source: this._currentLine.YEAROFENTRY,
+        });
+        return false;
+      } else {
+        this._yearOfEntry = parseInt(myYearOfEntry, 10);
+        return true;
+      }
     }
+
   }
 
   _validateDisabled() {
@@ -811,25 +819,21 @@ class Worker {
 
   _validateRecSource() {
     const myRecSource = parseInt(this._currentLine.RECSOURCE);
-
+    
     // optional
-    if (this._currentLine.RECSOURCE && this._currentLine.RECSOURCE.length > 0) {
-      if (isNaN(myRecSource)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.RESOURCE_ERROR,
-          errType: 'RECSOURCE_ERROR',
-          error: "The code you have entered for RECSOURCE is incorrect",
-          source: this._currentLine.RECSOURCE,
-        });
-        return false;
-      } else {
-        this._recSource = myRecSource;
-        return true;
-      }
+    if (this._currentLine.RECSOURCE && (isNaN(myRecSource))) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.RESOURCE_ERROR,
+        errType: 'RECSOURCE_ERROR',
+        error: "The code you have entered for RECSOURCE is incorrect",
+        source: this._currentLine.RECSOURCE,
+      });
+      return false;
     } else {
+      this._recSource = myRecSource || myRecSource === 0 ? myRecSource : null;
       return true;
     }
   }
@@ -840,7 +844,8 @@ class Worker {
     const dateRegex = /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/;
     const today = moment(new Date());
     const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
-    const myRealDOBDate = moment.utc(this._currentLine.DOB, "DD/MM/YYYY");
+    const myRealDOBDate = this._currentLine.DOB && this._currentLine.DOB.length > 1 ? moment.utc(this._currentLine.DOB, "DD/MM/YYYY") : null;
+    const myYearOfEntry = this._currentLine.YEAROFENTRY;
 
     if (!myStartDate) {
       this._validationErrors.push({
@@ -849,7 +854,7 @@ class Worker {
         lineNumber: this._lineNumber,
         warnCode: Worker.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
-        warnError: "STARTDATE is missing",
+        warning: "STARTDATE is missing",
         source: this._currentLine.STARTDATE,
       });
       return false;
@@ -860,7 +865,7 @@ class Worker {
         lineNumber: this._lineNumber,
         warnCode: Worker.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
-        warnError: "STARTDATE is incorrectly formatted and will be ignored",
+        warning: "STARTDATE is incorrectly formatted and will be ignored",
         source: this._currentLine.STARTDATE,
       });
       return false;
@@ -875,7 +880,7 @@ class Worker {
         source: this._currentLine.STARTDATE,
       });
       return false;
-    } else if (myRealStartDate.diff(myRealDOBDate, 'years', false) < AGE) {
+    } else if (myRealDOBDate && myRealStartDate.diff(myRealDOBDate, 'years', false) < AGE) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -883,6 +888,17 @@ class Worker {
         warnCode: Worker.START_DATE_WARNING,
         warnType: 'START_DATE_WARNING',
         warning: "STARTDATE is before workers 14th birthday and will be ignored",
+        source: this._currentLine.STARTINSECT,
+      });
+      return false;
+    } else if (myRealStartDate.isBefore(myYearOfEntry)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.START_DATE_WARNING,
+        warnType: 'START_DATE_WARNING',
+        warning: "STARTDATE is before year of entry and will be ignored",
         source: this._currentLine.STARTINSECT,
       });
       return false;
@@ -1003,67 +1019,63 @@ class Worker {
     const myZeroHourContract = parseInt(this._currentLine.ZEROHRCONT, 10);
     const myContHours = parseFloat(this._currentLine.CONTHOURS);
 
-    // optional
-    if (this._currentLine.ZEROHRCONT && this._currentLine.ZEROHRCONT.length > 0) {
-      if (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.ZERO_HRCONT_ERROR,
-          errType: 'ZEROHRCONT_ERROR',
-          error: "The code you have entered for ZEROHRCONT is incorrect",
-          source: this._currentLine.ZEROHRCONT,
-        });
-        return false;
-      } else if (myContHours > 0 && (myZeroHourContract === 999 || myZeroHourContract === 1)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.ZERO_HRCONT_ERROR,
-          errType: 'ZEROHRCONT_ERROR',
-          error: "The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks",
-          source: this._currentLine.ZEROHRCONT,
-        });
-        return false;
-      } else if (myContHours === 0 &&  myZeroHourContract === 2) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.ZERO_HRCONT_WARNING,
-          warnType: 'ZERO_HRCONT_WARNING',
-          warning: "You have entered “0” in CONTHOURS but not entered “Yes” to the ZEROHRCONT question",
-          source: this._currentLine.ZEROHRCONT,
-        });
-        return false;
-      }  else if (myContHours > 0 &&  !myZeroHourContract) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.ZERO_HRCONT_WARNING,
-          warnType: 'ZERO_HRCONT_WARNING',
-          warning: "You have entered contracted hours but have not said this worker is not on a zero hours contract",
-          source: this._currentLine.ZEROHRCONT,
-        });
-        return false;
-      } else {
-        switch (myZeroHourContract) {
-          case 1:
-            this._zeroHourContract = 'Yes';
-            break;
-          case 2:
-            this._zeroHourContract = 'No';
-            break;
-          case 999:
-            this._zeroHourContract = 'Don\'t know';
-            break;
-        }
-        return true;
-      }
+    if (myContHours > 0 && !this._currentLine.ZEROHRCONT) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.ZERO_HRCONT_WARNING,
+        warnType: 'ZERO_HRCONT_WARNING',
+        warning: "You have entered contracted hours but have not said this worker is not on a zero hours contract",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
+    }
+    else if (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.ZERO_HRCONT_ERROR,
+        errType: 'ZEROHRCONT_ERROR',
+        error: "The code you have entered for ZEROHRCONT is incorrect",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
+    } else if (myContHours > 0 && (myZeroHourContract === 999 || myZeroHourContract === 1)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.ZERO_HRCONT_ERROR,
+        errType: 'ZEROHRCONT_ERROR',
+        error: "The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
+    } else if (myContHours === 0 &&  myZeroHourContract === 2) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.ZERO_HRCONT_WARNING,
+        warnType: 'ZERO_HRCONT_WARNING',
+        warning: "You have entered “0” in CONTHOURS but not entered “Yes” to the ZEROHRCONT question",
+        source: this._currentLine.ZEROHRCONT,
+      });
+      return false;
     } else {
+      switch (myZeroHourContract) {
+        case 1:
+          this._zeroHourContract = 'Yes';
+          break;
+        case 2:
+          this._zeroHourContract = 'No';
+          break;
+        case 999:
+          this._zeroHourContract = 'Don\'t know';
+          break;
+      }
       return true;
     }
   }
@@ -1071,11 +1083,14 @@ class Worker {
   _validateDaysSick() {
     const myDaysSick = parseFloat(this._currentLine.DAYSSICK);
 
-    // optional
     if (this._currentLine.DAYSSICK && this._currentLine.DAYSSICK.length > 0) {
-      const MAX_VALUE = 365.0;
+      const MAX_VALUE = 366.0;
       const DONT_KNOW_VALUE = 999;
-      if (isNaN(myDaysSick) || myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
+
+      const containsHalfDay = this._currentLine.DAYSSICK.indexOf('.') > 0 ?
+        this._currentLine.DAYSSICK.split(".")[1] : 5;
+
+      if (isNaN(myDaysSick) || containsHalfDay !== 5 || myDaysSick < 0 || myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1257,7 +1272,7 @@ class Worker {
     // main job description is optional, but even then, only relevant if main job is 23 or 27
     const ALLOWED_JOBS = [23, 27];
 
-    if (ALLOWED_JOBS.includes(this._mainJobRole) && this._currentLine.MAINJRDESC.length < 0) {
+    if (ALLOWED_JOBS.includes(this._mainJobRole) && this._currentLine.MAINJRDESC.length === 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1306,7 +1321,7 @@ class Worker {
 
     // optional
     if (this._currentLine.CONTHOURS && this._currentLine.CONTHOURS.length > 0) {
-      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS)) {
+      if (isNaN(myContHours) || !digitRegex.test(this._currentLine.CONTHOURS) && Math.floor(myContHours) !== 999) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1331,13 +1346,26 @@ class Worker {
         return false;
       }
       else if (myEmplStatus && EMPL_STATUSES.includes(parseFloat(myEmplStatus)) ) {
+        let contractType = '';
+        switch (myEmplStatus) {
+          case '3':
+            contractType = 'Pool/Bank'
+            break;
+          case '4':
+            contractType = 'Agency';
+            break;
+          case '7':
+            contractType = 'Other';
+            break;
+        }
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
+
           warnCode: Worker.CONT_HOURS_WARNING,
           warnType: 'CONT_HOURS_WARNING',
-          warning: `CONTHOURS will be ignored as EMPLSTATUS is ${this._currentLine.EMPLSTATUS}`,
+          warning: `CONTHOURS will be ignored as EMPLSTATUS is ${contractType}`,
           source: this._currentLine.CONTHOURS,
         });
         return false;
@@ -1364,14 +1392,14 @@ class Worker {
 
     // optional
     if (this._currentLine.AVGHOURS && this._currentLine.AVGHOURS.length > 0) {
-      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS)) {
+      if (isNaN(myAvgHours) || !digitRegex.test(this._currentLine.AVGHOURS) && (Math.floor(myAvgHours) !== 999)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           warnCode: Worker.AVG_HOURS_WARNING,
           warnType: 'AVG_HOURS_ERROR',
-          warning: `The code you have entered for CONTHOURS is incorrect and will be ignored`,
+          warning: `The code you have entered for AVGHOURS is incorrect and will be ignored`,
           source: this._currentLine.AVGHOURS,
         });
         return false;
@@ -1389,13 +1417,23 @@ class Worker {
         return false;
       }
       else if (myEmplStatus && EMPL_STATUSES.includes(parseFloat(myEmplStatus)) ) {
+        let contractType = '';
+        switch (myEmplStatus) {
+          case '1':
+            contractType = 'Permanent'
+            break;
+          case '2':
+            contractType = 'Temporary';
+            break;
+        }
+
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           warnCode: Worker.AVG_HOURS_WARNING,
           warnType: 'AVG_HOURS_ERROR',
-          warning: `AVGHOURS will be ignored as staff record is ${myEmplStatus}`,
+          warning: `AVGHOURS will be ignored as staff record is ${contractType}`,
           source: this._currentLine.AVGHOURS,
         });
         return false;
@@ -1414,152 +1452,202 @@ class Worker {
   }
 
   _validateOtherJobs() {
-    // other jobs (optional) is a semi colon delimited list of integers
-    if ( this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
-      const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
-      const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
+    const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
+    const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
+    const localValidationErrors = [];
+    const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
 
-      const localValidationErrors = [];
-      const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
-      if (!isValid) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.OTHER_JOB_ROLE_ERROR,
-          errType: `OTHER_JOB_ROLE_ERROR`,
-          error: "The code you have entered for OTHERJOBROLE is incorrect",
-          source: this._currentLine.OTHERJOBROLE,
-        });
-      } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Worker.OTHER_JOB_ROLE_ERROR,
-          errType: `OTHER_JOB_ROLE_ERROR`,
-          error: "OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)",
-          source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
-        });
-      } else {
-        const myJobDescriptions = [];
-        this._otherJobs = listOfotherJobs.map((thisJob, index) => {
-          const thisJobIndex = parseInt(thisJob, 10);
+    if (!isValid) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.OTHER_JOB_ROLE_ERROR,
+        errType: `OTHER_JOB_ROLE_ERROR`,
+        error: "The code you have entered for OTHERJOBROLE is incorrect",
+        source: this._currentLine.OTHERJOBROLE,
+      });
+    } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
+      localValidationErrors.push({
+        lineNumber: this._lineNumber,
+        errCode: Worker.OTHER_JOB_ROLE_ERROR,
+        errType: `OTHER_JOB_ROLE_ERROR`,
+        error: "OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)",
+        source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
+      });
+    } else {
+      const myJobDescriptions = [];
+      this._otherJobs = listOfotherJobs.map((thisJob, index) => {
+        const thisJobIndex = parseInt(thisJob, 10);
 
-          // if the job is one of the many "other" job roles, then need to validate the "other description"
-          const otherJobs = [23, 27];   // these are the original budi codes
-          if (otherJobs.includes(thisJobIndex)) {
-            const myJobOther = listOfotherJobsDescriptions[index];
-            const MAX_LENGTH = 120;
-            if (!myJobOther || myJobOther.length == 0) {
-              localValidationErrors.push({
-                lineNumber: this._lineNumber,
-                errCode: Worker.OTHER_JR_DESC_ERROR,
-                errType: `OTHER_JR_DESC_ERROR`,
-                error: `OTHERJRDESC (${index+1}) has not been supplied`,
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-              });
-              myJobDescriptions.push(null);
-            } else if (myJobOther.length > MAX_LENGTH) {
-              localValidationErrors.push({
-                lineNumber: this._lineNumber,
-                errCode: Worker.OTHER_JR_DESC_ERROR,
-                errType: `OTHER_JR_DESC_ERROR`,
-                error: `OTHERJRDESC is longer than 120 characters`,
-                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-              });
-            } else {
-              myJobDescriptions.push(listOfotherJobsDescriptions[index]);
-            }
-          } else if(listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
+        // if the job is one of the many "other" job roles, then need to validate the "other description"
+        const otherJobs = [23, 27];   // these are the original budi codes
+        if (otherJobs.includes(thisJobIndex)) {
+          const myJobOther = listOfotherJobsDescriptions[index];
+          const MAX_LENGTH = 120;
+          if (!myJobOther || myJobOther.length == 0) {
             localValidationErrors.push({
               lineNumber: this._lineNumber,
-              warnCode: Worker.OTHER_JR_DESC_WARNING,
-              warnType: `OTHER_JR_DESC_WARNING`,
-              warning: `OTHERJRDESC will be ignored as not required for OTHERJOBROLE`,
+              errCode: Worker.OTHER_JR_DESC_ERROR,
+              errType: `OTHER_JR_DESC_ERROR`,
+              error: `OTHERJRDESC (${index+1}) has not been supplied`,
               source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-          })
-          } else {
+            });
             myJobDescriptions.push(null);
+          } else if (myJobOther.length > MAX_LENGTH) {
+            localValidationErrors.push({
+              lineNumber: this._lineNumber,
+              errCode: Worker.OTHER_JR_DESC_ERROR,
+              errType: `OTHER_JR_DESC_ERROR`,
+              error: `OTHERJRDESC is longer than 120 characters`,
+              source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+            });
+          } else {
+            myJobDescriptions.push(listOfotherJobsDescriptions[index]);
           }
+        } else if(listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
+          localValidationErrors.push({
+            lineNumber: this._lineNumber,
+            warnCode: Worker.OTHER_JR_DESC_WARNING,
+            warnType: `OTHER_JR_DESC_WARNING`,
+            warning: `OTHERJRDESC will be ignored as not required for OTHERJOBROLE`,
+            source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+        })
+        } else {
+          myJobDescriptions.push(null);
+        }
 
-          return thisJobIndex;
-        });
+        return thisJobIndex;
+      });
 
-        this._otherJobsOther = myJobDescriptions;
-      }
-
-      if (localValidationErrors.length > 0) {
-        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
-        return false;
-      }
-
-      return true;
-    } else {
-      return true;
+      this._otherJobsOther = myJobDescriptions;
     }
+
+    if (localValidationErrors.length > 0) {
+      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+      return false;
+    }
+
+    return true;
   }
 
   _validateRegisteredNurse() {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
+    const NURSING_ROLE = 16;
 
-    // optional
-    if (this._currentLine.NMCREG && this._currentLine.NMCREG.length > 0) {
-      // only check is main job or other job includes job role "16" (nurse)
-      const NURSING_ROLE = 16;
-
-      if ((this._mainJobRole && this._mainJobRole == NURSING_ROLE) ||
-          (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) {
-        if (isNaN(myRegisteredNurse)) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.NMCREG_ERROR,
-            errType: 'NMCREG_ERROR',
-            error: "Registered Nursing (NMCREG) must be an integer",
-            source: this._currentLine.NMCREG,
-          });
-          return false;
-        }
-        else {
-          this._registeredNurse = myRegisteredNurse;
-          return true;
-        }
-      } else {
-        return true;
-      }
+    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (myRegisteredNurse !== 0 && isNaN(myRegisteredNurse) )) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NMCREG_WARNING,
+        warnType: 'NMCREG_WARNING',
+        warning: "NMCREG has not been supplied",
+        source: this._currentLine.NMCREG,
+      });
+      return false;
+    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NMCREG_WARNING,
+        warnType: 'NMCREG_WARNING',
+        warning: "NMCREG will be ignored as this is not required for the MAINJOBROLE",
+        source: this._currentLine.NMCREG,
+      });
+      return false;
     } else {
+      this._registeredNurse = myRegisteredNurse;
       return true;
     }
   }
 
   _validateNursingSpecialist() {
     const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
+    const NURSING_ROLE = 16;
 
-    // optional
-    if (this._currentLine.NURSESPEC && this._currentLine.NURSESPEC.length > 0) {
-      // only check is main job or other job includes job role "16" (nurse)
-      const NURSING_ROLE = 16;
+    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (myNursingSpecialist !== 0  && isNaN(myNursingSpecialist) )) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NURSE_SPEC_WARNING,
+        warnType: 'NURSE_SPEC_WARNING',
+        warning: "NURSESPEC has not been supplied",
+        source: this._currentLine.NURSESPEC,
+      });
+      return false;
+    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NURSESPEC  && this._currentLine.NURSESPEC.length !== 0) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NURSE_SPEC_WARNING,
+        warnType: 'NURSE_SPEC_WARNING',
+        warning: "NURSESPEC will be ignored as this is not required for the MAINJOBROLE",
+        source: this._currentLine.NURSESPEC,
+      });
+      return false;
+    }
+    else {
+      this._nursingSpecialist = myNursingSpecialist;
+      return true;
+    }
+  }
 
-      if ((this._mainJobRole && this._mainJobRole == NURSING_ROLE) ||
-          (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) {
-        if (isNaN(myNursingSpecialist)) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.NURSE_SPEC_ERROR,
-            errType: 'NURSE_SPEC_ERROR',
-            error: "Nursing Specialist (NURSESPEC) must be an integer",
-            source: this._currentLine.NURSESPEC,
-          });
-          return false;
-        }
-        else {
-          this._nursingSpecialist = myNursingSpecialist;
-          return true;
-        }
-      } else {
-        return true;
+  _validateAmhp() {
+    const amhpValues = [1,2,999];
+    const myAmhp = parseInt(this._currentLine.AMHP);
+    const SOCIAL_WORKER_ROLE = 6;
+
+    if (this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE && ( isNaN(myAmhp) )) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.AMHP_WARNING,
+        warnType: 'AMHP_WARNING',
+        warning: "AMHP has not been supplied",
+        source: this._currentLine.AMHP,
+      });
+      return false;
+    }
+    else if (this._mainJobRole && this._mainJobRole !== SOCIAL_WORKER_ROLE && this._currentLine.AMHP) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.AMHP_WARNING,
+        warnType: 'AMHP_WARNING',
+        warning: "The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE",
+        source: this._currentLine.AMHP,
+      });
+      return false;
+    }
+    else if (!isNaN(myAmhp) && (myAmhp === 0 || !amhpValues.includes(myAmhp))) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.AMHP_WARNING,
+        warnType: 'AMHP_WARNING',
+        warning: "The code you have entered for AMHP is incorrect and will be ignored",
+        source: this._currentLine.AMHP,
+      });
+      return false;
+    }
+    else {
+      this._amhp = myAmhp;
+      switch (myAmhp) {
+        case 1:
+          this._amhp = 'Yes';
+          break;
+        case 2:
+          this._amhp = 'No';
+          break;
+        case 999:
+          this._amhp = 'Don\'t know';
+          break;
       }
-    } else {
       return true;
     }
   }
@@ -1594,7 +1682,7 @@ class Worker {
   _validateCountryOfBirth() {
     const myCountry = parseInt(this._currentLine.COUNTRYOFBIRTH, 10);
 
-    if (this._currentLine.COUNTRYOFBIRTH) {
+    if (this._currentLine.COUNTRYOFBIRTH && this._currentLine.COUNTRYOFBIRTH.length > 0) {
       if (myCountry === 826) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -1602,7 +1690,7 @@ class Worker {
           lineNumber: this._lineNumber,
           warnCode: Worker.COUNTRY_OF_BIRTH_WARNING,
           warnType: 'COUNTRY_OF_BIRTH_WARNING',
-          warning: "Country of birth has been ignored as …..was born in UK",
+          warning: "Country of birth has been ignored as worker was born in UK",
           source: this._currentLine.COUNTRYOFBIRTH,
         });
         return false;
@@ -1727,19 +1815,11 @@ class Worker {
 
       this._nonSocialCareQualification = myNonSocialCareIndicator;
 
-      // if the social care indicator is "1" (yes) - then get the next value which must be the level
+      // if the social care indicator is "1" (yes) - then get the next value which must be the level - optional only for non-social care!
       if (myNonSocialCareIndicator == 1) {
-        const myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
+        let myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
         if (isNaN(myNonSocialCareLevel)) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-            errType: 'NON_SOCIALCARE_QUAL_ERROR',
-            error: "Non-Social Care Qualification (NONSCQUAL) level (after semi colon) must be an integer",
-            source: this._currentLine.NONSCQUAL,
-          });
+          myNonSocialCareLevel = 999; // "Don't know"
         }
         this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
       }
@@ -1852,53 +1932,6 @@ class Worker {
     this._qualifications = myProcessedQualifications.filter(thisQualification => thisQualification !== null && thisQualification !== false);
   }
 
-  _validateAmhp() {
-    const amhpValues = [1,2,999];
-    const myAmhp = parseInt(this._currentLine.AMHP);
-
-    if (this._currentLine.AMHP && this._currentLine.AMHP.length > 0) {
-      if (isNaN(myAmhp)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.AMHP_ERROR,
-          errType: 'AMHP_ERROR',
-          error: "AMHP (AMHP) must be an integer",
-          source: this._currentLine.AMHP,
-        });
-        return false;
-      } else if (!amhpValues.includes(parseInt(myAmhp))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.AMHP_ERROR,
-          errType: 'AMHP_ERROR',
-          error: "AMHP (AMHP) must have value 1(Yes) to 2(No),  999(Unknown) ",
-          source: this._currentLine.AMHP,
-        });
-        return false;
-      }
-      else {
-        switch (myAmhp) {
-          case 1:
-            this._amhp = 'Yes';
-            break;
-          case 2:
-            this._amhp = 'No';
-            break;
-          case 999:
-            this._amhp = 'Don\'t know';
-            break;
-        }
-        return true;
-      }
-    } else {
-      return true;
-    }
-  }
-
   //transform related
   _transformContractType() {
     if (this._contractType) {
@@ -1943,7 +1976,7 @@ class Worker {
 
   //transform related
   _transformRecruitment() {
-    if (this._recSource) {
+    if (this._recSource || this._recSource === 0) {
       if (this._recSource === 16) {
         this._recSource = 'No';
       } else {
@@ -1956,7 +1989,7 @@ class Worker {
             lineNumber: this._lineNumber,
             errCode: Worker.RECSOURCE_ERROR,
             errType: `RECSOURCE_ERROR`,
-            error: `Recruitement Source (RECSOURCE): ${this._recSource} is unknown`,
+            error: `The code you have entered for RECSOURCE is incorrect`,
             source: this._currentLine.RECSOURCE,
           });
         } else {
@@ -2014,7 +2047,7 @@ class Worker {
 
   // ['Adult Nurse', 'Mental Health Nurse', 'Learning Disabilities Nurse', `Children's Nurse`, 'Enrolled Nurse'
   _transformRegisteredNurse() {
-    if (this._registeredNurse) {
+    if (this._registeredNurse || this._registeredNurse === 0) {
       switch (this._registeredNurse) {
         case 1:
           this._registeredNurse = 'Adult Nurse';
@@ -2036,9 +2069,9 @@ class Worker {
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: Worker.NURSE_SPEC_ERROR,
-            errType: `NMCREG_ERROR`,
-            error: `Registered Nurse (NMCREG): ${this._registeredNurse} is unknown`,
+            warnCode: Worker.NMCREG_WARNING,
+            warnType: `NMCREG_WARNING`,
+            warning: `The code you have entered for NMCREG is incorrect and will be ignored`,
             source: this._currentLine.NMCREG,
           });
       }
@@ -2046,7 +2079,7 @@ class Worker {
   }
 
   _transformNursingSpecialist() {
-    if (this._nursingSpecialist) {
+    if (this._nursingSpecialist || this._nursingSpecialist === 0) {
       const myValidatedSpecialist = BUDI.nursingSpecialist(BUDI.TO_ASC, this._nursingSpecialist);
 
       if (!myValidatedSpecialist) {
@@ -2054,9 +2087,9 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.NURSE_SPEC_ERROR,
-          errType: `NURSE_SPEC_ERROR`,
-          error: `Nursing Specialist (NURSESPEC): ${this._nursingSpecialist} is unknown`,
+          warnCode: Worker.NURSE_SPEC_WARNING,
+          warnType: `NURSE_SPEC_WARNING`,
+          warning: `The code you have entered for NURSESPEC is incorrect and will be ignored`,
           source: this._currentLine.NURSESPEC,
         });
       } else {
@@ -2223,19 +2256,23 @@ class Worker {
     };
   }
 
-  preValidate() {
-    return this._validateHeaders();
+  preValidate(headers) {
+    return this._validateHeaders(headers);
   }
 
   static isContent(data) {
-    const contentRegex = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    return contentRegex.test(data.substring(0,50));
+    const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
+    const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMB/;
+
+    const toReturn = contentRegex1.test(data.substring(0,50)) || contentRegex2.test(data.substring(0,50));
+    return contentRegex1.test(data.substring(0,50)) || contentRegex2.test(data.substring(0,50));
   }
 
-  _validateHeaders() {
-    const headers = Object.keys(this._currentLine);
+  _validateHeaders(headers) {
     // only run once for first line, so check _lineNumber
-    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+    // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
+    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers) &&
+        JSON.stringify(this._headers_v1_without_chgUnique) !== JSON.stringify(headers)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -2655,9 +2692,9 @@ class Worker {
             validationError.source  = `${this._currentLine.APPRENTICE}`;
             break;
           case 'WorkerApprovedMentalHealthWorker':
-            validationError.errCode = Worker.AMHP_ERROR;
-            validationError.errType = 'AMHP_ERROR';
-            validationError.source  = `${this._currentLine.AMHP}`;
+            // validationError.errCode = Worker.AMHP_ERROR;
+            // validationError.errType = 'AMHP_ERROR';
+            // validationError.source  = `${this._currentLine.AMHP}`;
             break;
           case 'WorkerBritishCitizenship':
             validationError.errCode = Worker.BRITISH_CITIZENSHIP_ERROR;
@@ -2740,9 +2777,9 @@ class Worker {
             validationError.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
-            validationError.errCode = Worker.RECSOURCE_ERROR;
-            validationError.errType = 'RECSOURCE_ERROR';
-            validationError.source  = `${this._currentLine.RECSOURCE}`;
+            // validationError.errCode = Worker.RECSOURCE_ERROR;
+            // validationError.errType = 'RECSOURCE_ERROR';
+            // validationError.source  = `${this._currentLine.RECSOURCE}`;
             break;
           case 'WorkerSocialCareStartDate':
             validationError.errCode = Worker.START_INSECT_ERROR;
@@ -2818,7 +2855,7 @@ class Worker {
           case 'WorkerApprovedMentalHealthWorker':
             validationWarning.warnCode = Worker.AMHP_WARNING;
             validationWarning.warnType = 'AMHP_WARNING';
-            validationWarning.source  = `${this._currentLine.AMHP}`;
+            // validationWarning.source  = `${this._currentLine.AMHP}`;
             break;
           case 'WorkerBritishCitizenship':
             validationWarning.warnCode = Worker.BRITISH_CITIZENSHIP_WARNING;
@@ -2898,9 +2935,9 @@ class Worker {
             validationWarning.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
-            validationWarning.warnCode = Worker.RECSOURCE_ERROR;
-            validationWarning.warnType = 'RECSOURCE_ERROR';
-            validationWarning.source  = `${this._currentLine.RECSOURCE}`;
+            // validationWarning.warnCode = Worker.RECSOURCE_ERROR;
+            // validationWarning.warnType = 'RECSOURCE_ERROR';
+            // validationWarning.source  = `${this._currentLine.RECSOURCE}`;
             break;
           case 'WorkerSocialCareStartDate':
             validationWarning.warnCode = Worker.START_INSECT_WARNING;
@@ -2926,6 +2963,10 @@ class Worker {
             validationWarning.warnCode = Worker.ZERO_HRCONT_WARNING;
             validationWarning.warnType = 'ZERO_HRCONT_WARNING';
             validationWarning.source  = `${this._currentLine.ZEROHRCONT}`;
+            break;
+          case 'RegisteredNurse':
+            break;
+          case 'NurseSpecialism':
             break;
           default:
             validationWarning.warnCode = thisWarning.code;
@@ -3145,7 +3186,7 @@ class Worker {
     const columns = [];
     columns.push(establishmentId);
     columns.push(entity.localIdentifier);   // todo - this will be local identifier
-    columns.push('');
+    //columns.push('');              // not on download
     columns.push('UNCHECKED');
     columns.push(entity.nameOrId);
 
@@ -3197,6 +3238,7 @@ class Worker {
     switch (entity.disabiliity) {
       case null:
           columns.push('');
+          break;
       case 'Yes':
         columns.push(1);
         break;
@@ -3213,6 +3255,7 @@ class Worker {
     switch (entity.careCerticate) {
       case null:
           columns.push('');
+          break;
       case 'Yes, completed':
         columns.push(1);
         break;

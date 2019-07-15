@@ -23,7 +23,7 @@
         <input
           class="govuk-input govuk-input--width-10"
           [class.govuk-input--error]="submitted && form.get('nationalInsuranceNumber').invalid"
-          formControlName="nationalInsuranceNumber"
+          [formControlName]="'nationalInsuranceNumber'"
           id="nationalInsuranceNumber"
           name="nationalInsuranceNumber"
           type="text"

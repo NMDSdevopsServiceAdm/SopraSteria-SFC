@@ -1,90 +1,60 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-
-import { UserService } from '@core/services/user.service';
-import { Subscription } from 'rxjs';
-import { UserDetails } from '@core/model/userDetails.model';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { BackService } from '@core/services/back.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { Component } from '@angular/core';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { SecurityQuestion } from '@features/account/security-question/security-question';
+import { UserDetails } from '@core/model/userDetails.model';
+import { UserService } from '@core/services/user.service';
 
 @Component({
   selector: 'app-change-user-security',
   templateUrl: './change-user-security.component.html',
 })
-export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
-  public formErrorsMap: Array<ErrorDetails>;
+export class ChangeUserSecurityComponent extends SecurityQuestion {
+  private serverErrorsMap: Array<ErrorDefinition>;
+  private userDetails: UserDetails;
+  private username: string;
   public serverError: string;
-  public serverErrorsMap: Array<ErrorDefinition>;
-  public submitted: boolean;
-  public userDetails: UserDetails;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
+    private breadcrumbService: BreadcrumbService,
     private userService: UserService,
-    private errorSummaryService: ErrorSummaryService
-  ) {}
-
-  // Get Security Question
-  get getSecurityQuestionInput() {
-    return this.form.get('securityQuestionInput');
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder,
+    protected router: Router,
+  ) {
+    super(backService, errorSummaryService, formBuilder, router);
   }
 
-  // Get Security Answer
-  get getSecurityAnswerInput() {
-    return this.form.get('securityAnswerInput');
-  }
-
-  ngOnInit() {
-    this.form = this.fb.group({
-      securityQuestionInput: ['', [Validators.required, Validators.maxLength(255)]],
-      securityAnswerInput: ['', [Validators.required, Validators.maxLength(255)]],
-    });
-
-    this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
-    );
-
-    this.setUserDetails();
-    this.submitted = false;
-    this.setupFormErrorsMap();
+  protected init(): void {
+    this.breadcrumbService.show();
+    this.setupSubscription();
     this.setupServerErrorsMap();
   }
 
-  public setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'securityQuestionInput',
-        type: [
-          {
-            name: 'required',
-            message: 'Please enter your security question.',
-          },
-          {
-            name: 'maxlength',
-            message: 'The security question must be no longer than 255 characters.',
-          },
-        ],
-      },
-      {
-        item: 'securityAnswerInput',
-        type: [
-          {
-            name: 'required',
-            message: 'Please enter your security answer.',
-          },
-          {
-            name: 'maxlength',
-            message: 'The security answer must be no longer than 255 characters.',
-          },
-        ],
-      },
-    ];
+  protected setupSubscription(): void {
+    this.subscriptions.add(
+      this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
+        if (userDetails) {
+          this.userDetails = userDetails;
+          this.preFillForm({
+            securityQuestion: userDetails.securityQuestion,
+            securityAnswer: userDetails.securityAnswer,
+          });
+        }
+      })
+    );
+
+    this.subscriptions.add(
+      this.userService.getUsernameFromEstbId().subscribe(data => {
+        this.username = data.users[0].username;
+      })
+    );
   }
 
   public setupServerErrorsMap(): void {
@@ -96,29 +66,10 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     ];
   }
 
-  private setUserDetails(): void {
-    if (this.userDetails) {
-      this.form.setValue({
-        securityQuestionInput: this.userDetails['securityQuestion'],
-        securityAnswerInput: this.userDetails['securityAnswer'],
-      });
-    }
-  }
-
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  private changeUserDetails(userDetails: UserDetails): void {
+  private changeUserDetails(username: string, userDetails: UserDetails): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(userDetails).subscribe(
-        () => this.router.navigate(['/account-management/your-account']),
+      this.userService.updateUserDetails(username, userDetails).subscribe(
+        () => this.router.navigate(['/account-management']),
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
@@ -127,20 +78,13 @@ export class ChangeUserSecurityComponent implements OnInit, OnDestroy {
     );
   }
 
-  public onSubmit(): void {
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (this.form.valid) {
-      this.userDetails.securityQuestion = this.form.value.securityQuestionInput,
-      this.userDetails.securityAnswer = this.form.value.securityAnswerInput,
-      this.changeUserDetails(this.userDetails);
-    } else {
-      this.errorSummaryService.scrollToErrorSummary();
-    }
+  protected save(): void {
+    this.userDetails.securityQuestion = this.getSecurityQuestion.value;
+    this.userDetails.securityAnswer = this.getSecurityAnswer.value;
+    this.changeUserDetails(this.username, this.userDetails);
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  protected setCallToActionLabel(): void {
+    this.callToActionLabel = 'Save and return';
   }
 }

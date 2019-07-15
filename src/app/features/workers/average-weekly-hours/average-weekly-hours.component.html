@@ -14,12 +14,12 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="hoursKnown"
+                [formControlName]="'hoursKnown'"
                 id="hoursKnown-conditional-1"
                 name="hoursKnown"
                 type="radio"
                 value="Yes"
-                data-aria-controls="conditional-hoursKnown-conditional-1"
+                aria-controls="conditional-hoursKnown-conditional-1"
               />
               <label class="govuk-label govuk-radios__label" for="hoursKnown-conditional-1">
                 Yes
@@ -51,7 +51,7 @@
                 <input
                   class="govuk-input govuk-date-input__input govuk-input--width-4"
                   [class.govuk-input--error]="submitted && form.get('hours').invalid"
-                  formControlName="hours"
+                  [formControlName]="'hours'"
                   id="hours"
                   name="hours"
                   type="number"
@@ -63,7 +63,7 @@
             <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                formControlName="hoursKnown"
+                [formControlName]="'hoursKnown'"
                 id="hoursKnown-2"
                 name="hoursKnown"
                 type="radio"

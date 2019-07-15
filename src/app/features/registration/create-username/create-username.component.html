@@ -26,25 +26,11 @@
           </span>
           <span *ngIf="submitted && getUsername.errors" id="username-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
-            <ng-container *ngIf="getUsername.hasError('required')">
-              {{ getFormErrorMessage('username', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="getUsername.hasError('maxlength')">
-              {{ getFormErrorMessage('username', 'maxlength') }}
-            </ng-container>
-            <ng-container *ngIf="getUsername.hasError('minlength')">
-              {{ getFormErrorMessage('username', 'minlength') }}
-            </ng-container>
-            <ng-container *ngIf="getUsername.hasError('usernameExists')">
-              {{ getFormErrorMessage('username', 'usernameExists') }}
-            </ng-container>
-            <ng-container *ngIf="getUsername.hasError('pattern')">
-              {{ getFormErrorMessage('username', 'pattern') }}
-            </ng-container>
+            {{ getFirstErrorMessage('username') }}
           </span>
           <input
             class="govuk-input govuk-input--width-10"
-            formControlName="username"
+            [formControlName]="'username'"
             id="username"
             name="username"
             [class.govuk-input--error]="submitted && getUsername.errors"
@@ -52,7 +38,7 @@
           />
         </div>
 
-        <div formGroupName="passwordGroup">
+        <div [formGroupName]="'passwordGroup'">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPassword.errors">
             <label class="govuk-label" for="createPasswordInput">
               Password
@@ -60,19 +46,14 @@
             <span id="createPasswordInput-hint" class="govuk-hint">
               This must be at least 8 characters, contain one uppercase and one lowercase letter and a number
             </span>
-            <span *ngIf="submitted" id="createPasswordInput-error" class="govuk-error-message">
+            <span *ngIf="submitted && getPassword.errors" id="createPasswordInput-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
-              <span *ngIf="getPassword.hasError('required')">
-                {{ getFormErrorMessage('passwordGroup.createPasswordInput', 'required') }}
-              </span>
-              <span *ngIf="getPassword.hasError('pattern')">
-                {{ getFormErrorMessage('passwordGroup.createPasswordInput', 'pattern') }}
-              </span>
+              {{ getFirstErrorMessage('passwordGroup.createPasswordInput') }}
             </span>
             <input
               aria-describedby="createPasswordInput-hint"
               class="govuk-input govuk-input--width-10"
-              formControlName="createPasswordInput"
+              [formControlName]="'createPasswordInput'"
               id="createPasswordInput"
               name="createPasswordInput"
               [class.govuk-input--error]="submitted && getPassword.errors"
@@ -84,18 +65,17 @@
             <label class="govuk-label" for="confirmPasswordInput">
               Confirm password
             </label>
-            <span *ngIf="submitted" id="confirmPasswordInput-error" class="govuk-error-message">
+            <span
+              *ngIf="submitted && getConfirmPassword.errors"
+              id="confirmPasswordInput-error"
+              class="govuk-error-message"
+            >
               <span class="govuk-visually-hidden">Error:</span>
-              <span
-                *ngIf="getConfirmPassword.hasError('required') || getConfirmPassword.hasError('notMatched')"
-                id="passwordGroup-error"
-              >
-                {{ getFormErrorMessage('passwordGroup.confirmPasswordInput', 'required') }}
-              </span>
+              {{ getFirstErrorMessage('passwordGroup.confirmPasswordInput') }}
             </span>
             <input
               class="govuk-input govuk-input--width-10"
-              formControlName="confirmPasswordInput"
+              [formControlName]="'confirmPasswordInput'"
               id="confirmPasswordInput"
               name="confirmPasswordInput"
               [class.govuk-input--error]="submitted && getConfirmPassword.errors"

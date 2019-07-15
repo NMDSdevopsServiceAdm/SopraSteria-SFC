@@ -18,7 +18,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public workplaces: Workplace[] = [];
-  public workplacesCount: number;
+  public workplacesCount = 0;
 
   constructor(
     private authService: AuthService,
@@ -48,11 +48,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
           if (workplaces.subsidaries) {
             this.workplaces = workplaces.subsidaries.establishments;
             this.workplacesCount = workplaces.subsidaries.count;
-          }
-
-          if (workplaces.primary) {
-            this.workplaces.unshift(workplaces.primary);
-            this.workplacesCount += 1;
           }
         },
         (error: HttpErrorResponse) => {

@@ -1,11 +1,15 @@
 <dl class="govuk-list--definition">
-  <dt>
-    Total number of staff
-    <a routerLink="/worker/total-staff" class="govuk-util__float-right" (click)="setReturn()">
+  <dt>Total number of staff</dt>
+  <dd>
+    {{ totalStaff }}
+    <a
+      [routerLink]="['/worker', 'total-staff']"
+      class="govuk-util__float-right govuk-!-font-size-19 govuk-!-font-weight-regular"
+      (click)="setReturn()"
+    >
       Change <span class="govuk-visually-hidden"> total number of staff</span>
     </a>
-  </dt>
-  <dd>{{ totalStaff }}</dd>
+  </dd>
   <ng-container *ngIf="totalStaff !== totalWorkers">
     <dt>Staff records added</dt>
     <dd>

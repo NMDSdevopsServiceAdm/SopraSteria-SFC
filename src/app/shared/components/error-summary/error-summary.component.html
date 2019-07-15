@@ -14,23 +14,23 @@
       <ng-container *ngIf="errors">
         <li *ngFor="let i of errors">
           <a
-            routerLink="."
-            fragment="{{ transformFragmentName(i.item) }}-error"
-            queryParamsHandling="merge"
+            [routerLink]="'.'"
+            [fragment]="transformFragmentName(i.item) + '-error'"
+            [queryParamsHandling]="'merge'"
             [innerHTML]="getFormErrorMessage(i.item, i.errors[0])"
           >
           </a>
         </li>
       </ng-container>
       <li *ngIf="serverError">
-        <a routerLink="." fragment="server-error" queryParamsHandling="merge" [innerHTML]="serverError"></a>
+        <a [routerLink]="'.'" [fragment]="'server-error'" [queryParamsHandling]="'merge'" [innerHTML]="serverError"></a>
       </li>
       <ng-container *ngIf="customErrors">
         <li *ngFor="let customError of customErrors">
           <a
-            routerLink="."
+            [routerLink]="'.'"
             [fragment]="customError.name"
-            queryParamsHandling="merge"
+            [queryParamsHandling]="merge"
             [innerHTML]="customError.message"
           ></a>
         </li>

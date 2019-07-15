@@ -22,7 +22,7 @@
         with you.
       </p>
     </app-details>
-    <app-details [title]="'What do we share with CQC?'">
+    <app-details *ngIf="establishment.isRegulated" [title]="'What do we share with CQC?'">
       <p>We share all data, including individual worker records, with the exception of:</p>
       <ul class="govuk-list govuk-list--bullet">
         <li>Record ID</li>
@@ -62,8 +62,8 @@
             <h2 class="govuk-fieldset__heading">Do you agree to us sharing data with:</h2>
           </legend>
           <div class="govuk-checkboxes">
-            <div class="govuk-checkboxes__item">
-              <input class="govuk-checkboxes__input" id="shareWith-cqc" formControlName="cqc" type="checkbox" />
+            <div class="govuk-checkboxes__item" *ngIf="establishment.isRegulated">
+              <input class="govuk-checkboxes__input" id="shareWith-cqc" [formControlName]="'cqc'" type="checkbox" />
               <label class="govuk-label govuk-checkboxes__label" for="shareWith-cqc">
                 Care Quality Commission (CQC)
               </label>
@@ -72,7 +72,7 @@
               <input
                 class="govuk-checkboxes__input"
                 id="shareWith-localAuthorities"
-                formControlName="localAuthorities"
+                [formControlName]="'localAuthorities'"
                 type="checkbox"
               />
               <label class="govuk-label govuk-checkboxes__label" for="shareWith-localAuthorities">
