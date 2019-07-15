@@ -40,6 +40,17 @@ export interface UploadedFilesResponse {
   files: ValidatedFile[];
 }
 
+export interface UploadedFilesRequestDownloadResponse {
+  file: {
+    filename: string;
+    uploaded: Date;
+    username: string;
+    size: number;
+    key: string;
+    signedUrl: string;
+  };
+}
+
 export interface ValidatedFile {
   errors: number;
   filename: string;
