@@ -311,9 +311,39 @@ router.route('/uploaded').put(async (req, res) => {
       status = false;
     }
 
-    const importedEstablishments = myDownloads.establishments ? await csv().fromString(myDownloads.establishments) : null;
-    const importedWorkers = myDownloads.workers ? await csv().fromString(myDownloads.workers) :  null;
-    const importedTraining = myDownloads.trainings ? await csv().fromString(myDownloads.trainings) : null;
+    let workerHeaders, establishmentHeaders, trainingHeaders;
+    let importedWorkers = null, importedEstablishments = null, importedTraining = null;
+
+    let headerPromises = [];
+
+    if(myDownloads.establishments){
+      headerPromises.push(new Promise( async (resolve, reject) => {
+        importedEstablishments = await csv().fromString(myDownloads.establishments).on('header', (header) => {
+          establishmentHeaders = header;
+          resolve();
+        });
+      }));
+    }
+
+    if(myDownloads.workers){
+      headerPromises.push(new Promise( async (resolve, reject) => {
+        importedWorkers = await csv().fromString(myDownloads.workers).on('header', (header) => {
+          workerHeaders = header;
+          resolve();
+        });
+      }));
+    }
+
+    if(myDownloads.training){
+      trainingHeaders.push(new Promise( async (resolve, reject) => {
+        importedTraining = await csv().fromString(myDownloads.training).on('header', (header) => {
+          trainingHeaders = header;
+          resolve();
+        });
+      }));
+    }
+
+    await Promise.all(headerPromises);
 
     //////////////////////////////
     const firstRow = 0;
@@ -900,7 +930,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     // having parsed all establishments, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
     myEstablishments.forEach(thisEstablishment => {
-      const keyNoWhitespace = thisEstablishment.key;
+      const keyNoWhitespace = thisEstablishment.localId;
       if (allEstablishmentsByKey[keyNoWhitespace]) {
         // this establishment is a duplicate
         csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
@@ -1064,6 +1094,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
       return thisCurrentEstablishment;
     }
   });
+
+
   let notPrimary = true;
   if (primaryEstablishment) {
     const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishment.key];
@@ -1675,7 +1707,8 @@ const exportToCsv = async (NEWLINE, allMyEstablishemnts) => {
     thisEstablishmentWorkers.forEach(thisWorker => {
       const workerCsvValidator = new CsvWorkerValidator();
 
-      workersCsvArray.push(workerCsvValidator.toCSV(thisEstablishment.key, thisWorker));
+      // note - thisEstablishment.name will need to be local identifier once available
+      workersCsvArray.push(workerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker));
 
       // and for this Worker's training records
       thisWorker.training ? thisWorker.training.forEach(thisTrainingRecord => {
