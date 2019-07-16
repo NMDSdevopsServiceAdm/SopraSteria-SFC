@@ -1,9 +1,3 @@
-export interface AccountDetails {
-  label: string;
-  data: string;
-  route: string;
-}
-
 export interface CreateAccountRequest {
   email: string;
   fullname: string;

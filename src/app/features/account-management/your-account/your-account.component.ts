@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
-import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
@@ -11,19 +11,19 @@ import { Subscription } from 'rxjs';
 })
 export class YourAccountComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public establishment: any;
+  public loginInfo: SummaryList[];
+  public securityInfo: SummaryList[];
   public user: UserDetails;
+  public userInfo: SummaryList[];
   public username: string;
 
   constructor(
-    private authService: AuthService,
     private userService: UserService,
     private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show();
-    this.establishment = this.authService.establishment.id;
     this.getUsername();
   }
 
@@ -40,9 +40,56 @@ export class YourAccountComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.getUserDetails(this.username).subscribe((userDetails: UserDetails) => {
         this.user = userDetails;
+        this.setAccountDetails();
         this.userService.updateState(userDetails);
       })
     );
+  }
+
+  private setAccountDetails(): void {
+    this.userInfo = [
+      {
+        label: 'Full name',
+        data: this.user.fullname,
+        route: '/account-management/change-your-details',
+      },
+      {
+        label: 'Job title',
+        data: this.user.jobTitle,
+      },
+      {
+        label: 'Email address',
+        data: this.user.email,
+      },
+      {
+        label: 'Contact phone',
+        data: this.user.phone,
+      },
+    ];
+
+    this.loginInfo = [
+      {
+        label: 'Username',
+        data: this.user.username,
+        route: '/account-management/change-password',
+      },
+      {
+        label: 'Password',
+        data: '******',
+      },
+    ];
+
+    this.securityInfo = [
+      {
+        label: 'Security question',
+        data: this.user.securityQuestion,
+        route: '/account-management/change-user-security',
+      },
+      {
+        label: 'Security answer',
+        data: this.user.securityQuestionAnswer,
+      },
+    ];
   }
 
   ngOnDestroy() {
