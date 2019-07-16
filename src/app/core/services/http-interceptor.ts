@@ -1,10 +1,10 @@
 import { HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { API_PATTERN } from '@core/constants/constants';
 import { Observable } from 'rxjs/Observable';
 import { catchError, debounceTime } from 'rxjs/operators';
 
 import { HttpErrorHandler } from './http-error-handler.service';
-import { API_PATTERN } from '@core/constants/constants';
 
 @Injectable()
 export class HttpInterceptor implements HttpInterceptor {
