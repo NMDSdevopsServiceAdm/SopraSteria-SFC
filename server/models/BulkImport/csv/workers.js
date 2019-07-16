@@ -849,6 +849,7 @@ class Worker {
     const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
     const myRealDOBDate = this._currentLine.DOB && this._currentLine.DOB.length > 1 ? moment.utc(this._currentLine.DOB, "DD/MM/YYYY") : null;
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
+    const myRealYearOfEntry = myYearOfEntry ? `${myYearOfEntry}-01-01`: null;   // if year of entry is given, then format it to a proper year that can be used by moment
 
     if (!myStartDate) {
       this._validationErrors.push({
@@ -894,7 +895,7 @@ class Worker {
         source: this._currentLine.STARTINSECT,
       });
       return false;
-    } else if (myRealStartDate.isBefore(myYearOfEntry)) {
+    } else if (myYearOfEntry && myRealStartDate.isBefore(myRealYearOfEntry)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1460,73 +1461,85 @@ class Worker {
     const localValidationErrors = [];
     const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
 
-    if (!isValid) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.OTHER_JOB_ROLE_ERROR,
-        errType: `OTHER_JOB_ROLE_ERROR`,
-        error: "The code you have entered for OTHERJOBROLE is incorrect",
-        source: this._currentLine.OTHERJOBROLE,
-      });
-    } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.OTHER_JOB_ROLE_ERROR,
-        errType: `OTHER_JOB_ROLE_ERROR`,
-        error: "OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)",
-        source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
-      });
-    } else {
-      const myJobDescriptions = [];
-      this._otherJobs = listOfotherJobs.map((thisJob, index) => {
-        const thisJobIndex = parseInt(thisJob, 10);
+    if (this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.lenmgth > 0) {
+      if (!isValid) {
+        localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errType: `OTHER_JOB_ROLE_ERROR`,
+          error: "The code you have entered for OTHERJOBROLE is incorrect",
+          source: this._currentLine.OTHERJOBROLE,
+        });
+      } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
+        localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errType: `OTHER_JOB_ROLE_ERROR`,
+          error: "OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)",
+          source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
+        });
+      } else {
+        const myJobDescriptions = [];
+        this._otherJobs = listOfotherJobs.map((thisJob, index)   => {
+          const thisJobIndex = parseInt(thisJob, 10);
 
-        // if the job is one of the many "other" job roles, then need to validate the "other description"
-        const otherJobs = [23, 27];   // these are the original budi codes
-        if (otherJobs.includes(thisJobIndex)) {
-          const myJobOther = listOfotherJobsDescriptions[index];
-          const MAX_LENGTH = 120;
-          if (!myJobOther || myJobOther.length == 0) {
+          // if the job is one of the many "other" job roles, then need to validate the "other description"
+          const otherJobs = [23, 27];   // these are the original budi codes
+          if (otherJobs.includes(thisJobIndex)) {
+            const myJobOther = listOfotherJobsDescriptions[index];
+            const MAX_LENGTH = 120;
+            if (!myJobOther || myJobOther.length == 0) {
+              localValidationErrors.push({
+                worker: this._currentLine.UNIQUEWORKERID,
+                name: this._currentLine.LOCALESTID,
+                lineNumber: this._lineNumber,
+                errCode: Worker.OTHER_JR_DESC_ERROR,
+                errType: `OTHER_JR_DESC_ERROR`,
+                error: `OTHERJRDESC (${index+1}) has not been supplied`,
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+              });
+              myJobDescriptions.push(null);
+            } else if (myJobOther.length > MAX_LENGTH) {
+              localValidationErrors.push({
+                worker: this._currentLine.UNIQUEWORKERID,
+                name: this._currentLine.LOCALESTID,
+                lineNumber: this._lineNumber,
+                errCode: Worker.OTHER_JR_DESC_ERROR,
+                errType: `OTHER_JR_DESC_ERROR`,
+                error: `OTHERJRDESC is longer than 120 characters`,
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+              });
+            } else {
+              myJobDescriptions.push(listOfotherJobsDescriptions[index]);
+            }
+          } else if(listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
             localValidationErrors.push({
+              worker: this._currentLine.UNIQUEWORKERID,
+              name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
-              errCode: Worker.OTHER_JR_DESC_ERROR,
-              errType: `OTHER_JR_DESC_ERROR`,
-              error: `OTHERJRDESC (${index+1}) has not been supplied`,
+              warnCode: Worker.OTHER_JR_DESC_WARNING,
+              warnType: `OTHER_JR_DESC_WARNING`,
+              warning: `OTHERJRDESC will be ignored as not required for OTHERJOBROLE`,
               source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-            });
-            myJobDescriptions.push(null);
-          } else if (myJobOther.length > MAX_LENGTH) {
-            localValidationErrors.push({
-              lineNumber: this._lineNumber,
-              errCode: Worker.OTHER_JR_DESC_ERROR,
-              errType: `OTHER_JR_DESC_ERROR`,
-              error: `OTHERJRDESC is longer than 120 characters`,
-              source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-            });
+          })
           } else {
-            myJobDescriptions.push(listOfotherJobsDescriptions[index]);
+            myJobDescriptions.push(null);
           }
-        } else if(listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
-          localValidationErrors.push({
-            lineNumber: this._lineNumber,
-            warnCode: Worker.OTHER_JR_DESC_WARNING,
-            warnType: `OTHER_JR_DESC_WARNING`,
-            warning: `OTHERJRDESC will be ignored as not required for OTHERJOBROLE`,
-            source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-        })
-        } else {
-          myJobDescriptions.push(null);
-        }
 
-        return thisJobIndex;
-      });
+          return thisJobIndex;
+        });
 
-      this._otherJobsOther = myJobDescriptions;
-    }
+        this._otherJobsOther = myJobDescriptions;
+      }
 
-    if (localValidationErrors.length > 0) {
-      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
-      return false;
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
     }
 
     return true;
