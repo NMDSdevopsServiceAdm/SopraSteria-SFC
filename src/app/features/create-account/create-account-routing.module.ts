@@ -1,6 +1,5 @@
 import { AccountSavedComponent } from '@features/create-account/account-saved/account-saved.component';
 import { ConfirmAccountDetailsComponent } from '@features/create-account/confirm-account-details/confirm-account-details.component';
-import { CreateUserAccountComponent } from '@features/create-account/create-user-account/create-user-account.component';
 import { CreateUsernameComponent } from '@features/create-account/create-username/create-username.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
@@ -8,11 +7,7 @@ import { SecurityQuestionComponent } from '@features/create-account/security-que
 
 const routes: Routes = [
   {
-    path: '',
-    component: CreateUserAccountComponent,
-  },
-  {
-    path: 'create-username/:establishmentUid',
+    path: 'create-username',
     component: CreateUsernameComponent,
     data: { title: 'Create Username' },
   },
