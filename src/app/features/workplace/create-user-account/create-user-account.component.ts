@@ -65,7 +65,7 @@ export class CreateUserAccountComponent extends AccountDetails {
       this.createAccountService
         .createAccount(this.establishmentUid, this.form.value)
         .subscribe(
-          () => this.router.navigate(['/create-account/saved']),
+          () => this.router.navigate(['/workplace', this.establishmentUid, 'user/saved']),
           (error: HttpErrorResponse) => this.onError(error)
         )
     );
