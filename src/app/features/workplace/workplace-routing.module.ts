@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
-import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
+import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
@@ -39,7 +39,7 @@ const routes: Routes = [
     data: { title: 'Start' },
   },
   {
-    path: ':establishmentid',
+    path: ':establishmentuid',
     component: EditWorkplaceComponent,
     resolve: { establishment: WorkplaceResolver },
     data: { title: 'Workplace' },
@@ -128,27 +128,22 @@ const routes: Routes = [
         component: SuccessComponent,
         data: { title: 'Success' },
       },
+      {
+        path: 'user/create',
+        component: CreateUserAccountComponent,
+        data: { title: 'Create User Account' },
+      },
+      {
+        path: 'user/saved',
+        component: UserAccountSavedComponent,
+        data: { title: 'User Account Saved' },
+      },
+      {
+        path: 'user/:useruid',
+        component: ViewUserAccountComponent,
+        data: { title: 'View User Account' },
+      },
     ],
-  },
-  {
-    path: ':establishmentuid/user/:useruid',
-    component: ViewUserAccountComponent,
-    data: { title: 'View User Account' },
-  },
-  {
-    path: ':establishmentUid/user/create',
-    component: CreateUserAccountComponent,
-    data: { title: 'Create User Account' },
-  },
-  {
-    path: ':establishmentUid/user/saved',
-    component: UserAccountSavedComponent,
-    data: { title: 'User Account Saved' },
-  },
-  {
-    path: ':establishmentuid/user/:useruid',
-    component: ViewUserAccountComponent,
-    data: { title: 'View User Account' },
   },
 ];
 
