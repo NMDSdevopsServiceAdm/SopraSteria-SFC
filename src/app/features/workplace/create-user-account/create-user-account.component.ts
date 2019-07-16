@@ -12,9 +12,9 @@ import { Roles } from '@core/model/roles.enum';
 
 @Component({
   selector: 'app-create-account',
-  templateUrl: './create-account.component.html',
+  templateUrl: './create-user-account.component.html',
 })
-export class CreateAccountComponent extends AccountDetails {
+export class CreateUserAccountComponent extends AccountDetails {
   public callToActionLabel = 'Save user account';
   public establishmentUid: string;
   public roleRadios: RadioFieldData[] = [
@@ -65,7 +65,7 @@ export class CreateAccountComponent extends AccountDetails {
       this.createAccountService
         .createAccount(this.establishmentUid, this.form.value)
         .subscribe(
-          () => this.router.navigate(['/create-account/saved']),
+          () => this.router.navigate(['/workplace', this.establishmentUid, 'user/saved']),
           (error: HttpErrorResponse) => this.onError(error)
         )
     );
