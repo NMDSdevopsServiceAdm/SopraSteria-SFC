@@ -87,10 +87,10 @@ const routes: Routes = [
     },
   },
   {
-    path: 'create-account',
-    loadChildren: '@features/create-account/create-account.module#CreateAccountModule',
-    canActivate: [AuthGuard],
-    data: { title: 'Create account' },
+    path: 'activate-account',
+    loadChildren: '@features/activate-user-account/activate-user-account.module#ActivateUserAccountModule',
+    canActivate: [AuthGuard], // TODO create new guard
+    data: { title: 'Activate User Account' },
   },
   {
     path: '',
