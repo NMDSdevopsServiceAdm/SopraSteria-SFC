@@ -34,10 +34,10 @@ export class CustomValidators extends Validators {
       return { bothAreEmpty: true };
     } else {
       if (!control1.value && control2.value) {
-        errors[ `${control1Name}Empty` ] = true;
+        errors[`${control1Name}Empty`] = true;
         return errors;
       } else if (control1.value && !control2.value) {
-        errors[ `${control2Name}Empty` ] = true;
+        errors[`${control2Name}Empty`] = true;
         return errors;
       }
     }
@@ -56,9 +56,15 @@ export class CustomValidators extends Validators {
     }
   }
 
-  static checkFiles(fileUpload, files: File[]): ValidatorFn {
+  static checkFiles(c: AbstractControl): { [key: string]: boolean } | null {
     const errors: ValidationErrors = {};
     const maxFileSize = 20971520;
+
+    if (c.value == null || c.value.length === 0) {
+      return null;
+    }
+
+    const files = Array.from(c.value);
 
     if (files.length < 2 || files.length > 3) {
       errors[`filecount`] = true;
@@ -82,8 +88,8 @@ export class CustomValidators extends Validators {
     });
 
     if (Object.keys(errors).length) {
-      // timeout needed for IE11
-      setTimeout(() => fileUpload.setErrors(errors));
+      c.setErrors(errors);
+      return errors;
     }
 
     return null;
