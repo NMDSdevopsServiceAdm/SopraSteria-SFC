@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { UserAccountSavedComponent } from '@features/create-account/account-saved/user-account-saved.component';
+import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { SharedModule } from '@shared/shared.module';
 
