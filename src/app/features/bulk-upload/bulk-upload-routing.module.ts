@@ -29,6 +29,7 @@ const routes: Routes = [
   {
     path: 'workplace-references',
     component: WorkplaceReferencesPageComponent,
+    resolve: { workplaceReferences: WorkplacesReferencesResolver },
     data: { title: 'Workplace references' },
   },
   {
@@ -36,7 +37,7 @@ const routes: Routes = [
     component: StaffReferencesPageComponent,
     resolve: {
       references: StaffReferencesResolver,
-      workplaces: WorkplacesReferencesResolver,
+      workplaceReferences: WorkplacesReferencesResolver,
     },
     data: { title: 'Staff references' },
     runGuardsAndResolvers: 'always',
