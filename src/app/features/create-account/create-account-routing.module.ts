@@ -12,7 +12,7 @@ const routes: Routes = [
     component: CreateAccountComponent,
   },
   {
-    path: 'create-username',
+    path: 'create-username/:establishmentUid',
     component: CreateUsernameComponent,
     data: { title: 'Create Username' },
   },
