@@ -5,9 +5,9 @@ import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-account-saved',
-  templateUrl: './account-saved.component.html',
+  templateUrl: './user-account-saved.component.html',
 })
-export class AccountSavedComponent implements OnInit {
+export class UserAccountSavedComponent implements OnInit {
   constructor(private userService: UserService) {}
 
   public returnUrl$: Observable<URLStructure>;

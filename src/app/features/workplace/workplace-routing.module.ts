@@ -19,6 +19,7 @@ import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+import { UserAccountSavedComponent } from '@features/create-account/account-saved/user-account-saved.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewUserAccountComponent } from './view-user-account/view-user-account.component';
@@ -137,6 +138,11 @@ const routes: Routes = [
     path: ':establishmentUid/user/create',
     component: CreateUserAccountComponent,
     data: { title: 'Create User Account' },
+  },
+  {
+    path: ':establishmentUid/user/saved',
+    component: UserAccountSavedComponent,
+    data: { title: 'User Account Saved' },
   },
 ];
 

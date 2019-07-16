@@ -6,15 +6,9 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SecurityQuestionComponent } from './security-question/security-question.component';
 import { SharedModule } from '@shared/shared.module';
-import { AccountSavedComponent } from './account-saved/account-saved.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, CreateAccountRoutingModule],
-  declarations: [
-    ConfirmAccountDetailsComponent,
-    CreateUsernameComponent,
-    SecurityQuestionComponent,
-    AccountSavedComponent,
-  ],
+  declarations: [ConfirmAccountDetailsComponent, CreateUsernameComponent, SecurityQuestionComponent],
 })
 export class CreateAccountModule {}
