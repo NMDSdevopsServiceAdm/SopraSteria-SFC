@@ -295,15 +295,17 @@ class Establishment {
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: 'First line of address (ADDRESS1) must be defined',
-        source: myAddress1,
         name: this._currentLine.LOCALESTID,
       });
     } else if (myAddress1.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ADDRESS_ERROR,
-        errType: `ADDRESS_ERROR`,
-        error: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
+        // errCode: Establishment.ADDRESS_ERROR,
+        // errType: `ADDRESS_ERROR`,
+        // error: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
+        warnCode: Establishment.ADDRESS_ERROR,
+        warnType: `ADDRESS_ERROR`,
+        warning: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress1,
         name: this._currentLine.LOCALESTID,
       });
@@ -557,9 +559,12 @@ class Establishment {
     if (this._regType && this._regType == 2 && (!myprovID || myprovID.length==0)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.PROV_ID_ERROR,
-        errType: `PROV_ID_ERROR`,
-        error: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
+        // errCode: Establishment.PROV_ID_ERROR,
+        // errType: `PROV_ID_ERROR`,
+        // error: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
+        warnCode: Establishment.PROV_ID_ERROR,
+        warnType: `PROV_ID_ERROR`,
+        warning: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
         source: myprovID,
         name: this._currentLine.LOCALESTID,
       });
@@ -568,9 +573,12 @@ class Establishment {
     else if (this._regType  && this._regType == 2 && !provIDRegex.test(myprovID)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.PROV_ID_ERROR,
-        errType: `PROV_ID_ERROR`,
-        error: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
+        // errCode: Establishment.PROV_ID_ERROR,
+        // errType: `PROV_ID_ERROR`,
+        // error: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
+        warnCode: Establishment.PROV_ID_ERROR,
+        warnType: `PROV_ID_ERROR`,
+        warning: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
         source: myprovID,
         name: this._currentLine.LOCALESTID,
       });
@@ -1646,8 +1654,8 @@ class Establishment {
       capacities: this._capacities,
       utilisations: this._utilisations,
       totalPermTemp: this._totalPermTemp,
-      
-      
+
+
       allJobs: this._alljobs,
       counts: {
         vacancies: this._vacancies,
@@ -1840,9 +1848,10 @@ class Establishment {
             break;
           case 'Address':
           case 'Postcode':
-            validationError.errCode = Establishment.ADDRESS_ERROR;
-            validationError.errType = 'ADDRESS_ERROR';
-            validationError.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
+            // validationError.errCode = Establishment.ADDRESS_ERROR;
+            // validationError.errType = 'ADDRESS_ERROR';
+            // validationError.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
+            validationError.errCode = null; // ignore
             break;
           case 'CQCRegistered':
             validationError.errCode = Establishment.REGTYPE_ERROR;
@@ -1862,7 +1871,7 @@ class Establishment {
             validationError.source  = thisProp;
         }
 
-        this._validationErrors.push(validationError);
+        validationError.errCode ? this._validationErrors.push(validationError) : true;
       }) : true;
     });
 
@@ -1959,7 +1968,7 @@ class Establishment {
             validationWarning.source  = thisProp;
         }
 
-        this._validationErrors.push(validationWarning);
+        validationWarning.warnCode ? this._validationErrors.push(validationWarning) : true;
       }) : true;
     });
 
