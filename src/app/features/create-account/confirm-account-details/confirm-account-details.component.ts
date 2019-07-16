@@ -60,6 +60,7 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
     );
   }
 
+  // TODO update email, fullname, jobTitle, password props once BE exposes this info in token
   private setAccountDetails(): void {
     this.userInfo = [
       {
