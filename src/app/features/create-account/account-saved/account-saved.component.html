@@ -9,7 +9,7 @@
         role="button"
         draggable="false"
         class="govuk-button"
-        [routerLink]="['/dashboard']"
+        [routerLink]="(returnUrl$ | async)?.url"
         [fragment]="'user-accounts'"
       >
         Return to user accounts

@@ -27,15 +27,16 @@ import { StaffRecordSummaryComponent } from './components/staff-record-summary/s
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
+import { SummaryListComponent } from './components/summary-list/summary-list.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
+import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
-import { SummaryListComponent } from './components/summary-list/summary-list.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
@@ -71,6 +72,7 @@ import { SummaryListComponent } from './components/summary-list/summary-list.com
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
     SummaryListComponent,
+    UserAccountsSummaryComponent,
   ],
   exports: [
     AlertComponent,
@@ -103,6 +105,7 @@ import { SummaryListComponent } from './components/summary-list/summary-list.com
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
     SummaryListComponent,
+    UserAccountsSummaryComponent,
   ],
 })
 export class SharedModule {}

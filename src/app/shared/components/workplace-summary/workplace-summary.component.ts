@@ -32,8 +32,10 @@ export class WorkplaceSummaryComponent {
 
       if (Object.keys(temp).length) {
         Object.keys(temp).forEach(key => {
-          const message = this.i18nPluralPipe.transform(temp[key], this.pluralMap[key]);
-          this.capacityMessages.push(message);
+          if (this.pluralMap[key]) {
+            const message = this.i18nPluralPipe.transform(temp[key], this.pluralMap[key]);
+            this.capacityMessages.push(message);
+          }
         });
       }
     }

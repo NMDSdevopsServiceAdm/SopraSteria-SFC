@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { take } from 'rxjs/operators';
-
-import { AuthService } from '@core/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { LoggedInEstablishment } from '@core/model/logged-in.model';
-import { URLStructure } from '@core/model/url.model';
 import { ParentPermissions } from '@core/model/my-workplaces.model';
+import { URLStructure } from '@core/model/url.model';
+import { AuthService } from '@core/services/auth.service';
+import { UserService } from '@core/services/user.service';
 
 @Component({
   selector: 'app-view-workplace',
@@ -18,18 +17,20 @@ export class ViewWorkplaceComponent implements OnInit {
   public summaryReturnUrl: URLStructure;
   public staffPermission = ParentPermissions.WorkplaceAndStaff;
 
-  constructor(private establishmentService: EstablishmentService, private authService: AuthService) {}
+  constructor(private route: ActivatedRoute, private authService: AuthService, private userService: UserService) {}
 
   ngOnInit() {
     this.parentEstablishment = this.authService.establishment;
-    this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
-      this.workplace = establishment;
-    });
+    this.workplace = this.route.snapshot.data.establishment;
 
     this.summaryReturnUrl = {
       url: ['/workplace', this.workplace.uid],
       fragment: 'workplace',
     };
+
+    this.userService.updateReturnUrl({
+      url: ['/workplace', this.workplace.uid],
+    });
   }
 
   public checkPermission(permission: ParentPermissions) {
