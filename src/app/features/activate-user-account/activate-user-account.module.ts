@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ConfirmAccountDetailsComponent } from './confirm-account-details/confirm-account-details.component';
-import { CreateAccountRoutingModule } from '@features/create-account/create-account-routing.module';
+import { ActivateUserAccountRoutingModule } from '@features/activate-user-account/activate-user-account-routing.module';
 import { CreateUsernameComponent } from './create-username/create-username.component';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -8,7 +8,7 @@ import { SecurityQuestionComponent } from './security-question/security-question
 import { SharedModule } from '@shared/shared.module';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, CreateAccountRoutingModule],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, ActivateUserAccountRoutingModule],
   declarations: [ConfirmAccountDetailsComponent, CreateUsernameComponent, SecurityQuestionComponent],
 })
-export class CreateAccountModule {}
+export class ActivateUserAccountModule {}

@@ -1,8 +1,8 @@
-import { ConfirmAccountDetailsComponent } from '@features/create-account/confirm-account-details/confirm-account-details.component';
-import { CreateUsernameComponent } from '@features/create-account/create-username/create-username.component';
+import { ConfirmAccountDetailsComponent } from '@features/activate-user-account/confirm-account-details/confirm-account-details.component';
+import { CreateUsernameComponent } from '@features/activate-user-account/create-username/create-username.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SecurityQuestionComponent } from '@features/create-account/security-question/security-question.component';
+import { SecurityQuestionComponent } from '@features/activate-user-account/security-question/security-question.component';
 
 const routes: Routes = [
   {
@@ -26,4 +26,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class CreateAccountRoutingModule {}
+export class ActivateUserAccountRoutingModule {}
