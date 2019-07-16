@@ -43,7 +43,7 @@ export class CreateUserAccountComponent extends AccountDetails {
   protected init(): void {
     this.breadcrumbService.show();
     this.addFormControls();
-    this.establishmentUid = this.route.snapshot.params.establishmentUid;
+    this.establishmentUid = this.route.parent.snapshot.params.establishmentuid;
   }
 
   private addFormControls(): void {
