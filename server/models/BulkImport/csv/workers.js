@@ -808,7 +808,7 @@ class Worker {
 
   _validateRecSource() {
     const myRecSource = parseInt(this._currentLine.RECSOURCE);
-    
+
     // optional
     if (this._currentLine.RECSOURCE && (isNaN(myRecSource))) {
       this._validationErrors.push({
@@ -835,7 +835,7 @@ class Worker {
     const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
     const myRealDOBDate = this._currentLine.DOB && this._currentLine.DOB.length > 1 ? moment.utc(this._currentLine.DOB, "DD/MM/YYYY") : null;
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
-    
+
     if (!myStartDate) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -1565,7 +1565,7 @@ class Worker {
         source: this._currentLine.NURSESPEC,
       });
       return false;
-    } 
+    }
     else {
       this._nursingSpecialist = myNursingSpecialist;
       return true;
@@ -1722,7 +1722,7 @@ class Worker {
     }
 
     this._socialCareQualification = mySocialCareIndicator;
-    
+
     // if the social care indicator is "1" (yes) - then get the next value which must be the level
     if (mySocialCareIndicator == 1) {
       const mySocialCareLevel = parseInt(mySocialCare[1]);
@@ -1739,6 +1739,7 @@ class Worker {
         });
       }
 
+      //moev this to transform
       if (ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
         this._qualifications.forEach(q => {
           if (q.id > mySocialCareLevel) {
@@ -1775,7 +1776,7 @@ class Worker {
   _transformSocialCareQualificationLevel() {
     if (this._socialCareQualificationlevel || this._socialCareQualificationlevel === 0) {
       const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._socialCareQualificationlevel);
-      
+
       if (!myValidatedQualificationLevel) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -1792,40 +1793,57 @@ class Worker {
     }
   };
 
+  _transformNonSocialCareQualificationLevel() {
+      if (this._nonSocialCareQualificationlevel || this._nonSocialCareQualificationlevel === 0) {
+      // ASC WDS country of birth is a split enum/index
+      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._nonSocialCareQualificationlevel);
+
+      if (!myValidatedQualificationLevel) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          warnType: `NON_SOCIALCARE_QUAL_ERROR`,
+          warning: `The level you have entered for NONSCQUAL is not valid and will be ignored`,
+          source: this._currentLine.NONSCQUAL,
+        })
+
+      } else {
+        this._nonSocialCareQualificationlevel = myValidatedQualificationLevel;
+      }
+    }
+  };
+
   _validateNonSocialCareQualification() {
     const myNonSocialCare = this._currentLine.NONSCQUAL ? this._currentLine.NONSCQUAL.split(';') : null;
+    const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
 
-    // optional
-    if (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) {
-      const localValidationErrors = [];
+    const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ?
+      parseInt(myNonSocialCare[0]) : '';
 
-      const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
-      const myNonSocialCareIndicator = parseInt(myNonSocialCare[0]);
+    if (isNaN(myNonSocialCareIndicator)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+        warnType: 'NON_SOCIALCARE_QUAL_ERROR',
+        warning: "NONSCQUAL is blank",
+        source: this._currentLine.NONSCQUAL,
+      });
 
-      if (isNaN(myNonSocialCareIndicator)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-          errType: 'NON_SOCIALCARE_QUAL_ERROR',
-          error: "Non-Social Care Qualification (NONSCQUAL) indicator (before semi colon) must be an integer",
-          source: this._currentLine.NONSCQUAL,
-        });
-      }
-
-      if (!ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-          errType: 'NON_SOCIALCARE_QUAL_ERROR',
-          error: `Non-Social Care Qualification (NONSCQUAL) indicator (before semi colon) must be one of: ${ALLOWED_SOCIAL_CARE_VALUES}`,
-          source: this._currentLine.NONSCQUAL,
-        });
-      }
-
+    } else if (!ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+        errType: 'NON_SOCIALCARE_QUAL_ERROR',
+        error: "The code you have entered for NONSCQUAL is incorrect",
+        source: this._currentLine.NONSCQUAL,
+      });
+    } else if(myNonSocialCareIndicator == 1) {
       this._nonSocialCareQualification = myNonSocialCareIndicator;
 
       // if the social care indicator is "1" (yes) - then get the next value which must be the level - optional only for non-social care!
@@ -1833,20 +1851,30 @@ class Worker {
         let myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
         if (isNaN(myNonSocialCareLevel)) {
           myNonSocialCareLevel = 999; // "Don't know"
+        } else if (myNonSocialCareLevel) {
+          this._qualifications.forEach(q => {
+            if (q.id > myNonSocialCareLevel) {
+              this._validationErrors.push({
+                worker: this._currentLine.UNIQUEWORKERID,
+                name: this._currentLine.LOCALESTID,
+                lineNumber: this._lineNumber,
+                warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+                warnType: 'NON_SOCIALCARE_QUAL_ERROR',
+                warning: `NONSCQUAL level does not match the QUALACH** (${q.column})`,
+                source: this._currentLine.SCQUAL,
+              });
+            }
+          })
         }
+
         this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
       }
 
-      if (localValidationErrors.length > 0) {
-        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
-        return false;
-      }
-
-      return true;
-
+      return false;
     } else {
       return true;
     }
+
   }
 
   __validateQualification(qualificationIndex, qualificationName, qualificationError, qualificationErrorName, qualification,
@@ -2172,26 +2200,7 @@ class Worker {
 
 
 
-  _transformNonSocialCareQualificationLevel() {
-    if (this._nonSocialCareQualificationlevel) {
-      // ASC WDS country of birth is a split enum/index
-      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._nonSocialCareQualificationlevel);
 
-      if (!myValidatedQualificationLevel) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-          errType: `NON_SOCIALCARE_QUAL_ERROR`,
-          error: `Non Social Care Qualiifcation (NONSCQUAL): Level ${this._nonSocialCareQualificationlevel} is unknown`,
-          source: this._currentLine.NONSCQUAL,
-        });
-      } else {
-        this._nonSocialCareQualificationlevel = myValidatedQualificationLevel;
-      }
-    }
-  };
 
   _transformQualificationRecords() {
     if (this._qualifications && Array.isArray(this._qualifications)) {
