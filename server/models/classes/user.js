@@ -10,6 +10,7 @@ const uuid = require('uuid');
 
 // database models
 const models = require('../index');
+const Sequelize = require('sequelize');
 
 // notifications
 const sendAddUserEmail = require('../../utils/email/notify-email').sendAddUser;
@@ -74,6 +75,12 @@ class User {
     static get LOG_TRACE() { return 400; }
     static get LOG_DEBUG() { return 500; }
 
+    // Maximum user types
+    static get MAX_EDIT_PARENT_USERS() { return 3 }
+    static get MAX_READ_PARENT_USERS() { return 20 }
+    static get MAX_EDIT_SINGLE_USERS() { return 3 }
+    static get MAX_READ_SINGLE_USERS() { return 3 }
+    
     set logLevel(logLevel) {
         this._logLevel = logLevel;
     }
@@ -640,6 +647,26 @@ class User {
 
       throw new Error('Not implemented');
     };
+
+    static async fetchUserTypeCounts(establishmentId){
+        const results = await models.user.findAll({
+            attributes: ['UserRoleValue', [Sequelize.fn('count', Sequelize.col('UserRoleValue')), 'roleCount']],
+            group: ['UserRoleValue'],
+            where: {
+                establishmentId: establishmentId,
+                archived: false
+            },
+            raw: true
+        });
+
+        const returnData = { 'Read': 0, 'Edit': 0};
+
+        results.forEach((element) => {
+            returnData[element.UserRoleValue] = Number.parseInt(element.roleCount);
+        });
+
+        return returnData;
+    }
 
     // returns a set of User based on given filter criteria (all if no filters defined) - restricted to the given Establishment
     static async fetch(establishmentId, filters=null) {
