@@ -63,11 +63,11 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       },
       {
         label: 'Email address',
-        data: this.userDetails.emailAddress,
+        data: this.userDetails.email,
       },
       {
         label: 'Contact phone',
-        data: this.userDetails.contactNumber,
+        data: this.userDetails.phone,
       },
     ];
 
@@ -110,7 +110,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     payload.user.username = this.loginCredentials.username;
     payload.user.password = this.loginCredentials.password;
     payload.user.securityQuestion = this.securityDetails.securityQuestion;
-    payload.user.securityAnswer = this.securityDetails.securityAnswer;
+    payload.user.securityQuestionAnswer = this.securityDetails.securityAnswer;
     return [payload];
   }
 

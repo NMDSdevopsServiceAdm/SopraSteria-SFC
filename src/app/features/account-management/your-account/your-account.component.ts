@@ -59,11 +59,11 @@ export class YourAccountComponent implements OnInit, OnDestroy {
       },
       {
         label: 'Email address',
-        data: this.user.emailAddress,
+        data: this.user.email,
       },
       {
         label: 'Contact phone',
-        data: this.user.contactNumber,
+        data: this.user.phone,
       },
     ];
 
@@ -87,7 +87,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
       },
       {
         label: 'Security answer',
-        data: this.user.securityAnswer,
+        data: this.user.securityQuestionAnswer,
       },
     ];
   }

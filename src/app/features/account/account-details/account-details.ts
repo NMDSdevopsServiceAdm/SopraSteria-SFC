@@ -68,10 +68,10 @@ export class AccountDetails implements OnInit, OnDestroy {
 
   protected setUserDetails(): UserDetails {
     return (this.userDetails = {
-      emailAddress: this.form.get(this.formControlsMap[2].name).value,
+      email: this.form.get(this.formControlsMap[2].name).value,
       fullname: this.form.get(this.formControlsMap[0].name).value,
       jobTitle: this.form.get(this.formControlsMap[1].name).value,
-      contactNumber: this.form.get(this.formControlsMap[3].name).value,
+      phone: this.form.get(this.formControlsMap[3].name).value,
     });
   }
 
