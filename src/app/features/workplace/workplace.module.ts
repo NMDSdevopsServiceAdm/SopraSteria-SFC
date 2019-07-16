@@ -24,6 +24,7 @@ import { ViewWorkplaceComponent } from './view-workplace/view-workplace.componen
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { WorkplaceResolver } from './workplace.resolver';
 import { StartComponent } from './start/start.component';
+import { ViewUserAccountComponent } from './view-user-account/view-user-account.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkplaceRoutingModule],
@@ -47,6 +48,7 @@ import { StartComponent } from './start/start.component';
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
     StartComponent,
+    ViewUserAccountComponent,
   ],
   providers: [WorkplaceResolver],
 })
