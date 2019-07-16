@@ -218,7 +218,7 @@ class Establishment extends EntityValidator {
     }
 
     get key(){
-        return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this._properties.get('LocalIdentifier').property : this.name).replace(/\s/g, "");
+        return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.name).replace(/\s/g, "");
     }
 
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -317,20 +317,27 @@ class Establishment extends EntityValidator {
                 const promises = [];
                 if (document.workers && Array.isArray(document.workers)) {
                     document.workers.forEach(thisWorker => {
-                        const workerKey = thisWorker.nameOrId.replace(/\s/g, "");
+                      // we're loading from JSON, not entity, so there is no key property; so add it
+                      thisWorker.key = thisWorker.localIdentifier ? thisWorker.localIdentifier.replace(/\s/g, "") : thisWorker.nameOrId.replace(/\s/g, "");
 
-                        // check if we already have the Worker associated, before associating a new worker
-                        if (this._workerEntities[workerKey]) {
-                            // else we already have this worker, load changes against it
-                            promises.push(this._workerEntities[workerKey].load(thisWorker, true));
+                      // check if we already have the Worker associated, before associating a new worker
+                      if (this._workerEntities[thisWorker.key]) {
+                          if (thisWorker.changeLocalIdentifer) {
+                            console.log(`WA DEBUG - changing the local identifier on (${thisWorker.nameOrId}), from (${thisWorker.key}) to (${thisWorker.changeLocalIdentifer})`)
+                            thisWorker.localIdentifier = thisWorker.changeLocalIdentifer;
+                          } else {
+                            delete thisWorker.localIdentifier;
+                          }
+                          // else we already have this worker, load changes against it
+                          promises.push(this._workerEntities[thisWorker.key].load(thisWorker, true));
 
-                        } else {
-                            const newWorker = new Worker(null);
+                      } else {
+                          const newWorker = new Worker(null);
 
-                            // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-                            this.associateWorker(workerKey, newWorker);
-                            promises.push(newWorker.load(thisWorker, true));
-                        }
+                          // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                          this.associateWorker(thisWorker.key, newWorker);
+                          promises.push(newWorker.load(thisWorker, true));
+                      }
 
                     });
 
@@ -338,7 +345,9 @@ class Establishment extends EntityValidator {
                     // however, how do we mark for deletion those no longer required
                     this._readyForDeletionWorkers = [];
                     Object.values(this._workerEntities).forEach(thisWorker => {
-                        const foundWorker = document.workers.find(givenWorker => givenWorker.nameOrId === thisWorker.nameOrId);
+                        const foundWorker = document.workers.find(givenWorker => {
+                          return givenWorker.key === thisWorker.key
+                        });
                         if (!foundWorker) {
                             this._readyForDeletionWorkers.push(thisWorker);
                         }
@@ -1057,7 +1066,7 @@ class Establishment extends EntityValidator {
 
                             // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
                             // without whitespace
-                            this.associateWorker(newWorker.nameOrId.replace(/\s/g, ""), newWorker);
+                            this.associateWorker(newWorker.key, newWorker);
 
                             return {};
                         }));

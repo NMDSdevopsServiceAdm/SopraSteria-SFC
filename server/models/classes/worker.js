@@ -160,7 +160,7 @@ class Worker extends EntityValidator {
     }
 
     get key(){
-        return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this._properties.get('LocalIdentifier').property : this.nameOrId).replace(/\s/g, "");
+        return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.nameOrId).replace(/\s/g, "");
     }
 
     get contract() {
@@ -840,6 +840,7 @@ class Worker extends EntityValidator {
                 // now append the extendable properties
                 const updateDocument = {
                     archived: true,
+                    LocalIdentifierValue: null,
                     updated: updatedTimestamp,
                     updatedBy: deletedBy
                 };
