@@ -51,7 +51,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   private setAccountDetails(): void {
-    this.accountDetails = [
+    this.userInfo = [
       {
         label: 'Full name',
         data: this.userDetails.fullname,
@@ -60,23 +60,30 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Job title',
         data: this.userDetails.jobTitle,
-        route: '/registration/change-your-details',
       },
       {
         label: 'Email address',
         data: this.userDetails.emailAddress,
-        route: '/registration/change-your-details',
       },
       {
         label: 'Contact phone',
         data: this.userDetails.contactNumber,
-        route: '/registration/change-your-details',
       },
+    ];
+
+    this.loginInfo = [
       {
         label: 'Username',
         data: this.loginCredentials.username,
         route: '/registration/create-username',
       },
+      {
+        label: 'Password',
+        data: '******',
+      },
+    ];
+
+    this.securityInfo = [
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
@@ -85,7 +92,6 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Security answer',
         data: this.securityDetails.securityAnswer,
-        route: '/registration/security-question',
       },
     ];
   }
@@ -110,10 +116,12 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
 
   protected save(): void {
     this.subscriptions.add(
-      this.registrationService.postRegistration(this.generatePayload()).subscribe(
-        () => this.router.navigate(['/registration/complete']),
-        (error: HttpErrorResponse) => this.onError(error)
-      )
+      this.registrationService
+        .postRegistration(this.generatePayload())
+        .subscribe(
+          () => this.router.navigate(['/registration/complete']),
+          (error: HttpErrorResponse) => this.onError(error)
+        )
     );
   }
 }

@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserDetails } from '@core/model/userDetails.model';
-import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
@@ -11,19 +10,16 @@ import { Subscription } from 'rxjs';
 })
 export class YourAccountComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public establishment: any;
   public user: UserDetails;
   public username: string;
 
   constructor(
-    private authService: AuthService,
     private userService: UserService,
     private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show();
-    this.establishment = this.authService.establishment.id;
     this.getUsername();
   }
 

@@ -11,8 +11,11 @@
     <span class="govuk-caption-l">User account</span>
     <h2 class="govuk-heading-l">Confirm your account details</h2>
 
-    <dl *ngIf="accountDetails" class="govuk-summary-list govuk-!-margin-bottom-8">
-      <div class="govuk-summary-list__row" *ngFor="let item of accountDetails">
+    <dl
+      *ngIf="userInfo"
+      class="govuk-summary-list govuk-summary-list--no-border govuk-summary-list--top-border govuk-!-margin-bottom-0"
+    >
+      <div class="govuk-summary-list__row" *ngFor="let item of userInfo">
         <dt class="govuk-summary-list__key">
           {{ item.label }}
         </dt>
@@ -20,7 +23,7 @@
           {{ item.data }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="[item.route]">
+          <a *ngIf="item.route" [routerLink]="[item.route]">
             Change
             <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>
           </a>
@@ -28,7 +31,7 @@
       </div>
     </dl>
 
-    <form (ngSubmit)="onSubmit()" [formGroup]="form" id="form">
+    <form (ngSubmit)="onSubmit()" [formGroup]="form" id="form" class="govuk-!-margin-top-6">
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <fieldset class="govuk-fieldset" aria-describedby="termsAndConditions-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">

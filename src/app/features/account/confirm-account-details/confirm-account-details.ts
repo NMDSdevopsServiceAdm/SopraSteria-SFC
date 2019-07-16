@@ -17,7 +17,9 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected workplaceService: Service;
-  public accountDetails: AccountDetails[];
+  public userInfo: AccountDetails[];
+  public loginInfo: AccountDetails[];
+  public securityInfo: AccountDetails[];
   public form: FormGroup;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;
