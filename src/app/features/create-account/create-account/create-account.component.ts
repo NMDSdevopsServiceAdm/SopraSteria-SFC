@@ -1,4 +1,5 @@
 import { AccountDetails } from '@features/account/account-details/account-details';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { Component } from '@angular/core';
@@ -7,7 +8,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RadioFieldData } from '@core/model/form-controls.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Roles } from '@core/model/roles.enum';
 
 @Component({
   selector: 'app-create-account',
@@ -18,11 +19,11 @@ export class CreateAccountComponent extends AccountDetails {
   public establishmentUid: string;
   public roleRadios: RadioFieldData[] = [
     {
-      value: 'Edit',
+      value: Roles.Edit,
       label: 'Edit',
     },
     {
-      value: 'Read',
+      value: Roles.Read,
       label: 'Read-only',
     },
   ];
