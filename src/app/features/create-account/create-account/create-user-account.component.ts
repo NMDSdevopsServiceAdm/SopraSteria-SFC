@@ -12,9 +12,9 @@ import { Roles } from '@core/model/roles.enum';
 
 @Component({
   selector: 'app-create-account',
-  templateUrl: './create-account.component.html',
+  templateUrl: './create-user-account.component.html',
 })
-export class CreateAccountComponent extends AccountDetails {
+export class CreateUserAccountComponent extends AccountDetails {
   public callToActionLabel = 'Save user account';
   public establishmentUid: string;
   public roleRadios: RadioFieldData[] = [
