@@ -61,6 +61,12 @@ export class UserService {
       .get<{
         users: Array<UserDetails>;
       }>(`/api/user/establishment/${establishmentUid}`)
-      .pipe(map(response => response.users));
+      .pipe(
+        map(response =>
+          response.users.map(user => {
+            return { ...user, status: user.username === null ? 'Pending' : 'Active' };
+          })
+        )
+      );
   }
 }

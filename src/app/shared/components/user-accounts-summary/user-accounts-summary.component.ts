@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
+import { orderBy } from 'lodash';
 import { combineLatest } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -21,18 +22,18 @@ export class UserAccountsSummaryComponent implements OnInit {
     combineLatest(this.authService.auth$, this.userService.getAllUsersForEstablishment(this.establishmentUid))
       .pipe(take(1))
       .subscribe(([auth, users]) => {
-        this.users = users;
+        this.users = orderBy(users, ['status', 'role', 'username'], ['desc', 'asc', 'asc']);
         this.canAddUser = auth && auth.role === 'Edit' && this.userSlotsAvailable(users);
       });
   }
 
-  public userSlotsAvailable(users: Array<UserDetails>) {
+  public isPending(user: UserDetails) {
+    return user.username === null;
+  }
+
+  private userSlotsAvailable(users: Array<UserDetails>) {
     const editUsers = users.filter(user => user.role === 'Edit');
     const readOnlyUsers = users.filter(user => user.role === 'Read');
     return editUsers.length < 3 || readOnlyUsers.length < 3;
-  }
-
-  public isPending(user: UserDetails) {
-    return user.username === null;
   }
 }
