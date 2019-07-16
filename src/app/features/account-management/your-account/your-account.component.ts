@@ -17,10 +17,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
   public userInfo: SummaryList[];
   public username: string;
 
-  constructor(
-    private userService: UserService,
-    private breadcrumbService: BreadcrumbService
-  ) {}
+  constructor(private userService: UserService, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {
     this.breadcrumbService.show();
@@ -38,7 +35,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
 
   private getUserSummary() {
     this.subscriptions.add(
-      this.userService.getUserDetails(this.username).subscribe((userDetails: UserDetails) => {
+      this.userService.getMyDetails(this.username).subscribe((userDetails: UserDetails) => {
         this.user = userDetails;
         this.setAccountDetails();
         this.userService.updateState(userDetails);

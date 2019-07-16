@@ -28,9 +28,13 @@ export class UserService {
   }
 
   /*
-   * GET /api/user/establishment/:establishmentId/:username
+   * GET /api/user/establishment/:establishmentId/:username|userUid
    */
-  public getUserDetails(username): Observable<UserDetails> {
+  public getUserDetails(establishmentUid: string, userUid: string): Observable<UserDetails> {
+    return this.http.get<any>(`/api/user/establishment/${establishmentUid}/${userUid}`);
+  }
+
+  public getMyDetails(username: string): Observable<UserDetails> {
     return this.http.get<any>(`/api/user/establishment/${this.establishmentService.establishmentId}/${username}`);
   }
 
