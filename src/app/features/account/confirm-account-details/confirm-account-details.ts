@@ -1,4 +1,3 @@
-import { AccountDetails } from '@core/model/account.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -9,6 +8,7 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { Service } from '@core/model/services.model';
 import { Subscription } from 'rxjs';
+import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
 
 export class ConfirmAccountDetails implements OnInit, OnDestroy {
@@ -17,9 +17,9 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected workplaceService: Service;
-  public userInfo: AccountDetails[];
-  public loginInfo: AccountDetails[];
-  public securityInfo: AccountDetails[];
+  public userInfo: SummaryList[];
+  public loginInfo: SummaryList[];
+  public securityInfo: SummaryList[];
   public form: FormGroup;
   public loginCredentials: LoginCredentials;
   public securityDetails: SecurityDetails;

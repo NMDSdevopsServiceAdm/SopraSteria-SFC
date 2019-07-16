@@ -35,6 +35,7 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
+import { SummaryListComponent } from './components/summary-list/summary-list.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
@@ -69,6 +70,7 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    SummaryListComponent,
   ],
   exports: [
     AlertComponent,
@@ -100,6 +102,7 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    SummaryListComponent,
   ],
 })
 export class SharedModule {}
