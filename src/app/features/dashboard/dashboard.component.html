@@ -31,6 +31,13 @@
         <app-home-tab></app-home-tab>
       </app-tab>
 
+      <app-tab [title]="'User Accounts'">
+        <app-user-accounts-summary
+          *ngIf="establishment"
+          [establishmentUid]="establishment.uid"
+        ></app-user-accounts-summary>
+      </app-tab>
+
       <app-tab [title]="'Workplace'">
         <app-workplace-tab></app-workplace-tab>
       </app-tab>

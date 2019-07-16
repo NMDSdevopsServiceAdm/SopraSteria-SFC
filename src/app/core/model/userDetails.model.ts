@@ -11,4 +11,7 @@ export interface UserDetails {
   updated?: string;
   updatedBy?: string;
   username?: string;
+  status?: UserStatus;
 }
+
+export type UserStatus = 'Pending' | 'Active';

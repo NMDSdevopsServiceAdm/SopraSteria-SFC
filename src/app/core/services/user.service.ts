@@ -1,10 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
+import { URLStructure } from '@core/model/url.model';
+import { UserDetails, UserStatus } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { EstablishmentService } from './establishment.service';
-import { UserDetails } from '@core/model/userDetails.model';
-import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +14,9 @@ import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 export class UserService {
   private _userDetails$: BehaviorSubject<UserDetails> = new BehaviorSubject<UserDetails>(null);
   public userDetails$: Observable<UserDetails> = this._userDetails$.asObservable();
+
+  private _returnUrl$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
+  public returnUrl$: Observable<URLStructure> = this._returnUrl$.asObservable();
 
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
 
@@ -43,7 +48,25 @@ export class UserService {
     this._userDetails$.next(userDetails);
   }
 
+  public updateReturnUrl(returnUrl: URLStructure) {
+    this._returnUrl$.next(returnUrl);
+  }
+
   public getEstablishments(): Observable<GetWorkplacesResponse> {
     return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`);
+  }
+
+  public getAllUsersForEstablishment(establishmentUid: string): Observable<Array<UserDetails>> {
+    return this.http
+      .get<{
+        users: Array<UserDetails>;
+      }>(`/api/user/establishment/${establishmentUid}`)
+      .pipe(
+        map(response =>
+          response.users.map(user => {
+            return { ...user, status: user.username === null ? ('Pending' as UserStatus) : ('Active' as UserStatus) };
+          })
+        )
+      );
   }
 }
