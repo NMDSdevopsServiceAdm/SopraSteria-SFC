@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { CreateAccountRequest } from '@core/model/account.model';
+import { CompleteCreateAccountRequest, PartialCreateAccountRequest } from '@core/model/account.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginCredentials } from '@core/model/login-credentials.model';
@@ -14,7 +14,11 @@ export class CreateAccountService {
 
   constructor(private http: HttpClient) {}
 
-  public createAccount(establishmentUid: string, requestPayload: CreateAccountRequest) {
+  public partialCreateAccount(establishmentUid: string, requestPayload: PartialCreateAccountRequest) {
     return this.http.post(`/api/user/add/establishment/${establishmentUid}`, requestPayload);
+  }
+
+  public completeCreateAccount(requestPayload: CompleteCreateAccountRequest) {
+    return this.http.post(`/api/user/add`, requestPayload);
   }
 }

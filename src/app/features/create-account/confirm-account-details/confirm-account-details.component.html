@@ -1,3 +1,19 @@
-<p>
-  confirm-account-details works!
-</p>
+<app-error-summary *ngIf="serverError" [serverError]="serverError"> </app-error-summary>
+
+<div class="govuk-grid-row" id="server-error">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <span class="govuk-caption-l">User account</span>
+    <h2 class="govuk-heading-l">Confirm your account details</h2>
+    <p class="govuk-!-margin-bottom-6">
+      Before saving this user account, check the information you have provided is correct.
+    </p>
+    <app-summary-list [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
+    <app-summary-list [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
+    <app-summary-list [wrapBorder]="true" [summaryList]="securityInfo"></app-summary-list>
+  </div>
+</div>
+<div class="govuk-button-group">
+  <button type="button" class="govuk-button" (click)="save()">
+    Save and complete
+  </button>
+</div>

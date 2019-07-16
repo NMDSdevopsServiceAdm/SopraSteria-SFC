@@ -63,7 +63,7 @@ export class CreateAccountComponent extends AccountDetails {
   protected save() {
     this.subscriptions.add(
       this.createAccountService
-        .createAccount(this.establishmentUid, this.form.value)
+        .partialCreateAccount(this.establishmentUid, this.form.value)
         .subscribe(
           () => this.router.navigate(['/create-account/saved']),
           (error: HttpErrorResponse) => this.onError(error)
