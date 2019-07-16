@@ -1091,10 +1091,10 @@ class Worker {
       const MAX_VALUE = 366.0;
       const DONT_KNOW_VALUE = 999;
 
-      const containsHalfDay = this._currentLine.DAYSSICK.indexOf('.') > 0 ?
-        this._currentLine.DAYSSICK.split(".")[1] : 5;
+      const containsHalfDay = this._currentLine.DAYSSICK.indexOf('.') > 0 ? parseInt(this._currentLine.DAYSSICK.split(".")[1], 10) : 5;
 
-      if (isNaN(myDaysSick) || containsHalfDay !== 5 || myDaysSick < 0 || myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
+      if (myDaysSick != DONT_KNOW_VALUE && (isNaN(myDaysSick) || containsHalfDay !== 5 || myDaysSick < 0 || myDaysSick > MAX_VALUE)) {
+
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2443,7 +2443,8 @@ class Worker {
   toAPI() {
     const changeProperties = {
     // the minimum to create a new worker
-      nameOrId : this._uniqueWorkerId,
+      localIdentifier: this._uniqueWorkerId,
+      nameOrId : this._displayId,
       contract : this._contractType,
       mainJob : {
         jobId: this._mainJobRole,

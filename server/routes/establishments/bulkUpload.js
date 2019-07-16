@@ -1269,15 +1269,17 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
 
       // find new/updated/deleted workers
       onloadWorkers.forEach(thisOnloadWorker => {
-        const foundWorker= currentWorkers.find(thisCurrentWorker => thisCurrentWorker === thisOnloadWorker);
+        const foundWorker= currentWorkers.find(thisCurrentWorker => {
+          return thisCurrentWorker === thisOnloadWorker;
+        });
 
         if (foundWorker) {
           updatedWorkers.push({
-            nameOrId: thisOnloadWorker
+            key: thisOnloadWorker
           });
         } else {
           newWorkers.push({
-            nameOrId: thisOnloadWorker
+            key: thisOnloadWorker
           });
         }
       });
@@ -1326,7 +1328,7 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         currentWorkers.forEach(thisCurrentWorker => deletedWorkers.push(thisCurrentWorker));
 
         deletedEntities.push({
-          name: thisCurrentEstablishment.name,
+          key: thisCurrentEstablishment.key,
           workers: {
             deleted: deletedWorkers,
           }
@@ -1605,6 +1607,7 @@ router.route('/complete').post(async (req, res) => {
               updatedEstablishments.push(foundOnloadEstablishment);
             }
           });
+
           // now update the updated
           const updateEstablishmentPromises = [];
           validationDiferenceReport.updated.forEach(thisUpdatedEstablishment => {
@@ -1613,20 +1616,17 @@ router.route('/complete').post(async (req, res) => {
             const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisUpdatedEstablishment.key);
             const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisUpdatedEstablishment.key);
 
-            if(foundOnloadEstablishment){
-              delete foundOnloadEstablishment.localIdentifier;
-              foundOnloadEstablishment.workers.forEach((worker) => {
-                delete worker.localIdentifier;
-                if(worker.changeLocalIdentifer){
-                  worker._properties.get('LocalIdentifier').property = worker.changeLocalIdentifer;
-                }
-              });
-            }
-
-            // current is already restored, so simply need to load the onboard into the current, and load the associated work entities
+            // current is already restored, so simply need pass the onload entity into the current along with the associated set of worker entities
             if (foundCurrentEstablishment) {
+              // when updating existing entities, need to remove the local identifer!
+              // but because the properties are not actual properties - but managed properties - we can't just delete the property
+
+              // simply work on the resulting full JSON presentation, whereby every property is a simply propery
+              const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true);
+              delete thisEstablishmentJSON.localIdentifier;
+
               updatedEstablishments.push(foundCurrentEstablishment);
-              updateEstablishmentPromises.push(foundCurrentEstablishment.load(foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true), true));
+              updateEstablishmentPromises.push(foundCurrentEstablishment.load(thisEstablishmentJSON, true));
             }
           });
 
