@@ -1773,48 +1773,6 @@ class Worker {
     return true;
   }
 
-  _transformSocialCareQualificationLevel() {
-    if (this._socialCareQualificationlevel || this._socialCareQualificationlevel === 0) {
-      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._socialCareQualificationlevel);
-
-      if (!myValidatedQualificationLevel) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.SOCIALCARE_QUAL_ERROR,
-          warnType: `SOCIALCARE_QUAL_ERROR`,
-          warning: `The level you have entered for SCQUAL is not valid and will be ignored`,
-          source: this._currentLine.SCQUAL,
-        });
-      } else {
-        this._socialCareQualificationlevel = myValidatedQualificationLevel;
-      }
-    }
-  };
-
-  _transformNonSocialCareQualificationLevel() {
-      if (this._nonSocialCareQualificationlevel || this._nonSocialCareQualificationlevel === 0) {
-      // ASC WDS country of birth is a split enum/index
-      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._nonSocialCareQualificationlevel);
-
-      if (!myValidatedQualificationLevel) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-          warnType: `NON_SOCIALCARE_QUAL_ERROR`,
-          warning: `The level you have entered for NONSCQUAL is not valid and will be ignored`,
-          source: this._currentLine.NONSCQUAL,
-        })
-
-      } else {
-        this._nonSocialCareQualificationlevel = myValidatedQualificationLevel;
-      }
-    }
-  };
-
   _validateNonSocialCareQualification() {
     const myNonSocialCare = this._currentLine.NONSCQUAL ? this._currentLine.NONSCQUAL.split(';') : null;
     const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
@@ -2199,8 +2157,47 @@ class Worker {
   };
 
 
+  _transformSocialCareQualificationLevel() {
+    if (this._socialCareQualificationlevel || this._socialCareQualificationlevel === 0) {
+      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._socialCareQualificationlevel);
 
+      if (!myValidatedQualificationLevel) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.SOCIALCARE_QUAL_ERROR,
+          warnType: `SOCIALCARE_QUAL_ERROR`,
+          warning: `The level you have entered for SCQUAL is not valid and will be ignored`,
+          source: this._currentLine.SCQUAL,
+        });
+      } else {
+        this._socialCareQualificationlevel = myValidatedQualificationLevel;
+      }
+    }
+  };
 
+  _transformNonSocialCareQualificationLevel() {
+      if (this._nonSocialCareQualificationlevel || this._nonSocialCareQualificationlevel === 0) {
+      // ASC WDS country of birth is a split enum/index
+      const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._nonSocialCareQualificationlevel);
+
+      if (!myValidatedQualificationLevel) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          warnType: `NON_SOCIALCARE_QUAL_ERROR`,
+          warning: `The level you have entered for NONSCQUAL is not valid and will be ignored`,
+          source: this._currentLine.NONSCQUAL,
+        })
+
+      } else {
+        this._nonSocialCareQualificationlevel = myValidatedQualificationLevel;
+      }
+    }
+  };
 
   _transformQualificationRecords() {
     if (this._qualifications && Array.isArray(this._qualifications)) {
