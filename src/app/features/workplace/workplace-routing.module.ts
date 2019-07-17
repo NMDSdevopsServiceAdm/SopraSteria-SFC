@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
+import { RoleGuard } from '@core/guards/role/role.guard';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
@@ -132,7 +133,11 @@ const routes: Routes = [
       {
         path: 'user/create',
         component: CreateUserAccountComponent,
-        data: { title: 'Create User Account' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: ['Edit'],
+          title: 'Create User Account'
+        }
       },
       {
         path: 'user/saved',
