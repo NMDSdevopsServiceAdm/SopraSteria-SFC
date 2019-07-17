@@ -2050,8 +2050,6 @@ class Worker {
         this._mainJobRole = myValidatedJobRole;
       }
     }
-
-    console.log("WA DEBUG - main job role after transformation - ", this._mainJobRole, this._validationErrors)
   };
 
   _transformOtherJobRoles() {
