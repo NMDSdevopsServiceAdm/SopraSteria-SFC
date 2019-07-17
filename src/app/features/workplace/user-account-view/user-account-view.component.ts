@@ -38,6 +38,7 @@ export class UserAccountViewComponent implements OnInit {
     },
   ];
   public canDeleteUser: boolean;
+  public canEdit: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -72,6 +73,7 @@ export class UserAccountViewComponent implements OnInit {
         // TODO users can not delete themselves, but uid for LoggedInSession is not exposed so can't currently compare
         const editUsers = users.filter(user => user.role === 'Edit');
         this.canDeleteUser = auth && auth.role === 'Edit' && editUsers.length > 1 && !this.user.isPrimary;
+        this.canEdit = auth.role === Roles.Edit;
       });
   }
 

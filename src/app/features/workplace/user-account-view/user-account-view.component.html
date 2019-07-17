@@ -22,7 +22,7 @@
           Permissions
         </dt>
         <dd class="govuk-summary-list__value">{{ user.isPrimary ? 'Primary' : '' }} {{ user.role }}</dd>
-        <dd class="govuk-summary-list__actions">
+        <dd *ngIf="canEdit" class="govuk-summary-list__actions">
           <a [routerLink]="['permissions']">
             Change
             <span class="govuk-visually-hidden"> user permissions</span>
