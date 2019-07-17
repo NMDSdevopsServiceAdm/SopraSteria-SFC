@@ -2039,8 +2039,6 @@ class Worker {
           error: `The code you have entered for MAINJOBROLE is incorrect`,
           source: this._currentLine.MAINJOBROLE,
         });
-
-        console.log("WA DEBUG - transformMainJoBrole - validation errors: ", this._validationErrors)
       } else {
         this._mainJobRole = myValidatedJobRole;
       }
