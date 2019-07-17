@@ -26,6 +26,7 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
   public serverError: string;
   public submitted = false;
   public userDetails: UserDetails;
+  protected actionType: string;
 
   constructor(
     protected errorSummaryService: ErrorSummaryService,
@@ -67,7 +68,11 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 400,
-        message: 'Registration failed.',
+        message: `${this.actionType} failed.`,
+      },
+      {
+        name: 404,
+        message: 'User not found or does not belong to the given establishment.',
       },
     ];
   }

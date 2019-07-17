@@ -15,6 +15,8 @@ import { UserService } from '@core/services/user.service';
   templateUrl: './confirm-account-details.component.html',
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
+  protected actionType = 'Registration';
+
   constructor(
     private backService: BackService,
     private registrationService: RegistrationService,
