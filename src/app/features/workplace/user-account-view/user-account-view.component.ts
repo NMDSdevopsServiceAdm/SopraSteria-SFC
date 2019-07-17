@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { RadioFieldData } from '@core/model/form-controls.model';
+import { LoggedInSession } from '@core/model/logged-in.model';
 import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -26,23 +25,12 @@ export class UserAccountViewComponent implements OnInit {
   public establishment: Establishment;
   public user: UserDetails;
   public userInfo: SummaryList[];
-  public form: FormGroup;
-  public roleRadios: RadioFieldData[] = [
-    {
-      value: Roles.Edit,
-      label: 'Edit',
-    },
-    {
-      value: Roles.Read,
-      label: 'Read only',
-    },
-  ];
   public canDeleteUser: boolean;
+  public canResendActivationLink: boolean;
   public canEdit: boolean;
 
   constructor(
     private route: ActivatedRoute,
-    private formBuilder: FormBuilder,
     private router: Router,
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
@@ -58,11 +46,6 @@ export class UserAccountViewComponent implements OnInit {
   ngOnInit() {
     this.breadcrumbService.show();
 
-    this.form = this.formBuilder.group({
-      role: [this.user.role, Validators.required],
-      primary: this.user.isPrimary,
-    });
-
     this.userService
       .getAllUsersForEstablishment(this.establishment.uid)
       .pipe(
@@ -70,10 +53,7 @@ export class UserAccountViewComponent implements OnInit {
         withLatestFrom(this.authService.auth$)
       )
       .subscribe(([users, auth]) => {
-        // TODO users can not delete themselves, but uid for LoggedInSession is not exposed so can't currently compare
-        const editUsers = users.filter(user => user.role === 'Edit');
-        this.canDeleteUser = auth && auth.role === 'Edit' && editUsers.length > 1 && !this.user.isPrimary;
-        this.canEdit = auth.role === Roles.Edit;
+        this.setPermissions(users, auth);
       });
   }
 
@@ -125,5 +105,16 @@ export class UserAccountViewComponent implements OnInit {
         data: this.user.username || '-',
       },
     ];
+  }
+
+  private setPermissions(users: Array<UserDetails>, auth: LoggedInSession) {
+    const canEdit = auth && auth.role === Roles.Edit;
+    const isPending = this.user.username === null;
+    const isPrimary = this.user.isPrimary;
+    const editUsersList = users.filter(user => user.role === Roles.Edit);
+
+    this.canDeleteUser = canEdit && editUsersList.length > 1 && !isPrimary && auth.uid !== this.user.uid;
+    this.canResendActivationLink = canEdit && isPending;
+    this.canEdit = auth.role === Roles.Edit;
   }
 }
