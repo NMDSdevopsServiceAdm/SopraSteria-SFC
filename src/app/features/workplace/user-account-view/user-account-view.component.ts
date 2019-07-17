@@ -120,7 +120,7 @@ export class UserAccountViewComponent implements OnInit {
     this.loginInfo = [
       {
         label: 'Username',
-        data: this.user.username,
+        data: this.user.username || '-',
       },
       {
         label: 'Password',

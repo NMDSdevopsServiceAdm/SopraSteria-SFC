@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { RadioFieldData } from '@core/model/form-controls.model';
-import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
@@ -25,22 +22,10 @@ export class UserAccountViewComponent implements OnInit {
   public establishment: Establishment;
   public user: UserDetails;
   public userInfo: SummaryList[];
-  public form: FormGroup;
-  public roleRadios: RadioFieldData[] = [
-    {
-      value: Roles.Edit,
-      label: 'Edit',
-    },
-    {
-      value: Roles.Read,
-      label: 'Read only',
-    },
-  ];
   public canDeleteUser: boolean;
 
   constructor(
     private route: ActivatedRoute,
-    private formBuilder: FormBuilder,
     private router: Router,
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
@@ -55,11 +40,6 @@ export class UserAccountViewComponent implements OnInit {
 
   ngOnInit() {
     this.breadcrumbService.show();
-
-    this.form = this.formBuilder.group({
-      role: [this.user.role, Validators.required],
-      primary: this.user.isPrimary,
-    });
 
     this.userService
       .getAllUsersForEstablishment(this.establishment.uid)

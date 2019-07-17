@@ -24,6 +24,9 @@ import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+import {
+  UserAccountEditPermissionsComponent,
+} from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UserAccountResolver } from './user-account.resolver';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceResolver } from './workplace.resolver';
@@ -141,9 +144,20 @@ const routes: Routes = [
       },
       {
         path: 'user/:useruid',
-        component: UserAccountViewComponent,
-        resolve: { user: UserAccountResolver },
         data: { title: 'View User Account' },
+        children: [
+          {
+            path: '',
+            component: UserAccountViewComponent,
+            resolve: { user: UserAccountResolver },
+          },
+          {
+            path: 'permissions',
+            component: UserAccountEditPermissionsComponent,
+            resolve: { user: UserAccountResolver },
+            data: { title: 'Edit Permissions' },
+          },
+        ],
       },
     ],
   },

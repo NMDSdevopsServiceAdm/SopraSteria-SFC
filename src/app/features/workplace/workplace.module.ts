@@ -33,6 +33,7 @@ import { ViewWorkplaceComponent } from './view-workplace/view-workplace.componen
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { WorkplaceResolver } from './workplace.resolver';
+import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
@@ -60,6 +61,7 @@ import { WorkplaceResolver } from './workplace.resolver';
     WorkplaceInfoPanelComponent,
     UserAccountSavedComponent,
     UserAccountDeleteDialogComponent,
+    UserAccountEditPermissionsComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [UserAccountDeleteDialogComponent],
