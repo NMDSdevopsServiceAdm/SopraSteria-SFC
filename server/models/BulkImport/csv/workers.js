@@ -2672,9 +2672,328 @@ class Worker {
 
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
   addAPIValidations(errors, warnings) {
-    errors = []
-    warnings = []
+    errors.forEach(thisError => {
+      thisError.properties ? thisError.properties.forEach(thisProp => {
+        const validationError = {
+          lineNumber: this._lineNumber,
+          error: thisError.message,
+          name: this._currentLine.LOCALESTID,
+          worker: this._currentLine.UNIQUEWORKERID,
+        };
 
+        switch (thisProp) {
+          case 'WorkerNameOrId':
+            // validationError.errCode = Worker.UNIQUE_WORKER_ID_ERROR;
+            // validationError.errType = 'UNIQUE_WORKER_ID_ERROR';
+            // validationError.source  = `${this._currentLine.UNIQUEWORKERID}`;
+            break;
+          case 'WorkerMainJob':
+            // validationError.errCode = Worker.MAIN_JOB_ROLE_ERROR;
+            // validationError.errType = 'MAIN_JOB_ROLE_ERROR';
+            // validationError.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
+            break;
+          case 'WorkerContract':
+            // validationError.errCode = Worker.CONTRACT_TYPE_ERROR;
+            // validationError.errType = 'CONTRACT_TYPE_ERROR';
+            // validationError.source  = `${this._currentLine.EMPLSTATUS}`;
+            break;
+          case 'WorkerAnnualHourlyPay':
+            // note - the Worker entity wraps the pay type (interval) and rate, with a single rate for hourly and annually
+            validationError.errCode = Worker.SALARY_INT_ERROR;
+            validationError.errType = 'SALARY_INT_ERROR';
+            validationError.source  = `${this._currentLine.SALARYINT} - ${this._currentLine.SALARY} - ${this._currentLine.HOURLYRATE}`;
+            break;
+          case 'WorkerApprenticeshipTraining':
+            validationError.errCode = Worker.APPRENCTICE_ERROR;
+            validationError.errType = 'APPRENCTICE_ERROR';
+            validationError.source  = `${this._currentLine.APPRENTICE}`;
+            break;
+          case 'WorkerApprovedMentalHealthWorker':
+            // validationError.errCode = Worker.AMHP_ERROR;
+            // validationError.errType = 'AMHP_ERROR';
+            // validationError.source  = `${this._currentLine.AMHP}`;
+            break;
+          case 'WorkerBritishCitizenship':
+            validationError.errCode = Worker.BRITISH_CITIZENSHIP_ERROR;
+            validationError.errType = 'BRITISH_CITIZENSHIP_ERROR';
+            validationError.source  = `${this._currentLine.BRITISHCITIZENSHIP}`;
+            break;
+          case 'WorkerCareCertificate':
+            validationError.errCode = Worker.CARE_CERT_ERROR;
+            validationError.errType = 'CARE_CERT_ERROR';
+            validationError.source  = `${this._currentLine.CARECERT}`;
+            break;
+          case 'WorkerCountry':
+            // validationError.errCode = Worker.COUNTRY_OF_BIRTH_ERROR;
+            // validationError.errType = 'COUNTRY_OF_BIRTH_ERROR';
+            // validationError.source  = `${this._currentLine.COUNTRYOFBIRTH}`;
+            break;
+          case 'WorkerDateOfBirth':
+            validationError.errCode = Worker.DOB_ERROR;
+            validationError.errType = 'DOB_ERROR';
+            validationError.source  = `${this._currentLine.DOB}`;
+            break;
+          case 'WorkerDaysSick':
+            validationError.errCode = Worker.DAYSICK_ERROR;
+            validationError.errType = 'DAYSICK_ERROR';
+            validationError.source  = `${this._currentLine.DAYSSICK}`;
+            break;
+          case 'WorkerDisability':
+            validationError.errCode = Worker.DISABLED_ERROR;
+            validationError.errType = 'DISABLED_ERROR';
+            validationError.source  = `${this._currentLine.DISABLED}`;
+            break;
+          case 'WorkerEthnicity':
+            validationError.errCode = Worker.ETHNICITY_ERROR;
+            validationError.errType = 'ETHNICITY_ERROR';
+            validationError.source  = `${this._currentLine.ETHNICITY}`;
+            break;
+          case 'WorkerGender':
+            validationError.errCode = Worker.GENDER_ERROR;
+            validationError.errType = 'GENDER_ERROR';
+            validationError.source  = `${this._currentLine.GENDER}`;
+            break;
+          // in Worker entity, we have separated the non-social care qualification type and level into separate properties
+          case 'WorkerOtherQualification':
+          case 'WorkerHighestQualification':
+            validationError.errCode = Worker.NON_SOCIALCARE_QUAL_ERROR;
+            validationError.errType = 'NON_SOCIALCARE_QUAL_ERROR';
+            validationError.source  = `${this._currentLine.NONSCQUAL}`;
+            break;
+          case 'WorkerMainJobStartDate':
+            validationError.errCode = Worker.START_DATE_ERROR;
+            validationError.errType = 'START_DATE_ERROR';
+            validationError.source  = `${this._currentLine.STARTDATE}`;
+            break;
+          case 'WorkerNationalInsuranceNumber':
+            validationError.errCode = Worker.NINUMBER_ERROR;
+            validationError.errType = 'NINUMBER_ERROR';
+            validationError.source  = `${this._currentLine.NINUMBER}`;
+            break;
+          case 'WorkerNationality':
+            // validationError.errCode = Worker.NATIONALITY_ERROR;
+            // validationError.errType = 'NATIONALITY_ERROR';
+            // validationError.source  = `${this._currentLine.NATIONALITY}`;
+            break;
+          case 'WorkerOtherJobs':
+            // the Worker entity combines OTHERJOBROLE and OTHERJRDESC
+            validationError.errCode = Worker.OTHER_JOB_ROLE_ERROR;
+            validationError.errType = 'OTHER_JOB_ROLE_ERROR';
+            validationError.source  = `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`;
+            break;
+          case 'WorkerPostcode':
+            validationError.errCode = Worker.POSTCODE_ERROR;
+            validationError.errType = 'POSTCODE_ERROR';
+            validationError.source  = `${this._currentLine.POSTCODE}`;
+            break;
+          // in Worker entity, we have separated the social care qualification type and level into separate properties
+          case 'WorkerQualificationInSocialCare':
+          case 'WorkerSocialCareQualification':
+            // validationError.errCode = Worker.SOCIALCARE_QUAL_ERROR;
+            // validationError.errType = 'SOCIALCARE_QUAL_ERROR';
+            // validationError.source  = `${this._currentLine.SCQUAL}`;
+            break;
+          case 'WorkerRecruitedFrom':
+            // validationError.errCode = Worker.RECSOURCE_ERROR;
+            // validationError.errType = 'RECSOURCE_ERROR';
+            // validationError.source  = `${this._currentLine.RECSOURCE}`;
+            break;
+          case 'WorkerSocialCareStartDate':
+            validationError.errCode = Worker.START_INSECT_ERROR;
+            validationError.errType = 'START_INSECT_ERROR';
+            validationError.source  = `${this._currentLine.STARTINSECT}`;
+            break;
+          case `WorkerWeeklyHoursAverage`:
+            validationError.errCode = Worker.AVG_HOURS_ERROR;
+            validationError.errType = 'AVG_HOURS_ERROR';
+            validationError.source  = `${this._currentLine.AVGHOURS}`;
+            break;
+          case 'WorkerWeeklyHoursContracted':
+            validationError.errCode = Worker.CONT_HOURS_ERROR;
+            validationError.errType = 'CONT_HOURS_ERROR';
+            validationError.source  = `${this._currentLine.CONTHOURS}`;
+            break;
+          case 'WorkerYearArrived':
+            validationError.errCode = Worker.YEAR_OF_ENTRY_ERROR;
+            validationError.errType = 'YEAR_OF_ENTRY_ERROR';
+            validationError.source  = `${this._currentLine.YEAROFENTRY}`;
+            break;
+          case 'WorkerZeroContract':
+            validationError.errCode = Worker.ZERO_HRCONT_ERROR;
+            validationError.errType = 'ZERO_HRCONT_ERROR';
+            validationError.source  = `${this._currentLine.ZEROHRCONT}`;
+            break;
+          default:
+            validationError.errCode = thisError.code;
+            validationError.errType = 'Undefined';
+            validationError.source  = thisProp;
+        }
+        this._validationErrors.push(validationError);
+      }) : true;
+    });
+
+
+    warnings.forEach(thisWarning => {
+      thisWarning.properties ? thisWarning.properties.forEach(thisProp => {
+        const validationWarning = {
+          lineNumber: this._lineNumber,
+          warning: thisWarning.message,
+          name: this._currentLine.LOCALESTID,
+          worker: this._currentLine.UNIQUEWORKERID,
+        };
+
+        switch (thisProp) {
+          case 'WorkerNameOrId':
+            validationWarning.warnCode = Worker.UNIQUE_WORKER_ID_WARNING;
+            validationWarning.warnType = 'UNIQUE_WORKER_ID_WARNING';
+            validationWarning.source  = `${this._currentLine.UNIQUEWORKERID}`;
+            break;
+          case 'WorkerMainJob':
+            // validationWarning.warnCode = Worker.MAIN_JOB_ROLE_WARNING;
+            // validationWarning.warnType = 'MAIN_JOB_ROLE_WARNING';
+            // validationWarning.source  = `${this._currentLine.MAINJOBROLE} - ${this._currentLine.MAINJRDESC}`;
+            break;
+          case 'WorkerContract':
+            // validationWarning.warnCode = Worker.CONTRACT_TYPE_WARNING;
+            // validationWarning.warnType = 'CONTRACT_TYPE_WARNING';
+            // validationWarning.source  = `${this._currentLine.EMPLSTATUS}`;
+            break;
+          case 'WorkerAnnualHourlyPay':
+            // note - the Worker entity wraps the pay type (interval) and rate, with a single rate for hourly and annually
+            validationWarning.warnCode = Worker.SALARY_INT_WARNING;
+            validationWarning.warnType = 'SALARY_INT_WARNING';
+            validationWarning.source  = `${this._currentLine.SALARYINT} - ${this._currentLine.SALARY} - ${this._currentLine.HOURLYRATE}`;
+            break;
+          case 'WorkerApprenticeshipTraining':
+            validationWarning.warnCode = Worker.APPRENCTICE_WARNING;
+            validationWarning.warnType = 'APPRENCTICE_WARNING';
+            validationWarning.source  = `${this._currentLine.APPRENTICE}`;
+            break;
+          case 'WorkerApprovedMentalHealthWorker':
+            validationWarning.warnCode = Worker.AMHP_WARNING;
+            validationWarning.warnType = 'AMHP_WARNING';
+            // validationWarning.source  = `${this._currentLine.AMHP}`;
+            break;
+          case 'WorkerBritishCitizenship':
+            validationWarning.warnCode = Worker.BRITISH_CITIZENSHIP_WARNING;
+            validationWarning.warnType = 'BRITISH_CITIZENSHIP_ERROR';
+            validationWarning.source  = `${this._currentLine.BRITISHCITIZENSHIP}`;
+            break;
+          case 'WorkerCareCertificate':
+            validationWarning.warnCode = Worker.CARE_CERT_WARNING;
+            validationWarning.warnType = 'CARE_CERT_WARNING';
+            validationWarning.source  = `${this._currentLine.CARECERT}`;
+            break;
+          case 'WorkerCountry':
+            // validationWarning.warnCode = Worker.COUNTRY_OF_BIRTH_WARNING;
+            // validationWarning.warnType = 'COUNTRY_OF_BIRTH_ERROR';
+            // validationWarning.source  = `${this._currentLine.COUNTRYOFBIRTH}`;
+            break;
+          case 'WorkerDateOfBirth':
+            // validationWarning.warnCode = Worker.DOB_WARNING;
+            // validationWarning.warnType = 'DOB_WARNING';
+            // validationWarning.source  = `${this._currentLine.DOB}`;
+            break;
+          case 'WorkerDaysSick':
+            validationWarning.warnCode = Worker.DAYSICK_WARNING;
+            validationWarning.warnType = 'DAYSICK_WARNING';
+            validationWarning.source  = `${this._currentLine.DAYSSICK}`;
+            break;
+          case 'WorkerDisability':
+            validationWarning.warnCode = Worker.DISABLED_WARNING;
+            validationWarning.warnType = 'DISABLED_WARNING';
+            validationWarning.source  = `${this._currentLine.DISABLED}`;
+            break;
+          case 'WorkerEthnicity':
+            validationWarning.warnCode = Worker.ETHNICITY_WARNING;
+            validationWarning.warnType = 'ETHNICITY_WARNING';
+            validationWarning.source  = `${this._currentLine.ETHNICITY}`;
+            break;
+          case 'WorkerGender':
+            validationWarning.warnCode = Worker.GENDER_WARNING;
+            validationWarning.warnType = 'GENDER_WARNING';
+            validationWarning.source  = `${this._currentLine.GENDER}`;
+            break;
+          case 'WorkerHighestQualification':
+            validationWarning.warnCode = Worker.NON_SOCIALCARE_QUAL_WARNING;
+            validationWarning.warnType = 'NON_SOCIALCARE_QUAL_WARNING';
+            validationWarning.source  = `${this._currentLine.STARTDATE}`;
+            break;
+          case 'WorkerMainJobStartDate':
+            validationWarning.warnCode = Worker.START_DATE_WARNING;
+            validationWarning.warnType = 'START_DATE_WARNING';
+            validationWarning.source  = `${this._currentLine.STARTDATE}`;
+            break;
+          case 'WorkerNationalInsuranceNumber':
+            validationWarning.warnCode = Worker.NINUMBER_WARNING;
+            validationWarning.warnType = 'NINUMBER_WARNING';
+            validationWarning.source  = `${this._currentLine.NINUMBER}`;
+            break;
+          case 'WorkerNationality':
+            // validationWarning.warnCode = Worker.NATIONALITY_WARNING;
+            // validationWarning.warnType = 'NATIONALITY_WARNING';
+            // validationWarning.source  = `${this._currentLine.NATIONALITY}`;
+            break;
+          case 'WorkerOtherJobs':
+            validationWarning.warnCode = Worker.OTHER_JOB_ROLE_WARNING;
+            validationWarning.warnType = 'OTHER_JOB_ROLE_WARNING';
+            validationWarning.source  = `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`;
+            break;
+          case 'WorkerPostcode':
+            validationWarning.warnCode = Worker.POSTCODE_ERROR;
+            validationWarning.warnType = 'POSTCODE_ERROR';
+            validationWarning.source  = `${this._currentLine.POSTCODE}`;
+            break;
+          // in Worker entity, we have separated the social care qualification type and level into separate properties
+          case 'WorkerQualificationInSocialCare':
+          case 'WorkerSocialCareQualification':
+            // validationWarning.warnCode = Worker.SOCIALCARE_QUAL_WARNING;
+            // validationWarning.warnType = 'SOCIALCARE_QUAL_WARNING';
+            // validationWarning.source  = `${this._currentLine.SCQUAL}`;
+            break;
+          case 'WorkerRecruitedFrom':
+            // validationWarning.warnCode = Worker.RECSOURCE_ERROR;
+            // validationWarning.warnType = 'RECSOURCE_ERROR';
+            // validationWarning.source  = `${this._currentLine.RECSOURCE}`;
+            break;
+          case 'WorkerSocialCareStartDate':
+            validationWarning.warnCode = Worker.START_INSECT_WARNING;
+            validationWarning.warnType = 'START_INSECT_WARNING';
+            validationWarning.source  = `${this._currentLine.STARTINSECT}`;
+            break;
+          case 'WorkerWeeklyHoursAverage':
+            validationWarning.warnCode = Worker.AVG_HOURS_WARNING;
+            validationWarning.warnType = 'AVG_HOURS_WARNING';
+            validationWarning.source  = `${this._currentLine.AVGHOURS}`;
+            break;
+          case 'WorkerWeeklyHoursContracted':
+            validationWarning.warnCode = Worker.CONT_HOURS_WARNING;
+            validationWarning.warnType = 'CONT_HOURS_WARNING';
+            validationWarning.source  = `${this._currentLine.CONTHOURS}`;
+            break;
+          case 'WorkerYearArrived':
+            validationWarning.warnCode = Worker.YEAR_OF_ENTRY_ERROR;
+            validationWarning.warnType = 'YEAR_OF_ENTRY_ERROR';
+            validationWarning.source  = `${this._currentLine.YEAROFENTRY}`;
+            break;
+          case 'WorkerZeroContract':
+            validationWarning.warnCode = Worker.ZERO_HRCONT_WARNING;
+            validationWarning.warnType = 'ZERO_HRCONT_WARNING';
+            validationWarning.source  = `${this._currentLine.ZEROHRCONT}`;
+            break;
+          case 'RegisteredNurse':
+            break;
+          case 'NurseSpecialism':
+            break;
+          default:
+            validationWarning.warnCode = thisWarning.code;
+            validationWarning.warnType = 'Undefined';
+            validationWarning.source  = thisProp;
+        }
+
+        this._validationErrors.push(validationWarning);
+      }) : true;
+    });
   }
 
 
