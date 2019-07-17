@@ -10,7 +10,7 @@
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <span class="govuk-caption-l">User account</span>
     <h2 class="govuk-heading-l">Confirm your account details</h2>
-    <p>Before saving this user account, check the information you have provided is correct.</p>
+    <p class="govuk-!-margin-bottom-6">Before saving this user account, check the information you have provided is correct.</p>
 
     <app-summary-list [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
     <app-summary-list [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
@@ -56,9 +56,11 @@
         </fieldset>
       </div>
 
-      <button type="submit" class="govuk-button">
-        Submit
-      </button>
+      <div class="govuk-button-group">
+        <button type="submit" class="govuk-button">
+          Submit
+        </button>
+      </div>
     </form>
   </div>
 </div>
