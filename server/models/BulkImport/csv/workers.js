@@ -1526,7 +1526,9 @@ class Worker {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
     const NURSING_ROLE = 16;
 
-    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (myRegisteredNurse !== 0 && isNaN(myRegisteredNurse) )) {
+    if (((this._mainJobRole && this._mainJobRole === NURSING_ROLE) ||
+        (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) &&
+        (myRegisteredNurse !== 0 && isNaN(myRegisteredNurse) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1537,7 +1539,9 @@ class Worker {
         source: this._currentLine.NMCREG,
       });
       return false;
-    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0) {
+    } else if (((this._mainJobRole && this._mainJobRole !== NURSING_ROLE) &&
+                (this._otherJobs && !this._otherJobs.includes(NURSING_ROLE))) &&
+                (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1558,7 +1562,9 @@ class Worker {
     const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
     const NURSING_ROLE = 16;
 
-    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (myNursingSpecialist !== 0  && isNaN(myNursingSpecialist) )) {
+    if (((this._mainJobRole && this._mainJobRole === NURSING_ROLE) ||
+    (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) &&
+    (myNursingSpecialist !== 0  && isNaN(myNursingSpecialist) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1569,7 +1575,9 @@ class Worker {
         source: this._currentLine.NURSESPEC,
       });
       return false;
-    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NURSESPEC  && this._currentLine.NURSESPEC.length !== 0) {
+    } else if (((this._mainJobRole && this._mainJobRole !== NURSING_ROLE) &&
+      (this._otherJobs && !this._otherJobs.includes(NURSING_ROLE))) &&
+      (this._currentLine.NURSESPEC  && this._currentLine.NURSESPEC.length !== 0)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1592,7 +1600,9 @@ class Worker {
     const myAmhp = parseInt(this._currentLine.AMHP);
     const SOCIAL_WORKER_ROLE = 6;
 
-    if (this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE && ( isNaN(myAmhp) )) {
+    if (((this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE) ||
+      (this._otherJobs && this._otherJobs.includes(SOCIAL_WORKER_ROLE))) &&
+      ( isNaN(myAmhp) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1604,7 +1614,9 @@ class Worker {
       });
       return false;
     }
-    else if (this._mainJobRole && this._mainJobRole !== SOCIAL_WORKER_ROLE && this._currentLine.AMHP) {
+    else if (((this._mainJobRole && this._mainJobRole !== SOCIAL_WORKER_ROLE) &&
+      (this._otherJobs && !this._otherJobs.includes(SOCIAL_WORKER_ROLE))) &&
+      (this._currentLine.AMHP)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
