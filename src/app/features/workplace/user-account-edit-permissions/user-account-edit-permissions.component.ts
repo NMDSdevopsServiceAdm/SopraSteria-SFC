@@ -7,6 +7,7 @@ import { RadioFieldData } from '@core/model/form-controls.model';
 import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
@@ -41,7 +42,8 @@ export class UserAccountEditPermissionsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
-    private userService: UserService
+    private userService: UserService,
+    private alertService: AlertService
   ) {
     this.user = this.route.snapshot.data.user;
     this.establishment = this.route.parent.snapshot.data.establishment;
@@ -74,10 +76,13 @@ export class UserAccountEditPermissionsComponent implements OnInit {
 
     this.subscriptions.add(
       this.userService.updateUserDetails(this.user.uid, { ...this.user, ...props }).subscribe(
-        () => {
+        data => {
           this.router.navigate(['/workplace', this.establishment.uid, 'user', this.user.uid], {
             fragment: 'user-accounts',
           });
+          if (data.isPrimary) {
+            this.alertService.addAlert({ type: 'success', message: `${this.user.fullname} is the new primary user` });
+          }
         },
         error => this.onError(error)
       )
