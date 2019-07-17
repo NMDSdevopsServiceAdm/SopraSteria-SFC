@@ -295,7 +295,15 @@ class Establishment extends EntityValidator {
                 allAssociatedServiceIndices.push(document.mainService.id);
             }
             if (document && document.otherServices && Array.isArray(document.otherServices)) {
-                document.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+                document.otherServices.forEach(thisService => {
+                  if (thisService.id) {
+                    allAssociatedServiceIndices.push(thisService.id);
+                  } else if (thisService.services && Array.isArray(thisService.services)) {
+                    thisService.services.forEach(innerService => {
+                      allAssociatedServiceIndices.push(innerService.id)
+                    });
+                  }
+                });
             }
             if (document && document.services && Array.isArray(document.services)) {
                 document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
