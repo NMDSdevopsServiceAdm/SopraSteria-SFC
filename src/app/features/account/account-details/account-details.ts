@@ -165,8 +165,12 @@ export class AccountDetails implements OnInit, OnDestroy {
     }
   }
 
-  protected onError(error: HttpErrorResponse): void {
-    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+  protected onError(response: HttpErrorResponse): void {
+    if (response.status === 400) {
+      this.serverErrorsMap[1].message = response.error;
+    }
+
+    this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
     this.errorSummaryService.scrollToErrorSummary();
   }
 
