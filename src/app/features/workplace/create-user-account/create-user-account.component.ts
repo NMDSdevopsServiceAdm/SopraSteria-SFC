@@ -24,7 +24,7 @@ export class CreateUserAccountComponent extends AccountDetails {
     },
     {
       value: Roles.Read,
-      label: 'Read-only',
+      label: 'Read only',
     },
   ];
 
