@@ -24,4 +24,5 @@ export interface LoggedInSession {
   lastLoggedIn: string;
   mainService: LoggedInMainService;
   role: Roles;
+  uid: string;
 }

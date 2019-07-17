@@ -1,13 +1,20 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
+  <div class="govuk-grid-column-one-third-from-desktop">
     <span class="govuk-caption-l">User Account</span>
     <h1 class="govuk-heading-l">{{ user.fullname }}</h1>
   </div>
-  <div class="govuk-grid-column-one-third-from-desktop">
-    <button *ngIf="canDeleteUser" class="govuk-button govuk-button--link" (click)="onDeleteUser()">
-      <img src="/assets/images/bin.svg" /> Delete <span class="govuk-visually-hidden">{{ user.fullname }}'s</span>user
-      account
-    </button>
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <div class="govuk-button-heading-group">
+      <button *ngIf="canResendActivationLink" class="govuk-button govuk-button--link" (click)="resendActivationLink()">
+        Resend account set up link
+      </button>
+      <button *ngIf="canDeleteUser" class="govuk-button govuk-button--link" (click)="onDeleteUser()">
+        <img src="/assets/images/bin.svg" />
+        <span class="govuk-!-margin-left-1">
+          Delete <span class="govuk-visually-hidden">{{ user.fullname }}'s</span> user account
+        </span>
+      </button>
+    </div>
   </div>
 </div>
 <div class="govuk-grid-row">

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { LoggedInSession } from '@core/model/logged-in.model';
+import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
@@ -23,6 +25,7 @@ export class UserAccountViewComponent implements OnInit {
   public user: UserDetails;
   public userInfo: SummaryList[];
   public canDeleteUser: boolean;
+  public canResendActivationLink: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,9 +51,7 @@ export class UserAccountViewComponent implements OnInit {
         withLatestFrom(this.authService.auth$)
       )
       .subscribe(([users, auth]) => {
-        // TODO users can not delete themselves, but uid for LoggedInSession is not exposed so can't currently compare
-        const editUsers = users.filter(user => user.role === 'Edit');
-        this.canDeleteUser = auth && auth.role === 'Edit' && editUsers.length > 1 && !this.user.isPrimary;
+        this.setPermissions(users, auth);
       });
   }
 
@@ -106,5 +107,15 @@ export class UserAccountViewComponent implements OnInit {
         data: '******',
       },
     ];
+  }
+
+  private setPermissions(users: Array<UserDetails>, auth: LoggedInSession) {
+    const canEdit = auth && auth.role === Roles.Edit;
+    const isPending = this.user.username === null;
+    const isPrimary = this.user.isPrimary;
+    const editUsersList = users.filter(user => user.role === Roles.Edit);
+
+    this.canDeleteUser = canEdit && editUsersList.length > 1 && !isPrimary && auth.uid !== this.user.uid;
+    this.canResendActivationLink = canEdit && isPending;
   }
 }
