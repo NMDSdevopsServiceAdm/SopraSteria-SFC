@@ -1227,8 +1227,7 @@ class Worker {
   _validateMainJobRole() {
     const myMainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
 
-    // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
-    if (!myMainJobRole || isNaN(myMainJobRole)) {
+    if (myMainJobRole !== 0 && (!myMainJobRole || isNaN(myMainJobRole))) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1436,9 +1435,9 @@ class Worker {
     const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
     const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
     const localValidationErrors = [];
-    const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
+    const isValid = listOfotherJobs.every(job => !Number.isNaN(parseInt(job)));
 
-    if (this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.lenmgth > 0) {
+    if (this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
       if (!isValid) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
@@ -1449,7 +1448,7 @@ class Worker {
           error: "The code you have entered for OTHERJOBROLE is incorrect",
           source: this._currentLine.OTHERJOBROLE,
         });
-      } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
+      } else if (listOfotherJobs.length !== listOfotherJobsDescriptions.length) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1512,6 +1511,7 @@ class Worker {
 
         this._otherJobsOther = myJobDescriptions;
       }
+
 
       if (localValidationErrors.length > 0) {
         localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
@@ -2014,7 +2014,7 @@ class Worker {
   };
 
   _transformMainJobRole() {
-    if (this._mainJobRole) {
+    if (this._mainJobRole || this._mainJobRole === 0) {
       const myValidatedJobRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
 
       if (!myValidatedJobRole) {
