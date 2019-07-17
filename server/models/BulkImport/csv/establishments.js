@@ -728,8 +728,6 @@ class Establishment {
     const listOfServiceUsers = this._currentLine.SERVICEUSERS.split(';');
     const listOfServiceUsersDescriptions = this._currentLine.OTHERUSERDESC.split(';');
 
-    console.log("WA DEBUG - Number of service users - ", listOfServiceUsers.length, this._currentLine.SERVICEUSERS.length)
-
     const localValidationErrors = [];
     const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService))) : true;
     if (!isValid) {
