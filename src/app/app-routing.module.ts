@@ -89,7 +89,7 @@ const routes: Routes = [
   {
     path: 'activate-account',
     loadChildren: '@features/activate-user-account/activate-user-account.module#ActivateUserAccountModule',
-    canActivate: [AuthGuard], // TODO create new guard
+    // canActivate: [AuthGuard], // TODO create new guard
     data: { title: 'Activate User Account' },
   },
   {

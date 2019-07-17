@@ -1,3 +1,4 @@
+import { ActivationCompleteComponent } from '@features/activate-user-account/activation-complete/activation-complete.component';
 import { ConfirmAccountDetailsComponent } from '@features/activate-user-account/confirm-account-details/confirm-account-details.component';
 import { CreateUsernameComponent } from '@features/activate-user-account/create-username/create-username.component';
 import { NgModule } from '@angular/core';
@@ -19,6 +20,11 @@ const routes: Routes = [
     path: 'confirm-account-details',
     component: ConfirmAccountDetailsComponent,
     data: { title: 'Confirm Account Details' },
+  },
+  {
+    path: 'complete',
+    component: ActivationCompleteComponent,
+    data: { title: 'Complete' },
   },
 ];
 
