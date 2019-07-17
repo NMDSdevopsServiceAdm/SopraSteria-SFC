@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
@@ -23,7 +24,7 @@ export class UserAccountsSummaryComponent implements OnInit {
       .pipe(take(1))
       .subscribe(([auth, users]) => {
         this.users = orderBy(users, ['status', 'role', 'username'], ['desc', 'asc', 'asc']);
-        this.canAddUser = auth && auth.role === 'Edit' && this.userSlotsAvailable(users);
+        this.canAddUser = auth && auth.role === Roles.Edit && this.userSlotsAvailable(users);
       });
   }
 
@@ -32,8 +33,8 @@ export class UserAccountsSummaryComponent implements OnInit {
   }
 
   private userSlotsAvailable(users: Array<UserDetails>) {
-    const editUsers = users.filter(user => user.role === 'Edit');
-    const readOnlyUsers = users.filter(user => user.role === 'Read');
+    const editUsers = users.filter(user => user.role === Roles.Edit);
+    const readOnlyUsers = users.filter(user => user.role === Roles.Read);
     return editUsers.length < 3 || readOnlyUsers.length < 3;
   }
 }

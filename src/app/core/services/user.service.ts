@@ -56,6 +56,13 @@ export class UserService {
     return of({});
   }
 
+  /*
+   * TODO - Implement API calls once BE ready
+   */
+  public resendActivationLink(useruid: string, activationuid: string) {
+    return of({});
+  }
+
   public updateState(userDetails: UserDetails) {
     this._userDetails$.next(userDetails);
   }

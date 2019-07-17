@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { RadioFieldData } from '@core/model/form-controls.model';
+import { LoggedInSession } from '@core/model/logged-in.model';
 import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
 import { UserDetails } from '@core/model/userDetails.model';
@@ -37,6 +38,7 @@ export class ViewUserAccountComponent implements OnInit {
     },
   ];
   public canDeleteUser: boolean;
+  public canResendActivationLink: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -68,9 +70,24 @@ export class ViewUserAccountComponent implements OnInit {
         withLatestFrom(this.authService.auth$)
       )
       .subscribe(([users, auth]) => {
-        // TODO users can not delete themselves, but uid for LoggedInSession is not exposed so can't currently compare
-        const editUsers = users.filter(user => user.role === 'Edit');
-        this.canDeleteUser = auth && auth.role === 'Edit' && editUsers.length > 1 && !this.user.isPrimary;
+        this.setPermissions(users, auth);
+      });
+  }
+
+  // TODO get the activationuid from the user and catch any api errors
+  public resendActivationLink() {
+    this.userService
+      .resendActivationLink(this.user.uid, 'TODO_ACTIVATION_UID')
+      .pipe(
+        withLatestFrom(this.userService.returnUrl$),
+        take(1)
+      )
+      .subscribe(([response, returnUrl]) => {
+        this.router.navigate(returnUrl.url, { fragment: 'user-accounts' });
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'Account set up link has been resent. [BE NOT IMPLEMENTED]',
+        });
       });
   }
 
@@ -126,5 +143,15 @@ export class ViewUserAccountComponent implements OnInit {
         data: '******',
       },
     ];
+  }
+
+  private setPermissions(users: Array<UserDetails>, auth: LoggedInSession) {
+    const canEdit = auth && auth.role === Roles.Edit;
+    const isPending = this.user.username === null;
+    const isPrimary = this.user.isPrimary;
+    const editUsersList = users.filter(user => user.role === Roles.Edit);
+
+    this.canDeleteUser = canEdit && editUsersList.length > 1 && !isPrimary && auth.uid !== this.user.uid;
+    this.canResendActivationLink = canEdit && isPending;
   }
 }

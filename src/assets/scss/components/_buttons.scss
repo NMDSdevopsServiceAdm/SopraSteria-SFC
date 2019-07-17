@@ -1,12 +1,12 @@
- // Tertiary button variables
- $govuk-tertiary-button-colour: #0058BE;
- $govuk-tertiary-button-hover-colour: govuk-shade($govuk-tertiary-button-colour, 10%);
- $govuk-tertiary-button-shadow-colour: govuk-shade($govuk-tertiary-button-colour, 40%);
- $govuk-tertiary-button-text-colour: govuk-colour("white");
+// Tertiary button variables
+$govuk-tertiary-button-colour: #0058be;
+$govuk-tertiary-button-hover-colour: govuk-shade($govuk-tertiary-button-colour, 10%);
+$govuk-tertiary-button-shadow-colour: govuk-shade($govuk-tertiary-button-colour, 40%);
+$govuk-tertiary-button-text-colour: govuk-colour('white');
 
- $button-shadow-size: $govuk-border-width-form-element;
+$button-shadow-size: $govuk-border-width-form-element;
 
- .govuk-button--tertiary {
+.govuk-button--tertiary {
   background-color: $govuk-tertiary-button-colour;
   box-shadow: 0 $button-shadow-size 0 $govuk-tertiary-button-shadow-colour;
 
@@ -37,6 +37,21 @@
 
 .govuk-button-group {
   margin-top: govuk-spacing(8);
+}
+
+.govuk-button-heading-group {
+  display: flex;
+  @include govuk-media-query($from: desktop) {
+    margin-top: govuk-spacing(6);
+    justify-content: flex-end;
+  }
+  .govuk-button--link {
+    display: flex;
+    align-items: center;
+    &:not(:first-of-type) {
+      margin-left: govuk-spacing(5);
+    }
+  }
 }
 
 .govuk-button {
