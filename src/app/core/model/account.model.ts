@@ -16,3 +16,7 @@ export interface ActivateAccountRequest {
   securityQuestionAnswer: string;
   username: string;
 }
+
+export interface ValidateCreateAccountRequest {
+  uuid: string;
+}
