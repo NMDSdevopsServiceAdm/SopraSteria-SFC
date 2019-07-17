@@ -1,5 +1,5 @@
 <app-error-summary
-  *ngIf="submitted && form.invalid"
+  *ngIf="(submitted && form.invalid) || serverError"
   [formErrorsMap]="formErrorsMap"
   [form]="form"
   [serverError]="serverError"
