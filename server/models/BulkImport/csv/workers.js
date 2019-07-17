@@ -2538,7 +2538,7 @@ class Worker {
       }
     }
 
-    if (this._daysSick) {
+    if (this._daysSick !== null) {
       // days sick is decimal
       if (this._daysSick !== 'No') {
         changeProperties.daysSick = {
