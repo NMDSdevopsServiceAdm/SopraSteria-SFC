@@ -124,10 +124,6 @@ export class UserAccountViewComponent implements OnInit {
         label: 'Username',
         data: this.user.username || '-',
       },
-      {
-        label: 'Password',
-        data: '******',
-      },
     ];
   }
 }
