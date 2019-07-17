@@ -12,7 +12,7 @@ export interface UserDetails {
   updatedBy?: string;
   username?: string;
   status?: UserStatus;
-  isPrimary: boolean;
+  isPrimary?: boolean;
 }
 
 export type UserStatus = 'Pending' | 'Active';
