@@ -322,12 +322,9 @@ class Establishment extends EntityValidator {
 
                       // check if we already have the Worker associated, before associating a new worker
                       if (this._workerEntities[thisWorker.key]) {
-                          if (thisWorker.changeLocalIdentifer) {
-                            console.log(`WA DEBUG - changing the local identifier on (${thisWorker.nameOrId}), from (${thisWorker.key}) to (${thisWorker.changeLocalIdentifer})`)
-                            thisWorker.localIdentifier = thisWorker.changeLocalIdentifer;
-                          } else {
-                            delete thisWorker.localIdentifier;
-                          }
+                          // the local identifier is required during bulk upload for reasoning; but against the worker itself, it's immutable.
+                          delete thisWorker.localIdentifier;
+
                           // else we already have this worker, load changes against it
                           promises.push(this._workerEntities[thisWorker.key].load(thisWorker, true));
 
@@ -711,7 +708,7 @@ class Establishment extends EntityValidator {
                         });
                         await Promise.all(createModelPromises);
 
-                        /*
+                        /* https://trello.com/c/5V5sAa4w
                         // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
                         // having updated the Establishment, check to see whether it is necessary to recalculate
                         //  the overall WDF eligibility for this establishment and all its workers
@@ -724,8 +721,7 @@ class Establishment extends EntityValidator {
                         } else {
                             // TODO - include Completed logic.
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        }
-                        */
+                        } */
 
                         // if requested, propagate the saving of this establishment down to each of the associated entities
                         if (associatedEntities) {

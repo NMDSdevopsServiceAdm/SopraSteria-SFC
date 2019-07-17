@@ -466,9 +466,6 @@ class Worker extends EntityValidator {
                         }));
                     await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
-
-                    console.log("WA DEBUG - saving worker: ", this.nameOrId, associatedEntities)
-
                     if (associatedEntities) {
                         await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
                     }
@@ -517,6 +514,11 @@ class Worker extends EntityValidator {
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
+
+                    if (this._changeLocalIdentifer) {
+                      // during bulk upload only, if the change local identifier value is set, then when saving this worker, update it's local identifier;
+                      updateDocument.LocalIdentifierValue = this._changeLocalIdentifer;
+                    }
 
                     // every time the worker is saved, need to calculate
                     //  it's current WDF Eligibility, and if it is eligible, update
@@ -599,6 +601,7 @@ class Worker extends EntityValidator {
                         });
                         await Promise.all(createMmodelPromises);
 
+                        /* https://trello.com/c/5V5sAa4w
                         // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
                         // having updated the Worker, check to see whether it is necessary to recalculate
                         //  the overall WDF eligibility for this Worker's establishment and all its workers.
@@ -610,7 +613,7 @@ class Worker extends EntityValidator {
 
                         if (associatedEntities) {
                             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
-                        }
+                        } */
 
                         // this is an async method - don't wait for it to return
                         AWSKinesis.workerPump(AWSKinesis.UPDATED, this.toJSON());
