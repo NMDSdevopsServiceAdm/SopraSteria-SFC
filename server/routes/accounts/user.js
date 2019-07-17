@@ -33,8 +33,16 @@ router.route('/establishment/:id').get(async (req, res) => {
 
     try {
         const allTheseUsers = await User.User.fetch(establishmentId);
+
+        let data = allTheseUsers.map((user) => {
+            return Object.assign(user, { status: user.username == null ? 'Pending' : 'Active'});
+        });
+        
         return res.status(200).json({
-            users: allTheseUsers
+            users: data.sort((a, b) => { 
+                if((a.status > b.status)) return -1; 
+                return (new Date(b.created) - new Date(a.created))
+            })
         });
     } catch (err) {
         console.error('user::establishment - failed', err);
@@ -65,12 +73,17 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
 
     try {
         if (await thisUser.restore(byUUID, byUsername, showHistory && req.query.history !== 'property')) {
-            return res.status(200).json(thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false));
+            let userData = thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false);
+            if(thisUser._isPrimary) userData.isPrimary = true;
+            if(userData.username && req.username && userData.username == req.username){
+                delete userData.securityQuestionAnswer;
+                delete userData.securityQuestion;
+            } 
+            return res.status(200).json(userData);
         } else {
             // not found worker
             return res.status(404).send('Not Found');
         }
-
     } catch (err) {
         const thisError = new User.UserExceptions.UserRestoreException(
             null,

@@ -603,8 +603,7 @@ class User {
                 this._updatedBy = fetchResults.updatedBy;
 
                 // TODO: change to amanaged property
-                this._isPrimary - fetchResults.isPrimary;
-
+                this._isPrimary = fetchResults.isPrimary;
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
                 //  because ID is primay key and hence indexed
@@ -682,9 +681,9 @@ class User {
                 {
                     model: models.login,
                     attributes: ['username', 'lastLogin']
-                }
+                } 
             ],
-            attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy'],
+            attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy','isPrimary'],
             order: [
                 ['updated', 'DESC']
             ]
@@ -701,7 +700,8 @@ class User {
                     username: thisUser.login && thisUser.login.username ? thisUser.login.username : null,
                     created:  thisUser.created.toJSON(),
                     updated: thisUser.updated.toJSON(),
-                    updatedBy: thisUser.updatedBy
+                    updatedBy: thisUser.updatedBy,
+                    isPrimary: thisUser.isPrimary ? true : false
                 })
             });
         }
