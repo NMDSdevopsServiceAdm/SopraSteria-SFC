@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
+import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
@@ -25,7 +26,6 @@ import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountResolver } from './user-account.resolver';
 import { VacanciesComponent } from './vacancies/vacancies.component';
-import { ViewUserAccountComponent } from './view-user-account/view-user-account.component';
 import { WorkplaceResolver } from './workplace.resolver';
 
 const routes: Routes = [
@@ -141,7 +141,7 @@ const routes: Routes = [
       },
       {
         path: 'user/:useruid',
-        component: ViewUserAccountComponent,
+        component: UserAccountViewComponent,
         resolve: { user: UserAccountResolver },
         data: { title: 'View User Account' },
       },

@@ -11,13 +11,14 @@ import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { UserService } from '@core/services/user.service';
+import {
+  UserAccountDeleteDialogComponent,
+} from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
 import { take, withLatestFrom } from 'rxjs/operators';
 
-import { UserAccountDeleteDialogComponent } from '../user-account-delete-dialog/user-account-delete-dialog.component';
-
 @Component({
-  selector: 'app-view-user-account',
-  templateUrl: './view-user-account.component.html',
+  selector: 'app-user-account-view',
+  templateUrl: './user-account-view.component.html',
 })
 export class UserAccountViewComponent implements OnInit {
   public loginInfo: SummaryList[];
