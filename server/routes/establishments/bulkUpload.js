@@ -982,7 +982,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           const workerKeyNoWhitespace = (thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID).replace(/\s/g, "");
           workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
 
-          if (knownEstablishment) {
+          if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
             knownEstablishment.associateWorker(myAPIWorkers[thisWorker.lineNumber].key, myAPIWorkers[thisWorker.lineNumber]);
           } else {
             // this should never happen

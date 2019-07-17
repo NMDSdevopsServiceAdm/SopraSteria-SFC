@@ -1227,7 +1227,10 @@ class Worker {
   _validateMainJobRole() {
     const myMainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
 
-    if (myMainJobRole !== 0 && (!myMainJobRole || isNaN(myMainJobRole))) {
+    console.log("WA DEBUG - myMainJobRole", myMainJobRole)
+
+    // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
+    if (!this._currentLine.MAINJOBROLE || this._currentLine.MAINJOBROLE.length == 0 || !myMainJobRole || isNaN(myMainJobRole) || myMainJobRole === 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -2014,10 +2017,24 @@ class Worker {
   };
 
   _transformMainJobRole() {
-    if (this._mainJobRole || this._mainJobRole === 0) {
+    console.log("WA DBEUG - _transformMainJobRole - this._mainJobRole: ", this._mainJobRole)
+    // main job is mandatory
+    if (this._mainJobRole === null) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.MAIN_JOB_ROLE_ERROR,
+        errType: `MAIN_JOB_ROLE_ERROR`,
+        error: `The code you have entered for MAINJOBROLE is incorrect`,
+        source: this._currentLine.MAINJOBROLE,
+      });
+    } else if (this._mainJobRole || this._mainJobRole === 0) {
       const myValidatedJobRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
+      console.log("WA DBEUG - _transformMainJobRole - myValidatedJobRole: ", myValidatedJobRole)
 
       if (!myValidatedJobRole) {
+        console.log("WA DBEUG - _transformMainJobRole - failed BUDI mapping raising error: ", myValidatedJobRole)
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2027,10 +2044,14 @@ class Worker {
           error: `The code you have entered for MAINJOBROLE is incorrect`,
           source: this._currentLine.MAINJOBROLE,
         });
+
+        console.log("WA DEBUG - transformMainJoBrole - validation errors: ", this._validationErrors)
       } else {
         this._mainJobRole = myValidatedJobRole;
       }
     }
+
+    console.log("WA DEBUG - main job role after transformation - ", this._mainJobRole, this._validationErrors)
   };
 
   _transformOtherJobRoles() {
