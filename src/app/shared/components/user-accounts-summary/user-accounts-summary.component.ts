@@ -3,8 +3,7 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 import { orderBy } from 'lodash';
-import { combineLatest } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { take, withLatestFrom } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-accounts-summary',
@@ -19,9 +18,13 @@ export class UserAccountsSummaryComponent implements OnInit {
   constructor(private authService: AuthService, private userService: UserService) {}
 
   ngOnInit() {
-    combineLatest(this.authService.auth$, this.userService.getAllUsersForEstablishment(this.establishmentUid))
-      .pipe(take(1))
-      .subscribe(([auth, users]) => {
+    this.userService
+      .getAllUsersForEstablishment(this.establishmentUid)
+      .pipe(
+        take(1),
+        withLatestFrom(this.authService.auth$)
+      )
+      .subscribe(([users, auth]) => {
         this.users = orderBy(users, ['status', 'role', 'username'], ['desc', 'asc', 'asc']);
         this.canAddUser = auth && auth.role === 'Edit' && this.userSlotsAvailable(users);
       });

@@ -1,8 +1,10 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
+import { DialogService } from '@core/services/dialog.service';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
+import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
@@ -22,6 +24,8 @@ import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
+import { UserResolver } from './user.resolver';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewUserAccountComponent } from './view-user-account/view-user-account.component';
@@ -31,7 +35,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { WorkplaceResolver } from './workplace.resolver';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkplaceRoutingModule],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, WorkplaceRoutingModule, OverlayModule],
   declarations: [
     CheckAnswersComponent,
     ConfirmLeaversComponent,
@@ -55,7 +59,9 @@ import { WorkplaceResolver } from './workplace.resolver';
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
     UserAccountSavedComponent,
+    UserAccountDeleteDialogComponent,
   ],
-  providers: [WorkplaceResolver],
+  providers: [DialogService, WorkplaceResolver, UserResolver],
+  entryComponents: [UserAccountDeleteDialogComponent],
 })
 export class WorkplaceModule {}

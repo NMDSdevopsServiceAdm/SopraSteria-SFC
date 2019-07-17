@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails, UserStatus } from '@core/model/userDetails.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { EstablishmentService } from './establishment.service';
@@ -30,8 +30,11 @@ export class UserService {
   /*
    * GET /api/user/establishment/:establishmentId/:username
    */
-  public getUserDetails(username): Observable<UserDetails> {
-    return this.http.get<any>(`/api/user/establishment/${this.establishmentService.establishmentId}/${username}`);
+  public getUserDetails(
+    username: string,
+    establishmentuid = this.establishmentService.establishmentId.toString()
+  ): Observable<UserDetails> {
+    return this.http.get<UserDetails>(`/api/user/establishment/${establishmentuid}/${username}`);
   }
 
   /*
@@ -42,6 +45,14 @@ export class UserService {
       `/api/user/establishment/${this.establishmentService.establishmentId}/${username}`,
       userDetails
     );
+  }
+
+  /*
+   * TODO - Implement API calls once BE ready
+   * DELETE /api/user/establishment/:establishmentId/:username
+   */
+  public deleteUser(useruid: string) {
+    return of({});
   }
 
   public updateState(userDetails: UserDetails) {

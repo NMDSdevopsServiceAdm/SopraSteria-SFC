@@ -23,6 +23,7 @@ import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+import { UserResolver } from './user.resolver';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewUserAccountComponent } from './view-user-account/view-user-account.component';
 import { WorkplaceResolver } from './workplace.resolver';
@@ -142,6 +143,7 @@ const routes: Routes = [
         path: 'user/:useruid',
         component: ViewUserAccountComponent,
         data: { title: 'View User Account' },
+        resolve: { user: UserResolver },
       },
     ],
   },
