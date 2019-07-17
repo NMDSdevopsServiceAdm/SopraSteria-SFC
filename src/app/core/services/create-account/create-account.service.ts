@@ -1,5 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
-import { CreateAccountRequest } from '@core/model/account.model';
+import { ActivateAccountRequest, CreateAccountRequest } from '@core/model/account.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginCredentials } from '@core/model/login-credentials.model';
@@ -16,5 +16,9 @@ export class CreateAccountService {
 
   public createAccount(establishmentUid: string, requestPayload: CreateAccountRequest) {
     return this.http.post(`/api/user/add/establishment/${establishmentUid}`, requestPayload);
+  }
+
+  public activateAccount(requestPayload: ActivateAccountRequest) {
+    return this.http.post(`/api/user/add`, requestPayload);
   }
 }
