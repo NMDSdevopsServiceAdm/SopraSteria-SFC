@@ -588,12 +588,11 @@ class Worker {
 
   //Mandatory for local Authority - need to check this conditional check
   _validateEthnicity() {
-    const ethnicityValues = [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 98, 99];
     const myEthnicity = parseInt(this._currentLine.ETHNICITY);
 
     // optional
     if (this._currentLine.ETHNICITY && this._currentLine.ETHNICITY.length > 0) {
-      if (isNaN(myEthnicity) || !ethnicityValues.includes(myEthnicity)) {
+      if (isNaN(myEthnicity)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1979,8 +1978,8 @@ class Worker {
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ETHNICITY_ERROR,
-          errType: `ETHNICITY_ERROR`,
-          error: `Ethnicity (ETHNICITY): ${this._ethnicity} is unknown`,
+          errType: 'ETHNICITY_ERROR',
+          error: "The code you have entered for ETHNICITY is incorrect",
           source: this._currentLine.ETHNICITY,
         });
       } else {
@@ -2539,7 +2538,7 @@ class Worker {
       }
     }
 
-    if (this._daysSick) {
+    if (this._daysSick !== null) {
       // days sick is decimal
       if (this._daysSick !== 'No') {
         changeProperties.daysSick = {
