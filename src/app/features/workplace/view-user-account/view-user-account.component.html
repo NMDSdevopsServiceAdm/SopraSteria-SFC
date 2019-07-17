@@ -3,6 +3,12 @@
     <span class="govuk-caption-l">User Account</span>
     <h1 class="govuk-heading-l">{{ user.fullname }}</h1>
   </div>
+  <div class="govuk-grid-column-one-third-from-desktop">
+    <button *ngIf="canDeleteUser" class="govuk-button govuk-button--link" (click)="onDeleteUser()">
+      <img src="/assets/images/bin.svg" /> Delete <span class="govuk-visually-hidden">{{ user.fullname }}'s</span>user
+      account
+    </button>
+  </div>
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
