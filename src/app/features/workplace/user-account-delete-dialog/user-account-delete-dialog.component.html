@@ -1,0 +1,12 @@
+<h1 id="dialogHeading" class="govuk-heading-l">You are about to permanently delete {{ data.user.fullname }}.</h1>
+
+<p>This will delete all the information stored in the account.</p>
+
+<p>
+  <strong>This action cannot be undone.</strong>
+</p>
+
+<button (click)="close(true)" class="govuk-button">Delete account</button>
+<button (click)="close(false)" class="govuk-button govuk-button--link govuk-util__float-right">
+  Cancel
+</button>
