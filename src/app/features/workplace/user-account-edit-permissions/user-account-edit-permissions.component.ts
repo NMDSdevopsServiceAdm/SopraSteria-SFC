@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-user-account-edit-permissions',
   templateUrl: './user-account-edit-permissions.component.html',
 })
-export class UserAccountEditPermissionsComponent implements OnInit {
+export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public establishment: Establishment;
   public user: UserDetails;
@@ -58,6 +58,10 @@ export class UserAccountEditPermissionsComponent implements OnInit {
       role: [this.user.role, Validators.required],
       primary: this.user.isPrimary,
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {

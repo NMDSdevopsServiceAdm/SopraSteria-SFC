@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { LoggedInSession } from '@core/model/logged-in.model';
 import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
+import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
@@ -13,13 +14,15 @@ import { UserService } from '@core/services/user.service';
 import {
   UserAccountDeleteDialogComponent,
 } from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
+import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-account-view',
   templateUrl: './user-account-view.component.html',
 })
-export class UserAccountViewComponent implements OnInit {
+export class UserAccountViewComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription = new Subscription();
   public loginInfo: SummaryList[];
   public securityInfo: SummaryList[];
   public establishment: Establishment;
@@ -28,6 +31,7 @@ export class UserAccountViewComponent implements OnInit {
   public canDeleteUser: boolean;
   public canResendActivationLink: boolean;
   public canEdit: boolean;
+  public return: URLStructure;
 
   constructor(
     private route: ActivatedRoute,
@@ -55,6 +59,16 @@ export class UserAccountViewComponent implements OnInit {
       .subscribe(([users, auth]) => {
         this.setPermissions(users, auth);
       });
+
+    this.subscriptions.add(
+      this.userService.returnUrl$.pipe(take(1)).subscribe(returnUrl => {
+        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid] };
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   public onDeleteUser() {
