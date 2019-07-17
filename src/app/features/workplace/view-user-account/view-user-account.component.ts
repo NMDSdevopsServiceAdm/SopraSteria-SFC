@@ -145,14 +145,13 @@ export class ViewUserAccountComponent implements OnInit {
     ];
   }
 
-  // TODO users can not delete themselves, but uid for LoggedInSession is not exposed so can't currently compare
   private setPermissions(users: Array<UserDetails>, auth: LoggedInSession) {
-    const isEdit = auth && auth.role === Roles.Edit;
+    const canEdit = auth && auth.role === Roles.Edit;
     const isPending = this.user.username === null;
     const isPrimary = this.user.isPrimary;
     const editUsersList = users.filter(user => user.role === Roles.Edit);
 
-    this.canDeleteUser = isEdit && editUsersList.length > 1 && !isPrimary;
-    this.canResendActivationLink = isEdit && isPending;
+    this.canDeleteUser = canEdit && editUsersList.length > 1 && !isPrimary && auth.uid !== this.user.uid;
+    this.canResendActivationLink = canEdit && isPending;
   }
 }
