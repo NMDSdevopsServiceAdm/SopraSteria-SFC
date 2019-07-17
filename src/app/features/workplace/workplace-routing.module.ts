@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
+import { RoleGuard } from '@core/guards/role/role.guard';
+import { Roles } from '@core/model/roles.enum';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
@@ -154,8 +156,12 @@ const routes: Routes = [
           {
             path: 'permissions',
             component: UserAccountEditPermissionsComponent,
+            canActivate: [RoleGuard],
             resolve: { user: UserAccountResolver },
-            data: { title: 'Edit Permissions' },
+            data: {
+              roles: [Roles.Edit],
+              title: 'Edit Permissions',
+            },
           },
         ],
       },
