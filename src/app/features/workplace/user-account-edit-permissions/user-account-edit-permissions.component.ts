@@ -74,7 +74,7 @@ export class UserAccountEditPermissionsComponent implements OnInit {
 
     this.subscriptions.add(
       this.userService.updateUserDetails(this.user.uid, { ...this.user, ...props }).subscribe(
-        data => {
+        () => {
           this.router.navigate(['/workplace', this.establishment.uid, 'user', this.user.uid], {
             fragment: 'user-accounts',
           });
