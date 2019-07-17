@@ -14,6 +14,8 @@ import { Router } from '@angular/router';
   templateUrl: './confirm-account-details.component.html',
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
+  protected actionType = 'Account activation';
+
   constructor(
     private backService: BackService,
     private createAccountService: CreateAccountService,
@@ -49,7 +51,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Full name',
         data: this.userDetails.fullname,
-        route: '/registration/change-your-details',
+        route: '/activate-account/change-your-details',
       },
       {
         label: 'Job title',
@@ -69,7 +71,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Username',
         data: this.loginCredentials.username,
-        route: '/registration/create-username',
+        route: '/activate-account/create-username',
       },
       {
         label: 'Password',
@@ -81,7 +83,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
-        route: '/registration/security-question',
+        route: '/activate-account/security-question',
       },
       {
         label: 'Security answer',
