@@ -28,11 +28,6 @@ export class CreateUsernameComponent extends CreateUsername {
     this.callToActionLabel = 'Save and continue';
   }
 
-  protected setBackLink(): void {
-    const route: string = this.loginCredentialsExist ? '/create-account/security-question' : '/create-account';
-    this.backService.setBackLink({ url: [route] });
-  }
-
   protected setupSubscriptions(): void {
     this.subscriptions.add(
       this.createAccountService.loginCredentials$.subscribe((loginCredentials: LoginCredentials) => {
