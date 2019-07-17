@@ -1227,8 +1227,6 @@ class Worker {
   _validateMainJobRole() {
     const myMainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
 
-    console.log("WA DEBUG - myMainJobRole", myMainJobRole)
-
     // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
     if (!this._currentLine.MAINJOBROLE || this._currentLine.MAINJOBROLE.length == 0 || !myMainJobRole || isNaN(myMainJobRole) || myMainJobRole === 0) {
       this._validationErrors.push({
@@ -2017,7 +2015,6 @@ class Worker {
   };
 
   _transformMainJobRole() {
-    console.log("WA DBEUG - _transformMainJobRole - this._mainJobRole: ", this._mainJobRole)
     // main job is mandatory
     if (this._mainJobRole === null) {
       this._validationErrors.push({
@@ -2031,10 +2028,8 @@ class Worker {
       });
     } else if (this._mainJobRole || this._mainJobRole === 0) {
       const myValidatedJobRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
-      console.log("WA DBEUG - _transformMainJobRole - myValidatedJobRole: ", myValidatedJobRole)
 
       if (!myValidatedJobRole) {
-        console.log("WA DBEUG - _transformMainJobRole - failed BUDI mapping raising error: ", myValidatedJobRole)
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
