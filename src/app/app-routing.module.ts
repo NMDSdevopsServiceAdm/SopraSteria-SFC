@@ -89,7 +89,7 @@ const routes: Routes = [
     },
   },
   {
-    path: 'activate-account/:establishmentuid',
+    path: 'activate-account/:activationToken',
     loadChildren: '@features/activate-user-account/activate-user-account.module#ActivateUserAccountModule',
     canActivate: [CreateUserGuard],
     data: { title: 'Activate User Account' },

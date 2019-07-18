@@ -16,7 +16,7 @@ export class CreateUserGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
     const requestPayload: ValidateCreateAccountRequest = {
-      uuid: route.params.establishmentUid
+      uuid: route.params.activationToken
     };
 
     // TODO there is a BE bug with this api so this is WIP
