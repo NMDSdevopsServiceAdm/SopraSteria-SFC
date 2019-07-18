@@ -43,11 +43,16 @@ router.route('/establishment/:id').get(async (req, res) => {
     }
 });
 
-// gets requested user id or username - using the establishment id extracted for authorised token
-// optional parameter - "history" must equal 1
-router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
-router.route('/establishment/:id/:userId').get(async (req, res) => {
-    const userId = req.params.userId;
+
+const getUser = async (req, res) => {
+    let userId;
+
+    if(req.params.userId){
+        userId = req.params.userId;
+    } else {
+        userId = req.username;
+    }
+
     const establishmentId = req.establishmentId;
     const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
     const showHistoryTime = req.query.history === 'timeline' ? true : false;
@@ -67,7 +72,7 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
     try {
         if (await thisUser.restore(byUUID, byUsername, showHistory && req.query.history !== 'property')) {
             let userData = thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false);
-            if(userData.username && req.username && userData.username == req.username){
+            if(!(userData.username && req.username && userData.username == req.username)){
                 delete userData.securityQuestionAnswer;
                 delete userData.securityQuestion;
             } 
@@ -88,6 +93,18 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
         console.error('user::GET/:userId - failed', thisError.message);
         return res.status(503).send(thisError.safe);
     }
+}
+
+
+router.use('/me', Authorization.isAuthorised);
+router.route('/me').get(async (req, res) => {
+    getUser(req, res);
+});
+
+// gets requested user id or username - using the establishment id extracted for authorised token
+// optional parameter - "history" must equal 1
+router.route('/establishment/:id/:userId').get(async (req, res) => {
+    getUser(req, res);
 });
 
 // updates a user with given uid or username

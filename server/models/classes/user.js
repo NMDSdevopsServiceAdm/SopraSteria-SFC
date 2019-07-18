@@ -774,6 +774,8 @@ class User {
             myDefaultJSON.updated = this.updated.toJSON();
             myDefaultJSON.updatedBy = this.updatedBy;
             myDefaultJSON.isPrimary = (this._isPrimary) ? true : false;
+            myDefaultJSON.lastLoggedIn = this.login && this.login.username ? this.login.lastLogin : null;
+            myDefaultJSON.establishmentId = this._establishmentId;
 
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {
