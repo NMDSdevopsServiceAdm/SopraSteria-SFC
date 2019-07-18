@@ -16,3 +16,14 @@ export interface ActivateAccountRequest {
   securityQuestionAnswer: string;
   username: string;
 }
+
+export interface ValidateAccountActivationTokenRequest {
+  uuid: string;
+}
+
+export interface ValidateAccountActivationTokenResponse {
+  email: string;
+  fullname: string;
+  jobTitle: string;
+  phone: string;
+}

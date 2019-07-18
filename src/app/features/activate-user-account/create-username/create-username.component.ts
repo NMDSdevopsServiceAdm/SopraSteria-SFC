@@ -6,15 +6,18 @@ import { CreateUsername } from '@features/account/create-username/create-usernam
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder } from '@angular/forms';
 import { RegistrationService } from '@core/services/registration.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-username',
   templateUrl: './create-username.component.html',
 })
 export class CreateUsernameComponent extends CreateUsername {
+  private activationToken: string;
+
   constructor(
     private createAccountService: CreateAccountService,
+    private route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -26,11 +29,7 @@ export class CreateUsernameComponent extends CreateUsername {
 
   protected init(): void {
     this.callToActionLabel = 'Save and continue';
-  }
-
-  protected setBackLink(): void {
-    const route: string = this.loginCredentialsExist ? '/create-account/security-question' : '/create-account';
-    this.backService.setBackLink({ url: [route] });
+    this.activationToken = this.route.snapshot.data.activationToken;
   }
 
   protected setupSubscriptions(): void {
@@ -45,7 +44,7 @@ export class CreateUsernameComponent extends CreateUsername {
   }
 
   protected save(): void {
-    this.router.navigate(['/create-account/security-question']).then(() => {
+    this.router.navigate(['/activate-account', this.activationToken, '/security-question']).then(() => {
       this.createAccountService.loginCredentials$.next({
         username: this.getUsername.value,
         password: this.getPassword.value,
