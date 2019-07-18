@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
+import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
@@ -25,10 +27,8 @@ import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import { UserAccountResolver } from './user-account.resolver';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewUserAccountComponent } from './view-user-account/view-user-account.component';
-import { WorkplaceResolver } from './workplace.resolver';
 
 const routes: Routes = [
   {
@@ -137,8 +137,8 @@ const routes: Routes = [
         canActivate: [RoleGuard],
         data: {
           roles: [Roles.Edit],
-          title: 'Create User Account'
-        }
+          title: 'Create User Account',
+        },
       },
       {
         path: 'user/saved',

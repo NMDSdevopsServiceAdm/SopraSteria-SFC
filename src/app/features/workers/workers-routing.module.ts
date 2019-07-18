@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { WorkerResolver } from '@core/resolvers/worker.resolver';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
@@ -47,7 +48,6 @@ import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
-import { WorkerResolver } from './worker.resolver';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 
 const routes: Routes = [

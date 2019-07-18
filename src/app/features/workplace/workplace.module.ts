@@ -2,6 +2,8 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
@@ -25,14 +27,12 @@ import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
-import { UserAccountResolver } from './user-account.resolver';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewUserAccountComponent } from './view-user-account/view-user-account.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
-import { WorkplaceResolver } from './workplace.resolver';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
