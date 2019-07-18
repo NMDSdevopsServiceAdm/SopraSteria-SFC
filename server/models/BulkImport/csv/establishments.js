@@ -87,6 +87,8 @@ class Establishment {
   static get ALL_SERVICES_WARNING() { return 2120; }
   static get SERVICE_USERS_WARNING() { return 2130; }
   static get CAPACITY_UTILISATION_WARNING() { return 2140; }
+  static get ALL_JOBS_WARNING() { return 2180; }
+
   static get VACANCIES_WARNING() { return 2300; }
   static get STARTERS_WARNING() { return 2310; }
   static get LEAVERS_WARNING() { return 2320; }
@@ -726,8 +728,6 @@ class Establishment {
     const listOfServiceUsers = this._currentLine.SERVICEUSERS.split(';');
     const listOfServiceUsersDescriptions = this._currentLine.OTHERUSERDESC.split(';');
 
-    console.log("WA DEBUG - Number of service users - ", listOfServiceUsers.length, this._currentLine.SERVICEUSERS.length)
-
     const localValidationErrors = [];
     const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService))) : true;
     if (!isValid) {
@@ -939,33 +939,21 @@ class Establishment {
   }
 
   _validateAllJobs() {
-    // mandatory
+    // optional
     const allJobs = this._currentLine.ALLJOBROLES.split(';');
-
     const localValidationErrors = [];
 
     // allJobs can only be empty, if TOTALPERMTEMP is 0
-    if (this._totalPermTemp > 0 && this._currentLine.ALLJOBROLES.length === 0) {
+    if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ALL_JOBS_ERROR,
-        errType: `ALL_JOBS_ERROR`,
-        error: "All Job Roles (ALLJOBROLES) must be defined",
+        warnCode: Establishment.ALL_JOBS_WARNING,
+        warnType: `ALL_JOBS_WARNING`,
+        warning: "All Job Roles (ALLJOBROLES) missing",
         source: this._currentLine.ALLJOBROLES,
         name: this._currentLine.LOCALESTID,
       });
-    } else if (this._totalPermTemp > 0) {
-      // must have at least one job role
-      if (allJobs.length < 1) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.ALL_JOBS_ERROR,
-          errType: `ALL_JOBS_ERROR`,
-          error: "All Job Roles (ALLJOBROLES) must be defined",
-          source: this._currentLine.ALLJOBROLES,
-          name: this._currentLine.LOCALESTID,
-        });
-      }
+    } else if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0) {
       // all jobs are integers
       const isValid = allJobs.every(thisJob => !Number.isNaN(parseInt(thisJob)));
       if (!isValid) {
@@ -2079,6 +2067,7 @@ class Establishment {
     columns.push(entity.numberOfStaff ? entity.numberOfStaff : 0);
 
     // all job roles, starters, leavers and vacancies
+
     const allJobs = [];
     if (entity.starters && Array.isArray(entity.starters)) {
       entity.starters.forEach(thisStarter => allJobs.push(thisStarter));
@@ -2090,54 +2079,69 @@ class Establishment {
       entity.vacancies.forEach(thisVacancy => allJobs.push(thisVacancy));
     }
 
-    columns.push(allJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';'));
-    if (entity.starters && !Array.isArray(entity.starters)) {
-      if (entity.starters === 'None') {
-        columns.push(allJobs.map(thisJob => 0).join(';'));
-      } else {
-        columns.push(999);
+    // all jobs needs to be a set of unique ids (which across starters, leavers and vacancies may be repeated)
+    const uniqueJobs = [];
+    allJobs.forEach(thisAllJob => {
+      if (!uniqueJobs.includes(thisAllJob.jobId)) {
+        uniqueJobs.push(thisAllJob.jobId);
       }
-    } else {
-      columns.push(allJobs.map(thisJob => {
-        const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.id === thisJob.id);
-        if (isThisJobAStarterJob) {
-          return isThisJobAStarterJob.total;
+    });
+
+    columns.push(uniqueJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob)).join(';'));
+    if (uniqueJobs.length > 0) {
+      if (entity.starters && !Array.isArray(entity.starters)) {
+        if (entity.starters === 'None') {
+          columns.push(uniqueJobs.map(x => 0).join(';'));
         } else {
-          return 0;
+          columns.push(999);
         }
-      }).join(';'));
-    }
-    if (entity.leavers && !Array.isArray(entity.leavers)) {
-      if (entity.leavers === 'None') {
-        columns.push(allJobs.map(thisJob => 0).join(';'));
       } else {
-        columns.push(999);
+        columns.push(uniqueJobs.map(thisJob => {
+          const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.jobId === thisJob);
+          if (isThisJobAStarterJob) {
+            return isThisJobAStarterJob.total;
+          } else {
+            return 0;
+          }
+        }).join(';'));
       }
-    } else {
-      columns.push(allJobs.map(thisJob => {
-        const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.id === thisJob.id);
-        if (isThisJobALeaverJob) {
-          return isThisJobALeaverJob.total;
-        } else {
-          return 0;
+      if (entity.leavers && !Array.isArray(entity.leavers)) {
+        if (entity.leavers === 'None') {
+          columns.push(uniqueJobs.map(x => 0).join(';'));
+        } else  {
+          columns.push(999);
         }
-      }).join(';'));
-    }
-    if (entity.vacancies && !Array.isArray(entity.vacancies)) {
-      if (entity.vacancies === 'None') {
-        columns.push(allJobs.map(thisJob => 0).join(';'));
       } else {
-        columns.push(999);
+        columns.push(uniqueJobs.map(thisJob => {
+          const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.jobId === thisJob);
+          if (isThisJobALeaverJob) {
+            return isThisJobALeaverJob.total;
+          } else {
+            return 0;
+          }
+        }).join(';'));
       }
-    } else {
-      columns.push(allJobs.map(thisJob => {
-        const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.id === thisJob.id);
-        if (isThisJobAVacancyJob) {
-          return isThisJobAVacancyJob.total;
+      if (entity.vacancies && !Array.isArray(entity.vacancies)) {
+        if (entity.vacancies === 'None') {
+          columns.push(uniqueJobs.map(x => 0).join(';'));
         } else {
-          return 0;
+          columns.push(999);
         }
-      }).join(';'));
+      } else {
+        columns.push(uniqueJobs.map(thisJob => {
+          const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.jobId === thisJob);
+          if (isThisJobAVacancyJob) {
+            return isThisJobAVacancyJob.total;
+          } else {
+            return 0;
+          }
+        }).join(';'));
+      }
+
+    } else {
+      columns.push('');
+      columns.push('');
+      columns.push('');
     }
 
     // reasons for leaving - currently can't be mapped
