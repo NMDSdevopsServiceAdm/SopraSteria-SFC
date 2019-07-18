@@ -9,6 +9,7 @@ import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AuthService } from '@core/services/auth.service';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
@@ -24,13 +25,14 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public referenceTypeEnum = BulkUploadFileType;
   public remainingEstablishments: number;
   public renderForm = false;
-  public return: URLStructure;
+  public returnTo: URLStructure;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
 
   constructor(
     protected authService: AuthService,
+    protected bulkUploadService: BulkUploadService,
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService

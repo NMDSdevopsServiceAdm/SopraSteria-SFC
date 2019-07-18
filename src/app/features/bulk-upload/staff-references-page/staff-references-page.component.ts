@@ -6,6 +6,7 @@ import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { WorkPlaceReference } from '@core/model/my-workplaces.model';
 import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
@@ -29,13 +30,14 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   constructor(
     private activatedRoute: ActivatedRoute,
     protected authService: AuthService,
+    protected bulkUploadService: BulkUploadService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected workerService: WorkerService
   ) {
-    super(authService, router, formBuilder, errorSummaryService);
+    super(authService, bulkUploadService, router, formBuilder, errorSummaryService);
 
     this.subscriptions.add(
       this.router.events
@@ -53,6 +55,10 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
           this.remainingEstablishments = this.workPlaceReferences.length - (this.getWorkplacePosition() + 1);
 
           this.setupForm();
+          if (this.bulkUploadService.returnTo) {
+            this.returnTo = this.bulkUploadService.returnTo;
+            this.bulkUploadService.setReturnTo(null);
+          }
           this.setNextRoute();
           this.setBackLink();
         })
@@ -60,10 +66,12 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   }
 
   private setBackLink(): void {
-    const url =
-      this.getWorkplacePosition() === 0
-        ? ['/bulk-upload/workplace-references']
-        : ['/bulk-upload/staff-references', this.workPlaceReferences[this.getWorkplacePosition() - 1].uid];
+    const url = this.returnTo
+      ? this.returnTo.url
+      : this.getWorkplacePosition() === 0
+      ? ['/bulk-upload/workplace-references']
+      : ['/bulk-upload/staff-references', this.workPlaceReferences[this.getWorkplacePosition() - 1].uid];
+
     this.backService.setBackLink({ url });
   }
 
@@ -77,10 +85,11 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   }
 
   protected setNextRoute(): void {
-    this.nextRoute =
-      this.workPlaceReferences.length === this.getWorkplacePosition() + 1
-        ? ['/bulk-upload/workplace-and-staff-references/success']
-        : ['/bulk-upload/staff-references', this.workPlaceReferences[this.getWorkplacePosition() + 1].uid];
+    this.nextRoute = this.returnTo
+      ? this.returnTo.url
+      : this.workPlaceReferences.length === this.getWorkplacePosition() + 1
+      ? ['/bulk-upload/workplace-and-staff-references/success']
+      : ['/bulk-upload/staff-references', this.workPlaceReferences[this.getWorkplacePosition() + 1].uid];
   }
 
   protected save(saveAndContinue: boolean): void {

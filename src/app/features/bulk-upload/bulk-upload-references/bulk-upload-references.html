@@ -68,7 +68,9 @@
             class="govuk-!-margin-bottom-0 govuk__justify-self-end govuk__grid-column-3"
             *ngIf="referenceType === referenceTypeEnum.Establishment && reference.localIdentifier"
           >
-            <a [routerLink]="['/bulk-upload/staff-references', reference.uid]">Staff references</a>
+            <a [routerLink]="['/bulk-upload/staff-references', reference.uid]" (click)="setReturn()">
+              Staff references
+            </a>
           </p>
         </div>
       </ng-container>
@@ -94,7 +96,7 @@
             class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
             [routerLink]="nextRoute"
           >
-            Continue
+            {{ !!returnTo ? 'Return' : 'Continue' }}
           </a>
           <span class="govuk-visually-hidden">or</span>
           <a
@@ -117,7 +119,7 @@
             class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
             (click)="onSubmit(true)"
           >
-            Save and continue
+            {{ !!returnTo ? 'Save and return' : 'Save and continue' }}
           </button>
           <span class="govuk-visually-hidden">or</span>
           <button

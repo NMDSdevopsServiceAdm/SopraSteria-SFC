@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LoggedInSession } from '@core/model/logged-in.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -22,6 +23,7 @@ export class HomeTabComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService
   ) {}
@@ -53,5 +55,9 @@ export class HomeTabComponent implements OnInit {
           this.updateWorkplace = !d.employerType;
         })
     );
+  }
+
+  public setReturn(): void {
+    this.bulkUploadService.setReturnTo({ url: ['/dashboard'] });
   }
 }

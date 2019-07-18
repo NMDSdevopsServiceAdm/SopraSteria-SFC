@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
@@ -22,21 +23,28 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   public referenceTypeInfo = 'You must create unique references for each workplace.';
   public columnOneLabel = 'Workplace';
   public columnTwoLabel = 'Workplace reference';
+  private exit: string[] = ['/bulk-upload'];
 
   constructor(
     private establishmentService: EstablishmentService,
     private activatedRoute: ActivatedRoute,
     protected authService: AuthService,
+    protected bulkUploadService: BulkUploadService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router
   ) {
-    super(authService, router, formBuilder, errorSummaryService);
+    super(authService, bulkUploadService, router, formBuilder, errorSummaryService);
   }
 
   protected init(): void {
-    this.backService.setBackLink({ url: ['/dashboard'] });
+    if (this.bulkUploadService.returnTo) {
+      this.exit = this.bulkUploadService.returnTo.url;
+      this.bulkUploadService.setReturnTo(null);
+    }
+
+    this.backService.setBackLink({ url: this.exit });
     this.references = this.activatedRoute.snapshot.data.workplaceReferences;
     this.setupForm();
   }
@@ -51,11 +59,15 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
             if (saveAndContinue) {
               this.router.navigate(['/bulk-upload/staff-references', this.references[0].uid]);
             } else {
-              this.router.navigate(['/dashboard']);
+              this.router.navigate(this.exit);
             }
           },
           (error: HttpErrorResponse) => this.onError(error)
         )
     );
+  }
+
+  public setReturn(): void {
+    this.bulkUploadService.setReturnTo({ url: ['/bulk-upload/workplace-references'] });
   }
 }
