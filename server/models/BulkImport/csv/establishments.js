@@ -12,7 +12,10 @@ class Establishment {
     this._localId = null;
     this._status = null;
     this._name = null;
-    this._address = null;
+    this._address1 = null;
+    this._address2 = null;
+    this._address3 = null;
+    this._town = null;
     this._postcode = null;
 
     this._establishmentType = null;
@@ -300,12 +303,9 @@ class Establishment {
     } else if (myAddress1.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        // errCode: Establishment.ADDRESS_ERROR,
-        // errType: `ADDRESS_ERROR`,
-        // error: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
-        warnCode: Establishment.ADDRESS_ERROR,
-        warnType: `ADDRESS_ERROR`,
-        warning: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
+        errCode: Establishment.ADDRESS_ERROR,
+        errType: `ADDRESS_ERROR`,
+        error: `First line of address (ADDRESS1) must be no more than ${MAX_LENGTH} characters`,
         source: myAddress1,
         name: this._currentLine.LOCALESTID,
       });
@@ -382,10 +382,10 @@ class Establishment {
     }
 
     // concatenate the address
-    this._address = myAddress1;
-    this._address = myAddress2 ? `${this._address}, ${myAddress2}` : this._address;
-    this._address = myAddress3 ? `${this._address}, ${myAddress3}` : this._address;
-    this._address = myTown ? `${this._address}, ${myTown}` : this._address;
+    this._address1 = myAddress1;
+    this._address2 = myAddress2;
+    this._address3 = myAddress3;
+    this._town = myTown;
     this._postcode = myPostcode;
 
     return true;
@@ -556,6 +556,7 @@ class Establishment {
     // must be given if "REGTYPE" is 2 - but if given must be in the format "n-nnnnnnnnn"
     const provIDRegex = /^[0-9]{1}\-[0-9]{8,10}$/;
     const myprovID = this._currentLine.PROVNUM;
+
     if (this._regType && this._regType == 2 && (!myprovID || myprovID.length==0)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
@@ -573,12 +574,9 @@ class Establishment {
     else if (this._regType  && this._regType == 2 && !provIDRegex.test(myprovID)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        // errCode: Establishment.PROV_ID_ERROR,
-        // errType: `PROV_ID_ERROR`,
-        // error: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
-        warnCode: Establishment.PROV_ID_ERROR,
-        warnType: `PROV_ID_ERROR`,
-        warning: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
+        errCode: Establishment.PROV_ID_ERROR,
+        errType: `PROV_ID_ERROR`,
+        error: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
         source: myprovID,
         name: this._currentLine.LOCALESTID,
       });
@@ -1618,7 +1616,10 @@ class Establishment {
   toJSON() {
     return {
       name: this._name,
-      address: this._address,
+      address1: this._address1,
+      address2: this._address2,
+      address3: this._address3,
+      town: this._town,
       postcode: this._postcode,
       employerType: this._establishmentType,
       employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
@@ -1680,10 +1681,13 @@ class Establishment {
   // returns an API representation of this Establishment
   toAPI() {
     const fixedProperties = {
-      Address: this._address,
-      Postcode: this._postcode,
-      locationId: this._shareWithCqc ? this._locationID : undefined,
-      ProvId: this._shareWithCqc ? this._provID : undefined,        // this will be ignored by Establishment entity
+      Address1: this._address1 ? this._address1 : '',
+      Address2: this._address2 ? this._address2 : '',
+      Address3: this._address3 ? this._address3 : '',
+      Town: this._town ? this._town : '',
+      Postcode: this._postcode ? this._postcode : '',
+      LocationId: this._regType ? this._locationID : undefined,
+      ProvId: this._regType ? this._provID : undefined,
       IsCQCRegulated: this._regType !== null & this._regType === 2 ? true : false,
     };
 
@@ -1989,10 +1993,10 @@ class Establishment {
     columns.push(this._csvQuote(entity.localIdentifier));   // todo - this will be local identifier
     columns.push('UNCHECKED');
     columns.push(this._csvQuote(entity.name));
-    columns.push(this._csvQuote(entity.address));
-    columns.push(''); // address is not store in separate fields in ASC WDS
-    columns.push(''); // address is not store in separate fields in ASC WDS
-    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(this._csvQuote(entity.address1));
+    columns.push(this._csvQuote(entity.address2));
+    columns.push(this._csvQuote(entity.address3));
+    columns.push(this._csvQuote(entity.town));
     columns.push(entity.postcode);
 
     switch (entity.employerType.value) {
@@ -2027,7 +2031,7 @@ class Establishment {
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);
-    columns.push('');   // we don't have prov id yet
+    columns.push(entity.isRegulated ? entity.provId : '');
     columns.push(entity.isRegulated ? entity.locationId : '');
 
     // main service - this is mandatory in ASC WDS so no need to check for it being available or not

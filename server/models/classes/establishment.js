@@ -76,8 +76,13 @@ class Establishment extends EntityValidator {
 
         // localised attributes
         this._name = null;
-        this._address = null;
+        this._address1 = null;
+        this._address2 = null;
+        this._address3 = null;
+        this._town = null;
+        this._county = null;
         this._locationId = null;
+        this._provId = null;
         this._postcode = null;
         this._isRegulated = null;
         this._mainService = null;
@@ -139,11 +144,39 @@ class Establishment extends EntityValidator {
         return this._properties.get('Name') ? this._properties.get('Name').property : null;
     };
     get address() {
-        return this._address;
+      // returns concatenated address
+      const addressParts = [];
+      this._address1 ? addressParts.push(this._address1) : true;
+      this._address2 ? addressParts.push(this._address2) : true;
+      this._address3 ?  addressParts.push(this._address3) : true;
+      this._town ? addressParts.push(this._town) : true;
+      this._county ? addressParts.push(this._county) : true;
+      return addressParts.join(', ');
+    }
+    get address1() {
+        return this._address1;
     };
+    get address1() {
+        return this._address1;
+    };
+    get address2() {
+      return this._address2;
+    };
+    get address3() {
+      return this._address3;
+    };
+    get town() {
+      return this._town;
+    }
+    get county() {
+      return this._county;
+    }
     get locationId() {
-        return this._locationId;
+      return this._locationId;
     };
+    get provId() {
+      return this._provId;
+    }
     get postcode() {
         return this._postcode;
     };
@@ -235,15 +268,20 @@ class Establishment extends EntityValidator {
     }
 
     // external method to initialise the mandatory non-extendable properties
-    initialise(address, locationId, postcode, isRegulated) {
+    initialise(address1, address2, address3, town, county, locationId, provId, postcode, isRegulated) {
 
         // NMDS ID will be calculated when saving this establishment for the very first time - on creation only
         this._nmdsId = null;
 
-        this._address = address;
+        this._address1 = address1;
+        this._address2 = address2;
+        this._address3 = address3;
+        this._town = town;
+        this._county = county;
         this._postcode = postcode;
         this._isRegulated = isRegulated;
         this._locationId = locationId;
+        this._provId = provId;
     }
 
     initialiseSub(parentID, parentUid){
@@ -308,8 +346,23 @@ class Establishment extends EntityValidator {
                 this._isRegulated = document.isRegulated;
             }
             if (document.locationId) {
-                // Note - the if more validation to do on location ID - so this really should be a managed property
+                // Note - there is more validation to do on location ID - so this really should be a managed property
                 this._locationId = document.locationId;
+            }
+            if (document.provId) {
+              // Note - there is more validation to do on location ID - so this really should be a managed property
+              this._provId = document.provId;
+            }
+            if (document.address1) {
+              // if address is given, allow reset on all address components
+              this._address1 = document.address1;
+              this._address2 = document.address2 ? document.address2 : '';
+              this._address3 = document.address3 ? document.address3 : '';
+              this._town = document.town ? document.town : '';
+              this._county = document.county ? document.county : '';
+            }
+            if (document.postcode) {
+              this._postcode = document.postcode;
             }
 
             // allow for deep restoration of entities (associations - namely Worker here)
@@ -471,7 +524,11 @@ class Establishment extends EntityValidator {
                 const creationDocument = {
                     uid: this.uid,
                     NameValue: this.name,
-                    address: this._address,
+                    address1: this._address1,
+                    address2: this._address2,
+                    address3: this._address3,
+                    town: this._town,
+                    county: this._county,
                     postcode: this._postcode,
                     isParent: this._isParent,
                     parentUid: this._parentUid,
@@ -480,6 +537,7 @@ class Establishment extends EntityValidator {
                     parentPermissions: this._parentPermissions,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
+                    proviId: this._provId,
                     MainServiceFKValue: this.mainService.id,
                     nmdsId: this._nmdsId,
                     updatedBy: savedBy.toLowerCase(),
@@ -621,6 +679,13 @@ class Establishment extends EntityValidator {
                         source: bulkUploaded ? 'Bulk' : 'Online',
                         isRegulated: this._isRegulated,                         // to remove when a change managed property
                         locationId: this._locationId,                           // to remove when a change managed property
+                        provId: this._provId,                                   // to remove when a change managed property
+                        address1: this._address1,
+                        address2: this._address2,
+                        address3: this._address3,
+                        town: this._town,
+                        county: this._county,
+                        postcode: this._postcode,
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
@@ -798,8 +863,14 @@ class Establishment extends EntityValidator {
                 this._updatedBy = fetchResults.updatedBy;
 
                 this._name = fetchResults.NameValue;
-                this._address = fetchResults.address;
+                this._address1 = fetchResults.address1;
+                this._address2 = fetchResults.address2;
+                this._address3 = fetchResults.address3;
+                this._town = fetchResults.town;
+                this._county = fetchResults.county;
+
                 this._locationId = fetchResults.locationId;
+                this._provId = fetchResults.provId;
                 this._postcode = fetchResults.postcode;
                 this._isRegulated = fetchResults.isRegulated;
 
@@ -1217,8 +1288,14 @@ class Establishment extends EntityValidator {
 
             if (fullDescription) {
                 myDefaultJSON.address = this.address;
+                myDefaultJSON.address1 = this.address1;
+                myDefaultJSON.address2 = this.address2;
+                myDefaultJSON.address3 = this.address3;
+                myDefaultJSON.town = this.town;
+                myDefaultJSON.county = this.county;
                 myDefaultJSON.postcode = this.postcode;
                 myDefaultJSON.locationId = this.locationId;
+                myDefaultJSON.provId = this.provId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
                 myDefaultJSON.isParent = this.isParent;
@@ -1294,7 +1371,8 @@ class Establishment extends EntityValidator {
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid main service');
             }
 
-            if (!(this._address)) {
+            // must at least have the first line of address
+            if (!(this._address1)) {
                 allExistAndValid = false;
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.ERROR,
@@ -1302,7 +1380,7 @@ class Establishment extends EntityValidator {
                     this._address ? `Invalid: ${this._address}` : 'Missing',
                     ['Address']
                 ));
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid address');
+                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid first line of address');
             }
 
             if (!(this._postcode)) {
@@ -1338,6 +1416,18 @@ class Establishment extends EntityValidator {
                 ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
             }
+
+            // prov id can be null for a Non-CQC site - CANNOT IMPOST THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
+            // if (this._isRegulated && this._provId === null) {
+            //   allExistAndValid = false;
+            //   this._validations.push(new ValidationMessage(
+            //       ValidationMessage.ERROR,
+            //       106,
+            //       'Missing (mandatory) for a CQC Registered site',
+            //       ['ProvID']
+            //   ));
+            //   this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Prov ID for a (CQC) Regulated workspace');
+            // }
 
         } catch (err) {
             console.error(err)

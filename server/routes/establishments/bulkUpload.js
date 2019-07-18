@@ -725,8 +725,13 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
   try {
     thisApiEstablishment.initialise(
-      thisEstablishmentAsAPI.Address,
+      thisEstablishmentAsAPI.Address1,
+      thisEstablishmentAsAPI.Address2,
+      thisEstablishmentAsAPI.Address3,
+      thisEstablishmentAsAPI.Town,
+      null,
       thisEstablishmentAsAPI.LocationId,
+      thisEstablishmentAsAPI.ProvId,
       thisEstablishmentAsAPI.Postcode,
       thisEstablishmentAsAPI.IsCQCRegulated
     );
@@ -1547,11 +1552,15 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
         onLoadEstablishments.push(newOnloadEstablishment);
 
 
-        newOnloadEstablishment.initialise(thisEntity.address,
-                                          thisEntity.locationRef,
+        newOnloadEstablishment.initialise(thisEntity.address1,
+                                          thisEntity.address2,
+                                          thisEntity.address3,
+                                          thisEntity.town,
+                                          thisEntity.county,
+                                          thisEntity.locationId,
+                                          thisEntity.provId,
                                           thisEntity.postcode,
-                                          thisEntity.isRegulated,
-                                          null);
+                                          thisEntity.isRegulated);
         onloadPromises.push(newOnloadEstablishment.load(thisEntity, true));
       });
     }
@@ -1694,6 +1703,9 @@ const exportToCsv = async (NEWLINE, allMyEstablishemnts) => {
   trainingCsvArray.push(new CsvTrainingValidator().headers);
 
   allMyEstablishemnts.forEach(thisEstablishment => {
+    console.log("WA DEBUG - exporting this establishment: ", thisEstablishment)
+
+
     const establishmentCsvValidator = new CsvEstablishmentValidator();
 
     establishmentsCsvArray.push(establishmentCsvValidator.toCSV(thisEstablishment));
