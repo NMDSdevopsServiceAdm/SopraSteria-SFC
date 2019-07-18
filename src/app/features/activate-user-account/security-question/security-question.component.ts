@@ -50,7 +50,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   }
 
   protected save(): void {
-    this.router.navigate(['/activate-account', this.activationToken, '/security-question']).then(() => {
+    this.router.navigate(['/activate-account', this.activationToken, 'security-question']).then(() => {
       this.createAccountService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,
         securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
