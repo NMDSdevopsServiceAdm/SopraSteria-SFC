@@ -1703,9 +1703,6 @@ const exportToCsv = async (NEWLINE, allMyEstablishemnts) => {
   trainingCsvArray.push(new CsvTrainingValidator().headers);
 
   allMyEstablishemnts.forEach(thisEstablishment => {
-    console.log("WA DEBUG - exporting this establishment: ", thisEstablishment)
-
-
     const establishmentCsvValidator = new CsvEstablishmentValidator();
 
     establishmentsCsvArray.push(establishmentCsvValidator.toCSV(thisEstablishment));
