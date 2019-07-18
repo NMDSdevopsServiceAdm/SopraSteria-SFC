@@ -671,7 +671,7 @@ class User {
     static async fetch(establishmentId, filters=null) {
         if (filters) throw new Error("Filters not implemented");
 
-        const allUsers = [];
+        let allUsers = [];
         const fetchResults = await models.user.findAll({
             where: {
                 establishmentId: establishmentId,
@@ -703,6 +703,15 @@ class User {
                     updatedBy: thisUser.updatedBy,
                     isPrimary: thisUser.isPrimary ? true : false
                 })
+            });
+
+            allUsers = allUsers.map((user) => {
+                return Object.assign(user, { status: user.username == null ? 'Pending' : 'Active'});
+            });
+            
+            allUsers.sort((a, b) => { 
+                if((a.status > b.status)) return -1; 
+                return (new Date(b.updated) - new Date(a.updated))
             });
         }
 
@@ -764,6 +773,7 @@ class User {
             myDefaultJSON.created = this.created.toJSON();
             myDefaultJSON.updated = this.updated.toJSON();
             myDefaultJSON.updatedBy = this.updatedBy;
+            myDefaultJSON.isPrimary = (this._isPrimary) ? true : false;
 
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {

@@ -34,15 +34,8 @@ router.route('/establishment/:id').get(async (req, res) => {
     try {
         const allTheseUsers = await User.User.fetch(establishmentId);
 
-        let data = allTheseUsers.map((user) => {
-            return Object.assign(user, { status: user.username == null ? 'Pending' : 'Active'});
-        });
-        
         return res.status(200).json({
-            users: data.sort((a, b) => { 
-                if((a.status > b.status)) return -1; 
-                return (new Date(b.created) - new Date(a.created))
-            })
+            users: allTheseUsers
         });
     } catch (err) {
         console.error('user::establishment - failed', err);
@@ -74,7 +67,6 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
     try {
         if (await thisUser.restore(byUUID, byUsername, showHistory && req.query.history !== 'property')) {
             let userData = thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false);
-            if(thisUser._isPrimary) userData.isPrimary = true;
             userData.status = (thisUser.username == null ? 'Pending' : 'Active');
             if(userData.username && req.username && userData.username == req.username){
                 delete userData.securityQuestionAnswer;
