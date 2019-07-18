@@ -1,4 +1,4 @@
-import { ActivateAccountRequest, CreateAccountRequest, ValidateCreateAccountRequest } from '@core/model/account.model';
+import { ActivateAccountRequest, CreateAccountRequest, ValidateAccountActivationTokenRequest } from '@core/model/account.model';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -24,7 +24,7 @@ export class CreateAccountService {
     return this.http.post(`/api/user/add`, requestPayload);
   }
 
-  public validateCreateAccount(requestPayload: ValidateCreateAccountRequest) {
+  public validateAccountActivationToken(requestPayload: ValidateAccountActivationTokenRequest) {
     return this.http.post(`/api/user/validateAddUser`, requestPayload);
   }
 }

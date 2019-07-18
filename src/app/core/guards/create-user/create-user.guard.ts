@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { ValidateCreateAccountRequest } from '@core/model/account.model';
+import { ValidateAccountActivationTokenRequest } from '@core/model/account.model';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -15,12 +15,12 @@ export class CreateUserGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> | Promise<boolean> | boolean {
-    const requestPayload: ValidateCreateAccountRequest = {
+    const requestPayload: ValidateAccountActivationTokenRequest = {
       uuid: route.params.activationToken
     };
 
     // TODO there is a BE bug with this api so this is WIP
-    this.createAccountService.validateCreateAccount(requestPayload)
+    this.createAccountService.validateAccountActivationToken(requestPayload)
       .pipe(take(1))
       .subscribe((response: any) => console.log(response));
 
