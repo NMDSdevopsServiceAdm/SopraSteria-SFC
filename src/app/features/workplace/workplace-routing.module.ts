@@ -5,6 +5,7 @@ import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
+import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
@@ -25,9 +26,11 @@ import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+import {
+  UserAccountEditPermissionsComponent,
+} from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UserAccountResolver } from './user-account.resolver';
 import { VacanciesComponent } from './vacancies/vacancies.component';
-import { ViewUserAccountComponent } from './view-user-account/view-user-account.component';
 import { WorkplaceResolver } from './workplace.resolver';
 
 const routes: Routes = [
@@ -147,9 +150,24 @@ const routes: Routes = [
       },
       {
         path: 'user/:useruid',
-        component: ViewUserAccountComponent,
-        resolve: { user: UserAccountResolver },
         data: { title: 'View User Account' },
+        children: [
+          {
+            path: '',
+            component: UserAccountViewComponent,
+            resolve: { user: UserAccountResolver },
+          },
+          {
+            path: 'permissions',
+            component: UserAccountEditPermissionsComponent,
+            canActivate: [RoleGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              roles: [Roles.Edit],
+              title: 'Edit Permissions',
+            },
+          },
+        ],
       },
     ],
   },
