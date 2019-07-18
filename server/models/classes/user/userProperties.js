@@ -7,7 +7,7 @@ const jobTitleProperty = require('./properties/jobTitleProperty').UserJobTitlePr
 const emailProperty = require('./properties/emailProperty').UserEmailProperty;
 const phoneProperty = require('./properties/phoneProperty').UserPhoneProperty;
 const securityQuestionProperty = require('./properties/securityQuestionProperty').UserSecurityQuestionProperty;
-const securityAnswerProperty = require('./properties/securityQuestionAnswerProperty').UserSecurityQuestionAnswerProperty;
+const securityQuestionAnswerProperty = require('./properties/securityQuestionAnswerProperty').UserSecurityQuestionAnswerProperty;
 const roleProperty = require('./properties/roleProperty').UserRoleProperty;
 
 class UserPropertyManager {
@@ -20,7 +20,7 @@ class UserPropertyManager {
         this._thisManager.registerProperty(phoneProperty);
         this._thisManager.registerProperty(roleProperty);
         this._thisManager.registerProperty(securityQuestionProperty);
-        this._thisManager.registerProperty(securityAnswerProperty);
+        this._thisManager.registerProperty(securityQuestionAnswerProperty);
     }
 
     get manager() {
