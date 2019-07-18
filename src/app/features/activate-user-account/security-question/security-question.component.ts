@@ -1,12 +1,12 @@
-import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
-import { CreateAccountService } from '@core/services/create-account/create-account.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { finalize } from 'rxjs/operators';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SecurityDetails } from '@core/model/security-details.model';
+import { BackService } from '@core/services/back.service';
+import { CreateAccountService } from '@core/services/create-account/create-account.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { SecurityQuestion } from '@features/account/security-question/security-question';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-security-question',
@@ -53,7 +53,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
     this.router.navigate(['/activate-account', this.activationToken, '/security-question']).then(() => {
       this.createAccountService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,
-        securityAnswer: this.getSecurityAnswer.value,
+        securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
       });
     });
   }

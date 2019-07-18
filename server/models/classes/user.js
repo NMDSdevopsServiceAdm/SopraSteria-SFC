@@ -80,7 +80,7 @@ class User {
     static get MAX_READ_PARENT_USERS() { return 20 }
     static get MAX_EDIT_SINGLE_USERS() { return 3 }
     static get MAX_READ_SINGLE_USERS() { return 3 }
-    
+
     set logLevel(logLevel) {
         this._logLevel = logLevel;
     }
@@ -123,7 +123,7 @@ class User {
         const prop = this._properties.get('SecurityQuestion');
         return prop ? prop.property : null;
     };
-    get securityAnswer() {
+    get securityQuestionAnswer() {
         const prop = this._properties.get('SecurityQuestionAnswer');
         return prop ? prop.property : null;
     };

@@ -1,14 +1,14 @@
-import { BackService } from '@core/services/back.service';
-import { combineLatest } from 'rxjs';
-import { Component } from '@angular/core';
-import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RegistrationPayload } from '@core/model/registration.model';
-import { RegistrationService } from '@core/services/registration.service';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RegistrationPayload } from '@core/model/registration.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
+import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-account-details',
@@ -93,7 +93,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       },
       {
         label: 'Security answer',
-        data: this.securityDetails.securityAnswer,
+        data: this.securityDetails.securityQuestionAnswer,
       },
     ];
   }
@@ -112,7 +112,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     payload.user.username = this.loginCredentials.username;
     payload.user.password = this.loginCredentials.password;
     payload.user.securityQuestion = this.securityDetails.securityQuestion;
-    payload.user.securityQuestionAnswer = this.securityDetails.securityAnswer;
+    payload.user.securityQuestionAnswer = this.securityDetails.securityQuestionAnswer;
     return [payload];
   }
 

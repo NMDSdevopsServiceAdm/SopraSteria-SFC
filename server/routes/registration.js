@@ -333,10 +333,10 @@ router.route('/')
       const Userdata = {
         FullName : req.body[0].user.fullname,
         JobTitle : req.body[0].user.jobTitle,
-        Email    : req.body[0].user.emailAddress,
-        Phone    : req.body[0].user.contactNumber,
+        Email    : req.body[0].user.email,
+        Phone    : req.body[0].user.phone,
         SecurityQuestion: req.body[0].user.securityQuestion,
-        SecurityQuestionAnswer: req.body[0].user.securityAnswer,
+        SecurityQuestionAnswer: req.body[0].user.securityQuestionAnswer,
         DateCreated: new Date(),
         EstablishmentID:0,
         AdminUser: true
@@ -462,7 +462,7 @@ router.route('/')
           const slackMsg = req.body[0];
           delete slackMsg.user.password;
           delete slackMsg.user.securityQuestion;
-          delete slackMsg.user.securityAnswer;
+          delete slackMsg.user.securityQuestionAnswer;
           slackMsg.nmdsId = Estblistmentdata.NmdsId;
           slackMsg.establishmentUid = Estblistmentdata.eUID;
           slack.info("Registration", JSON.stringify(slackMsg, null, 2));
