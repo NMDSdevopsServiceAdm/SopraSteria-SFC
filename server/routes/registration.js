@@ -329,8 +329,8 @@ router.route('/')
       const Userdata = {
         FullName : req.body[0].user.fullname,
         JobTitle : req.body[0].user.jobTitle,
-        Email    : req.body[0].user.emailAddress,
-        Phone    : req.body[0].user.contactNumber,
+        Email    : req.body[0].user.email,
+        Phone    : req.body[0].user.phone,
         SecurityQuestion: req.body[0].user.securityQuestion,
         SecurityQuestionAnswer: req.body[0].user.securityAnswer,
         DateCreated: new Date(),
