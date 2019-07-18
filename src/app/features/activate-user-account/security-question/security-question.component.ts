@@ -13,7 +13,7 @@ import { SecurityQuestion } from '@features/account/security-question/security-q
   templateUrl: './security-question.component.html',
 })
 export class SecurityQuestionComponent extends SecurityQuestion {
-  private establishmentUid: string;
+  private activationToken: string;
 
   constructor(
     private createAccountService: CreateAccountService,
@@ -28,12 +28,12 @@ export class SecurityQuestionComponent extends SecurityQuestion {
 
   protected init(): void {
     this.setupSubscription();
-    this.establishmentUid = this.route.snapshot.data.establishmentUid;
+    this.activationToken = this.route.snapshot.data.activationToken;
   }
 
   protected setBackLink(): void {
     const route: string = this.securityDetailsExist ? 'confirm-account-details' : 'create-username';
-    this.backService.setBackLink({ url: ['/activate-account', this.establishmentUid, route] });
+    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, route] });
   }
 
   protected setupSubscription(): void {
@@ -50,7 +50,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   }
 
   protected save(): void {
-    this.router.navigate(['/activate-account', this.establishmentUid, '/security-question']).then(() => {
+    this.router.navigate(['/activate-account', this.activationToken, '/security-question']).then(() => {
       this.createAccountService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,
         securityAnswer: this.getSecurityAnswer.value,

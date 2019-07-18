@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './create-username.component.html',
 })
 export class CreateUsernameComponent extends CreateUsername {
-  private establishmentUid: string;
+  private activationToken: string;
 
   constructor(
     private createAccountService: CreateAccountService,
@@ -29,7 +29,7 @@ export class CreateUsernameComponent extends CreateUsername {
 
   protected init(): void {
     this.callToActionLabel = 'Save and continue';
-    this.establishmentUid = this.route.snapshot.data.establishmentUid;
+    this.activationToken = this.route.snapshot.data.activationToken;
   }
 
   protected setupSubscriptions(): void {
@@ -44,7 +44,7 @@ export class CreateUsernameComponent extends CreateUsername {
   }
 
   protected save(): void {
-    this.router.navigate(['/activate-account', this.establishmentUid, '/security-question']).then(() => {
+    this.router.navigate(['/activate-account', this.activationToken, '/security-question']).then(() => {
       this.createAccountService.loginCredentials$.next({
         username: this.getUsername.value,
         password: this.getPassword.value,
