@@ -1,37 +1,30 @@
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { ValidateAccountActivationTokenRequest, ValidateAccountActivationTokenResponse } from '@core/model/account.model';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ValidateAccountActivationTokenRequest } from '@core/model/account.model';
+import { CreateAccountService } from '@core/services/create-account/create-account.service';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CreateUserGuard implements CanActivate {
-  private validToken: boolean;
   constructor(private createAccountService: CreateAccountService, private router: Router) {}
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     const requestPayload: ValidateAccountActivationTokenRequest = {
-      uuid: route.params.activationToken
+      uuid: route.params.activationToken,
     };
 
-    this.createAccountService.validateAccountActivationToken(requestPayload)
-      .pipe(take(1))
-      .subscribe((response: ValidateAccountActivationTokenResponse) => {
+    return this.createAccountService.validateAccountActivationToken(requestPayload).pipe(
+      map(response => {
         this.createAccountService.userDetails$.next(response);
-        this.validToken = true;
-      });
-
-    if (this.validToken) {
-      return true;
-    }
-
-    this.router.navigate(['/dashboard']);
-    return false;
+        return true;
+      }),
+      catchError(() => {
+        this.router.navigate(['/dashboard']);
+        return of(false);
+      })
+    );
   }
 }
