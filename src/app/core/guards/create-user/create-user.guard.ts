@@ -1,14 +1,15 @@
-import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { ValidateAccountActivationTokenRequest } from '@core/model/account.model';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { ValidateAccountActivationTokenRequest, ValidateAccountActivationTokenResponse } from '@core/model/account.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CreateUserGuard implements CanActivate {
+  private validToken: boolean;
   constructor(private createAccountService: CreateAccountService, private router: Router) {}
 
   canActivate(
@@ -19,12 +20,16 @@ export class CreateUserGuard implements CanActivate {
       uuid: route.params.activationToken
     };
 
-    // TODO there is a BE bug with this api so this is WIP
     this.createAccountService.validateAccountActivationToken(requestPayload)
       .pipe(take(1))
-      .subscribe((response: any) => console.log(response));
+      .subscribe((response: ValidateAccountActivationTokenResponse) => {
+        this.createAccountService.userDetails$.next(response);
+        this.validToken = true;
+      });
 
-    return true;
+    if (this.validToken) {
+      return true;
+    }
 
     this.router.navigate(['/dashboard']);
     return false;

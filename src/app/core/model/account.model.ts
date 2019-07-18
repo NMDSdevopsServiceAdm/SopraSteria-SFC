@@ -20,3 +20,10 @@ export interface ActivateAccountRequest {
 export interface ValidateAccountActivationTokenRequest {
   uuid: string;
 }
+
+export interface ValidateAccountActivationTokenResponse {
+  email: string;
+  fullname: string;
+  jobTitle: string;
+  phone: string;
+}
