@@ -32,10 +32,7 @@
       </app-tab>
 
       <app-tab [title]="'User accounts'">
-        <app-user-accounts-summary
-          *ngIf="establishment"
-          [establishmentUid]="establishment.uid"
-        ></app-user-accounts-summary>
+        <app-user-accounts-summary *ngIf="establishment" [workplace]="establishment"></app-user-accounts-summary>
       </app-tab>
 
       <app-tab [title]="'Workplace'">

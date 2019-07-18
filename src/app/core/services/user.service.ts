@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
-import { UserDetails, UserStatus } from '@core/model/userDetails.model';
+import { UserDetails } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -80,12 +80,6 @@ export class UserService {
       .get<{
         users: Array<UserDetails>;
       }>(`/api/user/establishment/${establishmentUid}`)
-      .pipe(
-        map(response =>
-          response.users.map(user => {
-            return { ...user, status: user.username === null ? ('Pending' as UserStatus) : ('Active' as UserStatus) };
-          })
-        )
-      );
+      .pipe(map(response => response.users));
   }
 }
