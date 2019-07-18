@@ -17,9 +17,6 @@ export class EditUserPermissionsGuard implements CanActivate {
     this.workplaceUid = next.params.establishmentuid;
     this.userUid = next.params.useruid;
 
-    console.log(next, state);
-    console.log(this.workplaceUid, this.userUid);
-
     return this.userService.getAllUsersForEstablishment(this.workplaceUid).pipe(
       map(users => {
         if (users.length > 1) {
