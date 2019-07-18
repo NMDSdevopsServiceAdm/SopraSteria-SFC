@@ -50,15 +50,17 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.breadcrumbService.show();
 
-    this.userService
-      .getAllUsersForEstablishment(this.establishment.uid)
-      .pipe(
-        take(1),
-        withLatestFrom(this.authService.auth$)
-      )
-      .subscribe(([users, auth]) => {
-        this.setPermissions(users, auth);
-      });
+    this.subscriptions.add(
+      this.userService
+        .getAllUsersForEstablishment(this.establishment.uid)
+        .pipe(
+          take(1),
+          withLatestFrom(this.authService.auth$)
+        )
+        .subscribe(([users, auth]) => {
+          this.setPermissions(users, auth);
+        })
+    );
 
     this.subscriptions.add(
       this.userService.returnUrl$.pipe(take(1)).subscribe(returnUrl => {
@@ -129,6 +131,6 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
 
     this.canDeleteUser = canEdit && editUsersList.length > 1 && !isPrimary && auth.uid !== this.user.uid;
     this.canResendActivationLink = canEdit && isPending;
-    this.canEdit = auth.role === Roles.Edit;
+    this.canEdit = auth.role === Roles.Edit && users.length > 1;
   }
 }
