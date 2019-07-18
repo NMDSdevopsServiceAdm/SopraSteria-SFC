@@ -220,7 +220,7 @@ class Establishment extends EntityValidator {
       return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
     }
     get reasonsForLeaving() {
-      return this.reasonsForLeaving;
+      return this._reasonsForLeaving;
     }
 
     get nmdsId() {
@@ -369,8 +369,9 @@ class Establishment extends EntityValidator {
             if (document.postcode) {
               this._postcode = document.postcode;
             }
-            if (document.reasponsForLeaving) {
-              this._reasonsForLeaving = document.reasponsForLeaving;
+
+            if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
+              this._reasonsForLeaving = document.reasonsForLeaving;
             }
 
             // allow for deep restoration of entities (associations - namely Worker here)
@@ -892,6 +893,9 @@ class Establishment extends EntityValidator {
                 this._dataOwner = fetchResults.dataOwner;
                 this._parentPermissions = fetchResults.parentPermissions;
 
+                // interim solution for reason for leaving
+                this._reasonsForLeaving = fetchResults.reasonsForLeaving;
+
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
                 //  because ID is primay key and hence indexed
@@ -1311,6 +1315,7 @@ class Establishment extends EntityValidator {
                 myDefaultJSON.parentUid = this.parentUid;
                 myDefaultJSON.dataOwner = this.dataOwner;
                 myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
+                myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
             }
 
             myDefaultJSON.created = this.created ? this.created.toJSON() : null;
