@@ -1695,7 +1695,6 @@ class Establishment {
     if (this._reasonsForLeaving && Array.isArray(this._reasonsForLeaving)) {
       fixedProperties.reasonsForLeaving = this._reasonsForLeaving.map(thisReason => `${thisReason.id}:${thisReason.count}`).join('|');
     } else {
-      console.log("WA DEBUG - reasons for leaving set to empty")
       fixedProperties.reasonsForLeaving = ''; // reset
     }
 
