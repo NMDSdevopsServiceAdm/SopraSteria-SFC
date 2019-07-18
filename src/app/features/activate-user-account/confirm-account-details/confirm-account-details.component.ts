@@ -109,6 +109,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       securityQuestion: this.securityDetails.securityQuestion,
       securityQuestionAnswer: this.securityDetails.securityQuestionAnswer,
       username: this.loginCredentials.username,
+      addUserUUID: this.activationToken
     };
   }
 

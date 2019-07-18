@@ -7,6 +7,7 @@ export interface CreateAccountRequest {
 }
 
 export interface ActivateAccountRequest {
+  addUserUUID: string;
   email: string;
   fullname: string;
   jobTitle: string;
