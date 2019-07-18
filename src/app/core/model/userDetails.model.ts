@@ -15,4 +15,7 @@ export interface UserDetails {
   isPrimary?: boolean;
 }
 
-export type UserStatus = 'Pending' | 'Active';
+export enum UserStatus {
+  Pending = 'Pending',
+  Active = 'Active',
+}
