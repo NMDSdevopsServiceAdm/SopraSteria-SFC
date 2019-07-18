@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
       attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt'],
       include: [ {
         model: models.user,
-        attributes: ['id', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
+        attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
         include: [{
           model: models.establishment,
           attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId', 'lastBulkUploaded'],
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
         attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt'],
         include: [ {
           model: models.user,
-          attributes: ['id', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
+          attributes: ['id', 'uid',  'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
           where: {
             UserRoleValue: 'Admin',
           }
@@ -150,6 +150,7 @@ router.post('/', async (req, res) => {
         }
 
         const response = formatSuccessulLoginResponse(
+          establishmentUser.user.uid,
           establishmentUser.user.FullNameValue,
           establishmentUser.user.isPrimary,
           establishmentUser.lastLogin,
@@ -263,10 +264,12 @@ router.post('/', async (req, res) => {
 });
 
 // TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, isPrimary, lastLoggedDate, role, establishment, username, expiryDate) => {
+const formatSuccessulLoginResponse = (uid, fullname, isPrimary, lastLoggedDate, role, establishment, username, expiryDate) => {
   // note - the mainService can be null
+  console.log("WA DEBIG - user uid: ", uid)
   return {
     username,
+    uid,
     fullname,
     isPrimary,
     lastLoggedIn: lastLoggedDate ? lastLoggedDate.toISOString() : null,
