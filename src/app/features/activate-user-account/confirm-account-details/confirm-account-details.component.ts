@@ -1,13 +1,13 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ActivateAccountRequest } from '@core/model/account.model';
 import { BackService } from '@core/services/back.service';
-import { combineLatest } from 'rxjs';
-import { Component } from '@angular/core';
-import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-account-details',
@@ -87,7 +87,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       },
       {
         label: 'Security answer',
-        data: this.securityDetails.securityAnswer,
+        data: this.securityDetails.securityQuestionAnswer,
       },
     ];
   }
@@ -104,7 +104,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       password: this.loginCredentials.password,
       phone: this.userDetails.phone,
       securityQuestion: this.securityDetails.securityQuestion,
-      securityQuestionAnswer: this.securityDetails.securityAnswer,
+      securityQuestionAnswer: this.securityDetails.securityQuestionAnswer,
       username: this.loginCredentials.username,
     };
   }

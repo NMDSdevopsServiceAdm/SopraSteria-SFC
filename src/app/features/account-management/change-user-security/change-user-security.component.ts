@@ -1,14 +1,14 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { Component } from '@angular/core';
-import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { SecurityQuestion } from '@features/account/security-question/security-question';
-import { UserDetails } from '@core/model/userDetails.model';
 import { UserService } from '@core/services/user.service';
+import { SecurityQuestion } from '@features/account/security-question/security-question';
 
 @Component({
   selector: 'app-change-user-security',
@@ -26,7 +26,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router,
+    protected router: Router
   ) {
     super(backService, errorSummaryService, formBuilder, router);
   }
@@ -44,7 +44,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
           this.userDetails = userDetails;
           this.preFillForm({
             securityQuestion: userDetails.securityQuestion,
-            securityAnswer: userDetails.securityQuestionAnswer,
+            securityQuestionAnswer: userDetails.securityQuestionAnswer,
           });
         }
       })
@@ -80,7 +80,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
 
   protected save(): void {
     this.userDetails.securityQuestion = this.getSecurityQuestion.value;
-    this.userDetails.securityQuestionAnswer = this.getSecurityAnswer.value;
+    this.userDetails.securityQuestionAnswer = this.getSecurityQuestionAnswer.value;
     this.changeUserDetails(this.username, this.userDetails);
   }
 

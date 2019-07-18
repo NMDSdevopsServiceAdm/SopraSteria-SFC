@@ -1,10 +1,10 @@
-import { BackService } from '@core/services/back.service';
-import { ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SecurityDetails } from '@core/model/security-details.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
 export class SecurityQuestion implements OnInit, OnDestroy {
@@ -18,11 +18,11 @@ export class SecurityQuestion implements OnInit, OnDestroy {
   public formControlsMap: any[] = [
     {
       label: 'Enter a security question',
-      name: 'securityQuestion'
+      name: 'securityQuestion',
     },
     {
       label: 'Enter the answer to the security question',
-      name: 'securityAnswer'
+      name: 'securityQuestionAnswer',
     },
   ];
 
@@ -39,8 +39,8 @@ export class SecurityQuestion implements OnInit, OnDestroy {
   }
 
   // Get security answer
-  get getSecurityAnswer() {
-    return this.form.get('securityAnswer');
+  get getSecurityQuestionAnswer() {
+    return this.form.get('securityQuestionAnswer');
   }
 
   ngOnInit() {
@@ -58,7 +58,7 @@ export class SecurityQuestion implements OnInit, OnDestroy {
   protected preFillForm(securityDetails: SecurityDetails): void {
     if (securityDetails) {
       this.getSecurityQuestion.setValue(securityDetails.securityQuestion);
-      this.getSecurityAnswer.setValue(securityDetails.securityAnswer);
+      this.getSecurityQuestionAnswer.setValue(securityDetails.securityQuestionAnswer);
     }
   }
 
@@ -67,7 +67,7 @@ export class SecurityQuestion implements OnInit, OnDestroy {
   private setupForm(): void {
     this.form = this.formBuilder.group({
       securityQuestion: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
-      securityAnswer: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
+      securityQuestionAnswer: ['', [Validators.required, Validators.maxLength(this.securityDetailsMaxLength)]],
     });
   }
 
@@ -87,7 +87,7 @@ export class SecurityQuestion implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'securityAnswer',
+        item: 'Q',
         type: [
           {
             name: 'required',
