@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
-import { UserDetails } from '@core/model/userDetails.model';
+import { UserDetails, UserStatus } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 import { combineLatest } from 'rxjs';
@@ -33,7 +33,7 @@ export class UserAccountsSummaryComponent implements OnInit {
   }
 
   public isPending(user: UserDetails) {
-    return user.status === 'Pending';
+    return user.status === UserStatus.Pending;
   }
 
   private userSlotsAvailable(users: Array<UserDetails>) {
