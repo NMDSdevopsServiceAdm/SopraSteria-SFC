@@ -1,48 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { RadioFieldData } from '@core/model/form-controls.model';
 import { LoggedInSession } from '@core/model/logged-in.model';
 import { Roles } from '@core/model/roles.enum';
 import { SummaryList } from '@core/model/summary-list.model';
+import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { UserService } from '@core/services/user.service';
+import {
+  UserAccountDeleteDialogComponent,
+} from '@features/workplace/user-account-delete-dialog/user-account-delete-dialog.component';
+import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
-import { UserAccountDeleteDialogComponent } from '../user-account-delete-dialog/user-account-delete-dialog.component';
-
 @Component({
-  selector: 'app-view-user-account',
-  templateUrl: './view-user-account.component.html',
+  selector: 'app-user-account-view',
+  templateUrl: './user-account-view.component.html',
 })
-export class ViewUserAccountComponent implements OnInit {
+export class UserAccountViewComponent implements OnInit, OnDestroy {
+  private subscriptions: Subscription = new Subscription();
   public loginInfo: SummaryList[];
   public securityInfo: SummaryList[];
   public establishment: Establishment;
   public user: UserDetails;
   public userInfo: SummaryList[];
-  public form: FormGroup;
-  public roleRadios: RadioFieldData[] = [
-    {
-      value: Roles.Edit,
-      label: 'Edit',
-    },
-    {
-      value: Roles.Read,
-      label: 'Read only',
-    },
-  ];
   public canDeleteUser: boolean;
   public canResendActivationLink: boolean;
+  public canEdit: boolean;
+  public return: URLStructure;
 
   constructor(
     private route: ActivatedRoute,
-    private formBuilder: FormBuilder,
     private router: Router,
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
@@ -58,11 +50,6 @@ export class ViewUserAccountComponent implements OnInit {
   ngOnInit() {
     this.breadcrumbService.show();
 
-    this.form = this.formBuilder.group({
-      role: [this.user.role, Validators.required],
-      primary: this.user.isPrimary,
-    });
-
     this.userService
       .getAllUsersForEstablishment(this.establishment.uid)
       .pipe(
@@ -72,23 +59,16 @@ export class ViewUserAccountComponent implements OnInit {
       .subscribe(([users, auth]) => {
         this.setPermissions(users, auth);
       });
+
+    this.subscriptions.add(
+      this.userService.returnUrl$.pipe(take(1)).subscribe(returnUrl => {
+        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid] };
+      })
+    );
   }
 
-  // TODO get the activationuid from the user and catch any api errors
-  public resendActivationLink() {
-    this.userService
-      .resendActivationLink(this.user.uid, 'TODO_ACTIVATION_UID')
-      .pipe(
-        withLatestFrom(this.userService.returnUrl$),
-        take(1)
-      )
-      .subscribe(([response, returnUrl]) => {
-        this.router.navigate(returnUrl.url, { fragment: 'user-accounts' });
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Account set up link has been resent. [BE NOT IMPLEMENTED]',
-        });
-      });
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   public onDeleteUser() {
@@ -136,11 +116,7 @@ export class ViewUserAccountComponent implements OnInit {
     this.loginInfo = [
       {
         label: 'Username',
-        data: this.user.username,
-      },
-      {
-        label: 'Password',
-        data: '******',
+        data: this.user.username || '-',
       },
     ];
   }
@@ -153,5 +129,6 @@ export class ViewUserAccountComponent implements OnInit {
 
     this.canDeleteUser = canEdit && editUsersList.length > 1 && !isPrimary && auth.uid !== this.user.uid;
     this.canResendActivationLink = canEdit && isPending;
+    this.canEdit = auth.role === Roles.Edit;
   }
 }

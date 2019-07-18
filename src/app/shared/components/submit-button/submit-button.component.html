@@ -12,7 +12,11 @@
   <ng-template #summary>
     <button type="button" class="govuk-button" (click)="onClick('return', true)">Save and return</button>
   </ng-template>
-  <button type="button" class="govuk-button govuk-button--link govuk-util__float-right" (click)="onClick('exit', true)">
-    Save and exit
+  <button
+    type="button"
+    class="govuk-button govuk-button--link govuk-util__float-right"
+    (click)="onClick('exit', false)"
+  >
+    Exit
   </button>
 </div>

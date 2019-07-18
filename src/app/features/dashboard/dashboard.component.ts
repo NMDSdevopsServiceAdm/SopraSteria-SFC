@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
     this.lastLoggedIn = this.authService.lastLoggedIn;
     this.userService.updateReturnUrl({
       url: ['/dashboard'],
+      fragment: 'user-accounts',
     });
   }
 }
