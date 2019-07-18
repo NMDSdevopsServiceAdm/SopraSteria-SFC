@@ -49,6 +49,7 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   }
 
   protected setupForm(): void {
+    this.submitted = false;
     this.form = this.formBuilder.group({});
 
     this.references.forEach((reference: Workplace | Worker) => {
