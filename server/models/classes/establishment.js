@@ -95,6 +95,9 @@ class Establishment extends EntityValidator {
         this._dataOwner = null;
         this._parentPermissions = null;
 
+        // interim reasons for leaving - https://trello.com/c/vNHbfdms
+        this._reasonsForLeaving = null;
+
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
         this._properties =thisEstablishmentManager.manager;
@@ -216,7 +219,9 @@ class Establishment extends EntityValidator {
     get vacancies() {
       return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
     }
-
+    get reasonsForLeaving() {
+      return this._reasonsForLeaving;
+    }
 
     get nmdsId() {
         return this._nmdsId;
@@ -363,6 +368,10 @@ class Establishment extends EntityValidator {
             }
             if (document.postcode) {
               this._postcode = document.postcode;
+            }
+
+            if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
+              this._reasonsForLeaving = document.reasonsForLeaving;
             }
 
             // allow for deep restoration of entities (associations - namely Worker here)
@@ -686,6 +695,7 @@ class Establishment extends EntityValidator {
                         town: this._town,
                         county: this._county,
                         postcode: this._postcode,
+                        reasonsForLeaving: this._reasonsForLeaving,
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
@@ -882,6 +892,9 @@ class Establishment extends EntityValidator {
                 this._parentUid = fetchResults.parentUid;
                 this._dataOwner = fetchResults.dataOwner;
                 this._parentPermissions = fetchResults.parentPermissions;
+
+                // interim solution for reason for leaving
+                this._reasonsForLeaving = fetchResults.reasonsForLeaving;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -1302,6 +1315,7 @@ class Establishment extends EntityValidator {
                 myDefaultJSON.parentUid = this.parentUid;
                 myDefaultJSON.dataOwner = this.dataOwner;
                 myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
+                myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
             }
 
             myDefaultJSON.created = this.created ? this.created.toJSON() : null;

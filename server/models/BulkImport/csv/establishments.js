@@ -1605,7 +1605,7 @@ class Establishment {
     status = !this._transformAllServices() ? false : status;
     status = !this._transformServiceUsers() ? false : status;
     status = !this._transformAllJobs() ? false : status;
-    status = !this._transformReasonsForLeaving() ? false : status;
+    //status = !this._transformReasonsForLeaving() ? false : status;        // interim solution - not transforming reasons for leaving
     status = !this._transformAllCapacities() ? false : status;
     status = !this._transformAllUtilisation() ? false : status;
     status = !this._transformAllVacanciesStartersLeavers() ? false : status;
@@ -1690,6 +1690,13 @@ class Establishment {
       ProvId: this._regType ? this._provID : undefined,
       IsCQCRegulated: this._regType !== null & this._regType === 2 ? true : false,
     };
+
+    // interim solution for reasons for leaving
+    if (this._reasonsForLeaving && Array.isArray(this._reasonsForLeaving)) {
+      fixedProperties.reasonsForLeaving = this._reasonsForLeaving.map(thisReason => `${thisReason.id}:${thisReason.count}`).join('|');
+    } else {
+      fixedProperties.reasonsForLeaving = ''; // reset
+    }
 
     const changeProperties = {
       name: this._name,
@@ -2144,9 +2151,26 @@ class Establishment {
       }).join(';'));
     }
 
-    // reasons for leaving - currently can't be mapped
-    columns.push('');
-    columns.push('');
+    // reasons for leaving - currently can't be mapped - interim solution is a string of "reasonID:count|reasonId:count" (without BUDI mapping)
+    if (entity.reasonsForLeaving && entity.reasonsForLeaving.length > 0) {
+      const reasons = [];
+      const reasonsCount = [];
+      const myReasons = entity.reasonsForLeaving.split('|');
+
+      console.log("WA DEBUG - we have reasons on download: ", myReasons)
+
+      myReasons.forEach(currentReason => {
+        const [reasonId, reasonCount] = currentReason.split(':');
+        reasons.push(reasonId);
+        reasonsCount.push(reasonCount);
+      });
+
+      columns.push(reasons.join(';'));
+      columns.push(reasonsCount.join(';'));
+    } else {
+      columns.push('');
+      columns.push('');
+    }
 
     return columns.join(',');
   };

@@ -455,6 +455,11 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       field: '"LastBulkUploaded"'
     },
+    reasonsForLeaving: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ReasonsForLeaving"'
+    },
     created: {
       type: DataTypes.DATE,
       allowNull: false,
