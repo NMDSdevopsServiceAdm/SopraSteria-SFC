@@ -1,10 +1,10 @@
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
-import { catchError, map } from 'rxjs/operators';
-import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { ValidateAccountActivationTokenRequest } from '@core/model/account.model';
+import { AuthService } from '@core/services/auth.service';
+import { CreateAccountService } from '@core/services/create-account/create-account.service';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -22,18 +22,16 @@ export class CreateUserGuard implements CanActivate {
     };
 
     return this.createAccountService.validateAccountActivationToken(requestPayload).pipe(
-      map(
-        response => {
-          this.createAccountService.userDetails$.next(response.body);
-          const token = response.headers.get('authorization');
-          this.authService.authorise(token);
-          return true;
-        },
-        catchError(() => {
-          this.router.navigate(['/dashboard']);
-          return of(false);
-        })
-      )
+      map(response => {
+        this.createAccountService.userDetails$.next(response.body);
+        const token = response.headers.get('authorization');
+        this.authService.authorise(token);
+        return true;
+      }),
+      catchError(() => {
+        this.router.navigate(['/activate-account', 'expired-activation-link']);
+        return of(false);
+      })
     );
   }
 }

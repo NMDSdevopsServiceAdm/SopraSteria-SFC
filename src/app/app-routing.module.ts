@@ -5,7 +5,6 @@ import {
   ProblemWithTheServiceComponent,
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
-import { CreateUserGuard } from '@core/guards/create-user/create-user.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
@@ -89,9 +88,8 @@ const routes: Routes = [
     },
   },
   {
-    path: 'activate-account/:activationToken',
+    path: 'activate-account',
     loadChildren: '@features/activate-user-account/activate-user-account.module#ActivateUserAccountModule',
-    canActivate: [CreateUserGuard],
     data: { title: 'Activate User Account' },
   },
   {
