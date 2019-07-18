@@ -28,7 +28,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
 
   protected init(): void {
     this.setupSubscription();
-    this.activationToken = this.route.snapshot.data.activationToken;
+    this.activationToken = this.route.snapshot.params.activationToken;
   }
 
   protected setBackLink(): void {
@@ -50,7 +50,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   }
 
   protected save(): void {
-    this.router.navigate(['/activate-account', this.activationToken, '/security-question']).then(() => {
+    this.router.navigate(['/activate-account', this.activationToken, 'confirm-account-details']).then(() => {
       this.createAccountService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,
         securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
