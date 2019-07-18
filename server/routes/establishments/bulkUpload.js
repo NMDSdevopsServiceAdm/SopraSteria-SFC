@@ -1279,12 +1279,18 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         });
 
         if (foundWorker) {
+          const theWorker = foundCurrentEstablishment.theWorker(foundWorker);
           updatedWorkers.push({
-            key: thisOnloadWorker
+            key: thisOnloadWorker,
+            name: theWorker.nameOrId,
+            localId: theWorker.localIdentifier,
           });
         } else {
+          const theWorker = thisOnloadEstablishment.theWorker(thisOnloadWorker);
           newWorkers.push({
-            key: thisOnloadWorker
+            key: thisOnloadWorker,
+            name: theWorker.nameOrId,
+            localId: theWorker.localIdentifier,
           });
         }
       });
@@ -1294,8 +1300,11 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         const foundWorker= onloadWorkers.find(thisOnloadWorker => thisCurrentWorker === thisOnloadWorker);
 
         if (!foundWorker) {
+          const theWorker = foundCurrentEstablishment.theWorker(thisCurrentWorker);
           deletedWorkers.push({
-            nameOrId: thisCurrentWorker
+            key: thisCurrentWorker,
+            name: theWorker.nameOrId,
+            localId: theWorker.localIdentifier,
           });
         }
       });
@@ -1303,6 +1312,8 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       updatedEntities.push({
         key: thisOnloadEstablishment.key,
+        name: thisOnloadEstablishment.name,
+        localId: thisOnloadEstablishment.localIdentifier,
         workers: {
           new: newWorkers,
           updated: updatedWorkers,
@@ -1313,6 +1324,8 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       newEntities.push({
         key: thisOnloadEstablishment.key,
+        name: thisOnloadEstablishment.name,
+        localId: thisOnloadEstablishment.localIdentifier
       });
     }
   });
@@ -1330,10 +1343,19 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         const currentWorkers = thisCurrentEstablishment.associatedWorkers;
         const deletedWorkers = [];
 
-        currentWorkers.forEach(thisCurrentWorker => deletedWorkers.push(thisCurrentWorker));
+        currentWorkers.forEach(thisCurrentWorker => {
+          const thisWorker = thisCurrentEstablishment.theWorker(thisCurrentWorker);
+          deletedWorkers.push({
+            key: thisCurrentWorker,
+            name: thisWorker.nameOrId,
+            localId: thisWorker.localIdentifier
+              });
+      });
 
         deletedEntities.push({
           key: thisCurrentEstablishment.key,
+          name: thisCurrentEstablishment.name,
+          localId: thisCurrentEstablishment.localIdentifier,
           workers: {
             deleted: deletedWorkers,
           }
