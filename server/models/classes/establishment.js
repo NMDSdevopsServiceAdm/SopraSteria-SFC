@@ -95,6 +95,9 @@ class Establishment extends EntityValidator {
         this._dataOwner = null;
         this._parentPermissions = null;
 
+        // interim reasons for leaving - https://trello.com/c/vNHbfdms
+        this._reasonsForLeaving = null;
+
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
         this._properties =thisEstablishmentManager.manager;
@@ -216,7 +219,9 @@ class Establishment extends EntityValidator {
     get vacancies() {
       return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
     }
-
+    get reasonsForLeaving() {
+      return this.reasonsForLeaving;
+    }
 
     get nmdsId() {
         return this._nmdsId;
@@ -363,6 +368,9 @@ class Establishment extends EntityValidator {
             }
             if (document.postcode) {
               this._postcode = document.postcode;
+            }
+            if (document.reasponsForLeaving) {
+              this._reasonsForLeaving = document.reasponsForLeaving;
             }
 
             // allow for deep restoration of entities (associations - namely Worker here)
@@ -686,6 +694,7 @@ class Establishment extends EntityValidator {
                         town: this._town,
                         county: this._county,
                         postcode: this._postcode,
+                        reasonsForLeaving: this._reasonsForLeaving,
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
