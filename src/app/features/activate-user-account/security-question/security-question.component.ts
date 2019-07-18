@@ -28,7 +28,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
 
   protected init(): void {
     this.setupSubscription();
-    this.activationToken = this.route.snapshot.data.activationToken;
+    this.activationToken = this.route.snapshot.params.activationToken;
   }
 
   protected setBackLink(): void {

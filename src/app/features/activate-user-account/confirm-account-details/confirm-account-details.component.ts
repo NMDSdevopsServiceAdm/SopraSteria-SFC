@@ -1,13 +1,13 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
 import { ActivateAccountRequest } from '@core/model/account.model';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
+import { combineLatest } from 'rxjs';
+import { Component } from '@angular/core';
+import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
-import { combineLatest } from 'rxjs';
+import { FormBuilder } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-confirm-account-details',
@@ -15,8 +15,10 @@ import { combineLatest } from 'rxjs';
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   protected actionType = 'Account activation';
+  private activationToken: string;
 
   constructor(
+    private route: ActivatedRoute,
     private backService: BackService,
     private createAccountService: CreateAccountService,
     private router: Router,
@@ -29,6 +31,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   protected init() {
     this.setupSubscriptions();
     this.setBackLink();
+    this.activationToken = this.route.snapshot.params.activationToken;
   }
 
   protected setupSubscriptions(): void {
@@ -114,7 +117,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       this.createAccountService
         .activateAccount(this.generatePayload())
         .subscribe(
-          () => this.router.navigate(['/activate-account/complete']),
+          () => this.router.navigate(['/activate-account', this.activationToken, 'complete']),
           (error: HttpErrorResponse) => this.onError(error)
         )
     );

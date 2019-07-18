@@ -29,7 +29,7 @@ export class CreateUsernameComponent extends CreateUsername {
 
   protected init(): void {
     this.callToActionLabel = 'Save and continue';
-    this.activationToken = this.route.snapshot.data.activationToken;
+    this.activationToken = this.route.snapshot.params.activationToken;
   }
 
   protected setupSubscriptions(): void {
@@ -44,7 +44,7 @@ export class CreateUsernameComponent extends CreateUsername {
   }
 
   protected save(): void {
-    this.router.navigate(['/activate-account', this.activationToken, '/security-question']).then(() => {
+    this.router.navigate(['/activate-account', this.activationToken, 'security-question']).then(() => {
       this.createAccountService.loginCredentials$.next({
         username: this.getUsername.value,
         password: this.getPassword.value,
