@@ -42,6 +42,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
         .pipe(
           filter(event => event instanceof NavigationEnd),
           map(() => this.activatedRoute),
+          filter(route => !route.snapshot.fragment),
           map(route => route.snapshot.data)
         )
         .subscribe(data => {
