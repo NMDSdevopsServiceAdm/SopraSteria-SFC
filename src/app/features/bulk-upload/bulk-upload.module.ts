@@ -2,6 +2,8 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
+import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { BulkUploadRoutingModule } from '@features/bulk-upload/bulk-upload-routing.module';
 import { BulkUploadStartPageComponent } from '@features/bulk-upload/bulk-upload-start-page/bulk-upload-start-page.component';
@@ -17,12 +19,10 @@ import { FilesUploadComponent } from './files-upload/files-upload.component';
 import { ReferencesCreatedPageComponent } from './references-created-page/references-created-page.component';
 import { ReportDownloadLinkComponent } from './report-download-link/report-download-link.component';
 import { SelectedFilesListComponent } from './selected-files-list/selected-files-list.component';
-import { StaffReferencesResolver } from './staff-references.resolver';
 import { UploadDataFilesComponent } from './upload-data-files/upload-data-files.component';
 import { UploadWarningDialogComponent } from './upload-warning-dialog/upload-warning-dialog.component';
 import { UploadedFilesListComponent } from './uploaded-files-list/uploaded-files-list.component';
 import { WorkplaceReferencesPageComponent } from './workplace-references-page/workplace-references-page.component';
-import { WorkplacesReferencesResolver } from './workplace-references.resolver';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, BulkUploadRoutingModule, OverlayModule],
