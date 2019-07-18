@@ -103,6 +103,7 @@ router.route('/me').get(async (req, res) => {
 
 // gets requested user id or username - using the establishment id extracted for authorised token
 // optional parameter - "history" must equal 1
+router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id/:userId').get(async (req, res) => {
     getUser(req, res);
 });
