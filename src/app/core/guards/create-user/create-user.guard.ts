@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { ValidateAccountActivationTokenRequest } from '@core/model/account.model';
+import {
+  ValidateAccountActivationTokenRequest,
+  ValidateAccountActivationTokenResponse,
+} from '@core/model/account.model';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -17,7 +20,7 @@ export class CreateUserGuard implements CanActivate {
     };
 
     return this.createAccountService.validateAccountActivationToken(requestPayload).pipe(
-      map(response => {
+      map((response: ValidateAccountActivationTokenResponse) => {
         this.createAccountService.userDetails$.next(response);
         return true;
       }),
