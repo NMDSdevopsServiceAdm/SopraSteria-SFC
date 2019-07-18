@@ -15,15 +15,40 @@ module.exports = function(sequelize, DataTypes) {
       unique: true,
       field: '"EstablishmentUID"'
     },
-    address: {
+    address1: {
       type: DataTypes.TEXT,
-      allowNull: false,
-      field: '"Address"'
+      allowNull: true,
+      field: '"Address1"'
+    },
+    address2: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address2"'
+    },
+    address3: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Address3"'
+    },
+    town: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"Town"'
+    },
+    county: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"County"'
     },
     locationId: {
       type: DataTypes.INTEGER,
       allowNull: true,
       field: '"LocationID"'
+    },
+    provId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      field: '"ProvID"'
     },
     postcode: {
       type: DataTypes.TEXT,
@@ -429,6 +454,11 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       field: '"LastBulkUploaded"'
+    },
+    reasonsForLeaving: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      field: '"ReasonsForLeaving"'
     },
     created: {
       type: DataTypes.DATE,
