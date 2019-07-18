@@ -2099,60 +2099,59 @@ class Establishment {
     });
 
     columns.push(uniqueJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob)).join(';'));
-    if (uniqueJobs.length > 0) {
-      if (entity.starters && !Array.isArray(entity.starters)) {
-        if (entity.starters === 'None') {
-          columns.push(uniqueJobs.map(x => 0).join(';'));
-        } else {
-          columns.push(999);
-        }
+    if (entity.starters && !Array.isArray(entity.starters)) {
+      if (entity.starters === 'None') {
+        columns.push(uniqueJobs.map(x => 0).join(';'));
+      } else if (entity.starters === 'Don\'t know') {
+        columns.push(999);
       } else {
-        columns.push(uniqueJobs.map(thisJob => {
-          const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.jobId === thisJob);
-          if (isThisJobAStarterJob) {
-            return isThisJobAStarterJob.total;
-          } else {
-            return 0;
-          }
-        }).join(';'));
+        columns.push('')
       }
-      if (entity.leavers && !Array.isArray(entity.leavers)) {
-        if (entity.leavers === 'None') {
-          columns.push(uniqueJobs.map(x => 0).join(';'));
-        } else  {
-          columns.push(999);
-        }
-      } else {
-        columns.push(uniqueJobs.map(thisJob => {
-          const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.jobId === thisJob);
-          if (isThisJobALeaverJob) {
-            return isThisJobALeaverJob.total;
-          } else {
-            return 0;
-          }
-        }).join(';'));
-      }
-      if (entity.vacancies && !Array.isArray(entity.vacancies)) {
-        if (entity.vacancies === 'None') {
-          columns.push(uniqueJobs.map(x => 0).join(';'));
-        } else {
-          columns.push(999);
-        }
-      } else {
-        columns.push(uniqueJobs.map(thisJob => {
-          const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.jobId === thisJob);
-          if (isThisJobAVacancyJob) {
-            return isThisJobAVacancyJob.total;
-          } else {
-            return 0;
-          }
-        }).join(';'));
-      }
-
     } else {
-      columns.push('');
-      columns.push('');
-      columns.push('');
+      columns.push(uniqueJobs.map(thisJob => {
+        const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.jobId === thisJob);
+        if (isThisJobAStarterJob) {
+          return isThisJobAStarterJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+    if (entity.leavers && !Array.isArray(entity.leavers)) {
+      if (entity.leavers === 'None') {
+        columns.push(uniqueJobs.map(x => 0).join(';'));
+      } else if (entity.leavers === 'Don\'t know') {
+        columns.push(999);
+      } else  {
+        columns.push('');
+      }
+    } else {
+      columns.push(uniqueJobs.map(thisJob => {
+        const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.jobId === thisJob);
+        if (isThisJobALeaverJob) {
+          return isThisJobALeaverJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
+    }
+    if (entity.vacancies && !Array.isArray(entity.vacancies)) {
+      if (entity.vacancies === 'None') {
+        columns.push(uniqueJobs.map(x => 0).join(';'));
+      } else if (entity.vacancies === 'Don\'t know') {
+        columns.push(999);
+      } else {
+        columns.push('');
+      }
+    } else {
+      columns.push(uniqueJobs.map(thisJob => {
+        const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.jobId === thisJob);
+        if (isThisJobAVacancyJob) {
+          return isThisJobAVacancyJob.total;
+        } else {
+          return 0;
+        }
+      }).join(';'));
     }
 
     // reasons for leaving - currently can't be mapped - interim solution is a string of "reasonID:count|reasonId:count" (without BUDI mapping)
