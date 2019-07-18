@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
 import { sortBy } from 'lodash';
@@ -22,21 +22,16 @@ export class WdfComponent implements OnInit {
 
   constructor(
     private reportService: ReportService,
-    private establishmentService: EstablishmentService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
     this.returnUrl = { url: ['/reports', 'wdf'] };
-
-    combineLatest(
-      this.establishmentService.establishment$,
-      this.workerService.getAllWorkers(),
-      this.reportService.getWDFReport(this.establishmentService.establishmentId.toString())
-    )
+    this.workplace = this.route.snapshot.data.establishment;
+    combineLatest(this.workerService.getAllWorkers(), this.reportService.getWDFReport(this.workplace.uid))
       .pipe(take(1))
-      .subscribe(([establishment, workers, report]) => {
-        this.workplace = establishment;
+      .subscribe(([workers, report]) => {
         this.workers = sortBy(workers, ['wdfEligible']);
         this.report = report;
       });

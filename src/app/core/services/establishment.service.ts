@@ -8,7 +8,7 @@ import {
 } from '@core/model/establishment.model';
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
@@ -43,7 +43,7 @@ interface EmployerTypeRequest {
   providedIn: 'root',
 })
 export class EstablishmentService {
-  private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
+  private _primaryEstablishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   public previousEstablishmentId: number;
   public isSameLoggedInUser: boolean;
@@ -61,27 +61,27 @@ export class EstablishmentService {
     }
   }
 
-  public get establishment$() {
-    if (this._establishment$.value !== null) {
-      return this._establishment$.asObservable();
+  public get primaryEstablishment$() {
+    if (this._primaryEstablishment$.value !== null) {
+      return of(this._primaryEstablishment$.value);
     }
     return this.getEstablishment(this.establishmentId.toString()).pipe(
       tap(establishment => {
-        this.setState(establishment);
+        this.setPrimaryEstablishment(establishment);
       })
     );
   }
 
-  public get establishment() {
-    return this._establishment$.value as Establishment;
+  public get primaryEstablishment() {
+    return this._primaryEstablishment$.value as Establishment;
   }
 
-  setState(establishment) {
-    this._establishment$.next(establishment);
+  setPrimaryEstablishment(establishment: Establishment) {
+    this._primaryEstablishment$.next(establishment);
   }
 
   public resetState() {
-    this._establishment$.next(null);
+    this._primaryEstablishment$.next(null);
   }
 
   public set establishmentId(value: number) {

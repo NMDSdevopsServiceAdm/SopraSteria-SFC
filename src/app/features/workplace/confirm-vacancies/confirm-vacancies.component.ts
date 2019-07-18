@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
@@ -16,7 +16,7 @@ export class ConfirmVacanciesComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+      this.establishmentService.primaryEstablishment$.pipe(take(1)).subscribe(establishment => {
         this.establishment = establishment;
       })
     );

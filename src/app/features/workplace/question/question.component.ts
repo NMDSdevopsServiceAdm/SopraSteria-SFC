@@ -39,7 +39,7 @@ export class Question implements OnInit, OnDestroy {
     this.return = this.establishmentService.returnTo;
 
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(establishment => {
+      this.establishmentService.primaryEstablishment$.subscribe(establishment => {
         this.establishment = establishment;
 
         if (!this.initiated) {
@@ -133,7 +133,7 @@ export class Question implements OnInit, OnDestroy {
   protected onSuccess(): void {}
 
   protected _onSuccess(data) {
-    this.establishmentService.setState({ ...this.establishment, ...data });
+    this.establishmentService.setPrimaryEstablishment({ ...this.establishment, ...data });
     this.onSuccess();
     this.navigate();
   }

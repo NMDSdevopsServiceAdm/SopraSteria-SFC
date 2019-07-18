@@ -76,7 +76,7 @@ export class OtherServicesComponent extends Question {
   }
 
   private preFillForm(): void {
-    const allOtherServices = this.establishmentService.establishment.otherServices;
+    const allOtherServices = this.establishmentService.primaryEstablishment.otherServices;
 
     if (allOtherServices) {
       allOtherServices.forEach((data: ServiceGroup) => this.allOtherServices.push(...data.services));
@@ -146,7 +146,7 @@ export class OtherServicesComponent extends Question {
   }
 
   protected _onSuccess(data) {
-    this.establishmentService.setState({ ...this.establishment, ...data });
+    this.establishmentService.setPrimaryEstablishment({ ...this.establishment, ...data });
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.id, true).subscribe(
         response => {

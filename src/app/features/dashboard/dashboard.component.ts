@@ -1,28 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { LoggedInEstablishment } from '@core/model/logged-in.model';
+import { ActivatedRoute } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { AuthService } from '@core/services/auth.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
-  public establishment: LoggedInEstablishment | null;
-  public lastLoggedIn: string | null;
+  public establishment: Establishment;
+  public lastLoggedIn: string;
 
-  constructor(
-    private establishmentService: EstablishmentService,
-    private authService: AuthService,
-    private userService: UserService
-  ) {}
+  constructor(private authService: AuthService, private userService: UserService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
-      this.establishment = establishment;
-    });
+    this.establishment = this.route.snapshot.data.establishment;
     this.lastLoggedIn = this.authService.lastLoggedIn;
     this.userService.updateReturnUrl({
       url: ['/dashboard'],

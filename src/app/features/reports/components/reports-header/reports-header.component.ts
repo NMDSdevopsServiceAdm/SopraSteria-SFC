@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-reports-header',
@@ -10,11 +9,11 @@ import { Observable } from 'rxjs';
 export class ReportsHeaderComponent implements OnInit {
   @Input() title = 'Reports';
 
-  public establishment$: Observable<Establishment>;
+  public establishment: Establishment;
 
-  constructor(private establishmentService: EstablishmentService) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.establishment$ = this.establishmentService.establishment$;
+    this.establishment = this.route.snapshot.data.establishment;
   }
 }

@@ -7,6 +7,7 @@ import {
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
+import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
@@ -77,6 +78,7 @@ const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard],
     data: { title: 'Dashboard' },
+    resolve: { establishment: PrimaryWorkplaceResolver },
   },
   {
     path: 'bulk-upload',

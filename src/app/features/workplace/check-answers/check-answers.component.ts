@@ -19,7 +19,7 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+      this.establishmentService.primaryEstablishment$.pipe(take(1)).subscribe(establishment => {
         this.establishment = establishment;
 
         this.summaryReturnUrl = { url: ['/workplace', establishment.id, 'check-answers'] };

@@ -16,7 +16,7 @@ export class ConfirmLeaversComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
+      this.establishmentService.primaryEstablishment$.pipe(take(1)).subscribe(establishment => {
         this.establishment = establishment;
       })
     );
