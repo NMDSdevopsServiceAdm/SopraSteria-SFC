@@ -603,8 +603,7 @@ class User {
                 this._updatedBy = fetchResults.updatedBy;
 
                 // TODO: change to amanaged property
-                this._isPrimary - fetchResults.isPrimary;
-
+                this._isPrimary = fetchResults.isPrimary;
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
                 //  because ID is primay key and hence indexed
@@ -672,7 +671,7 @@ class User {
     static async fetch(establishmentId, filters=null) {
         if (filters) throw new Error("Filters not implemented");
 
-        const allUsers = [];
+        let allUsers = [];
         const fetchResults = await models.user.findAll({
             where: {
                 establishmentId: establishmentId,
@@ -682,9 +681,9 @@ class User {
                 {
                     model: models.login,
                     attributes: ['username', 'lastLogin']
-                }
+                } 
             ],
-            attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy'],
+            attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy','isPrimary'],
             order: [
                 ['updated', 'DESC']
             ]
@@ -701,8 +700,18 @@ class User {
                     username: thisUser.login && thisUser.login.username ? thisUser.login.username : null,
                     created:  thisUser.created.toJSON(),
                     updated: thisUser.updated.toJSON(),
-                    updatedBy: thisUser.updatedBy
+                    updatedBy: thisUser.updatedBy,
+                    isPrimary: thisUser.isPrimary ? true : false
                 })
+            });
+
+            allUsers = allUsers.map((user) => {
+                return Object.assign(user, { status: user.username == null ? 'Pending' : 'Active'});
+            });
+            
+            allUsers.sort((a, b) => { 
+                if((a.status > b.status)) return -1; 
+                return (new Date(b.updated) - new Date(a.updated))
             });
         }
 
@@ -764,6 +773,7 @@ class User {
             myDefaultJSON.created = this.created.toJSON();
             myDefaultJSON.updated = this.updated.toJSON();
             myDefaultJSON.updatedBy = this.updatedBy;
+            myDefaultJSON.isPrimary = (this._isPrimary) ? true : false;
 
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {
