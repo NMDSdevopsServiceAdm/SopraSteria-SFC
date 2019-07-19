@@ -10,6 +10,7 @@ const bcrypt = require('bcrypt-nodejs');
 const generateJWT = require('../../utils/security/generateJWT');
 const usernameCheck = require('../../utils/security/usernameValidation').isUsernameValid;
 
+
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 
@@ -431,6 +432,50 @@ router.route('/add/establishment/:id').post(async (req, res) => {
         }
 
         console.error("Unexpected exception: ", err)
+    }
+});
+
+// Resend activation link
+router.use('/:id/:trackingId', Authorization.hasAuthorisedEstablishment);
+router.route('/:id/:trackingId').get(async (req, res) => {
+    if (!req.params.trackingId) {
+        console.error('No UUID');
+        return res.status(400).send();
+    }
+    // parse input - escaped to prevent SQL injection
+    const givenUuid = escape(req.params.trackingId);
+    const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
+
+    if (!uuidV4Regex.test(givenUuid)) {
+        console.error('Invalid UUID');
+        return res.status(400).send();
+    }
+    
+    try {
+        const passTokenResults = await models.addUserTracking.findOne({
+            where: {
+                uuid: givenUuid
+            },
+            include: [
+                {
+                    model: models.user,
+                    attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'JobTitleValue', 'PhoneValue'],
+                }
+            ]
+        });
+
+        if(passTokenResults){
+            const thisUser = new User.User();
+            if (await thisUser.restore(passTokenResults.user.uid, null, null)) {
+                await models.sequelize.transaction(async t => {
+                    await thisUser.trackNewUser(req.username, t, 0);
+                });
+            }
+        }
+        return res.status(200).send();
+    }
+    catch(err){
+        return res.status(503).send(err.safe);
     }
 });
 
