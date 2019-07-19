@@ -20,7 +20,7 @@ export class CreateAccountService {
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
   public activationComplete$: BehaviorSubject<boolean> = new BehaviorSubject(null);
-  private returnTo$ = new BehaviorSubject<URLStructure>(null);
+  public returnTo$ = new BehaviorSubject<URLStructure>(null);
 
   constructor(private http: HttpClient) {}
 

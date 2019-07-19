@@ -29,11 +29,12 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   protected init(): void {
     this.setupSubscription();
     this.activationToken = this.route.snapshot.params.activationToken;
+    this.return = this.createAccountService.returnTo$.value;
+    this.back = this.return ? this.return : { url: ['/activate-account', this.activationToken, 'create-username'] };
   }
 
   protected setBackLink(): void {
-    const route: string = this.securityDetailsExist ? 'confirm-account-details' : 'create-username';
-    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, route] });
+    this.backService.setBackLink(this.back);
   }
 
   protected setupSubscription(): void {

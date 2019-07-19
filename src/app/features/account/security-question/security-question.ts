@@ -6,10 +6,13 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
+import { URLStructure } from '@core/model/url.model';
 
 export class SecurityQuestion implements OnInit, OnDestroy {
   private formErrorsMap: Array<ErrorDetails>;
   private securityDetailsMaxLength = 255;
+  protected back: URLStructure;
+  protected return: URLStructure;
   protected securityDetailsExist = false;
   protected subscriptions: Subscription = new Subscription();
   public callToActionLabel: string;

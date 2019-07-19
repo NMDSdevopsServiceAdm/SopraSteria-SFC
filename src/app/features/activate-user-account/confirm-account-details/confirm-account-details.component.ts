@@ -29,9 +29,9 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   protected init() {
+    this.activationToken = this.route.snapshot.params.activationToken;
     this.setupSubscriptions();
     this.setBackLink();
-    this.activationToken = this.route.snapshot.params.activationToken;
   }
 
   protected setupSubscriptions(): void {
@@ -95,7 +95,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/activate-account/security-question'] });
+    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, '/security-question'] });
   }
 
   private generatePayload(): ActivateAccountRequest {
