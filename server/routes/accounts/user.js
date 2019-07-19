@@ -491,6 +491,10 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
     }
 });
 
+router.route('/:username').delete(async (req, res) => {
+    return res.status(200).send();
+});
+
 // validates (part add) a new user - not authentication middleware
 router.route('/validateAddUser').post(async (req, res) => {
     if (!req.body.uuid) {
