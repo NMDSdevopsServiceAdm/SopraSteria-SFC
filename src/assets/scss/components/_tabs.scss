@@ -1,4 +1,4 @@
-.js-enabled .govuk-tabs__panel {
+.js-enabled .govuk-tabs__panel:not(.has-border) {
   padding-right: 0;
   padding-left: 0;
   border: 0;
