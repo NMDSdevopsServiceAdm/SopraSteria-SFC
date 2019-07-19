@@ -1,9 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { EstablishmentService } from './establishment.service';
@@ -48,19 +48,17 @@ export class UserService {
     );
   }
 
-  /*
-   * TODO - Implement API calls once BE ready
-   * DELETE /api/user/establishment/:establishmentId/:username
-   */
   public deleteUser(useruid: string) {
-    return of({});
+    return this.http.delete(`api/user/${useruid}`);
   }
 
-  /*
-   * TODO - Implement API calls once BE ready
-   */
-  public resendActivationLink(useruid: string, activationuid: string) {
-    return of({});
+  public resendActivationLink(useruid: string) {
+    const token = localStorage.getItem('auth-token');
+    const headers = new HttpHeaders({ Authorization: token });
+    return this.http.post(`api/user/${useruid}/resend-activation`, null, {
+      headers,
+      responseType: 'text' as 'json',
+    });
   }
 
   public updateState(userDetails: UserDetails) {
