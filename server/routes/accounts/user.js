@@ -512,6 +512,64 @@ router.route('/validateAddUser').post(async (req, res) => {
     }
 });
 
+router.use('/:username', Authorization.isAuthorisedAddUser);
+router.route('/:username').delete(async (req, res) => {
+   //401
+   //403
+   //200
+   //404     
+
+   try {
+        // all checks pass, so find the user using facts from the token (now on the req)
+        const login = await models.login.findOne({
+            where: {
+                username: {
+                    [models.Sequelize.Op.iLike] : req.username
+                },
+                isActive: true
+            },
+            include: [
+                {
+                    model: models.user,
+                    attributes: ['id', 'FullNameValue'],
+                }
+            ]
+        });
+
+        if (login && login.username === req.username && login.user.id) {
+            await models.sequelize.transaction(async t => {
+
+                // Set the login to not active
+                login.update({
+                    isActive: false
+                },
+                {transaction: t});
+
+                // Create audit log entry
+                const auditEvent = {
+                    userFk: login.user.id,
+                    username: req.username,
+                    type: 'deletedUser',
+                    property: 'isActive',
+                    event: {}
+                };
+                await models.userAudit.create(auditEvent, {transaction: t});
+
+                
+            });
+
+            return res.status(200).send(`User deleted ${login.user.FullNameValue}`);
+        } else {
+            throw new Error(`Failed to find user: ${req.username}`);
+        }
+
+  } catch (err) {
+    console.error('User delete failed', err);
+    return res.status(503).send();
+  }
+
+});
+
 // registers (full add) a new user - authentication middleware is specific to add user token
 router.use('/add', Authorization.isAuthorisedAddUser);
 router.route('/add').post(async (req, res) => {

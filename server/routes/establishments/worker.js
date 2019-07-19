@@ -164,7 +164,7 @@ router.route('/localIdentifier').put(async (req, res) => {
             if (thisGivenWorker && thisGivenWorker.uid && myWorkersUIDs.includes(thisGivenWorker.uid)) {
               const updateThisWorker = updateLocalIdOnWorker(thisGivenWorker, t, updatedTimestamp, username, allAuditEvents);
               dbUpdatePromises.push(updateThisWorker);
-              updatedUids.push(thisGivenWorker.uid);
+              updatedUids.push(thisGivenWorker);
             }
           });
 
