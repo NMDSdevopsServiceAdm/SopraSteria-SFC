@@ -1,5 +1,5 @@
 export interface SummaryList {
   label: string;
   data: string;
-  route?: string;
+  route?: string | any[];
 }

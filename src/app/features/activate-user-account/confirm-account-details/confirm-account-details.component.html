@@ -10,14 +10,17 @@
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <span class="govuk-caption-l govuk-!-margin-bottom-2">User account</span>
     <h1 class="govuk-heading-l">Confirm your account details</h1>
-    <p class="govuk-!-margin-bottom-6">Before saving this user account, check the information you have provided is correct.</p>
+    <p class="govuk-!-margin-bottom-6">
+      Before saving this user account, check the information you have provided is correct.
+    </p>
 
     <app-summary-list [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
-    <app-summary-list [topBorder]="true" [summaryList]="loginInfo"></app-summary-list>
+    <app-summary-list [topBorder]="true" [summaryList]="loginInfo" (setReturn)="onSetReturn()"></app-summary-list>
     <app-summary-list
       [wrapBorder]="true"
       [summaryList]="securityInfo"
       class="govuk-util__block govuk-!-margin-bottom-6"
+      (setReturn)="onSetReturn()"
     ></app-summary-list>
 
     <form (ngSubmit)="onSubmit()" [formGroup]="form" id="form">
