@@ -286,6 +286,7 @@ exports.isAdmin = (req, res , next) => {
         if (claim.role !== 'Admin') {
           return res.status(403).send('You\'re not admin');
         } else {
+          req.username = claim.sub;
           next();
         }
       }
