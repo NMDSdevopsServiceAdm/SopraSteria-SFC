@@ -30,6 +30,15 @@ export class CreateUsernameComponent extends CreateUsername {
   protected init(): void {
     this.callToActionLabel = 'Save and continue';
     this.activationToken = this.route.snapshot.params.activationToken;
+    this.setBackLink();
+  }
+
+  protected setBackLink(): void {
+    this.return = this.createAccountService.returnTo$.value;
+
+    if (this.return) {
+      this.backService.setBackLink(this.return);
+    }
   }
 
   protected setupSubscriptions(): void {
