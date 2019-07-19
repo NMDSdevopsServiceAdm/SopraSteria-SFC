@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edit-user-permissions.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
@@ -160,7 +161,7 @@ const routes: Routes = [
           {
             path: 'permissions',
             component: UserAccountEditPermissionsComponent,
-            canActivate: [RoleGuard],
+            canActivate: [RoleGuard, EditUserPermissionsGuard],
             resolve: { user: UserAccountResolver },
             data: {
               roles: [Roles.Edit],
