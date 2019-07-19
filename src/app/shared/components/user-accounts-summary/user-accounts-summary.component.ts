@@ -40,6 +40,6 @@ export class UserAccountsSummaryComponent implements OnInit {
   private userSlotsAvailable(users: Array<UserDetails>) {
     const editUsers = users.filter(user => user.role === Roles.Edit);
     const readOnlyUsers = users.filter(user => user.role === Roles.Read);
-    return editUsers.length < 3 || readOnlyUsers.length < 3;
+    return editUsers.length < 3 || readOnlyUsers.length < 20;
   }
 }
