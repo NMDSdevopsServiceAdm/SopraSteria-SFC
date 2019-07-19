@@ -4,6 +4,7 @@ import { Roles } from '@core/model/roles.enum';
 import { UserDetails, UserStatus } from '@core/model/userDetails.model';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
+import { orderBy } from 'lodash';
 import { combineLatest } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -23,7 +24,7 @@ export class UserAccountsSummaryComponent implements OnInit {
     combineLatest(this.authService.auth$, this.userService.getAllUsersForEstablishment(this.workplace.uid))
       .pipe(take(1))
       .subscribe(([auth, users]) => {
-        this.users = users;
+        this.users = orderBy(users, ['status', 'role', 'username'], ['desc', 'asc', 'asc']);
         this.canAddUser = auth && auth.role === Roles.Edit && this.userSlotsAvailable(users);
       });
   }
