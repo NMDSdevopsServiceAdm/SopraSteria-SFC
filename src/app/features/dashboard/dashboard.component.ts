@@ -17,7 +17,7 @@ export class DashboardComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private authService: AuthService,
     private userService: UserService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
