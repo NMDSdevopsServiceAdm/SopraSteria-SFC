@@ -13,7 +13,7 @@
       {{ item.data }}
     </dd>
     <dd *ngIf="item.route" class="govuk-summary-list__actions">
-      <a [routerLink]="[item.route]">
+      <a [routerLink]="[item.route]" (click)="emitSetReturn()">
         Change
         <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>
       </a>
