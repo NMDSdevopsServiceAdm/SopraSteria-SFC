@@ -114,7 +114,7 @@ router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishmen
 router.route('/establishment/:id/:userId').put(async (req, res) => {
     const userId = req.params.userId;
     const establishmentId = req.establishmentId;
-    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 2*60*60*24*1000; // 2 days
 
     // validating user id - must be a V4 UUID or it's a username
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -438,6 +438,8 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 // Resend activation link
 router.use('/:id/:trackingId', Authorization.hasAuthorisedEstablishment);
 router.route('/:id/:trackingId').get(async (req, res) => {
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 2*60*60*24*1000; // 2 days
+
     if (!req.params.trackingId) {
         console.error('No UUID');
         return res.status(400).send();
@@ -468,7 +470,7 @@ router.route('/:id/:trackingId').get(async (req, res) => {
             const thisUser = new User.User();
             if (await thisUser.restore(passTokenResults.user.uid, null, null)) {
                 await models.sequelize.transaction(async t => {
-                    await thisUser.trackNewUser(req.username, t, 0);
+                    await thisUser.trackNewUser(req.username, t, expiresTTLms);
                 });
             }
         }
