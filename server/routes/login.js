@@ -13,6 +13,7 @@ const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
 const uuid = require('uuid');
 
 const config = require('..//config/config');
+const formatSuccessulLoginResponse = require('../utils/login/response');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
@@ -262,36 +263,6 @@ router.post('/', async (req, res) => {
     return res.status(503).send({});
   }
 });
-
-// TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (uid, fullname, isPrimary, lastLoggedDate, role, establishment, username, expiryDate) => {
-  // note - the mainService can be null
-  console.log("WA DEBIG - user uid: ", uid)
-  return {
-    username,
-    uid,
-    fullname,
-    isPrimary,
-    lastLoggedIn: lastLoggedDate ? lastLoggedDate.toISOString() : null,
-    role,
-    establishment: establishment ? {
-      id: establishment.id,
-      uid: establishment.uid,
-      name: establishment.NameValue,
-      isRegulated: establishment.isRegulated,
-      nmdsId: establishment.nmdsId,
-      isParent: establishment.isParent,
-      parentUid: establishment.parentUid ? establishment.parentUid : undefined,
-      parentName: establishment.parentName ? establishment.parentName : undefined,
-      isFirstBulkUpload: establishment.lastBulkUploaded ? false : true,
-    } : null,
-    mainService: establishment ?  {
-      id: establishment.mainService ? establishment.mainService.id : null,
-      name: establishment.mainService ? establishment.mainService.name : null
-    } : null,
-    expiryDate: expiryDate
-  };
-};
 
 // renews a given bearer token; this token must exist and must be valid
 //  it must be a Logged In "Bearer" token
