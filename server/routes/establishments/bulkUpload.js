@@ -1279,12 +1279,18 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         });
 
         if (foundWorker) {
+          const theWorker = foundCurrentEstablishment.theWorker(foundWorker);
           updatedWorkers.push({
-            key: thisOnloadWorker
+            key: thisOnloadWorker,
+            name: theWorker.nameOrId,
+            localId: theWorker.localIdentifier,
           });
         } else {
+          const theWorker = thisOnloadEstablishment.theWorker(thisOnloadWorker);
           newWorkers.push({
-            key: thisOnloadWorker
+            key: thisOnloadWorker,
+            name: theWorker.nameOrId,
+            localId: theWorker.localIdentifier,
           });
         }
       });
@@ -1294,8 +1300,11 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         const foundWorker= onloadWorkers.find(thisOnloadWorker => thisCurrentWorker === thisOnloadWorker);
 
         if (!foundWorker) {
+          const theWorker = foundCurrentEstablishment.theWorker(thisCurrentWorker);
           deletedWorkers.push({
-            nameOrId: thisCurrentWorker
+            key: thisCurrentWorker,
+            name: theWorker.nameOrId,
+            localId: theWorker.localIdentifier,
           });
         }
       });
@@ -1303,6 +1312,8 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       updatedEntities.push({
         key: thisOnloadEstablishment.key,
+        name: thisOnloadEstablishment.name,
+        localId: thisOnloadEstablishment.localIdentifier,
         workers: {
           new: newWorkers,
           updated: updatedWorkers,
@@ -1313,6 +1324,8 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       newEntities.push({
         key: thisOnloadEstablishment.key,
+        name: thisOnloadEstablishment.name,
+        localId: thisOnloadEstablishment.localIdentifier
       });
     }
   });
@@ -1330,10 +1343,19 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         const currentWorkers = thisCurrentEstablishment.associatedWorkers;
         const deletedWorkers = [];
 
-        currentWorkers.forEach(thisCurrentWorker => deletedWorkers.push(thisCurrentWorker));
+        currentWorkers.forEach(thisCurrentWorker => {
+          const thisWorker = thisCurrentEstablishment.theWorker(thisCurrentWorker);
+          deletedWorkers.push({
+            key: thisCurrentWorker,
+            name: thisWorker.nameOrId,
+            localId: thisWorker.localIdentifier
+              });
+      });
 
         deletedEntities.push({
           key: thisCurrentEstablishment.key,
+          name: thisCurrentEstablishment.name,
+          localId: thisCurrentEstablishment.localIdentifier,
           workers: {
             deleted: deletedWorkers,
           }
@@ -1444,12 +1466,16 @@ router.route('/report/:reportType').get(async (req, res) => {
 
     let entities =  null;
     let messages =  null;
+    let differenceReport = null;
 
     const entityKey = `${req.establishmentId}/intermediary/establishment.entities.json`;
+    const differenceReportKey = `${req.establishmentId}/validation/difference.report.json`;
 
     try {
       const establishment = await downloadContent(entityKey);
+      const differenceReportS3 = await downloadContent(differenceReportKey);
       entities = establishment ? JSON.parse(establishment.data) : null;
+      differenceReport = differenceReportS3 ? JSON.parse(differenceReportS3.data) : null;
     } catch (err) {
       throw new Error(`router.route('/report').get - failed to download: `, entityKey);
     }
@@ -1493,10 +1519,71 @@ router.route('/report/:reportType').get(async (req, res) => {
       readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
 
       entities ? entities
-      .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
-      .reduce((acc, val) => acc.concat(val), [])
-      .sort((a,b) => a.name > b.name)
-      .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
+        .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
+        .reduce((acc, val) => acc.concat(val), [])
+        .sort((a,b) => a.name > b.name)
+        .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
+
+      // list all establishments that are being deleted
+      console.log("WA DEBUG - difference report: ", differenceReportKey)
+      if (differenceReport && differenceReport.deleted && Array.isArray(differenceReport.deleted) && differenceReport.deleted.length > 0) {
+        const deletedTitle = '* Deleted (the following Workplaces will be deleted) *';
+        const deletedPadding = '*'.padStart(deletedTitle.length, '*');
+        readable.push(`${NEWLINE}${deletedPadding}${NEWLINE}${deletedTitle}${NEWLINE}${deletedPadding}${NEWLINE}`);
+
+        differenceReport.deleted
+          .sort((x,y) => x.name > y.name)
+          .forEach(thisDeletedEstablishment => {
+            readable.push(`"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId})${NEWLINE}`)
+          });
+      }
+    }
+
+    if (reportType === 'workers') {
+      // list all workers that are being deleted
+      if (differenceReport) {
+        const numberOfDeletedWorkersFromUpdatedEstablishments = differenceReport.updated.reduce((total, current) => total += current.workers.deleted.length, 0);
+        const numberOfDeletedWorkersFromDeletedEstablishments = differenceReport.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
+        const totalDeletedWorkers = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
+
+        if (numberOfDeletedWorkersFromDeletedEstablishments) {
+          let deletedTitle = '* Deleted Workplaces (the following Staff will be deleted) *';
+          let deletedPadding = '*'.padStart(deletedTitle.length, '*');
+          readable.push(`${NEWLINE}${deletedPadding}${NEWLINE}${deletedTitle}${NEWLINE}${deletedPadding}${NEWLINE}`);
+
+          differenceReport.deleted
+            .sort((x,y) => x.name > y.name)
+            .forEach(thisDeletedEstablishment => {
+              if (thisDeletedEstablishment.workers && thisDeletedEstablishment.workers.deleted) {
+                thisDeletedEstablishment.workers.deleted
+                  .sort((x,y) => x.name > y.name)
+                  .forEach(thisWorker => {
+                    console.log()
+                    readable.push(`"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId}) - "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`)
+                  });
+              }
+            });
+        }
+
+        if (numberOfDeletedWorkersFromUpdatedEstablishments) {
+          deletedTitle = '* Existing Workplaces (the following Staff will be deleted) *';
+          deletedPadding = '*'.padStart(deletedTitle.length, '*');
+          readable.push(`${NEWLINE}${deletedPadding}${NEWLINE}${deletedTitle}${NEWLINE}${deletedPadding}${NEWLINE}`);
+
+          differenceReport.updated
+            .sort((x,y) => x.name > y.name)
+            .forEach(thisUpdatedEstablishment => {
+              if (thisUpdatedEstablishment.workers && thisUpdatedEstablishment.workers.deleted) {
+                thisUpdatedEstablishment.workers.deleted
+                  .sort((x,y) => x.name > y.name)
+                  .forEach(thisWorker => {
+                    readable.push(`"${thisUpdatedEstablishment.name}" (LOCALSTID - ${thisUpdatedEstablishment.localId})- "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`)
+                  });
+              }
+            });
+        }
+
+      }
     }
 
     readable.push(null);

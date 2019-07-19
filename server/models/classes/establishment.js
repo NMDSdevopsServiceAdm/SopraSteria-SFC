@@ -321,6 +321,10 @@ class Establishment extends EntityValidator {
         }
     }
 
+    theWorker(key) {
+        return this._workerEntities && key ? this._workerEntities[key] : null;
+    }
+
 
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
