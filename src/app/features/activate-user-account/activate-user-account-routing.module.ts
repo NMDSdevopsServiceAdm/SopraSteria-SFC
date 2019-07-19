@@ -10,6 +10,7 @@ import {
 import { CreateUsernameComponent } from '@features/activate-user-account/create-username/create-username.component';
 import { SecurityQuestionComponent } from '@features/activate-user-account/security-question/security-question.component';
 import { ExpiredActivationLinkComponent } from '@features/activate-user-account/expired-activation-link/expired-activation-link.component';
+import { ActivationCompleteGuard } from '@core/guards/activation-complete/activation-complete.guard';
 
 const routes: Routes = [
   {
@@ -24,21 +25,25 @@ const routes: Routes = [
     children: [
       {
         path: 'create-username',
+        canActivate: [ActivationCompleteGuard],
         component: CreateUsernameComponent,
         data: { title: 'Create Username' },
       },
       {
         path: 'security-question',
+        canActivate: [ActivationCompleteGuard],
         component: SecurityQuestionComponent,
         data: { title: 'Security Question' },
       },
       {
         path: 'confirm-account-details',
+        canActivate: [ActivationCompleteGuard],
         component: ConfirmAccountDetailsComponent,
         data: { title: 'Confirm Account Details' },
       },
       {
         path: 'complete',
+        canActivate: [ActivationCompleteGuard],
         component: ActivationCompleteComponent,
         data: { title: 'Complete' },
       },

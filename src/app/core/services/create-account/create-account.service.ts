@@ -18,6 +18,7 @@ export class CreateAccountService {
   public userDetails$: BehaviorSubject<UserDetails> = new BehaviorSubject<UserDetails>(null);
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
+  public activationComplete$: BehaviorSubject<boolean> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient) {}
 
