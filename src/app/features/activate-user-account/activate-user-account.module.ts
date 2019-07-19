@@ -1,12 +1,16 @@
-import { ActivateUserAccountRoutingModule } from '@features/activate-user-account/activate-user-account-routing.module';
-import { ActivationCompleteComponent } from './activation-complete/activation-complete.component';
 import { CommonModule } from '@angular/common';
-import { ConfirmAccountDetailsComponent } from './confirm-account-details/confirm-account-details.component';
-import { CreateUsernameComponent } from './create-username/create-username.component';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { SecurityQuestionComponent } from './security-question/security-question.component';
+import { ActivateUserAccountRoutingModule } from '@features/activate-user-account/activate-user-account-routing.module';
+import {
+  ExpiredActivationLinkComponent,
+} from '@features/activate-user-account/expired-activation-link/expired-activation-link.component';
 import { SharedModule } from '@shared/shared.module';
+
+import { ActivationCompleteComponent } from './activation-complete/activation-complete.component';
+import { ConfirmAccountDetailsComponent } from './confirm-account-details/confirm-account-details.component';
+import { CreateUsernameComponent } from './create-username/create-username.component';
+import { SecurityQuestionComponent } from './security-question/security-question.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, ActivateUserAccountRoutingModule],
@@ -15,6 +19,7 @@ import { SharedModule } from '@shared/shared.module';
     CreateUsernameComponent,
     SecurityQuestionComponent,
     ActivationCompleteComponent,
+    ExpiredActivationLinkComponent,
   ],
 })
 export class ActivateUserAccountModule {}
