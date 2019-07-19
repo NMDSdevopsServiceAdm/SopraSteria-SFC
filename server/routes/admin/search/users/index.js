@@ -24,7 +24,7 @@ router.route('/').post(async function (req, res) {
             include: [
               {
                 model: models.establishment,
-                attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address', 'isParent', 'NameValue', 'updated'],
+                attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address1', 'isParent', 'NameValue', 'updated'],
               },
             ],
             where: {
@@ -60,7 +60,7 @@ router.route('/').post(async function (req, res) {
             nmdsId: thisLogin.user.establishment.nmdsId,
             postcode: thisLogin.user.establishment.postcode,
             isRegulated: thisLogin.user.establishment.isRegulated,
-            address: thisLogin.user.establishment.address,
+            address: thisLogin.user.establishment.address1,
             isParent: thisLogin.user.establishment.isParent,
             locationId: thisLogin.user.establishment.locationId,
             }

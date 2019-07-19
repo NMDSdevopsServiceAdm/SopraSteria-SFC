@@ -13,6 +13,7 @@ const usernameCheck = require('../../utils/security/usernameValidation').isUsern
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
 
+
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 
@@ -116,7 +117,7 @@ router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishmen
 router.route('/establishment/:id/:userId').put(async (req, res) => {
     const userId = req.params.userId;
     const establishmentId = req.establishmentId;
-    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 2*60*60*24*1000; // 2 days
 
     // validating user id - must be a V4 UUID or it's a username
     const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -435,6 +436,63 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 
         console.error("Unexpected exception: ", err)
     }
+});
+
+// Resend activation link
+
+router.use('/:uid/resend-activation', Authorization.isAuthorised);
+router.route('/:uid/resend-activation').post(async (req, res) => {
+    const userId = req.params.uid;
+    const establishmentId = req.establishmentId;
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 2*60*60*24*1000; // 2 days
+
+    // validating user id - must be a V4 UUID
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    let byUUID = null;
+    if (uuidRegex.test(userId.toUpperCase())) {
+        byUUID = userId;
+    } else {
+        return res.status(400).send();
+    }
+
+    const thisUser = new User.User(establishmentId);
+    
+    try {
+        const passTokenResults = await models.addUserTracking.findOne({
+            where: {
+                completed: null
+            },
+            include: [
+                {
+                    model: models.user,
+                    attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'JobTitleValue', 'PhoneValue'],
+                    where: {
+                        uid: byUUID
+                    }
+                }
+            ]
+        });
+
+        if(passTokenResults){
+            const thisUser = new User.User();
+            if (await thisUser.restore(passTokenResults.user.uid, null, null)) {
+                await models.sequelize.transaction(async t => {
+                    await thisUser.trackNewUser(req.username, t, expiresTTLms);
+                });
+            }
+            return res.status(200).send("Success");
+        }else{
+            return res.status(404).send("Not found");
+        }
+        
+    }
+    catch(err){
+        return res.status(503).send(err.safe);
+    }
+});
+
+router.route('/:username').delete(async (req, res) => {
+    return res.status(200).send();
 });
 
 // validates (part add) a new user - not authentication middleware

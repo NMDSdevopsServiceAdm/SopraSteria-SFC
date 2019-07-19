@@ -7,7 +7,7 @@ $error_row_padding: $govuk-gutter-half;
 }
 
 .govuk-error-table__row--highlight {
-  background: lighten(govuk-colour('light-blue'), 50%);
+  background: rgba(govuk-colour('blue'), 0.15);
   .govuk-table__cell:first-of-type {
     padding-left: $error_row_padding / 2;
   }

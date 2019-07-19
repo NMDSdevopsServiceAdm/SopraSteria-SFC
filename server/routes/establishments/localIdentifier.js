@@ -179,7 +179,7 @@ router.route('/').put(async (req, res) => {
           if (thisGivenEstablishment && thisGivenEstablishment.uid && myEstablishmentUIDs.includes(thisGivenEstablishment.uid)) {
             const updateThisEstablishment = updateLocalIdOnEstablishment(thisGivenEstablishment, t, updatedTimestamp, username, allAuditEvents);
             dbUpdatePromises.push(updateThisEstablishment);
-            updatedUids.push(thisGivenEstablishment.uid);
+            updatedUids.push(thisGivenEstablishment);
           } else {
             // simply ignore it - silient operation, as the frontend is not going to give dodgy UIDs
           }
