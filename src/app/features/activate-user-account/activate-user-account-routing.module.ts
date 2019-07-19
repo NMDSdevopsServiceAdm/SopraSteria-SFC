@@ -21,29 +21,26 @@ const routes: Routes = [
   {
     path: ':activationToken',
     canActivate: [CreateUserGuard],
+    canActivateChild: [ActivationCompleteGuard],
     data: { title: 'Activate User Account' },
     children: [
       {
         path: 'create-username',
-        canActivate: [ActivationCompleteGuard],
         component: CreateUsernameComponent,
         data: { title: 'Create Username' },
       },
       {
         path: 'security-question',
-        canActivate: [ActivationCompleteGuard],
         component: SecurityQuestionComponent,
         data: { title: 'Security Question' },
       },
       {
         path: 'confirm-account-details',
-        canActivate: [ActivationCompleteGuard],
         component: ConfirmAccountDetailsComponent,
         data: { title: 'Confirm Account Details' },
       },
       {
         path: 'complete',
-        canActivate: [ActivationCompleteGuard],
         component: ActivationCompleteComponent,
         data: { title: 'Complete' },
       },

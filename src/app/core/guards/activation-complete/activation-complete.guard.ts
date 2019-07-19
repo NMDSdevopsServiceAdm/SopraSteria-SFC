@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateChild, Router, RouterStateSnapshot } from '@angular/router';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ActivationCompleteGuard implements CanActivate {
+export class ActivationCompleteGuard implements CanActivateChild {
   constructor(
     private createAccountService: CreateAccountService,
     private router: Router
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     if (!this.createAccountService.activationComplete$.value) {
       return true;
     } else {
