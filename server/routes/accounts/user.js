@@ -437,7 +437,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 
 // Resend activation link
 router.use('/:id/:trackingId', Authorization.hasAuthorisedEstablishment);
-router.route('/:id/:trackingId').get(async (req, res) => {
+router.route('/:id/:trackingId').post(async (req, res) => {
     const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 2*60*60*24*1000; // 2 days
 
     if (!req.params.trackingId) {
@@ -474,7 +474,7 @@ router.route('/:id/:trackingId').get(async (req, res) => {
                 });
             }
         }
-        return res.status(200).send();
+        return res.status(200).send("Success");
     }
     catch(err){
         return res.status(503).send(err.safe);
