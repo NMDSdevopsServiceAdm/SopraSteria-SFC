@@ -35,7 +35,7 @@ router.route('/').post(async function (req, res) {
 
   try {
     let results = await models.establishment.findAll({
-        attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address', 'isParent', 'NameValue', 'updated'],
+        attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address1', 'isParent', 'NameValue', 'updated'],
         where:searchFilter,
         order: [
           ['NameValue', 'ASC']
@@ -49,7 +49,7 @@ router.route('/').post(async function (req, res) {
         nmdsId: thisEstablishment.nmdsId,
         postcode: thisEstablishment.postcode,
         isRegulated: thisEstablishment.isRegulated,
-        address: thisEstablishment.address,
+        address: thisEstablishment.address1,
         isParent: thisEstablishment.isParent,
         locationId: thisEstablishment.locationId,
         lastUpdated: thisEstablishment.updated
