@@ -16,23 +16,23 @@
         "locationId": "123456",
         "fullname": "John Smith",
         "jobTitle": "Care assistant",
-        "emailAddress": "john@gmail.com",
-        "contactNumber": "07777777770",
+        "email": "john@gmail.com",
+        "phone": "07777777770",
         "username": "johnsmith",
         "password": "password1",
         "securityQuestion": "How much wood could a wood chuck chuck if a woodchuck could chuck wood?",
-        "securityAnswer": "3"
+        "securityQuestionAnswer": "3"
       },
       {
         "uid": 1,
         "fullname": "Carol Henderson",
         "jobTitle": "Care co-ordinator",
-        "emailAddress": "carol@gmail.com",
-        "contactNumber": "07777777771",
+        "email": "carol@gmail.com",
+        "phone": "07777777771",
         "username": "carolhenderson",
         "password": "password1",
         "securityQuestion": "How old is my oldest pet?",
-        "securityAnswer": "As of 2018 he is 7"
+        "securityQuestionAnswer": "As of 2018 he is 7"
       }
     ]
   },
@@ -52,12 +52,12 @@
         "uid": 0,
         "fullname": "John Smith",
         "jobTitle": "Care assistant",
-        "emailAddress": "john2@gmail.com",
-        "contactNumber": "07777777770",
+        "email": "john2@gmail.com",
+        "phone": "07777777770",
         "username": "johnsmith2",
         "password": "password1",
         "securityQuestion": "How much wood could a wood chuck chuck if a woodchuck could chuck wood?",
-        "securityAnswer": "7"
+        "securityQuestionAnswer": "7"
       }
     ]
   },
@@ -77,12 +77,12 @@
         "uid": 0,
         "fullname": "Brendan Newbanks",
         "jobTitle": "Care assistant",
-        "emailAddress": "brendan@gmail.com",
-        "contactNumber": "07777777772",
+        "email": "brendan@gmail.com",
+        "phone": "07777777772",
         "username": "brendannewbanks",
         "password": "password1",
         "securityQuestion": "If I could be any transformer, who would I be?",
-        "securityAnswer": "Soundwave"
+        "securityQuestionAnswer": "Soundwave"
       }
     ]
   }

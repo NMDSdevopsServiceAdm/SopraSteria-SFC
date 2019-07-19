@@ -80,6 +80,10 @@ export class EstablishmentService {
     this._establishment$.next(establishment);
   }
 
+  public resetState() {
+    this._establishment$.next(null);
+  }
+
   public set establishmentId(value: number) {
     this._establishmentId = value;
     localStorage.setItem('establishmentId', value.toString());

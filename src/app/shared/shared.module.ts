@@ -25,12 +25,13 @@ import {
 } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
-import { StartButtonComponent } from './components/start-button/start-button.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
+import { SummaryListComponent } from './components/summary-list/summary-list.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
+import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
@@ -64,13 +65,14 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     QualificationsAndTrainingComponent,
     StaffRecordSummaryComponent,
     StaffSummaryComponent,
-    StartButtonComponent,
     StatusComponent,
     SubmitButtonComponent,
     TabComponent,
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    SummaryListComponent,
+    UserAccountsSummaryComponent,
   ],
   exports: [
     AlertComponent,
@@ -96,13 +98,14 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     QualificationsAndTrainingComponent,
     StaffRecordSummaryComponent,
     StaffSummaryComponent,
-    StartButtonComponent,
     StatusComponent,
     SubmitButtonComponent,
     TabComponent,
     TabsComponent,
     TotalStaffPanelComponent,
     WorkplaceSummaryComponent,
+    SummaryListComponent,
+    UserAccountsSummaryComponent,
   ],
 })
 export class SharedModule {}

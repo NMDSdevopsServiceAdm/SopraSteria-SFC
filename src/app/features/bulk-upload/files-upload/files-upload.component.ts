@@ -1,7 +1,12 @@
 import { HttpEventType } from '@angular/common/http';
 import { Component, OnInit, Renderer2 } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PresignedUrlResponseItem, PresignedUrlsRequest, UploadFileRequestItem, ValidatedFile } from '@core/model/bulk-upload.model';
+import {
+  PresignedUrlResponseItem,
+  PresignedUrlsRequest,
+  UploadFileRequestItem,
+  ValidatedFile,
+} from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -83,7 +88,8 @@ export class FilesUploadComponent implements OnInit {
     this.bulkUploadService.resetBulkUpload();
     const target = $event.target || $event.srcElement;
     this.selectedFiles = Array.from(target['files']);
-    this.fileUpload.setValidators(CustomValidators.checkFiles(this.fileUpload, this.selectedFiles));
+    this.fileUpload.setValidators(CustomValidators.checkFiles);
+    this.fileUpload.updateValueAndValidity();
     this.bulkUploadService.selectedFiles$.next(this.selectedFiles);
     this.filesUploaded = false;
 

@@ -1,118 +1,104 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { LocationAddress } from '@core/model/location.model';
-import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
-import { SecurityDetails } from '@core/model/security-details.model';
-import { Service } from '@core/model/services.model';
-import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
-import { Subscription } from 'rxjs';
+import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-account-details',
   templateUrl: './confirm-account-details.component.html',
 })
-export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
-  public form: FormGroup;
-  public userDetails: UserDetails;
-  public loginCredentials: LoginCredentials;
-  public securityDetails: SecurityDetails;
-  public serverError: string;
-  public submitted = false;
-  private formErrorsMap: Array<ErrorDetails>;
-  private locationAddress: LocationAddress;
-  private serverErrorsMap: Array<ErrorDefinition>;
-  private subscriptions: Subscription = new Subscription();
-  private workplaceService: Service;
+export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
+  protected actionType = 'Registration';
 
   constructor(
     private backService: BackService,
-    private errorSummaryService: ErrorSummaryService,
-    private fb: FormBuilder,
     private registrationService: RegistrationService,
     private router: Router,
-    private userService: UserService
-  ) {}
+    private userService: UserService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder
+  ) {
+    super(errorSummaryService, formBuilder);
+  }
 
-  ngOnInit() {
-    this.setupForm();
+  protected init() {
     this.setupSubscriptions();
-    this.setupFormErrorsMap();
-    this.setupServerErrorsMap();
     this.setBackLink();
   }
 
-  private setupForm(): void {
-    this.form = this.fb.group({
-      termsAndConditions: [null, Validators.required],
-    });
-  }
-
-  private setupSubscriptions(): void {
+  protected setupSubscriptions(): void {
     this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
-    );
-
-    this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe(
-        (locationAddress: LocationAddress) => (this.locationAddress = locationAddress)
-      )
-    );
-
-    this.subscriptions.add(
-      this.registrationService.selectedWorkplaceService$.subscribe(
-        (workplaceService: Service) => (this.workplaceService = workplaceService)
-      )
-    );
-
-    this.subscriptions.add(
-      this.registrationService.loginCredentials$.subscribe(
-        (loginCredentials: LoginCredentials) => (this.loginCredentials = loginCredentials)
-      )
-    );
-
-    this.subscriptions.add(
-      this.registrationService.securityDetails$.subscribe(
-        (securityDetails: SecurityDetails) => (this.securityDetails = securityDetails)
-      )
+      combineLatest(
+        this.userService.userDetails$,
+        this.registrationService.selectedLocationAddress$,
+        this.registrationService.selectedWorkplaceService$,
+        this.registrationService.loginCredentials$,
+        this.registrationService.securityDetails$
+      ).subscribe(([userDetails, locationAddress, workplaceService, loginCredentials, securityDetails]) => {
+        this.userDetails = userDetails;
+        this.locationAddress = locationAddress;
+        this.workplaceService = workplaceService;
+        this.loginCredentials = loginCredentials;
+        this.securityDetails = securityDetails;
+        this.setAccountDetails();
+      })
     );
   }
 
-  private setupFormErrorsMap(): void {
-    this.formErrorsMap = [
+  private setAccountDetails(): void {
+    this.userInfo = [
       {
-        item: 'termsAndConditions',
-        type: [
-          {
-            name: 'required',
-            message: 'Please agree to the terms and conditions.',
-          },
-        ],
+        label: 'Full name',
+        data: this.userDetails.fullname,
+        route: '/registration/change-your-details',
+      },
+      {
+        label: 'Job title',
+        data: this.userDetails.jobTitle,
+      },
+      {
+        label: 'Email address',
+        data: this.userDetails.email,
+      },
+      {
+        label: 'Contact phone',
+        data: this.userDetails.phone,
+      },
+    ];
+
+    this.loginInfo = [
+      {
+        label: 'Username',
+        data: this.loginCredentials.username,
+        route: '/registration/create-username',
+      },
+      {
+        label: 'Password',
+        data: '******',
+      },
+    ];
+
+    this.securityInfo = [
+      {
+        label: 'Security question',
+        data: this.securityDetails.securityQuestion,
+        route: '/registration/security-question',
+      },
+      {
+        label: 'Security answer',
+        data: this.securityDetails.securityQuestionAnswer,
       },
     ];
   }
 
-  private setupServerErrorsMap(): void {
-    this.serverErrorsMap = [
-      {
-        name: 503,
-        message: 'Database error.',
-      },
-      {
-        name: 400,
-        message: 'Registration failed.',
-      },
-    ];
-  }
-
-  private setBackLink(): void {
+  protected setBackLink(): void {
     this.backService.setBackLink({ url: ['/registration/security-question'] });
   }
 
@@ -126,48 +112,18 @@ export class ConfirmAccountDetailsComponent implements OnInit, OnDestroy {
     payload.user.username = this.loginCredentials.username;
     payload.user.password = this.loginCredentials.password;
     payload.user.securityQuestion = this.securityDetails.securityQuestion;
-    payload.user.securityQuestionAnswer = this.securityDetails.securityAnswer;
-
+    payload.user.securityQuestionAnswer = this.securityDetails.securityQuestionAnswer;
     return [payload];
   }
 
-  public onSubmit(): void {
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (this.form.valid) {
-      this.submitRegistration();
-    } else {
-      this.errorSummaryService.scrollToErrorSummary();
-    }
-  }
-
-  private submitRegistration(): void {
+  protected save(): void {
     this.subscriptions.add(
-      this.registrationService.postRegistration(this.generatePayload()).subscribe(
-        () => this.router.navigate(['/registration/complete']),
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          this.errorSummaryService.scrollToErrorSummary();
-        }
-      )
+      this.registrationService
+        .postRegistration(this.generatePayload())
+        .subscribe(
+          () => this.router.navigate(['/registration/complete']),
+          (error: HttpErrorResponse) => this.onError(error)
+        )
     );
-  }
-
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  /**
-   * Unsubscribe hook to ensure no memory leaks
-   */
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }

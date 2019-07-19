@@ -14,7 +14,7 @@ import { AuthService } from '@core/services/auth.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { filter } from 'lodash';
+import { filter, findIndex } from 'lodash';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -171,22 +171,41 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     };
   }
 
+  public downloadFile(event: Event, key: string) {
+    event.preventDefault();
+
+    this.bulkUploadService
+      .getUploadedFileSignedURL(this.establishmentService.establishmentId, key)
+      .subscribe(signedURL => {
+        window.open(signedURL);
+      });
+  }
+
   /**
    * Set validate success update uploaded files
    * And then set total warnings and/or errors and status
    * @param response
    */
   private onValidateComplete(response: ValidatedFilesResponse): void {
-    this.uploadedFiles = [response.establishment, response.training, response.workers];
-    this.uploadedFiles = filter(this.uploadedFiles, 'filename');
+    // this.uploadedFiles = [response.establishment, response.training, response.workers];
     const validationErrors: Array<ErrorDefinition> = [];
 
-    this.uploadedFiles.forEach((file: ValidatedFile) => {
-      file.status = file.errors ? FileValidateStatus.Fail : FileValidateStatus.Pass;
-      this.totalWarnings = this.totalWarnings + file.warnings;
-      this.totalErrors = this.totalErrors + file.errors;
-      if (file.errors) {
-        validationErrors.push(this.getValidationError(file));
+    /* TODO: BE returns a different object for ValidatedFiles than UploadedFiles
+     *       previously we were just overwritting the uploaded files object with the
+     *       returned data, but that would then wipe out other information needed to
+     *       to display the uploaded files list. This now joins the objects together
+     *       but it would be a lot better if the API sent the same object back.
+     */
+    filter(response, 'filename').forEach((validatedFile: ValidatedFile) => {
+      const index = findIndex(this.uploadedFiles, ['fileType', validatedFile.fileType]);
+      this.uploadedFiles[index] = { ...this.uploadedFiles[index], ...validatedFile };
+      this.uploadedFiles[index].status = this.uploadedFiles[index].errors
+        ? FileValidateStatus.Fail
+        : FileValidateStatus.Pass;
+      this.totalWarnings = this.totalWarnings + this.uploadedFiles[index].warnings;
+      this.totalErrors = this.totalErrors + this.uploadedFiles[index].errors;
+      if (this.uploadedFiles[index].errors) {
+        validationErrors.push(this.getValidationError(this.uploadedFiles[index]));
       }
     });
     this.bulkUploadService.validationErrors$.next(validationErrors);

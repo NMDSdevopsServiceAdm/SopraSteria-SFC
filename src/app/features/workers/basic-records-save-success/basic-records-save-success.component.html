@@ -11,7 +11,13 @@
       <li>Add a full staff record.</li>
     </ul>
     <div class="govuk-button-group">
-      <a class="govuk-button" role="button" routerLink="/dashboard" fragment="staff-records">
+      <a
+        role="button"
+        draggable="false"
+        class="govuk-button"
+        [routerLink]="['/dashboard']"
+        [fragment]="'staff-records'"
+      >
         Go to staff records
       </a>
     </div>

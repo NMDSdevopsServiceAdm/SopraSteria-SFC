@@ -6,6 +6,7 @@ import {
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
+import { Roles } from '@core/model/roles.enum';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
@@ -94,15 +95,14 @@ const routes: Routes = [
     loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
     canActivate: [AuthGuard, RoleGuard],
     data: {
-      roles: ['Edit'],
+      roles: [Roles.Edit],
       title: 'Bulk Upload',
     },
   },
   {
-    path: 'create-account',
-    loadChildren: '@features/create-account/create-account.module#CreateAccountModule',
-    canActivate: [AuthGuard],
-    data: { title: 'Create account' },
+    path: 'activate-account',
+    loadChildren: '@features/activate-user-account/activate-user-account.module#ActivateUserAccountModule',
+    data: { title: 'Activate User Account' },
   },
   {
     path: '',
@@ -116,7 +116,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { anchorScrolling: 'enabled' })],
+  imports: [
+    RouterModule.forRoot(routes, {
+      anchorScrolling: 'enabled',
+      onSameUrlNavigation: 'reload',
+      paramsInheritanceStrategy: 'always',
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule { }

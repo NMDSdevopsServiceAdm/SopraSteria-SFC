@@ -76,8 +76,13 @@ class Establishment extends EntityValidator {
 
         // localised attributes
         this._name = null;
-        this._address = null;
+        this._address1 = null;
+        this._address2 = null;
+        this._address3 = null;
+        this._town = null;
+        this._county = null;
         this._locationId = null;
+        this._provId = null;
         this._postcode = null;
         this._isRegulated = null;
         this._mainService = null;
@@ -89,6 +94,9 @@ class Establishment extends EntityValidator {
         this._parentId = null;
         this._dataOwner = null;
         this._parentPermissions = null;
+
+        // interim reasons for leaving - https://trello.com/c/vNHbfdms
+        this._reasonsForLeaving = null;
 
         // abstracted properties
         const thisEstablishmentManager = new EstablishmentProperties();
@@ -139,11 +147,39 @@ class Establishment extends EntityValidator {
         return this._properties.get('Name') ? this._properties.get('Name').property : null;
     };
     get address() {
-        return this._address;
+      // returns concatenated address
+      const addressParts = [];
+      this._address1 ? addressParts.push(this._address1) : true;
+      this._address2 ? addressParts.push(this._address2) : true;
+      this._address3 ?  addressParts.push(this._address3) : true;
+      this._town ? addressParts.push(this._town) : true;
+      this._county ? addressParts.push(this._county) : true;
+      return addressParts.join(', ');
+    }
+    get address1() {
+        return this._address1;
     };
+    get address1() {
+        return this._address1;
+    };
+    get address2() {
+      return this._address2;
+    };
+    get address3() {
+      return this._address3;
+    };
+    get town() {
+      return this._town;
+    }
+    get county() {
+      return this._county;
+    }
     get locationId() {
-        return this._locationId;
+      return this._locationId;
     };
+    get provId() {
+      return this._provId;
+    }
     get postcode() {
         return this._postcode;
     };
@@ -183,7 +219,9 @@ class Establishment extends EntityValidator {
     get vacancies() {
       return this._properties.get('Vacancies') ? this._properties.get('Vacancies').property : null;
     }
-
+    get reasonsForLeaving() {
+      return this._reasonsForLeaving;
+    }
 
     get nmdsId() {
         return this._nmdsId;
@@ -217,6 +255,10 @@ class Establishment extends EntityValidator {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
     }
 
+    get key(){
+        return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.name).replace(/\s/g, "");
+    }
+
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
     _initialise() {
         if (this._uid === null) {
@@ -231,15 +273,20 @@ class Establishment extends EntityValidator {
     }
 
     // external method to initialise the mandatory non-extendable properties
-    initialise(address, locationId, postcode, isRegulated) {
+    initialise(address1, address2, address3, town, county, locationId, provId, postcode, isRegulated) {
 
         // NMDS ID will be calculated when saving this establishment for the very first time - on creation only
         this._nmdsId = null;
 
-        this._address = address;
+        this._address1 = address1;
+        this._address2 = address2;
+        this._address3 = address3;
+        this._town = town;
+        this._county = county;
         this._postcode = postcode;
         this._isRegulated = isRegulated;
         this._locationId = locationId;
+        this._provId = provId;
     }
 
     initialiseSub(parentID, parentUid){
@@ -282,7 +329,8 @@ class Establishment extends EntityValidator {
             this.resetValidations();
 
             // inject all services against this establishment
-            document.allMyServices = ServiceCache.allMyServices(document.IsCQCRegulated);
+            const isRegulated = document.IsCQCRegulated || document.isRegulated;
+            document.allMyServices = ServiceCache.allMyServices(isRegulated);
 
             // inject all capacities against this establishment - note, "other services" can be represented by the JSON document attribute "services" or "otherServices"
             const allAssociatedServiceIndices = [];
@@ -290,7 +338,15 @@ class Establishment extends EntityValidator {
                 allAssociatedServiceIndices.push(document.mainService.id);
             }
             if (document && document.otherServices && Array.isArray(document.otherServices)) {
-                document.otherServices.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+                document.otherServices.forEach(thisService => {
+                  if (thisService.id) {
+                    allAssociatedServiceIndices.push(thisService.id);
+                  } else if (thisService.services && Array.isArray(thisService.services)) {
+                    thisService.services.forEach(innerService => {
+                      allAssociatedServiceIndices.push(innerService.id)
+                    });
+                  }
+                });
             }
             if (document && document.services && Array.isArray(document.services)) {
                 document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
@@ -304,8 +360,27 @@ class Establishment extends EntityValidator {
                 this._isRegulated = document.isRegulated;
             }
             if (document.locationId) {
-                // Note - the if more validation to do on location ID - so this really should be a managed property
+                // Note - there is more validation to do on location ID - so this really should be a managed property
                 this._locationId = document.locationId;
+            }
+            if (document.provId) {
+              // Note - there is more validation to do on location ID - so this really should be a managed property
+              this._provId = document.provId;
+            }
+            if (document.address1) {
+              // if address is given, allow reset on all address components
+              this._address1 = document.address1;
+              this._address2 = document.address2 ? document.address2 : '';
+              this._address3 = document.address3 ? document.address3 : '';
+              this._town = document.town ? document.town : '';
+              this._county = document.county ? document.county : '';
+            }
+            if (document.postcode) {
+              this._postcode = document.postcode;
+            }
+
+            if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
+              this._reasonsForLeaving = document.reasonsForLeaving;
             }
 
             // allow for deep restoration of entities (associations - namely Worker here)
@@ -313,20 +388,24 @@ class Establishment extends EntityValidator {
                 const promises = [];
                 if (document.workers && Array.isArray(document.workers)) {
                     document.workers.forEach(thisWorker => {
-                        const workerKey = thisWorker.nameOrId.replace(/\s/g, "");
+                      // we're loading from JSON, not entity, so there is no key property; so add it
+                      thisWorker.key = thisWorker.localIdentifier ? thisWorker.localIdentifier.replace(/\s/g, "") : thisWorker.nameOrId.replace(/\s/g, "");
 
-                        // check if we already have the Worker associated, before associating a new worker
-                        if (this._workerEntities[workerKey]) {
-                            // else we already have this worker, load changes against it
-                            promises.push(this._workerEntities[workerKey].load(thisWorker, true));
+                      // check if we already have the Worker associated, before associating a new worker
+                      if (this._workerEntities[thisWorker.key]) {
+                          // the local identifier is required during bulk upload for reasoning; but against the worker itself, it's immutable.
+                          delete thisWorker.localIdentifier;
 
-                        } else {
-                            const newWorker = new Worker(null);
+                          // else we already have this worker, load changes against it
+                          promises.push(this._workerEntities[thisWorker.key].load(thisWorker, true));
 
-                            // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-                            this.associateWorker(workerKey, newWorker);
-                            promises.push(newWorker.load(thisWorker, true));
-                        }
+                      } else {
+                          const newWorker = new Worker(null);
+
+                          // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                          this.associateWorker(thisWorker.key, newWorker);
+                          promises.push(newWorker.load(thisWorker, true));
+                      }
 
                     });
 
@@ -334,7 +413,9 @@ class Establishment extends EntityValidator {
                     // however, how do we mark for deletion those no longer required
                     this._readyForDeletionWorkers = [];
                     Object.values(this._workerEntities).forEach(thisWorker => {
-                        const foundWorker = document.workers.find(givenWorker => givenWorker.nameOrId === thisWorker.nameOrId);
+                        const foundWorker = document.workers.find(givenWorker => {
+                          return givenWorker.key === thisWorker.key
+                        });
                         if (!foundWorker) {
                             this._readyForDeletionWorkers.push(thisWorker);
                         }
@@ -461,7 +542,11 @@ class Establishment extends EntityValidator {
                 const creationDocument = {
                     uid: this.uid,
                     NameValue: this.name,
-                    address: this._address,
+                    address1: this._address1,
+                    address2: this._address2,
+                    address3: this._address3,
+                    town: this._town,
+                    county: this._county,
                     postcode: this._postcode,
                     isParent: this._isParent,
                     parentUid: this._parentUid,
@@ -470,6 +555,7 @@ class Establishment extends EntityValidator {
                     parentPermissions: this._parentPermissions,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
+                    proviId: this._provId,
                     MainServiceFKValue: this.mainService.id,
                     nmdsId: this._nmdsId,
                     updatedBy: savedBy.toLowerCase(),
@@ -611,6 +697,14 @@ class Establishment extends EntityValidator {
                         source: bulkUploaded ? 'Bulk' : 'Online',
                         isRegulated: this._isRegulated,                         // to remove when a change managed property
                         locationId: this._locationId,                           // to remove when a change managed property
+                        provId: this._provId,                                   // to remove when a change managed property
+                        address1: this._address1,
+                        address2: this._address2,
+                        address3: this._address3,
+                        town: this._town,
+                        county: this._county,
+                        postcode: this._postcode,
+                        reasonsForLeaving: this._reasonsForLeaving,
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
@@ -698,7 +792,7 @@ class Establishment extends EntityValidator {
                         });
                         await Promise.all(createModelPromises);
 
-                        /*
+                        /* https://trello.com/c/5V5sAa4w
                         // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
                         // having updated the Establishment, check to see whether it is necessary to recalculate
                         //  the overall WDF eligibility for this establishment and all its workers
@@ -711,8 +805,7 @@ class Establishment extends EntityValidator {
                         } else {
                             // TODO - include Completed logic.
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._id, this._uid, thisTransaction);
-                        }
-                        */
+                        } */
 
                         // if requested, propagate the saving of this establishment down to each of the associated entities
                         if (associatedEntities) {
@@ -789,8 +882,14 @@ class Establishment extends EntityValidator {
                 this._updatedBy = fetchResults.updatedBy;
 
                 this._name = fetchResults.NameValue;
-                this._address = fetchResults.address;
+                this._address1 = fetchResults.address1;
+                this._address2 = fetchResults.address2;
+                this._address3 = fetchResults.address3;
+                this._town = fetchResults.town;
+                this._county = fetchResults.county;
+
                 this._locationId = fetchResults.locationId;
+                this._provId = fetchResults.provId;
                 this._postcode = fetchResults.postcode;
                 this._isRegulated = fetchResults.isRegulated;
 
@@ -802,6 +901,9 @@ class Establishment extends EntityValidator {
                 this._parentUid = fetchResults.parentUid;
                 this._dataOwner = fetchResults.dataOwner;
                 this._parentPermissions = fetchResults.parentPermissions;
+
+                // interim solution for reason for leaving
+                this._reasonsForLeaving = fetchResults.reasonsForLeaving;
 
                 // if history of the User is also required; attach the association
                 //  and order in reverse chronological - note, order on id (not when)
@@ -1053,7 +1155,7 @@ class Establishment extends EntityValidator {
 
                             // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
                             // without whitespace
-                            this.associateWorker(newWorker.nameOrId.replace(/\s/g, ""), newWorker);
+                            this.associateWorker(newWorker.key, newWorker);
 
                             return {};
                         }));
@@ -1208,14 +1310,21 @@ class Establishment extends EntityValidator {
 
             if (fullDescription) {
                 myDefaultJSON.address = this.address;
+                myDefaultJSON.address1 = this.address1;
+                myDefaultJSON.address2 = this.address2;
+                myDefaultJSON.address3 = this.address3;
+                myDefaultJSON.town = this.town;
+                myDefaultJSON.county = this.county;
                 myDefaultJSON.postcode = this.postcode;
                 myDefaultJSON.locationId = this.locationId;
+                myDefaultJSON.provId = this.provId;
                 myDefaultJSON.isRegulated = this.isRegulated;
                 myDefaultJSON.nmdsId = this.nmdsId;
                 myDefaultJSON.isParent = this.isParent;
                 myDefaultJSON.parentUid = this.parentUid;
                 myDefaultJSON.dataOwner = this.dataOwner;
                 myDefaultJSON.parentPermissions = this.isParent ? undefined : this.parentPermissions;
+                myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
             }
 
             myDefaultJSON.created = this.created ? this.created.toJSON() : null;
@@ -1285,7 +1394,8 @@ class Establishment extends EntityValidator {
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid main service');
             }
 
-            if (!(this._address)) {
+            // must at least have the first line of address
+            if (!(this._address1)) {
                 allExistAndValid = false;
                 this._validations.push(new ValidationMessage(
                     ValidationMessage.ERROR,
@@ -1293,7 +1403,7 @@ class Establishment extends EntityValidator {
                     this._address ? `Invalid: ${this._address}` : 'Missing',
                     ['Address']
                 ));
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid address');
+                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid first line of address');
             }
 
             if (!(this._postcode)) {
@@ -1329,6 +1439,18 @@ class Establishment extends EntityValidator {
                 ));
                 this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
             }
+
+            // prov id can be null for a Non-CQC site - CANNOT IMPOST THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
+            // if (this._isRegulated && this._provId === null) {
+            //   allExistAndValid = false;
+            //   this._validations.push(new ValidationMessage(
+            //       ValidationMessage.ERROR,
+            //       106,
+            //       'Missing (mandatory) for a CQC Registered site',
+            //       ['ProvID']
+            //   ));
+            //   this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Prov ID for a (CQC) Regulated workspace');
+            // }
 
         } catch (err) {
             console.error(err)

@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { WdfWorkerComponent } from '@features/reports/pages/wdf-worker/wdf-worker.component';
 import { WdfComponent } from '@features/reports/pages/wdf/wdf.component';
-import { WorkerResolver } from '@features/workers/worker.resolver';
 
 import { ReportsComponent } from './reports.component';
 

@@ -7,15 +7,17 @@
   </div>
 
   <div class="govuk-grid-column-one-third">
-    <a class="govuk-button govuk-button--link" role="button" href="#">
-      <img src="/assets/images/bin.svg" />Delete Workplace
-    </a>
+    <button class="govuk-button govuk-button--link"><img src="/assets/images/bin.svg" />Delete Workplace</button>
   </div>
 </div>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-tabs>
+      <app-tab [title]="'User accounts'">
+        <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
+      </app-tab>
+
       <app-tab [title]="'Workplace'">
         <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
       </app-tab>

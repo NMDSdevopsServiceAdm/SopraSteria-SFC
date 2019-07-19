@@ -1,18 +1,17 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { WorkPlaceReference } from '@core/model/my-workplaces.model';
 import { AuthService } from '@core/services/auth.service';
-import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { BackService } from '@core/services/back.service';
-import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
-import { Component } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
-import { take } from 'rxjs/operators';
-import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
-import { filter, findIndex } from 'lodash';
+import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
+import { filter as _filter, findIndex } from 'lodash';
+import { filter, map, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-workplace-references-page',
@@ -24,62 +23,56 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
   private workPlaceReferences: WorkPlaceReference[];
   public columnOneLabel = 'Name';
   public columnTwoLabel = 'Staff reference';
+  public nextRoute: String[] = [];
   public referenceType = BulkUploadFileType.Worker;
   public referenceTypeInfo = 'You must create unique references for each member of staff.';
 
   constructor(
     private activatedRoute: ActivatedRoute,
-    private bulkUploadService: BulkUploadService,
     protected authService: AuthService,
+    protected bulkUploadService: BulkUploadService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
     protected router: Router,
     protected workerService: WorkerService
   ) {
-    super(authService, router, formBuilder, errorSummaryService);
-  }
+    super(authService, bulkUploadService, router, formBuilder, errorSummaryService);
 
-  protected init(): void {
-    this.subscribeToRouteChange();
-    this.getEstablishmentUid();
-  }
-
-  private subscribeToRouteChange(): void {
     this.subscriptions.add(
-      this.router.events.subscribe(event => {
-        if (event instanceof NavigationEnd) {
+      this.router.events
+        .pipe(
+          filter(event => event instanceof NavigationEnd),
+          map(() => this.activatedRoute),
+          filter(route => !route.snapshot.fragment),
+          map(route => route.snapshot.data)
+        )
+        .subscribe(data => {
+          this.establishmentUid = this.activatedRoute.snapshot.paramMap.get('uid');
+          this.references = data.references;
+          this.workPlaceReferences = data.workplaceReferences;
+          this.establishmentName = _filter(this.workPlaceReferences, ['uid', this.establishmentUid])[0].name;
+          this.remainingEstablishments = this.workPlaceReferences.length - (this.getWorkplacePosition() + 1);
+
+          this.setupForm();
+          if (this.bulkUploadService.returnTo) {
+            this.returnTo = this.bulkUploadService.returnTo;
+            this.bulkUploadService.setReturnTo(null);
+          }
+          this.setNextRoute();
           this.setBackLink();
-        }
-      })
+        })
     );
   }
 
   private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/bulk-upload/workplace-references'] });
-  }
+    const url = this.returnTo
+      ? this.returnTo.url
+      : this.getWorkplacePosition() === 0
+      ? ['/bulk-upload/workplace-references']
+      : ['/bulk-upload/staff-references', this.workPlaceReferences[this.getWorkplacePosition() - 1].uid];
 
-  private getEstablishmentUid(): void {
-    this.subscriptions.add(
-      this.activatedRoute.params.subscribe(params => {
-        this.establishmentUid = params.uid;
-        this.getReferences(this.establishmentUid);
-        this.getEstablishmentInfo();
-      })
-    );
-  }
-
-  private getEstablishmentInfo(): void {
-    this.subscriptions.add(
-      this.bulkUploadService.workPlaceReferences$
-        .pipe(take(1))
-        .subscribe((workPlaceReferences: WorkPlaceReference[]) => {
-          this.setBackLink();
-          this.establishmentName = filter(workPlaceReferences, ['uid', this.establishmentUid])[0].name;
-          this.workPlaceReferences = workPlaceReferences;
-          this.remainingEstablishments = workPlaceReferences.length - this.getWorkplacePosition();
-        })
-    );
+    this.backService.setBackLink({ url });
   }
 
   /**
@@ -88,32 +81,15 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
    * NOTE: add 1 as array's are 0 index based
    */
   private getWorkplacePosition(): number {
-    return findIndex(this.workPlaceReferences, ['uid', this.establishmentUid]) + 1;
+    return findIndex(this.workPlaceReferences, ['uid', this.establishmentUid]);
   }
 
-  protected getReferences(establishmentUid: string): void {
-    this.subscriptions.add(
-      this.workerService.getAllWorkersByUid(establishmentUid).subscribe(
-        (references: Worker[]) => {
-          if (references) {
-            this.references = references;
-            this.setupForm();
-          }
-        },
-        (error: HttpErrorResponse) => this.onError(error)
-      )
-    );
-  }
-
-  protected navigateToNextRoute(): void {
-    if (this.workPlaceReferences.length === this.getWorkplacePosition()) {
-      this.router.navigate(['/bulk-upload/workplace-and-staff-references/success']);
-    } else {
-      this.router.navigate([
-        '/bulk-upload/staff-references',
-        this.workPlaceReferences[this.getWorkplacePosition()].uid,
-      ]);
-    }
+  protected setNextRoute(): void {
+    this.nextRoute = this.returnTo
+      ? this.returnTo.url
+      : this.workPlaceReferences.length === this.getWorkplacePosition() + 1
+      ? ['/bulk-upload/workplace-and-staff-references/success']
+      : ['/bulk-upload/staff-references', this.workPlaceReferences[this.getWorkplacePosition() + 1].uid];
   }
 
   protected save(saveAndContinue: boolean): void {
@@ -124,7 +100,7 @@ export class StaffReferencesPageComponent extends BulkUploadReferences {
         .subscribe(
           () => {
             if (saveAndContinue) {
-              this.navigateToNextRoute();
+              this.router.navigate(this.nextRoute);
             } else {
               this.router.navigate(['/bulk-upload/workplace-references']);
             }

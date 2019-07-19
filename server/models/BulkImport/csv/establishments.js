@@ -12,7 +12,10 @@ class Establishment {
     this._localId = null;
     this._status = null;
     this._name = null;
-    this._address = null;
+    this._address1 = null;
+    this._address2 = null;
+    this._address3 = null;
+    this._town = null;
     this._postcode = null;
 
     this._establishmentType = null;
@@ -87,6 +90,8 @@ class Establishment {
   static get ALL_SERVICES_WARNING() { return 2120; }
   static get SERVICE_USERS_WARNING() { return 2130; }
   static get CAPACITY_UTILISATION_WARNING() { return 2140; }
+  static get ALL_JOBS_WARNING() { return 2180; }
+
   static get VACANCIES_WARNING() { return 2300; }
   static get STARTERS_WARNING() { return 2310; }
   static get LEAVERS_WARNING() { return 2320; }
@@ -295,7 +300,6 @@ class Establishment {
         errCode: Establishment.ADDRESS_ERROR,
         errType: `ADDRESS_ERROR`,
         error: 'First line of address (ADDRESS1) must be defined',
-        source: myAddress1,
         name: this._currentLine.LOCALESTID,
       });
     } else if (myAddress1.length > MAX_LENGTH) {
@@ -380,10 +384,10 @@ class Establishment {
     }
 
     // concatenate the address
-    this._address = myAddress1;
-    this._address = myAddress2 ? `${this._address}, ${myAddress2}` : this._address;
-    this._address = myAddress3 ? `${this._address}, ${myAddress3}` : this._address;
-    this._address = myTown ? `${this._address}, ${myTown}` : this._address;
+    this._address1 = myAddress1;
+    this._address2 = myAddress2;
+    this._address3 = myAddress3;
+    this._town = myTown;
     this._postcode = myPostcode;
 
     return true;
@@ -554,12 +558,16 @@ class Establishment {
     // must be given if "REGTYPE" is 2 - but if given must be in the format "n-nnnnnnnnn"
     const provIDRegex = /^[0-9]{1}\-[0-9]{8,10}$/;
     const myprovID = this._currentLine.PROVNUM;
+
     if (this._regType && this._regType == 2 && (!myprovID || myprovID.length==0)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.PROV_ID_ERROR,
-        errType: `PROV_ID_ERROR`,
-        error: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
+        // errCode: Establishment.PROV_ID_ERROR,
+        // errType: `PROV_ID_ERROR`,
+        // error: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
+        warnCode: Establishment.PROV_ID_ERROR,
+        warnType: `PROV_ID_ERROR`,
+        warning: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
         source: myprovID,
         name: this._currentLine.LOCALESTID,
       });
@@ -717,8 +725,6 @@ class Establishment {
 
     const listOfServiceUsers = this._currentLine.SERVICEUSERS.split(';');
     const listOfServiceUsersDescriptions = this._currentLine.OTHERUSERDESC.split(';');
-
-    console.log("WA DEBUG - Number of service users - ", listOfServiceUsers.length, this._currentLine.SERVICEUSERS.length)
 
     const localValidationErrors = [];
     const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService))) : true;
@@ -931,33 +937,21 @@ class Establishment {
   }
 
   _validateAllJobs() {
-    // mandatory
+    // optional
     const allJobs = this._currentLine.ALLJOBROLES.split(';');
-
     const localValidationErrors = [];
 
     // allJobs can only be empty, if TOTALPERMTEMP is 0
-    if (this._totalPermTemp > 0 && this._currentLine.ALLJOBROLES.length === 0) {
+    if (!this._currentLine.ALLJOBROLES || this._currentLine.ALLJOBROLES.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ALL_JOBS_ERROR,
-        errType: `ALL_JOBS_ERROR`,
-        error: "All Job Roles (ALLJOBROLES) must be defined",
+        warnCode: Establishment.ALL_JOBS_WARNING,
+        warnType: `ALL_JOBS_WARNING`,
+        warning: "All Job Roles (ALLJOBROLES) missing",
         source: this._currentLine.ALLJOBROLES,
         name: this._currentLine.LOCALESTID,
       });
-    } else if (this._totalPermTemp > 0) {
-      // must have at least one job role
-      if (allJobs.length < 1) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.ALL_JOBS_ERROR,
-          errType: `ALL_JOBS_ERROR`,
-          error: "All Job Roles (ALLJOBROLES) must be defined",
-          source: this._currentLine.ALLJOBROLES,
-          name: this._currentLine.LOCALESTID,
-        });
-      }
+    } else if (this._currentLine.ALLJOBROLES && this._currentLine.ALLJOBROLES.length > 0) {
       // all jobs are integers
       const isValid = allJobs.every(thisJob => !Number.isNaN(parseInt(thisJob)));
       if (!isValid) {
@@ -1497,8 +1491,8 @@ class Establishment {
     }
   }
 
-  preValidate() {
-    return this._validateHeaders();
+  preValidate(headers) {
+    return this._validateHeaders(headers);
   }
 
   static isContent(data) {
@@ -1506,8 +1500,7 @@ class Establishment {
     return contentRegex.test(data.substring(0,50));
   }
 
-  _validateHeaders() {
-    const headers = Object.keys(this._currentLine);
+  _validateHeaders(headers) {
     // only run once for first line, so check _lineNumber
     if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
       this._validationErrors.push({
@@ -1600,7 +1593,7 @@ class Establishment {
     status = !this._transformAllServices() ? false : status;
     status = !this._transformServiceUsers() ? false : status;
     status = !this._transformAllJobs() ? false : status;
-    status = !this._transformReasonsForLeaving() ? false : status;
+    //status = !this._transformReasonsForLeaving() ? false : status;        // interim solution - not transforming reasons for leaving
     status = !this._transformAllCapacities() ? false : status;
     status = !this._transformAllUtilisation() ? false : status;
     status = !this._transformAllVacanciesStartersLeavers() ? false : status;
@@ -1611,7 +1604,10 @@ class Establishment {
   toJSON() {
     return {
       name: this._name,
-      address: this._address,
+      address1: this._address1,
+      address2: this._address2,
+      address3: this._address3,
+      town: this._town,
       postcode: this._postcode,
       employerType: this._establishmentType,
       employerTypeOther: this._establishmentTypeOther ? this._establishmentTypeOther : undefined,
@@ -1647,6 +1643,8 @@ class Establishment {
       capacities: this._capacities,
       utilisations: this._utilisations,
       totalPermTemp: this._totalPermTemp,
+
+
       allJobs: this._alljobs,
       counts: {
         vacancies: this._vacancies,
@@ -1671,15 +1669,26 @@ class Establishment {
   // returns an API representation of this Establishment
   toAPI() {
     const fixedProperties = {
-      Address: this._address,
-      Postcode: this._postcode,
-      locationId: this._shareWithCqc ? this._locationID : undefined,
-      ProvId: this._shareWithCqc ? this._provID : undefined,        // this will be ignored by Establishment entity
+      Address1: this._address1 ? this._address1 : '',
+      Address2: this._address2 ? this._address2 : '',
+      Address3: this._address3 ? this._address3 : '',
+      Town: this._town ? this._town : '',
+      Postcode: this._postcode ? this._postcode : '',
+      LocationId: this._regType ? this._locationID : undefined,
+      ProvId: this._regType ? this._provID : undefined,
       IsCQCRegulated: this._regType !== null & this._regType === 2 ? true : false,
     };
 
+    // interim solution for reasons for leaving
+    if (this._reasonsForLeaving && Array.isArray(this._reasonsForLeaving)) {
+      fixedProperties.reasonsForLeaving = this._reasonsForLeaving.map(thisReason => `${thisReason.id}:${thisReason.count}`).join('|');
+    } else {
+      fixedProperties.reasonsForLeaving = ''; // reset
+    }
+
     const changeProperties = {
       name: this._name,
+      localIdentifier: this._localId,
       isRegulated: this._regType === 2 ? true : false,
       employerType: {
         value: this._establishmentType,
@@ -1838,9 +1847,10 @@ class Establishment {
             break;
           case 'Address':
           case 'Postcode':
-            validationError.errCode = Establishment.ADDRESS_ERROR;
-            validationError.errType = 'ADDRESS_ERROR';
-            validationError.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
+            // validationError.errCode = Establishment.ADDRESS_ERROR;
+            // validationError.errType = 'ADDRESS_ERROR';
+            // validationError.source  = `${this._currentLine.ADDRESS1},${this._currentLine.ADDRESS2},${this._currentLine.ADDRESS3},${this._currentLine.POSTTOWN},${this._currentLine.POSTCODE}`;
+            validationError.errCode = null; // ignore
             break;
           case 'CQCRegistered':
             validationError.errCode = Establishment.REGTYPE_ERROR;
@@ -1860,7 +1870,7 @@ class Establishment {
             validationError.source  = thisProp;
         }
 
-        this._validationErrors.push(validationError);
+        validationError.errCode ? this._validationErrors.push(validationError) : true;
       }) : true;
     });
 
@@ -1957,7 +1967,7 @@ class Establishment {
             validationWarning.source  = thisProp;
         }
 
-        this._validationErrors.push(validationWarning);
+        validationWarning.warnCode ? this._validationErrors.push(validationWarning) : true;
       }) : true;
     });
 
@@ -1978,10 +1988,10 @@ class Establishment {
     columns.push(this._csvQuote(entity.localIdentifier));   // todo - this will be local identifier
     columns.push('UNCHECKED');
     columns.push(this._csvQuote(entity.name));
-    columns.push(this._csvQuote(entity.address));
-    columns.push(''); // address is not store in separate fields in ASC WDS
-    columns.push(''); // address is not store in separate fields in ASC WDS
-    columns.push(''); // address is not store in separate fields in ASC WDS
+    columns.push(this._csvQuote(entity.address1));
+    columns.push(this._csvQuote(entity.address2));
+    columns.push(this._csvQuote(entity.address3));
+    columns.push(this._csvQuote(entity.town));
     columns.push(entity.postcode);
 
     switch (entity.employerType.value) {
@@ -2016,7 +2026,7 @@ class Establishment {
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);
-    columns.push('');   // we don't have prov id yet
+    columns.push(entity.isRegulated ? entity.provId : '');
     columns.push(entity.isRegulated ? entity.locationId : '');
 
     // main service - this is mandatory in ASC WDS so no need to check for it being available or not
@@ -2068,6 +2078,7 @@ class Establishment {
     columns.push(entity.numberOfStaff ? entity.numberOfStaff : 0);
 
     // all job roles, starters, leavers and vacancies
+
     const allJobs = [];
     if (entity.starters && Array.isArray(entity.starters)) {
       entity.starters.forEach(thisStarter => allJobs.push(thisStarter));
@@ -2079,16 +2090,26 @@ class Establishment {
       entity.vacancies.forEach(thisVacancy => allJobs.push(thisVacancy));
     }
 
-    columns.push(allJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob.jobId)).join(';'));
+    // all jobs needs to be a set of unique ids (which across starters, leavers and vacancies may be repeated)
+    const uniqueJobs = [];
+    allJobs.forEach(thisAllJob => {
+      if (!uniqueJobs.includes(thisAllJob.jobId)) {
+        uniqueJobs.push(thisAllJob.jobId);
+      }
+    });
+
+    columns.push(uniqueJobs.map(thisJob => BUDI.jobRoles(BUDI.FROM_ASC, thisJob)).join(';'));
     if (entity.starters && !Array.isArray(entity.starters)) {
       if (entity.starters === 'None') {
-        columns.push(allJobs.map(thisJob => 0).join(';'));
-      } else {
+        columns.push(uniqueJobs.map(x => 0).join(';'));
+      } else if (entity.starters === 'Don\'t know') {
         columns.push(999);
+      } else {
+        columns.push('')
       }
     } else {
-      columns.push(allJobs.map(thisJob => {
-        const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.id === thisJob.id);
+      columns.push(uniqueJobs.map(thisJob => {
+        const isThisJobAStarterJob = entity.starters.find(myStarter => myStarter.jobId === thisJob);
         if (isThisJobAStarterJob) {
           return isThisJobAStarterJob.total;
         } else {
@@ -2098,13 +2119,15 @@ class Establishment {
     }
     if (entity.leavers && !Array.isArray(entity.leavers)) {
       if (entity.leavers === 'None') {
-        columns.push(allJobs.map(thisJob => 0).join(';'));
-      } else {
+        columns.push(uniqueJobs.map(x => 0).join(';'));
+      } else if (entity.leavers === 'Don\'t know') {
         columns.push(999);
+      } else  {
+        columns.push('');
       }
     } else {
-      columns.push(allJobs.map(thisJob => {
-        const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.id === thisJob.id);
+      columns.push(uniqueJobs.map(thisJob => {
+        const isThisJobALeaverJob = entity.leavers.find(myLeaver => myLeaver.jobId === thisJob);
         if (isThisJobALeaverJob) {
           return isThisJobALeaverJob.total;
         } else {
@@ -2114,13 +2137,15 @@ class Establishment {
     }
     if (entity.vacancies && !Array.isArray(entity.vacancies)) {
       if (entity.vacancies === 'None') {
-        columns.push(allJobs.map(thisJob => 0).join(';'));
-      } else {
+        columns.push(uniqueJobs.map(x => 0).join(';'));
+      } else if (entity.vacancies === 'Don\'t know') {
         columns.push(999);
+      } else {
+        columns.push('');
       }
     } else {
-      columns.push(allJobs.map(thisJob => {
-        const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.id === thisJob.id);
+      columns.push(uniqueJobs.map(thisJob => {
+        const isThisJobAVacancyJob = entity.vacancies.find(myVacancy => myVacancy.jobId === thisJob);
         if (isThisJobAVacancyJob) {
           return isThisJobAVacancyJob.total;
         } else {
@@ -2129,9 +2154,26 @@ class Establishment {
       }).join(';'));
     }
 
-    // reasons for leaving - currently can't be mapped
-    columns.push('');
-    columns.push('');
+    // reasons for leaving - currently can't be mapped - interim solution is a string of "reasonID:count|reasonId:count" (without BUDI mapping)
+    if (entity.reasonsForLeaving && entity.reasonsForLeaving.length > 0) {
+      const reasons = [];
+      const reasonsCount = [];
+      const myReasons = entity.reasonsForLeaving.split('|');
+
+      console.log("WA DEBUG - we have reasons on download: ", myReasons)
+
+      myReasons.forEach(currentReason => {
+        const [reasonId, reasonCount] = currentReason.split(':');
+        reasons.push(reasonId);
+        reasonsCount.push(reasonCount);
+      });
+
+      columns.push(reasons.join(';'));
+      columns.push(reasonsCount.join(';'));
+    } else {
+      columns.push('');
+      columns.push('');
+    }
 
     return columns.join(',');
   };

@@ -10,6 +10,9 @@ const bcrypt = require('bcrypt-nodejs');
 const generateJWT = require('../../utils/security/generateJWT');
 const usernameCheck = require('../../utils/security/usernameValidation').isUsernameValid;
 
+const config = require('../../config/config');
+const loginResponse = require('../../utils/login/response');
+
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
 
@@ -33,6 +36,7 @@ router.route('/establishment/:id').get(async (req, res) => {
 
     try {
         const allTheseUsers = await User.User.fetch(establishmentId);
+
         return res.status(200).json({
             users: allTheseUsers
         });
@@ -42,11 +46,16 @@ router.route('/establishment/:id').get(async (req, res) => {
     }
 });
 
-// gets requested user id or username - using the establishment id extracted for authorised token
-// optional parameter - "history" must equal 1
-router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
-router.route('/establishment/:id/:userId').get(async (req, res) => {
-    const userId = req.params.userId;
+
+const getUser = async (req, res) => {
+    let userId;
+
+    if(req.params.userId){
+        userId = req.params.userId;
+    } else {
+        userId = req.username;
+    }
+
     const establishmentId = req.establishmentId;
     const showHistory = req.query.history === 'full' || req.query.history === 'property' || req.query.history === 'timeline' ? true : false;
     const showHistoryTime = req.query.history === 'timeline' ? true : false;
@@ -65,12 +74,16 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
 
     try {
         if (await thisUser.restore(byUUID, byUsername, showHistory && req.query.history !== 'property')) {
-            return res.status(200).json(thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false));
+            let userData = thisUser.toJSON(showHistory, showPropertyHistoryOnly, showHistoryTime, false);
+            if(!(userData.username && req.username && userData.username == req.username)){
+                delete userData.securityQuestionAnswer;
+                delete userData.securityQuestion;
+            }
+            return res.status(200).json(userData);
         } else {
             // not found worker
             return res.status(404).send('Not Found');
         }
-
     } catch (err) {
         const thisError = new User.UserExceptions.UserRestoreException(
             null,
@@ -83,6 +96,19 @@ router.route('/establishment/:id/:userId').get(async (req, res) => {
         console.error('user::GET/:userId - failed', thisError.message);
         return res.status(503).send(thisError.safe);
     }
+}
+
+
+router.use('/me', Authorization.isAuthorised);
+router.route('/me').get(async (req, res) => {
+    getUser(req, res);
+});
+
+// gets requested user id or username - using the establishment id extracted for authorised token
+// optional parameter - "history" must equal 1
+router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id/:userId').get(async (req, res) => {
+    getUser(req, res);
 });
 
 // updates a user with given uid or username
@@ -100,9 +126,9 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
     } else {
         byUsername = escape(userId.toLowerCase());
     }
-    
+
     const thisUser = new User.User(establishmentId);
-    
+
     try {
         // before updating a Worker, we need to be sure the Worker is
         //  available to the given establishment. The best way of doing that
@@ -130,7 +156,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
             } else {
                 return res.status(400).send('Unexpected Input.');
             }
-            
+
         } else {
             // not found worker
             return res.status(404).send('Not Found');
@@ -152,7 +178,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
 router.use('/resetPassword', Authorization.isAuthorisedPasswdReset);
 router.route('/resetPassword').post(async (req, res) => {
     const givenPassword = escape(req.body.password);
-    
+
     if (givenPassword === 'undefined') {
         return res.status(400).send('missing password');
     }
@@ -213,7 +239,7 @@ router.route('/resetPassword').post(async (req, res) => {
                     }
                 );
             });
-            
+
         } else {
             throw new Error(`Failed to find user: ${req.username}`);
         }
@@ -233,7 +259,7 @@ router.use('/changePassword', Authorization.isAuthorised);
 router.route('/changePassword').post(async (req, res) => {
     const currentPassword = escape(req.body.currentPassword);
     const newPassword = escape(req.body.newPassword);
-    
+
     if (currentPassword === 'undefined' || newPassword === 'undefined') {
         return res.status(400).send('missing password');
     }
@@ -276,7 +302,7 @@ router.route('/changePassword').post(async (req, res) => {
                             passwdLastChanged: new Date()
                         },
                         {transaction: t});
-        
+
                         // and crfeate an audit event
                         const auditEvent = {
                             userFk: login.user.id,
@@ -296,17 +322,17 @@ router.route('/changePassword').post(async (req, res) => {
                     // failed authentication
                     await models.sequelize.transaction(async t => {
                         const maxNumberOfFailedAttempts = 10;
-          
+
                         // increment the number of failed attempts by one
                         const loginUpdate = {
                           invalidAttempt: login.invalidAttempt + 1
                         };
                         login.update(loginUpdate, {transaction: t});
-          
-                        // TODO - could implement both https://www.npmjs.com/package/request-ip & https://www.npmjs.com/package/iplocation 
+
+                        // TODO - could implement both https://www.npmjs.com/package/request-ip & https://www.npmjs.com/package/iplocation
                         //        to resolve the client's IP address on login failure, thus being able to audit the source of where the failed
                         //        login came from
-          
+
                         // add an audit record
                         const auditEvent = {
                           userFk: login.user.id,
@@ -317,12 +343,12 @@ router.route('/changePassword').post(async (req, res) => {
                         };
                         await models.userAudit.create(auditEvent, {transaction: t});
                       });
-          
+
                       return res.status(403).send();
                 }
 
             }); // end comparePassword.promise.then
-            
+
         } else {
             throw new Error(`Failed to find user: ${req.username}`);
         }
@@ -346,10 +372,28 @@ router.route('/add/establishment/:id').post(async (req, res) => {
         console.error('/add/establishment/:id - given user does not have sufficient permission')
         return res.status(403).send();
     }
-    
+
+    if(!req.body.role || !(req.body.role == 'Edit' || req.body.role == 'Read')){
+        console.error('/add/establishment/:id - Invalid request')
+        return res.status(403).send();
+    }
+
+    let limits = {'Edit': User.User.MAX_EDIT_SINGLE_USERS, 'Read' : User.User.MAX_READ_SINGLE_USERS};
+
+    if(req.isParent){
+        limits = {'Edit': User.User.MAX_EDIT_PARENT_USERS, 'Read' : User.User.MAX_READ_PARENT_USERS};
+    }
+
+    const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
+
+    if(currentTypeLimits[req.body.role]+1 > limits[req.body.role]){
+        console.error('/add/establishment/:id - Invalid request')
+        return res.status(400).send(`Cannot create new account as ${req.body.role} account type limit reached`);
+    }
+
     // use the User properties to load (includes validation)
     const thisUser = new User.User(establishmentId);
-    
+
     try {
         // TODO: JSON validation
 
@@ -407,7 +451,7 @@ router.route('/validateAddUser').post(async (req, res) => {
         console.error('Invalid UUID');
         return res.status(400).send();
     }
-    
+
     try {
         // username is on Login table, but email is on User table. Could join, but it's just as east to fetch each individual
         const passTokenResults = await models.addUserTracking.findOne({
@@ -421,7 +465,7 @@ router.route('/validateAddUser').post(async (req, res) => {
                 }
             ]
         });
-  
+
         if (passTokenResults && passTokenResults.id) {
             // now check if the token has expired or already been consumed
             const now = new Date().getTime();
@@ -430,29 +474,29 @@ router.route('/validateAddUser').post(async (req, res) => {
                 console.error(`/add/validateAddUser - reset token (${givenUuid}) expired`);
                 return res.status(403).send();
             }
-    
+
             if (passTokenResults.completed) {
                 console.error(`/add/validateAddUser - reset token (${givenUuid}) has already been used`);
                 return res.status(403).send();
             }
-    
+
             // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User UUID.
             if (passTokenResults.user && passTokenResults.user.id) {
                 // generate JWT and attach it to the header (Authorization) - JWT username is the name of the User who registered the user (for audit purposes)
                 const JWTexpiryInMinutes = 30;
                 const token = generateJWT.addUserJWT(JWTexpiryInMinutes, passTokenResults.user.uid, passTokenResults.user.FullNameValue , givenUuid);
-        
+
                 res.set({
                     'Authorization': 'Bearer ' + token
                 });
-        
+
                 return res.status(200).json({
                     fullname: passTokenResults.user.FullNameValue,
                     jobTitle: passTokenResults.user.JobTitleValue,
                     email: passTokenResults.user.EmailValue,
                     phone: passTokenResults.user.PhoneValue,
                 });
-    
+
             } else {
                 throw new Error(`Failed to find user matching reset token (${givenUuid})`);
             }
@@ -473,7 +517,7 @@ router.use('/add', Authorization.isAuthorisedAddUser);
 router.route('/add').post(async (req, res) => {
     // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
     const addUserUUID = req.addUserUUID;
-   
+
     try {
         // TODO: JSON validation
         if (req.body[0] && req.body[0].user && req.body[0].user.username) {
@@ -567,6 +611,81 @@ router.route('/my/establishments').get(async (req, res) => {
         console.error("/user/my/establishments: ERR: ", err.message);
         return res.status(503).send({});        // intentionally an empty JSON response
     }
+});
+
+router.use('/swap/establishment/:id', Authorization.isAdmin);
+router.route('/swap/establishment/:id').post(async (req, res) => {
+  const newEstablishmentId = req.params.id;
+
+  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+  if (!uuidRegex.test(newEstablishmentId.toUpperCase())) return res.status(400).send({ message: 'Unexpected establishment id'});
+
+  let establishment = null;
+  if (newEstablishmentId) {
+    // this is an admin user, find the given establishment
+    establishment = await models.establishment.findOne({
+      attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId', 'lastBulkUploaded'],
+      include: [{
+        model: models.services,
+        as: 'mainService',
+        attributes: ['id', 'name']
+      }],
+      where: {
+        uid: newEstablishmentId
+      }
+    });
+
+    if (!establishment || !establishment.id) {
+      console.error('POST .../user/swap/establishment failed: on finding the given establishment');
+      return res.status(404).send({
+        message: `Establishment with UID ${newEstablishmentId} is not found`,
+      });
+    }
+  }
+
+  // gets here having found the establishment
+  const loginTokenTTL = config.get('jwt.ttl.login');
+  const token = generateJWT.loginJWT(loginTokenTTL,
+                                     establishment.id,
+                                     establishment.uid,
+                                     establishment.isParent,
+                                     req.username,
+                                     'Admin');
+  var date = new Date().getTime();
+  date += (loginTokenTTL * 60  * 1000);
+
+
+  // dereference the user
+  const thisUser = await models.login.findOne({
+    attributes: ['username', 'lastLogin'],
+    where: {
+      username: req.username,
+    },
+    include: [
+      {
+        model: models.user,
+        attributes: ['uid', 'FullNameValue'],
+      }
+    ]
+  });
+
+  if (!thisUser || !thisUser.username || !thisUser.user.uid) {
+    console.log('POST .../user/swap/establishment failed to dereference thisUser');
+    return res.status(400).send({ message: 'Unexpected user'});
+  }
+
+  const response = loginResponse(
+    thisUser.user.uid,
+    thisUser.user.FullNameValue,
+    false,
+    thisUser.lastLogin,
+    'Admin',
+    establishment,
+    req.username,
+    new Date(date).toISOString()
+  );
+
+  return res.set({'Authorization': 'Bearer ' + token}).status(200).json(response);
 });
 
 module.exports = router;

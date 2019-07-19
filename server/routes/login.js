@@ -13,6 +13,7 @@ const isAuthorised = require('../utils/security/isAuthenticated').isAuthorised;
 const uuid = require('uuid');
 
 const config = require('..//config/config');
+const formatSuccessulLoginResponse = require('../utils/login/response');
 
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
@@ -43,7 +44,7 @@ router.post('/', async (req, res) => {
       attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt'],
       include: [ {
         model: models.user,
-        attributes: ['id', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
+        attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
         include: [{
           model: models.establishment,
           attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId', 'lastBulkUploaded'],
@@ -66,7 +67,7 @@ router.post('/', async (req, res) => {
         attributes: ['id', 'username', 'isActive', 'invalidAttempt', 'registrationId', 'firstLogin', 'Hash', 'lastLogin', 'tribalHash', 'tribalSalt'],
         include: [ {
           model: models.user,
-          attributes: ['id', 'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
+          attributes: ['id', 'uid',  'FullNameValue', 'EmailValue', 'isPrimary', 'establishmentId', "UserRoleValue", 'tribalId'],
           where: {
             UserRoleValue: 'Admin',
           }
@@ -74,32 +75,32 @@ router.post('/', async (req, res) => {
       });
 
       if (establishmentUser && establishmentUser.user && establishmentUser.user.id) {
-        if (!givenEstablishmentUid) {
-          console.error('This is an admin user; expect establishment.uid');
-          return res.status(400).send({});
-        }
-
-        // this is an admin user, find the given establishment
-        establishmentUser.user.establishment = await models.establishment.findOne({
-          attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId', 'lastBulkUploaded'],
-          include: [{
-            model: models.services,
-            as: 'mainService',
-            attributes: ['id', 'name']
-          }],
-          where: {
-            uid: givenEstablishmentUid
-          }
-        });
-
-        if (establishmentUser.user.establishment && establishmentUser.user.establishment.id) {
-          console.log(`Found admin user (${givenUsername}) and establishment (${givenEstablishmentUid})`);
-        } else {
-          console.error('POST .../login failed: on finding the given establishment');
-          return res.status(401).send({
-            message: 'Authentication failed.',
+        if (givenEstablishmentUid) {
+          // this is an admin user, find the given establishment
+          establishmentUser.user.establishment = await models.establishment.findOne({
+            attributes: ['id', 'uid', 'NameValue', 'isRegulated', 'nmdsId', 'isParent', 'parentUid', 'parentId', 'lastBulkUploaded'],
+            include: [{
+              model: models.services,
+              as: 'mainService',
+              attributes: ['id', 'name']
+            }],
+            where: {
+              uid: givenEstablishmentUid
+            }
           });
+
+          if (establishmentUser.user.establishment && establishmentUser.user.establishment.id) {
+            console.log(`Found admin user (${givenUsername}) and establishment (${givenEstablishmentUid})`);
+          } else {
+            console.error('POST .../login failed: on finding the given establishment');
+            return res.status(401).send({
+              message: 'Authentication failed.',
+            });
+          }
+        } else {
+          establishmentUser.user.establishment = null;    // this admin user has no primary (home) establishment
         }
+
       } else {
         console.error(`Failed to find user account associated with: ${givenUsername}`);
         return res.status(401).send({
@@ -125,13 +126,18 @@ router.post('/', async (req, res) => {
       if (isMatch && !err) {
         const loginTokenTTL = config.get('jwt.ttl.login');
 
-        const token = generateJWT.loginJWT(loginTokenTTL, establishmentUser.user.establishment.id, establishmentUser.user.establishment.uid, establishmentUser.user.establishment.isParent, givenUsername, establishmentUser.user.UserRoleValue);
+        const token = generateJWT.loginJWT(loginTokenTTL,
+                                           establishmentUser.user.establishment ? establishmentUser.user.establishment.id : null,
+                                           establishmentUser.user.establishment ? establishmentUser.user.establishment.uid : null,
+                                           establishmentUser.user.establishment ? establishmentUser.user.establishment.isParent : null,
+                                           givenUsername,
+                                           establishmentUser.user.UserRoleValue);
         var date = new Date().getTime();
         date += (loginTokenTTL * 60  * 1000);
 
 
         // dereference the parent establishment's name
-        if (Number.isInteger(establishmentUser.user.establishment.parentId)) {
+        if (establishmentUser.user.establishment && Number.isInteger(establishmentUser.user.establishment.parentId)) {
           const parentEstablishment = await models.establishment.findOne({
             attributes: ['NameValue'],
             where: {
@@ -145,12 +151,13 @@ router.post('/', async (req, res) => {
         }
 
         const response = formatSuccessulLoginResponse(
+          establishmentUser.user.uid,
           establishmentUser.user.FullNameValue,
           establishmentUser.user.isPrimary,
           establishmentUser.lastLogin,
           establishmentUser.user.UserRoleValue,
           establishmentUser.user.establishment,
-          establishmentUser.user.establishment.mainService,
+          givenUsername,
           new Date(date).toISOString()
         );
 
@@ -256,33 +263,6 @@ router.post('/', async (req, res) => {
     return res.status(503).send({});
   }
 });
-
-// TODO: enforce JSON schema
-const formatSuccessulLoginResponse = (fullname, isPrimary, lastLoggedDate, role, establishment, mainService, expiryDate) => {
-  // note - the mainService can be null
-  return {
-    fullname,
-    isPrimary,
-    lastLoggedIn: lastLoggedDate ? lastLoggedDate.toISOString() : null,
-    role,
-    establishment: {
-      id: establishment.id,
-      uid: establishment.uid,
-      name: establishment.NameValue,
-      isRegulated: establishment.isRegulated,
-      nmdsId: establishment.nmdsId,
-      isParent: establishment.isParent,
-      parentUid: establishment.parentUid ? establishment.parentUid : undefined,
-      parentName: establishment.parentName ? establishment.parentName : undefined,
-      isFirstBulkUpload: establishment.lastBulkUploaded ? false : true,
-    },
-    mainService: {
-      id: mainService ? mainService.id : null,
-      name: mainService ? mainService.name : null
-    },
-    expiryDate: expiryDate
-  };
-};
 
 // renews a given bearer token; this token must exist and must be valid
 //  it must be a Logged In "Bearer" token
