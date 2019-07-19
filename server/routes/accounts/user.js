@@ -436,32 +436,36 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 });
 
 // Resend activation link
-router.use('/:id/:trackingId', Authorization.hasAuthorisedEstablishment);
-router.route('/:id/:trackingId').post(async (req, res) => {
+
+router.use('/:uid/resend-activation', Authorization.isAuthorised);
+router.route('/:uid/resend-activation').post(async (req, res) => {
+    const userId = req.params.uid;
+    const establishmentId = req.establishmentId;
     const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 2*60*60*24*1000; // 2 days
 
-    if (!req.params.trackingId) {
-        console.error('No UUID');
+    // validating user id - must be a V4 UUID
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    let byUUID = null;
+    if (uuidRegex.test(userId.toUpperCase())) {
+        byUUID = userId;
+    } else {
         return res.status(400).send();
     }
-    // parse input - escaped to prevent SQL injection
-    const givenUuid = escape(req.params.trackingId);
-    const uuidV4Regex = /^[A-F\d]{8}-[A-F\d]{4}-4[A-F\d]{3}-[89AB][A-F\d]{3}-[A-F\d]{12}$/i;
 
-    if (!uuidV4Regex.test(givenUuid)) {
-        console.error('Invalid UUID');
-        return res.status(400).send();
-    }
+    const thisUser = new User.User(establishmentId);
     
     try {
         const passTokenResults = await models.addUserTracking.findOne({
             where: {
-                uuid: givenUuid
+                completed: null
             },
             include: [
                 {
                     model: models.user,
                     attributes: ['id', 'uid', 'FullNameValue', 'EmailValue', 'JobTitleValue', 'PhoneValue'],
+                    where: {
+                        uid: byUUID
+                    }
                 }
             ]
         });
@@ -473,8 +477,11 @@ router.route('/:id/:trackingId').post(async (req, res) => {
                     await thisUser.trackNewUser(req.username, t, expiresTTLms);
                 });
             }
+            return res.status(200).send("Success");
+        }else{
+            return res.status(404).send("Not found");
         }
-        return res.status(200).send("Success");
+        
     }
     catch(err){
         return res.status(503).send(err.safe);
