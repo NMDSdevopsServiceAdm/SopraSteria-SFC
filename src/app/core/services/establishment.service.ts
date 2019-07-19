@@ -48,7 +48,7 @@ export class EstablishmentService {
   public previousEstablishmentId: number;
   public isSameLoggedInUser: boolean;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private _establishmentId: number = null;
 
@@ -118,6 +118,11 @@ export class EstablishmentService {
 
   public setReturnTo(returnTo: URLStructure) {
     this.returnTo$.next(returnTo);
+  }
+
+  public swapEstablishmentId(value: number) {
+    this._establishmentId = value;
+    localStorage.setItem('establishmentId', value.toString());
   }
 
   getEstablishment(id: string) {

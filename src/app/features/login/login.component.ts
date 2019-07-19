@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.form = this.formBuilder.group({
@@ -121,10 +121,13 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.authService.postLogin(this.getLoginCredentials()).subscribe(
         response => {
           this.authService.updateState(response.body);
-          this.establishmentService.checkIfSameLoggedInUser(response.body.establishment.id);
 
-          // update the establishment service state with the given establishment id
-          this.establishmentService.establishmentId = response.body.establishment.id;
+          if (response.body.establishment && response.body.establishment.id) {
+            this.establishmentService.checkIfSameLoggedInUser(response.body.establishment.id);
+
+            // update the establishment service state with the given establishment id
+            this.establishmentService.establishmentId = response.body.establishment.id;
+          }
 
           const token = response.headers.get('authorization');
           this.authService.authorise(token);

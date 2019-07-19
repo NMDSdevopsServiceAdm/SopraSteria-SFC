@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { LoggedInSession } from '@core/model/logged-in.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
@@ -24,7 +23,6 @@ export class HomeTabComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private route: ActivatedRoute,
     private authService: AuthService,
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
@@ -35,14 +33,12 @@ export class HomeTabComponent implements OnInit {
 
     this.establishmentId = this.establishmentService.establishmentId;
 
-    if (this.route.snapshot.queryParamMap.get('est')) {
-      this.establishmentId = parseInt(this.route.snapshot.queryParamMap.get('est'));
-    }
-
     this.subscriptions.add(
       this.authService.auth$.pipe(take(1)).subscribe((loggedInSession: LoggedInSession) => {
-        this.role = loggedInSession.role;
-        this.isParent = loggedInSession.establishment.isParent;
+        if (loggedInSession && loggedInSession.role) {
+          this.role = loggedInSession.role;
+          this.isParent = loggedInSession.establishment.isParent;
+        }
       })
     );
 

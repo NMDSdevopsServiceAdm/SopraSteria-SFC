@@ -1,7 +1,9 @@
 import { BackService } from '@core/services/back.service';
 import { OnDestroy, OnInit, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
 	selector: 'app-search',
@@ -28,7 +30,9 @@ export class SearchComponent implements OnInit {
 	constructor(
 		private router: Router,
 		protected backService: BackService,
-		private http: HttpClient
+		private http: HttpClient,
+		private establishmentService: EstablishmentService,
+		private authService: AuthService
 	) {
 	}
 
@@ -54,9 +58,17 @@ export class SearchComponent implements OnInit {
 
 
 	public searchType(data, type) {
-		return this.http.post<any>('/api/admin/search/' + type, data);
+		return this.http.post<any>('/api/admin/search/' + type, data, { observe: 'response' });
 	}
 
+	public getNewEstablishmentId(id) {
+		return this.http.post<any>('/api/user/swap/establishment/' + id, null, { observe: 'response' });
+	}
+
+	public setEsblishmentId(id, e): void {
+		e.preventDefault();
+		this.getNewEstablishmentId(id).subscribe((data) => this.onSwapSuccess(data), error => this.onError(error));
+	}
 
 	public onSubmit(): void {
 		this.form.errors = [];
@@ -88,18 +100,24 @@ export class SearchComponent implements OnInit {
 			}
 
 			this.searchType(data, this.form.type).subscribe((data) => this.onSuccess(data), error => this.onError(error))
-
-
-
 		}
 	}
 
 	private onSuccess(data) {
-		this.results = data;
+		this.results = data.body;
+	}
+
+	private onSwapSuccess(data) {
+		if (data.body && data.body.establishment && data.body.establishment.id) {
+			this.establishmentService.setState(data.body.establishment);
+			this.establishmentService.swapEstablishmentId(data.body.establishment.id);
+			this.authService.swapToken(data.headers.get('authorization'));
+			// localStorage.setItem('auth-token', data.headers.get('authorization'));
+			this.router.navigate(['/dashboard']);
+		}
 	}
 
 	private onError(error) { }
-
 
 	protected setBackLink(): void {
 		this.backService.setBackLink({ url: ['/dashboard'] });

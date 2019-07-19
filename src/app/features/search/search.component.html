@@ -1,6 +1,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
-    <form novalidate id="server-error">
+    <form (ngSubmit)="onSubmit()" novalidate id="server-error">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">{{form.subTitle}}</span>
@@ -54,7 +54,7 @@
       
       </fieldset>
 
-      <button class="govuk-button" type="button" (click)="onSubmit();">{{form.buttonText}}</button>
+      <button class="govuk-button" type="submit">{{form.buttonText}}</button>
 
     </form>
   </div>
@@ -78,9 +78,9 @@
           <tr class="govuk-table__row">
             <th class="govuk-table__header" scope="col">Username</th>
             <th class="govuk-table__header" scope="col">Name</th>
-            <th class="govuk-table__header" scope="col">Est. name</th>
-            <th class="govuk-table__header" scope="col">Est. NMDS ID</th>
-            <th class="govuk-table__header" scope="col">Est. Postcode</th>
+            <th class="govuk-table__header" scope="col">Establishment</th>
+            <th class="govuk-table__header" scope="col">NMDS ID</th>
+            <th class="govuk-table__header" scope="col">Postcode</th>
             <th class="govuk-table__header" scope="col">Security Question</th>
             <th class="govuk-table__header" scope="col">Security Answer</th>
           </tr>
@@ -89,7 +89,7 @@
           <tr class="govuk-table__row" *ngFor="let item of results">
             <td class="govuk-table__cell" scope="row">{{item.username}}</td>
             <td class="govuk-table__cell" scope="row">{{item.name}}</td>
-            <td class="govuk-table__cell" scope="row"><a [routerLink]="['/dashboard']" [queryParams]="{est: item.establishment.uid}">{{item.establishment.name}}</a></td>
+            <td class="govuk-table__cell" scope="row"><a (click)="setEsblishmentId(item.establishment.uid, $event);" href="#">{{item.establishment.name}}</a></td>
             <td class="govuk-table__cell" scope="row">{{item.establishment.nmdsId}}</td>
             <td class="govuk-table__cell" scope="row">{{item.establishment.postcode}}</td>
             <td class="govuk-table__cell" scope="row">{{item.securityQuestion}}</td>
@@ -115,7 +115,7 @@
         </thead>
         <tbody class="govuk-table__body">
           <tr class="govuk-table__row" *ngFor="let item of results">
-            <td class="govuk-table__cell" scope="row"><a [routerLink]="['/dashboard']" [queryParams]="{est: item.uid}">{{item.name}}</a></td>
+            <td class="govuk-table__cell" scope="row"><a (click)="setEsblishmentId(item.uid, $event);" href="#">{{item.name}}</a></td>
             <td class="govuk-table__cell" scope="row">{{item.nmdsId}}</td>
             <td class="govuk-table__cell" scope="row">{{item.postcode}}</td>
             <td class="govuk-table__cell" scope="row">{{item.locationId}}</td>

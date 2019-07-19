@@ -17,7 +17,7 @@ export class UserAccountsSummaryComponent implements OnInit {
   public users: Array<UserDetails> = [];
   public canAddUser: boolean;
 
-  constructor(private authService: AuthService, private userService: UserService) {}
+  constructor(private authService: AuthService, private userService: UserService) { }
 
   ngOnInit() {
     combineLatest(this.authService.auth$, this.userService.getAllUsersForEstablishment(this.workplace.uid))

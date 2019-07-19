@@ -24,7 +24,7 @@ export class AuthService {
   // Observable login stream
   public auth$: Observable<LoggedInSession> = this._auth$.asObservable();
 
-  constructor(private http: HttpClient, private router: Router, private establishmentService: EstablishmentService) {}
+  constructor(private http: HttpClient, private router: Router, private establishmentService: EstablishmentService) { }
 
   public get isLoggedIn(): boolean {
     return !!this.token;
@@ -105,6 +105,16 @@ export class AuthService {
 
   authorise(token) {
     this.token = token;
+  }
+
+  swapToken(token: any) {
+    this._token = token;
+
+    if (token) {
+      localStorage.setItem('auth-token', token);
+    } else {
+      localStorage.removeItem('auth-token');
+    }
   }
 
   postLogin(id: any) {

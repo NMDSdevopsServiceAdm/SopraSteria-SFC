@@ -7,7 +7,7 @@ import { API_PATTERN } from '@core/constants/constants';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (API_PATTERN.test(request.url)) {
