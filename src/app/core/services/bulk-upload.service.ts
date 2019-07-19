@@ -13,6 +13,7 @@ import {
 } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Workplace } from '@core/model/my-workplaces.model';
+import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -24,6 +25,7 @@ import { UserService } from './user.service';
 })
 export class BulkUploadService {
   private _workPlaceReferences$: BehaviorSubject<Workplace[]> = new BehaviorSubject(null);
+  private returnTo$ = new BehaviorSubject<URLStructure>(null);
   public exposeForm$: BehaviorSubject<FormGroup> = new BehaviorSubject(null);
   public preValidationError$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public preValidateFiles$: BehaviorSubject<boolean> = new BehaviorSubject(null);
@@ -31,6 +33,12 @@ export class BulkUploadService {
   public serverError$: BehaviorSubject<string> = new BehaviorSubject(null);
   public uploadedFiles$: BehaviorSubject<ValidatedFile[]> = new BehaviorSubject(null);
   public validationErrors$: BehaviorSubject<Array<ErrorDefinition>> = new BehaviorSubject(null);
+
+  constructor(
+    private http: HttpClient,
+    private establishmentService: EstablishmentService,
+    private userService: UserService
+  ) {}
 
   public get workPlaceReferences$() {
     if (this._workPlaceReferences$.value !== null) {
@@ -53,11 +61,13 @@ export class BulkUploadService {
     );
   }
 
-  constructor(
-    private http: HttpClient,
-    private establishmentService: EstablishmentService,
-    private userService: UserService
-  ) {}
+  public get returnTo(): URLStructure {
+    return this.returnTo$.value;
+  }
+
+  public setReturnTo(returnTo: URLStructure): void {
+    this.returnTo$.next(returnTo);
+  }
 
   public getPresignedUrls(payload: PresignedUrlsRequest): Observable<PresignedUrlResponseItem[]> {
     return this.http.post<PresignedUrlResponseItem[]>(
