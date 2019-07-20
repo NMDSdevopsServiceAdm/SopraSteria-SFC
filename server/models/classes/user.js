@@ -440,6 +440,7 @@ class User {
 
                     const updateDocument = {
                         ...modifedUpdateDocument,
+                        isPrimary: this._isPrimary,
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };

@@ -146,8 +146,32 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
 
             // this is an update to an existing User, so no mandatory properties!
             if (isValidUser) {
-                await thisUser.save(req.username, expiresTTLms);
 
+                await models.sequelize.transaction(async t => {
+
+                    if(thisUser._isPrimary){
+                        // Set the existing primary to not primary
+                        await models.user.update({
+                                isPrimary: false,
+                                updated: new Date(),
+                                updatedBy: req.username.toLowerCase()
+                            },{
+                            where: {
+                                uid: { $not: thisUser.uid},
+                                establishmentId: establishmentId,
+                                archived: false,
+                                isPrimary: true
+                            },
+                            transaction: t,
+                            returning: true,
+                            raw: true,
+                            attributes: ['id', 'updated'],
+                        });
+                    }
+
+                    await thisUser.save(req.username, expiresTTLms, t);
+                });            
+    
                 // if local/dev - we're not sending email so return the add user tracking UUID if it exists
                 let response = thisUser.toJSON(false, false, false, true);
                 if (isLocal(req) && thisUser.trackingId) {
