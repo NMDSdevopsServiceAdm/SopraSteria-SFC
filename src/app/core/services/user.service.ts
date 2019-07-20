@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
@@ -49,14 +49,11 @@ export class UserService {
   }
 
   public deleteUser(useruid: string) {
-    return this.http.delete(`api/user/${useruid}`);
+    return this.http.delete(`/api/user/${useruid}`);
   }
 
   public resendActivationLink(useruid: string) {
-    const token = localStorage.getItem('auth-token');
-    const headers = new HttpHeaders({ Authorization: token });
-    return this.http.post(`api/user/${useruid}/resend-activation`, null, {
-      headers,
+    return this.http.post(`/api/user/${useruid}/resend-activation`, null, {
       responseType: 'text' as 'json',
     });
   }
