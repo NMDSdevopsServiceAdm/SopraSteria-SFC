@@ -73,7 +73,7 @@ router.route('/').post(async function (req, res) {
         include: [
           {
             model: models.establishment,
-            attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address', 'isParent', 'NameValue', 'updated'],
+            attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address1', 'isParent', 'NameValue', 'updated'],
           },
           {
             model: models.login,
@@ -109,7 +109,7 @@ router.route('/').post(async function (req, res) {
             nmdsId: thisUser.establishment.nmdsId,
             postcode: thisUser.establishment.postcode,
             isRegulated: thisUser.establishment.isRegulated,
-            address: thisUser.establishment.address,
+            address: thisUser.establishment.address1,
             isParent: thisUser.establishment.isParent,
             locationId: thisUser.establishment.locationId,
             }
