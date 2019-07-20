@@ -212,8 +212,16 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     this.validationComplete = true;
   }
 
+  /**
+   * Strip off file extension
+   * Replace white spaces with '-'
+   * Then convert to lowercase
+   * @param file ValidatedFile
+   */
   private getFileId(file: ValidatedFile): string {
-    return `bulk-upload-validation-${file.filename.substr(0, file.filename.lastIndexOf('.'))}`;
+    const fileName: string = file.filename.substr(0, file.filename.lastIndexOf('.'));
+    const transformedFileName: string = fileName.replace(/\s/g, '-').toLowerCase();
+    return `bulk-upload-validation-${transformedFileName}`;
   }
 
   /**

@@ -54,14 +54,20 @@ const routes: Routes = [
   {
     path: 'search-users',
     loadChildren: '@features/search/search.module#SearchModule',
-    canActivate: [AuthGuard],
-    data: { title: 'Search Users' },
+    canActivate: [AuthGuard, RoleGuard],
+    data: {
+      roles: [Roles.Admin],
+      title: 'Search Users'
+    },
   },
   {
     path: 'search-establishments',
     loadChildren: '@features/search/search.module#SearchModule',
-    canActivate: [AuthGuard],
-    data: { title: 'Search Establishments' },
+    canActivate: [AuthGuard, RoleGuard],
+    data: {
+      roles: [Roles.Admin],
+      title: 'Search Establishments'
+    },
   },
   {
     path: 'worker',
@@ -95,7 +101,7 @@ const routes: Routes = [
     loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
     canActivate: [AuthGuard, RoleGuard],
     data: {
-      roles: [Roles.Edit],
+      roles: [Roles.Edit, Roles.Admin],
       title: 'Bulk Upload',
     },
   },
