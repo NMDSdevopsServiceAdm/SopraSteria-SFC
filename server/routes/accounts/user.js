@@ -12,6 +12,7 @@ const usernameCheck = require('../../utils/security/usernameValidation').isUsern
 
 const config = require('../../config/config');
 const loginResponse = require('../../utils/login/response');
+const uuid = require('uuid');
 
 // all user functionality is encapsulated
 const User = require('../../models/classes/user');
@@ -512,19 +513,13 @@ router.route('/validateAddUser').post(async (req, res) => {
     }
 });
 
-router.use('/:username', Authorization.isAuthorisedAddUser);
+router.use('/:username', Authorization.isAuthorised);
 router.route('/:username').delete(async (req, res) => {
-   //401
-   //403
-   //200
-   //404     
-
    try {
-        // all checks pass, so find the user using facts from the token (now on the req)
         const login = await models.login.findOne({
             where: {
                 username: {
-                    [models.Sequelize.Op.iLike] : req.username
+                    [models.Sequelize.Op.iLike] : req.params.username
                 },
                 isActive: true
             },
@@ -532,12 +527,30 @@ router.route('/:username').delete(async (req, res) => {
                 {
                     model: models.user,
                     attributes: ['id', 'FullNameValue'],
+                    where: {
+                        establishmentId: req.establishmentId
+                    }
                 }
             ]
         });
 
-        if (login && login.username === req.username && login.user.id) {
+        if (login && login.user.id) {
             await models.sequelize.transaction(async t => {
+
+                // If the deleted user is the primary, make us the primary
+                if(login.user.isPrimary){
+                    await models.user.update({
+                            isPrimary: true,
+                            updated: new Date(),
+                            updatedBy: req.username.toLowerCase()
+                        },{
+                        where: {
+                            username: req.username
+                        },
+                        transaction: t,
+                        attributes: ['id', 'updated'],
+                    });                    
+                }
 
                 // Set the login to not active
                 login.update({
@@ -555,12 +568,30 @@ router.route('/:username').delete(async (req, res) => {
                 };
                 await models.userAudit.create(auditEvent, {transaction: t});
 
-                
+                let randomNewUsername = uuid.v4();
+
+                login.user.update({
+                    Archived: true,
+                    FullNameValue: false,
+                    isPrimary: false,
+                    Username: randomNewUsername,
+                    EmailValue: '',
+                    PhoneValue: '',
+                    JobTitle: '',
+                    SecurityQuestionValue: '',
+                    SecurityQuestionAnswerValue: ''
+                },
+                {transaction: t});
+
+                await models.sequelize.query('UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: login.username, usernameNew: randomNewUsername },type: models.sequelize.QueryTypes.UPDATE, transaction: t });
+                await models.sequelize.query('UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: login.username, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: t });
+                await models.sequelize.query('UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: login.username, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: t });
+
             });
 
-            return res.status(200).send(`User deleted ${login.user.FullNameValue}`);
+            return res.status(200).send(`User deleted`);
         } else {
-            throw new Error(`Failed to find user: ${req.username}`);
+            return res.status(404).send(`User not found`);
         }
 
   } catch (err) {
