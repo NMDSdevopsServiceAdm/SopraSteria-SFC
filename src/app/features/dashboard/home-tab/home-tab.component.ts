@@ -37,7 +37,7 @@ export class HomeTabComponent implements OnInit {
       this.authService.auth$.pipe(take(1)).subscribe((loggedInSession: LoggedInSession) => {
         if (loggedInSession && loggedInSession.role) {
           this.role = loggedInSession.role;
-          this.isParent = loggedInSession.establishment.isParent;
+          this.isParent = loggedInSession.establishment && loggedInSession.establishment.isParent ? loggedInSession.establishment.isParent : false;
         }
       })
     );
