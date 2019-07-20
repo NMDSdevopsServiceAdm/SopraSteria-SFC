@@ -73,6 +73,26 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
+  public resendActivationLink() {
+    this.subscriptions.add(
+      this.userService.resendActivationLink(this.user.uid).subscribe(
+        () => {
+          this.router.navigate(this.return.url, { fragment: 'user-accounts' });
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Account set up link has been resent.',
+          });
+        },
+        () => {
+          this.alertService.addAlert({
+            type: 'warning',
+            message: 'There was an error resending account set up link.',
+          });
+        }
+      )
+    );
+  }
+
   public onDeleteUser() {
     const dialog = this.dialogService.open(UserAccountDeleteDialogComponent, { user: this.user });
     dialog.afterClosed.subscribe(deleteConfirmed => {
@@ -83,16 +103,20 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   }
 
   private deleteUser() {
-    this.userService
-      .deleteUser(this.user.uid)
-      .pipe(
-        withLatestFrom(this.userService.returnUrl$),
-        take(1)
+    this.subscriptions.add(
+      this.userService.deleteUser(this.user.uid).subscribe(
+        () => {
+          this.router.navigate(this.return.url, { fragment: 'user-accounts' });
+          this.alertService.addAlert({ type: 'success', message: 'User successfully deleted.' });
+        },
+        () => {
+          this.alertService.addAlert({
+            type: 'warning',
+            message: 'There was an error deleting the user.',
+          });
+        }
       )
-      .subscribe(([response, returnUrl]) => {
-        this.router.navigate(returnUrl.url, { fragment: 'user-accounts' });
-        this.alertService.addAlert({ type: 'success', message: 'User deleted [BE NOT IMPLEMENTED]' });
-      });
+    );
   }
 
   private setAccountDetails(): void {
