@@ -60,7 +60,7 @@ export class AuthService {
   }
   public get isFirstBulkUpload(): boolean {
     if (this._session) {
-      return this._session.establishment.isFirstBulkUpload;
+      return (this._session.establishment && this._session.establishment.isFirstBulkUpload ? this._session.establishment.isFirstBulkUpload : true);
     } else {
       return true;
     }
