@@ -48,6 +48,8 @@ export class EstablishmentService {
   public previousEstablishmentId: number;
   public isSameLoggedInUser: boolean;
 
+  private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
+
   constructor(private http: HttpClient) {}
 
   private _establishmentId: number = null;
@@ -59,6 +61,14 @@ export class EstablishmentService {
     } else {
       this.isSameLoggedInUser = true;
     }
+  }
+
+  public get primaryWorkplace$() {
+    return this._primaryWorkplace$.value;
+  }
+
+  public set primaryWorkplace$(workplace: Establishment) {
+    this._primaryWorkplace$.next(workplace);
   }
 
   public get establishment$() {

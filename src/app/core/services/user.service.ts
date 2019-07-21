@@ -18,7 +18,22 @@ export class UserService {
   private _returnUrl$: BehaviorSubject<URLStructure> = new BehaviorSubject<URLStructure>(null);
   public returnUrl$: Observable<URLStructure> = this._returnUrl$.asObservable();
 
+  private _loggedInUser$: BehaviorSubject<UserDetails> = new BehaviorSubject<UserDetails>(null);
+  public loggedInUser$: Observable<UserDetails> = this._loggedInUser$.asObservable();
+
   constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
+
+  public get loggedInUser(): UserDetails {
+    return this._loggedInUser$.value;
+  }
+
+  public set loggedInUser(user: UserDetails) {
+    this._loggedInUser$.next(user);
+  }
+
+  public getLoggedInUser(): Observable<UserDetails> {
+    return this.http.get<UserDetails>(`/api/user/me`);
+  }
 
   /*
    * GET /api/user/establishment/:establishmentId
