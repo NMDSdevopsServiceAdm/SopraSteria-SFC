@@ -39,20 +39,12 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
 
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
-        if (userDetails) {
-          this.userDetails = userDetails;
-          this.preFillForm({
-            securityQuestion: userDetails.securityQuestion,
-            securityQuestionAnswer: userDetails.securityQuestionAnswer,
-          });
-        }
-      })
-    );
-
-    this.subscriptions.add(
-      this.userService.getUsernameFromEstbId().subscribe(data => {
-        this.username = data.users[0].username;
+      this.userService.loggedInUser$.subscribe(user => {
+        this.userDetails = user;
+        this.preFillForm({
+          securityQuestion: user.securityQuestion,
+          securityQuestionAnswer: user.securityQuestionAnswer,
+        });
       })
     );
   }
@@ -66,10 +58,13 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
     ];
   }
 
-  private changeUserDetails(username: string, userDetails: UserDetails): void {
+  private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(username, userDetails).subscribe(
-        () => this.router.navigate(['/account-management']),
+      this.userService.updateUserDetails(this.userDetails.username, userDetails).subscribe(
+        data => {
+          this.userService.loggedInUser = { ...this.userDetails, ...data };
+          this.router.navigate(['/account-management']);
+        },
         (error: HttpErrorResponse) => {
           this.form.setErrors({ serverError: true });
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
@@ -81,7 +76,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
   protected save(): void {
     this.userDetails.securityQuestion = this.getSecurityQuestion.value;
     this.userDetails.securityQuestionAnswer = this.getSecurityQuestionAnswer.value;
-    this.changeUserDetails(this.username, this.userDetails);
+    this.changeUserDetails(this.userDetails);
   }
 
   protected setCallToActionLabel(): void {

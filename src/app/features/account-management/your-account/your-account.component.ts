@@ -21,24 +21,11 @@ export class YourAccountComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.breadcrumbService.show();
-    this.getUsername();
-  }
 
-  private getUsername() {
     this.subscriptions.add(
-      this.userService.getUsernameFromEstbId().subscribe(data => {
-        this.username = data.users[0].username;
-        this.getUserSummary();
-      })
-    );
-  }
-
-  private getUserSummary() {
-    this.subscriptions.add(
-      this.userService.getMyDetails(this.username).subscribe((userDetails: UserDetails) => {
-        this.user = userDetails;
+      this.userService.loggedInUser$.subscribe(user => {
+        this.user = user;
         this.setAccountDetails();
-        this.userService.updateState(userDetails);
       })
     );
   }

@@ -1,13 +1,13 @@
-import { AccountDetails } from '@features/account/account-details/account-details';
-import { BackService } from '@core/services/back.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { Component } from '@angular/core';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
+import { AccountDetails } from '@features/account/account-details/account-details';
 
 @Component({
   selector: 'app-change-your-details',
@@ -15,6 +15,7 @@ import { UserService } from '@core/services/user.service';
 })
 export class ChangeYourDetailsComponent extends AccountDetails {
   public callToActionLabel = 'Save and return';
+  public user: UserDetails;
   protected username: string;
 
   constructor(
@@ -23,7 +24,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
     protected router: Router,
-    protected userService: UserService,
+    protected userService: UserService
   ) {
     super(backService, errorSummaryService, fb, router);
   }
@@ -39,17 +40,9 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   private setupSubscriptions(): void {
     this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
-        if (userDetails) {
-          this.userDetails = userDetails;
-          this.prefillForm(userDetails);
-        }
-      })
-    );
-
-    this.subscriptions.add(
-      this.userService.getUsernameFromEstbId().subscribe(data => {
-        this.username = data.users[0].username;
+      this.userService.loggedInUser$.subscribe(user => {
+        this.userDetails = user;
+        this.prefillForm(user);
       })
     );
   }
@@ -66,14 +59,18 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   }
 
   protected save(): void {
-    this.userService.updateState(this.setUserDetails());
-    this.changeUserDetails(this.username, this.userDetails);
+    const details = this.setUserDetails();
+    this.userService.updateState(details);
+    this.changeUserDetails(details);
   }
 
-  private changeUserDetails(username: string, userDetails: UserDetails): void {
+  private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(username, userDetails).subscribe(
-        () => this.router.navigate(['/account-management']),
+      this.userService.updateUserDetails(this.userDetails.username, userDetails).subscribe(
+        data => {
+          this.userService.loggedInUser = { ...this.userDetails, ...data };
+          this.router.navigate(['/account-management']);
+        },
         (error: HttpErrorResponse) => this.onError(error)
       )
     );
