@@ -101,10 +101,18 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
             // this is a known subsidairy of this given parent establishment
 
             // but, to be able to access the subsidary, then the permissions must not be null
-            if (referencedEstablishment.dataOwmer === 'Workplace' && referencedEstablishment.parentPermissions === null) {
-              console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
-              // failed to find establishment by UUID - being a subsidairy of this known parent
-              return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+            if (referencedEstablishment.dataOwner === 'Workplace') {
+              if (referencedEstablishment.parentPermissions === null) {
+                console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
+                // failed to find establishment by UUID - being a subsidairy of this known parent
+                return res.status(403).send({message: `Parent not permitted to access Establishment with id: ${req.params.id}`});
+              }
+
+              // parent permissions must be either null (no access), "Workplace" or "Workplace and staff" - if not null, then have access to the establishment
+              // but only read access (GET)
+              if (req.method !== 'GET') {
+                return res.status(403).send({message: `Parent not permitted to update Establishment with id: ${req.params.id}`});
+              }
             }
 
             req.establishmentId = referencedEstablishment.id;

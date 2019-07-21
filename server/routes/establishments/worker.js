@@ -27,17 +27,17 @@ const validateWorker = async (req, res, next) => {
     // if the request for this worker is by a user associated with parent, and the requested establishment is
     //  not their primary establishment, then they must have been granted "staff" level permission to access the worker
     if (req.establishmentId !== req.establishment.id) {
-
-      // TODO - although I can now demonstrate this is working - removing this restriction because bulk upload
-      //        parent/sub permissions need to be refine because at present, the frontend will try and set the local identifiers
-      //        on subs it doesn't technically have permisison on.
-      //   https://trello.com/c/LtgGtQho
       // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
-      // if (!req.parentIsOwner  &&
-      //     (req.parentPermissions === null || req.parentPermissions !== "Workplace and Staff")) {
-      //         console.error("validateWorker authorisation - parent is requesting a subdiaries worker without required permission");
-      //         return res.status(400).send('Not Found');
-      // }
+      if (!req.parentIsOwner  &&
+          (req.parentPermissions === null || req.parentPermissions !== "Workplace and Staff")) {
+        console.error(`Parent not permitted to access Worker with id: ${workerId}`);
+        return res.status(403).send({ message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}` });
+      }
+
+      // more so, if the parent is not the owner, then only read access is allow
+      if (req.method !== 'GET') {
+        return res.status(403).send({ message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}` });
+      }
     }
 
 
@@ -114,9 +114,10 @@ const updateLocalIdOnWorker = async (thisGivenWorker, transaction, updatedTimest
     }
 }
 
-router.use('/', validateWorker);
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
+router.use('/:workerId', validateWorker);
+router.use('/', validateWorker);
 
 // gets all workers
 router.route('/').get(async (req, res) => {
