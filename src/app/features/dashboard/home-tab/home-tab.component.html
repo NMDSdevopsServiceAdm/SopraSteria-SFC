@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-m">Home</h2>
     <p *ngIf="!workplace?.employerType || updateStaffRecords">What you need to do first.</p>
-    <app-inset-text *ngIf="!workplace?.employerType" [color]="'todo'">
+    <app-inset-text *ngIf="workplace && !workplace?.employerType" [color]="'todo'">
       You need to provide information on your workplace.<br />
       <a [routerLink]="['/workplace', workplace?.uid, 'start']">Add workplace information</a>
     </app-inset-text>
