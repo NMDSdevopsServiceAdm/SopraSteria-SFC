@@ -3,9 +3,9 @@ import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
-import { UserService } from '@core/services/user.service';
+import { CreateAccountService } from '@core/services/create-account/create-account.service';
 
 @Component({
   selector: 'app-change-your-details',
@@ -13,10 +13,12 @@ import { UserService } from '@core/services/user.service';
 })
 export class ChangeYourDetailsComponent extends AccountDetails {
   public callToActionLabel = 'Save and return';
-  private previousAndReturnRoute: any[] = ['/registration/confirm-account-details'];
+  private activationToken: string;
+  private previousAndReturnRoute: any[];
 
   constructor(
-    private userService: UserService,
+    private createAccountService: CreateAccountService,
+    private route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
@@ -27,12 +29,14 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   protected init() {
     this.setupSubscription();
+    this.activationToken = this.route.snapshot.params.activationToken;
+    this.previousAndReturnRoute = ['/activate-account' , this.activationToken, 'confirm-account-details'];
     this.setBackLink();
   }
 
   private setupSubscription(): void {
     this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
+      this.createAccountService.userDetails$.subscribe((userDetails: UserDetails) => {
         if (userDetails) {
           this.prefillForm(userDetails);
         }
@@ -52,11 +56,11 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   }
 
   protected save(): void {
-    this.userService.updateState(this.setUserDetails());
-    this.router.navigate([this.previousAndReturnRoute]);
+    this.createAccountService.userDetails$.next(this.setUserDetails());
+    this.router.navigate(this.previousAndReturnRoute);
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [this.previousAndReturnRoute] });
+    this.backService.setBackLink({ url: this.previousAndReturnRoute });
   }
 }

@@ -1,19 +1,19 @@
+import { BackService } from '@core/services/back.service';
+import { EMAIL_PATTERN, PHONE_PATTERN } from '@core/constants/constants';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { UserDetails } from '@core/model/userDetails.model';
-import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
+import { UserDetails } from '@core/model/userDetails.model';
 
 export class AccountDetails implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverError: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
-  protected userDetails: UserDetails;
   public callToActionLabel = 'Continue';
   public form: FormGroup;
   public formControlsMap: any[] = [
@@ -51,11 +51,11 @@ export class AccountDetails implements OnInit, OnDestroy {
         '',
         [
           Validators.required,
-          Validators.pattern('^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,4}$'),
+          Validators.pattern(EMAIL_PATTERN),
           Validators.maxLength(120),
         ],
       ],
-      phone: ['', [Validators.required, Validators.pattern('^[0-9 x(?=ext 0-9+)]{8,50}$')]],
+      phone: ['', [Validators.required, Validators.pattern(PHONE_PATTERN)]],
     });
 
     this.setupFormErrorsMap();

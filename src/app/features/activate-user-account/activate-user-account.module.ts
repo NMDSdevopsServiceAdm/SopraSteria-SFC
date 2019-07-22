@@ -11,6 +11,7 @@ import { ActivationCompleteComponent } from './activation-complete/activation-co
 import { ConfirmAccountDetailsComponent } from './confirm-account-details/confirm-account-details.component';
 import { CreateUsernameComponent } from './create-username/create-username.component';
 import { SecurityQuestionComponent } from './security-question/security-question.component';
+import { ChangeYourDetailsComponent } from './change-your-details/change-your-details.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, ActivateUserAccountRoutingModule],
@@ -20,6 +21,7 @@ import { SecurityQuestionComponent } from './security-question/security-question
     SecurityQuestionComponent,
     ActivationCompleteComponent,
     ExpiredActivationLinkComponent,
+    ChangeYourDetailsComponent,
   ],
 })
 export class ActivateUserAccountModule {}
