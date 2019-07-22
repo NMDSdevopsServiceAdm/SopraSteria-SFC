@@ -10,6 +10,7 @@ import { Injectable } from '@angular/core';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { URLStructure } from '@core/model/url.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +20,7 @@ export class CreateAccountService {
   public loginCredentials$: BehaviorSubject<LoginCredentials> = new BehaviorSubject(null);
   public securityDetails$: BehaviorSubject<SecurityDetails> = new BehaviorSubject(null);
   public activationComplete$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public returnTo$ = new BehaviorSubject<URLStructure>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -36,5 +38,9 @@ export class CreateAccountService {
     return this.http.post<ValidateAccountActivationTokenResponse>(`/api/user/validateAddUser`, requestPayload, {
       observe: 'response',
     });
+  }
+
+  public setReturnTo(returnTo: URLStructure): void {
+    this.returnTo$.next(returnTo);
   }
 }

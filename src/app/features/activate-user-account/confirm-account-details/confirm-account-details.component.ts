@@ -29,9 +29,9 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   protected init() {
+    this.activationToken = this.route.snapshot.params.activationToken;
     this.setupSubscriptions();
     this.setBackLink();
-    this.activationToken = this.route.snapshot.params.activationToken;
   }
 
   protected setupSubscriptions(): void {
@@ -54,7 +54,6 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Full name',
         data: this.userDetails.fullname,
-        route: '/activate-account/change-your-details',
       },
       {
         label: 'Job title',
@@ -74,7 +73,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Username',
         data: this.loginCredentials.username,
-        route: '/activate-account/create-username',
+        route: { url: ['/activate-account', this.activationToken, 'create-username'] },
       },
       {
         label: 'Password',
@@ -86,7 +85,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
-        route: '/activate-account/security-question',
+        route: { url: ['/activate-account', this.activationToken, 'security-question'] },
       },
       {
         label: 'Security answer',
@@ -96,7 +95,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/activate-account/security-question'] });
+    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, '/security-question'] });
   }
 
   private generatePayload(): ActivateAccountRequest {
@@ -109,7 +108,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       securityQuestion: this.securityDetails.securityQuestion,
       securityQuestionAnswer: this.securityDetails.securityQuestionAnswer,
       username: this.loginCredentials.username,
-      addUserUUID: this.activationToken
+      addUserUUID: this.activationToken,
     };
   }
 
@@ -122,5 +121,11 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
           (error: HttpErrorResponse) => this.onError(error)
         )
     );
+  }
+
+  public onSetReturn(): void {
+    this.createAccountService.setReturnTo({
+      url: ['/activate-account', this.activationToken, 'confirm-account-details'],
+    });
   }
 }
