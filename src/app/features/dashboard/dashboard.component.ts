@@ -29,7 +29,6 @@ export class DashboardComponent implements OnInit {
 
     this.subscriptions.add(
       this.userService.loggedInUser$.subscribe(user => {
-        console.log('WP', this.workplace);
         if (user && user.role === 'Admin') {
           if (!this.workplace) {
             this.router.navigate(['/search-users']);
