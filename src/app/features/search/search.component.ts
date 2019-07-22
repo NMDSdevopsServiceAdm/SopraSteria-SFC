@@ -110,9 +110,8 @@ export class SearchComponent implements OnInit {
 	private onSwapSuccess(data) {
 		if (data.body && data.body.establishment && data.body.establishment.id) {
 			this.establishmentService.setState(data.body.establishment);
-			this.establishmentService.swapEstablishmentId(data.body.establishment.id);
-			this.authService.swapToken(data.headers.get('authorization'));
-			// localStorage.setItem('auth-token', data.headers.get('authorization'));
+			this.establishmentService.establishmentId = data.body.establishment.id;
+			this.authService.token = data.headers.get('authorization');
 			this.router.navigate(['/dashboard']);
 		}
 	}

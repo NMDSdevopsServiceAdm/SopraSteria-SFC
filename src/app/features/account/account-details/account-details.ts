@@ -1,12 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { BackService } from '@core/services/back.service';
 import { OnDestroy, OnInit } from '@angular/core';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { Subscription } from 'rxjs';
 
 export class AccountDetails implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
@@ -19,19 +19,19 @@ export class AccountDetails implements OnInit, OnDestroy {
   public formControlsMap: any[] = [
     {
       label: 'Your full name',
-      name: 'fullname'
+      name: 'fullname',
     },
     {
       label: 'Your job title',
-      name: 'jobTitle'
+      name: 'jobTitle',
     },
     {
       label: 'Your email address',
-      name: 'email'
+      name: 'email',
     },
     {
       label: 'Contact phone number',
-      name: 'phone'
+      name: 'phone',
     },
   ];
   public submitted = false;
@@ -40,7 +40,7 @@ export class AccountDetails implements OnInit, OnDestroy {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
-    protected router: Router,
+    protected router: Router
   ) {}
 
   ngOnInit() {
@@ -67,12 +67,12 @@ export class AccountDetails implements OnInit, OnDestroy {
   protected init() {}
 
   protected setUserDetails(): UserDetails {
-    return (this.userDetails = {
+    return {
       email: this.form.get(this.formControlsMap[2].name).value,
       fullname: this.form.get(this.formControlsMap[0].name).value,
       jobTitle: this.form.get(this.formControlsMap[1].name).value,
       phone: this.form.get(this.formControlsMap[3].name).value,
-    });
+    };
   }
 
   public setupFormErrorsMap(): void {

@@ -1069,7 +1069,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const qualificationsAsArray = Object.values(myAPIQualifications);
 
   // prepare the validation difference report which highlights all new, updated and deleted establishments and workers
-  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent);
+  const RESTORE_ASSOCIATION_LEVEL=1;
+  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false);
   // bulk upload specific validations - knowing the to load and current set of entities
 
   // firstly, if the logged in account performing this validation is not a parent, then
@@ -1079,7 +1080,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     const MAX_ESTABLISHMENTS = 1;
 
     if (establishments.imported.length !== MAX_ESTABLISHMENTS) {
-      csvEstablishmentSchemaErrors.push(CsvEstablishmentValidator.justOneEstablishmentError());
+      csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.justOneEstablishmentError());
     }
   }
 
@@ -1091,15 +1092,36 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     }
   });
 
-
   let notPrimary = true;
   if (primaryEstablishment) {
     const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishment.key];
     if (!onloadedPrimaryEstablishment) {
-      csvEstablishmentSchemaErrors.push(CsvEstablishmentValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
+      csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
     }
   } else {
     console.error(("Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!"));
+  }
+
+  if (isParent) {
+    // must be a parent
+    // check for trying to upload against subsidaries for which this parent does not own (if a parent) - ignore the primary (self) establishment of course
+    const allLoadedEstablishments =Object.values(myAPIEstablishments);
+    allLoadedEstablishments.forEach(thisOnloadEstablishment => {
+      if (thisOnloadEstablishment.key !== primaryEstablishment.key) {
+        // we're not the primary
+        const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrentEstablishment => {
+          if (thisCurrentEstablishment.key === thisOnloadEstablishment.key) {
+            return thisCurrentEstablishment;
+          }
+        });
+
+        if (foundCurrentEstablishment && foundCurrentEstablishment.dataOwner !== 'Parent') {
+          const lineNumberByKey = allEstablishmentsByKey[foundCurrentEstablishment.key];
+          const establishmentLineValidator = myEstablishments[lineNumberByKey-2];
+          csvEstablishmentSchemaErrors.unshift(establishmentLineValidator.addNotOwner());
+        }
+      }
+    });
   }
 
   // update CSV metadata error/warning counts
@@ -1205,7 +1227,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
-const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent, assocationLevel) => {
+// the "onlyMine" parameter is used to remove those subsidiary establishments where the parent is not the owner
+const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent, assocationLevel=1, onlyMine=false) => {
   try {
     const thisUser = new UserEntity(primaryEstablishmentId);;
     await thisUser.restore(null, loggedInUsername, false);
@@ -1225,9 +1248,11 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
 
     if (myEstablishments.subsidaries && myEstablishments.subsidaries.establishments && Array.isArray(myEstablishments.subsidaries.establishments)) {
       myEstablishments.subsidaries.establishments.forEach(thisSubsidairy => {
-        const newSub = new EstablishmentEntity(loggedInUsername);
-        currentEntities.push(newSub);
-        restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel));
+        if (!onlyMine || (onlyMine && thisSubsidairy.dataOwner === 'Parent')) {
+          const newSub = new EstablishmentEntity(loggedInUsername);
+          currentEntities.push(newSub);
+          restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel));
+        }
       });
     }
 
@@ -1518,11 +1543,12 @@ router.route('/report/:reportType').get(async (req, res) => {
       const laPadding = '*'.padStart(laTitle.length, '*');
       readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
 
-      entities ? entities
-        .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
-        .reduce((acc, val) => acc.concat(val), [])
-        .sort((a,b) => a.name > b.name)
-        .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
+      entities ? entities.map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
+                          .reduce((acc, val) => acc.concat(val), [])
+                          .map(la => la.name)
+                          .sort((a,b) => a > b)
+                          .filter((value, index, self) => self.indexOf(value)===index)
+                          .map(item => readable.push(`${item}${NEWLINE}`)) : true;
 
       // list all establishments that are being deleted
       console.log("WA DEBUG - difference report: ", differenceReportKey)
@@ -1840,7 +1866,8 @@ router.route('/download/:downloadType').get(async (req, res) => {
 
       try {
         const ENTITY_RESTORE_LEVEL=2;
-        const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL);
+        // only restore those subs that this primary establishment owns
+        const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true);
         [establishments, workers, training] = await exportToCsv(NEWLINE, myCurrentEstablishments);
 
       } catch(err) {

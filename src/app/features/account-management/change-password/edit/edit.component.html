@@ -17,7 +17,7 @@
           </h1>
         </legend>
 
-        <p>Change password for account {{ userDetails.username }}</p>
+        <p>Change password for account {{ userDetails?.username }}</p>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getOldPasswordInput.errors">
           <label class="govuk-label" for="oldPasswordInput">

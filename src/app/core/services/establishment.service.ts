@@ -47,6 +47,7 @@ export class EstablishmentService {
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   public previousEstablishmentId: number;
   public isSameLoggedInUser: boolean;
+  private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
 
   constructor(private http: HttpClient) { }
 
@@ -59,6 +60,14 @@ export class EstablishmentService {
     } else {
       this.isSameLoggedInUser = true;
     }
+  }
+
+  public get primaryWorkplace$() {
+    return this._primaryWorkplace$.value;
+  }
+
+  public set primaryWorkplace$(workplace: Establishment) {
+    this._primaryWorkplace$.next(workplace);
   }
 
   public get establishment$() {
@@ -118,11 +127,6 @@ export class EstablishmentService {
 
   public setReturnTo(returnTo: URLStructure) {
     this.returnTo$.next(returnTo);
-  }
-
-  public swapEstablishmentId(value: number) {
-    this._establishmentId = value;
-    localStorage.setItem('establishmentId', value.toString());
   }
 
   getEstablishment(id: string) {
