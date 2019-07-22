@@ -57,7 +57,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Full name',
         data: this.userDetails.fullname,
-        route: '/registration/change-your-details',
+        route: { url: ['/registration/change-your-details'] },
       },
       {
         label: 'Job title',
@@ -77,7 +77,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Username',
         data: this.loginCredentials.username,
-        route: '/registration/create-username',
+        route: { url: ['/registration/create-username'] },
       },
       {
         label: 'Password',
@@ -89,7 +89,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
-        route: '/registration/security-question',
+        route: { url: ['/registration/security-question'] },
       },
       {
         label: 'Security answer',

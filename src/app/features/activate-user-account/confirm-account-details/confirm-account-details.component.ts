@@ -73,7 +73,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Username',
         data: this.loginCredentials.username,
-        route: ['/activate-account', this.activationToken, 'create-username'],
+        route: { url: ['/activate-account', this.activationToken, 'create-username'] },
       },
       {
         label: 'Password',
@@ -85,7 +85,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
-        route: ['/activate-account', this.activationToken, 'security-question'],
+        route: { url: ['/activate-account', this.activationToken, 'security-question'] },
       },
       {
         label: 'Security answer',

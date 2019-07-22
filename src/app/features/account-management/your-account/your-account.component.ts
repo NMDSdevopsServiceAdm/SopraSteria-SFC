@@ -48,7 +48,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
       {
         label: 'Full name',
         data: this.user.fullname,
-        route: '/account-management/change-your-details',
+        route: { url: ['/account-management/change-your-details'] },
       },
       {
         label: 'Job title',
@@ -68,7 +68,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
       {
         label: 'Username',
         data: this.user.username,
-        route: '/account-management/change-password',
+        route: { url: ['/account-management/change-password'] },
       },
       {
         label: 'Password',
@@ -80,7 +80,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
       {
         label: 'Security question',
         data: this.user.securityQuestion,
-        route: '/account-management/change-user-security',
+        route: { url: ['/account-management/change-user-security'] },
       },
       {
         label: 'Security answer',

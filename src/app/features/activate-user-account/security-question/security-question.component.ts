@@ -34,7 +34,6 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   protected setBackLink(): void {
     this.return = this.createAccountService.returnTo$.value;
     this.back = this.return ? this.return : { url: ['/activate-account', this.activationToken, 'create-username'] };
-    console.log('setBackLink fired', this.return, this.back);
     this.backService.setBackLink(this.back);
   }
 
