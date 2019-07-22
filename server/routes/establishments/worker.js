@@ -41,10 +41,10 @@ const validateWorker = async (req, res, next) => {
     }
 
 
-    if (workerId) {
+    if (workerId && workerId !== 'localIdentifier') {
         // validating worker id - must be a V4 UUID
         const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-        if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
+        if (!uuidRegex.test(workerId.toUpperCase())) return res.status(410).send('Unexpected worker id');
 
         const thisWorker = new Workers.Worker(establishmentId);
 
