@@ -104,7 +104,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, RoleGuard],
         data: {
           roles: [Roles.Admin],
-          title: 'Search Users'
+          title: 'Search Users',
         },
       },
       {
@@ -113,7 +113,7 @@ const routes: Routes = [
         canActivate: [AuthGuard, RoleGuard],
         data: {
           roles: [Roles.Admin],
-          title: 'Search Establishments'
+          title: 'Search Establishments',
         },
       },
     ],
@@ -139,4 +139,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
