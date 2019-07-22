@@ -13,10 +13,13 @@ import { Subscription } from 'rxjs';
   templateUrl: './enter-workplace-address.component.html',
 })
 export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
+  private addressMaxLength = 40;
+  private formErrorsMap: Array<ErrorDetails>;
+  private postcodeMaxLength = 8;
+  private subscriptions: Subscription = new Subscription();
+  private workplaceNameMaxLength = 120;
   public form: FormGroup;
   public submitted = false;
-  private formErrorsMap: Array<ErrorDetails>;
-  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private backService: BackService,
@@ -66,12 +69,12 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
 
   private setupForm(): void {
     this.form = this.fb.group({
-      address1: ['', [Validators.required, Validators.maxLength(40)]],
-      address2: ['', [Validators.required, Validators.maxLength(40)]],
-      county: ['', [Validators.required, Validators.maxLength(40)]],
-      postcode: ['', [Validators.required, Validators.maxLength(8)]],
-      townOrCity: ['', [Validators.required, Validators.maxLength(40)]],
-      workplaceName: ['', [Validators.required, Validators.maxLength(120)]],
+      address1: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      address2: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      county: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      postcode: ['', [Validators.required, Validators.maxLength(this.postcodeMaxLength)]],
+      townOrCity: ['', [Validators.required, Validators.maxLength(this.addressMaxLength)]],
+      workplaceName: ['', [Validators.required, Validators.maxLength(this.workplaceNameMaxLength)]],
     });
   }
 
@@ -107,7 +110,7 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
           },
           {
             name: 'maxlength',
-            message: 'Your address must be no longer than 40 characters.',
+            message: `'Your address must be no longer than ${this.addressMaxLength} characters.`,
           },
         ],
       },
@@ -120,7 +123,7 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
           },
           {
             name: 'maxlength',
-            message: 'Your address must be no longer than 40 characters.',
+            message: `'Your address must be no longer than ${this.addressMaxLength} characters.`,
           },
         ],
       },
@@ -133,7 +136,7 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
           },
           {
             name: 'maxlength',
-            message: 'Your county must be no longer than 8 characters.',
+            message: `'Your county must be no longer than ${this.addressMaxLength} characters.`,
           },
         ],
       },
@@ -146,7 +149,7 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
           },
           {
             name: 'maxlength',
-            message: 'Your postcode must be no longer than 8 characters.',
+            message: `Your postcode must be no longer than ${this.postcodeMaxLength} characters.`,
           },
         ],
       },
@@ -159,7 +162,7 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
           },
           {
             name: 'maxlength',
-            message: 'Your town or city must be no longer than 40 characters.',
+            message: `'Your town or city must be no longer than ${this.addressMaxLength} characters.`,
           },
         ],
       },
@@ -172,7 +175,7 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
           },
           {
             name: 'maxlength',
-            message: 'Your workplace name must be no longer than 120 characters.',
+            message: `Your workplace name must be no longer than ${this.workplaceNameMaxLength} characters.`,
           },
         ],
       },
