@@ -49,8 +49,9 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
   }
 
   private userSlotsAvailable(users: Array<UserDetails>) {
+    const readOnlyLimit = this.workplace.isParent ? 20 : 3;
     const editUsers = users.filter(user => user.role === Roles.Edit);
     const readOnlyUsers = users.filter(user => user.role === Roles.Read);
-    return editUsers.length < 3 || readOnlyUsers.length < 20;
+    return editUsers.length < 3 || readOnlyUsers.length < readOnlyLimit;
   }
 }

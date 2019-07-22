@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
-import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,11 +20,12 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit() {
-
-    this.establishmentService.primaryWorkplace$.subscribe(workplace => (this.workplace = workplace));
+    this.subscriptions.add(
+      this.establishmentService.primaryWorkplace$.subscribe(workplace => (this.workplace = workplace))
+    );
 
     this.subscriptions.add(
       this.userService.loggedInUser$.subscribe(user => {
