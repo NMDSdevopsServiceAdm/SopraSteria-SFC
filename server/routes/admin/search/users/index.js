@@ -34,7 +34,7 @@ router.route('/').post(async function (req, res) {
         ],
         where: {
           username: {
-            [models.Sequelize.Op.iLike] : usernameSearchField
+            [models.Sequelize.Op.iLike] : usernameSearchField,
           },
         },
         order: [
@@ -78,6 +78,11 @@ router.route('/').post(async function (req, res) {
           {
             model: models.login,
             attributes: ['username', 'isActive', 'passwdLastChanged', 'lastLogin'],
+            where: {
+              username: {
+                [models.Sequelize.Op.ne] : null,
+              },
+            }
           }
         ],
         where: {
