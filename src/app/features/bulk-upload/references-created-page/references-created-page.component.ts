@@ -6,13 +6,9 @@ import { AuthService } from '@core/services/auth.service';
   templateUrl: './references-created-page.component.html',
 })
 export class ReferencesCreatedPageComponent implements OnInit {
-
-  constructor(
-    private authService: AuthService
-  ) {}
+  constructor(private authService: AuthService) {}
 
   ngOnInit() {
     this.authService.isFirstBulkUpload = false;
   }
-
 }
