@@ -38,14 +38,9 @@ export class HomeTabComponent implements OnInit {
 
     this.subscriptions.add(this.userService.loggedInUser$.subscribe(user => (this.user = user)));
 
-    console.log('USER', this.user);
-
-
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(workplace => (this.workplace = workplace))
     );
-
-    console.log('WP', this.workplace);
 
     this.subscriptions.add(
       this.workerService
