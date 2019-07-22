@@ -925,7 +925,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     // having parsed all establishments, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
     myEstablishments.forEach(thisEstablishment => {
-      const keyNoWhitespace = thisEstablishment.localId;
+      const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, "");
       if (allEstablishmentsByKey[keyNoWhitespace]) {
         // this establishment is a duplicate
         csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
@@ -980,7 +980,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           // associate this worker to the known establishment
           const workerKey = thisWorker.uniqueWorker ? thisWorker.uniqueWorker.replace(/\s/g, "") : null;
           const foundEstablishmentByLineNumber = allEstablishmentsByKey[establishmentKeyNoWhitespace];
-
           const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
 
           //key workers, to be used in training
