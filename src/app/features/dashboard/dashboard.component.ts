@@ -9,8 +9,8 @@ import { UserService } from '@core/services/user.service';
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
-  public establishment: LoggedInEstablishment | null;
-  public lastLoggedIn: string | null;
+  public workplace: LoggedInEstablishment;
+  public lastLoggedIn: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -19,7 +19,9 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.establishmentService.establishment$.subscribe(establishment => (this.establishment = establishment));
+    this.establishmentService.establishment$.subscribe(workplace => {
+      this.workplace = workplace;
+    });
 
     // TODO: Use user object to get last logged in date
     this.lastLoggedIn = this.authService.lastLoggedIn;
