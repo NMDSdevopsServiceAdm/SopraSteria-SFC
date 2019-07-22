@@ -24,6 +24,7 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
     this.establishmentService.primaryWorkplace$.subscribe(workplace => (this.workplace = workplace));
 
     this.subscriptions.add(
@@ -32,16 +33,6 @@ export class DashboardComponent implements OnInit {
           if (!this.workplace) {
             this.router.navigate(['/search-users']);
             return false;
-          } else {
-
-            const workplaceId = localStorage.getItem('establishmentId');
-
-            this.establishmentService
-              .getEstablishment(workplaceId)
-              .pipe(take(1))
-              .subscribe(workplace => {
-                this.workplace = workplace;
-              })
           }
         }
       })
