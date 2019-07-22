@@ -5,6 +5,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,9 +33,21 @@ export class DashboardComponent implements OnInit {
 
     this.subscriptions.add(
       this.userService.loggedInUser$.subscribe(user => {
-        if (user && user.role === 'Admin' && !this.workplace) {
-          this.router.navigate(['/search-users']);
-          return false;
+        if (user && user.role === 'Admin') {
+          if (!this.workplace) {
+            this.router.navigate(['/search-users']);
+            return false;
+          } else {
+
+            const workplaceId = localStorage.getItem('establishmentId');
+
+            this.establishmentService
+              .getEstablishment(workplaceId)
+              .pipe(take(1))
+              .subscribe(workplace => {
+                this.workplace = workplace;
+              })
+          }
         }
       })
     );
