@@ -100,6 +100,9 @@ export interface Establishment {
   leavers: Leaver[] | string;
   totalLeavers: number;
   wdf: WDF;
+  isParent?: boolean;
+  parentName?: string;
+  isFirstBulkUpload?: boolean;
 }
 
 export interface UpdateJobsRequest {

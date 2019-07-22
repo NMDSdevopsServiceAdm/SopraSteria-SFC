@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoggedInEstablishment } from '@core/model/logged-in.model';
+import { Establishment } from '@core/model/establishment.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -13,7 +13,7 @@ import { take } from 'rxjs/operators';
 })
 export class DashboardComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
-  public workplace: LoggedInEstablishment;
+  public workplace: Establishment;
   public lastLoggedIn: string;
 
   constructor(
@@ -24,12 +24,7 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
-    this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(workplace => {
-        this.workplace = workplace;
-      })
-    )
+    this.establishmentService.primaryWorkplace$.subscribe(workplace => (this.workplace = workplace));
 
     this.subscriptions.add(
       this.userService.loggedInUser$.subscribe(user => {
