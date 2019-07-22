@@ -1811,8 +1811,6 @@ class Worker {
 
     const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ? parseInt(myNonSocialCare[0]) : null;
 
-    console.log("WA DEBUG - NONSCQUAL - ", myNonSocialCareIndicator)
-
     if (myNonSocialCareIndicator === null) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,

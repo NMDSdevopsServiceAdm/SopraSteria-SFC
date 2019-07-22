@@ -1433,18 +1433,21 @@ class Establishment extends EntityValidator {
             }
 
             // location id can be null for a Non-CQC site
-            if (this._isRegulated && this._locationId === null) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    106,
-                    'Missing (mandatory) for a CQC Registered site',
-                    ['LocationID']
-                ));
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
+            // if a CQC site, and main service is head office (ID=16)
+            if (this._isRegulated) {
+                if (this.mainService.id !== 16 && this._locationId === null)  {
+                    allExistAndValid = false;
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.ERROR,
+                        106,
+                        'Missing (mandatory) for a CQC Registered site',
+                        ['LocationID']
+                    ));
+                    this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
+                }
             }
 
-            // prov id can be null for a Non-CQC site - CANNOT IMPOST THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
+            // prov id can be null for a Non-CQC site - CANNOT IMPOSE THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
             // if (this._isRegulated && this._provId === null) {
             //   allExistAndValid = false;
             //   this._validations.push(new ValidationMessage(
