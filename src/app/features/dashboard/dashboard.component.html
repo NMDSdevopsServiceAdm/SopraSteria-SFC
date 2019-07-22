@@ -22,26 +22,27 @@
   <div class="govuk-grid-column-one-third">
     <p *ngIf="lastLoggedIn" class="govuk-!-font-size-16">Last signed in {{ lastLoggedIn | date: 'd MMMM y' }}</p>
   </div>
-</div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <app-tabs>
-      <app-tab [title]="'Home'">
-        <app-home-tab></app-home-tab>
-      </app-tab>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <app-tabs>
+        <app-tab [title]="'Home'">
+          <app-home-tab></app-home-tab>
+        </app-tab>
 
-      <app-tab [title]="'User accounts'">
-        <app-user-accounts-summary *ngIf="workplace" [workplace]="workplace"></app-user-accounts-summary>
-      </app-tab>
+        <app-tab [title]="'User accounts'">
+          <app-user-accounts-summary *ngIf="workplace" [workplace]="workplace"></app-user-accounts-summary>
+        </app-tab>
 
-      <app-tab [title]="'Workplace'">
-        <app-workplace-tab></app-workplace-tab>
-      </app-tab>
+        <app-tab [title]="'Workplace'">
+          <app-workplace-tab [workplace]="workplace"></app-workplace-tab>
+        </app-tab>
 
-      <app-tab [title]="'Staff records'">
-        <app-staff-records-tab></app-staff-records-tab>
-      </app-tab>
-    </app-tabs>
+        <app-tab [title]="'Staff records'">
+          <app-staff-records-tab></app-staff-records-tab>
+        </app-tab>
+      </app-tabs>
+    </div>
   </div>
+
 </div>

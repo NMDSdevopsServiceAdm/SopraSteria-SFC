@@ -19,7 +19,7 @@ export class UserAccountsSummaryComponent implements OnInit, OnDestroy {
   public users: Array<UserDetails> = [];
   public canAddUser: boolean;
 
-  constructor(private authService: AuthService, private userService: UserService) {}
+  constructor(private authService: AuthService, private userService: UserService) { }
 
   ngOnInit() {
     this.subscriptions.add(

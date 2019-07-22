@@ -15,6 +15,7 @@ import { take } from 'rxjs/operators';
 })
 export class HomeTabComponent implements OnInit {
   public editRole: Roles = Roles.Edit;
+  public adminRole: Roles = Roles.Admin;
   public establishmentId: number;
   public isParent: boolean;
   public updateStaffRecords: boolean;
@@ -28,9 +29,10 @@ export class HomeTabComponent implements OnInit {
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
     private workerService: WorkerService
-  ) {}
+  ) { }
 
   ngOnInit() {
+
     this.establishmentId = this.establishmentService.establishmentId;
 
     this.subscriptions.add(this.userService.loggedInUser$.subscribe(user => (this.user = user)));

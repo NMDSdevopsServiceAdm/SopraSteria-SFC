@@ -16,7 +16,7 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
   public totalStaff: number;
   public workers: Worker[];
 
-  constructor(private establishmentService: EstablishmentService, private workerService: WorkerService) {}
+  constructor(private establishmentService: EstablishmentService, private workerService: WorkerService) { }
 
   ngOnInit() {
     this.subscriptions.add(
