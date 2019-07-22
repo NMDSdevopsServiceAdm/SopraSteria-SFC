@@ -51,6 +51,7 @@ class Establishment {
   static get EXPECT_JUST_ONE_ERROR() { return 950; }
   static get MISSING_PRIMARY_ERROR() { return 955; }
 
+  static get NOT_OWNER_ERROR() { return 997; }
   static get DUPLICATE_ERROR() { return 998; }
   static get HEADERS_ERROR() { return 999; }
   static get MAIN_SERVICE_ERROR() { return 1000; }
@@ -1529,6 +1530,19 @@ class Establishment {
     };
   }
 
+  // add a duplicate validation error to the current set
+  addNotOwner() {
+    return {
+      origin: 'Establishments',
+      lineNumber: this._lineNumber,
+      errCode: Establishment.NOT_OWNER_ERROR,
+      errType: `NOT_OWNER_ERROR`,
+      error: `Not the owner`,
+      source: this._currentLine.LOCALESTID,
+      name: this._currentLine.LOCALESTID,
+    };
+  }
+
   static justOneEstablishmentError() {
     return {
       origin: 'Establishments',
@@ -1994,26 +2008,31 @@ class Establishment {
     columns.push(this._csvQuote(entity.town));
     columns.push(entity.postcode);
 
-    switch (entity.employerType.value) {
-      case 'Private Sector':
-        columns.push(6);
-        break;
-      case 'Voluntary / Charity':
-        columns.push(7);
-        break;
-      case 'Other':
-        columns.push(8);
-        break;
-      case 'Local Authority (generic/other)':
-        columns.push(3);
-        break;
-      case 'Local Authority (adult services)':
-        columns.push(1);
-        break;
-    }
-    if (entity.employerType.other) {
-      columns.push(this._csvQuote(entity.employerType.other))
+    if (entity.employerType) {
+      switch (entity.employerType.value) {
+        case 'Private Sector':
+          columns.push(6);
+          break;
+        case 'Voluntary / Charity':
+          columns.push(7);
+          break;
+        case 'Other':
+          columns.push(8);
+          break;
+        case 'Local Authority (generic/other)':
+          columns.push(3);
+          break;
+        case 'Local Authority (adult services)':
+          columns.push(1);
+          break;
+      }
+      if (entity.employerType.other) {
+        columns.push(this._csvQuote(entity.employerType.other))
+      } else {
+        columns.push('');
+      }
     } else {
+      columns.push('');
       columns.push('');
     }
 
@@ -2070,7 +2089,7 @@ class Establishment {
     columns.push(otherServices.map(thisService => thisService.other && thisService.other.length > 0 ? thisService.other : '').join(';'));
 
     // service users and their 'other' descriptions
-    const serviceUsers = entity.serviceUsers;
+    const serviceUsers = entity.serviceUsers ? entity.serviceUsers : [];
     columns.push(serviceUsers.map(thisUser => BUDI.serviceUsers(BUDI.FROM_ASC, thisUser.id)).join(';'));
     columns.push(serviceUsers.map(thisUser => thisUser.other && thisUser.other.length > 0 ? thisUser.other : '').join(';'));
 
