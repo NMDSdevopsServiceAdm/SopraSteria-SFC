@@ -427,13 +427,35 @@ class User {
             // we are updating an existing User
             try {
                 const updatedTimestamp = new Date();
-
+                
                 // need to update the existing User record and add an
                 //  updated audit event within a single transaction
                 await models.sequelize.transaction(async t => {
+
                     // the saving of an User can be initiated within
                     //  an external transaction
                     const thisTransaction = externalTransaction ? externalTransaction : t;
+
+                    if(this._isPrimary){
+                        console.log('inere')
+                        // Set the existing primary to not primary
+                        await models.user.update({
+                                isPrimary: false,
+                                updated: new Date(),
+                                updatedBy: savedBy.toLowerCase()
+                            },{
+                            where: {
+                                uid: { $not: this.uid},
+                                establishmentId: this._establishmentId,
+                                archived: false,
+                                isPrimary: true
+                            },
+                            transaction: thisTransaction,
+                            returning: true,
+                            raw: true,
+                            attributes: ['id', 'updated'],
+                        });
+                    }
 
                     // now append the extendable properties
                     const modifedUpdateDocument = this._properties.save(savedBy.toLowerCase(), {});

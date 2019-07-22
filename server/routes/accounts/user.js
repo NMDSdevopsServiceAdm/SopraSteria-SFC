@@ -148,27 +148,6 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
             if (isValidUser) {
 
                 await models.sequelize.transaction(async t => {
-
-                    if(thisUser._isPrimary){
-                        // Set the existing primary to not primary
-                        await models.user.update({
-                                isPrimary: false,
-                                updated: new Date(),
-                                updatedBy: req.username.toLowerCase()
-                            },{
-                            where: {
-                                uid: { $not: thisUser.uid},
-                                establishmentId: establishmentId,
-                                archived: false,
-                                isPrimary: true
-                            },
-                            transaction: t,
-                            returning: true,
-                            raw: true,
-                            attributes: ['id', 'updated'],
-                        });
-                    }
-
                     await thisUser.save(req.username, expiresTTLms, t);
                 });            
     
