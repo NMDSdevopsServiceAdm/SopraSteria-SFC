@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
 
     this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe(establishment => {
+      this.establishmentService.establishment$.subscribe(workplace => {
         this.workplace = workplace;
       })
     )
