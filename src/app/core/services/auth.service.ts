@@ -30,7 +30,7 @@ export class AuthService {
     private router: Router,
     private establishmentService: EstablishmentService,
     private userService: UserService
-  ) {}
+  ) { }
 
   public get isLoggedIn(): boolean {
     return !!this.token;
@@ -65,7 +65,7 @@ export class AuthService {
     }
   }
   public get isFirstBulkUpload(): boolean {
-    if (this._session) {
+    if (this._session && this._session.establishment) {
       return this._session.establishment.isFirstBulkUpload;
     } else {
       return true;
