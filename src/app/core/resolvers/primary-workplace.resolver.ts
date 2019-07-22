@@ -13,7 +13,7 @@ export class PrimaryWorkplaceResolver implements Resolve<any> {
     if (workplaceid) {
       return this.establishmentService
         .getEstablishment(workplaceid)
-        .pipe(tap(workplace => (this.establishmentService.primaryWorkplace$ = workplace)));
+        .pipe(tap(workplace => this.establishmentService.setPrimaryWorkplace(workplace)));
     }
 
     return of(null);
