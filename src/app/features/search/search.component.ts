@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { AuthService } from '@core/services/auth.service';
+import { take } from 'rxjs/operators';
+
 
 @Component({
 	selector: 'app-search',
@@ -109,10 +111,20 @@ export class SearchComponent implements OnInit {
 
 	private onSwapSuccess(data) {
 		if (data.body && data.body.establishment && data.body.establishment.id) {
-			this.establishmentService.setState(data.body.establishment);
-			this.establishmentService.establishmentId = data.body.establishment.id;
+
 			this.authService.token = data.headers.get('authorization');
-			this.router.navigate(['/dashboard']);
+
+			const workplaceId = data.body.establishment.id;
+
+			this.establishmentService
+				.getEstablishment(workplaceId)
+				.pipe(take(1))
+				.subscribe(workplace => {
+					this.establishmentService.setState(workplace);
+					this.establishmentService.setPrimaryWorkplace(workplace);
+					this.establishmentService.establishmentId = workplace.uid;
+					this.router.navigate(['/dashboard']);
+				})
 		}
 	}
 

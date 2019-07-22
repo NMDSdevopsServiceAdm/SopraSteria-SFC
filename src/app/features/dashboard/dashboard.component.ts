@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
     this.subscriptions.add(
       this.establishmentService.primaryWorkplace$.subscribe(workplace => (this.workplace = workplace))
     );
+
     this.subscriptions.add(
       this.userService.loggedInUser$.subscribe(user => {
         if (user && user.role === 'Admin') {
