@@ -41,9 +41,6 @@ export class HomeTabComponent implements OnInit {
       this.establishmentService.establishment$.subscribe(workplace => (this.workplace = workplace))
     );
 
-    console.log('USER', this.user);
-    console.log('EST', this.workplace);
-
     this.subscriptions.add(
       this.workerService
         .getAllWorkers()
