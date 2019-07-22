@@ -151,6 +151,9 @@ class Worker {
 
   static get AMHP_WARNING() { return 3380; }
 
+  static get SOCIALCARE_QUAL_WANRING() { return 3360; }
+  static get NON_SOCIALCARE_QUAL_WARNING() { return 3370; }
+
   static get YEAROFENTRY_WARNING() { return 3380; }
 
   static get QUAL_ACH01_ERROR() { return 5010; }
@@ -999,6 +1002,7 @@ class Worker {
     const zeroHourContractValues = [1, 2, 999];
     const myZeroHourContract = parseInt(this._currentLine.ZEROHRCONT, 10);
     const myContHours = parseFloat(this._currentLine.CONTHOURS);
+    const zeroHoursEmpty = this._currentLine.ZEROHRCONT && this._currentLine.ZEROHRCONT.length > 0 ? false : true;
 
     if (myContHours > 0 && !this._currentLine.ZEROHRCONT) {
       this._validationErrors.push({
@@ -1012,7 +1016,7 @@ class Worker {
       });
       return false;
     }
-    else if (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract)) {
+    else if (!zeroHoursEmpty && (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract))) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1724,20 +1728,19 @@ class Worker {
     const mySocialCare = this._currentLine.SCQUAL ? this._currentLine.SCQUAL.split(';') : null;
     const mainJobRoles = [6,16,15];
     const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
-    const mySocialCareIndicator = (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) ?
-      parseInt(mySocialCare[0]) : '';
+    const mySocialCareIndicator = (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) ? parseInt(mySocialCare[0]) : null;
 
-    if (isNaN(mySocialCareIndicator)) {
+    if (mySocialCareIndicator === null) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.SOCIALCARE_QUAL_WARNING,
-        warnType: 'SOCIALCARE_QUAL_WARNING',
+        warnCode: Worker.SOCIALCARE_QUAL_WANRING,
+        warnType: 'SOCIALCARE_QUAL_WANRING',
         warning: "SCQUAL is blank",
         source: this._currentLine.SCQUAL,
       });
-    } else if (!ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
+    } else if (isNaN(mySocialCareIndicator) || !ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1751,8 +1754,8 @@ class Worker {
 
     this._socialCareQualification = mySocialCareIndicator;
 
-    // if the social care indicator is "1" (yes) - then get the next value which must be the level
-    if (mySocialCareIndicator == 1) {
+    if (mySocialCareIndicator === 1) {
+      // if the social care indicator is "1" (yes) - then get the next value which must be the level
       const mySocialCareLevel = parseInt(mySocialCare[1]);
 
       if (!mySocialCareLevel && mySocialCareLevel !== 0) {
@@ -1798,6 +1801,7 @@ class Worker {
       this._socialCareQualificationlevel = mySocialCareLevel;
     }
 
+
     return true;
   }
 
@@ -1805,21 +1809,22 @@ class Worker {
     const myNonSocialCare = this._currentLine.NONSCQUAL ? this._currentLine.NONSCQUAL.split(';') : null;
     const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
 
-    const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ?
-      parseInt(myNonSocialCare[0]) : '';
+    const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ? parseInt(myNonSocialCare[0]) : null;
 
-    if (isNaN(myNonSocialCareIndicator)) {
+    console.log("WA DEBUG - NONSCQUAL - ", myNonSocialCareIndicator)
+
+    if (myNonSocialCareIndicator === null) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-        warnType: 'NON_SOCIALCARE_QUAL_ERROR',
+        warnCode: Worker.NON_SOCIALCARE_QUAL_WARNING,
+        warnType: 'NON_SOCIALCARE_QUAL_WARNING',
         warning: "NONSCQUAL is blank",
         source: this._currentLine.NONSCQUAL,
       });
 
-    } else if (!ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
+    } else if (isNaN(myNonSocialCareIndicator) || !ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1844,8 +1849,8 @@ class Worker {
                 worker: this._currentLine.UNIQUEWORKERID,
                 name: this._currentLine.LOCALESTID,
                 lineNumber: this._lineNumber,
-                warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-                warnType: 'NON_SOCIALCARE_QUAL_ERROR',
+                warnCode: Worker.NON_SOCIALCARE_QUAL_WARNING,
+                warnType: 'NON_SOCIALCARE_QUAL_WARNING',
                 warning: `NONSCQUAL level does not match the QUALACH** (${q.column})`,
                 source: this._currentLine.SCQUAL,
               });
