@@ -1,10 +1,10 @@
 <div class="govuk-grid-row govuk-!-margin-top-3">
   <div class="govuk-grid-column-two-thirds">
     <h2 class="govuk-heading-m">Home</h2>
-    <p *ngIf="updateWorkplace || updateStaffRecords">What you need to do first.</p>
-    <app-inset-text *ngIf="updateWorkplace" [color]="'todo'">
+    <p *ngIf="!workplace?.employerType || updateStaffRecords">What you need to do first.</p>
+    <app-inset-text *ngIf="workplace && !workplace?.employerType" [color]="'todo'">
       You need to provide information on your workplace.<br />
-      <a [routerLink]="['/workplace', establishmentId, 'start']">Add workplace information</a>
+      <a [routerLink]="['/workplace', workplace?.uid, 'start']">Add workplace information</a>
     </app-inset-text>
 
     <app-inset-text *ngIf="updateStaffRecords" [color]="'todo'">
@@ -17,7 +17,7 @@
     <p>You have no new notifications</p>
     <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
     <ul class="govuk-list">
-      <li *ngIf="role === editRole"><a [routerLink]="['/bulk-upload']" (click)="setReturn()">Bulk upload</a></li>
+      <li *ngIf="user?.role === editRole"><a [routerLink]="['/bulk-upload']" (click)="setReturn()">Bulk upload</a></li>
       <li *ngIf="isParent"><a [routerLink]="['/workplace', 'view-my-workplaces']">View my workplaces</a></li>
       <li><a [routerLink]="['/reports']">View reports</a></li>
       <!--
