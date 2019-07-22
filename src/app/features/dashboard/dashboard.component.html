@@ -31,7 +31,7 @@
         </app-tab>
 
         <app-tab [title]="'User accounts'">
-          <app-user-accounts-summary *ngIf="workplace" [workplace]="workplace"></app-user-accounts-summary>
+          <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
         </app-tab>
 
         <app-tab [title]="'Workplace'">
@@ -44,5 +44,4 @@
       </app-tabs>
     </div>
   </div>
-
 </div>
