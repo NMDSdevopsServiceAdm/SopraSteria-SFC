@@ -16,7 +16,6 @@ import { take } from 'rxjs/operators';
 export class HomeTabComponent implements OnInit {
   public editRole: Roles = Roles.Edit;
   public adminRole: Roles = Roles.Admin;
-  public role: Roles;
   public establishmentId: number;
   public isParent: boolean;
   public updateStaffRecords: boolean;

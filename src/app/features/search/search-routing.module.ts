@@ -6,11 +6,8 @@ const routes: Routes = [
   {
     path: '',
     component: SearchComponent,
-  },
-  {
-    path: 'search',
-    data: { title: 'Search' }
-  },
+    data: { title: 'Search' },
+  }
 ];
 
 @NgModule({
