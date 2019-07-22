@@ -25,33 +25,15 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
 
+    this.establishmentService.primaryWorkplace$.subscribe(workplace => (this.workplace = workplace));
+
     this.subscriptions.add(
       this.userService.loggedInUser$.subscribe(user => {
         if (user && user.role === 'Admin') {
           if (!this.workplace) {
             this.router.navigate(['/search-users']);
             return false;
-          } else {
-
-            this.subscriptions.add(
-              this.establishmentService.establishment$.subscribe(workplace => {
-                this.workplace = workplace;
-              })
-            )
-
-
-            const workplaceId = localStorage.getItem('establishmentId');
-
-            this.establishmentService
-              .getEstablishment(workplaceId)
-              .pipe(take(1))
-              .subscribe(workplace => {
-                this.workplace = workplace;
-              })
           }
-        } else {
-          this.establishmentService.primaryWorkplace$.subscribe(workplace => (this.workplace = workplace));
-
         }
       })
     );
