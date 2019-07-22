@@ -47,10 +47,9 @@ export class EstablishmentService {
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   public previousEstablishmentId: number;
   public isSameLoggedInUser: boolean;
-
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private _establishmentId: number = null;
 
