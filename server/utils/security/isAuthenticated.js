@@ -5,7 +5,7 @@ const thisIss = config.get('jwt.iss');
 const models = require('../../models');
 
 exports.getTokenSecret = () => {
-  return process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
+  return config.get('jwt.secret');
 }
 
 // this util middleware will block if the given request is not authorised

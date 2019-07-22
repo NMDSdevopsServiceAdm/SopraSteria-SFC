@@ -1,10 +1,11 @@
 const config = require('../../config/config');
 const jwt = require('jsonwebtoken');
 const Authorization = require('./isAuthenticated');
-const Token_Secret = Authorization.getTokenSecret();
 
 // this generates the login JWT
 exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, isParent, username, role) => {
+  const Token_Secret = Authorization.getTokenSecret();
+
   var claims = {
     EstblishmentId: establishmentId,
     EstablishmentUID: establishmentUid,
@@ -20,6 +21,7 @@ exports.loginJWT = (ttlMinutes, establishmentId, establishmentUid, isParent, use
 
 // this re-generates the login JWT
 exports.regenerateLoginToken = (ttlMinutes, req) => {
+  const Token_Secret = Authorization.getTokenSecret();
 
   var claims = {
     EstblishmentId: req.establishment.id,
@@ -36,6 +38,7 @@ exports.regenerateLoginToken = (ttlMinutes, req) => {
 
 // this generates the password reset JWT
 exports.passwordResetJWT = (ttlMinutes, username, name, resetUUID) => {
+  const Token_Secret = Authorization.getTokenSecret();
 
   var claims = {
     sub: username,
@@ -50,6 +53,7 @@ exports.passwordResetJWT = (ttlMinutes, username, name, resetUUID) => {
 
 // this generates the add User JWT
 exports.addUserJWT = (ttlMinutes, userUID, name, addUserUUID) => {
+  const Token_Secret = Authorization.getTokenSecret();
 
   var claims = {
     sub: userUID,
