@@ -32,6 +32,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   public totalErrors = 0;
   public totalWarnings = 0;
   public uploadedFiles: ValidatedFile[];
+  public validationErrors: Array<ErrorDefinition> = [];
   public validationComplete = false;
 
   constructor(
@@ -75,7 +76,12 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
         .preValidateFiles(this.establishmentService.establishmentId)
         .pipe(take(1))
         .subscribe(
-          (response: ValidatedFile[]) => this.checkForMandatoryFiles(response),
+          (response: ValidatedFile[]) => {
+            this.validationErrors = [];
+            this.checkForMandatoryFiles(response);
+            this.checkForInvalidFiles(response);
+            this.uploadedFiles = response;
+          },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message)
         )
     );
@@ -83,7 +89,6 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   private checkForMandatoryFiles(response: ValidatedFile[]): void {
     const files: string[] = response.map(data => this.bulkUploadFileTypeEnum[data.fileType]);
-    this.uploadedFiles = response;
 
     if (
       !files.includes(this.bulkUploadFileTypeEnum.Establishment) ||
@@ -95,6 +100,25 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     }
 
     this.bulkUploadService.preValidationError$.next(this.preValidationError);
+  }
+
+  private checkForInvalidFiles(response: ValidatedFile[]) {
+    response.forEach(file => {
+      if (!file.fileType || file.fileType === null) {
+        file.errors = 1;
+        this.validationErrors.push({
+          name: this.getFileId(file),
+          message: 'The file was not recognised',
+        });
+        this.preValidationError = true;
+      }
+    });
+    this.bulkUploadService.validationErrors$.next(this.validationErrors);
+  }
+
+  public getErrorMessage(file: ValidatedFile) {
+    const errorDefinition = this.validationErrors.find(validatedFile => validatedFile.name === this.getFileId(file));
+    return errorDefinition ? errorDefinition.message : null;
   }
 
   public getFileType(fileName: string): string {
@@ -188,7 +212,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
    */
   private onValidateComplete(response: ValidatedFilesResponse): void {
     // this.uploadedFiles = [response.establishment, response.training, response.workers];
-    const validationErrors: Array<ErrorDefinition> = [];
+    this.validationErrors = [];
 
     /* TODO: BE returns a different object for ValidatedFiles than UploadedFiles
      *       previously we were just overwritting the uploaded files object with the
@@ -205,10 +229,10 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       this.totalWarnings = this.totalWarnings + this.uploadedFiles[index].warnings;
       this.totalErrors = this.totalErrors + this.uploadedFiles[index].errors;
       if (this.uploadedFiles[index].errors) {
-        validationErrors.push(this.getValidationError(this.uploadedFiles[index]));
+        this.validationErrors.push(this.getValidationError(this.uploadedFiles[index]));
       }
     });
-    this.bulkUploadService.validationErrors$.next(validationErrors);
+    this.bulkUploadService.validationErrors$.next(this.validationErrors);
     this.validationComplete = true;
   }
 

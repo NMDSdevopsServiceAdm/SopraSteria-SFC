@@ -6,7 +6,6 @@ import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { SecurityQuestion } from '@features/account/security-question/security-question';
-import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-security-question',
@@ -27,22 +26,22 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   }
 
   protected init(): void {
-    this.setupSubscription();
     this.activationToken = this.route.snapshot.params.activationToken;
+    this.setupSubscription();
+    this.setBackLink();
   }
 
   protected setBackLink(): void {
-    const route: string = this.securityDetailsExist ? 'confirm-account-details' : 'create-username';
-    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, route] });
+    this.return = this.createAccountService.returnTo$.value;
+    this.back = this.return ? this.return : { url: ['/activate-account', this.activationToken, 'create-username'] };
+    this.backService.setBackLink(this.back);
   }
 
   protected setupSubscription(): void {
     this.subscriptions.add(
       this.createAccountService.securityDetails$
-        .pipe(finalize(() => this.setBackLink()))
         .subscribe((securityDetails: SecurityDetails) => {
           if (securityDetails) {
-            this.securityDetailsExist = true;
             this.preFillForm(securityDetails);
           }
         })

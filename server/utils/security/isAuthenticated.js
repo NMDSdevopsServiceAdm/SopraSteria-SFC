@@ -11,6 +11,7 @@ exports.getTokenSecret = () => {
 // this util middleware will block if the given request is not authorised
 exports.isAuthorised = (req, res , next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     // var dec = getverify(token, Token_Secret);
@@ -40,8 +41,13 @@ exports.isAuthorised = (req, res , next) => {
 exports.hasAuthorisedEstablishment = async (req, res, next) => {
   try {
     const token = getToken(req.headers[AUTH_HEADER]);
+    const Token_Secret = config.get('jwt.secret');
+
+    // console.log("WA DEBUG - hasAuthorisedEstablishment token: ", token, Token_Secret)
     if (token) {
       const claim = jwt.verify(token, Token_Secret);
+
+      // console.log("WA DEBUG - hasAuthorisedEstablishment token claims: ", claim)
 
       if (claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send({
@@ -77,6 +83,8 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
             isAuthorised = true;
           }
         }
+
+        //console.log("WA DEBUG - hasAuthorisedEstablishment: ", isAuthorised, claim.isParent)
 
         // if still not authorised - and only if this user is attributed to a parent establishment
         //  then follow up by checking against any of the known subsidaries of this parent establishment
@@ -188,7 +196,7 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
         message: 'token expired'
       });
     } else {
-      console.error("hasAuthorisedEstablishment: caught err: ", err.name, typeof err);
+      console.error("hasAuthorisedEstablishment: caught err: ", err.name, err);
       return res.status(403).send({
         sucess: false,
         message: 'token is invalid'
@@ -212,6 +220,7 @@ getToken = function (headers) {
 
 exports.isAuthorisedPasswdReset = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
@@ -238,6 +247,7 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
 
 exports.isAuthorisedAddUser = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
@@ -264,6 +274,7 @@ exports.isAuthorisedAddUser = (req, res, next) => {
 
 exports.isAuthorisedInternalAdminApp = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
@@ -283,6 +294,7 @@ exports.isAuthorisedInternalAdminApp = (req, res, next) => {
 
 exports.isAdmin = (req, res , next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     // var dec = getverify(token, Token_Secret);
@@ -307,6 +319,7 @@ exports.isAdmin = (req, res , next) => {
 
 exports.isAuthorisedRegistrationApproval = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {

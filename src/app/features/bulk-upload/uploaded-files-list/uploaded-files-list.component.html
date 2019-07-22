@@ -20,7 +20,7 @@
     <ng-container *ngFor="let file of uploadedFiles">
       <tr *ngIf="file.errors">
         <td class="govuk-error-table__message-cell" colspan="5">
-          <p class="govuk-error-message govuk-error-table__message" [innerText]="getValidationError(file).message"></p>
+          <p class="govuk-error-message govuk-error-table__message" [innerText]="getErrorMessage(file)"></p>
         </td>
       </tr>
       <tr [id]="getFileId(file)" class="govuk-table__row" [class.govuk-error-table__row]="file.errors">

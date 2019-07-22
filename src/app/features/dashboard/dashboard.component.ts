@@ -12,8 +12,8 @@ import { Subscription } from 'rxjs';
 })
 export class DashboardComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
-  public establishment: LoggedInEstablishment | null;
-  public lastLoggedIn: string | null;
+  public workplace: LoggedInEstablishment;
+  public lastLoggedIn: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -26,13 +26,13 @@ export class DashboardComponent implements OnInit {
 
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(establishment => {
-        this.establishment = establishment;
+        this.workplace = workplace;
       })
     )
 
     this.subscriptions.add(
       this.userService.loggedInUser$.subscribe(user => {
-        if (user && user.role === 'Admin' && !this.establishment) {
+        if (user && user.role === 'Admin' && !this.workplace) {
           this.router.navigate(['/search-users']);
           return false;
         }
