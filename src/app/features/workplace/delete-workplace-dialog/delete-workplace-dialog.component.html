@@ -1,0 +1,14 @@
+<h1 id="dialogHeading" class="govuk-panel--warning-prompt">
+  You are about to permanently delete {{ data.workplaceName }}.
+</h1>
+
+<p>This will delete all the workplace information and the records of all the staff.</p>
+
+<p>
+  <strong>This action cannot be undone.</strong>
+</p>
+
+<button (click)="close(true)" class="govuk-button">Delete workplace</button>
+<button (click)="close(false)" class="govuk-button govuk-button--link govuk-util__float-right">
+  Cancel
+</button>
