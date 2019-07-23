@@ -67,6 +67,8 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.workplace = this.route.snapshot.data.establishment;
+
     this.subscriptions.add(
       this.establishmentService.getStaff(this.workplace.uid).subscribe(establishmentStaff => {
         this.totalStaff = establishmentStaff ? establishmentStaff : 0;
