@@ -151,7 +151,7 @@ class Worker {
 
   static get AMHP_WARNING() { return 3380; }
 
-  static get SOCIALCARE_QUAL_WANRING() { return 3360; }
+  static get SOCIALCARE_QUAL_WARNING() { return 3360; }
   static get NON_SOCIALCARE_QUAL_WARNING() { return 3370; }
 
   static get YEAROFENTRY_WARNING() { return 3380; }
@@ -472,7 +472,7 @@ class Worker {
 
   _validatePostCode() {
     const myPostcode = this._currentLine.POSTCODE;
-    const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
+    const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}[A-Za-z]?\s{1}[0-9][A-Za-z]{2}$/;
 
     if (!myPostcode) {
       this._validationErrors.push({
@@ -1780,7 +1780,7 @@ class Worker {
               lineNumber: this._lineNumber,
               warnCode: Worker.SOCIALCARE_QUAL_WARNING,
               warnType: 'SOCIALCARE_QUAL_WARNING',
-              warning: `SCQUAL level does not match the QUALACH** (${q.column})`,
+              warning: `SCQUAL level does not match the QUALACH${q.column}`,
               source: this._currentLine.SCQUAL,
             });
           }
@@ -1811,59 +1811,50 @@ class Worker {
 
     const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ? parseInt(myNonSocialCare[0]) : null;
 
-    if (myNonSocialCareIndicator === null) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.NON_SOCIALCARE_QUAL_WARNING,
-        warnType: 'NON_SOCIALCARE_QUAL_WARNING',
-        warning: "NONSCQUAL is blank",
-        source: this._currentLine.NONSCQUAL,
-      });
 
-    } else if (isNaN(myNonSocialCareIndicator) || !ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-        errType: 'NON_SOCIALCARE_QUAL_ERROR',
-        error: "The code you have entered for NONSCQUAL is incorrect",
-        source: this._currentLine.NONSCQUAL,
-      });
-    } else if(myNonSocialCareIndicator == 1) {
-      this._nonSocialCareQualification = myNonSocialCareIndicator;
+    if (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) {
+      if (isNaN(myNonSocialCareIndicator) || !ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          errType: 'NON_SOCIALCARE_QUAL_ERROR',
+          error: "The code you have entered for NONSCQUAL is incorrect",
+          source: this._currentLine.NONSCQUAL,
+        });
+      } else if(myNonSocialCareIndicator == 1) {
+        this._nonSocialCareQualification = myNonSocialCareIndicator;
 
-      // if the social care indicator is "1" (yes) - then get the next value which must be the level - optional only for non-social care!
-      if (myNonSocialCareIndicator == 1) {
-        let myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
-        if (isNaN(myNonSocialCareLevel)) {
-          myNonSocialCareLevel = 999; // "Don't know"
-        } else if (myNonSocialCareLevel) {
-          this._qualifications.forEach(q => {
-            if (q.id > myNonSocialCareLevel) {
-              this._validationErrors.push({
-                worker: this._currentLine.UNIQUEWORKERID,
-                name: this._currentLine.LOCALESTID,
-                lineNumber: this._lineNumber,
-                warnCode: Worker.NON_SOCIALCARE_QUAL_WARNING,
-                warnType: 'NON_SOCIALCARE_QUAL_WARNING',
-                warning: `NONSCQUAL level does not match the QUALACH** (${q.column})`,
-                source: this._currentLine.SCQUAL,
-              });
-            }
-          })
+        // if the social care indicator is "1" (yes) - then get the next value which must be the level - optional only for non-social care!
+        if (myNonSocialCareIndicator == 1) {
+          let myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
+          if (isNaN(myNonSocialCareLevel)) {
+            myNonSocialCareLevel = 999; // "Don't know"
+          } else if (myNonSocialCareLevel) {
+            this._qualifications.forEach(q => {
+              if (q.id > myNonSocialCareLevel) {
+                this._validationErrors.push({
+                  worker: this._currentLine.UNIQUEWORKERID,
+                  name: this._currentLine.LOCALESTID,
+                  lineNumber: this._lineNumber,
+                  warnCode: Worker.NON_SOCIALCARE_QUAL_WARNING,
+                  warnType: 'NON_SOCIALCARE_QUAL_WARNING',
+                  warning: `NONSCQUAL level does not match the QUALACH${q.column}`,
+                  source: this._currentLine.SCQUAL,
+                });
+              }
+            })
+          }
+
+          this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
         }
 
-        this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
+        return false;
+      } else {
+        return true;
       }
-
-      return false;
-    } else {
-      return true;
     }
-
   }
 
   __validateQualification(qualificationIndex, qualificationName, qualificationError, qualificationErrorName, qualification,
@@ -1874,26 +1865,40 @@ class Worker {
     if (qualification && qualification.length > 0) {
       const localValidationErrors = [];
 
-      const qualificationId = parseInt(myQualification[0]);
+      const qualificationId = parseInt(myQualification[0], 10);
 
       if (isNaN(qualificationId)) {
         localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: qualificationError,
           errType: qualificationErrorName,
-          error: `Qualification (${qualificationName}) index (before semi colon) must be an integer`,
+          error: `The code you have entered for (${qualificationName}) is incorrect`,
           source: qualification,
         });
       }
 
       // if the social care indicator is "1" (yes) - then get the next value which must be the level
       const qualificationYear = parseInt(myQualification[1]);
-      if (isNaN(qualificationYear)) {
+      if (myQualification[1] === null || myQualification[1].length === 0) {
         localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: qualificationError,
+          warnType: qualificationErrorName,
+          warning: `Year achieved for ${qualificationName} is blank`,
+          source: qualification,
+        });
+      } else if (myQualification[1] !== null && isNaN(qualificationYear)) {
+        localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: qualificationError,
           errType: qualificationErrorName,
-          error: `Qualification (${qualificationName}) year (after semi colon) must be an integer`,
+          error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
         });
       }
@@ -1904,10 +1909,12 @@ class Worker {
         const MAX_LENGTH=120;
         if (qualificationDesc.length > MAX_LENGTH) {
           localValidationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: qualificationDescError,
-            errType: qualificationDescErrorName,
-            error: `Qualification Description (${qualificationDescName}) must be no more than 120 characters`,
+            warnCode: qualificationDescError,
+            warnType: qualificationDescErrorName,
+            warning: `The notes you hqve entered for (${qualificationDescName}) are over 120 characters and will be ignored`,
             source: qualificationDesc,
           });
         } else {
@@ -2311,10 +2318,11 @@ class Worker {
   }
 
   _validateHeaders(headers) {
+
     // only run once for first line, so check _lineNumber
     // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
-    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers) &&
-        JSON.stringify(this._headers_v1_without_chgUnique) !== JSON.stringify(headers)) {
+    if (this._headers_v1.join(',') !== headers &&
+        this._headers_v1_without_chgUnique.join(',') !== headers) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
