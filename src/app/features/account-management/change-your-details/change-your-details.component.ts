@@ -15,8 +15,7 @@ import { AccountDetails } from '@features/account/account-details/account-detail
 })
 export class ChangeYourDetailsComponent extends AccountDetails {
   public callToActionLabel = 'Save and return';
-  public user: UserDetails;
-  protected username: string;
+  protected userDetails: UserDetails;
 
   constructor(
     private breadcrumbService: BreadcrumbService,

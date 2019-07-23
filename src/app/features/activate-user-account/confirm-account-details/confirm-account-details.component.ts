@@ -54,6 +54,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
       {
         label: 'Full name',
         data: this.userDetails.fullname,
+        route: { url: ['/activate-account', this.activationToken, 'change-your-details'] },
       },
       {
         label: 'Job title',

@@ -11,6 +11,7 @@ import { CreateUsernameComponent } from '@features/activate-user-account/create-
 import { SecurityQuestionComponent } from '@features/activate-user-account/security-question/security-question.component';
 import { ExpiredActivationLinkComponent } from '@features/activate-user-account/expired-activation-link/expired-activation-link.component';
 import { ActivationCompleteGuard } from '@core/guards/activation-complete/activation-complete.guard';
+import { ChangeYourDetailsComponent } from '@features/activate-user-account/change-your-details/change-your-details.component';
 
 const routes: Routes = [
   {
@@ -24,6 +25,11 @@ const routes: Routes = [
     canActivateChild: [ActivationCompleteGuard],
     data: { title: 'Activate User Account' },
     children: [
+      {
+        path: 'change-your-details',
+        component: ChangeYourDetailsComponent,
+        data: { title: 'Change Your Details' },
+      },
       {
         path: 'create-username',
         component: CreateUsernameComponent,
