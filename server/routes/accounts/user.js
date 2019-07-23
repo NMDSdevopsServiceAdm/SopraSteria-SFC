@@ -569,8 +569,7 @@ router.route('/validateAddUser').post(async (req, res) => {
     }
 });
 
-
-router.use('/add/establishment/:id', Authorization.hasAuthorisedEstablishment);
+router.use('/establishment/:id/:userid', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id/:userid').delete(async (req, res) => {
     const userId = req.params.userid;
 
