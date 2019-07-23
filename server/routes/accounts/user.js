@@ -562,7 +562,7 @@ router.route('/:username').delete(async (req, res) => {
                 const auditEvent = {
                     userFk: login.user.id,
                     username: req.username,
-                    type: 'deletedUser',
+                    type: 'delete',
                     property: 'isActive',
                     event: {}
                 };
