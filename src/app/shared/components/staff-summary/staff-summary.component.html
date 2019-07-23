@@ -10,7 +10,7 @@
   </thead>
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let worker of workers">
-      <td class="govuk-table__cell" scope="row">
+      <td class="govuk-table__cell govuk-!-font-weight-regular">
         <a *ngIf="!wdfReportEnabled" [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid]">
           {{ worker.nameOrId }}
         </a>
