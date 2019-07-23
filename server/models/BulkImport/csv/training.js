@@ -37,7 +37,7 @@ class Training {
   static get CATEGORY_WARNING() { return 2050; }
   static get ACCREDITED_WARNING() { return 2060; }
   static get NOTES_WARNING() { return 2070; }
-  
+
 
   get headers() {
     return this._headers_v1.join(",");
@@ -283,7 +283,7 @@ class Training {
         lineNumber: this._lineNumber,
         errCode: Training.CATEGORY_ERROR,
         errType: `CATEGORY_ERROR`,
-        error: "CATEGORY is invalid", 
+        error: "CATEGORY is invalid",
         source: this._currentLine.CATEGORY,
       });
       return false;
@@ -374,9 +374,9 @@ class Training {
     return contentRegex.test(data.substring(0,50));
   }
 
-  _validateHeaders(header) {
+  _validateHeaders(headers) {
     // only run once for first line, so check _lineNumber
-    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+    if (this._headers_v1.join(',') !== headers) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,

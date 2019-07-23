@@ -382,6 +382,9 @@ class Establishment extends EntityValidator {
             if (document.postcode) {
               this._postcode = document.postcode;
             }
+            if (document.name) {
+                this._name = document.name;
+            }
 
             if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
               this._reasonsForLeaving = document.reasonsForLeaving;
@@ -471,10 +474,20 @@ class Establishment extends EntityValidator {
                     return thisWorker;
                 });
 
-                await Promise.all(workersAsArray.map(thisWorkerToSave => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true)));
+                const tasks1 = workersAsArray.map(thisWorkerToSave => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true));
+                const tasks2 = this._readyForDeletionWorkers.map(thisWorkerToSave => thisWorkerToSave.archive(savedBy,externalTransaction, true));
+                const tasks = [...tasks1, ...tasks2];
+                return tasks.reduce((promiseChain, currentTask) => {
+                  return promiseChain.then(chainResults =>
+                      currentTask.then(currentResult =>
+                          [ ...chainResults, currentResult ]
+                      )
+                  );
+                }, Promise.resolve([])).then(arrayOfResults => {
+                  console.log(`WA DEBUG - Establishment::saveAssociatedEntities(${this._id}) - completed waiting on worker save promises`);
+                });
 
                 // and now all the associated Workers marked for deletion
-                await Promise.all(this._readyForDeletionWorkers.map(thisWorkerToSave => thisWorkerToSave.archive(savedBy,externalTransaction, true)));
             } catch (err) {
                 console.error('Establishment::saveAssociatedEntities error: ', err);
                 // rethrow error to ensure the transaction is rolled back
@@ -705,6 +718,7 @@ class Establishment extends EntityValidator {
                         address1: this._address1,
                         address2: this._address2,
                         address3: this._address3,
+                        name: this._name,
                         town: this._town,
                         county: this._county,
                         postcode: this._postcode,

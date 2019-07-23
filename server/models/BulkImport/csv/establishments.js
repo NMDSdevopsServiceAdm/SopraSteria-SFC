@@ -1517,7 +1517,7 @@ class Establishment {
 
   _validateHeaders(headers) {
     // only run once for first line, so check _lineNumber
-    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+    if (this._headers_v1.join(',') !== headers) {
       this._validationErrors.push({
         lineNumber: 1,
         errCode: Establishment.HEADERS_ERROR,

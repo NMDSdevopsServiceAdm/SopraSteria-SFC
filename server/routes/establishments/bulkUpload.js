@@ -318,30 +318,24 @@ router.route('/uploaded').put(async (req, res) => {
     let headerPromises = [];
 
     if(myDownloads.establishments){
-      headerPromises.push(new Promise( async (resolve, reject) => {
-        importedEstablishments = await csv().fromString(myDownloads.establishments).on('header', (header) => {
-          establishmentHeaders = header;
-          resolve();
-        });
-      }));
+      importedEstablishments = await csv().fromString(myDownloads.establishments);
+      const positionOfNewline = myDownloads.establishments.indexOf("\n");
+      const headerLine = myDownloads.establishments.substring(0, positionOfNewline);
+      establishmentHeaders = headerLine.trim();
     }
 
     if(myDownloads.workers){
-      headerPromises.push(new Promise( async (resolve, reject) => {
-        importedWorkers = await csv().fromString(myDownloads.workers).on('header', (header) => {
-          workerHeaders = header;
-          resolve();
-        });
-      }));
+      importedWorkers = await csv().fromString(myDownloads.workers);
+      const positionOfNewline = myDownloads.workers.indexOf("\n");
+      const headerLine = myDownloads.workers.substring(0, positionOfNewline);
+      workerHeaders = headerLine.trim();
     }
 
     if(myDownloads.training){
-      trainingHeaders.push(new Promise( async (resolve, reject) => {
-        importedTraining = await csv().fromString(myDownloads.training).on('header', (header) => {
-          trainingHeaders = header;
-          resolve();
-        });
-      }));
+      importedTraining = await csv().fromString(myDownloads.training);
+      const positionOfNewline = myDownloads.training.indexOf("\n");
+      const headerLine = myDownloads.training.substring(0, positionOfNewline);
+      trainingHeaders = headerLine.trim();
     }
 
     await Promise.all(headerPromises);
@@ -365,7 +359,6 @@ router.route('/uploaded').put(async (req, res) => {
     }
 
     if(importedWorkers){
-      //console.log("WA DEBUG - imported workers: ", importedWorkers)
       const workerCsvValidator = new CsvWorkerValidator(importedWorkers[firstRow], firstLineNumber);
       if(workerCsvValidator.preValidate(workerHeaders)){
         // count records and update metadata
@@ -1766,20 +1759,28 @@ router.route('/complete').post(async (req, res) => {
           // wait for all updated::loads and deleted::deletes to complete
           await Promise.all(updateEstablishmentPromises);
 
-          // and now all saves for new, updated and deleted establishments, including their associated entities
-          await Promise.all(updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t, true)));
-        });
+          // to minimise impact pon database resources, having setup all establishments, their workers, their training and qualifications
+          //  iterate each establishment, one by one to save.
 
-        // gets here having successfully completed upon the bulk upload
-        //  clean up the S3 objects
-        await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
+          const tasks = updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t, true));
+          return tasks.reduce((promiseChain, currentTask) => {
+            return promiseChain.then(chainResults =>
+                currentTask.then(currentResult =>
+                    [ ...chainResults, currentResult ]
+                )
+            );
+          }, Promise.resolve([])).then(arrayOfResults => {
+            console.log("WA DEBUG - completed waiting on establishment::save promises")
 
-        // confirm success against the primary establishment
-        await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
-
-        return res.status(200).send({
-          // current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
-          // validated: onloadEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
+            // gets here having successfully completed upon the bulk upload
+            //  clean up the S3 objects
+            purgeBulkUploadS3Obbejcts(primaryEstablishmentId).then( () => {
+              // confirm success against the primary establishment
+              EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId).then(() => {
+                return res.status(200).send({});
+              });
+            })
+          });
         });
 
       } catch (err) {
