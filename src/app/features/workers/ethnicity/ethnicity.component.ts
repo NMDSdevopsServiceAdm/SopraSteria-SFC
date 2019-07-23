@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EthnicityService } from '@core/services/ethnicity.service';
@@ -18,12 +18,13 @@ export class EthnicityComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     private ethnicityService: EthnicityService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.subscriptions.add(this.ethnicityService.getEthnicities().subscribe(res => (this.ethnicities = res.byGroup)));
 
@@ -39,8 +40,8 @@ export class EthnicityComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'nationality'];
-    this.previous = ['/worker', this.worker.uid, 'disability'];
+    this.next = this.getRoutePath('nationality');
+    this.previous = this.getRoutePath('disability');
   }
 
   generateUpdateProps() {

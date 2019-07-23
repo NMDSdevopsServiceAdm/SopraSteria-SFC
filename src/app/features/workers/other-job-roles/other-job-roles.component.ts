@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Job, JobRole } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -22,12 +22,13 @@ export class OtherJobRolesComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected jobService: JobService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       selectedJobRoles: this.formBuilder.array([]),
@@ -71,7 +72,7 @@ export class OtherJobRolesComponent extends QuestionComponent {
       )
     );
 
-    this.previous = ['/worker', this.worker.uid, 'main-job-start-date'];
+    this.previous = this.getRoutePath('main-job-start-date');
   }
 
   public setupFormErrorsMap(): void {
@@ -131,11 +132,11 @@ export class OtherJobRolesComponent extends QuestionComponent {
 
   onSuccess() {
     if (this.workerService.hasJobRole(this.worker, 23)) {
-      this.next = ['/worker', this.worker.uid, 'nursing-category'];
+      this.next = this.getRoutePath('nursing-category');
     } else if (this.workerService.hasJobRole(this.worker, 27)) {
-      this.next = ['/worker', this.worker.uid, 'mental-health-professional'];
+      this.next = this.getRoutePath('mental-health-professional');
     } else {
-      this.next = ['/worker', this.worker.uid, 'national-insurance-number'];
+      this.next = this.getRoutePath('national-insurance-number');
     }
   }
 

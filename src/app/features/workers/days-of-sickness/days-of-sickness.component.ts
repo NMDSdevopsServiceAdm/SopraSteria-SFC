@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FLOAT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
@@ -22,11 +22,12 @@ export class DaysOfSicknessComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       daysKnown: null,
@@ -38,7 +39,7 @@ export class DaysOfSicknessComponent extends QuestionComponent {
 
   init() {
     if (![Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)) {
-      this.router.navigate(['/worker', this.worker.uid, 'adult-social-care-started'], { replaceUrl: true });
+      this.router.navigate(this.getRoutePath('adult-social-care-started'), { replaceUrl: true });
     }
 
     this.subscriptions.add(
@@ -66,8 +67,8 @@ export class DaysOfSicknessComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'contract-with-zero-hours'];
-    this.previous = ['/worker', this.worker.uid, 'adult-social-care-started'];
+    this.next = this.getRoutePath('contract-with-zero-hours');
+    this.previous = this.getRoutePath('adult-social-care-started');
   }
 
   setupFormErrorsMap(): void {

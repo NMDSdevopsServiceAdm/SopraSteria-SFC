@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RecruitmentResponse, RecruitmentService } from '@core/services/recruitment.service';
@@ -18,12 +18,13 @@ export class RecruitedFromComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     private recruitmentService: RecruitmentService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       recruitmentKnown: null,
@@ -56,11 +57,11 @@ export class RecruitedFromComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'adult-social-care-started'];
+    this.next = this.getRoutePath('adult-social-care-started');
     this.previous =
       this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-        ? ['/worker', this.worker.uid, 'country-of-birth']
-        : ['/worker', this.worker.uid, 'year-arrived-uk'];
+        ? this.getRoutePath('country-of-birth')
+        : this.getRoutePath('year-arrived-uk');
   }
 
   setupFormErrorsMap(): void {

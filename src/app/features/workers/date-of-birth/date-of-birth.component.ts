@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_DEFAULT, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -23,11 +23,12 @@ export class DateOfBirthComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       dob: this.formBuilder.group({
@@ -49,8 +50,8 @@ export class DateOfBirthComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'home-postcode'];
-    this.previous = ['/worker', this.worker.uid, 'national-insurance-number'];
+    this.next = this.getRoutePath('home-postcode');
+    this.previous = this.getRoutePath('national-insurance-number');
   }
 
   public setupFormErrorsMap(): void {

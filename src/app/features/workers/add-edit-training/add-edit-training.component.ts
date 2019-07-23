@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/f
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
@@ -24,6 +25,7 @@ export class AddEditTrainingComponent implements OnInit {
   public trainingRecord: TrainingRecord;
   public trainingRecordId: string;
   public worker: Worker;
+  public workplace: Establishment;
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
   private titleMaxLength = 120;
@@ -41,9 +43,13 @@ export class AddEditTrainingComponent implements OnInit {
 
   ngOnInit() {
     this.worker = this.workerService.worker;
+    this.workplace = this.route.parent.snapshot.data.establishment;
     this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
 
-    this.backService.setBackLink({ url: ['/worker', this.worker.uid], fragment: 'qualifications-and-training' });
+    this.backService.setBackLink({
+      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
+      fragment: 'qualifications-and-training',
+    });
 
     this.form = this.formBuilder.group({
       title: [null, [Validators.required, Validators.maxLength(120)]],
@@ -240,7 +246,7 @@ export class AddEditTrainingComponent implements OnInit {
 
   private onSuccess() {
     this.router
-      .navigate(['/worker', this.worker.uid], {
+      .navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid], {
         fragment: 'qualifications-and-training',
       })
       .then(() => {

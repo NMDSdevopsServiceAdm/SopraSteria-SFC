@@ -7,9 +7,11 @@
       <a [routerLink]="['/workplace', workplace?.uid, 'start']">Add workplace information</a>
     </app-inset-text>
 
-    <app-inset-text *ngIf="updateStaffRecords" [color]="'todo'">
+    <app-inset-text *ngIf="workplace && updateStaffRecords" [color]="'todo'">
       You need to provide information on all your staff.<br />
-      <a [routerLink]="['/worker', 'basic-records-start-screen']">Add staff records</a>
+      <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'basic-records-start-screen']"
+        >Add staff records</a
+      >
     </app-inset-text>
   </div>
   <div class="govuk-grid-column-one-third">
@@ -17,11 +19,15 @@
     <p>You have no new notifications</p>
     <h3 class="govuk-heading-s govuk-!-margin-top-6">Other things you can do</h3>
     <ul class="govuk-list">
-      <li *ngIf="[editRole, adminRole].includes(user?.role)"><a [routerLink]="['/bulk-upload']" (click)="setReturn()">Bulk upload</a></li>
+      <li *ngIf="[editRole, adminRole].includes(user?.role)">
+        <a [routerLink]="['/bulk-upload']" (click)="setReturn()">Bulk upload</a>
+      </li>
       <li *ngIf="workplace?.isParent"><a [routerLink]="['/workplace', 'view-my-workplaces']">View my workplaces</a></li>
       <li><a [routerLink]="['/reports']">View reports</a></li>
       <li *ngIf="[adminRole].includes(user?.role)"><a [routerLink]="['/search-users']">Search Users</a></li>
-      <li *ngIf="[adminRole].includes(user?.role)"><a [routerLink]="['/search-establishments']">Search Establishments</a></li>
+      <li *ngIf="[adminRole].includes(user?.role)">
+        <a [routerLink]="['/search-establishments']">Search Establishments</a>
+      </li>
       <!--
         TODO uncomment once relevant sections have been developed
         <li><a [routerLink]="['/']">Request to become a parent</a></li>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { CountryResponse, CountryService } from '@core/services/country.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -18,12 +18,13 @@ export class CountryOfBirthComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     private countryService: CountryService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.countryOfBirthNameValidator = this.countryOfBirthNameValidator.bind(this);
     this.countryOfBirthNameFilter = this.countryOfBirthNameFilter.bind(this);
@@ -60,8 +61,8 @@ export class CountryOfBirthComponent extends QuestionComponent {
 
     this.previous =
       this.worker.nationality && this.worker.nationality.value === 'British'
-        ? ['/worker', this.worker.uid, 'nationality']
-        : ['/worker', this.worker.uid, 'british-citizenship'];
+        ? this.getRoutePath('nationality')
+        : this.getRoutePath('british-citizenship');
   }
 
   setupFormErrorsMap(): void {
@@ -98,8 +99,8 @@ export class CountryOfBirthComponent extends QuestionComponent {
   onSuccess() {
     this.next =
       this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom'
-        ? ['/worker', this.worker.uid, 'recruited-from']
-        : ['/worker', this.worker.uid, 'year-arrived-uk'];
+        ? this.getRoutePath('recruited-from')
+        : this.getRoutePath('year-arrived-uk');
   }
 
   countryOfBirthNameValidator() {

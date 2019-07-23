@@ -11,7 +11,9 @@
   <tbody class="govuk-table__body">
     <tr class="govuk-table__row" *ngFor="let worker of workers">
       <td class="govuk-table__cell" scope="row">
-        <a *ngIf="!wdfReportEnabled" [routerLink]="['/worker', worker.uid]">{{ worker.nameOrId }}</a>
+        <a *ngIf="!wdfReportEnabled" [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid]">
+          {{ worker.nameOrId }}
+        </a>
         <a *ngIf="wdfReportEnabled" [routerLink]="['/reports', 'wdf', 'worker', worker.uid]">{{ worker.nameOrId }}</a>
       </td>
       <td class="govuk-table__cell">{{ worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title }}</td>
@@ -23,7 +25,9 @@
           *ngIf="!worker.completed"
           class="govuk-util__float-right"
           [routerLink]="[
-            '/worker',
+            '/workplace',
+            workplace.uid,
+            'staff-record',
             worker.uid,
             worker.mainJob?.jobId === 27 ? 'mental-health-professional' : 'main-job-start-date'
           ]"

@@ -1,11 +1,23 @@
-<app-basic-record [worker]="worker" [return]="returnTo" [wdfReportEnabled]="wdfReportEnabled"></app-basic-record>
+<app-basic-record
+  [workplace]="workplace"
+  [worker]="worker"
+  [return]="returnTo"
+  [wdfReportEnabled]="wdfReportEnabled"
+></app-basic-record>
 <app-personal-details
+  [workplace]="workplace"
   [worker]="worker"
   [return]="returnTo"
   [wdfReportEnabled]="wdfReportEnabled"
 ></app-personal-details>
-<app-employment [worker]="worker" [return]="returnTo" [wdfReportEnabled]="wdfReportEnabled"></app-employment>
+<app-employment
+  [workplace]="workplace"
+  [worker]="worker"
+  [return]="returnTo"
+  [wdfReportEnabled]="wdfReportEnabled"
+></app-employment>
 <app-qualifications-and-training
+  [workplace]="workplace"
   [worker]="worker"
   [return]="returnTo"
   [wdfReportEnabled]="wdfReportEnabled"

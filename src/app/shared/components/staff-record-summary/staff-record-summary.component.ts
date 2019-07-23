@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
@@ -12,6 +13,7 @@ export class StaffRecordSummaryComponent implements OnInit {
   @Input() set worker(value: Worker) {
     this._worker = value;
   }
+  @Input() workplace: Establishment;
   @Input() return: URLStructure;
   @Input() wdfReportEnabled = false;
 
@@ -22,8 +24,8 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   ngOnInit() {
     this.returnTo = this.wdfReportEnabled
-      ? { url: ['/reports', 'wdf', 'worker', this.worker.uid] }
-      : { url: ['/worker', this.worker.uid, 'check-answers'] };
+      ? { url: ['/reports', 'wdf', 'staff-record', this.worker.uid] }
+      : { url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'check-answers'] };
   }
 
   goBack(event) {

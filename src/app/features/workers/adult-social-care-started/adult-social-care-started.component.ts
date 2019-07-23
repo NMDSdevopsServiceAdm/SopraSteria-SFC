@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
@@ -20,11 +20,12 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
@@ -63,9 +64,9 @@ export class AdultSocialCareStartedComponent extends QuestionComponent {
     }
 
     this.next = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
-      ? ['/worker', this.worker.uid, 'days-of-sickness']
-      : ['/worker', this.worker.uid, 'contract-with-zero-hours'];
-    this.previous = ['/worker', this.worker.uid, 'recruited-from'];
+      ? this.getRoutePath('days-of-sickness')
+      : this.getRoutePath('contract-with-zero-hours');
+    this.previous = this.getRoutePath('recruited-from');
   }
 
   setupFormErrorsMap(): void {

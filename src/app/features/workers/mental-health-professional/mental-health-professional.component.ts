@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -17,11 +17,12 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       approvedMentalHealthWorker: null,
@@ -30,7 +31,7 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
 
   init(): void {
     if (!this.workerService.hasJobRole(this.worker, 27)) {
-      this.router.navigate(['/worker', this.worker.uid, 'staff-details'], { replaceUrl: true });
+      this.router.navigate(this.getRoutePath('staff-details'), { replaceUrl: true });
     }
 
     if (this.worker.approvedMentalHealthWorker) {
@@ -39,10 +40,10 @@ export class MentalHealthProfessionalComponent extends QuestionComponent impleme
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'national-insurance-number'];
+    this.next = this.getRoutePath('national-insurance-number');
     this.previous = this.workerService.hasJobRole(this.worker, 23)
-      ? ['/worker', this.worker.uid, 'nursing-specialism']
-      : ['/worker', this.worker.uid, 'other-job-roles'];
+      ? this.getRoutePath('nursing-specialism')
+      : this.getRoutePath('other-job-roles');
   }
 
   generateUpdateProps() {

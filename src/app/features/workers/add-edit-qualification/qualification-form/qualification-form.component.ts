@@ -54,12 +54,12 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
           qualification => qualification.id === parseInt(value, 10)
         );
 
-        if (selectedQualification.from) {
+        if (selectedQualification && selectedQualification.from) {
           const from = moment(selectedQualification.from);
           validators.push(Validators.min(from.year()));
         }
 
-        if (selectedQualification.until) {
+        if (selectedQualification && selectedQualification.until) {
           const until = moment(selectedQualification.until);
           validators.push(Validators.max(until.year()));
         }

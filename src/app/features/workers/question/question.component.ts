@@ -1,7 +1,8 @@
 import { OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
@@ -13,6 +14,7 @@ import { isNull } from 'util';
 export class QuestionComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public worker: Worker;
+  public workplace: Establishment;
   public submitted = false;
 
   public return: URLStructure;
@@ -29,6 +31,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
@@ -36,6 +39,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.return = this.workerService.returnTo;
+    this.workplace = this.route.parent.snapshot.data.establishment;
 
     this.subscriptions.add(
       this.workerService.worker$.subscribe(worker => {
@@ -81,7 +85,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
         break;
 
       case 'summary':
-        this.router.navigate(['/worker', this.worker.uid, 'check-answers']);
+        this.router.navigate(this.getRoutePath('check-answers'));
         break;
 
       case 'exit':
@@ -92,6 +96,10 @@ export class QuestionComponent implements OnInit, OnDestroy {
         this.router.navigate(this.return.url, { fragment: this.return.fragment, queryParams: this.return.queryParams });
         break;
     }
+  }
+
+  public getRoutePath(name: string) {
+    return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
   }
 
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {

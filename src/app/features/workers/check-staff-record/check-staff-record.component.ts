@@ -1,6 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -12,11 +13,18 @@ import { take } from 'rxjs/operators';
 })
 export class CheckStaffRecordComponent implements OnInit {
   public worker: Worker;
+  public workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private router: Router, private location: Location, private workerService: WorkerService) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private location: Location,
+    private workerService: WorkerService
+  ) {}
 
   ngOnInit() {
+    this.workplace = this.route.parent.snapshot.data.establishment;
     this.workerService.worker$.pipe(take(1)).subscribe(worker => {
       this.worker = worker;
     });
@@ -31,7 +39,7 @@ export class CheckStaffRecordComponent implements OnInit {
       this.workerService.updateWorker(this.worker.uid, props).subscribe(
         data => {
           this.workerService.setState({ ...this.worker, ...data });
-          this.router.navigate(['/worker/save-success']);
+          this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'save-success']);
         },
         error => {
           console.log(error);

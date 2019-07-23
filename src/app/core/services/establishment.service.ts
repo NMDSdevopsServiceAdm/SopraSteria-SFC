@@ -49,7 +49,7 @@ export class EstablishmentService {
   public isSameLoggedInUser: boolean;
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   private _establishmentId: number = null;
 
@@ -146,8 +146,8 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`);
   }
 
-  getStaff() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/staff`).pipe(map(res => res.numberOfStaff));
+  getStaff(establishmentuid: string) {
+    return this.http.get<any>(`/api/establishment/${establishmentuid}/staff`).pipe(map(res => res.numberOfStaff));
   }
 
   postStaff(numberOfStaff) {

@@ -6,7 +6,11 @@
 
 <p class="govuk-!-margin-bottom-7">This is mandatory information needed to create a basic staff record.</p>
 
-<app-total-staff-panel [totalStaff]="totalStaff" [totalWorkers]="calculatedTotalStaff"></app-total-staff-panel>
+<app-total-staff-panel
+  [workplace]="workplace"
+  [totalStaff]="totalStaff"
+  [totalWorkers]="calculatedTotalStaff"
+></app-total-staff-panel>
 
 <form novalidate (ngSubmit)="submitHandler()" [formGroup]="form">
   <div [formArrayName]="'staffRecords'">
