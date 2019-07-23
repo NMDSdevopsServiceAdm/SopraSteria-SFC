@@ -27,6 +27,9 @@ import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
+import {
+  UserAccountChangePrimaryDialogComponent,
+} from './user-account-change-primary-dialog/user-account-change-primary-dialog.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
 import {
   UserAccountEditPermissionsComponent,
@@ -62,10 +65,11 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
     UserAccountSavedComponent,
+    UserAccountChangePrimaryDialogComponent,
     UserAccountDeleteDialogComponent,
     UserAccountEditPermissionsComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
-  entryComponents: [UserAccountDeleteDialogComponent],
+  entryComponents: [UserAccountChangePrimaryDialogComponent, UserAccountDeleteDialogComponent],
 })
 export class WorkplaceModule {}

@@ -9,9 +9,14 @@ import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
+
+import {
+  UserAccountChangePrimaryDialogComponent,
+} from '../user-account-change-primary-dialog/user-account-change-primary-dialog.component';
 
 @Component({
   selector: 'app-user-account-edit-permissions',
@@ -19,7 +24,7 @@ import { Subscription } from 'rxjs';
 })
 export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public establishment: Establishment;
+  public workplace: Establishment;
   public user: UserDetails;
   public form: FormGroup;
   public serverError: string;
@@ -42,13 +47,14 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
+    private dialogService: DialogService,
     private userService: UserService,
     private alertService: AlertService
   ) {
     this.user = this.route.snapshot.data.user;
-    this.establishment = this.route.parent.snapshot.data.establishment;
+    this.workplace = this.route.parent.snapshot.data.establishment;
 
-    this.return = { url: ['/workplace', this.establishment.uid], fragment: 'user-accounts' };
+    this.return = { url: ['/workplace', this.workplace.uid], fragment: 'user-accounts' };
   }
 
   ngOnInit() {
@@ -64,28 +70,52 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
+  public changePrimary() {
+    const dialog = this.dialogService.open(UserAccountChangePrimaryDialogComponent, {
+      workplaceUid: this.workplace.uid,
+      currentUserUid: this.user.uid,
+    });
+    dialog.afterClosed.subscribe(userFullname => {
+      if (userFullname) {
+        const { role } = this.form.value;
+        this.save(role, false, userFullname);
+      }
+    });
+  }
+
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
     if (!payload.save) {
-      return this.router.navigate(['/workplace', this.establishment.uid], { fragment: 'user-accounts' });
+      return this.router.navigate(['/workplace', this.workplace.uid], { fragment: 'user-accounts' });
     }
 
     const { role, primary } = this.form.value;
+    const updatedPrimary = role === Roles.Read ? false : primary;
 
+    if (this.user.isPrimary && !updatedPrimary) {
+      this.changePrimary();
+      return;
+    }
+
+    this.save(role, updatedPrimary);
+  }
+
+  private save(role: Roles, primary: boolean, name: string = null) {
     const props = {
       role,
-      ...(role === Roles.Edit && {
-        isPrimary: primary,
-      }),
+      isPrimary: primary,
     };
 
     this.subscriptions.add(
       this.userService.updateUserDetails(this.user.uid, { ...this.user, ...props }).subscribe(
         data => {
-          this.router.navigate(['/workplace', this.establishment.uid, 'user', this.user.uid], {
+          this.router.navigate(['/workplace', this.workplace.uid, 'user', this.user.uid], {
             fragment: 'user-accounts',
           });
           if (data.isPrimary) {
-            this.alertService.addAlert({ type: 'success', message: `${this.user.fullname} is the new primary user` });
+            name = this.user.fullname;
+          }
+          if (name) {
+            this.alertService.addAlert({ type: 'success', message: `${name} is the new primary user` });
           }
         },
         error => this.onError(error)
