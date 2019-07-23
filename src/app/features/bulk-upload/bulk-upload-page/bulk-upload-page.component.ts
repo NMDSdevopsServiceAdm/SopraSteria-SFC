@@ -33,6 +33,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupUploadValidationErrors();
     this.setupSubscription();
+    this.bulkUploadService.setReturnTo(null);
   }
 
   public setupFormErrorsMap(): void {
@@ -41,17 +42,19 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
 
   public setupUploadValidationErrors(): void {
     this.subscriptions.add(
-      combineLatest(this.bulkUploadService.validationErrors$, this.bulkUploadService.serverError$).subscribe(
-        ([uploadValidationErrors, serverError]) => {
-          this.uploadValidationErrors = uploadValidationErrors;
-          this.serverError = serverError;
-          this.showErrorSummary = (!!uploadValidationErrors && uploadValidationErrors.length > 0) || !!serverError;
-
-          if (this.showErrorSummary) {
-            this.errorSummaryService.scrollToErrorSummary();
-          }
+      combineLatest(
+        this.bulkUploadService.preValidationError$,
+        this.bulkUploadService.validationErrors$,
+        this.bulkUploadService.serverError$
+      ).subscribe(([preValidationErrors, uploadValidationErrors, serverError]) => {
+        this.uploadValidationErrors = uploadValidationErrors;
+        this.serverError = serverError;
+        this.showErrorSummary =
+          preValidationErrors || (!!uploadValidationErrors && uploadValidationErrors.length > 0) || !!serverError;
+        if (this.showErrorSummary) {
+          this.errorSummaryService.scrollToErrorSummary();
         }
-      )
+      })
     );
   }
 

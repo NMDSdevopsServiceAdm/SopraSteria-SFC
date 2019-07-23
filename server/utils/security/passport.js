@@ -6,9 +6,9 @@ const JwtStrategy = require('passport-jwt').Strategy,
 // load up the user model
 const User = require('../../models').User;
 
-Token_Secret = Authorization.getTokenSecret();
 
 module.exports = function(passport) {
+  Token_Secret = Authorization.getTokenSecret();
   const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('JWT'),
     secretOrKey: Token_Secret,

@@ -7,7 +7,7 @@
       role="button"
       draggable="false"
       class="govuk-button govuk-button--secondary"
-      [routerLink]="['/worker', 'basic-records-start-screen']"
+      [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen']"
     >
       Add a basic record
     </a>
@@ -15,7 +15,7 @@
       role="button"
       draggable="false"
       class="govuk-button govuk-!-margin-left-8"
-      [routerLink]="['/worker', 'start-screen']"
+      [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'start-screen']"
     >
       Add a full record
     </a>
@@ -34,9 +34,10 @@
 </app-status>
 
 <app-total-staff-panel
+  [workplace]="workplace"
   [totalStaff]="totalStaff"
   [totalWorkers]="this.workers?.length"
   [returnToDash]="true"
 ></app-total-staff-panel>
 
-<app-staff-summary *ngIf="workers" [workers]="workers"></app-staff-summary>
+<app-staff-summary *ngIf="workers" [workplace]="workplace" [workers]="workers"></app-staff-summary>

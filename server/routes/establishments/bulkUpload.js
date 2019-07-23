@@ -312,7 +312,7 @@ router.route('/uploaded').put(async (req, res) => {
       status = false;
     }
 
-    let workerHeaders, establishmentHeaders, trainingHeaders; 
+    let workerHeaders, establishmentHeaders, trainingHeaders;
     let importedWorkers = null, importedEstablishments = null, importedTraining = null;
 
     let headerPromises = [];
@@ -321,7 +321,7 @@ router.route('/uploaded').put(async (req, res) => {
       headerPromises.push(new Promise( async (resolve, reject) => {
         importedEstablishments = await csv().fromString(myDownloads.establishments).on('header', (header) => {
           establishmentHeaders = header;
-          resolve();    
+          resolve();
         });
       }));
     }
@@ -330,16 +330,16 @@ router.route('/uploaded').put(async (req, res) => {
       headerPromises.push(new Promise( async (resolve, reject) => {
         importedWorkers = await csv().fromString(myDownloads.workers).on('header', (header) => {
           workerHeaders = header;
-          resolve();    
+          resolve();
         });
       }));
     }
-    
+
     if(myDownloads.training){
       trainingHeaders.push(new Promise( async (resolve, reject) => {
         importedTraining = await csv().fromString(myDownloads.training).on('header', (header) => {
           trainingHeaders = header;
-          resolve();    
+          resolve();
         });
       }));
     }
@@ -365,7 +365,7 @@ router.route('/uploaded').put(async (req, res) => {
     }
 
     if(importedWorkers){
-      console.log("WA DEBUG - imported workers: ", importedWorkers)
+      //console.log("WA DEBUG - imported workers: ", importedWorkers)
       const workerCsvValidator = new CsvWorkerValidator(importedWorkers[firstRow], firstLineNumber);
       if(workerCsvValidator.preValidate(workerHeaders)){
         // count records and update metadata
@@ -466,13 +466,8 @@ router.route('/validate').put(async (req, res) => {
       Prefix: `${req.establishmentId}/latest/`
     };
     const data = await s3.listObjects(params).promise();
-    //  const establishmentsCSV = null;
 
-    const establishmentRegex = /LOCALESTID,STATUS,ESTNAME,ADDRESS1,ADDRESS2,ADDRES/;
-    const workerRegex = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-    const trainingRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
     const createModelPromises = [];
-
     data.Contents.forEach(myFile => {
       const ignoreMetaDataObjects = /.*metadata.json$/;
       const ignoreRoot = /.*\/$/;
@@ -483,17 +478,17 @@ router.route('/validate').put(async (req, res) => {
 
     await Promise.all(createModelPromises).then(function(values){
        values.forEach(myfile=>{
-          if (establishmentRegex.test(myfile.data.substring(0,50))) {
+          if (CsvEstablishmentValidator.isContent(myfile.data)) {
             myDownloads.establishments = myfile.data;
             establishmentMetadata.filename = myfile.filename;
             establishmentMetadata.fileType = 'Establishment';
             establishmentMetadata.userName = myfile.username;
-          } else if (workerRegex.test(myfile.data.substring(0,50))) {
+          } else if (CsvWorkerValidator.isContent(myfile.data)) {
             myDownloads.workers = myfile.data;
             workerMetadata.filename = myfile.filename;
             workerMetadata.fileType = 'Worker';
             workerMetadata.userName = myfile.username;
-          } else if (trainingRegex.test(myfile.data.substring(0,50))) {
+          } else if (CsvTrainingValidator.isContent(myfile.data)) {
             myDownloads.trainings = myfile.data;
             trainingMetadata.filename = myfile.filename;
             trainingMetadata.fileType = 'Training';
@@ -565,13 +560,6 @@ router.route('/validate').post(async (req, res) => {
       establishmentMetadata.fileType = 'Establishment';
 
     }
-    if (workerRegex.test(req.body.workers.csv.substring(0,50))) {
-      let key = req.body.workers.filename;
-      workerMetadata.filename = key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3];
-      workerMetadata.fileType = 'Worker';
-
-    }
-
     if (trainingRegex.test(req.body.training.csv.substring(0,50))) {
       let key = req.body.training.filename;
       trainingMetadata.filename = key.match(filenameRegex)[2]+ '.' + key.match(filenameRegex)[3];
@@ -737,8 +725,13 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
   try {
     thisApiEstablishment.initialise(
-      thisEstablishmentAsAPI.Address,
+      thisEstablishmentAsAPI.Address1,
+      thisEstablishmentAsAPI.Address2,
+      thisEstablishmentAsAPI.Address3,
+      thisEstablishmentAsAPI.Town,
+      null,
       thisEstablishmentAsAPI.LocationId,
+      thisEstablishmentAsAPI.ProvId,
       thisEstablishmentAsAPI.Postcode,
       thisEstablishmentAsAPI.IsCQCRegulated
     );
@@ -750,7 +743,7 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
     if (isValid) {
       // no validation errors in the entity itself, so add it ready for completion
       //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
-      myAPIEstablishments[currentLineNumber] = thisApiEstablishment;
+      myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
     } else {
       const errors = thisApiEstablishment.errors;
       const warnings = thisApiEstablishment.warnings;
@@ -759,10 +752,10 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
 
       if (errors.length === 0) {
         //console.log("WA DEBUG - this establishment entity: ", JSON.stringify(thisApiEstablishment.toJSON(), null, 2));
-        myAPIEstablishments[currentLineNumber] = thisApiEstablishment;
+        myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
       } else {
         // TODO - remove this when capacities and services are fixed; temporarily adding establishments even though they're in error (because service/capacity validations put all in error)
-        myAPIEstablishments[currentLineNumber] = thisApiEstablishment;
+        myAPIEstablishments[thisApiEstablishment.key] = thisApiEstablishment;
       }
     }
 
@@ -932,13 +925,13 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     // having parsed all establishments, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
     myEstablishments.forEach(thisEstablishment => {
-      const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, "");
+      const keyNoWhitespace = thisEstablishment.localId;
       if (allEstablishmentsByKey[keyNoWhitespace]) {
         // this establishment is a duplicate
         csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
 
         // remove the entity
-        delete myAPIEstablishments[thisEstablishment.lineNumber];
+        delete myAPIEstablishments[keyNoWhitespace];
       } else {
         // does not yet exist
         allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
@@ -948,6 +941,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     console.info("API bulkupload - validateBulkUploadFiles: no establishment records");
     status = false;
   }
+
   establishments.establishmentMetadata.records = myEstablishments.length;
 
   // parse and process Workers CSV
@@ -972,6 +966,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
       } else {
         // does not yet exist - check this worker can be associated with a known establishment
         const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, "") : '';
+
         if (!allEstablishmentsByKey[establishmentKeyNoWhitespace]) {
           // not found the associated establishment
           csvWorkerSchemaErrors.push(thisWorker.uncheckedEstablishment());
@@ -985,15 +980,15 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           // associate this worker to the known establishment
           const workerKey = thisWorker.uniqueWorker ? thisWorker.uniqueWorker.replace(/\s/g, "") : null;
           const foundEstablishmentByLineNumber = allEstablishmentsByKey[establishmentKeyNoWhitespace];
-          const knownEstablishment = foundEstablishmentByLineNumber ? myAPIEstablishments[foundEstablishmentByLineNumber] : null;
+
+          const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
 
           //key workers, to be used in training
           const workerKeyNoWhitespace = (thisWorker._currentLine.LOCALESTID + thisWorker._currentLine.UNIQUEWORKERID).replace(/\s/g, "");
           workersKeyed[workerKeyNoWhitespace] = thisWorker._currentLine;
-          // console.log('thisWorker', thisWorker)
 
-          if (knownEstablishment) {
-            knownEstablishment.associateWorker(workerKey, myAPIWorkers[thisWorker.lineNumber]);
+          if (knownEstablishment && myAPIWorkers[thisWorker.lineNumber]) {
+            knownEstablishment.associateWorker(myAPIWorkers[thisWorker.lineNumber].key, myAPIWorkers[thisWorker.lineNumber]);
           } else {
             // this should never happen
             console.error(`FATAL: failed to associate worker (line number: ${thisWorker.lineNumber}/unique id (${thisWorker.uniqueWorker})) with a known establishment.`);
@@ -1074,8 +1069,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const qualificationsAsArray = Object.values(myAPIQualifications);
 
   // prepare the validation difference report which highlights all new, updated and deleted establishments and workers
-  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent);
-
+  const RESTORE_ASSOCIATION_LEVEL=1;
+  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false);
   // bulk upload specific validations - knowing the to load and current set of entities
 
   // firstly, if the logged in account performing this validation is not a parent, then
@@ -1085,7 +1080,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     const MAX_ESTABLISHMENTS = 1;
 
     if (establishments.imported.length !== MAX_ESTABLISHMENTS) {
-      csvEstablishmentSchemaErrors.push(CsvEstablishmentValidator.justOneEstablishmentError());
+      csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.justOneEstablishmentError());
     }
   }
 
@@ -1096,15 +1091,37 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
       return thisCurrentEstablishment;
     }
   });
+
   let notPrimary = true;
   if (primaryEstablishment) {
-    const primaryEstablishmentKey = primaryEstablishment.name.replace(/\s/g, "");
-    const onloadedPrimaryEstablishment = myAPIEstablishments[allEstablishmentsByKey[primaryEstablishmentKey]];
+    const onloadedPrimaryEstablishment = myAPIEstablishments[primaryEstablishment.key];
     if (!onloadedPrimaryEstablishment) {
-      csvEstablishmentSchemaErrors.push(CsvEstablishmentValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
+      csvEstablishmentSchemaErrors.unshift(CsvEstablishmentValidator.missingPrimaryEstablishmentError(primaryEstablishment.name));
     }
   } else {
     console.error(("Seriously, if seeing this then something has truely gone wrong - the primary establishment should always be in the set of current establishments!"));
+  }
+
+  if (isParent) {
+    // must be a parent
+    // check for trying to upload against subsidaries for which this parent does not own (if a parent) - ignore the primary (self) establishment of course
+    const allLoadedEstablishments =Object.values(myAPIEstablishments);
+    allLoadedEstablishments.forEach(thisOnloadEstablishment => {
+      if (thisOnloadEstablishment.key !== primaryEstablishment.key) {
+        // we're not the primary
+        const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrentEstablishment => {
+          if (thisCurrentEstablishment.key === thisOnloadEstablishment.key) {
+            return thisCurrentEstablishment;
+          }
+        });
+
+        if (foundCurrentEstablishment && foundCurrentEstablishment.dataOwner !== 'Parent') {
+          const lineNumberByKey = allEstablishmentsByKey[foundCurrentEstablishment.key];
+          const establishmentLineValidator = myEstablishments[lineNumberByKey-2];
+          csvEstablishmentSchemaErrors.unshift(establishmentLineValidator.addNotOwner());
+        }
+      }
+    });
   }
 
   // update CSV metadata error/warning counts
@@ -1210,7 +1227,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
 // for the given user, restores all establishment and worker entities only from the DB, associating the workers
 //  back to the establishment
-const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent, assocationLevel) => {
+// the "onlyMine" parameter is used to remove those subsidiary establishments where the parent is not the owner
+const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId, isParent, assocationLevel=1, onlyMine=false) => {
   try {
     const thisUser = new UserEntity(primaryEstablishmentId);;
     await thisUser.restore(null, loggedInUsername, false);
@@ -1230,9 +1248,11 @@ const restoreExistingEntities = async (loggedInUsername, primaryEstablishmentId,
 
     if (myEstablishments.subsidaries && myEstablishments.subsidaries.establishments && Array.isArray(myEstablishments.subsidaries.establishments)) {
       myEstablishments.subsidaries.establishments.forEach(thisSubsidairy => {
-        const newSub = new EstablishmentEntity(loggedInUsername);
-        currentEntities.push(newSub);
-        restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel));
+        if (!onlyMine || (onlyMine && thisSubsidairy.dataOwner === 'Parent')) {
+          const newSub = new EstablishmentEntity(loggedInUsername);
+          currentEntities.push(newSub);
+          restoreEntityPromises.push(newSub.restore(thisSubsidairy.uid, false, true, assocationLevel));
+        }
       });
     }
 
@@ -1268,8 +1288,10 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
   onloadEntities.forEach(thisOnloadEstablishment => {
     // find a match for this establishment
     // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
-    const foundCurrentEstablishment = currentEntities.find(thisCurrentEstablishment => thisCurrentEstablishment.name === thisOnloadEstablishment.name);
+    const foundCurrentEstablishment = currentEntities.find(thisCurrentEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
+
     if (foundCurrentEstablishment) {
+
       // for updated establishments, need to cross check the set of onload and current workers to identify the new, updated and deleted workers
       const currentWorkers = foundCurrentEstablishment.associatedWorkers;
       const onloadWorkers = thisOnloadEstablishment.associatedWorkers;
@@ -1277,15 +1299,23 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
 
       // find new/updated/deleted workers
       onloadWorkers.forEach(thisOnloadWorker => {
-        const foundWorker= currentWorkers.find(thisCurrentWorker => thisCurrentWorker === thisOnloadWorker);
+        const foundWorker= currentWorkers.find(thisCurrentWorker => {
+          return thisCurrentWorker === thisOnloadWorker;
+        });
 
         if (foundWorker) {
+          const theWorker = foundCurrentEstablishment.theWorker(foundWorker);
           updatedWorkers.push({
-            nameOrId: thisOnloadWorker
+            key: thisOnloadWorker,
+            name: theWorker.nameOrId,
+            localId: theWorker.localIdentifier,
           });
         } else {
+          const theWorker = thisOnloadEstablishment.theWorker(thisOnloadWorker);
           newWorkers.push({
-            nameOrId: thisOnloadWorker
+            key: thisOnloadWorker,
+            name: theWorker.nameOrId,
+            localId: theWorker.localIdentifier,
           });
         }
       });
@@ -1295,15 +1325,20 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         const foundWorker= onloadWorkers.find(thisOnloadWorker => thisCurrentWorker === thisOnloadWorker);
 
         if (!foundWorker) {
+          const theWorker = foundCurrentEstablishment.theWorker(thisCurrentWorker);
           deletedWorkers.push({
-            nameOrId: thisCurrentWorker
+            key: thisCurrentWorker,
+            name: theWorker.nameOrId,
+            localId: theWorker.localIdentifier,
           });
         }
       });
 
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       updatedEntities.push({
+        key: thisOnloadEstablishment.key,
         name: thisOnloadEstablishment.name,
+        localId: thisOnloadEstablishment.localIdentifier,
         workers: {
           new: newWorkers,
           updated: updatedWorkers,
@@ -1313,7 +1348,9 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
     } else {
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       newEntities.push({
+        key: thisOnloadEstablishment.key,
         name: thisOnloadEstablishment.name,
+        localId: thisOnloadEstablishment.localIdentifier
       });
     }
   });
@@ -1323,7 +1360,7 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
     if (thisCurrentEstablishment.id !== primaryEstablishmentId) {
       // find a match for this establishment
       // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
-      const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.name === thisOnloadEstablishment.name);
+      const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
 
       // cannot delete self
       if (!foundOnloadEstablishment) {
@@ -1331,10 +1368,19 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         const currentWorkers = thisCurrentEstablishment.associatedWorkers;
         const deletedWorkers = [];
 
-        currentWorkers.forEach(thisCurrentWorker => deletedWorkers.push(thisCurrentWorker));
+        currentWorkers.forEach(thisCurrentWorker => {
+          const thisWorker = thisCurrentEstablishment.theWorker(thisCurrentWorker);
+          deletedWorkers.push({
+            key: thisCurrentWorker,
+            name: thisWorker.nameOrId,
+            localId: thisWorker.localIdentifier
+              });
+      });
 
         deletedEntities.push({
+          key: thisCurrentEstablishment.key,
           name: thisCurrentEstablishment.name,
+          localId: thisCurrentEstablishment.localIdentifier,
           workers: {
             deleted: deletedWorkers,
           }
@@ -1445,12 +1491,16 @@ router.route('/report/:reportType').get(async (req, res) => {
 
     let entities =  null;
     let messages =  null;
+    let differenceReport = null;
 
     const entityKey = `${req.establishmentId}/intermediary/establishment.entities.json`;
+    const differenceReportKey = `${req.establishmentId}/validation/difference.report.json`;
 
     try {
       const establishment = await downloadContent(entityKey);
+      const differenceReportS3 = await downloadContent(differenceReportKey);
       entities = establishment ? JSON.parse(establishment.data) : null;
+      differenceReport = differenceReportS3 ? JSON.parse(differenceReportS3.data) : null;
     } catch (err) {
       throw new Error(`router.route('/report').get - failed to download: `, entityKey);
     }
@@ -1493,11 +1543,73 @@ router.route('/report/:reportType').get(async (req, res) => {
       const laPadding = '*'.padStart(laTitle.length, '*');
       readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
 
-      entities ? entities
-      .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
-      .reduce((acc, val) => acc.concat(val), [])
-      .sort((a,b) => a.name > b.name)
-      .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
+      entities ? entities.map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
+                          .reduce((acc, val) => acc.concat(val), [])
+                          .map(la => la.name)
+                          .sort((a,b) => a > b)
+                          .filter((value, index, self) => self.indexOf(value)===index)
+                          .map(item => readable.push(`${item}${NEWLINE}`)) : true;
+
+      // list all establishments that are being deleted
+      console.log("WA DEBUG - difference report: ", differenceReportKey)
+      if (differenceReport && differenceReport.deleted && Array.isArray(differenceReport.deleted) && differenceReport.deleted.length > 0) {
+        const deletedTitle = '* Deleted (the following Workplaces will be deleted) *';
+        const deletedPadding = '*'.padStart(deletedTitle.length, '*');
+        readable.push(`${NEWLINE}${deletedPadding}${NEWLINE}${deletedTitle}${NEWLINE}${deletedPadding}${NEWLINE}`);
+
+        differenceReport.deleted
+          .sort((x,y) => x.name > y.name)
+          .forEach(thisDeletedEstablishment => {
+            readable.push(`"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId})${NEWLINE}`)
+          });
+      }
+    }
+
+    if (reportType === 'workers') {
+      // list all workers that are being deleted
+      if (differenceReport) {
+        const numberOfDeletedWorkersFromUpdatedEstablishments = differenceReport.updated.reduce((total, current) => total += current.workers.deleted.length, 0);
+        const numberOfDeletedWorkersFromDeletedEstablishments = differenceReport.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
+        const totalDeletedWorkers = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
+
+        if (numberOfDeletedWorkersFromDeletedEstablishments) {
+          let deletedTitle = '* Deleted Workplaces (the following Staff will be deleted) *';
+          let deletedPadding = '*'.padStart(deletedTitle.length, '*');
+          readable.push(`${NEWLINE}${deletedPadding}${NEWLINE}${deletedTitle}${NEWLINE}${deletedPadding}${NEWLINE}`);
+
+          differenceReport.deleted
+            .sort((x,y) => x.name > y.name)
+            .forEach(thisDeletedEstablishment => {
+              if (thisDeletedEstablishment.workers && thisDeletedEstablishment.workers.deleted) {
+                thisDeletedEstablishment.workers.deleted
+                  .sort((x,y) => x.name > y.name)
+                  .forEach(thisWorker => {
+                    console.log()
+                    readable.push(`"${thisDeletedEstablishment.name}" (LOCALSTID - ${thisDeletedEstablishment.localId}) - "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`)
+                  });
+              }
+            });
+        }
+
+        if (numberOfDeletedWorkersFromUpdatedEstablishments) {
+          deletedTitle = '* Existing Workplaces (the following Staff will be deleted) *';
+          deletedPadding = '*'.padStart(deletedTitle.length, '*');
+          readable.push(`${NEWLINE}${deletedPadding}${NEWLINE}${deletedTitle}${NEWLINE}${deletedPadding}${NEWLINE}`);
+
+          differenceReport.updated
+            .sort((x,y) => x.name > y.name)
+            .forEach(thisUpdatedEstablishment => {
+              if (thisUpdatedEstablishment.workers && thisUpdatedEstablishment.workers.deleted) {
+                thisUpdatedEstablishment.workers.deleted
+                  .sort((x,y) => x.name > y.name)
+                  .forEach(thisWorker => {
+                    readable.push(`"${thisUpdatedEstablishment.name}" (LOCALSTID - ${thisUpdatedEstablishment.localId})- "${thisWorker.name}" (UNIQUEWORKERID - ${thisWorker.localId})${NEWLINE}`)
+                  });
+              }
+            });
+        }
+
+      }
     }
 
     readable.push(null);
@@ -1553,11 +1665,15 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
         onLoadEstablishments.push(newOnloadEstablishment);
 
 
-        newOnloadEstablishment.initialise(thisEntity.address,
-                                          thisEntity.locationRef,
+        newOnloadEstablishment.initialise(thisEntity.address1,
+                                          thisEntity.address2,
+                                          thisEntity.address3,
+                                          thisEntity.town,
+                                          thisEntity.county,
+                                          thisEntity.locationId,
+                                          thisEntity.provId,
                                           thisEntity.postcode,
-                                          thisEntity.isRegulated,
-                                          null);
+                                          thisEntity.isRegulated);
         onloadPromises.push(newOnloadEstablishment.load(thisEntity, true));
       });
     }
@@ -1604,7 +1720,7 @@ router.route('/complete').post(async (req, res) => {
           validationDiferenceReport.new.forEach(thisNewEstablishment => {
             // find the onload establishment by key
             // TODO - use the LOCAL_IDENTIFIER when its available
-            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.name === thisNewEstablishment.name);
+            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisNewEstablishment.key);
 
             // the entity is already loaded, so simply prep it ready for saving
             if (foundOnloadEstablishment) {
@@ -1619,13 +1735,20 @@ router.route('/complete').post(async (req, res) => {
           validationDiferenceReport.updated.forEach(thisUpdatedEstablishment => {
             // find the current establishment and onload establishment by key
             // TODO - use the LOCAL_IDENTIFIER when its available
-            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.name === thisUpdatedEstablishment.name);
-            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.name === thisUpdatedEstablishment.name);
+            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisUpdatedEstablishment.key);
+            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisUpdatedEstablishment.key);
 
-            // current is already restored, so simply need to load the onboard into the current, and load the associated work entities
+            // current is already restored, so simply need pass the onload entity into the current along with the associated set of worker entities
             if (foundCurrentEstablishment) {
+              // when updating existing entities, need to remove the local identifer!
+              // but because the properties are not actual properties - but managed properties - we can't just delete the property
+
+              // simply work on the resulting full JSON presentation, whereby every property is a simply propery
+              const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true);
+              delete thisEstablishmentJSON.localIdentifier;
+
               updatedEstablishments.push(foundCurrentEstablishment);
-              updateEstablishmentPromises.push(foundCurrentEstablishment.load(foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true), true));
+              updateEstablishmentPromises.push(foundCurrentEstablishment.load(thisEstablishmentJSON, true));
             }
           });
 
@@ -1634,14 +1757,13 @@ router.route('/complete').post(async (req, res) => {
 
             // find the current establishment by key
             // TODO - use the LOCAL_IDENTIFIER when its available
-            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.name === thisDeletedEstablishment.name);
+            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisDeletedEstablishment.key);
 
             // current is already restored, so simply need to delete it
             if (foundCurrentEstablishment) {
               updateEstablishmentPromises.push(foundCurrentEstablishment.delete(theLoggedInUser, t, true));
             }
           });
-
           // wait for all updated::loads and deleted::deletes to complete
           await Promise.all(updateEstablishmentPromises);
 
@@ -1704,15 +1826,13 @@ const exportToCsv = async (NEWLINE, allMyEstablishemnts) => {
       const workerCsvValidator = new CsvWorkerValidator();
 
       // note - thisEstablishment.name will need to be local identifier once available
-      workersCsvArray.push(workerCsvValidator.toCSV(thisEstablishment.name, thisWorker));
+      workersCsvArray.push(workerCsvValidator.toCSV(thisEstablishment.localIdentifier, thisWorker));
 
       // and for this Worker's training records
       thisWorker.training ? thisWorker.training.forEach(thisTrainingRecord => {
         const trainingCsvValidator = new CsvTrainingValidator();
 
-        // note - thisEstablishment.name will need to be local identifier once available
-        // note - thisWorker.nameOrId will need to be local identifier once available
-        trainingCsvArray.push(trainingCsvValidator.toCSV(thisEstablishment.name, thisWorker.nameOrId, thisTrainingRecord));
+        trainingCsvArray.push(trainingCsvValidator.toCSV(thisEstablishment.key, thisWorker.key, thisTrainingRecord));
       }) : true;
     });
 
@@ -1746,7 +1866,8 @@ router.route('/download/:downloadType').get(async (req, res) => {
 
       try {
         const ENTITY_RESTORE_LEVEL=2;
-        const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL);
+        // only restore those subs that this primary establishment owns
+        const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, ENTITY_RESTORE_LEVEL, true);
         [establishments, workers, training] = await exportToCsv(NEWLINE, myCurrentEstablishments);
 
       } catch(err) {

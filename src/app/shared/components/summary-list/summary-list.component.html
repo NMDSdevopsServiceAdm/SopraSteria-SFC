@@ -1,0 +1,22 @@
+<dl
+  *ngIf="summaryList"
+  class="govuk-summary-list govuk-!-margin-bottom-0"
+  [class.govuk-summary-list--no-border]="topBorder || wrapBorder"
+  [class.govuk-summary-list--top-border]="topBorder"
+  [class.govuk-summary-list--wrap-border]="wrapBorder"
+>
+  <div class="govuk-summary-list__row" *ngFor="let item of summaryList">
+    <dt class="govuk-summary-list__key">
+      {{ item.label }}
+    </dt>
+    <dd class="govuk-summary-list__value">
+      {{ item.data }}
+    </dd>
+    <dd *ngIf="item.route" class="govuk-summary-list__actions">
+      <a [routerLink]="item.route.url" (click)="emitSetReturn()">
+        Change
+        <span class="govuk-visually-hidden"> {{ item.label.toLowerCase() }}</span>
+      </a>
+    </dd>
+  </div>
+</dl>

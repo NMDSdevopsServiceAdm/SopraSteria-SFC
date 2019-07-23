@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -26,11 +26,12 @@ export class NursingSpecialismComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       nurseSpecialism: null,
@@ -39,7 +40,7 @@ export class NursingSpecialismComponent extends QuestionComponent {
 
   init() {
     if (!this.workerService.hasJobRole(this.worker, 23)) {
-      this.router.navigate(['/worker', this.worker.uid, 'other-job-roles'], { replaceUrl: true });
+      this.router.navigate(this.getRoutePath('other-job-roles'), { replaceUrl: true });
     }
 
     if (this.worker.nurseSpecialism && this.worker.nurseSpecialism.specialism) {
@@ -49,9 +50,9 @@ export class NursingSpecialismComponent extends QuestionComponent {
     }
 
     this.next = this.workerService.hasJobRole(this.worker, 27)
-      ? ['/worker', this.worker.uid, 'mental-health-professional']
-      : ['/worker', this.worker.uid, 'national-insurance-number'];
-    this.previous = ['/worker', this.worker.uid, 'nursing-category'];
+      ? this.getRoutePath('mental-health-professional')
+      : this.getRoutePath('national-insurance-number');
+    this.previous = this.getRoutePath('nursing-category');
   }
 
   generateUpdateProps() {

@@ -1,7 +1,7 @@
-import { ContactUsComponent } from '@features/public/contact-us/contact-us.component';
-import { FeedbackComponent } from '@features/public/feedback/feedback.component';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { ContactUsComponent } from '@features/public/contact-us/contact-us.component';
+import { FeedbackComponent } from '@features/public/feedback/feedback.component';
 import { TermsConditionsComponent } from '@features/public/terms-conditions/terms-conditions.component';
 
 const routes: Routes = [

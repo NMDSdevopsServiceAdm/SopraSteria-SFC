@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -9,6 +10,8 @@ import { Subscription } from 'rxjs';
   templateUrl: './staff-records-tab.component.html',
 })
 export class StaffRecordsTabComponent implements OnInit, OnDestroy {
+  @Input() workplace: Establishment;
+
   private subscriptions: Subscription = new Subscription();
   public createStaffResponse = null;
   public errors;
@@ -20,14 +23,14 @@ export class StaffRecordsTabComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.workerService.getAllWorkers().subscribe(data => {
-        this.workers = data;
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe(workers => {
+        this.workers = workers;
         this.incomplete = this.workers.filter(worker => !worker.completed).length;
       })
     );
 
     this.subscriptions.add(
-      this.establishmentService.getStaff().subscribe(totalStaff => {
+      this.establishmentService.getStaff(this.workplace.uid).subscribe(totalStaff => {
         this.totalStaff = totalStaff;
       })
     );

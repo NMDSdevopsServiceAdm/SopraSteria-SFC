@@ -1,8 +1,9 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -22,14 +23,15 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    @Inject(DIALOG_DATA) public worker: Worker,
+    @Inject(DIALOG_DATA) public data: { worker: Worker; workplace: Establishment },
     public dialog: Dialog<DeleteWorkerDialogComponent>,
     private router: Router,
+    private route: ActivatedRoute,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService
   ) {
-    super(worker, dialog);
+    super(data, dialog);
 
     this.form = this.formBuilder.group({
       reason: null,
@@ -82,14 +84,17 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
 
     this.subscriptions.add(
       this.workerService
-        .deleteWorker(this.worker.uid, deleteReason)
+        .deleteWorker(this.data.worker.uid, deleteReason)
         .subscribe(() => this.onSuccess(), error => this.onError(error))
     );
   }
 
   private onSuccess(): void {
-    this.workerService.setLastDeleted(this.worker.nameOrId);
-    this.router.navigate(['/worker', 'delete-success'], { replaceUrl: true });
+    this.workerService.setLastDeleted(this.data.worker.nameOrId);
+    this.router.navigate(['/workplace', this.data.workplace.uid, 'staff-record', 'delete-success'], {
+      relativeTo: this.route,
+      replaceUrl: true,
+    });
     this.close();
   }
 

@@ -20,9 +20,7 @@ export class ChangePasswordComponent implements OnInit, OnDestroy {
 
     this.submitted = false;
 
-    this.subscriptions.add(
-      this.userService.userDetails$.subscribe((userDetails: UserDetails) => (this.userDetails = userDetails))
-    );
+    this.subscriptions.add(this.userService.loggedInUser$.subscribe(user => (this.userDetails = user)));
   }
 
   public onResetPasswordSuccess(): void {

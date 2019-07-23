@@ -98,14 +98,8 @@ export class WorkerService {
     return this.http.get<Worker>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`);
   }
 
-  public getAllWorkersByUid(establishmentUid: string): Observable<Worker[]> {
-    return this.http.get<WorkersResponse>(`/api/establishment/${establishmentUid}/worker`).pipe(map(w => w.workers));
-  }
-
-  public getAllWorkers(): Observable<Worker[]> {
-    return this.http
-      .get<WorkersResponse>(`/api/establishment/${this.establishmentService.establishmentId}/worker`)
-      .pipe(map(w => w.workers));
+  public getAllWorkers(establishmentuid: string): Observable<Worker[]> {
+    return this.http.get<WorkersResponse>(`/api/establishment/${establishmentuid}/worker`).pipe(map(w => w.workers));
   }
 
   getLeaveReasons() {

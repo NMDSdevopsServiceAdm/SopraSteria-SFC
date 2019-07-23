@@ -27,24 +27,24 @@ const validateWorker = async (req, res, next) => {
     // if the request for this worker is by a user associated with parent, and the requested establishment is
     //  not their primary establishment, then they must have been granted "staff" level permission to access the worker
     if (req.establishmentId !== req.establishment.id) {
-
-      // TODO - although I can now demonstrate this is working - removing this restriction because bulk upload
-      //        parent/sub permissions need to be refine because at present, the frontend will try and set the local identifiers
-      //        on subs it doesn't technically have permisison on.
-      //   https://trello.com/c/LtgGtQho
       // the requestor is both a parent and they are requesting against non-primary establishment (aka a subsidiary)
-      // if (!req.parentIsOwner  &&
-      //     (req.parentPermissions === null || req.parentPermissions !== "Workplace and Staff")) {
-      //         console.error("validateWorker authorisation - parent is requesting a subdiaries worker without required permission");
-      //         return res.status(400).send('Not Found');
-      // }
+      if (!req.parentIsOwner  &&
+          (req.parentPermissions === null || req.parentPermissions !== "Workplace and Staff")) {
+        console.error(`Parent not permitted to access Worker with id: ${workerId}`);
+        return res.status(403).send({ message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}` });
+      }
+
+      // more so, if the parent is not the owner, then only read access is allow
+      if (req.method !== 'GET') {
+        return res.status(403).send({ message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}` });
+      }
     }
 
 
-    if (workerId) {
+    if (workerId && workerId !== 'localIdentifier') {
         // validating worker id - must be a V4 UUID
         const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-        if (!uuidRegex.test(workerId.toUpperCase())) return res.status(400).send('Unexpected worker id');
+        if (!uuidRegex.test(workerId.toUpperCase())) return res.status(410).send('Unexpected worker id');
 
         const thisWorker = new Workers.Worker(establishmentId);
 
@@ -114,9 +114,10 @@ const updateLocalIdOnWorker = async (thisGivenWorker, transaction, updatedTimest
     }
 }
 
-router.use('/', validateWorker);
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
+router.use('/:workerId', validateWorker);
+router.use('/', validateWorker);
 
 // gets all workers
 router.route('/').get(async (req, res) => {
@@ -164,7 +165,7 @@ router.route('/localIdentifier').put(async (req, res) => {
             if (thisGivenWorker && thisGivenWorker.uid && myWorkersUIDs.includes(thisGivenWorker.uid)) {
               const updateThisWorker = updateLocalIdOnWorker(thisGivenWorker, t, updatedTimestamp, username, allAuditEvents);
               dbUpdatePromises.push(updateThisWorker);
-              updatedUids.push(thisGivenWorker.uid);
+              updatedUids.push(thisGivenWorker);
             }
           });
 

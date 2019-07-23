@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { LoggedInSession } from '@core/model/logged-in.model';
+import { Component, Input, OnInit } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
-import { AuthService } from '@core/services/auth.service';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { UserDetails } from '@core/model/userDetails.model';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -12,46 +13,35 @@ import { take } from 'rxjs/operators';
   templateUrl: './home-tab.component.html',
 })
 export class HomeTabComponent implements OnInit {
+  @Input() workplace: Establishment;
+
   public editRole: Roles = Roles.Edit;
-  public role: Roles;
-  public establishmentId: number;
+  public adminRole: Roles = Roles.Admin;
   public isParent: boolean;
   public updateStaffRecords: boolean;
   public updateWorkplace: boolean;
+  public user: UserDetails;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private authService: AuthService,
-    private establishmentService: EstablishmentService,
+    private userService: UserService,
+    private bulkUploadService: BulkUploadService,
     private workerService: WorkerService
   ) {}
 
   ngOnInit() {
-    this.establishmentId = this.establishmentService.establishmentId;
-
-    this.subscriptions.add(
-      this.authService.auth$.pipe(take(1)).subscribe((loggedInSession: LoggedInSession) => {
-        this.role = loggedInSession.role;
-        this.isParent = loggedInSession.establishment.isParent;
-      })
-    );
-
+    this.subscriptions.add(this.userService.loggedInUser$.subscribe(user => (this.user = user)));
     this.subscriptions.add(
       this.workerService
-        .getAllWorkers()
+        .getAllWorkers(this.workplace.uid)
         .pipe(take(1))
         .subscribe(workers => {
           this.updateStaffRecords = !(workers.length > 0);
         })
     );
+  }
 
-    this.subscriptions.add(
-      this.establishmentService
-        .getEmployerType()
-        .pipe(take(1))
-        .subscribe(d => {
-          this.updateWorkplace = !d.employerType;
-        })
-    );
+  public setReturn(): void {
+    this.bulkUploadService.setReturnTo({ url: ['/dashboard'] });
   }
 }

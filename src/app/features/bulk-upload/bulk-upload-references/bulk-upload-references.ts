@@ -1,16 +1,17 @@
-import { AuthService } from '@core/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
 import { LocalIdentifiersRequest } from '@core/model/establishment.model';
-import { OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Workplace } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { Workplace } from '@core/model/my-workplaces.model';
+import { AuthService } from '@core/services/auth.service';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { Subscription } from 'rxjs';
 
 export class BulkUploadReferences implements OnInit, OnDestroy {
   protected maxLength = 120;
@@ -24,13 +25,14 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
   public referenceTypeEnum = BulkUploadFileType;
   public remainingEstablishments: number;
   public renderForm = false;
-  public return: URLStructure;
+  public returnTo: URLStructure;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public submitted = false;
 
   constructor(
     protected authService: AuthService,
+    protected bulkUploadService: BulkUploadService,
     protected router: Router,
     protected formBuilder: FormBuilder,
     protected errorSummaryService: ErrorSummaryService
@@ -48,9 +50,8 @@ export class BulkUploadReferences implements OnInit, OnDestroy {
     this.primaryEstablishmentName = this.authService.establishment ? this.authService.establishment.name : null;
   }
 
-  protected getReferences(establishmentUid?: string): void {}
-
   protected setupForm(): void {
+    this.submitted = false;
     this.form = this.formBuilder.group({});
 
     this.references.forEach((reference: Workplace | Worker) => {

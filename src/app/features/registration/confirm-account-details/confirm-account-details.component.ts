@@ -1,20 +1,22 @@
-import { BackService } from '@core/services/back.service';
-import { combineLatest } from 'rxjs';
-import { Component } from '@angular/core';
-import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RegistrationPayload } from '@core/model/registration.model';
-import { RegistrationService } from '@core/services/registration.service';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RegistrationPayload } from '@core/model/registration.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { RegistrationService } from '@core/services/registration.service';
 import { UserService } from '@core/services/user.service';
+import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-account-details',
   templateUrl: './confirm-account-details.component.html',
 })
 export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
+  protected actionType = 'Registration';
+
   constructor(
     private backService: BackService,
     private registrationService: RegistrationService,
@@ -51,41 +53,47 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   private setAccountDetails(): void {
-    this.accountDetails = [
+    this.userInfo = [
       {
         label: 'Full name',
         data: this.userDetails.fullname,
-        route: '/registration/change-your-details',
+        route: { url: ['/registration/change-your-details'] },
       },
       {
         label: 'Job title',
         data: this.userDetails.jobTitle,
-        route: '/registration/change-your-details',
       },
       {
         label: 'Email address',
-        data: this.userDetails.emailAddress,
-        route: '/registration/change-your-details',
+        data: this.userDetails.email,
       },
       {
         label: 'Contact phone',
-        data: this.userDetails.contactNumber,
-        route: '/registration/change-your-details',
+        data: this.userDetails.phone,
       },
+    ];
+
+    this.loginInfo = [
       {
         label: 'Username',
         data: this.loginCredentials.username,
-        route: '/registration/create-username',
+        route: { url: ['/registration/create-username'] },
       },
+      {
+        label: 'Password',
+        data: '******',
+      },
+    ];
+
+    this.securityInfo = [
       {
         label: 'Security question',
         data: this.securityDetails.securityQuestion,
-        route: '/registration/security-question',
+        route: { url: ['/registration/security-question'] },
       },
       {
         label: 'Security answer',
-        data: this.securityDetails.securityAnswer,
-        route: '/registration/security-question',
+        data: this.securityDetails.securityQuestionAnswer,
       },
     ];
   }
@@ -104,19 +112,18 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
     payload.user.username = this.loginCredentials.username;
     payload.user.password = this.loginCredentials.password;
     payload.user.securityQuestion = this.securityDetails.securityQuestion;
-    payload.user.securityAnswer = this.securityDetails.securityAnswer;
+    payload.user.securityQuestionAnswer = this.securityDetails.securityQuestionAnswer;
     return [payload];
   }
 
   protected save(): void {
     this.subscriptions.add(
-      this.registrationService.postRegistration(this.generatePayload()).subscribe(
-        () => this.router.navigate(['/registration/complete']),
-        (error: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
-          this.errorSummaryService.scrollToErrorSummary();
-        }
-      )
+      this.registrationService
+        .postRegistration(this.generatePayload())
+        .subscribe(
+          () => this.router.navigate(['/registration/complete']),
+          (error: HttpErrorResponse) => this.onError(error)
+        )
     );
   }
 }

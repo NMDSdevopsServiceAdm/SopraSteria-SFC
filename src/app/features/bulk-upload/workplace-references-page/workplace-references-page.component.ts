@@ -1,18 +1,15 @@
 import { I18nPluralPipe } from '@angular/common';
-import { Worker } from '@core/model/worker.model';
-import { AuthService } from '@core/services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
+import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
-import { BulkUploadService } from '@core/services/bulk-upload.service';
-import { Component } from '@angular/core';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
-import { GetWorkplacesResponse, Workplace, WorkPlaceReference } from '@core/model/my-workplaces.model';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { UserService } from '@core/services/user.service';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -26,72 +23,51 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
   public referenceTypeInfo = 'You must create unique references for each workplace.';
   public columnOneLabel = 'Workplace';
   public columnTwoLabel = 'Workplace reference';
-  private workPlaceReferences: WorkPlaceReference[] = [];
+  private exit: string[] = ['/bulk-upload'];
 
   constructor(
-    private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
-    private userService: UserService,
+    private activatedRoute: ActivatedRoute,
     protected authService: AuthService,
+    protected bulkUploadService: BulkUploadService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router,
+    protected router: Router
   ) {
-    super(authService, router, formBuilder, errorSummaryService);
+    super(authService, bulkUploadService, router, formBuilder, errorSummaryService);
   }
 
   protected init(): void {
-    this.backService.setBackLink({ url: ['/dashboard']});
-    this.getReferences();
-  }
+    if (this.bulkUploadService.returnTo) {
+      this.exit = this.bulkUploadService.returnTo.url;
+      this.bulkUploadService.setReturnTo(null);
+    }
 
-  private generateWorkPlaceReferences(references: Array<Workplace | Worker>): WorkPlaceReference[] {
-    return references.map(reference => {
-      return {
-        name: reference['name'] || reference['nameOrId'],
-        uid: reference.uid,
-      };
-    });
-  }
-
-  protected getReferences(): void {
-    this.subscriptions.add(
-      this.userService.getEstablishments().subscribe(
-        (references: GetWorkplacesResponse) => {
-          if (references.subsidaries) {
-            this.references = references.subsidaries.establishments;
-          }
-
-          if (references.primary) {
-            this.references.unshift(references.primary);
-          }
-
-          if (this.references.length) {
-            this.setupForm();
-            this.workPlaceReferences = this.generateWorkPlaceReferences(this.references);
-            this.bulkUploadService.workPlaceReferences$.next(this.workPlaceReferences);
-          }
-        },
-        (error: HttpErrorResponse) => this.onError(error)
-      )
-    );
+    this.backService.setBackLink({ url: this.exit });
+    this.references = this.activatedRoute.snapshot.data.workplaceReferences;
+    this.setupForm();
   }
 
   protected save(saveAndContinue: boolean): void {
     this.subscriptions.add(
-      this.establishmentService.updateLocalIdentifiers(this.generateRequest())
+      this.establishmentService
+        .updateLocalIdentifiers(this.generateRequest())
         .pipe(take(1))
         .subscribe(
           () => {
             if (saveAndContinue) {
-              this.router.navigate(['/bulk-upload/staff-references', this.workPlaceReferences[0].uid]);
+              this.router.navigate(['/bulk-upload/staff-references', this.references[0].uid]);
             } else {
-              this.router.navigate(['/dashboard']);
+              this.router.navigate(this.exit);
             }
           },
           (error: HttpErrorResponse) => this.onError(error)
         )
     );
+  }
+
+  public setReturn(): void {
+    this.bulkUploadService.setReturnTo({ url: ['/bulk-upload/workplace-references'] });
   }
 }

@@ -358,7 +358,10 @@ class Worker {
   _validateChangeUniqueWorkerId() {
     const myChangeUniqueWorkerId = this._currentLine.CHGUNIQUEWRKID;
     const MAX_LENGTH = 50;
-    if (myChangeUniqueWorkerId.length >= MAX_LENGTH) {
+
+    // CHGUNIQUEWRKID is optional
+
+    if (myChangeUniqueWorkerId && myChangeUniqueWorkerId.length > 0 && myChangeUniqueWorkerId.length >= MAX_LENGTH) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -369,7 +372,7 @@ class Worker {
         source: this._currentLine.CHGUNIQUEWRKID,
       });
       return false;
-    } else {
+    } else if (myChangeUniqueWorkerId && myChangeUniqueWorkerId.length > 0) {
       this._changeUniqueWorkerId = myChangeUniqueWorkerId;
       return true;
     }
@@ -585,12 +588,11 @@ class Worker {
 
   //Mandatory for local Authority - need to check this conditional check
   _validateEthnicity() {
-    const ethnicityValues = [31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 98, 99];
     const myEthnicity = parseInt(this._currentLine.ETHNICITY);
 
     // optional
     if (this._currentLine.ETHNICITY && this._currentLine.ETHNICITY.length > 0) {
-      if (isNaN(myEthnicity) || !ethnicityValues.includes(myEthnicity)) {
+      if (isNaN(myEthnicity)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -775,25 +777,14 @@ class Worker {
     const myCareCert = parseInt(this._currentLine.CARECERT);
 
     if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
-      if (isNaN(myCareCert)) {
+      if (isNaN(myCareCert) || !careCertValues.includes(parseInt(myCareCert))) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.CARE_CERT_ERROR,
           errType: 'CARECERT_ERROR',
-          error: "Care Certificate (CARECERT) must be an integer",
-          source: this._currentLine.CARECERT,
-        });
-        return false;
-      } else if (!careCertValues.includes(parseInt(myCareCert))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.CARE_CERT_ERROR,
-          errType: 'CARECERT_ERROR',
-          error: "Care Certificate (CARECERT) must have value 1(YES) or 2(NO) or 3(IN PROGRESS)",
+          error: "The code you have entered for CARECERT is incorrect",
           source: this._currentLine.CARECERT,
         });
         return false;
@@ -819,7 +810,7 @@ class Worker {
 
   _validateRecSource() {
     const myRecSource = parseInt(this._currentLine.RECSOURCE);
-    
+
     // optional
     if (this._currentLine.RECSOURCE && (isNaN(myRecSource))) {
       this._validationErrors.push({
@@ -846,6 +837,7 @@ class Worker {
     const myRealStartDate = moment.utc(myStartDate, "DD/MM/YYYY");
     const myRealDOBDate = this._currentLine.DOB && this._currentLine.DOB.length > 1 ? moment.utc(this._currentLine.DOB, "DD/MM/YYYY") : null;
     const myYearOfEntry = this._currentLine.YEAROFENTRY;
+    const myRealYearOfEntry = myYearOfEntry ? `${myYearOfEntry}-01-01`: null;   // if year of entry is given, then format it to a proper year that can be used by moment
 
     if (!myStartDate) {
       this._validationErrors.push({
@@ -891,7 +883,7 @@ class Worker {
         source: this._currentLine.STARTINSECT,
       });
       return false;
-    } else if (myRealStartDate.isBefore(myYearOfEntry)) {
+    } else if (myYearOfEntry && myRealStartDate.isBefore(myRealYearOfEntry)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -972,25 +964,14 @@ class Worker {
 
     // optional
     if (this._currentLine.APPRENTICE && this._currentLine.APPRENTICE.length) {
-      if (isNaN(myApprentice)) {
+      if (isNaN(myApprentice) || !apprenticeValues.includes(myApprentice)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.APPRENCTICE_ERROR,
-          errType: 'APPRENTICE_ERROR',
-          error: "Apprentice (APPRENTICE) must be an integer",
-          source: this._currentLine.APPRENTICE,
-        });
-        return false;
-      } else if (!apprenticeValues.includes(myApprentice)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.APPRENCTICE_ERROR,
-          errType: 'APPRENTICE_ERROR',
-          error: "Apprentice (APPRENTICE) value must 1(Yes), 2(No) or 999(Unknown)",
+          warnCode: Worker.APPRENCTICE_WARNING,
+          warnType: 'APPRENTICE_WARNING',
+          warning: "The code for APPRENTICE is incorrect and will be ignored",
           source: this._currentLine.APPRENTICE,
         });
         return false;
@@ -1087,10 +1068,10 @@ class Worker {
       const MAX_VALUE = 366.0;
       const DONT_KNOW_VALUE = 999;
 
-      const containsHalfDay = this._currentLine.DAYSSICK.indexOf('.') > 0 ?
-        this._currentLine.DAYSSICK.split(".")[1] : 5;
+      const containsHalfDay = this._currentLine.DAYSSICK.indexOf('.') > 0 ? parseInt(this._currentLine.DAYSSICK.split(".")[1], 10) : 5;
 
-      if (isNaN(myDaysSick) || containsHalfDay !== 5 || myDaysSick < 0 || myDaysSick > MAX_VALUE && myDaysSick != DONT_KNOW_VALUE) {
+      if (myDaysSick != DONT_KNOW_VALUE && (isNaN(myDaysSick) || containsHalfDay !== 5 || myDaysSick < 0 || myDaysSick > MAX_VALUE)) {
+
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1247,7 +1228,7 @@ class Worker {
     const myMainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
 
     // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
-    if (!myMainJobRole || isNaN(myMainJobRole)) {
+    if (!this._currentLine.MAINJOBROLE || this._currentLine.MAINJOBROLE.length == 0 || !myMainJobRole || isNaN(myMainJobRole) || myMainJobRole === 0) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1455,75 +1436,88 @@ class Worker {
     const listOfotherJobs = this._currentLine.OTHERJOBROLE.split(';');
     const listOfotherJobsDescriptions = this._currentLine.OTHERJRDESC.split(';');
     const localValidationErrors = [];
-    const isValid = listOfotherJobs.every(thiJob => !Number.isNaN(parseInt(thiJob)));
+    const isValid = listOfotherJobs.every(job => !Number.isNaN(parseInt(job)));
 
-    if (!isValid) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.OTHER_JOB_ROLE_ERROR,
-        errType: `OTHER_JOB_ROLE_ERROR`,
-        error: "The code you have entered for OTHERJOBROLE is incorrect",
-        source: this._currentLine.OTHERJOBROLE,
-      });
-    } else if (listOfotherJobs.length != listOfotherJobsDescriptions.length) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Worker.OTHER_JOB_ROLE_ERROR,
-        errType: `OTHER_JOB_ROLE_ERROR`,
-        error: "OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)",
-        source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
-      });
-    } else {
-      const myJobDescriptions = [];
-      this._otherJobs = listOfotherJobs.map((thisJob, index) => {
-        const thisJobIndex = parseInt(thisJob, 10);
+    if (this._currentLine.OTHERJOBROLE && this._currentLine.OTHERJOBROLE.length > 0) {
+      if (!isValid) {
+        localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errType: `OTHER_JOB_ROLE_ERROR`,
+          error: "The code you have entered for OTHERJOBROLE is incorrect",
+          source: this._currentLine.OTHERJOBROLE,
+        });
+      } else if (listOfotherJobs.length !== listOfotherJobsDescriptions.length) {
+        localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.OTHER_JOB_ROLE_ERROR,
+          errType: `OTHER_JOB_ROLE_ERROR`,
+          error: "OTHERJOBROLE/OTHERJRDESC, do not have the same number of items (i.e. numbers and/or semi colons)",
+          source: `${this._currentLine.OTHERJOBROLE} - ${this._currentLine.OTHERJRDESC}`,
+        });
+      } else {
+        const myJobDescriptions = [];
+        this._otherJobs = listOfotherJobs.map((thisJob, index)   => {
+          const thisJobIndex = parseInt(thisJob, 10);
 
-        // if the job is one of the many "other" job roles, then need to validate the "other description"
-        const otherJobs = [23, 27];   // these are the original budi codes
-        if (otherJobs.includes(thisJobIndex)) {
-          const myJobOther = listOfotherJobsDescriptions[index];
-          const MAX_LENGTH = 120;
-          if (!myJobOther || myJobOther.length == 0) {
+          // if the job is one of the many "other" job roles, then need to validate the "other description"
+          const otherJobs = [23, 27];   // these are the original budi codes
+          if (otherJobs.includes(thisJobIndex)) {
+            const myJobOther = listOfotherJobsDescriptions[index];
+            const MAX_LENGTH = 120;
+            if (!myJobOther || myJobOther.length == 0) {
+              localValidationErrors.push({
+                worker: this._currentLine.UNIQUEWORKERID,
+                name: this._currentLine.LOCALESTID,
+                lineNumber: this._lineNumber,
+                errCode: Worker.OTHER_JR_DESC_ERROR,
+                errType: `OTHER_JR_DESC_ERROR`,
+                error: `OTHERJRDESC (${index+1}) has not been supplied`,
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+              });
+              myJobDescriptions.push(null);
+            } else if (myJobOther.length > MAX_LENGTH) {
+              localValidationErrors.push({
+                worker: this._currentLine.UNIQUEWORKERID,
+                name: this._currentLine.LOCALESTID,
+                lineNumber: this._lineNumber,
+                errCode: Worker.OTHER_JR_DESC_ERROR,
+                errType: `OTHER_JR_DESC_ERROR`,
+                error: `OTHERJRDESC is longer than 120 characters`,
+                source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
+              });
+            } else {
+              myJobDescriptions.push(listOfotherJobsDescriptions[index]);
+            }
+          } else if(listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
             localValidationErrors.push({
+              worker: this._currentLine.UNIQUEWORKERID,
+              name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
-              errCode: Worker.OTHER_JR_DESC_ERROR,
-              errType: `OTHER_JR_DESC_ERROR`,
-              error: `OTHERJRDESC (${index+1}) has not been supplied`,
+              warnCode: Worker.OTHER_JR_DESC_WARNING,
+              warnType: `OTHER_JR_DESC_WARNING`,
+              warning: `OTHERJRDESC will be ignored as not required for OTHERJOBROLE`,
               source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-            });
-            myJobDescriptions.push(null);
-          } else if (myJobOther.length > MAX_LENGTH) {
-            localValidationErrors.push({
-              lineNumber: this._lineNumber,
-              errCode: Worker.OTHER_JR_DESC_ERROR,
-              errType: `OTHER_JR_DESC_ERROR`,
-              error: `OTHERJRDESC is longer than 120 characters`,
-              source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-            });
+          })
           } else {
-            myJobDescriptions.push(listOfotherJobsDescriptions[index]);
+            myJobDescriptions.push(null);
           }
-        } else if(listOfotherJobsDescriptions[index] && listOfotherJobsDescriptions[index].length > 0) {
-          localValidationErrors.push({
-            lineNumber: this._lineNumber,
-            warnCode: Worker.OTHER_JR_DESC_WARNING,
-            warnType: `OTHER_JR_DESC_WARNING`,
-            warning: `OTHERJRDESC will be ignored as not required for OTHERJOBROLE`,
-            source: `${this._currentLine.OTHERJOBROLE} - ${listOfotherJobsDescriptions[index]}`,
-        })
-        } else {
-          myJobDescriptions.push(null);
-        }
 
-        return thisJobIndex;
-      });
+          return thisJobIndex;
+        });
 
-      this._otherJobsOther = myJobDescriptions;
-    }
+        this._otherJobsOther = myJobDescriptions;
+      }
 
-    if (localValidationErrors.length > 0) {
-      localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
-      return false;
+
+      if (localValidationErrors.length > 0) {
+        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
+        return false;
+      }
     }
 
     return true;
@@ -1533,7 +1527,9 @@ class Worker {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
     const NURSING_ROLE = 16;
 
-    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (myRegisteredNurse !== 0 && isNaN(myRegisteredNurse) )) {
+    if (((this._mainJobRole && this._mainJobRole === NURSING_ROLE) ||
+        (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) &&
+        (myRegisteredNurse !== 0 && isNaN(myRegisteredNurse) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1544,7 +1540,9 @@ class Worker {
         source: this._currentLine.NMCREG,
       });
       return false;
-    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0) {
+    } else if (((this._mainJobRole && this._mainJobRole !== NURSING_ROLE) &&
+                (this._otherJobs && !this._otherJobs.includes(NURSING_ROLE))) &&
+                (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1565,7 +1563,9 @@ class Worker {
     const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
     const NURSING_ROLE = 16;
 
-    if (this._mainJobRole && this._mainJobRole === NURSING_ROLE && (myNursingSpecialist !== 0  && isNaN(myNursingSpecialist) )) {
+    if (((this._mainJobRole && this._mainJobRole === NURSING_ROLE) ||
+    (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) &&
+    (myNursingSpecialist !== 0  && isNaN(myNursingSpecialist) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1576,7 +1576,9 @@ class Worker {
         source: this._currentLine.NURSESPEC,
       });
       return false;
-    } else if (this._mainJobRole && this._mainJobRole !== NURSING_ROLE && this._currentLine.NURSESPEC  && this._currentLine.NURSESPEC.length !== 0) {
+    } else if (((this._mainJobRole && this._mainJobRole !== NURSING_ROLE) &&
+      (this._otherJobs && !this._otherJobs.includes(NURSING_ROLE))) &&
+      (this._currentLine.NURSESPEC  && this._currentLine.NURSESPEC.length !== 0)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1599,7 +1601,9 @@ class Worker {
     const myAmhp = parseInt(this._currentLine.AMHP);
     const SOCIAL_WORKER_ROLE = 6;
 
-    if (this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE && ( isNaN(myAmhp) )) {
+    if (((this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE) ||
+      (this._otherJobs && this._otherJobs.includes(SOCIAL_WORKER_ROLE))) &&
+      ( isNaN(myAmhp) )) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1611,7 +1615,9 @@ class Worker {
       });
       return false;
     }
-    else if (this._mainJobRole && this._mainJobRole !== SOCIAL_WORKER_ROLE && this._currentLine.AMHP) {
+    else if (((this._mainJobRole && this._mainJobRole !== SOCIAL_WORKER_ROLE) &&
+      (this._otherJobs && !this._otherJobs.includes(SOCIAL_WORKER_ROLE))) &&
+      (this._currentLine.AMHP)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1716,103 +1722,114 @@ class Worker {
 
   _validateSocialCareQualification() {
     const mySocialCare = this._currentLine.SCQUAL ? this._currentLine.SCQUAL.split(';') : null;
+    const mainJobRoles = [6,16,15];
+    const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
+    const mySocialCareIndicator = (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) ?
+      parseInt(mySocialCare[0]) : '';
 
-    // optional
-    if (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) {
-      const localValidationErrors = [];
-
-      const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
-      const mySocialCareIndicator = parseInt(mySocialCare[0]);
-
-      if (isNaN(mySocialCareIndicator)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.SOCIALCARE_QUAL_ERROR,
-          errType: 'SOCIALCARE_QUAL_ERROR',
-          error: "Social Care Qualification (SCQUAL) indicator (before semi colon) must be an integer",
-          source: this._currentLine.SCQUAL,
-        });
-      }
-
-      if (!ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.SOCIALCARE_QUAL_ERROR,
-          errType: 'SOCIALCARE_QUAL_ERROR',
-          error: `Social Care Qualification (SCQUAL) indicator (before semi colon) must be one of: ${ALLOWED_SOCIAL_CARE_VALUES}`,
-          source: this._currentLine.SCQUAL,
-        });
-      }
-
-      this._socialCareQualification = mySocialCareIndicator;
-
-      // if the social care indicator is "1" (yes) - then get the next value which must be the level
-      if (mySocialCareIndicator == 1) {
-        const mySocialCareLevel = parseInt(mySocialCare[1]);
-        if (isNaN(mySocialCareLevel)) {
-          this._validationErrors.push({
-            worker: this._currentLine.UNIQUEWORKERID,
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            errCode: Worker.SOCIALCARE_QUAL_ERROR,
-            errType: 'SOCIALCARE_QUAL_ERROR',
-            error: "Social Care Qualification (SCQUAL) level (after semi colon) must be an integer",
-            source: this._currentLine.SCQUAL,
-          });
-        }
-        this._socialCareQualificationlevel = mySocialCareLevel;
-      }
-
-      if (localValidationErrors.length > 0) {
-        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
-        return false;
-      }
-
-      return true;
-
-    } else {
-      return true;
+    if (isNaN(mySocialCareIndicator)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+        warnType: 'SOCIALCARE_QUAL_WARNING',
+        warning: "SCQUAL is blank",
+        source: this._currentLine.SCQUAL,
+      });
+    } else if (!ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.SOCIALCARE_QUAL_ERROR,
+        errType: 'SOCIALCARE_QUAL_ERROR',
+        error: "The code you have entered for SCQUAL is incorrect",
+        source: this._currentLine.SCQUAL,
+      });
     }
+
+    this._socialCareQualification = mySocialCareIndicator;
+
+    // if the social care indicator is "1" (yes) - then get the next value which must be the level
+    if (mySocialCareIndicator == 1) {
+      const mySocialCareLevel = parseInt(mySocialCare[1]);
+
+      if (!mySocialCareLevel && mySocialCareLevel !== 0) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.SOCIALCARE_QUAL_ERROR,
+          errType: 'SOCIALCARE_QUAL_ERROR',
+          error: "You must provide a value for SCQUAL level when SCQUAL is set to 1",
+          source: this._currentLine.SCQUAL,
+        });
+      }
+
+      //moev this to transform
+      if (ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
+        this._qualifications.forEach(q => {
+          if (q.id > mySocialCareLevel) {
+            this._validationErrors.push({
+              worker: this._currentLine.UNIQUEWORKERID,
+              name: this._currentLine.LOCALESTID,
+              lineNumber: this._lineNumber,
+              warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+              warnType: 'SOCIALCARE_QUAL_WARNING',
+              warning: `SCQUAL level does not match the QUALACH** (${q.column})`,
+              source: this._currentLine.SCQUAL,
+            });
+          }
+        })
+      }
+
+      if ((!mySocialCareLevel && mySocialCareLevel !== 0) && mainJobRoles.includes(this._mainJobRole)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+          warnType: 'SOCIALCARE_QUAL_WARNING',
+          warning: "workers MAINJOBROLE is a regulated profession therefore requires a Social Care qualification",
+          source: this._currentLine.SCQUAL,
+        });
+      }
+      this._socialCareQualificationlevel = mySocialCareLevel;
+    }
+
+    return true;
   }
 
   _validateNonSocialCareQualification() {
     const myNonSocialCare = this._currentLine.NONSCQUAL ? this._currentLine.NONSCQUAL.split(';') : null;
+    const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
 
-    // optional
-    if (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) {
-      const localValidationErrors = [];
+    const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ?
+      parseInt(myNonSocialCare[0]) : '';
 
-      const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
-      const myNonSocialCareIndicator = parseInt(myNonSocialCare[0]);
+    if (isNaN(myNonSocialCareIndicator)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+        warnType: 'NON_SOCIALCARE_QUAL_ERROR',
+        warning: "NONSCQUAL is blank",
+        source: this._currentLine.NONSCQUAL,
+      });
 
-      if (isNaN(myNonSocialCareIndicator)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-          errType: 'NON_SOCIALCARE_QUAL_ERROR',
-          error: "Non-Social Care Qualification (NONSCQUAL) indicator (before semi colon) must be an integer",
-          source: this._currentLine.NONSCQUAL,
-        });
-      }
-
-      if (!ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-          errType: 'NON_SOCIALCARE_QUAL_ERROR',
-          error: `Non-Social Care Qualification (NONSCQUAL) indicator (before semi colon) must be one of: ${ALLOWED_SOCIAL_CARE_VALUES}`,
-          source: this._currentLine.NONSCQUAL,
-        });
-      }
-
+    } else if (!ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+        errType: 'NON_SOCIALCARE_QUAL_ERROR',
+        error: "The code you have entered for NONSCQUAL is incorrect",
+        source: this._currentLine.NONSCQUAL,
+      });
+    } else if(myNonSocialCareIndicator == 1) {
       this._nonSocialCareQualification = myNonSocialCareIndicator;
 
       // if the social care indicator is "1" (yes) - then get the next value which must be the level - optional only for non-social care!
@@ -1820,20 +1837,30 @@ class Worker {
         let myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
         if (isNaN(myNonSocialCareLevel)) {
           myNonSocialCareLevel = 999; // "Don't know"
+        } else if (myNonSocialCareLevel) {
+          this._qualifications.forEach(q => {
+            if (q.id > myNonSocialCareLevel) {
+              this._validationErrors.push({
+                worker: this._currentLine.UNIQUEWORKERID,
+                name: this._currentLine.LOCALESTID,
+                lineNumber: this._lineNumber,
+                warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+                warnType: 'NON_SOCIALCARE_QUAL_ERROR',
+                warning: `NONSCQUAL level does not match the QUALACH** (${q.column})`,
+                source: this._currentLine.SCQUAL,
+              });
+            }
+          })
         }
+
         this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
       }
 
-      if (localValidationErrors.length > 0) {
-        localValidationErrors.forEach(thisValidation => this._validationErrors.push(thisValidation));;
-        return false;
-      }
-
-      return true;
-
+      return false;
     } else {
       return true;
     }
+
   }
 
   __validateQualification(qualificationIndex, qualificationName, qualificationError, qualificationErrorName, qualification,
@@ -1964,8 +1991,8 @@ class Worker {
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: Worker.ETHNICITY_ERROR,
-          errType: `ETHNICITY_ERROR`,
-          error: `Ethnicity (ETHNICITY): ${this._ethnicity} is unknown`,
+          errType: 'ETHNICITY_ERROR',
+          error: "The code you have entered for ETHNICITY is incorrect",
           source: this._currentLine.ETHNICITY,
         });
       } else {
@@ -2000,7 +2027,18 @@ class Worker {
   };
 
   _transformMainJobRole() {
-    if (this._mainJobRole) {
+    // main job is mandatory
+    if (this._mainJobRole === null) {
+      this._validationErrors.push({
+        worker: this._currentLine.UNIQUEWORKERID,
+        name: this._currentLine.LOCALESTID,
+        lineNumber: this._lineNumber,
+        errCode: Worker.MAIN_JOB_ROLE_ERROR,
+        errType: `MAIN_JOB_ROLE_ERROR`,
+        error: `The code you have entered for MAINJOBROLE is incorrect`,
+        source: this._currentLine.MAINJOBROLE,
+      });
+    } else if (this._mainJobRole || this._mainJobRole === 0) {
       const myValidatedJobRole = BUDI.jobRoles(BUDI.TO_ASC, this._mainJobRole);
 
       if (!myValidatedJobRole) {
@@ -2157,9 +2195,9 @@ class Worker {
     }
   };
 
+
   _transformSocialCareQualificationLevel() {
-    if (this._socialCareQualificationlevel) {
-      // ASC WDS country of birth is a split enum/index
+    if (this._socialCareQualificationlevel || this._socialCareQualificationlevel === 0) {
       const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._socialCareQualificationlevel);
 
       if (!myValidatedQualificationLevel) {
@@ -2167,9 +2205,9 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.SOCIALCARE_QUAL_ERROR,
-          errType: `SOCIALCARE_QUAL_ERROR`,
-          error: `Social Care Qualiifcation (SCQUAL): Level ${this._socialCareQualificationlevel} is unknown`,
+          warnCode: Worker.SOCIALCARE_QUAL_ERROR,
+          warnType: `SOCIALCARE_QUAL_ERROR`,
+          warning: `The level you have entered for SCQUAL is not valid and will be ignored`,
           source: this._currentLine.SCQUAL,
         });
       } else {
@@ -2179,7 +2217,7 @@ class Worker {
   };
 
   _transformNonSocialCareQualificationLevel() {
-    if (this._nonSocialCareQualificationlevel) {
+      if (this._nonSocialCareQualificationlevel || this._nonSocialCareQualificationlevel === 0) {
       // ASC WDS country of birth is a split enum/index
       const myValidatedQualificationLevel = BUDI.qualificationLevels(BUDI.TO_ASC, this._nonSocialCareQualificationlevel);
 
@@ -2188,11 +2226,12 @@ class Worker {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-          errType: `NON_SOCIALCARE_QUAL_ERROR`,
-          error: `Non Social Care Qualiifcation (NONSCQUAL): Level ${this._nonSocialCareQualificationlevel} is unknown`,
+          warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          warnType: `NON_SOCIALCARE_QUAL_ERROR`,
+          warning: `The level you have entered for NONSCQUAL is not valid and will be ignored`,
           source: this._currentLine.NONSCQUAL,
-        });
+        })
+
       } else {
         this._nonSocialCareQualificationlevel = myValidatedQualificationLevel;
       }
@@ -2324,9 +2363,9 @@ class Worker {
     status = !this._validateOtherJobs() ? false : status;
     status = !this._validateRegisteredNurse() ? false : status;
     status = !this._validateNursingSpecialist() ? false : status;
+    status = !this._validationQualificationRecords() ? false : status;
     status = !this._validateSocialCareQualification() ? false : status;
     status = !this._validateNonSocialCareQualification() ? false : status;
-    status = !this._validationQualificationRecords() ? false : status;
     status = !this._validateAmhp() ? false : status;
 
     return status;
@@ -2427,7 +2466,8 @@ class Worker {
   toAPI() {
     const changeProperties = {
     // the minimum to create a new worker
-      nameOrId : this._uniqueWorkerId,
+      localIdentifier: this._uniqueWorkerId,
+      nameOrId : this._displayId,
       contract : this._contractType,
       mainJob : {
         jobId: this._mainJobRole,
@@ -2522,7 +2562,7 @@ class Worker {
       }
     }
 
-    if (this._daysSick) {
+    if (this._daysSick !== null) {
       // days sick is decimal
       if (this._daysSick !== 'No') {
         changeProperties.daysSick = {
@@ -2610,6 +2650,10 @@ class Worker {
           changeProperties.otherQualification = 'Don\'t know';
           break;
       }
+    }
+
+    if(this._changeUniqueWorkerId) {
+      changeProperties.changeLocalIdentifer = this._changeUniqueWorkerId;
     }
 
     return changeProperties;
@@ -2768,9 +2812,9 @@ class Worker {
           // in Worker entity, we have separated the social care qualification type and level into separate properties
           case 'WorkerQualificationInSocialCare':
           case 'WorkerSocialCareQualification':
-            validationError.errCode = Worker.SOCIALCARE_QUAL_ERROR;
-            validationError.errType = 'SOCIALCARE_QUAL_ERROR';
-            validationError.source  = `${this._currentLine.SCQUAL}`;
+            // validationError.errCode = Worker.SOCIALCARE_QUAL_ERROR;
+            // validationError.errType = 'SOCIALCARE_QUAL_ERROR';
+            // validationError.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
             // validationError.errCode = Worker.RECSOURCE_ERROR;
@@ -2926,9 +2970,9 @@ class Worker {
           // in Worker entity, we have separated the social care qualification type and level into separate properties
           case 'WorkerQualificationInSocialCare':
           case 'WorkerSocialCareQualification':
-            validationWarning.warnCode = Worker.SOCIALCARE_QUAL_WARNING;
-            validationWarning.warnType = 'SOCIALCARE_QUAL_WARNING';
-            validationWarning.source  = `${this._currentLine.SCQUAL}`;
+            // validationWarning.warnCode = Worker.SOCIALCARE_QUAL_WARNING;
+            // validationWarning.warnType = 'SOCIALCARE_QUAL_WARNING';
+            // validationWarning.source  = `${this._currentLine.SCQUAL}`;
             break;
           case 'WorkerRecruitedFrom':
             // validationWarning.warnCode = Worker.RECSOURCE_ERROR;
@@ -2988,24 +3032,24 @@ class Worker {
 
         switch (thisProp) {
           case 'Qualification':
-            validationError.errCode = Worker[`QUAL_ACH${columnIndex}_WARNING`];
-            validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
-            validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_WARNING`];
+            // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
+            // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
             break;
           case 'Year':
-            validationError.errCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-            validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
-            validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            // validationError.errType = `QUAL_ACH${columnIndex}_ERROR`;
+            // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
             break;
           case 'Notes':
-            validationError.errCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
-            validationError.errType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
-            validationError.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
+            // validationError.errCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
+            // validationError.errType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
+            // validationError.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
             break;
           default:
-            validationError.errCode = thisError.code;
-            validationError.errType = 'Undefined';
-            validationError.source  = thisProp;
+            // validationError.errCode = thisError.code;
+            // validationError.errType = 'Undefined';
+            // validationError.source  = thisProp;
         }
         this._validationErrors.push(validationError);
       }) : true;
@@ -3021,24 +3065,24 @@ class Worker {
 
         switch (thisProp) {
           case 'Qualification':
-            validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-            validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
-            validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
+            // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
             break;
           case 'Year':
-            validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
-            validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
-            validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
+            // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_ERROR`];
+            // validationWarning.warnType  = `QUAL_ACH${columnIndex}_ERROR`;
+            // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}`]}`;
             break;
           case 'Notes':
-            validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
-            validationWarning.warnType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
-            validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
+            // validationWarning.warnCode = Worker[`QUAL_ACH${columnIndex}_NOTES_ERROR`];
+            // validationWarning.warnType = `QUAL_ACH${columnIndex}_NOTES_ERROR`;
+            // validationWarning.source  = `${this._currentLine[`QUALACH${columnIndex}NOTES`]}`;
             break;
           default:
-            validationWarning.warnCode = thisWarning.code;
-            validationWarning.warnType = 'Undefined';
-            validationWarning.source  = thisProp;
+            // validationWarning.warnCode = thisWarning.code;
+            // validationWarning.warnType = 'Undefined';
+            // validationWarning.source  = thisProp;
         }
 
         this._validationErrors.push(validationWarning);
@@ -3181,7 +3225,7 @@ class Worker {
     //     "OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     const columns = [];
     columns.push(establishmentId);
-    columns.push(entity.nameOrId);   // todo - this will be local identifier
+    columns.push(entity.localIdentifier);   // todo - this will be local identifier
     //columns.push('');              // not on download
     columns.push('UNCHECKED');
     columns.push(entity.nameOrId);

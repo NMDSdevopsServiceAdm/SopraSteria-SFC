@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -17,11 +17,12 @@ export class ApprenticeshipTrainingComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       apprenticeshipTraining: null,
@@ -35,8 +36,8 @@ export class ApprenticeshipTrainingComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'social-care-qualification'];
-    this.previous = ['/worker', this.worker.uid, 'care-certificate'];
+    this.next = this.getRoutePath('social-care-qualification');
+    this.previous = this.getRoutePath('care-certificate');
   }
 
   generateUpdateProps() {

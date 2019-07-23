@@ -11,10 +11,12 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { RegistrationService } from '@core/services/registration.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { URLStructure } from '@core/model/url.model';
 
 export class CreateUsername implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
   protected loginCredentialsExist = false;
+  protected return: URLStructure;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   protected userNameMaxLength = 120;

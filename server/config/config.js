@@ -12,7 +12,7 @@ const AppConfig = require('./appConfig');
 const config = convict({
   env: {
     doc: 'The application environment',
-    format: ['production', 'development', 'test', 'accessibility', 'localhost'],
+    format: ['production', 'preproduction', 'development', 'test', 'accessibility', 'localhost'],
     default: 'localhost',
     env: 'NODE_ENV'
   },
@@ -189,7 +189,8 @@ const config = convict({
       secret: {
         doc: 'The JWT signing secret',
         format: '*',
-        env: 'Token_Secret'
+        default: 'nodeauthsecret',
+        env: 'TOKEN_SECRET'
       },
       ttl: {
         default : {
@@ -369,6 +370,9 @@ if (config.get('aws.secrets.use')) {
     config.set('slack.url', AWSSecrets.slackUrl());
     config.set('notify.key', AWSSecrets.govNotify());
     config.set('admin.url', AWSSecrets.adminUrl());
+
+    // token secret
+    config.set('jwt.secret', AWSSecrets.jwtSecret());
 
     AppConfig.ready = true;
     AppConfig.emit(AppConfig.READY_EVENT);

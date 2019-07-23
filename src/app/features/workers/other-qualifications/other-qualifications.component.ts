@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -17,11 +17,12 @@ export class OtherQualificationsComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       otherQualification: null,
@@ -37,8 +38,8 @@ export class OtherQualificationsComponent extends QuestionComponent {
 
     this.previous =
       this.worker.qualificationInSocialCare === 'Yes'
-        ? ['/worker', this.worker.uid, 'social-care-qualification-level']
-        : ['/worker', this.worker.uid, 'social-care-qualification'];
+        ? this.getRoutePath('social-care-qualification-level')
+        : this.getRoutePath('social-care-qualification');
   }
 
   generateUpdateProps() {
@@ -56,7 +57,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
   onSuccess() {
     this.next =
       this.worker.otherQualification === 'Yes'
-        ? ['/worker', this.worker.uid, 'other-qualifications-level']
-        : ['/worker', this.worker.uid, 'check-answers'];
+        ? this.getRoutePath('other-qualifications-level')
+        : this.getRoutePath('check-answers');
   }
 }

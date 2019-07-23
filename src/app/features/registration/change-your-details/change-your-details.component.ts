@@ -13,6 +13,7 @@ import { UserService } from '@core/services/user.service';
 })
 export class ChangeYourDetailsComponent extends AccountDetails {
   public callToActionLabel = 'Save and return';
+  private previousAndReturnRoute: any[] = ['/registration/confirm-account-details'];
 
   constructor(
     private userService: UserService,
@@ -33,7 +34,6 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     this.subscriptions.add(
       this.userService.userDetails$.subscribe((userDetails: UserDetails) => {
         if (userDetails) {
-          this.userDetails = userDetails;
           this.prefillForm(userDetails);
         }
       })
@@ -43,20 +43,20 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   private prefillForm(userDetails: UserDetails): void {
     if (userDetails) {
       this.form.setValue({
-        email: userDetails.emailAddress,
-        fullName: userDetails.fullname,
+        email: userDetails.email,
+        fullname: userDetails.fullname,
         jobTitle: userDetails.jobTitle,
-        phone: userDetails.contactNumber,
+        phone: userDetails.phone,
       });
     }
   }
 
   protected save(): void {
     this.userService.updateState(this.setUserDetails());
-    this.router.navigate(['/registration/confirm-account-details']);
+    this.router.navigate([this.previousAndReturnRoute]);
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/confirm-account-details'] });
+    this.backService.setBackLink({ url: [this.previousAndReturnRoute] });
   }
 }

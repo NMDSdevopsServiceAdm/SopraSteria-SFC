@@ -1,11 +1,13 @@
 import { Component, Input } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-total-staff-panel',
-  templateUrl: './total-staff-panel.component.html'
+  templateUrl: './total-staff-panel.component.html',
 })
 export class TotalStaffPanelComponent {
+  @Input() workplace: Establishment;
   @Input() totalStaff = 0;
   @Input() totalWorkers = 0;
   @Input() returnToDash = false;

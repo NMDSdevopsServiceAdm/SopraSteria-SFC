@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BulkUploadGuard } from '@core/guards/bulk-upload/bulk-upload.guard';
+import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
+import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import {
   WorkplaceReferencesPageComponent,
 } from '@features/bulk-upload//workplace-references-page/workplace-references-page.component';
@@ -26,12 +28,18 @@ const routes: Routes = [
   {
     path: 'workplace-references',
     component: WorkplaceReferencesPageComponent,
+    resolve: { workplaceReferences: WorkplacesReferencesResolver },
     data: { title: 'Workplace references' },
   },
   {
     path: 'staff-references/:uid',
     component: StaffReferencesPageComponent,
+    resolve: {
+      references: StaffReferencesResolver,
+      workplaceReferences: WorkplacesReferencesResolver,
+    },
     data: { title: 'Staff references' },
+    runGuardsAndResolvers: 'always',
   },
   {
     path: 'workplace-and-staff-references/success',

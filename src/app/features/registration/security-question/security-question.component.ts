@@ -18,7 +18,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected router: Router,
+    protected router: Router
   ) {
     super(backService, errorSummaryService, formBuilder, router);
   }
@@ -51,7 +51,7 @@ export class SecurityQuestionComponent extends SecurityQuestion {
     this.router.navigate(['/registration/confirm-account-details']).then(() => {
       this.registrationService.securityDetails$.next({
         securityQuestion: this.getSecurityQuestion.value,
-        securityAnswer: this.getSecurityAnswer.value,
+        securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
       });
     });
   }

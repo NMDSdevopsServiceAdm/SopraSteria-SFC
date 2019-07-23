@@ -46,6 +46,7 @@ class Worker extends EntityValidator {
         this._updated = null;
         this._updatedBy = null;
         this._auditEvents = null;
+        this._changeLocalIdentifer = null;
 
         // abstracted properties
         const thisWorkerManager = new WorkerProperties();
@@ -134,12 +135,19 @@ class Worker extends EntityValidator {
         return this._trainingEntities;
     }
 
+    get changeLocalIdentifer() {
+        return this._changeLocalIdentifer;
+    }
+
     get establishmentId() {
         return this._establishmentId;
     }
 
     set establishmentId(establishmentId) {
         this._establishmentId = establishmentId;
+    }
+    get localIdentifier() {
+        return this._properties.get('LocalIdentifier') ? this._properties.get('LocalIdentifier').property : null;
     }
 
     get nameOrId() {
@@ -150,6 +158,11 @@ class Worker extends EntityValidator {
             return null;
         }
     }
+
+    get key(){
+        return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.nameOrId).replace(/\s/g, "");
+    }
+
     get contract() {
         return this._properties.get('Contract') ? this._properties.get('Contract').property : null;
     };
@@ -254,6 +267,10 @@ class Worker extends EntityValidator {
             // reason is not a managed property, load it specifically
             if (document.reason) {
                 this._reason = await this.validateReason(document.reason);
+            }
+
+            if(document.changeLocalIdentifer){
+                this._changeLocalIdentifer = document.changeLocalIdentifer;
             }
 
             // allow for deep restoration of entities (associations - namely Qualifications and Training here)
@@ -449,9 +466,6 @@ class Worker extends EntityValidator {
                         }));
                     await models.workerAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
 
-
-                    console.log("WA DEBUG - saving worker: ", this.nameOrId, associatedEntities)
-
                     if (associatedEntities) {
                         await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
                     }
@@ -500,6 +514,11 @@ class Worker extends EntityValidator {
                         updated: updatedTimestamp,
                         updatedBy: savedBy.toLowerCase()
                     };
+
+                    if (this._changeLocalIdentifer) {
+                      // during bulk upload only, if the change local identifier value is set, then when saving this worker, update it's local identifier;
+                      updateDocument.LocalIdentifierValue = this._changeLocalIdentifer;
+                    }
 
                     // every time the worker is saved, need to calculate
                     //  it's current WDF Eligibility, and if it is eligible, update
@@ -582,6 +601,7 @@ class Worker extends EntityValidator {
                         });
                         await Promise.all(createMmodelPromises);
 
+                        /* https://trello.com/c/5V5sAa4w
                         // TODO: ideally I'd like to publish this to pub/sub topic and process async - but do not have pub/sub to hand here
                         // having updated the Worker, check to see whether it is necessary to recalculate
                         //  the overall WDF eligibility for this Worker's establishment and all its workers.
@@ -593,7 +613,7 @@ class Worker extends EntityValidator {
 
                         if (associatedEntities) {
                             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
-                        }
+                        } */
 
                         // this is an async method - don't wait for it to return
                         AWSKinesis.workerPump(AWSKinesis.UPDATED, this.toJSON());
@@ -823,6 +843,7 @@ class Worker extends EntityValidator {
                 // now append the extendable properties
                 const updateDocument = {
                     archived: true,
+                    LocalIdentifierValue: null,
                     updated: updatedTimestamp,
                     updatedBy: deletedBy
                 };
@@ -999,7 +1020,8 @@ class Worker extends EntityValidator {
 
             // add worker default properties
             const myDefaultJSON = {
-                uid:  this.uid
+                uid:  this.uid,
+                changeLocalIdentifer: this.changeLocalIdentifer ? this.changeLocalIdentifer : undefined,
             };
 
             myDefaultJSON.created = this.created ? this.created.toJSON() : null;
@@ -1024,6 +1046,7 @@ class Worker extends EntityValidator {
         } else {
             return {
                 uid:  this.uid,
+                changeLocalIdentifer: this.changeLocalIdentifer ? this.changeLocalIdentifer : undefined,
                 created: this.created.toJSON(),
                 updated: this.updated.toJSON(),
                 updatedBy: this.updatedBy,

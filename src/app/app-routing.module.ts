@@ -6,6 +6,9 @@ import {
 } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
+import { Roles } from '@core/model/roles.enum';
+import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
+import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
@@ -39,22 +42,8 @@ const routes: Routes = [
     data: { title: 'Problem with the Service' },
   },
   {
-    path: 'workplace',
-    loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
-    canActivate: [AuthGuard],
-    data: { title: 'Workplace' },
-  },
-  {
-    path: 'reports',
-    loadChildren: '@features/reports/reports.module#ReportsModule',
-    canActivate: [AuthGuard],
-    data: { title: 'Reports' },
-  },
-  {
-    path: 'worker',
-    loadChildren: '@features/workers/workers.module#WorkersModule',
-    canActivate: [AuthGuard],
-    data: { title: 'Staff Records' },
+    path: 'public',
+    loadChildren: '@features/public/public.module#PublicModule',
   },
   {
     path: 'registration',
@@ -62,35 +51,66 @@ const routes: Routes = [
     data: { title: 'Registration' },
   },
   {
-    path: 'public',
-    loadChildren: '@features/public/public.module#PublicModule',
+    path: 'activate-account',
+    loadChildren: '@features/activate-user-account/activate-user-account.module#ActivateUserAccountModule',
+    data: { title: 'Activate User Account' },
   },
   {
-    path: 'account-management',
-    loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
-    canActivate: [AuthGuard],
-    data: { title: 'User Account' },
-  },
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    canActivate: [AuthGuard],
-    data: { title: 'Dashboard' },
-  },
-  {
-    path: 'bulk-upload',
-    loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
-    canActivate: [AuthGuard, RoleGuard],
-    data: {
-      roles: ['Edit'],
-      title: 'Bulk Upload',
-    },
-  },
-  {
-    path: 'create-account',
-    loadChildren: '@features/create-account/create-account.module#CreateAccountModule',
-    canActivate: [AuthGuard],
-    data: { title: 'Create account' },
+    path: '',
+    resolve: { loggedInUser: LoggedInUserResolver, workplace: PrimaryWorkplaceResolver },
+    children: [
+      {
+        path: 'workplace',
+        loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
+        canActivate: [AuthGuard],
+        data: { title: 'Workplace' },
+      },
+      {
+        path: 'reports',
+        loadChildren: '@features/reports/reports.module#ReportsModule',
+        canActivate: [AuthGuard],
+        data: { title: 'Reports' },
+      },
+      {
+        path: 'account-management',
+        loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
+        canActivate: [AuthGuard],
+        data: { title: 'User Account' },
+      },
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        canActivate: [AuthGuard],
+        data: { title: 'Dashboard' },
+      },
+      {
+        path: 'bulk-upload',
+        loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
+        canActivate: [AuthGuard, RoleGuard],
+        data: {
+          roles: [Roles.Edit, Roles.Admin],
+          title: 'Bulk Upload',
+        },
+      },
+      {
+        path: 'search-users',
+        loadChildren: '@features/search/search.module#SearchModule',
+        canActivate: [AuthGuard, RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Search Users',
+        },
+      },
+      {
+        path: 'search-establishments',
+        loadChildren: '@features/search/search.module#SearchModule',
+        canActivate: [AuthGuard, RoleGuard],
+        data: {
+          roles: [Roles.Admin],
+          title: 'Search Establishments',
+        },
+      },
+    ],
   },
   {
     path: '',
@@ -104,7 +124,13 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { anchorScrolling: 'enabled' })],
+  imports: [
+    RouterModule.forRoot(routes, {
+      anchorScrolling: 'enabled',
+      onSameUrlNavigation: 'reload',
+      paramsInheritanceStrategy: 'always',
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

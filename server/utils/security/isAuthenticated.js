@@ -5,12 +5,13 @@ const thisIss = config.get('jwt.iss');
 const models = require('../../models');
 
 exports.getTokenSecret = () => {
-  return process.env.Token_Secret ? process.env.Token_Secret : "nodeauthsecret";
+  return config.get('jwt.secret');
 }
 
 // this util middleware will block if the given request is not authorised
 exports.isAuthorised = (req, res , next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     // var dec = getverify(token, Token_Secret);
@@ -40,8 +41,13 @@ exports.isAuthorised = (req, res , next) => {
 exports.hasAuthorisedEstablishment = async (req, res, next) => {
   try {
     const token = getToken(req.headers[AUTH_HEADER]);
+    const Token_Secret = config.get('jwt.secret');
+
+    // console.log("WA DEBUG - hasAuthorisedEstablishment token: ", token, Token_Secret)
     if (token) {
       const claim = jwt.verify(token, Token_Secret);
+
+      // console.log("WA DEBUG - hasAuthorisedEstablishment token claims: ", claim)
 
       if (claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss) {
         return res.status(403).send({
@@ -78,6 +84,8 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
           }
         }
 
+        //console.log("WA DEBUG - hasAuthorisedEstablishment: ", isAuthorised, claim.isParent)
+
         // if still not authorised - and only if this user is attributed to a parent establishment
         //  then follow up by checking against any of the known subsidaries of this parent establishment
         //  including that of the given establishment (only known by it's UID)
@@ -101,10 +109,18 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
             // this is a known subsidairy of this given parent establishment
 
             // but, to be able to access the subsidary, then the permissions must not be null
-            if (referencedEstablishment.dataOwmer === 'Workplace' && referencedEstablishment.parentPermissions === null) {
-              console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
-              // failed to find establishment by UUID - being a subsidairy of this known parent
-              return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
+            if (referencedEstablishment.dataOwner === 'Workplace') {
+              if (referencedEstablishment.parentPermissions === null) {
+                console.error(`Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`);
+                // failed to find establishment by UUID - being a subsidairy of this known parent
+                return res.status(403).send({message: `Parent not permitted to access Establishment with id: ${req.params.id}`});
+              }
+
+              // parent permissions must be either null (no access), "Workplace" or "Workplace and staff" - if not null, then have access to the establishment
+              // but only read access (GET)
+              if (req.method !== 'GET') {
+                return res.status(403).send({message: `Parent not permitted to update Establishment with id: ${req.params.id}`});
+              }
             }
 
             req.establishmentId = referencedEstablishment.id;
@@ -180,7 +196,7 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
         message: 'token expired'
       });
     } else {
-      console.error("hasAuthorisedEstablishment: caught err: ", err.name, typeof err);
+      console.error("hasAuthorisedEstablishment: caught err: ", err.name, err);
       return res.status(403).send({
         sucess: false,
         message: 'token is invalid'
@@ -204,6 +220,7 @@ getToken = function (headers) {
 
 exports.isAuthorisedPasswdReset = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
@@ -230,6 +247,7 @@ exports.isAuthorisedPasswdReset = (req, res, next) => {
 
 exports.isAuthorisedAddUser = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
@@ -256,6 +274,7 @@ exports.isAuthorisedAddUser = (req, res, next) => {
 
 exports.isAuthorisedInternalAdminApp = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {
@@ -275,6 +294,7 @@ exports.isAuthorisedInternalAdminApp = (req, res, next) => {
 
 exports.isAdmin = (req, res , next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     // var dec = getverify(token, Token_Secret);
@@ -286,6 +306,7 @@ exports.isAdmin = (req, res , next) => {
         if (claim.role !== 'Admin') {
           return res.status(403).send('You\'re not admin');
         } else {
+          req.username = claim.sub;
           next();
         }
       }
@@ -298,6 +319,7 @@ exports.isAdmin = (req, res , next) => {
 
 exports.isAuthorisedRegistrationApproval = (req, res, next) => {
   const token = getToken(req.headers[AUTH_HEADER]);
+  const Token_Secret = config.get('jwt.secret');
 
   if (token) {
     jwt.verify(token, Token_Secret, function (err, claim) {

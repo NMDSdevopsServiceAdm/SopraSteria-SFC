@@ -8,7 +8,7 @@
       {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'year-arrived-uk']" (click)="setReturn()">
+      <a [routerLink]="['../year-arrived-uk']" (click)="setReturn()">
         <ng-container *ngIf="!worker.yearArrived">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -39,7 +39,7 @@
     </dd>
 
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'main-job-start-date']" (click)="setReturn()">
+      <a [routerLink]="['../main-job-start-date']" (click)="setReturn()">
         <ng-container *ngIf="!worker.mainJobStartDate">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -60,7 +60,7 @@
       {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'mental-health-professional']" (click)="setReturn()">
+      <a [routerLink]="['../mental-health-professional']" (click)="setReturn()">
         <ng-container *ngIf="!worker.approvedMentalHealthWorker">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -118,7 +118,7 @@
       </ng-template>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'other-job-roles']" (click)="setReturn()">
+      <a [routerLink]="['../other-job-roles']" (click)="setReturn()">
         <ng-container *ngIf="!worker.otherJobs?.length">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -139,7 +139,7 @@
       {{ worker.registeredNurse || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'nursing-category']" (click)="setReturn()">
+      <a [routerLink]="['../nursing-category']" (click)="setReturn()">
         <ng-container *ngIf="!worker.registeredNurse">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -160,7 +160,7 @@
       {{ worker.nurseSpecialism?.specialism | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'nursing-specialism']" (click)="setReturn()">
+      <a [routerLink]="['../nursing-specialism']" (click)="setReturn()">
         <ng-container *ngIf="!worker.registeredNurse">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -198,7 +198,7 @@
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'recruited-from']" (click)="setReturn()">
+      <a [routerLink]="['../recruited-from']" (click)="setReturn()">
         <ng-container *ngIf="!worker.recruitedFrom">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -223,7 +223,7 @@
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'adult-social-care-started']" (click)="setReturn()">
+      <a [routerLink]="['../adult-social-care-started']" (click)="setReturn()">
         <ng-container *ngIf="!worker.socialCareStartDate">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -253,7 +253,7 @@
       {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'days-of-sickness']" (click)="setReturn()">
+      <a [routerLink]="['../days-of-sickness']" (click)="setReturn()">
         <ng-container *ngIf="!worker.daysSick">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -283,7 +283,7 @@
       {{ worker.zeroHoursContract | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'contract-with-zero-hours']" (click)="setReturn()">
+      <a [routerLink]="['../contract-with-zero-hours']" (click)="setReturn()">
         <ng-container *ngIf="!worker.zeroHoursContract">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -320,7 +320,7 @@
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'average-weekly-hours']" (click)="setReturn()">
+      <a [routerLink]="['../average-weekly-hours']" (click)="setReturn()">
         <ng-container *ngIf="!worker.weeklyHoursAverage">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -357,7 +357,7 @@
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'weekly-contracted-hours']" (click)="setReturn()">
+      <a [routerLink]="['../weekly-contracted-hours']" (click)="setReturn()">
         <ng-container *ngIf="!worker.weeklyHoursContracted">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -388,7 +388,7 @@
       {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['/worker', worker.uid, 'salary']" (click)="setReturn()">
+      <a [routerLink]="['../salary']" (click)="setReturn()">
         <ng-container *ngIf="!worker.annualHourlyPay">
           Provide information
           <span class="govuk-visually-hidden"> for</span>

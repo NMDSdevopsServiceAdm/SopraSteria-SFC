@@ -1,7 +1,8 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
+import { Establishment } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
@@ -16,6 +17,7 @@ import { isNull } from 'util';
   templateUrl: './create-basic-records.component.html',
 })
 export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
+  public workplace: Establishment;
   public contracts: Array<string> = [];
   public jobs: Job[] = [];
   public totalStaff: number;
@@ -33,7 +35,8 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     private backService: BackService,
     private establishmentService: EstablishmentService,
     private jobService: JobService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private route: ActivatedRoute
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
 
@@ -65,13 +68,13 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(
-      this.establishmentService.getStaff().subscribe(establishmentStaff => {
+      this.establishmentService.getStaff(this.workplace.uid).subscribe(establishmentStaff => {
         this.totalStaff = establishmentStaff ? establishmentStaff : 0;
       })
     );
 
     this.subscriptions.add(
-      this.workerService.getAllWorkers().subscribe(workers => {
+      this.workerService.getAllWorkers(this.workplace.uid).subscribe(workers => {
         this.totalWorkers = workers ? workers.length : 0;
       })
     );
@@ -79,7 +82,9 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.jobService.getJobs().subscribe(jobs => (this.jobs = jobs)));
     this.contracts = Object.values(Contracts);
 
-    this.backService.setBackLink({ url: ['/worker/basic-records-start-screen'] });
+    this.backService.setBackLink({
+      url: ['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen'],
+    });
   }
 
   ngOnDestroy() {
@@ -149,7 +154,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
       this.workerService.setCreateStaffResponse(
         this.staffRecordsControl.controls.filter(record => record.get('uid').value).length
       );
-      this.router.navigate(['/worker', 'basic-records-save-success']);
+      this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'basic-records-save-success']);
     } else {
       const unsavedIndex = this.staffRecordsControl.controls.findIndex(control => {
         return isNull(control.get('uid').value);

@@ -47,6 +47,7 @@ export class EstablishmentService {
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   public previousEstablishmentId: number;
   public isSameLoggedInUser: boolean;
+  private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -59,6 +60,14 @@ export class EstablishmentService {
     } else {
       this.isSameLoggedInUser = true;
     }
+  }
+
+  public get primaryWorkplace$(): Observable<Establishment> {
+    return this._primaryWorkplace$.asObservable();
+  }
+
+  public setPrimaryWorkplace(workplace: Establishment) {
+    this._primaryWorkplace$.next(workplace);
   }
 
   public get establishment$() {
@@ -78,6 +87,10 @@ export class EstablishmentService {
 
   setState(establishment) {
     this._establishment$.next(establishment);
+  }
+
+  public resetState() {
+    this._establishment$.next(null);
   }
 
   public set establishmentId(value: number) {
@@ -133,8 +146,8 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`);
   }
 
-  getStaff() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/staff`).pipe(map(res => res.numberOfStaff));
+  getStaff(establishmentuid: string) {
+    return this.http.get<any>(`/api/establishment/${establishmentuid}/staff`).pipe(map(res => res.numberOfStaff));
   }
 
   postStaff(numberOfStaff) {
@@ -178,5 +191,9 @@ export class EstablishmentService {
       `/api/establishment/${this.establishmentId}/localIdentifier`,
       request
     );
+  }
+
+  public deleteWorkplace(workplaceUid: string): Observable<any> {
+    return this.http.delete<any>(`/api/establishment/${workplaceUid}`);
   }
 }

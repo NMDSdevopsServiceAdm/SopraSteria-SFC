@@ -24,7 +24,7 @@ router.route('/').post(async function (req, res) {
             include: [
               {
                 model: models.establishment,
-                attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address', 'isParent', 'NameValue', 'updated'],
+                attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address1', 'isParent', 'NameValue', 'updated'],
               },
             ],
             where: {
@@ -34,7 +34,7 @@ router.route('/').post(async function (req, res) {
         ],
         where: {
           username: {
-            [models.Sequelize.Op.iLike] : usernameSearchField
+            [models.Sequelize.Op.iLike] : usernameSearchField,
           },
         },
         order: [
@@ -48,7 +48,7 @@ router.route('/').post(async function (req, res) {
           username: thisLogin.username,
           isPrimary: thisLogin.user.isPrimary,
           securityQuestion: thisLogin.user.SecurityQuestionValue,
-          securityAnswer: thisLogin.user.SecurityQuestionAnswerValue,
+          securityQuestionAnswer: thisLogin.user.SecurityQuestionAnswerValue,
           email: thisLogin.user.EmailValue,
           phone: thisLogin.user.PhoneValue,
           isLocked: !thisLogin.isActive,
@@ -60,7 +60,7 @@ router.route('/').post(async function (req, res) {
             nmdsId: thisLogin.user.establishment.nmdsId,
             postcode: thisLogin.user.establishment.postcode,
             isRegulated: thisLogin.user.establishment.isRegulated,
-            address: thisLogin.user.establishment.address,
+            address: thisLogin.user.establishment.address1,
             isParent: thisLogin.user.establishment.isParent,
             locationId: thisLogin.user.establishment.locationId,
             }
@@ -73,11 +73,16 @@ router.route('/').post(async function (req, res) {
         include: [
           {
             model: models.establishment,
-            attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address', 'isParent', 'NameValue', 'updated'],
+            attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address1', 'isParent', 'NameValue', 'updated'],
           },
           {
             model: models.login,
             attributes: ['username', 'isActive', 'passwdLastChanged', 'lastLogin'],
+            where: {
+              username: {
+                [models.Sequelize.Op.ne] : null,
+              },
+            }
           }
         ],
         where: {
@@ -97,7 +102,7 @@ router.route('/').post(async function (req, res) {
           username: thisUser.login.username,
           isPrimary: thisUser.isPrimary,
           securityQuestion: thisUser.SecurityQuestionValue,
-          securityAnswer: thisUser.SecurityQuestionAnswerValue,
+          securityQuestionAnswer: thisUser.SecurityQuestionAnswerValue,
           email: thisUser.EmailValue,
           phone: thisUser.PhoneValue,
           isLocked: !thisUser.login.isActive,
@@ -109,7 +114,7 @@ router.route('/').post(async function (req, res) {
             nmdsId: thisUser.establishment.nmdsId,
             postcode: thisUser.establishment.postcode,
             isRegulated: thisUser.establishment.isRegulated,
-            address: thisUser.establishment.address,
+            address: thisUser.establishment.address1,
             isParent: thisUser.establishment.isParent,
             locationId: thisUser.establishment.locationId,
             }
