@@ -192,4 +192,8 @@ export class EstablishmentService {
       request
     );
   }
+
+  public deleteWorkplace(workplaceUid: string): Observable<any> {
+    return this.http.delete<any>(`/api/establishment/${workplaceUid}`);
+  }
 }
