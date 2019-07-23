@@ -706,6 +706,18 @@ class User {
                     transaction: thisTransaction
                     });     
 
+                    await models.addUserTracking.update(
+                        {
+                            completed: new Date(),
+                        },
+                        {
+                            transaction: thisTransaction,
+                            where : {
+                                userFk: this._id
+                            },
+                        }
+                    );
+
                     const auditEvent = {
                         userFk: this._id,
                         username: deletedBy,
