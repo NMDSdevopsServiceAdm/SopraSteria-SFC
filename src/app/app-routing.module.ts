@@ -57,19 +57,13 @@ const routes: Routes = [
   },
   {
     path: '',
-    resolve: { loggedInUser: LoggedInUserResolver, workplace: PrimaryWorkplaceResolver },
+    resolve: { loggedInUser: LoggedInUserResolver },
     children: [
       {
         path: 'workplace',
         loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
         canActivate: [AuthGuard],
         data: { title: 'Workplace' },
-      },
-      {
-        path: 'reports',
-        loadChildren: '@features/reports/reports.module#ReportsModule',
-        canActivate: [AuthGuard],
-        data: { title: 'Reports' },
       },
       {
         path: 'account-management',
@@ -81,12 +75,14 @@ const routes: Routes = [
         path: 'dashboard',
         component: DashboardComponent,
         canActivate: [AuthGuard],
+        resolve: { workplace: PrimaryWorkplaceResolver },
         data: { title: 'Dashboard' },
       },
       {
         path: 'bulk-upload',
         loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
         canActivate: [AuthGuard, RoleGuard],
+        resolve: { workplace: PrimaryWorkplaceResolver },
         data: {
           roles: [Roles.Edit, Roles.Admin],
           title: 'Bulk Upload',
