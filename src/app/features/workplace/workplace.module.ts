@@ -15,7 +15,7 @@ import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.compo
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import {
-  DataSharingWithLocalAuthoritiesComponent,
+    DataSharingWithLocalAuthoritiesComponent,
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DeleteWorkplaceDialogComponent } from './delete-workplace-dialog/delete-workplace-dialog.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
@@ -29,11 +29,11 @@ import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import {
-  UserAccountChangePrimaryDialogComponent,
+    UserAccountChangePrimaryDialogComponent,
 } from './user-account-change-primary-dialog/user-account-change-primary-dialog.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
 import {
-  UserAccountEditPermissionsComponent,
+    UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
@@ -42,36 +42,36 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
-  declarations: [
-    CheckAnswersComponent,
-    ConfirmLeaversComponent,
-    ConfirmStartersComponent,
-    ConfirmVacanciesComponent,
-    CreateUserAccountComponent,
-    DataSharingComponent,
-    DataSharingWithLocalAuthoritiesComponent,
-    DeleteWorkplaceDialogComponent,
-    EditWorkplaceComponent,
-    LeaversComponent,
-    OtherServicesComponent,
-    ServicesCapacityComponent,
-    ServiceUsersComponent,
-    StartComponent,
-    StartersComponent,
-    SuccessComponent,
-    TypeOfEmployerComponent,
-    VacanciesComponent,
-    ViewMyWorkplacesComponent,
-    UserAccountViewComponent,
-    ViewWorkplaceComponent,
-    WorkplaceInfoPanelComponent,
-    UserAccountSavedComponent,
-    UserAccountChangePrimaryDialogComponent,
-    UserAccountDeleteDialogComponent,
-    UserAccountEditPermissionsComponent,
-  ],
-  providers: [DialogService, WorkplaceResolver, UserAccountResolver],
-  entryComponents: [DeleteWorkplaceDialogComponent, UserAccountChangePrimaryDialogComponent, UserAccountDeleteDialogComponent],
+    imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
+    declarations: [
+        CheckAnswersComponent,
+        ConfirmLeaversComponent,
+        ConfirmStartersComponent,
+        ConfirmVacanciesComponent,
+        CreateUserAccountComponent,
+        DataSharingComponent,
+        DataSharingWithLocalAuthoritiesComponent,
+        DeleteWorkplaceDialogComponent,
+        EditWorkplaceComponent,
+        LeaversComponent,
+        OtherServicesComponent,
+        ServicesCapacityComponent,
+        ServiceUsersComponent,
+        StartComponent,
+        StartersComponent,
+        SuccessComponent,
+        TypeOfEmployerComponent,
+        VacanciesComponent,
+        ViewMyWorkplacesComponent,
+        UserAccountViewComponent,
+        ViewWorkplaceComponent,
+        WorkplaceInfoPanelComponent,
+        UserAccountSavedComponent,
+        UserAccountChangePrimaryDialogComponent,
+        UserAccountDeleteDialogComponent,
+        UserAccountEditPermissionsComponent,
+    ],
+    providers: [DialogService, WorkplaceResolver, UserAccountResolver],
+    entryComponents: [DeleteWorkplaceDialogComponent, UserAccountChangePrimaryDialogComponent, UserAccountDeleteDialogComponent],
 })
 export class WorkplaceModule {}

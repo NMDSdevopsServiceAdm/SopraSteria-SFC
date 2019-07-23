@@ -1,7 +1,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@core/services/auth.service';
 import { Component, OnInit } from '@angular/core';
-import { DeleteWorkerDialogComponent } from '@features/workers/delete-worker-dialog/delete-worker-dialog.component';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { DialogService } from '@core/services/dialog.service';
 import { Establishment } from '@core/model/establishment.model';
 import { LoggedInEstablishment } from '@core/model/logged-in.model';
@@ -46,6 +46,6 @@ export class ViewWorkplaceComponent implements OnInit {
 
   public deleteWorkplace(event: Event): void {
     event.preventDefault();
-    this.dialogService.open(DeleteWorkerDialogComponent, this.workplace);
+    this.dialogService.open(DeleteWorkplaceDialogComponent, { workplaceName: this.workplace.name });
   }
 }
