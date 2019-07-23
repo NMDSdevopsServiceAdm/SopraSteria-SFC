@@ -27,16 +27,15 @@ export class WdfComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.returnUrl = { url: ['/reports', 'wdf'] };
+    this.workplace = this.establishmentService.establishment;
+    this.returnUrl = { url: ['/workplace', this.workplace.uid, 'reports', 'wdf'] };
 
     combineLatest(
-      this.establishmentService.establishment$,
       this.workerService.getAllWorkers(this.workplace.uid),
-      this.reportService.getWDFReport(this.establishmentService.establishmentId.toString())
+      this.reportService.getWDFReport(this.workplace.uid)
     )
       .pipe(take(1))
-      .subscribe(([establishment, workers, report]) => {
-        this.workplace = establishment;
+      .subscribe(([workers, report]) => {
         this.workers = sortBy(workers, ['wdfEligible']);
         this.report = report;
       });

@@ -23,7 +23,7 @@
         <a [routerLink]="['/bulk-upload']" (click)="setReturn()">Bulk upload</a>
       </li>
       <li *ngIf="workplace?.isParent"><a [routerLink]="['/workplace', 'view-my-workplaces']">View my workplaces</a></li>
-      <li><a [routerLink]="['/reports']">View reports</a></li>
+      <li><a [routerLink]="['/workplace', workplace.uid, 'reports']">View reports</a></li>
       <li *ngIf="[adminRole].includes(user?.role)"><a [routerLink]="['/search-users']">Search Users</a></li>
       <li *ngIf="[adminRole].includes(user?.role)">
         <a [routerLink]="['/search-establishments']">Search Establishments</a>

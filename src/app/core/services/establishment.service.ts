@@ -9,7 +9,7 @@ import {
 import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 import { DataSharingRequest, SharingOptionsModel } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
@@ -71,7 +71,14 @@ export class EstablishmentService {
   }
 
   public get establishment$() {
-    return this._establishment$.asObservable();
+    if (this._establishment$.value !== null) {
+      return this._establishment$.asObservable();
+    }
+    return this.getEstablishment(this.establishmentId.toString()).pipe(
+      tap(establishment => {
+        this.setState(establishment);
+      })
+    );
   }
 
   public get establishment() {

@@ -8,7 +8,7 @@
       {{ worker.nameOrId }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../staff-details']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('staff-details')" (click)="setReturn()">
         Change
         <span class="govuk-visually-hidden"> basic record details</span>
       </a>

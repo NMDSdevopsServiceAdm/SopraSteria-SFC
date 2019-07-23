@@ -24,7 +24,7 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   ngOnInit() {
     this.returnTo = this.wdfReportEnabled
-      ? { url: ['/reports', 'wdf', 'staff-record', this.worker.uid] }
+      ? { url: ['/workplace', this.workplace.uid, 'reports', 'wdf', 'staff-record', this.worker.uid] }
       : { url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'check-answers'] };
   }
 
@@ -35,6 +35,10 @@ export class StaffRecordSummaryComponent implements OnInit {
 
   setReturn() {
     this.workerService.setReturnTo(this.return);
+  }
+
+  getRoutePath(name) {
+    return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
   }
 
   get worker(): Worker {
