@@ -31,7 +31,7 @@ export class WdfComponent implements OnInit {
 
     combineLatest(
       this.establishmentService.establishment$,
-      this.workerService.getAllWorkers(),
+      this.workerService.getAllWorkers(this.workplace.uid),
       this.reportService.getWDFReport(this.establishmentService.establishmentId.toString())
     )
       .pipe(take(1))

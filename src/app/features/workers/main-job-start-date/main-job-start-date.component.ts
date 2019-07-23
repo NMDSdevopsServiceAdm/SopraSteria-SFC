@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_DISPLAY_FULL, DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -20,11 +20,12 @@ export class MainJobStartDateComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       mainJobStartDate: this.formBuilder.group({
@@ -48,8 +49,8 @@ export class MainJobStartDateComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'other-job-roles'];
-    this.previous = ['/worker', this.worker.uid, 'staff-details'];
+    this.next = this.getRoutePath('other-job-roles');
+    this.previous = this.getRoutePath('staff-details');
   }
 
   public setupFormErrorsMap(): void {

@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import * as moment from 'moment';
 
 @Component({
@@ -6,6 +7,7 @@ import * as moment from 'moment';
   templateUrl: './staff-summary.component.html',
 })
 export class StaffSummaryComponent {
+  @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
   @Input() wdfReportEnabled = false;
 

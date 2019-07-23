@@ -16,7 +16,7 @@
         class="govuk-button"
         role="button"
         draggable="false"
-        [routerLink]="['/worker', worker.uid, 'main-job-start-date']"
+        [routerLink]="['../main-job-start-date']"
       >
         Complete Full Record
       </a>
@@ -25,12 +25,13 @@
 
   <app-tabs>
     <app-tab [title]="'Staff Record'">
-      <app-basic-record [worker]="worker" [return]="returnToRecord"></app-basic-record>
-      <app-personal-details [worker]="worker" [return]="returnToRecord"></app-personal-details>
-      <app-employment [worker]="worker" [return]="returnToRecord"></app-employment>
+      <app-basic-record [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-basic-record>
+      <app-personal-details [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-personal-details>
+      <app-employment [workplace]="workplace" [worker]="worker" [return]="returnToRecord"></app-employment>
     </app-tab>
     <app-tab [title]="'Qualifications and training'">
       <app-qualifications-and-training
+        [workplace]="workplace"
         [worker]="worker"
         [return]="returnToQuals"
         [showAddButtons]="true"

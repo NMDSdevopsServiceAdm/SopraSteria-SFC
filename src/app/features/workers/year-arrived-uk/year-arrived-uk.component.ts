@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -19,11 +19,12 @@ export class YearArrivedUkComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
@@ -35,7 +36,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
 
   init() {
     if (this.worker.countryOfBirth && this.worker.countryOfBirth.value === 'United Kingdom') {
-      this.router.navigate(['/worker', this.worker.uid, 'country-of-birth'], { replaceUrl: true });
+      this.router.navigate(this.getRoutePath('country-of-birth'), { replaceUrl: true });
     }
 
     this.subscriptions.add(
@@ -65,8 +66,8 @@ export class YearArrivedUkComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'recruited-from'];
-    this.previous = ['/worker', this.worker.uid, 'country-of-birth'];
+    this.next = this.getRoutePath('recruited-from');
+    this.previous = this.getRoutePath('country-of-birth');
   }
 
   setupFormErrorsMap(): void {

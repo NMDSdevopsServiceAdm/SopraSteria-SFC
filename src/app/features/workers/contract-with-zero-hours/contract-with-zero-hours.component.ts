@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -18,11 +18,12 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       zeroHoursContract: null,
@@ -37,8 +38,8 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     }
 
     this.previous = [Contracts.Permanent, Contracts.Temporary].includes(this.worker.contract)
-      ? ['/worker', this.worker.uid, 'days-of-sickness']
-      : ['/worker', this.worker.uid, 'adult-social-care-started'];
+      ? this.getRoutePath('days-of-sickness')
+      : this.getRoutePath('adult-social-care-started');
   }
 
   generateUpdateProps() {
@@ -57,7 +58,7 @@ export class ContractWithZeroHoursComponent extends QuestionComponent {
     this.next =
       this.worker.zeroHoursContract === 'Yes' ||
       [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
-        ? ['/worker', this.worker.uid, 'average-weekly-hours']
-        : ['/worker', this.worker.uid, 'weekly-contracted-hours'];
+        ? this.getRoutePath('average-weekly-hours')
+        : this.getRoutePath('weekly-contracted-hours');
   }
 }

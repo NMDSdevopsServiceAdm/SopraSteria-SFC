@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FLOAT_PATTERN } from '@core/constants/constants';
 import { Contracts } from '@core/model/contracts.enum';
 import { BackService } from '@core/services/back.service';
@@ -21,11 +21,12 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.floatPattern = this.floatPattern.substring(1, this.floatPattern.length - 1);
 
@@ -42,7 +43,7 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
         [Contracts.Agency, Contracts.Pool_Bank, Contracts.Other].includes(this.worker.contract)
       )
     ) {
-      this.router.navigate(['/worker', this.worker.uid, 'weekly-contracted-hours'], { replaceUrl: true });
+      this.router.navigate(this.getRoutePath('weekly-contracted-hours'), { replaceUrl: true });
     }
 
     this.subscriptions.add(
@@ -66,8 +67,8 @@ export class AverageWeeklyHoursComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'salary'];
-    this.previous = ['/worker', this.worker.uid, 'contract-with-zero-hours'];
+    this.next = this.getRoutePath('salary');
+    this.previous = this.getRoutePath('contract-with-zero-hours');
   }
 
   setupFormErrorsMap(): void {

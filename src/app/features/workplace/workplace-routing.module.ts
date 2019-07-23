@@ -170,6 +170,11 @@ const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'staff-record',
+        loadChildren: '@features/workers/workers.module#WorkersModule',
+        data: { title: 'Staff Records' },
+      },
     ],
   },
 ];

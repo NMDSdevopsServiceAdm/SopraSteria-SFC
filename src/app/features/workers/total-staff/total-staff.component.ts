@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -16,6 +17,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public returnToDash = false;
   public submitted = false;
+  public workplace: Establishment;
   private totalStaffConstraints = { min: 0, max: 999 };
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
@@ -26,7 +28,8 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
-    private workerService: WorkerService
+    private workerService: WorkerService,
+    private route: ActivatedRoute
   ) {
     this.form = this.formBuilder.group({
       totalStaff: [
@@ -42,8 +45,9 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.workplace = this.route.parent.snapshot.data.establishment;
     this.subscriptions.add(
-      this.establishmentService.getStaff().subscribe(staff => {
+      this.establishmentService.getStaff(this.workplace.uid).subscribe(staff => {
         this.form.patchValue({ totalStaff: staff });
       })
     );
@@ -53,7 +57,9 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     if (this.returnToDash) {
       this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
     } else {
-      this.backService.setBackLink({ url: ['/worker/basic-records-start-screen'] });
+      this.backService.setBackLink({
+        url: ['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen'],
+      });
     }
 
     this.setupFormErrors();
@@ -89,7 +95,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     if (this.returnToDash) {
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
     } else {
-      this.router.navigate(['/worker', 'create-basic-records']);
+      this.router.navigate(['create-basic-records'], { relativeTo: this.route.parent });
     }
   }
 

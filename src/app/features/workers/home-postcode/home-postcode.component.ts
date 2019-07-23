@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { POSTCODE_PATTERN } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -16,11 +16,12 @@ export class HomePostcodeComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       postcode: [null, this.postcodeValidator],
@@ -34,8 +35,8 @@ export class HomePostcodeComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'gender'];
-    this.previous = ['/worker', this.worker.uid, 'date-of-birth'];
+    this.next = this.getRoutePath('gender');
+    this.previous = this.getRoutePath('date-of-birth');
   }
 
   public setupFormErrorsMap(): void {

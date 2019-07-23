@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { Job } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
@@ -24,12 +24,13 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     private jobService: JobService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       nameOrId: [null, Validators.required],
@@ -51,7 +52,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       })
     );
 
-    this.previous = ['/worker', 'start-screen'];
+    this.previous = ['/workplace', this.workplace.uid, 'staff-record', 'start-screen'];
   }
 
   renderInEditMode() {
@@ -129,7 +130,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   onSuccess() {
-    this.next = ['/worker', this.worker.uid, 'main-job-start-date'];
+    this.next = this.getRoutePath('main-job-start-date');
   }
 
   selectedJobRole(id: number) {

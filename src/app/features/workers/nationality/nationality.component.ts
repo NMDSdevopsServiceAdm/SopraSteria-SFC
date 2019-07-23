@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Nationality } from '@core/model/nationality.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -19,12 +19,13 @@ export class NationalityComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     private nationalityService: NationalityService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.nationalityNameValidator = this.nationalityNameValidator.bind(this);
     this.nationalityNameFilter = this.nationalityNameFilter.bind(this);
@@ -63,7 +64,7 @@ export class NationalityComponent extends QuestionComponent {
       });
     }
 
-    this.previous = ['/worker', this.worker.uid, 'ethnicity'];
+    this.previous = this.getRoutePath('ethnicity');
   }
 
   setupFormErrorsMap(): void {
@@ -100,8 +101,8 @@ export class NationalityComponent extends QuestionComponent {
   onSuccess() {
     this.next =
       this.worker.nationality && this.worker.nationality.value === 'British'
-        ? ['/worker', this.worker.uid, 'country-of-birth']
-        : ['/worker', this.worker.uid, 'british-citizenship'];
+        ? this.getRoutePath('country-of-birth')
+        : this.getRoutePath('british-citizenship');
   }
 
   nationalityNameValidator() {

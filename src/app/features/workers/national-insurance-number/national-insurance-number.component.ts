@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NIN_PATTERN } from '@core/constants/constants';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -16,11 +16,12 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
   constructor(
     protected formBuilder: FormBuilder,
     protected router: Router,
+    protected route: ActivatedRoute,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService
   ) {
-    super(formBuilder, router, backService, errorSummaryService, workerService);
+    super(formBuilder, router, route, backService, errorSummaryService, workerService);
 
     this.form = this.formBuilder.group({
       nationalInsuranceNumber: [null, this.ninValidator],
@@ -34,14 +35,14 @@ export class NationalInsuranceNumberComponent extends QuestionComponent {
       });
     }
 
-    this.next = ['/worker', this.worker.uid, 'date-of-birth'];
+    this.next = this.getRoutePath('date-of-birth');
 
     if (this.workerService.hasJobRole(this.worker, 27)) {
-      this.previous = ['/worker', this.worker.uid, 'mental-health-professional'];
+      this.previous = this.getRoutePath('mental-health-professional');
     } else if (this.workerService.hasJobRole(this.worker, 23)) {
-      this.previous = ['/worker', this.worker.uid, 'nursing-specialism'];
+      this.previous = this.getRoutePath('nursing-specialism');
     } else {
-      this.previous = ['/worker', this.worker.uid, 'other-job-roles'];
+      this.previous = this.getRoutePath('other-job-roles');
     }
   }
 

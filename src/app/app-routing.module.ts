@@ -72,12 +72,6 @@ const routes: Routes = [
         data: { title: 'Reports' },
       },
       {
-        path: 'worker',
-        loadChildren: '@features/workers/workers.module#WorkersModule',
-        canActivate: [AuthGuard],
-        data: { title: 'Staff Records' },
-      },
-      {
         path: 'account-management',
         loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
         canActivate: [AuthGuard],

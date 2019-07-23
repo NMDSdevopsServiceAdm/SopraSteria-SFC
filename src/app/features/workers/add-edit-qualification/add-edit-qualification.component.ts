@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { QualificationRequest, QualificationResponse, QualificationType } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { BackService } from '@core/services/back.service';
@@ -21,6 +22,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public qualificationId: string;
   public record: QualificationResponse;
   public worker: Worker;
+  public workplace: Establishment;
   public yearValidators: ValidatorFn[];
   public notesMaxLength = 500;
   public submitted = false;
@@ -51,9 +53,13 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     });
 
     this.worker = this.workerService.worker;
+    this.workplace = this.route.parent.snapshot.data.establishment;
     this.qualificationId = this.route.snapshot.params.qualificationId;
 
-    this.backService.setBackLink({ url: ['/worker', this.worker.uid], fragment: 'qualifications-and-training' });
+    this.backService.setBackLink({
+      url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid],
+      fragment: 'qualifications-and-training',
+    });
 
     Object.keys(QualificationType).forEach(key => {
       this.qualificationTypes[key] = QualificationType[key];
@@ -223,7 +229,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   private onSuccess() {
     this.router
-      .navigate(['/worker', this.worker.uid], {
+      .navigate(['/workplace', this.workplace.uid, 'staff-record', this.worker.uid], {
         fragment: 'qualifications-and-training',
       })
       .then(() => {

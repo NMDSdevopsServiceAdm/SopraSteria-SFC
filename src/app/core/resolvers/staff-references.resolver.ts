@@ -12,7 +12,7 @@ export class StaffReferencesResolver implements Resolve<any> {
     const establishmentUUID = route.paramMap.get('uid');
 
     if (establishmentUUID) {
-      return this.workerService.getAllWorkersByUid(establishmentUUID).pipe(
+      return this.workerService.getAllWorkers(establishmentUUID).pipe(
         take(1),
         catchError(() => {
           this.router.navigate(['/bulk-upload']);
