@@ -67,7 +67,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
       this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
         () => {
           this.router.navigate(['workplace/view-my-workplaces']).then(() => {
-            this.alertService.addAlert({ type: 'success', message: 'Workplace successfully deleted.' });
+            this.alertService.addAlert({ type: 'success', message: `${this.workplace.name} has been permanently deleted.` });
           });
         },
         () => {
