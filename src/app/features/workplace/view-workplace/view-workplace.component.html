@@ -14,16 +14,16 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-tabs>
-      <app-tab [title]="'User accounts'">
-        <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
-      </app-tab>
-
       <app-tab [title]="'Workplace'">
         <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
       </app-tab>
 
       <app-tab [title]="'Staff records'" *ngIf="checkPermission(staffPermission)">
         <!-- <app-staff-records-sub-tab></app-staff-records-sub-tab> -->
+      </app-tab>
+
+      <app-tab [title]="'User accounts'">
+        <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
       </app-tab>
     </app-tabs>
   </div>
