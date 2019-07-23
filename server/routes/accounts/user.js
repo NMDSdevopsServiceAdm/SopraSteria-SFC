@@ -147,9 +147,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
             // this is an update to an existing User, so no mandatory properties!
             if (isValidUser) {
 
-                await models.sequelize.transaction(async t => {
-                    await thisUser.save(req.username, expiresTTLms, t);
-                });            
+                await thisUser.save(req.username, expiresTTLms, null);
     
                 // if local/dev - we're not sending email so return the add user tracking UUID if it exists
                 let response = thisUser.toJSON(false, false, false, true);

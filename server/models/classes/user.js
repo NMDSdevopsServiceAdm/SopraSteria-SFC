@@ -437,7 +437,6 @@ class User {
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
                     if(this._isPrimary){
-                        console.log('inere')
                         // Set the existing primary to not primary
                         await models.user.update({
                                 isPrimary: false,
