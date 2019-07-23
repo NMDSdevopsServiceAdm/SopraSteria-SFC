@@ -17,6 +17,7 @@ import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies
 import {
   DataSharingWithLocalAuthoritiesComponent,
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
+import { DeleteWorkplaceDialogComponent } from './delete-workplace-dialog/delete-workplace-dialog.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { LeaversComponent } from './leavers/leavers.component';
@@ -50,6 +51,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     CreateUserAccountComponent,
     DataSharingComponent,
     DataSharingWithLocalAuthoritiesComponent,
+    DeleteWorkplaceDialogComponent,
     EditWorkplaceComponent,
     LeaversComponent,
     OtherServicesComponent,
@@ -70,6 +72,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     UserAccountEditPermissionsComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
-  entryComponents: [UserAccountChangePrimaryDialogComponent, UserAccountDeleteDialogComponent],
+  entryComponents: [DeleteWorkplaceDialogComponent, UserAccountChangePrimaryDialogComponent, UserAccountDeleteDialogComponent],
 })
 export class WorkplaceModule {}
