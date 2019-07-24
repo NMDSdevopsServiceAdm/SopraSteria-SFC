@@ -41,9 +41,9 @@ export class BulkUploadService {
   ) {}
 
   public get workPlaceReferences$() {
-    if (this._workPlaceReferences$.value !== null) {
-      return this._workPlaceReferences$.asObservable();
-    }
+    // if (this._workPlaceReferences$.value !== null) {
+    //   return this._workPlaceReferences$.asObservable();
+    // }
     return this.userService.getEstablishments().pipe(
       map(response => {
         const references = [];
