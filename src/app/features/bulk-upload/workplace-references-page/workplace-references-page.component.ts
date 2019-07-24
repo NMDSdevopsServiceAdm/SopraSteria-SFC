@@ -48,7 +48,6 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
 
     this.backService.setBackLink({ url: this.exit });
     this.references = this.activatedRoute.snapshot.data.workplaceReferences;
-    console.log(this.references);
     this.setupForm();
   }
 
