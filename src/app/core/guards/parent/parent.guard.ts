@@ -1,23 +1,39 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { Observable } from 'rxjs';
-import { AuthService } from '@core/services/auth.service';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ParentGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private establishmentService: EstablishmentService, private router: Router) {}
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    if (this.authService.establishment.isParent) {
-      return true;
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
+    const primaryWorkplace = this.establishmentService.primaryWorkplace;
+
+    if (primaryWorkplace) {
+      return this.check(primaryWorkplace.isParent);
     }
 
-    this.router.navigate(['/dashboard']);
+    const workplaceid = localStorage.getItem('establishmentId');
+    if (workplaceid) {
+      return this.establishmentService.getEstablishment(workplaceid).pipe(
+        tap(workplace => this.establishmentService.setPrimaryWorkplace(workplace)),
+        map(workplace => this.check(workplace.isParent))
+      );
+    }
+
+    this.router.navigate(['/logged-out']);
     return false;
+  }
+
+  private check(isParent) {
+    if (!isParent) {
+      this.router.navigate(['/dashboard']);
+    }
+
+    return isParent;
   }
 }
