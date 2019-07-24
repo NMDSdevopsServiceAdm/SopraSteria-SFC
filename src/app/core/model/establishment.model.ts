@@ -1,5 +1,3 @@
-import { Workplace } from './my-workplaces.model';
-
 export interface MainService {
   id: number;
   name: string;
@@ -125,7 +123,7 @@ export interface LocalIdentifiersRequest {
 
 export interface LocalIdentifiersResponse {
   id: number;
-  localIdentifiers: Workplace[];
+  localIdentifiers: { uid: string; value: string };
   name: string;
   uid: string;
   updated: string;
