@@ -129,6 +129,29 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         byUsername = escape(userId.toLowerCase());
     }
 
+    // ensure only a user having the role of Edit can update a user
+    if (!(req.role && req.role === 'Edit')) {
+        return res.status(403).send();
+    }
+
+    if(req.body.role){
+        if(!(req.body.role == 'Edit' || req.body.role == 'Read')){
+            return res.status(400).send("Invalid request");
+        }
+        
+        let limits = {'Edit': User.User.MAX_EDIT_SINGLE_USERS, 'Read' : User.User.MAX_READ_SINGLE_USERS};
+
+        if(req.isParent){
+            limits = {'Edit': User.User.MAX_EDIT_PARENT_USERS, 'Read' : User.User.MAX_READ_PARENT_USERS};
+        }
+    
+        const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
+    
+        if(currentTypeLimits[req.body.role]+1 > limits[req.body.role]){
+            return res.status(400).send(`Cannot create new account as ${req.body.role} account type limit reached`);
+        }
+    }
+
     const thisUser = new User.User(establishmentId);
 
     try {
