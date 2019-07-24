@@ -1,13 +1,14 @@
-import { BackService } from '@core/services/back.service';
-import { EMAIL_PATTERN, PHONE_PATTERN } from '@core/constants/constants';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { EMAIL_PATTERN, PHONE_PATTERN } from '@core/constants/constants';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { Subscription } from 'rxjs';
 
 export class AccountDetails implements OnInit, OnDestroy {
   protected formErrorsMap: Array<ErrorDetails>;
@@ -35,6 +36,7 @@ export class AccountDetails implements OnInit, OnDestroy {
     },
   ];
   public submitted = false;
+  public return: URLStructure;
 
   constructor(
     protected backService: BackService,
@@ -154,11 +156,7 @@ export class AccountDetails implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
-    if (!payload.save) {
-      return this.navigateToNextRoute();
-    }
-
+  public onSubmit() {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -168,8 +166,6 @@ export class AccountDetails implements OnInit, OnDestroy {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
-
-  protected navigateToNextRoute(): void {}
 
   protected onError(response: HttpErrorResponse): void {
     if (response.status === 400) {
