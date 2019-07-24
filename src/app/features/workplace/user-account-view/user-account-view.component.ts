@@ -150,10 +150,6 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     const isPrimary = this.user.isPrimary;
     const editUsersList = users.filter(user => user.role === Roles.Edit);
 
-    console.log('canEdit', canEdit);
-    console.log('user Role', this.user.role);
-    console.log('editUserListLength', editUsersList.length);
-
     this.canDeleteUser =
       canEdit &&
       (editUsersList.length > 1 || this.user.role === Roles.Read) &&
