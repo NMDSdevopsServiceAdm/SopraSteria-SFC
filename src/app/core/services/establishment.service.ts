@@ -66,6 +66,10 @@ export class EstablishmentService {
     return this._primaryWorkplace$.asObservable();
   }
 
+  public get primaryWorkplace(): Establishment {
+    return this._primaryWorkplace$.value;
+  }
+
   public setPrimaryWorkplace(workplace: Establishment) {
     this._primaryWorkplace$.next(workplace);
   }
