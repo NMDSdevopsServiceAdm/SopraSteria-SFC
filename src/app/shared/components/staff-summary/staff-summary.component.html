@@ -16,7 +16,11 @@
         <a *ngIf="!wdfReportEnabled" [routerLink]="['/workplace', workplace.uid, 'staff-record', worker.uid]">
           {{ worker.nameOrId }}
         </a>
-        <a *ngIf="wdfReportEnabled" [routerLink]="['/reports', 'wdf', 'worker', worker.uid]">{{ worker.nameOrId }}</a>
+        <a
+          *ngIf="wdfReportEnabled"
+          [routerLink]="['/workplace', workplace.uid, 'reports', 'wdf', 'staff-record', worker.uid]"
+          >{{ worker.nameOrId }}</a
+        >
       </td>
       <td class="govuk-table__cell">{{ worker.mainJob.other ? worker.mainJob.other : worker.mainJob.title }}</td>
       <td class="govuk-table__cell">

@@ -20,7 +20,7 @@ const routes: Routes = [
         component: WdfComponent,
       },
       {
-        path: 'worker/:id',
+        path: 'staff-record/:id',
         component: WdfWorkerComponent,
         resolve: { worker: WorkerResolver },
         data: { title: 'Staff Summary' },

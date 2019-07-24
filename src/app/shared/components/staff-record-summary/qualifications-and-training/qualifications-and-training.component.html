@@ -40,7 +40,7 @@
     </dd>
 
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../care-certificate']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('care-certificate')" (click)="setReturn()">
         <ng-container *ngIf="!worker.careCertificate">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -70,7 +70,7 @@
       {{ worker.qualificationInSocialCare | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../social-care-qualification']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('social-care-qualification')" (click)="setReturn()">
         <ng-container *ngIf="!worker.qualificationInSocialCare">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -100,7 +100,7 @@
       {{ worker.socialCareQualification?.title | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../social-care-qualification-level']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('social-care-qualification-level')" (click)="setReturn()">
         <ng-container *ngIf="!worker.socialCareQualification">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -130,7 +130,7 @@
       {{ worker.otherQualification | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../other-qualifications']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('other-qualifications')" (click)="setReturn()">
         <ng-container *ngIf="!worker.otherQualification">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -160,7 +160,7 @@
       {{ worker.highestQualification?.title || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../other-qualifications-level']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('other-qualifications-level')" (click)="setReturn()">
         <ng-container *ngIf="!worker.highestQualification">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -181,7 +181,7 @@
       {{ worker.apprenticeshipTraining | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../apprenticeship-training']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('apprenticeship-training')" (click)="setReturn()">
         <ng-container *ngIf="!worker.apprenticeshipTraining">
           Provide information
           <span class="govuk-visually-hidden"> for</span>

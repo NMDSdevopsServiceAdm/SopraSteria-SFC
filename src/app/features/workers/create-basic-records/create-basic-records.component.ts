@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
@@ -35,8 +35,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     private backService: BackService,
     private establishmentService: EstablishmentService,
     private jobService: JobService,
-    private workerService: WorkerService,
-    private route: ActivatedRoute
+    private workerService: WorkerService
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
 

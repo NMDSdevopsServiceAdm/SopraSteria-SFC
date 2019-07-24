@@ -20,7 +20,12 @@
     Check the information you have provided on this staff record is correct.
   </p>
 
-  <app-staff-record-summary [worker]="worker" [wdfReportEnabled]="true"></app-staff-record-summary>
+  <app-staff-record-summary
+    *ngIf="workplace"
+    [workplace]="workplace"
+    [worker]="worker"
+    [wdfReportEnabled]="true"
+  ></app-staff-record-summary>
 
   <button type="button" class="govuk-button" (click)="saveAndComplete()">Save and complete</button>
 </ng-container>
