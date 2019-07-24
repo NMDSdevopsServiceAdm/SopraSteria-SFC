@@ -105,7 +105,11 @@ export class SecurityQuestion implements OnInit, OnDestroy {
     ];
   }
 
-  public onSubmit(): void {
+  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
+    if (!payload.save) {
+      return this.navigateToNextRoute();
+    }
+
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -115,6 +119,8 @@ export class SecurityQuestion implements OnInit, OnDestroy {
       this.errorSummaryService.scrollToErrorSummary();
     }
   }
+
+  protected navigateToNextRoute(): void {}
 
   protected save(): void {}
 

@@ -36,8 +36,12 @@
           </div>
         </ng-container>
       </fieldset>
-
-      <button type="submit" class="govuk-button">{{ callToActionLabel }}</button>
     </form>
   </div>
 </div>
+
+<app-submit-button
+  [return]="true"
+  (clicked)="onSubmit($event)"
+  [callToActionLabel]="callToActionLabel"
+></app-submit-button>
