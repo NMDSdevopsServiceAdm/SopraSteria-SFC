@@ -141,10 +141,10 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         
         let limits = {'Edit': User.User.MAX_EDIT_SINGLE_USERS, 'Read' : User.User.MAX_READ_SINGLE_USERS};
 
-        if(req.isParent){
+        if(req.isParent && req.establishmentId == req.establishment.id){
             limits = {'Edit': User.User.MAX_EDIT_PARENT_USERS, 'Read' : User.User.MAX_READ_PARENT_USERS};
         }
-    
+        
         const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
     
         if(currentTypeLimits[req.body.role]+1 > limits[req.body.role]){
@@ -406,7 +406,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 
     let limits = {'Edit': User.User.MAX_EDIT_SINGLE_USERS, 'Read' : User.User.MAX_READ_SINGLE_USERS};
 
-    if(req.isParent){
+    if(req.isParent && req.establishmentId == req.establishment.id){
         limits = {'Edit': User.User.MAX_EDIT_PARENT_USERS, 'Read' : User.User.MAX_READ_PARENT_USERS};
     }
 
