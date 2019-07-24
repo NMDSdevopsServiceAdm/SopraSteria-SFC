@@ -57,6 +57,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   protected save(): void {
     this.createAccountService.userDetails$.next(this.setUserDetails());
+    this.navigateToNextRoute();
   }
 
   protected navigateToNextRoute(): void {

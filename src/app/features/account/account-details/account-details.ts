@@ -154,7 +154,7 @@ export class AccountDetails implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public onSubmit(payload: { action: string; save: boolean }) {
+  public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
     if (!payload.save) {
       return this.navigateToNextRoute();
     }
@@ -164,7 +164,6 @@ export class AccountDetails implements OnInit, OnDestroy {
 
     if (this.form.valid) {
       this.save();
-      this.navigateToNextRoute();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
