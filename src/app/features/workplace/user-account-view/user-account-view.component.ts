@@ -101,7 +101,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
 
   private deleteUser() {
     this.subscriptions.add(
-      this.userService.deleteUser(this.user.uid).subscribe(
+      this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
         () => {
           this.router.navigate(this.return.url, { fragment: 'user-accounts' });
           this.alertService.addAlert({ type: 'success', message: 'User successfully deleted.' });
