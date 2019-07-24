@@ -56,9 +56,13 @@ export class BulkUploadService {
         return references;
       }),
       tap(references => {
-        this._workPlaceReferences$.next(references);
+        this.setWorkplaceReferences(references);
       })
     );
+  }
+
+  public setWorkplaceReferences(references: Workplace[]) {
+    this._workPlaceReferences$.next(references);
   }
 
   public get returnTo(): URLStructure {
