@@ -14,7 +14,7 @@
       Before saving this user account, check the information you have provided is correct.
     </p>
 
-    <app-summary-list [topBorder]="true" [summaryList]="userInfo"></app-summary-list>
+    <app-summary-list [topBorder]="true" [summaryList]="userInfo" (setReturn)="onSetReturn()"></app-summary-list>
     <app-summary-list [topBorder]="true" [summaryList]="loginInfo" (setReturn)="onSetReturn()"></app-summary-list>
     <app-summary-list
       [wrapBorder]="true"
