@@ -22,6 +22,7 @@ import { take, withLatestFrom } from 'rxjs/operators';
 export class UserAccountViewComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public loginInfo: SummaryList[];
+  public loggedInUser: UserDetails;
   public securityInfo: SummaryList[];
   public establishment: Establishment;
   public user: UserDetails;
@@ -55,6 +56,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
           withLatestFrom(this.userService.loggedInUser$)
         )
         .subscribe(([users, loggedInUser]) => {
+          this.loggedInUser = loggedInUser;
           this.setPermissions(users, loggedInUser);
         })
     );
@@ -100,6 +102,14 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   }
 
   private deleteUser() {
+    if (this.user.isPrimary) {
+      this.subscriptions.add(
+        this.userService
+          .updateUserDetails(this.loggedInUser.uid, { ...this.loggedInUser, ...{ isPrimary: true } })
+          .subscribe(data => (this.userService.loggedInUser = data))
+      );
+    }
+
     this.subscriptions.add(
       this.userService.deleteUser(this.establishment.uid, this.user.uid).subscribe(
         () => {
