@@ -63,8 +63,8 @@ export class UserService {
     );
   }
 
-  public deleteUser(useruid: string) {
-    return this.http.delete(`/api/user/${useruid}`);
+  public deleteUser(establishmentUid: string, userUid: string) {
+    return this.http.delete(`/api/user/establishment/${establishmentUid}/${userUid}`);
   }
 
   public resendActivationLink(useruid: string) {
