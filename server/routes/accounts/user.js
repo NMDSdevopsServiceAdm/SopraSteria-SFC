@@ -493,9 +493,6 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
     }
 });
 
-router.route('/:username').delete(async (req, res) => {
-    return res.status(200).send();
-});
 
 // validates (part add) a new user - not authentication middleware
 router.route('/validateAddUser').post(async (req, res) => {
@@ -572,92 +569,38 @@ router.route('/validateAddUser').post(async (req, res) => {
     }
 });
 
-router.use('/:username', Authorization.isAuthorised);
-router.route('/:username').delete(async (req, res) => {
-   try {
-        const login = await models.login.findOne({
-            where: {
-                username: {
-                    [models.Sequelize.Op.iLike] : req.params.username
-                },
-                isActive: true
-            },
-            include: [
-                {
-                    model: models.user,
-                    attributes: ['id', 'FullNameValue'],
-                    where: {
-                        establishmentId: req.establishmentId
-                    }
-                }
-            ]
-        });
+router.use('/establishment/:id/:userid', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id/:userid').delete(async (req, res) => {
+    const userId = req.params.userid;
 
-        if (login && login.user.id) {
-            await models.sequelize.transaction(async t => {
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    if (!uuidRegex.test(userId.toUpperCase())) {
+        return res.status(503).send('Invalid request');
+    }
 
-                // If the deleted user is the primary, make us the primary
-                if(login.user.isPrimary){
-                    await models.user.update({
-                            isPrimary: true,
-                            updated: new Date(),
-                            updatedBy: req.username.toLowerCase()
-                        },{
-                        where: {
-                            username: req.username
-                        },
-                        transaction: t,
-                        attributes: ['id', 'updated'],
-                    });                    
-                }
+    const thisUser = new User.User(userId);
 
-                // Set the login to not active
-                login.update({
-                    isActive: false
-                },
-                {transaction: t});
-
-                // Create audit log entry
-                const auditEvent = {
-                    userFk: login.user.id,
-                    username: req.username,
-                    type: 'delete',
-                    property: 'isActive',
-                    event: {}
-                };
-                await models.userAudit.create(auditEvent, {transaction: t});
-
-                let randomNewUsername = uuid.v4();
-
-                login.user.update({
-                    Archived: true,
-                    FullNameValue: false,
-                    isPrimary: false,
-                    Username: randomNewUsername,
-                    EmailValue: '',
-                    PhoneValue: '',
-                    JobTitle: '',
-                    SecurityQuestionValue: '',
-                    SecurityQuestionAnswerValue: ''
-                },
-                {transaction: t});
-
-                await models.sequelize.query('UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: login.username, usernameNew: randomNewUsername },type: models.sequelize.QueryTypes.UPDATE, transaction: t });
-                await models.sequelize.query('UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: login.username, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: t });
-                await models.sequelize.query('UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: login.username, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: t });
-
-            });
-
-            return res.status(200).send(`User deleted`);
+    try {
+        if (await thisUser.restore(userId, null, false)) {
+            console.log('restored about to delete');
+            await thisUser.delete(req.username);
+            return res.status(204).send();
         } else {
-            return res.status(404).send(`User not found`);
+            console.log('404 not found that user')
+            return res.status(404).send('Not Found');            
         }
+    } catch (err) {
+        const thisError = new User.UserExceptions.UserRestoreException(
+            thisUser.id,
+            thisUser.uid,
+            null,
+            err,
+            null,
+            `Failed to delete User with id/uid: ${userId}`);
 
-  } catch (err) {
-    console.error('User delete failed', err);
-    return res.status(503).send();
-  }
-
+        console.error('User::DELETE - failed', thisError.message);
+        return res.status(503).send(thisError.safe);
+    }
 });
 
 // registers (full add) a new user - authentication middleware is specific to add user token
