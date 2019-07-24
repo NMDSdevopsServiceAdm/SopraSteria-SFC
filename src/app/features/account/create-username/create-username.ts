@@ -167,7 +167,11 @@ export class CreateUsername implements OnInit, OnDestroy {
     ];
   }
 
-  public checkUsernameDoesntExist(): void {
+  public checkUsernameDoesntExist(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
+    if (!payload.save) {
+      return this.navigateToNextRoute();
+    }
+
     this.subscriptions.add(
       this.registrationService
         .getUsernameDuplicate(this.getUsername.value)
@@ -192,6 +196,8 @@ export class CreateUsername implements OnInit, OnDestroy {
         )
     );
   }
+
+  protected navigateToNextRoute(): void {}
 
   private onSubmit(): void {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
