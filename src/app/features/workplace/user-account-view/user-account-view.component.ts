@@ -157,14 +157,10 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   private setPermissions(users: Array<UserDetails>, loggedInUser: UserDetails) {
     const canEdit = loggedInUser.role === Roles.Edit;
     const isPending = this.user.username === null;
-    const isPrimary = this.user.isPrimary;
     const editUsersList = users.filter(user => user.role === Roles.Edit);
 
     this.canDeleteUser =
-      canEdit &&
-      (editUsersList.length > 1 || this.user.role === Roles.Read) &&
-      !isPrimary &&
-      loggedInUser.uid !== this.user.uid;
+      canEdit && (editUsersList.length > 1 || this.user.role === Roles.Read) && loggedInUser.uid !== this.user.uid;
     this.canResendActivationLink = canEdit && isPending;
     this.canEdit = canEdit && users.length > 1;
   }
