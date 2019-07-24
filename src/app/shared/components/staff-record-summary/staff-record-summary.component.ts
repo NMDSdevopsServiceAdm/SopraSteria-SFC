@@ -15,7 +15,7 @@ export class StaffRecordSummaryComponent implements OnInit {
   }
   @Input() workplace: Establishment;
   @Input() return: URLStructure;
-  @Input() wdfReportEnabled = false;
+  @Input() wdfView = false;
 
   public returnTo: URLStructure;
   private _worker: Worker;
@@ -23,9 +23,10 @@ export class StaffRecordSummaryComponent implements OnInit {
   constructor(private location: Location, public workerService: WorkerService) {}
 
   ngOnInit() {
-    this.returnTo = this.wdfReportEnabled
-      ? { url: ['/workplace', this.workplace.uid, 'reports', 'wdf', 'staff-record', this.worker.uid] }
-      : { url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'check-answers'] };
+    const staffRecordPath = ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid];
+    this.returnTo = this.wdfView
+      ? { url: [...staffRecordPath, ...['wdf-summary']] }
+      : { url: [...staffRecordPath, ...['check-answers']] };
   }
 
   goBack(event) {
@@ -37,7 +38,7 @@ export class StaffRecordSummaryComponent implements OnInit {
     this.workerService.setReturnTo(this.return);
   }
 
-  getRoutePath(name) {
+  public getRoutePath(name: string) {
     return ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, name];
   }
 

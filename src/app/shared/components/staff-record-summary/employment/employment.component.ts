@@ -14,7 +14,7 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
   providers: [DecimalPipe],
 })
 export class EmploymentComponent extends StaffRecordSummaryComponent {
-  @Input() wdfReportEnabled = false;
+  @Input() wdfView = false;
 
   constructor(
     location: Location,
@@ -59,19 +59,5 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
 
   get mainStartDate() {
     return moment(this.worker.mainJobStartDate).format(DATE_DISPLAY_DEFAULT);
-  }
-
-  get salary() {
-    let format = '1';
-    switch (this.worker.annualHourlyPay.value) {
-      case 'Annually':
-        format = '1.0-0';
-        break;
-      case 'Hourly':
-        format = '1.2-2';
-        break;
-    }
-    const formatted = this.decimalPipe.transform(this.worker.annualHourlyPay.rate, format);
-    return `£${formatted} ${this.worker.annualHourlyPay.value}`;
   }
 }

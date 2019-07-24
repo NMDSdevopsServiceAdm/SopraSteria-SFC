@@ -3,6 +3,9 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AlertComponent } from '@shared/components/alert/alert.component';
+import {
+  SummaryRecordValueComponent,
+} from '@shared/components/staff-record-summary/summary-record-value/summary-record-value.component';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
@@ -37,6 +40,8 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
+import { WorkerDaysPipe } from './pipes/worker-days.pipe';
+import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
@@ -73,6 +78,9 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     WorkplaceSummaryComponent,
     SummaryListComponent,
     UserAccountsSummaryComponent,
+    SummaryRecordValueComponent,
+    WorkerDaysPipe,
+    WorkerPayPipe,
   ],
   exports: [
     AlertComponent,
@@ -106,6 +114,8 @@ import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
     WorkplaceSummaryComponent,
     SummaryListComponent,
     UserAccountsSummaryComponent,
+    WorkerDaysPipe,
+    WorkerPayPipe,
   ],
 })
 export class SharedModule {}
