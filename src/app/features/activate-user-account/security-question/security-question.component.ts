@@ -49,19 +49,11 @@ export class SecurityQuestionComponent extends SecurityQuestion {
   }
 
   protected save(): void {
-    this.createAccountService.securityDetails$.next({
-      securityQuestion: this.getSecurityQuestion.value,
-      securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
+    this.router.navigate(['/activate-account', this.activationToken, 'confirm-account-details']).then(() => {
+      this.createAccountService.securityDetails$.next({
+        securityQuestion: this.getSecurityQuestion.value,
+        securityQuestionAnswer: this.getSecurityQuestionAnswer.value,
+      });
     });
-
-    this.navigateToNextRoute();
-  }
-
-  protected navigateToNextRoute(): void {
-    this.router.navigate(['/activate-account', this.activationToken, 'confirm-account-details']);
-  }
-
-  protected setCallToActionLabel(): void {
-    this.callToActionLabel = 'Save and continue';
   }
 }
