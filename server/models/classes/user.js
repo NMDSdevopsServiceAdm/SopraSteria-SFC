@@ -280,6 +280,8 @@ class User {
 
         // now send the email
         await sendAddUserEmail(emailProperty, fullnameProperty, this._trackingUUID);
+
+        return this._trackingUUID;
     }
 
     // saves the User to DB. Returns true if saved; false if not.

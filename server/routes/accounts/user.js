@@ -478,14 +478,20 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
         if(passTokenResults){
             const thisUser = new User.User();
             if (await thisUser.restore(passTokenResults.user.uid, null, null)) {
+                let trackingUUID = "";
                 await models.sequelize.transaction(async t => {
-                    await thisUser.trackNewUser(req.username, t, expiresTTLms);
+                    trackingUUID = await thisUser.trackNewUser(req.username, t, expiresTTLms);
                 });
+                let response = {};
+                if (isLocal(req)) {
+                    response = { trackingUUID };
+                }
+
+                return res.status(200).send(response);
             }
-            return res.status(200).send("Success");
-        }else{
-            return res.status(404).send("Not found");
         }
+        
+        return res.status(404).send("Not found");
         
     }
     catch(err){
