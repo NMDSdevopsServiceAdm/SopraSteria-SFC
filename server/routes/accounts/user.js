@@ -482,8 +482,12 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
                 await models.sequelize.transaction(async t => {
                     trackingUUID = await thisUser.trackNewUser(req.username, t, expiresTTLms);
                 });
+                let response = {};
+                if (isLocal(req)) {
+                    response = { trackingUUID };
+                }
 
-                return res.status(200).send(trackingUUID);
+                return res.status(200).send(response);
             }
         }
         
