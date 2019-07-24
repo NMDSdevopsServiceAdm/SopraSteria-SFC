@@ -69,21 +69,12 @@
           </div>
         </fieldset>
       </div>
-
-      <div class="govuk-button-group">
-        <button class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0" type="submit">
-          {{ callToActionLabel }}
-        </button>
-        <span class="govuk-visually-hidden">or</span>
-        <a
-          role="button"
-          draggable="false"
-          class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
-          [routerLink]="['/dashboard']"
-        >
-          Cancel
-        </a>
-      </div>
     </form>
   </div>
 </div>
+
+<app-submit-button
+  [return]="true"
+  (clicked)="onSubmit($event)"
+  [callToActionLabel]="callToActionLabel"
+></app-submit-button>
