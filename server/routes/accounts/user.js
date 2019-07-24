@@ -611,6 +611,10 @@ router.route('/establishment/:id/:userid').delete(async (req, res) => {
 
     try {
         if (await thisUser.restore(userId, null, false)) {
+            if(thisUser.username && thisUser.username == req.username){
+                return res.status(400).send('Cannot delete own user account');
+            }
+
             console.log('restored about to delete');
             await thisUser.delete(req.username);
             return res.status(204).send();
