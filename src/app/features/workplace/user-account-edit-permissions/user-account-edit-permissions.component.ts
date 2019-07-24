@@ -40,6 +40,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     },
   ];
   public return: URLStructure;
+  public submitted = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -58,6 +59,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.setupServerErrorsMap();
     this.breadcrumbService.show();
 
     this.form = this.formBuilder.group({
@@ -68,6 +70,15 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'Cannot update user permissions as too many of that role already exist.',
+      },
+    ];
   }
 
   public changePrimary() {
@@ -87,6 +98,8 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     if (!payload.save) {
       return this.router.navigate(['/workplace', this.workplace.uid], { fragment: 'user-accounts' });
     }
+
+    this.submitted = true;
 
     const { role, primary } = this.form.value;
     const updatedPrimary = role === Roles.Read ? false : primary;

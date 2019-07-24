@@ -1,4 +1,8 @@
-<app-error-summary *ngIf="submitted && form.invalid" [form]="form"></app-error-summary>
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [form]="form"
+  [serverError]="serverError"
+></app-error-summary>
 
 <form (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
