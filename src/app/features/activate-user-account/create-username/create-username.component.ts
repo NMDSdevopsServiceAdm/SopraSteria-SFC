@@ -53,15 +53,11 @@ export class CreateUsernameComponent extends CreateUsername {
   }
 
   protected save(): void {
-    this.createAccountService.loginCredentials$.next({
-      username: this.getUsername.value,
-      password: this.getPassword.value,
+    this.router.navigate(['/activate-account', this.activationToken, 'security-question']).then(() => {
+      this.createAccountService.loginCredentials$.next({
+        username: this.getUsername.value,
+        password: this.getPassword.value,
+      });
     });
-
-    this.navigateToNextRoute();
-  }
-
-  protected navigateToNextRoute(): void {
-    this.router.navigate(['/activate-account', this.activationToken, 'security-question']);
   }
 }
