@@ -4,12 +4,14 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BulkUploadFileType } from '@core/model/bulk-upload.model';
+import { Workplace } from '@core/model/my-workplaces.model';
 import { AuthService } from '@core/services/auth.service';
 import { BackService } from '@core/services/back.service';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BulkUploadReferences } from '@features/bulk-upload/bulk-upload-references/bulk-upload-references';
+import { find } from 'lodash';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -46,6 +48,7 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
 
     this.backService.setBackLink({ url: this.exit });
     this.references = this.activatedRoute.snapshot.data.workplaceReferences;
+    console.log(this.references);
     this.setupForm();
   }
 
@@ -55,7 +58,15 @@ export class WorkplaceReferencesPageComponent extends BulkUploadReferences {
         .updateLocalIdentifiers(this.generateRequest())
         .pipe(take(1))
         .subscribe(
-          () => {
+          data => {
+            const updatedReferences = this.references.map(workplace => {
+              const updated = find(data.localIdentifiers, ['uid', workplace.uid]);
+              return {
+                ...workplace,
+                ...{ localIdentifier: updated.value },
+              };
+            }) as Workplace[];
+            this.bulkUploadService.setWorkplaceReferences(updatedReferences);
             if (saveAndContinue) {
               this.router.navigate(['/bulk-upload/staff-references', this.references[0].uid]);
             } else {
