@@ -58,6 +58,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.setupServerErrorsMap();
     this.breadcrumbService.show();
 
     this.form = this.formBuilder.group({
@@ -68,6 +69,15 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  public setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'Cannot update user permissions as too many of that role already exist.',
+      },
+    ];
   }
 
   public changePrimary() {
