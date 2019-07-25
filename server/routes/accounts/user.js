@@ -615,6 +615,10 @@ router.route('/establishment/:id/:userid').delete(async (req, res) => {
                 return res.status(400).send('Cannot delete own user account');
             }
 
+            if(thisUser._isPrimary){
+                return res.status(400).send('Cannot delete primary account');
+            }
+
             console.log('restored about to delete');
             await thisUser.delete(req.username);
             return res.status(204).send();
