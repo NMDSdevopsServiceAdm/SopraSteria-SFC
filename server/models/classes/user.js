@@ -144,6 +144,11 @@ class User {
         return this._trackingUUID;
     }
 
+    get userRole() {
+        const prop = this._properties.get('UserRole');
+        return prop ? prop.property : null;
+    };
+
     // used by save to initialise a new User; returns true if having initialised this user
     _initialise() {
         if (this._uid === null) {

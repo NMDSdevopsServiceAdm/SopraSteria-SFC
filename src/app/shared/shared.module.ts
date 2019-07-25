@@ -30,6 +30,7 @@ import { StaffRecordSummaryComponent } from './components/staff-record-summary/s
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
+import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/submit-exit-buttons.component';
 import { SummaryListComponent } from './components/summary-list/summary-list.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
@@ -81,6 +82,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     SummaryRecordValueComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
+    SubmitExitButtonsComponent,
   ],
   exports: [
     AlertComponent,
@@ -116,6 +118,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     UserAccountsSummaryComponent,
     WorkerDaysPipe,
     WorkerPayPipe,
+    SubmitExitButtonsComponent,
   ],
 })
 export class SharedModule {}

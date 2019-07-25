@@ -31,6 +31,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     this.setupSubscription();
     this.activationToken = this.route.snapshot.params.activationToken;
     this.previousAndReturnRoute = ['/activate-account' , this.activationToken, 'confirm-account-details'];
+    this.return = this.createAccountService.returnTo$.value;
     this.setBackLink();
   }
 
@@ -57,10 +58,6 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   protected save(): void {
     this.createAccountService.userDetails$.next(this.setUserDetails());
-    this.navigateToNextRoute();
-  }
-
-  protected navigateToNextRoute(): void {
     this.router.navigate(this.previousAndReturnRoute);
   }
 

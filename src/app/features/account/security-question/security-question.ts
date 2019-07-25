@@ -90,7 +90,7 @@ export class SecurityQuestion implements OnInit, OnDestroy {
         ],
       },
       {
-        item: 'Q',
+        item: 'securityQuestionAnswer',
         type: [
           {
             name: 'required',
