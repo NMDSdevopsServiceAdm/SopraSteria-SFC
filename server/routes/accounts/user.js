@@ -391,7 +391,7 @@ router.use('/add/establishment/:id', Authorization.hasAuthorisedEstablishment);
 router.route('/add/establishment/:id').post(async (req, res) => {
     // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
     const establishmentId = req.establishmentId;
-    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 2*60*60*24*1000; // 2 days
 
     // ensure only a user having the role of Edit can register a new user
     if (!(req.role && req.role === 'Edit')) {
