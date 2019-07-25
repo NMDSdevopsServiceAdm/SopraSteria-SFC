@@ -37,6 +37,11 @@ notify:
 bulkupload:
     region: eu-west-2
     bucketname: sfc-bulkupload-preprod
+    validation:
+        timeout: 300
+        storeIntermediaries: false
+    completion:
+        timeout: 120
 
 public:
     download:

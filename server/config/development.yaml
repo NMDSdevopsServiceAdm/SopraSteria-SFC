@@ -32,6 +32,11 @@ jwt:
 bulkupload:
     region: eu-west-2
     bucketname: sfc-bulkupload-dev
+    validation:
+        timeout: 300
+        storeIntermediaries: true
+    completion:
+        timeout: 180
 
 public:
     download:
