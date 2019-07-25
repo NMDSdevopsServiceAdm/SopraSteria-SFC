@@ -27,6 +27,7 @@ import {
   QualificationsAndTrainingComponent,
 } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
+import { StaffRecordsTabComponent } from './components/staff-records-tab/staff-records-tab.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
@@ -85,6 +86,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     WorkerPayPipe,
     SubmitExitButtonsComponent,
     WdfConfirmationPanelComponent,
+    StaffRecordsTabComponent,
   ],
   exports: [
     AlertComponent,
@@ -122,6 +124,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     WorkerPayPipe,
     SubmitExitButtonsComponent,
     WdfConfirmationPanelComponent,
+    StaffRecordsTabComponent,
   ],
 })
 export class SharedModule {}

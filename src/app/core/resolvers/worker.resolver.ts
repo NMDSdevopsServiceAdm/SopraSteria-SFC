@@ -9,7 +9,7 @@ export class WorkerResolver implements Resolve<any> {
   constructor(private router: Router, private workerService: WorkerService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    return this.workerService.getWorker(route.paramMap.get('id')).pipe(
+    return this.workerService.getWorker(route.paramMap.get('establishmentuid'), route.paramMap.get('id')).pipe(
       catchError(() => {
         this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
         return of(null);

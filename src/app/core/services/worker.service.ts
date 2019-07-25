@@ -94,8 +94,8 @@ export class WorkerService {
     this.totalStaffReturn$.next(val);
   }
 
-  getWorker(workerId: string): Observable<Worker> {
-    return this.http.get<Worker>(`/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`);
+  getWorker(workplaceUid: string, workerId: string): Observable<Worker> {
+    return this.http.get<Worker>(`/api/establishment/${workplaceUid}/worker/${workerId}`);
   }
 
   public getAllWorkers(establishmentuid: string): Observable<Worker[]> {
@@ -106,18 +106,12 @@ export class WorkerService {
     return this.http.get<LeaveReasonsResponse>('/api/worker/leaveReasons').pipe(map(r => r.reasons));
   }
 
-  createWorker(props) {
-    return this.http.post<WorkerEditResponse>(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker`,
-      props
-    );
+  createWorker(workplaceUid: string, props) {
+    return this.http.post<WorkerEditResponse>(`/api/establishment/${workplaceUid}/worker`, props);
   }
 
-  updateWorker(workerId: string, props) {
-    return this.http.put<WorkerEditResponse>(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
-      props
-    );
+  updateWorker(workplaceUid: string, workerId: string, props) {
+    return this.http.put<WorkerEditResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}`, props);
   }
 
   deleteWorker(workerId: string, reason?: any) {

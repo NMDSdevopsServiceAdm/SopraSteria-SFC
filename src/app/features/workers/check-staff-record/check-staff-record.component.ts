@@ -36,7 +36,7 @@ export class CheckStaffRecordComponent implements OnInit {
     };
 
     this.subscriptions.add(
-      this.workerService.updateWorker(this.worker.uid, props).subscribe(
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
         data => {
           this.workerService.setState({ ...this.worker, ...data });
           this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'save-success']);

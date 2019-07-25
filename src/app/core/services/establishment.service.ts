@@ -154,8 +154,8 @@ export class EstablishmentService {
     return this.http.get<any>(`/api/establishment/${establishmentuid}/staff`).pipe(map(res => res.numberOfStaff));
   }
 
-  postStaff(numberOfStaff) {
-    return this.http.post<any>(`/api/establishment/${this.establishmentId}/staff/${numberOfStaff}`, null);
+  postStaff(workplaceUid: string, numberOfStaff: number) {
+    return this.http.post<any>(`/api/establishment/${workplaceUid}/staff/${numberOfStaff}`, null);
   }
 
   getSharingOptions() {
