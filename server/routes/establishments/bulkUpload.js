@@ -1161,12 +1161,17 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     // to false to disable the upload of intermediary objects
     // the all entities intermediary file is required on completion - establishments entity for validation report
     const allentitiesreadyforjson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true));
-    const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
-    const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
-    const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
-    const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
     establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`)) : true;
-    establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`)) : true;
+
+
+    // for the purpose of the establishment validation report, need a list of all unique local authorities against all establishments
+    const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
+    const unqiueLAs = establishmentsOnlyForJson ? establishmentsOnlyForJson.map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
+      .reduce((acc, val) => acc.concat(val), [])
+      .map(la => la.name)
+      .sort((a,b) => a > b)
+      .filter((value, index, self) => self.indexOf(value)===index) : [];
+    s3UploadPromises.push(uploadAsJSON(username, establishmentId, unqiueLAs, `${establishmentId}/intermediary/all.localauthorities.json`));
 
     const traceData = config.get('bulkupload.validation.storeIntermediaries');
     if (traceData) {
@@ -1176,6 +1181,10 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
       myTrainings.length > 0  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`)) : true;
 
       // upload the intermediary entities as JSON to S3
+      const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
+      const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
+      const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
+      establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`)) : true;
       workersAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, workersOnlyForJson, `${establishmentId}/intermediary/worker.entities.json`)) : true;
       trainingAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, trainingOnlyForJson, `${establishmentId}/intermediary/training.entities.json`)) : true;
       qualificationsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, qualificationsOnlyForJson, `${establishmentId}/intermediary/qualification.entities.json`)) : true;
@@ -1395,79 +1404,10 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
 
 };
 
+
+// deprecated
 router.route('/report').get(async (req, res) => {
-  // this report returns as plain text. The report line endings are dependent on not the
-  //  runtime platform, but on the requesting platform (99.9999% of the users will be on Windows)
-  const userAgent = UserAgentParser(req.headers['user-agent']);
-  const windowsTest = /windows/i;
-  const NEWLINE = windowsTest.test(userAgent.os.name) ? "\r\n" : "\n";
-
-  try {
-    const params = {
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
-      Prefix: `${req.establishmentId}/validation/`
-    };
-
-    const validation = await s3.listObjects(params).promise();
-    const validationMsgs = await Promise.all(validation.Contents);
-
-    const validationMsgContent = validationMsgs.map(async(file) => {
-      const content = await downloadContent(file.Key);
-      return JSON.parse(content.data);
-    });
-
-    const errorsAndWarnings = await Promise.all(validationMsgContent);
-
-    const key = `${req.establishmentId}/intermediary/establishment.entities.json`;
-    let establishment =  null;
-    try {
-      establishment = await downloadContent(key);
-    } catch (err) {
-      console.log(`router.route('/report').get - failed to download: `, key);
-    }
-    const entities = establishment ? JSON.parse(establishment.data) : null;
-    const readable = new Stream.Readable();
-
-    const errorTitle = '* Errors (will cause file(s) to be rejected) *';
-    const errorPadding = '*'.padStart(errorTitle.length, '*');
-    readable.push(`${errorPadding}${NEWLINE}${errorTitle}${NEWLINE}${errorPadding}${NEWLINE}${NEWLINE}`);
-
-    errorsAndWarnings
-      .reduce((acc, val) => acc.concat(val), [])
-      .filter(msg => msg.errCode && msg.errType)
-      .sort((a,b) => a.errCode - b.errCode)
-      .map(item => readable.push(`${item.origin} - ${item.error}, ${item.errCode} on line ${item.lineNumber}${NEWLINE}`));
-
-    const warningTitle = '* Warnings (files will be accepted but data is incomplete or internally inconsistent) *';
-    const warningPadding = '*'.padStart(warningTitle.length, '*');
-    readable.push(`${NEWLINE}${warningPadding}${NEWLINE}${warningTitle}${NEWLINE}${warningPadding}${NEWLINE}${NEWLINE}`);
-
-    errorsAndWarnings
-      .reduce((acc, val) => acc.concat(val), [])
-      .filter(msg => msg.warnCode && msg.warnType)
-      .sort((a,b) => a.warnCode - b.warnCode)
-      .map(item => readable.push(`${item.origin} - ${item.warning}, ${item.warnCode} on line ${item.lineNumber}${NEWLINE}`));
-
-    const laTitle = '* You are sharing data with the following Local Authorities *';
-    const laPadding = '*'.padStart(laTitle.length, '*');
-    readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}${NEWLINE}`);
-
-    entities ? entities
-      .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
-      .reduce((acc, val) => acc.concat(val), [])
-      .sort((a,b) => a.name > b.name)
-      .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
-
-    readable.push(null);
-
-    const date = new Date().toISOString().split('T')[0];
-    res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-sfc-bulk-upload-report.txt`);
-    res.set('Content-Type', 'text/plain');
-    return readable.pipe(res);
-  } catch (err) {
-    console.error(err);
-    return res.status(503).send({});
-  }
+  return res.status(410).send('Deprecated');
 });
 
 router.route('/report/:reportType').get(async (req, res) => {
@@ -1487,7 +1427,7 @@ router.route('/report/:reportType').get(async (req, res) => {
     let messages =  null;
     let differenceReport = null;
 
-    const entityKey = `${req.establishmentId}/intermediary/establishment.entities.json`;
+    const entityKey = `${req.establishmentId}/intermediary/all.localauthorities.json`;
     const differenceReportKey = `${req.establishmentId}/validation/difference.report.json`;
 
     try {
@@ -1537,12 +1477,7 @@ router.route('/report/:reportType').get(async (req, res) => {
       const laPadding = '*'.padStart(laTitle.length, '*');
       readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
 
-      entities ? entities.map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
-                          .reduce((acc, val) => acc.concat(val), [])
-                          .map(la => la.name)
-                          .sort((a,b) => a > b)
-                          .filter((value, index, self) => self.indexOf(value)===index)
-                          .map(item => readable.push(`${item}${NEWLINE}`)) : true;
+      entities ? entities.map(item => readable.push(`${item}${NEWLINE}`)) : true;
 
       // list all establishments that are being deleted
       console.log("WA DEBUG - difference report: ", differenceReportKey)
