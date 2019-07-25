@@ -4,10 +4,10 @@
       <th class="govuk-table__header" scope="col">Staff name</th>
       <th class="govuk-table__header" scope="col">Job role</th>
       <th class="govuk-table__header" scope="col">Last updated</th>
-      <th *ngIf="!wdfReportEnabled" class="govuk-table__header" scope="col">
+      <th *ngIf="!wdfView" class="govuk-table__header" scope="col">
         <span class="govuk-visually-hidden">Status</span>
       </th>
-      <th *ngIf="wdfReportEnabled" class="govuk-table__header" scope="col">WDF</th>
+      <th *ngIf="wdfView" class="govuk-table__header" scope="col">WDF</th>
     </tr>
   </thead>
   <tbody class="govuk-table__body">
@@ -21,7 +21,7 @@
       <td class="govuk-table__cell">
         <span class="govuk-visually-hidden">last updated</span> {{ lastUpdated(worker.updated) }}
       </td>
-      <td *ngIf="!wdfReportEnabled" class="govuk-table__cell">
+      <td *ngIf="!wdfView" class="govuk-table__cell">
         <a
           *ngIf="!worker.completed"
           class="govuk-util__float-right"
@@ -35,7 +35,7 @@
           >Provide more information <span class="govuk-visually-hidden"> for {{ worker.nameOrId }}</span></a
         >
       </td>
-      <td *ngIf="wdfReportEnabled" class="govuk-table__cell">
+      <td *ngIf="wdfView" class="govuk-table__cell">
         <span class="govuk-visually-hidden">{{ worker.nameOrId }} is</span>
         <app-eligibility-icon [eligible]="worker.wdfEligible"></app-eligibility-icon>
       </td>

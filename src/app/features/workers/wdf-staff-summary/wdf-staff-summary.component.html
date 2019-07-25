@@ -30,14 +30,11 @@
     [wdfView]="true"
   ></app-staff-record-summary>
 
-  <div class="govuk-button-group" *ngIf="displayConfirmButtons">
-    <button type="button" (click)="onConfirmAndSubmit()" class="govuk-button govuk-!-margin-right-8">
-      Confirm and submit
-    </button>
-    <button type="button" (click)="exit()" class="govuk-button govuk-button--secondary">
-      Exit without submitting
-    </button>
-  </div>
+  <app-wdf-confirmation-panel
+    *ngIf="displayConfirmationPanel"
+    (confirmed)="onConfirmAndSubmit()"
+    (exited)="exit()"
+  ></app-wdf-confirmation-panel>
 
   <!-- TODO REMOVE DEV BUTTON -->
   <div *ngIf="!worker.completed">

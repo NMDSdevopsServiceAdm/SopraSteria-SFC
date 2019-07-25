@@ -37,6 +37,7 @@ import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
 import { TotalStaffPanelComponent } from './components/total-staff-panel/total-staff-panel.component';
 import { UserAccountsSummaryComponent } from './components/user-accounts-summary/user-accounts-summary.component';
+import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
@@ -84,6 +85,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     WorkerDaysPipe,
     WorkerPayPipe,
     SubmitExitButtonsComponent,
+    WdfConfirmationPanelComponent,
     StaffRecordsTabComponent,
   ],
   exports: [
@@ -121,6 +123,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     WorkerDaysPipe,
     WorkerPayPipe,
     SubmitExitButtonsComponent,
+    WdfConfirmationPanelComponent,
     StaffRecordsTabComponent,
   ],
 })

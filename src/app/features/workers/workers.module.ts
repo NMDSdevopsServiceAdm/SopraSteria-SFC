@@ -57,7 +57,9 @@ import { QualificationsComponent } from './staff-record/qualifications/qualifica
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TrainingComponent } from './staff-record/training/training.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
-import { WdfConfirmationDialogComponent } from './wdf-confirmation-dialog/wdf-confirmation-dialog.component';
+import {
+  WdfWorkerConfirmationDialogComponent,
+} from './wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkersRoutingModule } from './workers-routing.module';
@@ -114,14 +116,14 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WorkerSaveSuccessComponent,
     YearArrivedUkComponent,
     WdfStaffSummaryComponent,
-    WdfConfirmationDialogComponent,
+    WdfWorkerConfirmationDialogComponent,
   ],
   providers: [DialogService, WorkerResolver],
   entryComponents: [
     DeleteQualificationDialogComponent,
     DeleteTrainingDialogComponent,
     DeleteWorkerDialogComponent,
-    WdfConfirmationDialogComponent,
+    WdfWorkerConfirmationDialogComponent,
   ],
 })
 export class WorkersModule {}

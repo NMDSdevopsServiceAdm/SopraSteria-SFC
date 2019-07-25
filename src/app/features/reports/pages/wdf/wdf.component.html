@@ -12,7 +12,7 @@
       *ngIf="workplace"
       [workplace]="workplace"
       [return]="returnUrl"
-      [wdfReportEnabled]="true"
+      [wdfView]="true"
     ></app-workplace-summary>
   </app-tab>
   <app-tab [title]="'Staff records'">
@@ -20,7 +20,13 @@
       *ngIf="workers && workplace"
       [workplace]="workplace"
       [workers]="workers"
-      [wdfReportEnabled]="true"
+      [wdfView]="true"
     ></app-staff-summary>
   </app-tab>
 </app-tabs>
+
+<app-wdf-confirmation-panel
+  *ngIf="displayConfirmationPanel"
+  (confirmed)="onConfirmAndSubmit()"
+  [exitable]="false"
+></app-wdf-confirmation-panel>

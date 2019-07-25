@@ -9,12 +9,13 @@ import { CreateUserAccountComponent } from '@features/workplace/create-user-acco
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { SharedModule } from '@shared/shared.module';
+
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import {
-  DataSharingWithLocalAuthoritiesComponent
+  DataSharingWithLocalAuthoritiesComponent,
 } from './data-sharing-with-local-authorities/data-sharing-with-local-authorities.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteWorkplaceDialogComponent } from './delete-workplace-dialog/delete-workplace-dialog.component';
@@ -28,15 +29,18 @@ import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import {
-  UserAccountChangePrimaryDialogComponent
+  UserAccountChangePrimaryDialogComponent,
 } from './user-account-change-primary-dialog/user-account-change-primary-dialog.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
 import {
-  UserAccountEditPermissionsComponent
+  UserAccountEditPermissionsComponent,
 } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
+import {
+  WdfWorkplaceConfirmationDialogComponent,
+} from './wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 
@@ -69,12 +73,14 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
+    WdfWorkplaceConfirmationDialogComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [
     DeleteWorkplaceDialogComponent,
     UserAccountChangePrimaryDialogComponent,
     UserAccountDeleteDialogComponent,
+    WdfWorkplaceConfirmationDialogComponent,
   ],
 })
 export class WorkplaceModule {}
