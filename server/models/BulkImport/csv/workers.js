@@ -1770,22 +1770,22 @@ class Worker {
         });
       }
 
-      //moev this to transform
-      if (ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
-        this._qualifications.forEach(q => {
-          if (q.id > mySocialCareLevel) {
-            this._validationErrors.push({
-              worker: this._currentLine.UNIQUEWORKERID,
-              name: this._currentLine.LOCALESTID,
-              lineNumber: this._lineNumber,
-              warnCode: Worker.SOCIALCARE_QUAL_WARNING,
-              warnType: 'SOCIALCARE_QUAL_WARNING',
-              warning: `SCQUAL level does not match the QUALACH${q.column}`,
-              source: this._currentLine.SCQUAL,
-            });
-          }
-        })
-      }
+      // https://trello.com/c/Pae7NyN8 - disabled until a solution can be found - and move this to transform
+      // if (ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
+      //   this._qualifications.forEach(q => {
+      //     if (q.id > mySocialCareLevel) {
+      //       this._validationErrors.push({
+      //         worker: this._currentLine.UNIQUEWORKERID,
+      //         name: this._currentLine.LOCALESTID,
+      //         lineNumber: this._lineNumber,
+      //         warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+      //         warnType: 'SOCIALCARE_QUAL_WARNING',
+      //         warning: `SCQUAL level does not match the QUALACH${q.column}`,
+      //         source: this._currentLine.SCQUAL,
+      //       });
+      //     }
+      //   });
+      // }
 
       if ((!mySocialCareLevel && mySocialCareLevel !== 0) && mainJobRoles.includes(this._mainJobRole)) {
         this._validationErrors.push({
@@ -1832,19 +1832,21 @@ class Worker {
           if (isNaN(myNonSocialCareLevel)) {
             myNonSocialCareLevel = 999; // "Don't know"
           } else if (myNonSocialCareLevel) {
-            this._qualifications.forEach(q => {
-              if (q.id > myNonSocialCareLevel) {
-                this._validationErrors.push({
-                  worker: this._currentLine.UNIQUEWORKERID,
-                  name: this._currentLine.LOCALESTID,
-                  lineNumber: this._lineNumber,
-                  warnCode: Worker.NON_SOCIALCARE_QUAL_WARNING,
-                  warnType: 'NON_SOCIALCARE_QUAL_WARNING',
-                  warning: `NONSCQUAL level does not match the QUALACH${q.column}`,
-                  source: this._currentLine.SCQUAL,
-                });
-              }
-            })
+
+            // https://trello.com/c/Pae7NyN8 - disabled until a solution can be found - and move this to transform
+            // this._qualifications.forEach(q => {
+            //   if (q.id > myNonSocialCareLevel) {
+            //     this._validationErrors.push({
+            //       worker: this._currentLine.UNIQUEWORKERID,
+            //       name: this._currentLine.LOCALESTID,
+            //       lineNumber: this._lineNumber,
+            //       warnCode: Worker.NON_SOCIALCARE_QUAL_WARNING,
+            //       warnType: 'NON_SOCIALCARE_QUAL_WARNING',
+            //       warning: `NONSCQUAL level does not match the QUALACH${q.column}`,
+            //       source: this._currentLine.SCQUAL,
+            //     });
+            //   }
+            // });
           }
 
           this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
@@ -2318,6 +2320,9 @@ class Worker {
   }
 
   _validateHeaders(headers) {
+    // console.log("WA DEBUF - _validateHeaders -  S: ", headers)
+    // console.log("WA DEBUF - _validateHeaders - T1: ", this._headers_v1.join(','))
+    // console.log("WA DEBUF - _validateHeaders - T2: ", this._headers_v1_without_chgUnique.join(','))
 
     // only run once for first line, so check _lineNumber
     // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
