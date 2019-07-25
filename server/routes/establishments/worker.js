@@ -35,11 +35,10 @@ const validateWorker = async (req, res, next) => {
       }
 
       // more so, if the parent is not the owner, then only read access is allow
-      if (req.method !== 'GET') {
-        return res.status(403).send({ message: `Parent not permitted to access Worker with id: ${workerId ? workerId : 'not applicable'}` });
+      if (!req.parentIsOwner && req.method !== 'GET') {
+        return res.status(403).send({ message: `Parent not permitted to update Worker with id: ${workerId ? workerId : 'not applicable'}` });
       }
     }
-
 
     if (workerId && workerId !== 'localIdentifier') {
         // validating worker id - must be a V4 UUID
