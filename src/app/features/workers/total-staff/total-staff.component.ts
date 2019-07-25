@@ -87,7 +87,9 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     const { totalStaff } = this.form.value;
 
     this.subscriptions.add(
-      this.establishmentService.postStaff(totalStaff).subscribe(() => this.onSuccess(), error => this.onError(error))
+      this.establishmentService
+        .postStaff(this.workplace.uid, totalStaff)
+        .subscribe(() => this.onSuccess(), error => this.onError(error))
     );
   }
 

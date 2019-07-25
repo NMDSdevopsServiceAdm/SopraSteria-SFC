@@ -34,7 +34,6 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
-import { StaffRecordsTabComponent } from '@features/dashboard/staff-records-tab/staff-records-tab.component';
 import { WorkplaceTabComponent } from '@features/dashboard/workplace-tab/workplace-tab.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
 import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/edit/edit.component';
@@ -69,7 +68,6 @@ import { AppComponent } from './app.component';
     ResetPasswordConfirmationComponent,
     ResetPasswordEditComponent,
     ServiceUnavailableComponent,
-    StaffRecordsTabComponent,
     WorkplaceTabComponent,
   ],
   imports: [

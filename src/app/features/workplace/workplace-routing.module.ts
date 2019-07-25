@@ -56,6 +56,7 @@ const routes: Routes = [
       {
         path: '',
         component: ViewWorkplaceComponent,
+        resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
         data: { title: 'View Workplace' },
       },
       {
