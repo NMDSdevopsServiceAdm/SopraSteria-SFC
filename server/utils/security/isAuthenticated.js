@@ -162,26 +162,18 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
 
           // having settled all claims, it is necessary to normalise req.establishmentId so it is always the establishment primary key
           if (establishmentIdIsUID) {
-            models.establishment.findOne({
+            const foundEstablishment = await models.establishment.findOne({
               attributes: ['id'],
               where: {
                 uid: req.establishment.uid
               }
-            })
-            .then(record => record.get())
-            .then(establishment => {
-              req.establishmentId = establishment.id;
-              next();
-            })
-            .catch(err => {
-              // failed to find establishment by UUID - not authorised
-              console.error(`FATAL - Authorised against primary establishment (${claim.EstblishmentId}/${claim.EstablishmentUID}), but failed to normalise the establishment UUID`);
-              return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
             });
-          } else {
-            // it's already primary key
-            next();
+
+            if (foundEstablishment && foundEstablishment.id) {
+              req.establishmentId = foundEstablishment.id;
+            }
           }
+          next();
         }
       }
     } else {
