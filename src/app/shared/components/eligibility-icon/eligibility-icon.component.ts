@@ -6,12 +6,13 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class EligibilityIconComponent implements OnInit {
   @Input() eligible: boolean;
+  @Input() check: boolean;
 
   public icon: string;
   public label: string;
 
   ngOnInit() {
     this.icon = this.eligible ? 'tick' : 'cross';
-    this.label = this.eligible ? 'Meeting requirements' : 'Not meeting requirements';
+    this.label = this.check ? 'Check and confirm' : this.eligible ? 'Meeting requirements' : 'Not meeting requirements';
   }
 }

@@ -1,4 +1,8 @@
-<app-reports-header [title]="'Workplace Development Fund'"></app-reports-header>
+<app-reports-header
+  *ngIf="workplace"
+  [workplace]="workplace"
+  [title]="'Workplace Development Fund'"
+></app-reports-header>
 
 <app-wdf-eligibility *ngIf="report" [report]="report"></app-wdf-eligibility>
 
@@ -8,10 +12,21 @@
       *ngIf="workplace"
       [workplace]="workplace"
       [return]="returnUrl"
-      [wdfReportEnabled]="true"
+      [wdfView]="true"
     ></app-workplace-summary>
   </app-tab>
   <app-tab [title]="'Staff records'">
-    <app-staff-summary *ngIf="workers" [workers]="workers" [wdfReportEnabled]="true"></app-staff-summary>
+    <app-staff-summary
+      *ngIf="workers && workplace"
+      [workplace]="workplace"
+      [workers]="workers"
+      [wdfView]="true"
+    ></app-staff-summary>
   </app-tab>
 </app-tabs>
+
+<app-wdf-confirmation-panel
+  *ngIf="displayConfirmationPanel"
+  (confirmed)="onConfirmAndSubmit()"
+  [exitable]="false"
+></app-wdf-confirmation-panel>

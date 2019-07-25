@@ -7,7 +7,7 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
   templateUrl: './qualifications-and-training.component.html',
 })
 export class QualificationsAndTrainingComponent extends StaffRecordSummaryComponent {
-  @Input() wdfReportEnabled = false;
+  @Input() wdfView = false;
   @Input() showAddButtons = false;
 
   get displaySocialCareQualifications() {

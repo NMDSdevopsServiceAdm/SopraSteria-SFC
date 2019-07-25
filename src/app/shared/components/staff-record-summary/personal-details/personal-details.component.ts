@@ -9,7 +9,7 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
   templateUrl: './personal-details.component.html',
 })
 export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
-  @Input() wdfReportEnabled = false;
+  @Input() wdfView = false;
 
   get displayBritishCitizenship() {
     return !(this.worker.nationality && this.worker.nationality.value === 'British');

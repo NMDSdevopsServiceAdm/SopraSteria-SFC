@@ -1,11 +1,11 @@
 const express = require('express');
 const appConfig = require('../../config/config');
 const AWS = require('aws-sdk');
-const fs = require('fs');
 const csv = require('csvtojson');
 const Stream = require('stream');
 const moment = require('moment');
 const dbmodels = require('../../models');
+const config = require('../../config/config');
 
 const UserAgentParser = require('ua-parser-js');
 
@@ -247,7 +247,6 @@ router.route('/signedUrl').get(async function (req, res) {
 
 // Prevalidate
 router.route('/uploaded').put(async (req, res) => {
-
   const establishmentId = req.establishmentId;
   const username = req.username;
   const myDownloads = {};
@@ -318,30 +317,24 @@ router.route('/uploaded').put(async (req, res) => {
     let headerPromises = [];
 
     if(myDownloads.establishments){
-      headerPromises.push(new Promise( async (resolve, reject) => {
-        importedEstablishments = await csv().fromString(myDownloads.establishments).on('header', (header) => {
-          establishmentHeaders = header;
-          resolve();
-        });
-      }));
+      importedEstablishments = await csv().fromString(myDownloads.establishments);
+      const positionOfNewline = myDownloads.establishments.indexOf("\n");
+      const headerLine = myDownloads.establishments.substring(0, positionOfNewline);
+      establishmentHeaders = headerLine.trim();
     }
 
     if(myDownloads.workers){
-      headerPromises.push(new Promise( async (resolve, reject) => {
-        importedWorkers = await csv().fromString(myDownloads.workers).on('header', (header) => {
-          workerHeaders = header;
-          resolve();
-        });
-      }));
+      importedWorkers = await csv().fromString(myDownloads.workers);
+      const positionOfNewline = myDownloads.workers.indexOf("\n");
+      const headerLine = myDownloads.workers.substring(0, positionOfNewline);
+      workerHeaders = headerLine.trim();
     }
 
     if(myDownloads.training){
-      trainingHeaders.push(new Promise( async (resolve, reject) => {
-        importedTraining = await csv().fromString(myDownloads.training).on('header', (header) => {
-          trainingHeaders = header;
-          resolve();
-        });
-      }));
+      importedTraining = await csv().fromString(myDownloads.training);
+      const positionOfNewline = myDownloads.training.indexOf("\n");
+      const headerLine = myDownloads.training.substring(0, positionOfNewline);
+      trainingHeaders = headerLine.trim();
     }
 
     await Promise.all(headerPromises);
@@ -365,7 +358,6 @@ router.route('/uploaded').put(async (req, res) => {
     }
 
     if(importedWorkers){
-      //console.log("WA DEBUG - imported workers: ", importedWorkers)
       const workerCsvValidator = new CsvWorkerValidator(importedWorkers[firstRow], firstLineNumber);
       if(workerCsvValidator.preValidate(workerHeaders)){
         // count records and update metadata
@@ -451,6 +443,9 @@ router.route('/uploaded').put(async (req, res) => {
 });
 
 router.route('/validate').put(async (req, res) => {
+  // manage the request timeout
+  req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
+
   const establishmentId = req.establishmentId;
   const username = req.username;
   const isParent = req.isParent;
@@ -925,7 +920,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     // having parsed all establishments, check for duplicates
     // the easiest way to check for duplicates is to build a single object, with the establishment key 'LOCALESTID` as property name
     myEstablishments.forEach(thisEstablishment => {
-      const keyNoWhitespace = thisEstablishment.localId;
+      const keyNoWhitespace = thisEstablishment.localId.replace(/\s/g, "");
       if (allEstablishmentsByKey[keyNoWhitespace]) {
         // this establishment is a duplicate
         csvEstablishmentSchemaErrors.push(thisEstablishment.addDuplicate(allEstablishmentsByKey[keyNoWhitespace]));
@@ -980,7 +975,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           // associate this worker to the known establishment
           const workerKey = thisWorker.uniqueWorker ? thisWorker.uniqueWorker.replace(/\s/g, "") : null;
           const foundEstablishmentByLineNumber = allEstablishmentsByKey[establishmentKeyNoWhitespace];
-
           const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
 
           //key workers, to be used in training
@@ -1147,6 +1141,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
   workers.workerMetadata.deleted = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
+  console.log("WA DEBUG - checkpoint - have completed validation, uploading artifacts to S3");
+
   // upload intermediary/validation S3 objects
   if (commit) {
     const s3UploadPromises = [];
@@ -1163,7 +1159,21 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     s3UploadPromises.push(uploadAsJSON(username, establishmentId, report, `${establishmentId}/validation/difference.report.json`));
 
     // to false to disable the upload of intermediary objects
-    const traceData = true;
+    // the all entities intermediary file is required on completion - establishments entity for validation report
+    const allentitiesreadyforjson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true));
+    establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`)) : true;
+
+
+    // for the purpose of the establishment validation report, need a list of all unique local authorities against all establishments
+    const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
+    const unqiueLAs = establishmentsOnlyForJson ? establishmentsOnlyForJson.map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
+      .reduce((acc, val) => acc.concat(val), [])
+      .map(la => la.name)
+      .sort((a,b) => a > b)
+      .filter((value, index, self) => self.indexOf(value)===index) : [];
+    s3UploadPromises.push(uploadAsJSON(username, establishmentId, unqiueLAs, `${establishmentId}/intermediary/all.localauthorities.json`));
+
+    const traceData = config.get('bulkupload.validation.storeIntermediaries');
     if (traceData) {
       // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
       myEstablishments.length > 0  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`)) : true;
@@ -1171,16 +1181,9 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
       myTrainings.length > 0  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`)) : true;
 
       // upload the intermediary entities as JSON to S3
-      //console.log("WA DEBUG - establishment entities as JSON:\n", JSON.stringify(myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,false,true)), null, 4));
-
-      // debug
-      const allentitiesreadyforjson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true));
-      const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
       const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
       const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
       const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
-
-      establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`)) : true;
       establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`)) : true;
       workersAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, workersOnlyForJson, `${establishmentId}/intermediary/worker.entities.json`)) : true;
       trainingAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, trainingOnlyForJson, `${establishmentId}/intermediary/training.entities.json`)) : true;
@@ -1401,79 +1404,10 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
 
 };
 
+
+// deprecated
 router.route('/report').get(async (req, res) => {
-  // this report returns as plain text. The report line endings are dependent on not the
-  //  runtime platform, but on the requesting platform (99.9999% of the users will be on Windows)
-  const userAgent = UserAgentParser(req.headers['user-agent']);
-  const windowsTest = /windows/i;
-  const NEWLINE = windowsTest.test(userAgent.os.name) ? "\r\n" : "\n";
-
-  try {
-    const params = {
-      Bucket: appConfig.get('bulkupload.bucketname').toString(),
-      Prefix: `${req.establishmentId}/validation/`
-    };
-
-    const validation = await s3.listObjects(params).promise();
-    const validationMsgs = await Promise.all(validation.Contents);
-
-    const validationMsgContent = validationMsgs.map(async(file) => {
-      const content = await downloadContent(file.Key);
-      return JSON.parse(content.data);
-    });
-
-    const errorsAndWarnings = await Promise.all(validationMsgContent);
-
-    const key = `${req.establishmentId}/intermediary/establishment.entities.json`;
-    let establishment =  null;
-    try {
-      establishment = await downloadContent(key);
-    } catch (err) {
-      console.log(`router.route('/report').get - failed to download: `, key);
-    }
-    const entities = establishment ? JSON.parse(establishment.data) : null;
-    const readable = new Stream.Readable();
-
-    const errorTitle = '* Errors (will cause file(s) to be rejected) *';
-    const errorPadding = '*'.padStart(errorTitle.length, '*');
-    readable.push(`${errorPadding}${NEWLINE}${errorTitle}${NEWLINE}${errorPadding}${NEWLINE}${NEWLINE}`);
-
-    errorsAndWarnings
-      .reduce((acc, val) => acc.concat(val), [])
-      .filter(msg => msg.errCode && msg.errType)
-      .sort((a,b) => a.errCode - b.errCode)
-      .map(item => readable.push(`${item.origin} - ${item.error}, ${item.errCode} on line ${item.lineNumber}${NEWLINE}`));
-
-    const warningTitle = '* Warnings (files will be accepted but data is incomplete or internally inconsistent) *';
-    const warningPadding = '*'.padStart(warningTitle.length, '*');
-    readable.push(`${NEWLINE}${warningPadding}${NEWLINE}${warningTitle}${NEWLINE}${warningPadding}${NEWLINE}${NEWLINE}`);
-
-    errorsAndWarnings
-      .reduce((acc, val) => acc.concat(val), [])
-      .filter(msg => msg.warnCode && msg.warnType)
-      .sort((a,b) => a.warnCode - b.warnCode)
-      .map(item => readable.push(`${item.origin} - ${item.warning}, ${item.warnCode} on line ${item.lineNumber}${NEWLINE}`));
-
-    const laTitle = '* You are sharing data with the following Local Authorities *';
-    const laPadding = '*'.padStart(laTitle.length, '*');
-    readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}${NEWLINE}`);
-
-    entities ? entities
-      .map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
-      .reduce((acc, val) => acc.concat(val), [])
-      .sort((a,b) => a.name > b.name)
-      .map(item => readable.push(`${item.name}${NEWLINE}`)) : true;
-
-    readable.push(null);
-
-    const date = new Date().toISOString().split('T')[0];
-    res.setHeader('Content-disposition', 'attachment; filename=' + `${date}-sfc-bulk-upload-report.txt`);
-    res.set('Content-Type', 'text/plain');
-    return readable.pipe(res);
-  } catch (err) {
-    console.error(err);
-    return res.status(503).send({});
-  }
+  return res.status(410).send('Deprecated');
 });
 
 router.route('/report/:reportType').get(async (req, res) => {
@@ -1493,7 +1427,7 @@ router.route('/report/:reportType').get(async (req, res) => {
     let messages =  null;
     let differenceReport = null;
 
-    const entityKey = `${req.establishmentId}/intermediary/establishment.entities.json`;
+    const entityKey = `${req.establishmentId}/intermediary/all.localauthorities.json`;
     const differenceReportKey = `${req.establishmentId}/validation/difference.report.json`;
 
     try {
@@ -1543,12 +1477,7 @@ router.route('/report/:reportType').get(async (req, res) => {
       const laPadding = '*'.padStart(laTitle.length, '*');
       readable.push(`${NEWLINE}${laPadding}${NEWLINE}${laTitle}${NEWLINE}${laPadding}${NEWLINE}`);
 
-      entities ? entities.map(en => en.localAuthorities !== undefined ? en.localAuthorities : [])
-                          .reduce((acc, val) => acc.concat(val), [])
-                          .map(la => la.name)
-                          .sort((a,b) => a > b)
-                          .filter((value, index, self) => self.indexOf(value)===index)
-                          .map(item => readable.push(`${item}${NEWLINE}`)) : true;
+      entities ? entities.map(item => readable.push(`${item}${NEWLINE}`)) : true;
 
       // list all establishments that are being deleted
       console.log("WA DEBUG - difference report: ", differenceReportKey)
@@ -1688,8 +1617,70 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
   }
 };
 
+const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, transaction, onloadEstablishments, primaryEstablishmentId, primaryEstablishmentUid) => {
+  try {
+    // find the onload establishment by key
+    const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisNewEstablishment.key);
+
+    // the entity is already loaded, so simply prep it ready for saving
+    if (foundOnloadEstablishment) {
+      // as this new establishment is created from a parent, it automatically becomes a sub
+      foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
+      await foundOnloadEstablishment.save(theLoggedInUser, true, 0, transaction, true);
+      console.log("WA DEBUG - have created new establishment: ", thisNewEstablishment.key);
+    }
+
+  } catch (err) {
+    console.error("completeNewEstablishment: failed to complete upon new establishment: ", thisNewEstablishment.key);
+    throw err;
+  }
+};
+
+const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedInUser, transaction, onloadEstablishments, myCurrentEstablishments) => {
+  try {
+    // find the current establishment and onload establishment by key
+    const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisUpdatedEstablishment.key);
+    const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisUpdatedEstablishment.key);
+
+    // current is already restored, so simply need pass the onload entity into the current along with the associated set of worker entities
+    if (foundCurrentEstablishment) {
+      // when updating existing entities, need to remove the local identifer!
+      // but because the properties are not actual properties - but managed properties - we can't just delete the property
+
+      // simply work on the resulting full JSON presentation, whereby every property is a simply propery
+      const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true);
+      delete thisEstablishmentJSON.localIdentifier;
+
+      await foundCurrentEstablishment.load(thisEstablishmentJSON, true);
+      await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true)
+      console.log("WA DEBUG - completed saving establishment: ", foundCurrentEstablishment.key);
+    }
+  } catch (err) {
+    console.error("completeUpdateEstablishment: failed to complete upon existing establishment: ", thisUpdatedEstablishment.key);
+    throw err;
+  }
+};
+
+const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedInUser, transaction, myCurrentEstablishments) => {
+  try {
+    // find the current establishment by key
+    const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisDeletedEstablishment.key);
+
+    // current is already restored, so simply need to delete it
+    if (foundCurrentEstablishment) {
+      await foundCurrentEstablishment.delete(theLoggedInUser, transaction, true);
+      console.log("WA DEBUG - completed deleting establishment: ", thisDeletedEstablishment.key);
+    }
+  } catch (err) {
+    console.error("completeDeleteEstablishment: failed to complete upon deleting establishment: ", thisDeletedEstablishment.key);
+    throw err;
+  }
+};
 
 router.route('/complete').post(async (req, res) => {
+  // manage the request timeout
+  req.setTimeout(config.get('bulkupload.completion.timeout') * 1000);
+
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
   const primaryEstablishmentUid = req.establishment.uid;
@@ -1709,6 +1700,9 @@ router.route('/complete').post(async (req, res) => {
       const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null);
       const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
 
+      // sequential promise console logger
+      const log = result => console.log(`result: ${result}`);
+
       // could look to parallel the three above tasks as each is relatively intensive - but happy path first
       // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction
       try {
@@ -1716,72 +1710,31 @@ router.route('/complete').post(async (req, res) => {
         await dbmodels.sequelize.transaction(async t => {
           const updatedEstablishments = [];
 
-          // first create the new establishments
-          validationDiferenceReport.new.forEach(thisNewEstablishment => {
-            // find the onload establishment by key
-            // TODO - use the LOCAL_IDENTIFIER when its available
-            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisNewEstablishment.key);
-
-            // the entity is already loaded, so simply prep it ready for saving
-            if (foundOnloadEstablishment) {
-              // as this new establishment is created from a parent, it automatically becomes a sub
-              foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
-              updatedEstablishments.push(foundOnloadEstablishment);
-            }
-          });
+          // first create the new establishments - in sequence
+          const starterNewPromise = Promise.resolve(null);
+          await validationDiferenceReport.new.reduce((p, thisNewEstablishment) => p.then(() => completeNewEstablishment(thisNewEstablishment, theLoggedInUser, t, onloadEstablishments, primaryEstablishmentId, primaryEstablishmentUid).then(log)), starterNewPromise);
 
           // now update the updated
-          const updateEstablishmentPromises = [];
-          validationDiferenceReport.updated.forEach(thisUpdatedEstablishment => {
-            // find the current establishment and onload establishment by key
-            // TODO - use the LOCAL_IDENTIFIER when its available
-            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisUpdatedEstablishment.key);
-            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisUpdatedEstablishment.key);
-
-            // current is already restored, so simply need pass the onload entity into the current along with the associated set of worker entities
-            if (foundCurrentEstablishment) {
-              // when updating existing entities, need to remove the local identifer!
-              // but because the properties are not actual properties - but managed properties - we can't just delete the property
-
-              // simply work on the resulting full JSON presentation, whereby every property is a simply propery
-              const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true);
-              delete thisEstablishmentJSON.localIdentifier;
-
-              updatedEstablishments.push(foundCurrentEstablishment);
-              updateEstablishmentPromises.push(foundCurrentEstablishment.load(thisEstablishmentJSON, true));
-            }
-          });
+          const starterUpdatedPromise = Promise.resolve(null);
+          await validationDiferenceReport.updated.reduce((p, thisUpdatedEstablishment) => p.then(() => completeUpdateEstablishment(thisUpdatedEstablishment, theLoggedInUser, t, onloadEstablishments, myCurrentEstablishments).then(log)), starterUpdatedPromise);
 
           // and finally, delete the deleted
-          validationDiferenceReport.deleted.forEach(thisDeletedEstablishment => {
+          const starterDeletedPromise = Promise.resolve(null);
+          await validationDiferenceReport.deleted.reduce((p, thisDeletedEstablishment) => p.then(() => completeDeleteEstablishment(thisDeletedEstablishment, theLoggedInUser, t, myCurrentEstablishments).then(log)), starterDeletedPromise);
 
-            // find the current establishment by key
-            // TODO - use the LOCAL_IDENTIFIER when its available
-            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisDeletedEstablishment.key);
+          console.log("WA DEBUG - completed - finished all establishments")
 
-            // current is already restored, so simply need to delete it
-            if (foundCurrentEstablishment) {
-              updateEstablishmentPromises.push(foundCurrentEstablishment.delete(theLoggedInUser, t, true));
-            }
-          });
-          // wait for all updated::loads and deleted::deletes to complete
-          await Promise.all(updateEstablishmentPromises);
-
-          // and now all saves for new, updated and deleted establishments, including their associated entities
-          await Promise.all(updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t, true)));
+          // gets here having successfully completed upon the bulk upload
+          //  clean up the S3 objects
+          await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
+          console.log("WA DEBUG - completed - purged")
         });
-
-        // gets here having successfully completed upon the bulk upload
-        //  clean up the S3 objects
-        await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
 
         // confirm success against the primary establishment
         await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
 
-        return res.status(200).send({
-          // current: myCurrentEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
-          // validated: onloadEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true)),
-        });
+        console.log("WA DEBUG - completed")
+        return res.status(200).send({});
 
       } catch (err) {
         console.error("route('/complete') err: ", err);
@@ -1877,7 +1830,7 @@ router.route('/download/:downloadType').get(async (req, res) => {
 
 
       // before returning the response - upload to S3
-      const traceData = true;
+      const traceData = config.get('bulkupload.validation.storeIntermediaries');
       if (traceData) {
         const s3UploadPromises = [];
         // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed

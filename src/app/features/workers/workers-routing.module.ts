@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
+import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from './add-edit-training/add-edit-training.component';
@@ -99,6 +100,11 @@ const routes: Routes = [
       {
         path: '',
         component: StaffRecordComponent,
+        data: { title: 'Staff Record' },
+      },
+      {
+        path: 'wdf-summary',
+        component: WdfStaffSummaryComponent,
         data: { title: 'Staff Record' },
       },
       {

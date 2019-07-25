@@ -24,3 +24,16 @@
     }
   }
 }
+
+.govuk-summary-list__value--confirm {
+  font-weight: bold;
+}
+
+.govuk-summary-list--wide {
+  .govuk-summary-list__key {
+    width: 70%;
+  }
+  .govuk-summary-list__value {
+    width: 30%;
+  }
+}

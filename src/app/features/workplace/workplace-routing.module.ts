@@ -4,6 +4,7 @@ import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edi
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
+import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
@@ -39,6 +40,7 @@ const routes: Routes = [
     path: 'view-my-workplaces',
     component: ViewMyWorkplacesComponent,
     canActivate: [ParentGuard],
+    resolve: { establishment: PrimaryWorkplaceResolver },
     data: { title: 'View My Workplaces' },
   },
   {
@@ -54,6 +56,7 @@ const routes: Routes = [
       {
         path: '',
         component: ViewWorkplaceComponent,
+        resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
         data: { title: 'View Workplace' },
       },
       {
@@ -174,6 +177,11 @@ const routes: Routes = [
         path: 'staff-record',
         loadChildren: '@features/workers/workers.module#WorkersModule',
         data: { title: 'Staff Records' },
+      },
+      {
+        path: 'reports',
+        loadChildren: '@features/reports/reports.module#ReportsModule',
+        data: { title: 'Reports' },
       },
     ],
   },

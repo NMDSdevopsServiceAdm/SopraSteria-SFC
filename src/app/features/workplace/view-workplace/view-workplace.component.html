@@ -1,14 +1,14 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <h1 class="govuk-heading-l">
-      <span *ngIf="parentEstablishment?.name" class="govuk-caption-xl">{{ parentEstablishment.name }}</span>
+      <span *ngIf="primaryEstablishment.isParent" class="govuk-caption-xl">{{ primaryEstablishment.name }}</span>
       {{ workplace.name }}
     </h1>
   </div>
 
   <div class="govuk-grid-column-one-third-from-desktop">
     <button
-      *ngIf="parentEstablishment?.isParent"
+      *ngIf="primaryEstablishment.isParent"
       class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
       (click)="onDeleteWorkplace($event)"
     >
@@ -23,16 +23,16 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <app-tabs>
-      <app-tab [title]="'User accounts'">
-        <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
-      </app-tab>
-
       <app-tab [title]="'Workplace'">
         <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
       </app-tab>
 
       <app-tab [title]="'Staff records'" *ngIf="checkPermission(staffPermission)">
-        <!-- <app-staff-records-sub-tab></app-staff-records-sub-tab> -->
+        <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
+      </app-tab>
+
+      <app-tab [title]="'User accounts'">
+        <app-user-accounts-summary [workplace]="workplace"></app-user-accounts-summary>
       </app-tab>
     </app-tabs>
   </div>

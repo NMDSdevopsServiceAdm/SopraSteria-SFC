@@ -151,6 +151,9 @@ class Worker {
 
   static get AMHP_WARNING() { return 3380; }
 
+  static get SOCIALCARE_QUAL_WARNING() { return 3360; }
+  static get NON_SOCIALCARE_QUAL_WARNING() { return 3370; }
+
   static get YEAROFENTRY_WARNING() { return 3380; }
 
   static get QUAL_ACH01_ERROR() { return 5010; }
@@ -469,7 +472,7 @@ class Worker {
 
   _validatePostCode() {
     const myPostcode = this._currentLine.POSTCODE;
-    const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}\s{1}[0-9][A-Za-z]{2}$/;
+    const postcodeRegex = /^[A-Za-z]{1,2}[0-9]{1,2}[A-Za-z]?\s{1}[0-9][A-Za-z]{2}$/;
 
     if (!myPostcode) {
       this._validationErrors.push({
@@ -999,6 +1002,7 @@ class Worker {
     const zeroHourContractValues = [1, 2, 999];
     const myZeroHourContract = parseInt(this._currentLine.ZEROHRCONT, 10);
     const myContHours = parseFloat(this._currentLine.CONTHOURS);
+    const zeroHoursEmpty = this._currentLine.ZEROHRCONT && this._currentLine.ZEROHRCONT.length > 0 ? false : true;
 
     if (myContHours > 0 && !this._currentLine.ZEROHRCONT) {
       this._validationErrors.push({
@@ -1012,7 +1016,7 @@ class Worker {
       });
       return false;
     }
-    else if (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract)) {
+    else if (!zeroHoursEmpty && (isNaN(myZeroHourContract) || !zeroHourContractValues.includes(myZeroHourContract))) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1724,20 +1728,19 @@ class Worker {
     const mySocialCare = this._currentLine.SCQUAL ? this._currentLine.SCQUAL.split(';') : null;
     const mainJobRoles = [6,16,15];
     const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
-    const mySocialCareIndicator = (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) ?
-      parseInt(mySocialCare[0]) : '';
+    const mySocialCareIndicator = (this._currentLine.SCQUAL && this._currentLine.SCQUAL.length > 0) ? parseInt(mySocialCare[0]) : null;
 
-    if (isNaN(mySocialCareIndicator)) {
+    if (mySocialCareIndicator === null) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.SOCIALCARE_QUAL_WARNING,
-        warnType: 'SOCIALCARE_QUAL_WARNING',
+        warnCode: Worker.SOCIALCARE_QUAL_WANRING,
+        warnType: 'SOCIALCARE_QUAL_WANRING',
         warning: "SCQUAL is blank",
         source: this._currentLine.SCQUAL,
       });
-    } else if (!ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
+    } else if (isNaN(mySocialCareIndicator) || !ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1751,8 +1754,8 @@ class Worker {
 
     this._socialCareQualification = mySocialCareIndicator;
 
-    // if the social care indicator is "1" (yes) - then get the next value which must be the level
-    if (mySocialCareIndicator == 1) {
+    if (mySocialCareIndicator === 1) {
+      // if the social care indicator is "1" (yes) - then get the next value which must be the level
       const mySocialCareLevel = parseInt(mySocialCare[1]);
 
       if (!mySocialCareLevel && mySocialCareLevel !== 0) {
@@ -1767,22 +1770,22 @@ class Worker {
         });
       }
 
-      //moev this to transform
-      if (ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
-        this._qualifications.forEach(q => {
-          if (q.id > mySocialCareLevel) {
-            this._validationErrors.push({
-              worker: this._currentLine.UNIQUEWORKERID,
-              name: this._currentLine.LOCALESTID,
-              lineNumber: this._lineNumber,
-              warnCode: Worker.SOCIALCARE_QUAL_WARNING,
-              warnType: 'SOCIALCARE_QUAL_WARNING',
-              warning: `SCQUAL level does not match the QUALACH** (${q.column})`,
-              source: this._currentLine.SCQUAL,
-            });
-          }
-        })
-      }
+      // https://trello.com/c/Pae7NyN8 - disabled until a solution can be found - and move this to transform
+      // if (ALLOWED_SOCIAL_CARE_VALUES.includes(mySocialCareIndicator)) {
+      //   this._qualifications.forEach(q => {
+      //     if (q.id > mySocialCareLevel) {
+      //       this._validationErrors.push({
+      //         worker: this._currentLine.UNIQUEWORKERID,
+      //         name: this._currentLine.LOCALESTID,
+      //         lineNumber: this._lineNumber,
+      //         warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+      //         warnType: 'SOCIALCARE_QUAL_WARNING',
+      //         warning: `SCQUAL level does not match the QUALACH${q.column}`,
+      //         source: this._currentLine.SCQUAL,
+      //       });
+      //     }
+      //   });
+      // }
 
       if ((!mySocialCareLevel && mySocialCareLevel !== 0) && mainJobRoles.includes(this._mainJobRole)) {
         this._validationErrors.push({
@@ -1798,6 +1801,7 @@ class Worker {
       this._socialCareQualificationlevel = mySocialCareLevel;
     }
 
+
     return true;
   }
 
@@ -1805,62 +1809,54 @@ class Worker {
     const myNonSocialCare = this._currentLine.NONSCQUAL ? this._currentLine.NONSCQUAL.split(';') : null;
     const ALLOWED_SOCIAL_CARE_VALUES = [1, 2, 999];
 
-    const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ?
-      parseInt(myNonSocialCare[0]) : '';
+    const myNonSocialCareIndicator = (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) ? parseInt(myNonSocialCare[0]) : null;
 
-    if (isNaN(myNonSocialCareIndicator)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-        warnType: 'NON_SOCIALCARE_QUAL_ERROR',
-        warning: "NONSCQUAL is blank",
-        source: this._currentLine.NONSCQUAL,
-      });
 
-    } else if (!ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-        errType: 'NON_SOCIALCARE_QUAL_ERROR',
-        error: "The code you have entered for NONSCQUAL is incorrect",
-        source: this._currentLine.NONSCQUAL,
-      });
-    } else if(myNonSocialCareIndicator == 1) {
-      this._nonSocialCareQualification = myNonSocialCareIndicator;
+    if (this._currentLine.NONSCQUAL && this._currentLine.NONSCQUAL.length > 0) {
+      if (isNaN(myNonSocialCareIndicator) || !ALLOWED_SOCIAL_CARE_VALUES.includes(myNonSocialCareIndicator)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          errCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
+          errType: 'NON_SOCIALCARE_QUAL_ERROR',
+          error: "The code you have entered for NONSCQUAL is incorrect",
+          source: this._currentLine.NONSCQUAL,
+        });
+      } else if(myNonSocialCareIndicator == 1) {
+        this._nonSocialCareQualification = myNonSocialCareIndicator;
 
-      // if the social care indicator is "1" (yes) - then get the next value which must be the level - optional only for non-social care!
-      if (myNonSocialCareIndicator == 1) {
-        let myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
-        if (isNaN(myNonSocialCareLevel)) {
-          myNonSocialCareLevel = 999; // "Don't know"
-        } else if (myNonSocialCareLevel) {
-          this._qualifications.forEach(q => {
-            if (q.id > myNonSocialCareLevel) {
-              this._validationErrors.push({
-                worker: this._currentLine.UNIQUEWORKERID,
-                name: this._currentLine.LOCALESTID,
-                lineNumber: this._lineNumber,
-                warnCode: Worker.NON_SOCIALCARE_QUAL_ERROR,
-                warnType: 'NON_SOCIALCARE_QUAL_ERROR',
-                warning: `NONSCQUAL level does not match the QUALACH** (${q.column})`,
-                source: this._currentLine.SCQUAL,
-              });
-            }
-          })
+        // if the social care indicator is "1" (yes) - then get the next value which must be the level - optional only for non-social care!
+        if (myNonSocialCareIndicator == 1) {
+          let myNonSocialCareLevel = parseInt(myNonSocialCare[1]);
+          if (isNaN(myNonSocialCareLevel)) {
+            myNonSocialCareLevel = 999; // "Don't know"
+          } else if (myNonSocialCareLevel) {
+
+            // https://trello.com/c/Pae7NyN8 - disabled until a solution can be found - and move this to transform
+            // this._qualifications.forEach(q => {
+            //   if (q.id > myNonSocialCareLevel) {
+            //     this._validationErrors.push({
+            //       worker: this._currentLine.UNIQUEWORKERID,
+            //       name: this._currentLine.LOCALESTID,
+            //       lineNumber: this._lineNumber,
+            //       warnCode: Worker.NON_SOCIALCARE_QUAL_WARNING,
+            //       warnType: 'NON_SOCIALCARE_QUAL_WARNING',
+            //       warning: `NONSCQUAL level does not match the QUALACH${q.column}`,
+            //       source: this._currentLine.SCQUAL,
+            //     });
+            //   }
+            // });
+          }
+
+          this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
         }
 
-        this._nonSocialCareQualificationlevel = myNonSocialCareLevel;
+        return false;
+      } else {
+        return true;
       }
-
-      return false;
-    } else {
-      return true;
     }
-
   }
 
   __validateQualification(qualificationIndex, qualificationName, qualificationError, qualificationErrorName, qualification,
@@ -1871,26 +1867,40 @@ class Worker {
     if (qualification && qualification.length > 0) {
       const localValidationErrors = [];
 
-      const qualificationId = parseInt(myQualification[0]);
+      const qualificationId = parseInt(myQualification[0], 10);
 
       if (isNaN(qualificationId)) {
         localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: qualificationError,
           errType: qualificationErrorName,
-          error: `Qualification (${qualificationName}) index (before semi colon) must be an integer`,
+          error: `The code you have entered for (${qualificationName}) is incorrect`,
           source: qualification,
         });
       }
 
       // if the social care indicator is "1" (yes) - then get the next value which must be the level
       const qualificationYear = parseInt(myQualification[1]);
-      if (isNaN(qualificationYear)) {
+      if (myQualification[1] === null || myQualification[1].length === 0) {
         localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: qualificationError,
+          warnType: qualificationErrorName,
+          warning: `Year achieved for ${qualificationName} is blank`,
+          source: qualification,
+        });
+      } else if (myQualification[1] !== null && isNaN(qualificationYear)) {
+        localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
           errCode: qualificationError,
           errType: qualificationErrorName,
-          error: `Qualification (${qualificationName}) year (after semi colon) must be an integer`,
+          error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
         });
       }
@@ -1901,10 +1911,12 @@ class Worker {
         const MAX_LENGTH=120;
         if (qualificationDesc.length > MAX_LENGTH) {
           localValidationErrors.push({
+            worker: this._currentLine.UNIQUEWORKERID,
+            name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: qualificationDescError,
-            errType: qualificationDescErrorName,
-            error: `Qualification Description (${qualificationDescName}) must be no more than 120 characters`,
+            warnCode: qualificationDescError,
+            warnType: qualificationDescErrorName,
+            warning: `The notes you hqve entered for (${qualificationDescName}) are over 120 characters and will be ignored`,
             source: qualificationDesc,
           });
         } else {
@@ -2308,10 +2320,14 @@ class Worker {
   }
 
   _validateHeaders(headers) {
+    // console.log("WA DEBUF - _validateHeaders -  S: ", headers)
+    // console.log("WA DEBUF - _validateHeaders - T1: ", this._headers_v1.join(','))
+    // console.log("WA DEBUF - _validateHeaders - T2: ", this._headers_v1_without_chgUnique.join(','))
+
     // only run once for first line, so check _lineNumber
     // Worker can support one of two headers - CHGUNIQUEWRKID column is optional
-    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers) &&
-        JSON.stringify(this._headers_v1_without_chgUnique) !== JSON.stringify(headers)) {
+    if (this._headers_v1.join(',') !== headers &&
+        this._headers_v1_without_chgUnique.join(',') !== headers) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -2695,7 +2711,7 @@ class Worker {
 
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
   addAPIValidations(errors, warnings) {
-    errors.forEach(thisError => {
+/*     errors.forEach(thisError => {
       thisError.properties ? thisError.properties.forEach(thisProp => {
         const validationError = {
           lineNumber: this._lineNumber,
@@ -3016,7 +3032,7 @@ class Worker {
 
         this._validationErrors.push(validationWarning);
       }) : true;
-    });
+    }); */
   }
 
 

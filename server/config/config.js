@@ -318,6 +318,25 @@ const config = convict({
       format: 'int',
       default: 300,
     },
+    validation: {
+      timeout: {
+        doc: 'The timeout in seconds for bulk upload validations',
+        format: 'int',
+        default: '300'
+      },
+      storeIntermediaries: {
+        doc: 'If true, intermediary trace data will be stored',
+        format: 'Boolean',
+        default: false
+      },
+    },
+    completion: {
+      timeout: {
+        doc: 'The timeout in seconds for bulk upload validations',
+        format: 'int',
+        default: '300'
+      },
+    }
   },
   public: {
     download: {

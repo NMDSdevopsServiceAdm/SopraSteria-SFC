@@ -284,6 +284,7 @@ class Worker extends EntityValidator {
                 // first training records
                 this._trainingEntities = [];
                 if (document.training && Array.isArray(document.training)) {
+                    //console.log("WA DEBUG - document.training: ", document.training)
                     document.training.forEach(thisTraining => {
                         const newTrainingRecord = new Training(null, null);
 
@@ -295,6 +296,7 @@ class Worker extends EntityValidator {
                 // and qualifications records
                 this._qualificationsEntities = [];
                 if (document.qualifications && Array.isArray(document.qualifications)) {
+                    //console.log("WA DEBUG - document.qualifications: ", document.qualifications)
                     document.qualifications.forEach(thisQualificationRecord => {
                         const newQualificationRecord = new Qualification(null, null);
 
@@ -305,6 +307,7 @@ class Worker extends EntityValidator {
 
                 // wait for loading of all training and qualification records
                 await Promise.all(promises);
+                //console.log("WA DEBUG - this qualifications/training: ", this._id, this._qualificationsEntities ? this._qualificationsEntities.length : 'undefined', this._trainingEntities ? this._trainingEntities.length : 'undefined');
             }
 
         } catch (err) {
@@ -349,6 +352,8 @@ class Worker extends EntityValidator {
     async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
         const newQualificationsPromises = [];
         const newTrainingPromises = [];
+
+        console.log("WA DEBUG - saving worker's associated entities: ", this._establishmentId, this._id, this._trainingEntities ? this._trainingEntities.length : 0, this._qualificationsEntities ? this._qualificationsEntities.length : 0)
 
         try {
             // there is no change audit on training; simply delete all that is there and recreate
@@ -405,6 +410,8 @@ class Worker extends EntityValidator {
     // Throws "WorkerSaveException" on error
     async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null, associatedEntities=false) {
         let mustSave = this._initialise();
+
+        console.log("WA DEBUG - saving Worker: est id/worker id - ", this._establishmentId, this.nameOrId)
 
         if (!this.uid) {
             this._log(Worker.LOG_ERROR, 'Not able to save an unknown uid');
@@ -609,11 +616,11 @@ class Worker extends EntityValidator {
                         const completedProperty = this._properties.get('Completed');
                         if (completedProperty && completedProperty.modified) {
                             await WdfCalculator.calculate(savedBy.toLowerCase(), this._establishmentId, null, thisTransaction);
-                        }
+                        }*/
 
                         if (associatedEntities) {
                             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
-                        } */
+                        }
 
                         // this is an async method - don't wait for it to return
                         AWSKinesis.workerPump(AWSKinesis.UPDATED, this.toJSON());

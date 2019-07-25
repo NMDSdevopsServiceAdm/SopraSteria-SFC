@@ -129,6 +129,11 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         byUsername = escape(userId.toLowerCase());
     }
 
+    // ensure only a user having the role of Edit can update a user
+    if (!(req.role && req.role === 'Edit')) {
+        return res.status(403).send();
+    }
+
     const thisUser = new User.User(establishmentId);
 
     try {
@@ -138,6 +143,24 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         if (await thisUser.restore(byUUID, byUsername, null)) {
             // TODO: JSON validation
 
+            if(req.body.role && thisUser.userRole !== req.body.role){
+                if(!(req.body.role == 'Edit' || req.body.role == 'Read')){
+                    return res.status(400).send("Invalid request");
+                }
+                    
+                let limits = {'Edit': User.User.MAX_EDIT_SINGLE_USERS, 'Read' : User.User.MAX_READ_SINGLE_USERS};
+        
+                if(req.isParent && req.establishmentId == req.establishment.id){
+                    limits = {'Edit': User.User.MAX_EDIT_PARENT_USERS, 'Read' : User.User.MAX_READ_PARENT_USERS};
+                }
+                
+                const currentTypeLimits = await User.User.fetchUserTypeCounts(establishmentId);
+            
+                if(currentTypeLimits[req.body.role]+1 > limits[req.body.role]){
+                    return res.status(400).send(`Cannot create new account as ${req.body.role} account type limit reached`);
+                }
+            }
+        
             // force lowercase on email when updating
             req.body.email = req.body.email ? req.body.email.toLowerCase() : req.body.email;
 
@@ -383,7 +406,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
 
     let limits = {'Edit': User.User.MAX_EDIT_SINGLE_USERS, 'Read' : User.User.MAX_READ_SINGLE_USERS};
 
-    if(req.isParent){
+    if(req.isParent && req.establishmentId == req.establishment.id){
         limits = {'Edit': User.User.MAX_EDIT_PARENT_USERS, 'Read' : User.User.MAX_READ_PARENT_USERS};
     }
 
@@ -478,14 +501,20 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
         if(passTokenResults){
             const thisUser = new User.User();
             if (await thisUser.restore(passTokenResults.user.uid, null, null)) {
+                let trackingUUID = "";
                 await models.sequelize.transaction(async t => {
-                    await thisUser.trackNewUser(req.username, t, expiresTTLms);
+                    trackingUUID = await thisUser.trackNewUser(req.username, t, expiresTTLms);
                 });
+                let response = {};
+                if (isLocal(req)) {
+                    response = { trackingUUID };
+                }
+
+                return res.status(200).send(response);
             }
-            return res.status(200).send("Success");
-        }else{
-            return res.status(404).send("Not found");
         }
+        
+        return res.status(404).send("Not found");
         
     }
     catch(err){
@@ -493,9 +522,6 @@ router.route('/:uid/resend-activation').post(async (req, res) => {
     }
 });
 
-router.route('/:username').delete(async (req, res) => {
-    return res.status(200).send();
-});
 
 // validates (part add) a new user - not authentication middleware
 router.route('/validateAddUser').post(async (req, res) => {
@@ -572,92 +598,42 @@ router.route('/validateAddUser').post(async (req, res) => {
     }
 });
 
-router.use('/:username', Authorization.isAuthorised);
-router.route('/:username').delete(async (req, res) => {
-   try {
-        const login = await models.login.findOne({
-            where: {
-                username: {
-                    [models.Sequelize.Op.iLike] : req.params.username
-                },
-                isActive: true
-            },
-            include: [
-                {
-                    model: models.user,
-                    attributes: ['id', 'FullNameValue'],
-                    where: {
-                        establishmentId: req.establishmentId
-                    }
-                }
-            ]
-        });
+router.use('/establishment/:id/:userid', Authorization.hasAuthorisedEstablishment);
+router.route('/establishment/:id/:userid').delete(async (req, res) => {
+    const userId = req.params.userid;
 
-        if (login && login.user.id) {
-            await models.sequelize.transaction(async t => {
+    const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+    if (!uuidRegex.test(userId.toUpperCase())) {
+        return res.status(503).send('Invalid request');
+    }
 
-                // If the deleted user is the primary, make us the primary
-                if(login.user.isPrimary){
-                    await models.user.update({
-                            isPrimary: true,
-                            updated: new Date(),
-                            updatedBy: req.username.toLowerCase()
-                        },{
-                        where: {
-                            username: req.username
-                        },
-                        transaction: t,
-                        attributes: ['id', 'updated'],
-                    });                    
-                }
+    const thisUser = new User.User(userId);
 
-                // Set the login to not active
-                login.update({
-                    isActive: false
-                },
-                {transaction: t});
+    try {
+        if (await thisUser.restore(userId, null, false)) {
+            if(thisUser.username && thisUser.username == req.username){
+                return res.status(400).send('Cannot delete own user account');
+            }
 
-                // Create audit log entry
-                const auditEvent = {
-                    userFk: login.user.id,
-                    username: req.username,
-                    type: 'delete',
-                    property: 'isActive',
-                    event: {}
-                };
-                await models.userAudit.create(auditEvent, {transaction: t});
-
-                let randomNewUsername = uuid.v4();
-
-                login.user.update({
-                    Archived: true,
-                    FullNameValue: false,
-                    isPrimary: false,
-                    Username: randomNewUsername,
-                    EmailValue: '',
-                    PhoneValue: '',
-                    JobTitle: '',
-                    SecurityQuestionValue: '',
-                    SecurityQuestionAnswerValue: ''
-                },
-                {transaction: t});
-
-                await models.sequelize.query('UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: login.username, usernameNew: randomNewUsername },type: models.sequelize.QueryTypes.UPDATE, transaction: t });
-                await models.sequelize.query('UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: login.username, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: t });
-                await models.sequelize.query('UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: login.username, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: t });
-
-            });
-
-            return res.status(200).send(`User deleted`);
+            console.log('restored about to delete');
+            await thisUser.delete(req.username);
+            return res.status(204).send();
         } else {
-            return res.status(404).send(`User not found`);
+            console.log('404 not found that user')
+            return res.status(404).send('Not Found');            
         }
+    } catch (err) {
+        const thisError = new User.UserExceptions.UserRestoreException(
+            thisUser.id,
+            thisUser.uid,
+            null,
+            err,
+            null,
+            `Failed to delete User with id/uid: ${userId}`);
 
-  } catch (err) {
-    console.error('User delete failed', err);
-    return res.status(503).send();
-  }
-
+        console.error('User::DELETE - failed', thisError.message);
+        return res.status(503).send(thisError.safe);
+    }
 });
 
 // registers (full add) a new user - authentication middleware is specific to add user token
@@ -692,30 +668,35 @@ router.route('/add').post(async (req, res) => {
             // use the User properties to load (includes validation)
             const thisUser = new User.User(trackingResponse.user.establishmentId, addUserUUID);
 
-            // only those properties defined in the POST body will be updated (peristed) along with
-            //   the additional role property - ovverwrites against that could be passed in the body
-            const newUserProperties = {
-                ...req.body,
-                role: trackingResponse.user.UserRoleValue
-            };
+            if (await thisUser.restore(trackingResponse.user.uid, null, null)) {
+                // TODO: JSON validation
+        
+                // only those properties defined in the POST body will be updated (peristed) along with
+                //   the additional role property - ovverwrites against that could be passed in the body
+                const newUserProperties = {
+                    ...req.body,
+                    role: trackingResponse.user.UserRoleValue
+                };
 
-            // force the username and email to be lowercase
-            newUserProperties.username = newUserProperties.username ? newUserProperties.username.toLowerCase() : newUserProperties.username;
-            newUserProperties.email = newUserProperties.email ? newUserProperties.email.toLowerCase() : newUserProperties.email;
+                // force the username and email to be lowercase
+                newUserProperties.username = newUserProperties.username ? newUserProperties.username.toLowerCase() : newUserProperties.username;
+                newUserProperties.email = newUserProperties.email ? newUserProperties.email.toLowerCase() : newUserProperties.email;
 
-            const isValidUser = await thisUser.load(newUserProperties);
-            // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!
-            if (isValidUser && thisUser.hasDefaultNewUserProperties) {
-                // this is a part user (register user) - so no audit
-                // Also, because this is a part user (register user) - must send a registration email which means adding
-                //  user tracking
-                await thisUser.save(trackingResponse.by);
+                const isValidUser = await thisUser.load(newUserProperties);
+                // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!
+                if (isValidUser && thisUser.hasDefaultNewUserProperties) {
+                    // this is a part user (register user) - so no audit
+                    // Also, because this is a part user (register user) - must send a registration email which means adding
+                    //  user tracking
+                    await thisUser.save(trackingResponse.by);
 
-                return res.status(200).json(thisUser.toJSON(false, false, false, true));
-            } else {
-                return res.status(400).send('Unexpected Input.');
+                    return res.status(200).json(thisUser.toJSON(false, false, false, true));
+                } else {
+                    return res.status(400).send('Unexpected Input.');
+                }
+            }else{
+                return res.status(404).send();
             }
-
         } else {
             // not found the given add user tracking reference
             console.error("api/user/add error - failed to match add user tracking and user record");

@@ -1,10 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
-import { LoggedInEstablishment } from '@core/model/logged-in.model';
-import { Workplace, GetWorkplacesResponse } from '@core/model/my-workplaces.model';
-import { AuthService } from '@core/services/auth.service';
+import { Establishment } from '@core/model/establishment.model';
+import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
@@ -14,20 +14,20 @@ import { Subscription } from 'rxjs';
 })
 export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  public establishment: LoggedInEstablishment | null;
+  public primaryWorkplace: Establishment;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
   public workplaces: Workplace[] = [];
   public workplacesCount = 0;
 
   constructor(
-    private authService: AuthService,
+    private establishmentService: EstablishmentService,
     private userService: UserService,
     private errorSummaryService: ErrorSummaryService
   ) {}
 
   ngOnInit() {
-    this.establishment = this.authService.establishment;
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.getEstablishments();
     this.setupServerErrorsMap();
   }

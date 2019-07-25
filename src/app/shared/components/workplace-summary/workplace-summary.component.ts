@@ -13,7 +13,7 @@ export class WorkplaceSummaryComponent {
   public capacityMessages = [];
   public pluralMap = [];
   private _workplace: any;
-  @Input() wdfReportEnabled = false;
+  @Input() wdfView = false;
 
   @Input()
   set workplace(workplace: any) {

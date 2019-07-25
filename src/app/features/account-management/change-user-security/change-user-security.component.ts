@@ -17,7 +17,6 @@ import { SecurityQuestion } from '@features/account/security-question/security-q
 export class ChangeUserSecurityComponent extends SecurityQuestion {
   private serverErrorsMap: Array<ErrorDefinition>;
   private userDetails: UserDetails;
-  private username: string;
   public serverError: string;
 
   constructor(

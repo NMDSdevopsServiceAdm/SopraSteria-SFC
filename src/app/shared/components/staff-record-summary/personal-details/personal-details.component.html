@@ -8,7 +8,7 @@
       {{ worker.nationalInsuranceNumber || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../national-insurance-number']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('national-insurance-number')" (click)="setReturn()">
         <ng-container *ngIf="!worker.nationalInsuranceNumber">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -25,20 +25,13 @@
     <dt class="govuk-summary-list__key">
       Date of birth
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.dateOfBirth === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.dateOfBirth != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.dateOfBirth" [item]="worker">
         {{ worker.dateOfBirth ? dob : '-' }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.dateOfBirth ? dob : '-' }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../date-of-birth']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('date-of-birth')" (click)="setReturn()">
         <ng-container *ngIf="!worker.dateOfBirth">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -59,7 +52,7 @@
       {{ worker.postcode || '-' }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../home-postcode']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('home-postcode')" (click)="setReturn()">
         <ng-container *ngIf="!worker.postcode">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -77,20 +70,13 @@
       Gender
     </dt>
 
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.gender === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.gender != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.gender" [item]="worker">
         {{ worker.gender | closedEndedAnswer }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.gender | closedEndedAnswer }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../gender']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('gender')" (click)="setReturn()">
         <ng-container *ngIf="!worker.gender">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -111,7 +97,7 @@
       {{ worker.disability | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../disability']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('disability')" (click)="setReturn()">
         <ng-container *ngIf="!worker.disability">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -132,7 +118,7 @@
       {{ worker.ethnicity?.ethnicity | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../ethnicity']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('ethnicity')" (click)="setReturn()">
         <ng-container *ngIf="!worker.ethnicity">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -149,28 +135,17 @@
     <dt class="govuk-summary-list__key">
       Nationality
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.nationality === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.nationality != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.nationality" [item]="worker">
         {{
           worker.nationality?.other?.nationality !== null
             ? worker.nationality?.other?.nationality
             : (worker.nationality?.value | closedEndedAnswer)
         }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{
-        worker.nationality?.other?.nationality !== null
-          ? worker.nationality?.other?.nationality
-          : (worker.nationality?.value | closedEndedAnswer)
-      }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../nationality']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('nationality')" (click)="setReturn()">
         <ng-container *ngIf="!worker.nationality">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -191,7 +166,7 @@
       {{ worker.britishCitizenship | closedEndedAnswer }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../british-citizenship']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('british-citizenship')" (click)="setReturn()">
         <ng-container *ngIf="!worker.britishCitizenship">
           Provide information
           <span class="govuk-visually-hidden"> for</span>
@@ -216,7 +191,7 @@
       }}
     </dd>
     <dd class="govuk-summary-list__actions">
-      <a [routerLink]="['../country-of-birth']" (click)="setReturn()">
+      <a [routerLink]="getRoutePath('country-of-birth')" (click)="setReturn()">
         <ng-container *ngIf="!worker.countryOfBirth">
           Provide information
           <span class="govuk-visually-hidden"> for</span>

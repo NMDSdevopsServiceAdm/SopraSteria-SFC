@@ -56,8 +56,4 @@ export class SecurityQuestionComponent extends SecurityQuestion {
       });
     });
   }
-
-  protected setCallToActionLabel(): void {
-    this.callToActionLabel = 'Save and continue';
-  }
 }

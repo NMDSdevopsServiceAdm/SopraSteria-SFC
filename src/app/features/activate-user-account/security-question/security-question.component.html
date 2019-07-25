@@ -1,8 +1,8 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+<form novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l">User account</span>
@@ -36,8 +36,7 @@
           </div>
         </ng-container>
       </fieldset>
-
-      <button type="submit" class="govuk-button">{{ callToActionLabel }}</button>
-    </form>
+    </div>
   </div>
-</div>
+  <app-submit-exit-buttons [return]="return"></app-submit-exit-buttons>
+</form>

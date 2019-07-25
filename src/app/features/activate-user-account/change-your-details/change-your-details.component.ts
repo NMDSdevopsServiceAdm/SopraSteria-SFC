@@ -14,7 +14,6 @@ import { CreateAccountService } from '@core/services/create-account/create-accou
 export class ChangeYourDetailsComponent extends AccountDetails {
   public callToActionLabel = 'Save and return';
   private activationToken: string;
-  private previousAndReturnRoute: any[];
 
   constructor(
     private createAccountService: CreateAccountService,
@@ -30,7 +29,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   protected init() {
     this.setupSubscription();
     this.activationToken = this.route.snapshot.params.activationToken;
-    this.previousAndReturnRoute = ['/activate-account' , this.activationToken, 'confirm-account-details'];
+    this.return = this.createAccountService.returnTo$.value;
     this.setBackLink();
   }
 
@@ -57,10 +56,10 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   protected save(): void {
     this.createAccountService.userDetails$.next(this.setUserDetails());
-    this.router.navigate(this.previousAndReturnRoute);
+    this.router.navigate(this.return.url);
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: this.previousAndReturnRoute });
+    this.backService.setBackLink(this.return);
   }
 }

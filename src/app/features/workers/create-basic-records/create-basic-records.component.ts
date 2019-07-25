@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Job } from '@core/model/job.model';
@@ -35,8 +35,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
     private backService: BackService,
     private establishmentService: EstablishmentService,
     private jobService: JobService,
-    private workerService: WorkerService,
-    private route: ActivatedRoute
+    private workerService: WorkerService
   ) {
     this.addStaffRecord = this.addStaffRecord.bind(this);
 
@@ -67,6 +66,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.workplace = this.establishmentService.establishment;
     this.subscriptions.add(
       this.establishmentService.getStaff(this.workplace.uid).subscribe(establishmentStaff => {
         this.totalStaff = establishmentStaff ? establishmentStaff : 0;
@@ -190,7 +190,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
 
       if (!isNull(uid.value)) {
         this.subscriptions.add(
-          this.workerService.updateWorker(uid.value, props).subscribe(
+          this.workerService.updateWorker(this.workplace.uid, uid.value, props).subscribe(
             () => this.closeStaffRecords(),
             error => {
               console.log(error);
@@ -199,7 +199,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
         );
       } else {
         this.subscriptions.add(
-          this.workerService.createWorker(props as Worker).subscribe(
+          this.workerService.createWorker(this.workplace.uid, props as Worker).subscribe(
             data => {
               staffRecord.patchValue({ uid: data.uid });
               this.closeStaffRecords();

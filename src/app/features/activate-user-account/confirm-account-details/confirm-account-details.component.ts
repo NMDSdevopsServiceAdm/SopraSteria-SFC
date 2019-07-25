@@ -1,13 +1,13 @@
-import { ActivateAccountRequest } from '@core/model/account.model';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BackService } from '@core/services/back.service';
-import { combineLatest } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ActivateAccountRequest } from '@core/model/account.model';
+import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FormBuilder } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
+import { ConfirmAccountDetails } from '@features/account/confirm-account-details/confirm-account-details';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-account-details',
@@ -96,7 +96,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, '/security-question'] });
+    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, 'security-question'] });
   }
 
   private generatePayload(): ActivateAccountRequest {
@@ -119,9 +119,17 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
         .activateAccount(this.generatePayload())
         .subscribe(
           () => this.router.navigate(['/activate-account', this.activationToken, 'complete']),
-          (error: HttpErrorResponse) => this.onError(error)
+          (error: HttpErrorResponse) => this._onError(error)
         )
     );
+  }
+
+  private _onError(error) {
+    if (error.status === 403) {
+      this.router.navigate(['/problem-with-the-service']);
+    } else {
+      this.onError(error);
+    }
   }
 
   public onSetReturn(): void {

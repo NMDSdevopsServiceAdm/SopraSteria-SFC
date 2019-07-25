@@ -144,6 +144,11 @@ class User {
         return this._trackingUUID;
     }
 
+    get userRole() {
+        const prop = this._properties.get('UserRole');
+        return prop ? prop.property : null;
+    };
+
     // used by save to initialise a new User; returns true if having initialised this user
     _initialise() {
         if (this._uid === null) {
@@ -280,6 +285,8 @@ class User {
 
         // now send the email
         await sendAddUserEmail(emailProperty, fullnameProperty, this._trackingUUID);
+
+        return this._trackingUUID;
     }
 
     // saves the User to DB. Returns true if saved; false if not.
@@ -660,14 +667,102 @@ class User {
         }
     };
 
-    // deletes this User from DB
-    // Can throw "UserDeleteException"
-    async delete() {
-      // this is an async method - don't wait for it to return
-      AWSKinesis.userPump(AWSKinesis.DELETED, this.toJSON());
+    async delete(deletedBy, externalTransaction=null, associatedEntities=false) {
+    
+        try {
+            const updatedTimestamp = new Date();
 
-      throw new Error('Not implemented');
+            await models.sequelize.transaction(async t => {
+
+                const thisTransaction = externalTransaction ? externalTransaction : t;
+                let randomNewUsername = uuid.v4();
+                let oldUsername = this._username;
+
+                const updateDocument = {
+                    updated: updatedTimestamp,
+                    updatedBy: deletedBy,
+                    archived: true,
+                    FullNameValue: false,
+                    isPrimary: false,
+                    Username: randomNewUsername,
+                    EmailValue: '',
+                    PhoneValue: '',
+                    JobTitle: '',
+                    SecurityQuestionValue: '',
+                    SecurityQuestionAnswerValue: ''
+                };
+
+                let [updatedRecordCount, updatedRows] = await models.user.update(updateDocument,
+                                            {
+                                                returning: true,
+                                                where: {
+                                                    uid: this.uid
+                                                },
+                                                attributes: ['id', 'updated'],
+                                                transaction: thisTransaction,
+                                            });
+
+                if (updatedRecordCount === 1) {
+
+                    await models.login.update({
+                        isActive: false
+                    },{
+                    where: {
+                        registrationId: this._id
+                    },
+                    transaction: thisTransaction
+                    });     
+
+                    await models.addUserTracking.update(
+                        {
+                            completed: new Date(),
+                        },
+                        {
+                            transaction: thisTransaction,
+                            where : {
+                                userFk: this._id
+                            },
+                        }
+                    );
+
+                    const auditEvent = {
+                        userFk: this._id,
+                        username: deletedBy,
+                        type: 'delete',
+                        property: 'isActive',
+                        event: {}
+                    };
+                    await models.userAudit.create(auditEvent, {transaction: thisTransaction});
+        
+                    await models.sequelize.query('UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: oldUsername, usernameNew: randomNewUsername },type: models.sequelize.QueryTypes.UPDATE, transaction: thisTransaction });
+                    await models.sequelize.query('UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: oldUsername, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: thisTransaction });
+                    await models.sequelize.query('UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: oldUsername, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: thisTransaction });
+    
+                    AWSKinesis.userPump(AWSKinesis.DELETED, this.toJSON());
+
+                    this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
+
+                } else {
+                    const nameId = this._properties.get('NameOrId');
+                    throw new UserExceptions.UserDeleteException(null,
+                                                                        this.uid,
+                                                                        null,
+                                                                        err,
+                                                                        `Failed to update (archive) user record with uid: ${this._uid}`);
+                }
+
+            });
+        } catch (err) {
+            console.log('throwing error');
+            console.log(err);
+            throw new UserExceptions.UserDeleteException(null,
+                this.uid,
+                null,
+                err,
+                `Failed to update (archive) user record with uid: ${this._uid}`);
+        }
     };
+
 
     static async fetchUserTypeCounts(establishmentId){
         const results = await models.user.findAll({
