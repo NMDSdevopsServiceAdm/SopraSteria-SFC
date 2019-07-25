@@ -404,7 +404,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
-        error: "Establishment Type (ESTTYPE) must be an integer",
+        error: "The ESTTYPE you have supplied is an incorrect code",
         source: this._currentLine.ESTTYPE,
         name: this._currentLine.LOCALESTID,
       });
@@ -563,12 +563,9 @@ class Establishment {
     if (this._regType && this._regType == 2 && (!myprovID || myprovID.length==0)) {
       this._validationErrors.push({
         lineNumber: this._lineNumber,
-        // errCode: Establishment.PROV_ID_ERROR,
-        // errType: `PROV_ID_ERROR`,
-        // error: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
-        warnCode: Establishment.PROV_ID_ERROR,
-        warnType: `PROV_ID_ERROR`,
-        warning: "Prov ID (PROVNUM) must be given as this workplace is CQC regulated",
+        errCode: Establishment.PROV_ID_ERROR,
+        errType: `PROV_ID_ERROR`,
+        error: "PROVNUM has not been supplied",
         source: myprovID,
         name: this._currentLine.LOCALESTID,
       });
@@ -579,14 +576,24 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.PROV_ID_ERROR,
         errType: `PROV_ID_ERROR`,
-        error: "Prov ID (PROVNUM) must be in the format 'n-nnnnnnnnn'",
+        error: "PROVNUM is incorrectly formatted",
         source: myprovID,
         name: this._currentLine.LOCALESTID,
       });
       return false;
-    } else if (this._regType) {
+    } else if (this._regType !== null && this._regType == 1) {
       this._provID = myprovID;
       return true;
+    } else if (this._regType !== null && this._regType == 0 && myprovID && myprovID.length > 0) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: Establishment.PROV_ID_WARNING,
+        warnType: `PROV_ID_WARNING`,
+        warning: "PROVNUM will be ignored as not required for this MAINSERVICE",
+        source: myprovID,
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
     }
   }
 
@@ -595,30 +602,47 @@ class Establishment {
     const locationIDRegex = /^[0-9]{1}-[0-9]{8,10}$/;
     const myLocationID = this._currentLine.LOCATIONID;
 
-    if (this._regType  && this._regType == 2 && (!myLocationID || myLocationID.length==0)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.LOCATION_ID_ERROR,
-        errType: `LOCATION_ID_ERROR`,
-        error: "Location ID (LOCATIONID) must be given as this workplace is CQC regulated",
-        source: myLocationID,
-        name: this._currentLine.LOCALESTID,
-      });
-      return false;
-    }
-    else if (this._regType && this._regType == 2 && !locationIDRegex.test(myLocationID)) {
-      this._validationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.LOCATION_ID_ERROR,
-        errType: `LOCATION_ID_ERROR`,
-        error: "Location ID (LOCATIONID) must be in the format 'n-nnnnnnnnn'",
-        source: myLocationID,
-        name: this._currentLine.LOCALESTID,
-      });
-      return false;
-    } else if (this._regType) {
+    // do not use
+    const mainServiceIsHeadOffice = this._currentLine.MAINSERVICE && parseInt(this._currentLine.MAINSERVICE, 10) === 72 ? true : false;
+
+    if (this._regType !== null  && this._regType == 2) {
+      // ignore location i
+      if (!mainServiceIsHeadOffice) {
+        if (!myLocationID || myLocationID.length==0) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.LOCATION_ID_ERROR,
+            errType: `LOCATION_ID_ERROR`,
+            error: "LOCATIONID has not been supplied",
+            source: myLocationID,
+            name: this._currentLine.LOCALESTID,
+          });
+          return false;
+        } else if (!locationIDRegex.test(myLocationID)) {
+          this._validationErrors.push({
+            lineNumber: this._lineNumber,
+            errCode: Establishment.LOCATION_ID_ERROR,
+            errType: `LOCATION_ID_ERROR`,
+            error: "LOCATIONID is incorrectly formatted",
+            source: myLocationID,
+            name: this._currentLine.LOCALESTID,
+          });
+          return false;
+        }
+      }
+
       this._locationID = myLocationID;
       return true;
+    } else if (this._regType !== null && this._regType == 0 && myLocationID && myLocationID.length > 0) {
+      this._validationErrors.push({
+        lineNumber: this._lineNumber,
+        warnCode: Establishment.LOCATION_ID_WARNING,
+        warnType: `LOCATION_ID_WARNING`,
+        warning: "LOCATIONID will be ignored as not required for this MAINSERVICE",
+        source: myLocationID,
+        name: this._currentLine.LOCALESTID,
+      });
+      return false;
     }
   }
 
@@ -728,65 +752,67 @@ class Establishment {
     const listOfServiceUsersDescriptions = this._currentLine.OTHERUSERDESC.split(';');
 
     const localValidationErrors = [];
-    const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService))) : true;
-    if (!isValid) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SERVICE_USERS_ERROR,
-        errType: `SERVICE_USERS_ERROR`,
-        error: "Service Users (SERVICEUSERS) must be a semi-colon delimited list of integers",
-        source: this._currentLine.SERVICEUSERS,
-        name: this._currentLine.LOCALESTID,
-      });
-    } else if (listOfServiceUsers.length != listOfServiceUsersDescriptions.length) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SERVICE_USERS_ERROR,
-        errType: `SERVICE_USERS_ERROR`,
-        error: "Service Users (SERVICEUSERS) count and Service Users Description (OTHERUSERDESC) count must equal",
-        source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
-        name: this._currentLine.LOCALESTID,
-      });
-    } else if (isValid) {
-      const myServiceUsersDescriptions = [];
-      this._allServiceUsers = listOfServiceUsers.map((thisService, index) => {
-        const thisServiceIndex = parseInt(thisService, 10);
+    if (this._currentLine.SERVICEUSERS && this._currentLine.SERVICEUSERS.length > 0) {
+      const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService))) : true;
+      if (!isValid) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.SERVICE_USERS_ERROR,
+          errType: `SERVICE_USERS_ERROR`,
+          error: "The SERVICEUSERS you have supplied has an incorrect code",
+          source: this._currentLine.SERVICEUSERS,
+          name: this._currentLine.LOCALESTID,
+        });
+      } else if (listOfServiceUsers.length != listOfServiceUsersDescriptions.length) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.SERVICE_USERS_ERROR,
+          errType: `SERVICE_USERS_ERROR`,
+          error: "SERVICEUSERS/OTHERUSERDESC do not have the same number of items (i.e. numbers and/or semi colons)",
+          source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
+          name: this._currentLine.LOCALESTID,
+        });
+      } else if (isValid) {
+        const myServiceUsersDescriptions = [];
+        this._allServiceUsers = listOfServiceUsers.map((thisService, index) => {
+          const thisServiceIndex = parseInt(thisService, 10);
 
-        // if the service user is one of the many "other" type of services, then need to validate the "other description"
-        const otherServiceUsers = [3, 9, 21];   // these are the original budi codes
-        if (otherServiceUsers.includes(thisServiceIndex)) {
-          const myServiceUserOther = listOfServiceUsersDescriptions[index];
-          const MAX_LENGTH = 120;
-          if (!myServiceUserOther || myServiceUserOther.length == 0) {
-            localValidationErrors.push({
-              lineNumber: this._lineNumber,
-              errCode: Establishment.SERVICE_USERS_ERROR,
-              errType: `SERVICE_USERS_ERROR`,
-              error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and consequently (OTHERUSERDESC:${index+1}) must be defined`,
-              source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
-              name: this._currentLine.LOCALESTID,
-            });
-            myServiceUsersDescriptions.push(null);
-          } else if (myServiceUserOther.length > MAX_LENGTH) {
-            localValidationErrors.push({
-              lineNumber: this._lineNumber,
-              errCode: Establishment.SERVICE_USERS_ERROR,
-              errType: `SERVICE_USERS_ERROR`,
-              error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and (OTHERUSERDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
-              source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
-              name: this._currentLine.LOCALESTID,
-            });
+          // if the service user is one of the many "other" type of services, then need to validate the "other description"
+          const otherServiceUsers = [3, 9, 21];   // these are the original budi codes
+          if (otherServiceUsers.includes(thisServiceIndex)) {
+            const myServiceUserOther = listOfServiceUsersDescriptions[index];
+            const MAX_LENGTH = 120;
+            if (!myServiceUserOther || myServiceUserOther.length == 0) {
+              localValidationErrors.push({
+                lineNumber: this._lineNumber,
+                errCode: Establishment.SERVICE_USERS_ERROR,
+                errType: `SERVICE_USERS_ERROR`,
+                error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and consequently (OTHERUSERDESC:${index+1}) must be defined`,
+                source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+                name: this._currentLine.LOCALESTID,
+              });
+              myServiceUsersDescriptions.push(null);
+            } else if (myServiceUserOther.length > MAX_LENGTH) {
+              localValidationErrors.push({
+                lineNumber: this._lineNumber,
+                errCode: Establishment.SERVICE_USERS_ERROR,
+                errType: `SERVICE_USERS_ERROR`,
+                error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and (OTHERUSERDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
+                source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+                name: this._currentLine.LOCALESTID,
+              });
+            } else {
+              myServiceUsersDescriptions.push(listOfServiceUsersDescriptions[index]);
+            }
           } else {
-            myServiceUsersDescriptions.push(listOfServiceUsersDescriptions[index]);
+            myServiceUsersDescriptions.push(null);
           }
-        } else {
-          myServiceUsersDescriptions.push(null);
-        }
 
-        return thisServiceIndex;
-      });
+          return thisServiceIndex;
+        });
 
-      this._allServiceUsersOther = myServiceUsersDescriptions;
+        this._allServiceUsersOther = myServiceUsersDescriptions;
+      }
     }
 
     if (localValidationErrors.length > 0) {
@@ -1082,28 +1108,18 @@ class Establishment {
     // only if the sum of "LEAVERS" is greater than 0
     const sumOfLeavers = this._leavers && Array.isArray(this._leavers) && this._leavers[0] !== 999 ? this._leavers.reduce((total, thisCount) => total+thisCount) : 0;
 
-    if (sumOfLeavers > 0) {
+    if (sumOfLeavers > 0 && this._currentLine.REASONS && this._currentLine.REASONS.length > 0) {
       const allReasons = this._currentLine.REASONS.split(';');
       const allReasonsCounts = this._currentLine.REASONNOS.split(';');
 
       const localValidationErrors = [];
 
-      if (!allReasons || allReasons.length==0) {
-        localValidationErrors.push({
-          lineNumber: this._lineNumber,
-          errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
-          errType: `REASONS_FOR_LEAVING_ERROR`,
-          error: "Reasons for Leaving (REASONS) must be defined as a semi-colon delimited set of reasons",
-          source: this._currentLine.REASONS,
-          name: this._currentLine.LOCALESTID,
-        });
-      }
       if (!allReasons.every(thisCount => !Number.isNaN(parseInt(thisCount)))) {
         localValidationErrors.push({
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
           errType: `REASONS_FOR_LEAVING_ERROR`,
-          error: `Reasons for Leaving (REASONS) values must be integers`,
+          error: `The REASONS you have supplied has an incorrect code`,
           source: `${this._currentLine.REASONS}`,
           name: this._currentLine.LOCALESTID,
         });
@@ -1114,7 +1130,7 @@ class Establishment {
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
           errType: `REASONS_FOR_LEAVING_ERROR`,
-          error: "Reasons for Leaving Counts (REASONNOS) must be defined as a semi-colon delimited set of reasons",
+          error: "REASONS/REASONNOS do not have the same number of items (i.e. numbers and/or semi colons)",
           source: this._currentLine.REASONNOS,
           name: this._currentLine.LOCALESTID,
         });
@@ -1137,7 +1153,7 @@ class Establishment {
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
           errType: `REASONS_FOR_LEAVING_ERROR`,
-          error: `Reasons for Leaving (REASON) and Reasons for Leaving Counts (REASONNOS) must have the same number of semi-colon delimited values`,
+          error: `REASONS/REASONNOS do not have the same number of items (i.e. numbers and/or semi colons)`,
           source: `${this._currentLine.REASON} - ${this._currentLine.REASONNOS}`,
           name: this._currentLine.LOCALESTID,
         });
@@ -1150,7 +1166,7 @@ class Establishment {
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
           errType: `REASONS_FOR_LEAVING_ERROR`,
-          error: `Sum of Reasons for Leaving Counts (REASONNOS) must equal the sum of leavers (LEAVERS)`,
+          error: `The total number of REASONNOS you have entered does not equal the total number of LEAVERS`,
           source: `${this._currentLine.REASONNOS} (${sumOfReasonsCounts}) - ${this._currentLine.LEAVERS} (${sumOfLeavers})`,
           name: this._currentLine.LOCALESTID,
         });
@@ -1503,7 +1519,7 @@ class Establishment {
 
   _validateHeaders(headers) {
     // only run once for first line, so check _lineNumber
-    if (JSON.stringify(this._headers_v1) !== JSON.stringify(headers)) {
+    if (this._headers_v1.join(',') !== headers) {
       this._validationErrors.push({
         lineNumber: 1,
         errCode: Establishment.HEADERS_ERROR,
@@ -1790,7 +1806,8 @@ class Establishment {
 
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
   addAPIValidations(errors, warnings) {
-    errors.forEach(thisError => {
+    // disable the integration of any API errors - they can't be propertly matched to bulk upload validations
+/*     errors.forEach(thisError => {
       thisError.properties ? thisError.properties.forEach(thisProp => {
         const validationError = {
           lineNumber: this._lineNumber,
@@ -1983,7 +2000,7 @@ class Establishment {
 
         validationWarning.warnCode ? this._validationErrors.push(validationWarning) : true;
       }) : true;
-    });
+    }); */
 
   };
 
@@ -2041,7 +2058,7 @@ class Establishment {
     const shareWithLA = entity.shareWithLA;
     columns.push(shareWith && shareWith.enabled && shareWith.with.includes('CQC') ? 1 : 0);
     columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? 1 : 0);
-    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') ? shareWithLA.map(thisLA => thisLA.cssrId).join(';') : '')
+    columns.push(shareWith && shareWith.enabled && shareWith.with.includes('Local Authority') && shareWithLA && Array.isArray(shareWithLA) ? shareWithLA.map(thisLA => thisLA.cssrId).join(';') : '')
 
     // CQC regulated, Prov IDand Location ID
     columns.push(entity.isRegulated ? 2 : 0);

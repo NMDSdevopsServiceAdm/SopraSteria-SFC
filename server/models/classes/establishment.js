@@ -382,6 +382,9 @@ class Establishment extends EntityValidator {
             if (document.postcode) {
               this._postcode = document.postcode;
             }
+            if (document.name) {
+                this._name = document.name;
+            }
 
             if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
               this._reasonsForLeaving = document.reasonsForLeaving;
@@ -465,16 +468,22 @@ class Establishment extends EntityValidator {
 
     async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
         if (this._workerEntities) {
+            const log = result => console.log(`result: ${result}`);
+
             try {
                 const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
                     thisWorker.establishmentId = this._id;
                     return thisWorker;
                 });
 
-                await Promise.all(workersAsArray.map(thisWorkerToSave => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true)));
+                // new and updated Workers
+                const starterSavePromise = Promise.resolve(null);
+                await workersAsArray.reduce((p, thisWorkerToSave) => p.then(() => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true).then(log)), starterSavePromise);
 
-                // and now all the associated Workers marked for deletion
-                await Promise.all(this._readyForDeletionWorkers.map(thisWorkerToSave => thisWorkerToSave.archive(savedBy,externalTransaction, true)));
+                // now deleted workers
+                const starterDeletedPromise = Promise.resolve(null);
+                await this._readyForDeletionWorkers.reduce((p, thisWorkerToDelete) => p.then(() => thisWorkerToDelete.archive(savedBy, externalTransaction, true).then(log)), starterDeletedPromise);
+
             } catch (err) {
                 console.error('Establishment::saveAssociatedEntities error: ', err);
                 // rethrow error to ensure the transaction is rolled back
@@ -705,6 +714,7 @@ class Establishment extends EntityValidator {
                         address1: this._address1,
                         address2: this._address2,
                         address3: this._address3,
+                        name: this._name,
                         town: this._town,
                         county: this._county,
                         postcode: this._postcode,
@@ -1433,18 +1443,22 @@ class Establishment extends EntityValidator {
             }
 
             // location id can be null for a Non-CQC site
-            if (this._isRegulated && this._locationId === null) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    106,
-                    'Missing (mandatory) for a CQC Registered site',
-                    ['LocationID']
-                ));
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
+            // if a CQC site, and main service is head office (ID=16)
+            const MAIN_SERVICE_HEAD_OFFICE_ID=16;
+            if (this._isRegulated) {
+                if (this.mainService.id !== MAIN_SERVICE_HEAD_OFFICE_ID && this._locationId === null)  {
+                    allExistAndValid = false;
+                    this._validations.push(new ValidationMessage(
+                        ValidationMessage.ERROR,
+                        106,
+                        'Missing (mandatory) for a CQC Registered site',
+                        ['LocationID']
+                    ));
+                    this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
+                }
             }
 
-            // prov id can be null for a Non-CQC site - CANNOT IMPOST THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
+            // prov id can be null for a Non-CQC site - CANNOT IMPOSE THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
             // if (this._isRegulated && this._provId === null) {
             //   allExistAndValid = false;
             //   this._validations.push(new ValidationMessage(
