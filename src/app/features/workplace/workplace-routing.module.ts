@@ -7,7 +7,6 @@ import { Roles } from '@core/model/roles.enum';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
-import { AddWorkplaceComponent } from '@features/workplace/add-workplace/add-workplace.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
@@ -43,12 +42,6 @@ const routes: Routes = [
     canActivate: [ParentGuard],
     resolve: { establishment: PrimaryWorkplaceResolver },
     data: { title: 'View My Workplaces' },
-  },
-  {
-    path: 'add-workplace',
-    component: AddWorkplaceComponent,
-    canActivate: [ParentGuard],
-    data: { title: 'Add Workplace' },
   },
   {
     path: 'start-screen',
