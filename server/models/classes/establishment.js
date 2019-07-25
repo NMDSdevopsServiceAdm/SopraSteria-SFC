@@ -468,26 +468,22 @@ class Establishment extends EntityValidator {
 
     async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
         if (this._workerEntities) {
+            const log = result => console.log(`result: ${result}`);
+
             try {
                 const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
                     thisWorker.establishmentId = this._id;
                     return thisWorker;
                 });
 
-                const tasks1 = workersAsArray.map(thisWorkerToSave => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true));
-                const tasks2 = this._readyForDeletionWorkers.map(thisWorkerToSave => thisWorkerToSave.archive(savedBy,externalTransaction, true));
-                const tasks = [...tasks1, ...tasks2];
-                return tasks.reduce((promiseChain, currentTask) => {
-                  return promiseChain.then(chainResults =>
-                      currentTask.then(currentResult =>
-                          [ ...chainResults, currentResult ]
-                      )
-                  );
-                }, Promise.resolve([])).then(arrayOfResults => {
-                  console.log(`WA DEBUG - Establishment::saveAssociatedEntities(${this._id}) - completed waiting on worker save promises`);
-                });
+                // new and updated Workers
+                const starterSavePromise = Promise.resolve(null);
+                await workersAsArray.reduce((p, thisWorkerToSave) => p.then(() => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true).then(log)), starterSavePromise);
 
-                // and now all the associated Workers marked for deletion
+                // now deleted workers
+                const starterDeletedPromise = Promise.resolve(null);
+                await this._readyForDeletionWorkers.reduce((p, thisWorkerToDelete) => p.then(() => thisWorkerToDelete.archive(savedBy, externalTransaction, true).then(log)), starterDeletedPromise);
+
             } catch (err) {
                 console.error('Establishment::saveAssociatedEntities error: ', err);
                 // rethrow error to ensure the transaction is rolled back

@@ -1,11 +1,11 @@
 const express = require('express');
 const appConfig = require('../../config/config');
 const AWS = require('aws-sdk');
-const fs = require('fs');
 const csv = require('csvtojson');
 const Stream = require('stream');
 const moment = require('moment');
 const dbmodels = require('../../models');
+const config = require('../../config/config');
 
 const UserAgentParser = require('ua-parser-js');
 
@@ -247,7 +247,6 @@ router.route('/signedUrl').get(async function (req, res) {
 
 // Prevalidate
 router.route('/uploaded').put(async (req, res) => {
-
   const establishmentId = req.establishmentId;
   const username = req.username;
   const myDownloads = {};
@@ -444,6 +443,9 @@ router.route('/uploaded').put(async (req, res) => {
 });
 
 router.route('/validate').put(async (req, res) => {
+  // manage the request timeout
+  req.setTimeout(config.get('bulkupload.validation.timeout') * 1000);
+
   const establishmentId = req.establishmentId;
   const username = req.username;
   const isParent = req.isParent;
@@ -1139,6 +1141,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
   workers.workerMetadata.deleted = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
+  console.log("WA DEBUG - checkpoint - have completed validation, uploading artifacts to S3");
+
   // upload intermediary/validation S3 objects
   if (commit) {
     const s3UploadPromises = [];
@@ -1155,7 +1159,16 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     s3UploadPromises.push(uploadAsJSON(username, establishmentId, report, `${establishmentId}/validation/difference.report.json`));
 
     // to false to disable the upload of intermediary objects
-    const traceData = true;
+    // the all entities intermediary file is required on completion - establishments entity for validation report
+    const allentitiesreadyforjson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true));
+    const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
+    const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
+    const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
+    const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
+    establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`)) : true;
+    establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`)) : true;
+
+    const traceData = config.get('bulkupload.validation.storeIntermediaries');
     if (traceData) {
       // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
       myEstablishments.length > 0  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myEstablishments.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${establishments.establishmentMetadata.filename}.csv.json`)) : true;
@@ -1163,17 +1176,6 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
       myTrainings.length > 0  ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, myTrainings.map(thisEstablishment => thisEstablishment.toJSON()), `${establishmentId}/intermediary/${training.trainingMetadata.filename}.csv.json`)) : true;
 
       // upload the intermediary entities as JSON to S3
-      //console.log("WA DEBUG - establishment entities as JSON:\n", JSON.stringify(myAPIEstablishments.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,false,true)), null, 4));
-
-      // debug
-      const allentitiesreadyforjson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON(false,false,false,false,true,null,true));
-      const establishmentsOnlyForJson = establishmentsAsArray.map(thisEstablishment => thisEstablishment.toJSON());
-      const workersOnlyForJson = workersAsArray.map(thisWorker => thisWorker.toJSON());
-      const trainingOnlyForJson = trainingAsArray.map(thisTraining => thisTraining.toJSON());
-      const qualificationsOnlyForJson = qualificationsAsArray.map(thisQualification => thisQualification.toJSON());
-
-      establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, allentitiesreadyforjson, `${establishmentId}/intermediary/all.entities.json`)) : true;
-      establishmentsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, establishmentsOnlyForJson, `${establishmentId}/intermediary/establishment.entities.json`)) : true;
       workersAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, workersOnlyForJson, `${establishmentId}/intermediary/worker.entities.json`)) : true;
       trainingAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, trainingOnlyForJson, `${establishmentId}/intermediary/training.entities.json`)) : true;
       qualificationsAsArray.length > 0 ? s3UploadPromises.push(uploadAsJSON(username, establishmentId, qualificationsOnlyForJson, `${establishmentId}/intermediary/qualification.entities.json`)) : true;
@@ -1680,8 +1682,70 @@ const restoreOnloadEntities = async (loggedInUsername, primaryEstablishmentId) =
   }
 };
 
+const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, transaction, onloadEstablishments, primaryEstablishmentId, primaryEstablishmentUid) => {
+  try {
+    // find the onload establishment by key
+    const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisNewEstablishment.key);
+
+    // the entity is already loaded, so simply prep it ready for saving
+    if (foundOnloadEstablishment) {
+      // as this new establishment is created from a parent, it automatically becomes a sub
+      foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
+      await foundOnloadEstablishment.save(theLoggedInUser, true, 0, transaction, true);
+      console.log("WA DEBUG - have created new establishment: ", thisNewEstablishment.key);
+    }
+
+  } catch (err) {
+    console.error("completeNewEstablishment: failed to complete upon new establishment: ", thisNewEstablishment.key);
+    throw err;
+  }
+};
+
+const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedInUser, transaction, onloadEstablishments, myCurrentEstablishments) => {
+  try {
+    // find the current establishment and onload establishment by key
+    const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisUpdatedEstablishment.key);
+    const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisUpdatedEstablishment.key);
+
+    // current is already restored, so simply need pass the onload entity into the current along with the associated set of worker entities
+    if (foundCurrentEstablishment) {
+      // when updating existing entities, need to remove the local identifer!
+      // but because the properties are not actual properties - but managed properties - we can't just delete the property
+
+      // simply work on the resulting full JSON presentation, whereby every property is a simply propery
+      const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true);
+      delete thisEstablishmentJSON.localIdentifier;
+
+      await foundCurrentEstablishment.load(thisEstablishmentJSON, true);
+      await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true)
+      console.log("WA DEBUG - completed saving establishment: ", foundCurrentEstablishment.key);
+    }
+  } catch (err) {
+    console.error("completeUpdateEstablishment: failed to complete upon existing establishment: ", thisUpdatedEstablishment.key);
+    throw err;
+  }
+};
+
+const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedInUser, transaction, myCurrentEstablishments) => {
+  try {
+    // find the current establishment by key
+    const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisDeletedEstablishment.key);
+
+    // current is already restored, so simply need to delete it
+    if (foundCurrentEstablishment) {
+      await foundCurrentEstablishment.delete(theLoggedInUser, transaction, true);
+      console.log("WA DEBUG - completed deleting establishment: ", thisDeletedEstablishment.key);
+    }
+  } catch (err) {
+    console.error("completeDeleteEstablishment: failed to complete upon deleting establishment: ", thisDeletedEstablishment.key);
+    throw err;
+  }
+};
 
 router.route('/complete').post(async (req, res) => {
+  // manage the request timeout
+  req.setTimeout(config.get('bulkupload.completion.timeout') * 1000);
+
   const theLoggedInUser = req.username;
   const primaryEstablishmentId = req.establishment.id;
   const primaryEstablishmentUid = req.establishment.uid;
@@ -1701,6 +1765,9 @@ router.route('/complete').post(async (req, res) => {
       const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null);
       const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
 
+      // sequential promise console logger
+      const log = result => console.log(`result: ${result}`);
+
       // could look to parallel the three above tasks as each is relatively intensive - but happy path first
       // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction
       try {
@@ -1708,80 +1775,31 @@ router.route('/complete').post(async (req, res) => {
         await dbmodels.sequelize.transaction(async t => {
           const updatedEstablishments = [];
 
-          // first create the new establishments
-          validationDiferenceReport.new.forEach(thisNewEstablishment => {
-            // find the onload establishment by key
-            // TODO - use the LOCAL_IDENTIFIER when its available
-            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisNewEstablishment.key);
-
-            // the entity is already loaded, so simply prep it ready for saving
-            if (foundOnloadEstablishment) {
-              // as this new establishment is created from a parent, it automatically becomes a sub
-              foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
-              updatedEstablishments.push(foundOnloadEstablishment);
-            }
-          });
+          // first create the new establishments - in sequence
+          const starterNewPromise = Promise.resolve(null);
+          await validationDiferenceReport.new.reduce((p, thisNewEstablishment) => p.then(() => completeNewEstablishment(thisNewEstablishment, theLoggedInUser, t, onloadEstablishments, primaryEstablishmentId, primaryEstablishmentUid).then(log)), starterNewPromise);
 
           // now update the updated
-          const updateEstablishmentPromises = [];
-          validationDiferenceReport.updated.forEach(thisUpdatedEstablishment => {
-            // find the current establishment and onload establishment by key
-            // TODO - use the LOCAL_IDENTIFIER when its available
-            const foundOnloadEstablishment = onloadEstablishments.find(thisOnload => thisOnload.key === thisUpdatedEstablishment.key);
-            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisUpdatedEstablishment.key);
-
-            // current is already restored, so simply need pass the onload entity into the current along with the associated set of worker entities
-            if (foundCurrentEstablishment) {
-              // when updating existing entities, need to remove the local identifer!
-              // but because the properties are not actual properties - but managed properties - we can't just delete the property
-
-              // simply work on the resulting full JSON presentation, whereby every property is a simply propery
-              const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true);
-              delete thisEstablishmentJSON.localIdentifier;
-
-              updatedEstablishments.push(foundCurrentEstablishment);
-              updateEstablishmentPromises.push(foundCurrentEstablishment.load(thisEstablishmentJSON, true));
-            }
-          });
+          const starterUpdatedPromise = Promise.resolve(null);
+          await validationDiferenceReport.updated.reduce((p, thisUpdatedEstablishment) => p.then(() => completeUpdateEstablishment(thisUpdatedEstablishment, theLoggedInUser, t, onloadEstablishments, myCurrentEstablishments).then(log)), starterUpdatedPromise);
 
           // and finally, delete the deleted
-          validationDiferenceReport.deleted.forEach(thisDeletedEstablishment => {
+          const starterDeletedPromise = Promise.resolve(null);
+          await validationDiferenceReport.deleted.reduce((p, thisDeletedEstablishment) => p.then(() => completeDeleteEstablishment(thisDeletedEstablishment, theLoggedInUser, t, myCurrentEstablishments).then(log)), starterDeletedPromise);
 
-            // find the current establishment by key
-            // TODO - use the LOCAL_IDENTIFIER when its available
-            const foundCurrentEstablishment = myCurrentEstablishments.find(thisCurrent => thisCurrent.key === thisDeletedEstablishment.key);
+          console.log("WA DEBUG - completed - finished all establishments")
 
-            // current is already restored, so simply need to delete it
-            if (foundCurrentEstablishment) {
-              updateEstablishmentPromises.push(foundCurrentEstablishment.delete(theLoggedInUser, t, true));
-            }
-          });
-          // wait for all updated::loads and deleted::deletes to complete
-          await Promise.all(updateEstablishmentPromises);
-
-          // to minimise impact pon database resources, having setup all establishments, their workers, their training and qualifications
-          //  iterate each establishment, one by one to save.
-
-          const tasks = updatedEstablishments.map(toSave => toSave.save(theLoggedInUser, true, 0, t, true));
-          return tasks.reduce((promiseChain, currentTask) => {
-            return promiseChain.then(chainResults =>
-                currentTask.then(currentResult =>
-                    [ ...chainResults, currentResult ]
-                )
-            );
-          }, Promise.resolve([])).then(arrayOfResults => {
-            console.log("WA DEBUG - completed waiting on establishment::save promises")
-
-            // gets here having successfully completed upon the bulk upload
-            //  clean up the S3 objects
-            purgeBulkUploadS3Obbejcts(primaryEstablishmentId).then( () => {
-              // confirm success against the primary establishment
-              EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId).then(() => {
-                return res.status(200).send({});
-              });
-            })
-          });
+          // gets here having successfully completed upon the bulk upload
+          //  clean up the S3 objects
+          await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
+          console.log("WA DEBUG - completed - purged")
         });
+
+        // confirm success against the primary establishment
+        await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
+
+        console.log("WA DEBUG - completed")
+        return res.status(200).send({});
 
       } catch (err) {
         console.error("route('/complete') err: ", err);
@@ -1877,7 +1895,7 @@ router.route('/download/:downloadType').get(async (req, res) => {
 
 
       // before returning the response - upload to S3
-      const traceData = true;
+      const traceData = config.get('bulkupload.validation.storeIntermediaries');
       if (traceData) {
         const s3UploadPromises = [];
         // upload the converted CSV as JSON to S3 - these are temporary objects as we build confidence in bulk upload they can be removed
