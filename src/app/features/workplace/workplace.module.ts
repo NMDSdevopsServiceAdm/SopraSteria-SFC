@@ -6,6 +6,7 @@ import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
+import { StartComponent } from '@features/workplace/start/start.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { SharedModule } from '@shared/shared.module';
@@ -24,7 +25,6 @@ import { LeaversComponent } from './leavers/leavers.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
-import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { SuccessComponent } from './success/success.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
@@ -43,7 +43,6 @@ import {
 } from './wdf-workplace-confirmation-dialog/wdf-workplace-confirmation-dialog.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
-import { AddWorkplaceComponent } from './add-workplace/add-workplace.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WorkplaceRoutingModule],
@@ -75,7 +74,6 @@ import { AddWorkplaceComponent } from './add-workplace/add-workplace.component';
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
     WdfWorkplaceConfirmationDialogComponent,
-    AddWorkplaceComponent,
   ],
   providers: [DialogService, WorkplaceResolver, UserAccountResolver],
   entryComponents: [

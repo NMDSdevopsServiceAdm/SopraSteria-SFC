@@ -66,6 +66,12 @@ const routes: Routes = [
         data: { title: 'Workplace' },
       },
       {
+        path: 'add-workplace',
+        loadChildren: '@features/add-workplace/add-workplace.module#AddWorkplaceModule',
+        canActivate: [AuthGuard],
+        data: { title: 'Add Workplace' },
+      },
+      {
         path: 'account-management',
         loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
         canActivate: [AuthGuard],
