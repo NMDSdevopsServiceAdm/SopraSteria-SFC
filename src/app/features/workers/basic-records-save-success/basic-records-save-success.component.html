@@ -11,14 +11,8 @@
       <li>Add a full staff record.</li>
     </ul>
     <div class="govuk-button-group">
-      <a
-        role="button"
-        draggable="false"
-        class="govuk-button"
-        [routerLink]="['/dashboard']"
-        [fragment]="'staff-records'"
-      >
-        Go to staff records
+      <a role="button" draggable="false" class="govuk-button" (click)="returnTo()">
+        {{ returnToLabel }}
       </a>
     </div>
   </div>
