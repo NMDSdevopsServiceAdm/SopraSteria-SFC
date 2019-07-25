@@ -1444,8 +1444,9 @@ class Establishment extends EntityValidator {
 
             // location id can be null for a Non-CQC site
             // if a CQC site, and main service is head office (ID=16)
+            const MAIN_SERVICE_HEAD_OFFICE_ID=16;
             if (this._isRegulated) {
-                if (this.mainService.id !== 16 && this._locationId === null)  {
+                if (this.mainService.id !== MAIN_SERVICE_HEAD_OFFICE_ID && this._locationId === null)  {
                     allExistAndValid = false;
                     this._validations.push(new ValidationMessage(
                         ValidationMessage.ERROR,
