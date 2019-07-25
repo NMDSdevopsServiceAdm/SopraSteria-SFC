@@ -56,7 +56,6 @@ router.route('/').get(async (req, res) => {
         );
 
         if (dailySnapshotResults && Array.isArray(dailySnapshotResults)) {
-          console.log("WA DEBUG - daily snapshots results: ", dailySnapshotResults)
             return res.status(200).json(dailySnapshotResults);
         } else {
             // unexpected
