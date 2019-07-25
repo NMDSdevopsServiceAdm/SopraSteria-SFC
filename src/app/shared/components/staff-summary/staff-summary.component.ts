@@ -10,7 +10,7 @@ import * as moment from 'moment';
 export class StaffSummaryComponent {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
-  @Input() wdfReportEnabled = false;
+  @Input() wdfView = false;
 
   public lastUpdated(timestamp: string): string {
     const lastUpdated: moment.Moment = moment(timestamp);
@@ -20,6 +20,6 @@ export class StaffSummaryComponent {
 
   public getWorkerRecordPath(worker: Worker) {
     const path = ['/workplace', this.workplace.uid, 'staff-record', worker.uid];
-    return this.wdfReportEnabled ? [...path, ...['wdf-summary']] : path;
+    return this.wdfView ? [...path, ...['wdf-summary']] : path;
   }
 }

@@ -9,7 +9,9 @@ import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { WdfConfirmationDialogComponent } from '../wdf-confirmation-dialog/wdf-confirmation-dialog.component';
+import {
+  WdfWorkerConfirmationDialogComponent,
+} from '../wdf-worker-confirmation-dialog/wdf-worker-confirmation-dialog.component';
 
 @Component({
   selector: 'app-wdf-staff-summary',
@@ -41,7 +43,7 @@ export class WdfStaffSummaryComponent implements OnInit {
   }
 
   public onConfirmAndSubmit() {
-    const dialog = this.dialogService.open(WdfConfirmationDialogComponent, {
+    const dialog = this.dialogService.open(WdfWorkerConfirmationDialogComponent, {
       daysSick: this.worker.daysSick,
       pay: this.worker.annualHourlyPay,
     });
@@ -53,7 +55,7 @@ export class WdfStaffSummaryComponent implements OnInit {
   }
 
   /**
-   * TODO: This does not do anything
+   * TODO: This does not do anything (awaiting implementation of BE 'save')
    */
   private confirmAndSubmit() {
     this.subscriptions.add(
@@ -84,7 +86,11 @@ export class WdfStaffSummaryComponent implements OnInit {
     this.router.navigate(['/workplace', this.workplace.uid, 'reports', 'wdf'], { fragment: 'staff-records' });
   }
 
-  get displayConfirmButtons() {
-    return this.worker.wdf.isEligible && !this.worker.wdf.currentEligibility;
+  /**
+   * TODO: Implement confirmation (confirmation not displayed until BE implemented)
+   */
+  get displayConfirmationPanel() {
+    return false;
+    // return this.worker.wdf.isEligible && !this.worker.wdf.currentEligibility;
   }
 }
