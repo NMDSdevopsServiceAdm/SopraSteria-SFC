@@ -34,7 +34,7 @@ export class WdfStaffSummaryComponent implements OnInit {
   ngOnInit() {
     this.workplace = this.establishmentService.establishment;
 
-    this.workerService.getWorker(this.route.snapshot.params.id).subscribe(worker => {
+    this.workerService.getWorker(this.workplace.uid, this.route.snapshot.params.id).subscribe(worker => {
       this.worker = worker;
       this.isEligible = this.worker.wdf.isEligible && this.worker.wdf.currentEligibility;
     });
@@ -57,7 +57,7 @@ export class WdfStaffSummaryComponent implements OnInit {
    */
   private confirmAndSubmit() {
     this.subscriptions.add(
-      this.workerService.updateWorker(this.worker.uid, {}).subscribe(() => {
+      this.workerService.updateWorker(this.workplace.uid, this.worker.uid, {}).subscribe(() => {
         this.goToWdfPage();
         this.alertService.addAlert({ type: 'success', message: 'The staff record has been saved and confirmed.' });
       })
@@ -73,7 +73,7 @@ export class WdfStaffSummaryComponent implements OnInit {
    */
   public saveAndComplete() {
     this.workerService
-      .updateWorker(this.worker.uid, {
+      .updateWorker(this.workplace.uid, this.worker.uid, {
         completed: true,
       })
       .pipe(take(1))

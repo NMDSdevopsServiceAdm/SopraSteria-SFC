@@ -190,7 +190,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
 
       if (!isNull(uid.value)) {
         this.subscriptions.add(
-          this.workerService.updateWorker(uid.value, props).subscribe(
+          this.workerService.updateWorker(this.workplace.uid, uid.value, props).subscribe(
             () => this.closeStaffRecords(),
             error => {
               console.log(error);
@@ -199,7 +199,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
         );
       } else {
         this.subscriptions.add(
-          this.workerService.createWorker(props as Worker).subscribe(
+          this.workerService.createWorker(this.workplace.uid, props as Worker).subscribe(
             data => {
               staffRecord.patchValue({ uid: data.uid });
               this.closeStaffRecords();
