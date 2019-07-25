@@ -668,30 +668,35 @@ router.route('/add').post(async (req, res) => {
             // use the User properties to load (includes validation)
             const thisUser = new User.User(trackingResponse.user.establishmentId, addUserUUID);
 
-            // only those properties defined in the POST body will be updated (peristed) along with
-            //   the additional role property - ovverwrites against that could be passed in the body
-            const newUserProperties = {
-                ...req.body,
-                role: trackingResponse.user.UserRoleValue
-            };
+            if (await thisUser.restore(trackingResponse.user.uid, null, null)) {
+                // TODO: JSON validation
+        
+                // only those properties defined in the POST body will be updated (peristed) along with
+                //   the additional role property - ovverwrites against that could be passed in the body
+                const newUserProperties = {
+                    ...req.body,
+                    role: trackingResponse.user.UserRoleValue
+                };
 
-            // force the username and email to be lowercase
-            newUserProperties.username = newUserProperties.username ? newUserProperties.username.toLowerCase() : newUserProperties.username;
-            newUserProperties.email = newUserProperties.email ? newUserProperties.email.toLowerCase() : newUserProperties.email;
+                // force the username and email to be lowercase
+                newUserProperties.username = newUserProperties.username ? newUserProperties.username.toLowerCase() : newUserProperties.username;
+                newUserProperties.email = newUserProperties.email ? newUserProperties.email.toLowerCase() : newUserProperties.email;
 
-            const isValidUser = await thisUser.load(newUserProperties);
-            // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!
-            if (isValidUser && thisUser.hasDefaultNewUserProperties) {
-                // this is a part user (register user) - so no audit
-                // Also, because this is a part user (register user) - must send a registration email which means adding
-                //  user tracking
-                await thisUser.save(trackingResponse.by);
+                const isValidUser = await thisUser.load(newUserProperties);
+                // this is a new User, so check mandatory properties and additional the additional default properties required to add a user!
+                if (isValidUser && thisUser.hasDefaultNewUserProperties) {
+                    // this is a part user (register user) - so no audit
+                    // Also, because this is a part user (register user) - must send a registration email which means adding
+                    //  user tracking
+                    await thisUser.save(trackingResponse.by);
 
-                return res.status(200).json(thisUser.toJSON(false, false, false, true));
-            } else {
-                return res.status(400).send('Unexpected Input.');
+                    return res.status(200).json(thisUser.toJSON(false, false, false, true));
+                } else {
+                    return res.status(400).send('Unexpected Input.');
+                }
+            }else{
+                return res.status(404).send();
             }
-
         } else {
             // not found the given add user tracking reference
             console.error("api/user/add error - failed to match add user tracking and user record");
