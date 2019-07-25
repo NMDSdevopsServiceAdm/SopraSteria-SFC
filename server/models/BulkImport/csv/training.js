@@ -495,7 +495,7 @@ class Training {
 
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
   addAPIValidations(errors, warnings) {
-    errors.forEach(thisError => {
+/*     errors.forEach(thisError => {
       thisError.properties ? thisError.properties.forEach(thisProp => {
         const validationError = {
           lineNumber: this._lineNumber,
@@ -594,7 +594,7 @@ class Training {
 
         this._validationErrors.push(validationWarning);
       }) : true;
-    });
+    }); */
   }
 
   _csvQuote(toCsv) {

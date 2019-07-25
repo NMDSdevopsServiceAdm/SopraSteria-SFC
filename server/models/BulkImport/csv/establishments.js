@@ -404,7 +404,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
         errType: `ESTABLISHMENT_TYPE_ERROR`,
-        error: "Establishment Type (ESTTYPE) must be an integer",
+        error: "The ESTTYPE you have supplied is an incorrect code",
         source: this._currentLine.ESTTYPE,
         name: this._currentLine.LOCALESTID,
       });
@@ -752,65 +752,67 @@ class Establishment {
     const listOfServiceUsersDescriptions = this._currentLine.OTHERUSERDESC.split(';');
 
     const localValidationErrors = [];
-    const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService))) : true;
-    if (!isValid) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SERVICE_USERS_ERROR,
-        errType: `SERVICE_USERS_ERROR`,
-        error: "Service Users (SERVICEUSERS) must be a semi-colon delimited list of integers",
-        source: this._currentLine.SERVICEUSERS,
-        name: this._currentLine.LOCALESTID,
-      });
-    } else if (listOfServiceUsers.length != listOfServiceUsersDescriptions.length) {
-      localValidationErrors.push({
-        lineNumber: this._lineNumber,
-        errCode: Establishment.SERVICE_USERS_ERROR,
-        errType: `SERVICE_USERS_ERROR`,
-        error: "Service Users (SERVICEUSERS) count and Service Users Description (OTHERUSERDESC) count must equal",
-        source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
-        name: this._currentLine.LOCALESTID,
-      });
-    } else if (isValid) {
-      const myServiceUsersDescriptions = [];
-      this._allServiceUsers = listOfServiceUsers.map((thisService, index) => {
-        const thisServiceIndex = parseInt(thisService, 10);
+    if (this._currentLine.SERVICEUSERS && this._currentLine.SERVICEUSERS.length > 0) {
+      const isValid = this._currentLine.SERVICEUSERS.length ? listOfServiceUsers.every(thisService => !Number.isNaN(parseInt(thisService))) : true;
+      if (!isValid) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.SERVICE_USERS_ERROR,
+          errType: `SERVICE_USERS_ERROR`,
+          error: "The SERVICEUSERS you have supplied has an incorrect code",
+          source: this._currentLine.SERVICEUSERS,
+          name: this._currentLine.LOCALESTID,
+        });
+      } else if (listOfServiceUsers.length != listOfServiceUsersDescriptions.length) {
+        localValidationErrors.push({
+          lineNumber: this._lineNumber,
+          errCode: Establishment.SERVICE_USERS_ERROR,
+          errType: `SERVICE_USERS_ERROR`,
+          error: "SERVICEUSERS/OTHERUSERDESC do not have the same number of items (i.e. numbers and/or semi colons)",
+          source: `${this._currentLine.SERVICEUSERS} - ${this._currentLine.OTHERUSERDESC}`,
+          name: this._currentLine.LOCALESTID,
+        });
+      } else if (isValid) {
+        const myServiceUsersDescriptions = [];
+        this._allServiceUsers = listOfServiceUsers.map((thisService, index) => {
+          const thisServiceIndex = parseInt(thisService, 10);
 
-        // if the service user is one of the many "other" type of services, then need to validate the "other description"
-        const otherServiceUsers = [3, 9, 21];   // these are the original budi codes
-        if (otherServiceUsers.includes(thisServiceIndex)) {
-          const myServiceUserOther = listOfServiceUsersDescriptions[index];
-          const MAX_LENGTH = 120;
-          if (!myServiceUserOther || myServiceUserOther.length == 0) {
-            localValidationErrors.push({
-              lineNumber: this._lineNumber,
-              errCode: Establishment.SERVICE_USERS_ERROR,
-              errType: `SERVICE_USERS_ERROR`,
-              error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and consequently (OTHERUSERDESC:${index+1}) must be defined`,
-              source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
-              name: this._currentLine.LOCALESTID,
-            });
-            myServiceUsersDescriptions.push(null);
-          } else if (myServiceUserOther.length > MAX_LENGTH) {
-            localValidationErrors.push({
-              lineNumber: this._lineNumber,
-              errCode: Establishment.SERVICE_USERS_ERROR,
-              errType: `SERVICE_USERS_ERROR`,
-              error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and (OTHERUSERDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
-              source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
-              name: this._currentLine.LOCALESTID,
-            });
+          // if the service user is one of the many "other" type of services, then need to validate the "other description"
+          const otherServiceUsers = [3, 9, 21];   // these are the original budi codes
+          if (otherServiceUsers.includes(thisServiceIndex)) {
+            const myServiceUserOther = listOfServiceUsersDescriptions[index];
+            const MAX_LENGTH = 120;
+            if (!myServiceUserOther || myServiceUserOther.length == 0) {
+              localValidationErrors.push({
+                lineNumber: this._lineNumber,
+                errCode: Establishment.SERVICE_USERS_ERROR,
+                errType: `SERVICE_USERS_ERROR`,
+                error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and consequently (OTHERUSERDESC:${index+1}) must be defined`,
+                source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+                name: this._currentLine.LOCALESTID,
+              });
+              myServiceUsersDescriptions.push(null);
+            } else if (myServiceUserOther.length > MAX_LENGTH) {
+              localValidationErrors.push({
+                lineNumber: this._lineNumber,
+                errCode: Establishment.SERVICE_USERS_ERROR,
+                errType: `SERVICE_USERS_ERROR`,
+                error: `Service Users (SERVICEUSERS:${index+1}) is an 'other' service and (OTHERUSERDESC:${index+1}) must not be greater than ${MAX_LENGTH} characters`,
+                source: `${this._currentLine.SERVICEDESC} - ${listOfServiceUsersDescriptions[index]}`,
+                name: this._currentLine.LOCALESTID,
+              });
+            } else {
+              myServiceUsersDescriptions.push(listOfServiceUsersDescriptions[index]);
+            }
           } else {
-            myServiceUsersDescriptions.push(listOfServiceUsersDescriptions[index]);
+            myServiceUsersDescriptions.push(null);
           }
-        } else {
-          myServiceUsersDescriptions.push(null);
-        }
 
-        return thisServiceIndex;
-      });
+          return thisServiceIndex;
+        });
 
-      this._allServiceUsersOther = myServiceUsersDescriptions;
+        this._allServiceUsersOther = myServiceUsersDescriptions;
+      }
     }
 
     if (localValidationErrors.length > 0) {
@@ -1117,7 +1119,7 @@ class Establishment {
           lineNumber: this._lineNumber,
           errCode: Establishment.REASONS_FOR_LEAVING_ERROR,
           errType: `REASONS_FOR_LEAVING_ERROR`,
-          error: `The reasons you have supplied is an incorrect code`,
+          error: `The REASONS you have supplied has an incorrect code`,
           source: `${this._currentLine.REASONS}`,
           name: this._currentLine.LOCALESTID,
         });
@@ -1804,7 +1806,8 @@ class Establishment {
 
   // maps Entity (API) validation messages to bulk upload specific messages (using Entity property name)
   addAPIValidations(errors, warnings) {
-    errors.forEach(thisError => {
+    // disable the integration of any API errors - they can't be propertly matched to bulk upload validations
+/*     errors.forEach(thisError => {
       thisError.properties ? thisError.properties.forEach(thisProp => {
         const validationError = {
           lineNumber: this._lineNumber,
@@ -1997,7 +2000,7 @@ class Establishment {
 
         validationWarning.warnCode ? this._validationErrors.push(validationWarning) : true;
       }) : true;
-    });
+    }); */
 
   };
 
