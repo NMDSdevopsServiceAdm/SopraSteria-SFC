@@ -96,7 +96,7 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, '/security-question'] });
+    this.backService.setBackLink({ url: ['/activate-account', this.activationToken, 'security-question'] });
   }
 
   private generatePayload(): ActivateAccountRequest {

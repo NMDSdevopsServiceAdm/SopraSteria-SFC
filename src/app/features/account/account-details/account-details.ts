@@ -11,6 +11,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Subscription } from 'rxjs';
 
 export class AccountDetails implements OnInit, OnDestroy {
+  protected back: URLStructure;
   protected formErrorsMap: Array<ErrorDetails>;
   protected serverError: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
