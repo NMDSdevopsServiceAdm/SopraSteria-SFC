@@ -3,6 +3,9 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AlertComponent } from '@shared/components/alert/alert.component';
+import {
+  SummaryRecordValueComponent,
+} from '@shared/components/staff-record-summary/summary-record-value/summary-record-value.component';
 
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
@@ -27,6 +30,7 @@ import { StaffRecordSummaryComponent } from './components/staff-record-summary/s
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StatusComponent } from './components/status/status.component';
 import { SubmitButtonComponent } from './components/submit-button/submit-button.component';
+import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/submit-exit-buttons.component';
 import { SummaryListComponent } from './components/summary-list/summary-list.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
@@ -37,7 +41,8 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
-import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/submit-exit-buttons.component';
+import { WorkerDaysPipe } from './pipes/worker-days.pipe';
+import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule],
@@ -74,6 +79,9 @@ import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/sub
     WorkplaceSummaryComponent,
     SummaryListComponent,
     UserAccountsSummaryComponent,
+    SummaryRecordValueComponent,
+    WorkerDaysPipe,
+    WorkerPayPipe,
     SubmitExitButtonsComponent,
   ],
   exports: [
@@ -108,6 +116,8 @@ import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/sub
     WorkplaceSummaryComponent,
     SummaryListComponent,
     UserAccountsSummaryComponent,
+    WorkerDaysPipe,
+    WorkerPayPipe,
     SubmitExitButtonsComponent,
   ],
 })

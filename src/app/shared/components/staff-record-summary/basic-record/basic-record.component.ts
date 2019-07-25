@@ -7,5 +7,5 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
   templateUrl: './basic-record.component.html',
 })
 export class BasicRecordComponent extends StaffRecordSummaryComponent {
-  @Input() wdfReportEnabled = false;
+  @Input() wdfView = false;
 }

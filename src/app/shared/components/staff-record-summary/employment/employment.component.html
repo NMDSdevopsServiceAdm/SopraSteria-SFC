@@ -25,19 +25,11 @@
     <dt class="govuk-summary-list__key">
       Date started
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.mainJobStartDate === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.mainJobStartDate != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.mainJobStartDate" [worker]="worker">
         {{ worker.mainJobStartDate ? mainStartDate : '-' }}
-      </ng-container>
+      </app-summary-record-value>
     </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.mainJobStartDate ? mainStartDate : '-' }}
-    </dd>
-
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('main-job-start-date')" (click)="setReturn()">
         <ng-container *ngIf="!worker.mainJobStartDate">
@@ -77,30 +69,7 @@
     <dt class="govuk-summary-list__key">
       Other job roles
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.otherJobs === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.otherJobs != 'No'">
-        <ng-container *ngIf="!worker.otherJobs?.length; else otherJobs">
-          -
-        </ng-container>
-        <ng-template #otherJobs>
-          <ul>
-            <li *ngFor="let otherJob of worker.otherJobs">
-              <ng-container *ngIf="otherJob.other; else title">
-                <span>{{ otherJob.other }}</span>
-              </ng-container>
-              <ng-template #title>
-                <span>{{ otherJob.title }}</span>
-              </ng-template>
-            </li>
-          </ul>
-        </ng-template>
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
+    <dd class="govuk-summary-list__value">
       <ng-container *ngIf="!worker.otherJobs?.length; else otherJobs">
         -
       </ng-container>
@@ -177,25 +146,14 @@
     <dt class="govuk-summary-list__key">
       Recruited from
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.recruitedFrom === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.recruitedFrom != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.recruitedFrom" [worker]="worker">
         {{
           worker.recruitedFrom?.from?.from !== null
             ? worker.recruitedFrom?.from?.from
             : (worker.recruitedFrom?.value | openEndedAnswer)
         }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{
-        worker.recruitedFrom?.from?.from !== null
-          ? worker.recruitedFrom?.from?.from
-          : (worker.recruitedFrom?.value | openEndedAnswer)
-      }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('recruited-from')" (click)="setReturn()">
@@ -240,17 +198,10 @@
     <dt class="govuk-summary-list__key">
       Sickness in last 12 months
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.daysSick === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.daysSick != 'No'">
-        {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ isNumber(worker.daysSick?.days) ? worker.daysSick?.days : (worker.daysSick?.value | openEndedAnswer) }}
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.daysSick" [worker]="worker">
+        {{ worker.daysSick | workerDays | openEndedAnswer }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('days-of-sickness')" (click)="setReturn()">
@@ -270,17 +221,10 @@
     <dt class="govuk-summary-list__key">
       Zero hours contract
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.zeroHoursContract === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.zeroHoursContract != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.zeroHoursContract" [worker]="worker">
         {{ worker.zeroHoursContract | closedEndedAnswer }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.zeroHoursContract | closedEndedAnswer }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('contract-with-zero-hours')" (click)="setReturn()">
@@ -300,24 +244,14 @@
     <dt class="govuk-summary-list__key">
       Average weekly working hours
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.weeklyHoursAverage === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.weeklyHoursAverage != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.weeklyHoursAverage" [worker]="worker">
         {{
           isNumber(worker.weeklyHoursAverage?.hours)
             ? worker.weeklyHoursAverage?.hours
             : (worker.weeklyHoursAverage?.value | openEndedAnswer)
         }}
-      </ng-container>
-    </dd>
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{
-        isNumber(worker.weeklyHoursAverage?.hours)
-          ? worker.weeklyHoursAverage?.hours
-          : (worker.weeklyHoursAverage?.value | openEndedAnswer)
-      }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('average-weekly-hours')" (click)="setReturn()">
@@ -337,24 +271,14 @@
     <dt class="govuk-summary-list__key">
       Contracted weekly hours
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.weeklyHoursContracted === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.weeklyHoursContracted != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.weeklyHoursContracted" [worker]="worker">
         {{
           isNumber(worker.weeklyHoursContracted?.hours)
             ? worker.weeklyHoursContracted?.hours
             : (worker.weeklyHoursContracted?.value | openEndedAnswer)
         }}
-      </ng-container>
-    </dd>
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{
-        isNumber(worker.weeklyHoursContracted?.hours)
-          ? worker.weeklyHoursContracted?.hours
-          : (worker.weeklyHoursContracted?.value | openEndedAnswer)
-      }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('weekly-contracted-hours')" (click)="setReturn()">
@@ -375,17 +299,10 @@
       Salary
     </dt>
 
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.annualHourlyPay === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.annualHourlyPay != 'No'">
-        {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.annualHourlyPay?.rate ? salary : (worker.annualHourlyPay?.value | closedEndedAnswer) }}
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.annualHourlyPay" [worker]="worker">
+        {{ worker.annualHourlyPay | workerPay | closedEndedAnswer }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('salary')" (click)="setReturn()">

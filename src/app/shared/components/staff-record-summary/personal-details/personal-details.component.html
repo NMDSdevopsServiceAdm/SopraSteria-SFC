@@ -25,17 +25,10 @@
     <dt class="govuk-summary-list__key">
       Date of birth
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.dateOfBirth === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.dateOfBirth != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.dateOfBirth" [worker]="worker">
         {{ worker.dateOfBirth ? dob : '-' }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.dateOfBirth ? dob : '-' }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('date-of-birth')" (click)="setReturn()">
@@ -77,17 +70,10 @@
       Gender
     </dt>
 
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.gender === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.gender != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.gender" [worker]="worker">
         {{ worker.gender | closedEndedAnswer }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.gender | closedEndedAnswer }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('gender')" (click)="setReturn()">
@@ -149,25 +135,14 @@
     <dt class="govuk-summary-list__key">
       Nationality
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.nationality === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.nationality != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.nationality" [worker]="worker">
         {{
           worker.nationality?.other?.nationality !== null
             ? worker.nationality?.other?.nationality
             : (worker.nationality?.value | closedEndedAnswer)
         }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{
-        worker.nationality?.other?.nationality !== null
-          ? worker.nationality?.other?.nationality
-          : (worker.nationality?.value | closedEndedAnswer)
-      }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('nationality')" (click)="setReturn()">

@@ -49,10 +49,7 @@ export interface Worker {
     value: string;
     year: number;
   };
-  daysSick?: {
-    value: number;
-    days?: number;
-  };
+  daysSick?: WorkerDays;
   zeroHoursContract: string;
   weeklyHoursAverage: {
     value: string;
@@ -62,10 +59,7 @@ export interface Worker {
     value: string;
     hours: number;
   };
-  annualHourlyPay: {
-    value: string;
-    rate: number;
-  };
+  annualHourlyPay: WorkerPay;
   careCertificate: string;
   apprenticeshipTraining: string;
   qualificationInSocialCare: string;
@@ -85,7 +79,45 @@ export interface Worker {
   created?: string;
   updated?: string;
   completed?: boolean;
+  wdf?: WorkerWdfRecord;
 }
+
+export interface WorkerPay {
+  value: string;
+  rate: number;
+}
+
+export interface WorkerDays {
+  value: number;
+  days?: number;
+}
+
+export interface WorkerWdfRecord {
+  annualHourlyPay: wdfStatus;
+  careCertificate: wdfStatus;
+  contract: wdfStatus;
+  currentEligibility: boolean;
+  dateOfBirth: wdfStatus;
+  daysSick: wdfStatus;
+  effectiveFrom: string;
+  gender: wdfStatus;
+  highestQualification: wdfStatus;
+  isEligible: boolean;
+  lastEligibility: string;
+  mainJob: wdfStatus;
+  mainJobStartDate: wdfStatus;
+  nationality: wdfStatus;
+  otherJobs: wdfStatus;
+  otherQualification: wdfStatus;
+  qualificationInSocialCare: wdfStatus;
+  recruitedFrom: wdfStatus;
+  socialCareQualification: wdfStatus;
+  weeklyHoursAverage: wdfStatus;
+  weeklyHoursContracted: wdfStatus;
+  zeroHoursContract: wdfStatus;
+}
+
+export type wdfStatus = 'Yes' | 'No' | 'Not relevant';
 
 export interface WorkersResponse {
   workers: Worker[];

@@ -1,19 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { WdfWorkerComponent } from '@features/reports/wdf-worker/wdf-worker.component';
+import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 
 describe('ReportsStaffSummaryComponent', () => {
-  let component: WdfWorkerComponent;
-  let fixture: ComponentFixture<WdfWorkerComponent>;
+  let component: WdfStaffSummaryComponent;
+  let fixture: ComponentFixture<WdfStaffSummaryComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [WdfWorkerComponent],
+      declarations: [WdfStaffSummaryComponent],
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(WdfWorkerComponent);
+    fixture = TestBed.createComponent(WdfStaffSummaryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

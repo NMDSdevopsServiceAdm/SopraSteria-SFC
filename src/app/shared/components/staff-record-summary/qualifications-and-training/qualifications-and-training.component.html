@@ -26,17 +26,10 @@
       Started or completed Care Certificate
     </dt>
 
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.careCertificate === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.careCertificate != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.careCertificate" [worker]="worker">
         {{ worker.careCertificate || '-' }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.careCertificate || '-' }}
+      </app-summary-record-value>
     </dd>
 
     <dd class="govuk-summary-list__actions">
@@ -57,17 +50,10 @@
     <dt class="govuk-summary-list__key">
       Any social care qualification
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.qualificationInSocialCare === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.qualificationInSocialCare != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.qualificationInSocialCare" [worker]="worker">
         {{ worker.qualificationInSocialCare | closedEndedAnswer }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.qualificationInSocialCare | closedEndedAnswer }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('social-care-qualification')" (click)="setReturn()">
@@ -87,17 +73,10 @@
     <dt class="govuk-summary-list__key">
       Highest level of social care qualification
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.socialCareQualification === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.socialCareQualification != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.socialCareQualification" [worker]="worker">
         {{ worker.socialCareQualification?.title | closedEndedAnswer }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.socialCareQualification?.title | closedEndedAnswer }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('social-care-qualification-level')" (click)="setReturn()">
@@ -117,17 +96,10 @@
     <dt class="govuk-summary-list__key">
       Non-social care qualification
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.otherQualification === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.otherQualification != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.socialCareQualification" [worker]="worker">
         {{ worker.otherQualification | closedEndedAnswer }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.otherQualification | closedEndedAnswer }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('other-qualifications')" (click)="setReturn()">
@@ -147,17 +119,10 @@
     <dt class="govuk-summary-list__key">
       Highest level of non-social care qualification
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.highestQualification === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.highestQualification != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.socialCareQualification" [worker]="worker">
         {{ worker.highestQualification?.title || '-' }}
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.highestQualification?.title || '-' }}
+      </app-summary-record-value>
     </dd>
     <dd class="govuk-summary-list__actions">
       <a [routerLink]="getRoutePath('other-qualifications-level')" (click)="setReturn()">

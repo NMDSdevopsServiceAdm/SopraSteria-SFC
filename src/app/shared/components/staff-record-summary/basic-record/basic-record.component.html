@@ -19,27 +19,15 @@
     <dt class="govuk-summary-list__key">
       Main job role
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.mainJob === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.mainJob != 'No'">
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.mainJob" [worker]="worker">
         <ng-container *ngIf="worker.mainJob.other; else title">
           <span>{{ worker.mainJob.other }}</span>
         </ng-container>
         <ng-template #title>
           <span>{{ worker.mainJob.title }}</span>
         </ng-template>
-      </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.mainJob.other; else title">
-        <span>{{ worker.mainJob.other }}</span>
-      </ng-container>
-      <ng-template #title>
-        <span>{{ worker.mainJob.title }}</span>
-      </ng-template>
+      </app-summary-record-value>
     </dd>
   </div>
 
@@ -47,15 +35,10 @@
     <dt class="govuk-summary-list__key">
       Contract type
     </dt>
-    <dd *ngIf="wdfReportEnabled" class="govuk-summary-list__value">
-      <ng-container *ngIf="worker.wdf.contract === 'No'">
-        <app-eligibility-icon [eligible]="false"></app-eligibility-icon>
-      </ng-container>
-      <ng-container *ngIf="worker.wdf.contract != 'No'"> {{ worker.contract }} </ng-container>
-    </dd>
-
-    <dd *ngIf="!wdfReportEnabled" class="govuk-summary-list__value">
-      {{ worker.contract }}
+    <dd class="govuk-summary-list__value">
+      <app-summary-record-value [wdfView]="wdfView" [wdfValue]="worker.wdf.contract" [worker]="worker">
+        {{ worker.contract }}
+      </app-summary-record-value>
     </dd>
   </div>
 </dl>

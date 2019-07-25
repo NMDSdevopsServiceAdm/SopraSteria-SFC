@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { DialogService } from '@core/services/dialog.service';
+import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { AddEditQualificationComponent } from './add-edit-qualification/add-edit-qualification.component';
@@ -56,6 +57,7 @@ import { QualificationsComponent } from './staff-record/qualifications/qualifica
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TrainingComponent } from './staff-record/training/training.component';
 import { TotalStaffComponent } from './total-staff/total-staff.component';
+import { WdfConfirmationDialogComponent } from './wdf-confirmation-dialog/wdf-confirmation-dialog.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkerSaveSuccessComponent } from './worker-save-success/worker-save-success.component';
 import { WorkersRoutingModule } from './workers-routing.module';
@@ -111,8 +113,15 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     WeeklyContractedHoursComponent,
     WorkerSaveSuccessComponent,
     YearArrivedUkComponent,
+    WdfStaffSummaryComponent,
+    WdfConfirmationDialogComponent,
   ],
   providers: [DialogService, WorkerResolver],
-  entryComponents: [DeleteQualificationDialogComponent, DeleteTrainingDialogComponent, DeleteWorkerDialogComponent],
+  entryComponents: [
+    DeleteQualificationDialogComponent,
+    DeleteTrainingDialogComponent,
+    DeleteWorkerDialogComponent,
+    WdfConfirmationDialogComponent,
+  ],
 })
 export class WorkersModule {}
