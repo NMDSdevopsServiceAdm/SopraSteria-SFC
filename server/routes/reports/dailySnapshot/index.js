@@ -21,15 +21,20 @@ const getToken = (headers) => {
 const isAuthorised = (req, res , next) => {
     const AUTH_HEADER = 'authorization';
     const token = getToken(req.headers[AUTH_HEADER]);
-  
+    const Token_Secret = config.get('jwt.secret');
+
+    console.log("WA DEBUG - isAuthorised::Token_Secret", Token_Secret)
+
     if (token) {
       jwt.verify(token, Token_Secret, function (err, claim) {
+        console.log("WA DEBUG - isAuthorised::claim", claim, err)
+
         if (err || claim.aud !== 'ADS-WDS-on-demand-reporting' || claim.iss !== thisIss) {
           return res.status(403).send('Invalid Token');
         } else {
           next();
         }
-      });    
+      });
     } else {
       // not authenticated
       res.status(401).send('Requires authorisation');
@@ -51,6 +56,7 @@ router.route('/').get(async (req, res) => {
         );
 
         if (dailySnapshotResults && Array.isArray(dailySnapshotResults)) {
+          console.log("WA DEBUG - daily snapshots results: ", dailySnapshotResults)
             return res.status(200).json(dailySnapshotResults);
         } else {
             // unexpected
