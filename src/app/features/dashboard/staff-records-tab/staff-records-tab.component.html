@@ -33,11 +33,38 @@
   }}
 </app-status>
 
-<app-total-staff-panel
-  [workplace]="workplace"
-  [totalStaff]="totalStaff"
-  [totalWorkers]="this.workers?.length"
-  [returnToDash]="true"
-></app-total-staff-panel>
+<ng-container *ngIf="workers?.length > 0; else noStaffRecords">
+  <app-total-staff-panel
+    [workplace]="workplace"
+    [totalStaff]="totalStaff"
+    [totalWorkers]="workers?.length"
+    [returnToDash]="true"
+  ></app-total-staff-panel>
 
-<app-staff-summary *ngIf="workers" [workplace]="workplace" [workers]="workers"></app-staff-summary>
+  <app-staff-summary *ngIf="workers" [workplace]="workplace" [workers]="workers"></app-staff-summary>
+</ng-container>
+
+<ng-template #noStaffRecords>
+  <app-inset-text color="warning">You need to start adding your staff records</app-inset-text>
+
+  <p>You can add full records or basic records.</p>
+
+  <h3>Full record</h3>
+  <p>For each full record you will need to add their:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>full name or ID number</li>
+    <li>main job role</li>
+    <li>type of contract</li>
+    <li>personal information</li>
+    <li>employment information</li>
+    <li>qualifications and training records</li>
+  </ul>
+
+  <h3>Basic record</h3>
+  <p>For each basic record you will need to add their:</p>
+  <ul class="govuk-list govuk-list--bullet">
+    <li>full name or ID number</li>
+    <li>main job role</li>
+    <li>type of contract</li>
+  </ul>
+</ng-template>
