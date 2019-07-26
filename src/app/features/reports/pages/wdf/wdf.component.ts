@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
 import { URLStructure } from '@core/model/url.model';
@@ -33,13 +33,14 @@ export class WdfComponent implements OnInit, OnDestroy {
     private reportService: ReportService,
     private workerService: WorkerService,
     private router: Router,
+    private route: ActivatedRoute,
     private dialogService: DialogService,
     private alertService: AlertService,
     private establishmentService: EstablishmentService
   ) {}
 
   ngOnInit() {
-    const workplaceUid = this.establishmentService.establishment.uid;
+    const workplaceUid = this.route.snapshot.params.establishmentuid;
 
     this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
     this.workerService.setReturnTo(null);
