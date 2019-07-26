@@ -61,6 +61,7 @@ const routes: Routes = [
   {
     path: 'total-staff',
     component: TotalStaffComponent,
+    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Total Staff' },
   },
   {

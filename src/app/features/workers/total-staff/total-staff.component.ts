@@ -47,7 +47,8 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    const primaryWorkplaceUid = this.route.parent.snapshot.data.primaryWorkplace.uid;
+    const primaryWorkplaceUid = this.route.snapshot.data.primaryWorkplace.uid;
+
     this.return =
       this.workplace.uid === primaryWorkplaceUid
         ? { url: ['/dashboard'] }
@@ -102,7 +103,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
   private onSuccess() {
     if (this.returnToDash) {
-      this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+      this.router.navigate(this.return.url, { fragment: 'staff-records' });
     } else {
       this.router.navigate(['create-basic-records'], { relativeTo: this.route.parent });
     }
