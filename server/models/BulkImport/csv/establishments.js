@@ -1,9 +1,12 @@
 const BUDI = require('../BUDI').BUDI;
 
 class Establishment {
-  constructor(currentLine, lineNumber) {
+  constructor(currentLine, lineNumber, allCurrentEstablishments) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
+    this._allCurrentEstablishments = allCurrentEstablishments;
+
+
     this._validationErrors = [];
     this._headers_v1 = ["LOCALESTID","STATUS","ESTNAME","ADDRESS1","ADDRESS2","ADDRESS3","POSTTOWN","POSTCODE","ESTTYPE","OTHERTYPE","PERMCQC","PERMLA","SHARELA","REGTYPE","PROVNUM","LOCATIONID","MAINSERVICE","ALLSERVICES","CAPACITY","UTILISATION","SERVICEDESC","SERVICEUSERS","OTHERUSERDESC","TOTALPERMTEMP","ALLJOBROLES","STARTERS","LEAVERS","VACANCIES","REASONS","REASONNOS"];
 
@@ -11,6 +14,7 @@ class Establishment {
     // CSV properties
     this._localId = null;
     this._status = null;
+    this._key = null;
     this._name = null;
     this._address1 = null;
     this._address2 = null;
@@ -57,6 +61,7 @@ class Establishment {
   static get MAIN_SERVICE_ERROR() { return 1000; }
   static get LOCAL_ID_ERROR() { return 1010; }
   static get STATUS_ERROR() { return 1020; }
+  static get STATUS_WARNING() { return 1025; }
   static get NAME_ERROR() { return 1030; }
   static get ADDRESS_ERROR() { return 1040; }
   static get ESTABLISHMENT_TYPE_ERROR() { return 1070; }
@@ -76,7 +81,6 @@ class Establishment {
   static get LEAVERS_ERROR() { return 1320; }
 
   static get REASONS_FOR_LEAVING_ERROR() { return 1360; }
-
 
   static get MAIN_SERVICE_WARNING() { return 2000; }
   static get NAME_WARNING() { return 2030; }
@@ -114,6 +118,9 @@ class Establishment {
 
   get localId() {
     return this._localId;
+  }
+  get key() {
+    return this._key;
   }
   get status() {
     return this._status;
@@ -223,6 +230,7 @@ class Establishment {
       return false;
     } else {
       this._localId = myLocalId;
+      this._key = myLocalId.replace(/\s/g, "");
       return true;
     }
   }
@@ -244,6 +252,76 @@ class Establishment {
       });
       return false;
     } else {
+      // helper which returns true if the given LOCALESTID
+      const thisEstablishmentExists = (key) => {
+        const foundEstablishment = this._allCurrentEstablishments.find(currentEstablishment => {
+          return currentEstablishment.key === key;
+        });
+        return foundEstablishment ? true : false;
+      };
+
+      // we have a known status - now validate the status against the known set of all current establishments
+      switch (myStatus) {
+        case 'NEW':
+          if (thisEstablishmentExists(this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              lineNumber: this._lineNumber,
+              errCode: Establishment.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `STATUS is NEW but establishment already exists`,
+              source: myStatus,
+            });
+          }
+          break;
+        case 'DELETE':
+          if (!thisEstablishmentExists(this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              lineNumber: this._lineNumber,
+              errCode: Establishment.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `STATUS is DELETE but establishment does not exist`,
+              source: myStatus,
+            });
+          }
+          break;
+        case 'UNCHECKED':
+          this._validationErrors.push({
+            name: this._currentLine.LOCALESTID,
+            lineNumber: this._lineNumber,
+            warnCode: Establishment.STATUS_WARNING,
+            warnType: `STATUS_WARNING`,
+            warning: `STATUS is UNCHECKED and will be ignored`,
+            source: myStatus,
+          });
+          break;
+        case 'NOCHANGE':
+          if (!thisEstablishmentExists(this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              lineNumber: this._lineNumber,
+              errCode: Establishment.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `STATUS is NOCHANGE but establishment does not exist`,
+              source: myStatus,
+            });
+          }
+          break;
+        case 'UPDATE':
+          if (!thisEstablishmentExists(this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              lineNumber: this._lineNumber,
+              errCode: Establishment.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `STATUS is UPDATE but establishment does not exist`,
+              source: myStatus,
+            });
+          }
+          break;
+      }
+
       this._status = myStatus;
       return true;
     }
@@ -424,9 +502,9 @@ class Establishment {
     if (myEstablishmentType == 8 && (!myOtherEstablishmentType || myOtherEstablishmentType.length == 0)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
-        errType: `ESTABLISHMENT_TYPE_ERROR`,
-        error: `Establishment Type (ESTTYPE) is 'Other (8)'; must define the Other (OTHERTYPE)`,
+        warnCode: Establishment.ESTABLISHMENT_TYPE_WARNING,
+        warnType: `ESTABLISHMENT_TYPE_WARNING`,
+        warning: `Establishment Type (ESTTYPE) is 'Other (8)'; missing description (OTHERTYPE)`,
         source: myOtherEstablishmentType,
         name: this._currentLine.LOCALESTID,
       });
@@ -1587,52 +1665,62 @@ class Establishment {
 
     status = !this._validateLocalisedId() ? false : status;
     status = !this._validateStatus() ? false : status;
-    status = !this._validateEstablishmentName() ? false : status;
-    status = !this._validateAddress() ? false : status;
-    status = !this._validateEstablishmentType() ? false : status;
 
-    status = !this._validateShareWithCQC() ? false : status;
-    status = !this._validateShareWithLA() ? false : status;
-    status = !this._validateLocalAuthorities() ? false : status;
+    // if the status is unchecked, then don't continue validation
+    if (this._status !== 'UNCHECKED') {
+      status = !this._validateEstablishmentName() ? false : status;
+      status = !this._validateAddress() ? false : status;
+      status = !this._validateEstablishmentType() ? false : status;
 
-    status = !this._validateRegType() ? false : status;
-    status = !this._validateProvID() ? false : status;
-    status = !this._validateLocationID() ? false : status;
+      status = !this._validateShareWithCQC() ? false : status;
+      status = !this._validateShareWithLA() ? false : status;
+      status = !this._validateLocalAuthorities() ? false : status;
 
-    status = !this._validateMainService() ? false : status;
-    status = !this._validateAllServices() ? false : status;
-    status = !this._validateServiceUsers() ? false : status;
-    status = !this._validateCapacitiesAndUtilisations() ? false : status;
+      status = !this._validateRegType() ? false : status;
+      status = !this._validateProvID() ? false : status;
+      status = !this._validateLocationID() ? false : status;
 
-    status = !this._validateTotalPermTemp() ? false : status;
-    status = !this._validateAllJobs() ? false : status;
-    status = !this._validateJobRoleTotals() ? false : status;
+      status = !this._validateMainService() ? false : status;
+      status = !this._validateAllServices() ? false : status;
+      status = !this._validateServiceUsers() ? false : status;
+      status = !this._validateCapacitiesAndUtilisations() ? false : status;
 
-    status = !this._validateReasonsForLeaving() ? false : status;
+      status = !this._validateTotalPermTemp() ? false : status;
+      status = !this._validateAllJobs() ? false : status;
+      status = !this._validateJobRoleTotals() ? false : status;
+
+      status = !this._validateReasonsForLeaving() ? false : status;
+    }
 
     return status;
   }
 
   // returns true on success, false is any attribute of Establishment fails
   transform() {
-    let status = true;
+    // if this Worker is unchecked, skip all transformations
+    if (this._status !== 'UNCHECKED') {
+      let status = true;
 
-    status = !this._transformMainService() ? false : status;
-    status = !this._transformEstablishmentType() ? false : status;
-    status = !this._transformLocalAuthorities() ? false : status;
-    status = !this._transformAllServices() ? false : status;
-    status = !this._transformServiceUsers() ? false : status;
-    status = !this._transformAllJobs() ? false : status;
-    //status = !this._transformReasonsForLeaving() ? false : status;        // interim solution - not transforming reasons for leaving
-    status = !this._transformAllCapacities() ? false : status;
-    status = !this._transformAllUtilisation() ? false : status;
-    status = !this._transformAllVacanciesStartersLeavers() ? false : status;
+      status = !this._transformMainService() ? false : status;
+      status = !this._transformEstablishmentType() ? false : status;
+      status = !this._transformLocalAuthorities() ? false : status;
+      status = !this._transformAllServices() ? false : status;
+      status = !this._transformServiceUsers() ? false : status;
+      status = !this._transformAllJobs() ? false : status;
+      //status = !this._transformReasonsForLeaving() ? false : status;        // interim solution - not transforming reasons for leaving
+      status = !this._transformAllCapacities() ? false : status;
+      status = !this._transformAllUtilisation() ? false : status;
+      status = !this._transformAllVacanciesStartersLeavers() ? false : status;
 
-    return status;
+      return status;
+    } else {
+      return true;
+    }
   }
 
   toJSON() {
     return {
+      status: this._status,
       name: this._name,
       address1: this._address1,
       address2: this._address2,
@@ -1717,6 +1805,7 @@ class Establishment {
     }
 
     const changeProperties = {
+      status: this._status,
       name: this._name,
       localIdentifier: this._localId,
       isRegulated: this._regType === 2 ? true : false,

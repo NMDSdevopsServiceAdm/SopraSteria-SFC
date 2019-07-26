@@ -37,3 +37,35 @@
     width: 30%;
   }
 }
+
+.govuk-summary-list--contains-warnings {
+  .govuk-summary-list__key {
+    width: 30%;
+  }
+  .govuk-summary-list__value {
+    width: 40%;
+  }
+  .govuk-summary-list__actions {
+    width: 30%;
+  }
+
+  .govuk-summary-list__row--warning {
+    dt,
+    dd {
+      background: rgba(govuk-colour('orange'), 0.15);
+    }
+    @include govuk-media-query($from: desktop) {
+      .govuk-summary-list__value {
+        white-space: nowrap;
+        p {
+          left: -75%;
+          width: 100%;
+          position: relative;
+        }
+      }
+    }
+    .govuk-summary-list__actions {
+      padding-right: govuk-spacing(2);
+    }
+  }
+}

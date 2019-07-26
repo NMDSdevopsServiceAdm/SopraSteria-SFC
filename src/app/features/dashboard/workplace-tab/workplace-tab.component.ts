@@ -16,10 +16,9 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
   public summaryReturnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private establishmentService: EstablishmentService) { }
+  constructor(private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
-
     this.summaryReturnUrl = { url: ['/dashboard'], fragment: 'workplace' };
 
     this.subscriptions.add(

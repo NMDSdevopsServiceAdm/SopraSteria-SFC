@@ -45,6 +45,7 @@ const isAuthorised = (req, res , next) => {
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
 router.use('/', isAuthorised);
 router.route('/').get(async (req, res) => {
+    req.setTimeout(15 * 60 * 1000);   // fifteen minutes
     try {
         // rather than define a sequelize model, instead, simply query directly upon a view
         // NOTE - the order of the records is defined by the view

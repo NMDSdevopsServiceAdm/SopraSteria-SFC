@@ -55,7 +55,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.user = this.route.snapshot.data.user;
     this.workplace = this.route.parent.snapshot.data.establishment;
 
-    this.return = { url: ['/workplace', this.workplace.uid], fragment: 'user-accounts' };
+    this.return = { url: ['/dashboard'], fragment: 'user-accounts' };
   }
 
   ngOnInit() {
@@ -96,7 +96,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
 
   public onSubmit(payload: { action: string; save: boolean } = { action: 'continue', save: true }) {
     if (!payload.save) {
-      return this.router.navigate(['/workplace', this.workplace.uid], { fragment: 'user-accounts' });
+      return this.router.navigate(this.return.url, { fragment: this.return.fragment });
     }
 
     this.submitted = true;

@@ -42,6 +42,7 @@ import { WorkplaceSummaryComponent } from './components/workplace-summary/workpl
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
+import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
@@ -87,6 +88,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     SubmitExitButtonsComponent,
     WdfConfirmationPanelComponent,
     StaffRecordsTabComponent,
+    NumericAnswerPipe,
   ],
   exports: [
     AlertComponent,
@@ -125,6 +127,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
     SubmitExitButtonsComponent,
     WdfConfirmationPanelComponent,
     StaffRecordsTabComponent,
+    NumericAnswerPipe,
   ],
 })
 export class SharedModule {}
