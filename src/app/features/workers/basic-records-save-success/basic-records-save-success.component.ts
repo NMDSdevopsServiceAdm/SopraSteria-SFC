@@ -9,6 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
   public total: number;
   public returnToWDF = false;
+  public return: { url: any[] };
 
   constructor(private route: ActivatedRoute, private router: Router, private workerService: WorkerService) {}
 
@@ -34,9 +35,10 @@ export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
       };
     }
     return {
-      link: this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
-        ? ['/dashboard']
-        : ['/workplace', this.route.snapshot.data.establishment.uid],
+      link:
+        this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
+          ? ['/dashboard']
+          : ['/workplace', this.route.snapshot.data.establishment.uid],
       fragment: 'staff-records',
       label: 'Go to staff records',
     };
