@@ -108,7 +108,7 @@ export class CreateBasicRecordsComponent implements OnInit, OnDestroy {
 
     if (uid) {
       this.subscriptions.add(
-        this.workerService.deleteWorker(uid).subscribe(() => {
+        this.workerService.deleteWorker(this.workplace.uid, uid).subscribe(() => {
           this.staffRecordsControl.controls.splice(index, 1);
         })
       );

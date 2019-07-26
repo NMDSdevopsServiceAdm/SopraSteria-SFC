@@ -11,11 +11,9 @@ import {
 } from '@core/model/qualification.model';
 import { TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
+import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-
-import { Worker, WorkerEditResponse, WorkersResponse } from '../model/worker.model';
-import { EstablishmentService } from './establishment.service';
 
 export interface Reason {
   id: number;
@@ -43,14 +41,10 @@ export class WorkerService {
   private _workers$: BehaviorSubject<Worker> = new BehaviorSubject<Worker>(null);
   public workers$: Observable<Worker> = this._workers$.asObservable();
 
-  constructor(private http: HttpClient, private establishmentService: EstablishmentService) {}
+  constructor(private http: HttpClient) {}
 
   public get worker() {
     return this._worker$.value as Worker;
-  }
-
-  public get lastDeleted() {
-    return this.lastDeleted$.value as string;
   }
 
   public get returnTo(): URLStructure {
@@ -105,24 +99,20 @@ export class WorkerService {
     return this.http.put<WorkerEditResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}`, props);
   }
 
-  deleteWorker(workerId: string, reason?: any) {
-    return this.http.request<any>(
-      'delete',
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}`,
-      {
-        ...(reason && {
-          body: reason,
-        }),
-      }
-    );
+  deleteWorker(workplaceUid: string, workerId: string, reason?: any) {
+    return this.http.request<any>('delete', `/api/establishment/${workplaceUid}/worker/${workerId}`, {
+      ...(reason && {
+        body: reason,
+      }),
+    });
   }
 
-  getAvailableQualifcations(workerId: string, type: QualificationType) {
+  getAvailableQualifcations(workplaceUid: string, workerId: string, type: QualificationType) {
     const params = new HttpParams().append('type', type);
 
     return this.http
       .get<AvailableQualificationsResponse>(
-        `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/qualification/available`,
+        `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/available`,
         {
           params,
         }
@@ -130,74 +120,63 @@ export class WorkerService {
       .pipe(map(res => res.qualifications));
   }
 
-  createQualification(workerId: string, record: QualificationRequest) {
+  createQualification(workplaceUid: string, workerId: string, record: QualificationRequest) {
     return this.http.post<QualificationRequest>(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/qualification`,
+      `/api/establishment/${workplaceUid}/worker/${workerId}/qualification`,
       record
     );
   }
 
-  updateQualification(workerId: string, qualificationId: string, record) {
+  updateQualification(workplaceUid: string, workerId: string, qualificationId: string, record) {
     return this.http.put(
-      `/api/establishment/${
-        this.establishmentService.establishmentId
-      }/worker/${workerId}/qualification/${qualificationId}`,
+      `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`,
       record
     );
   }
 
-  deleteQualification(workerId: string, qualificationId: string) {
-    return this.http.delete(
-      `/api/establishment/${
-        this.establishmentService.establishmentId
-      }/worker/${workerId}/qualification/${qualificationId}`
-    );
+  deleteQualification(workplaceUid: string, workerId: string, qualificationId: string) {
+    return this.http.delete(`/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`);
   }
 
-  getQualifications(workerId: string) {
-    return this.http.get<QualificationsResponse>(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/qualification`
-    );
+  getQualifications(workplaceUid: string, workerId: string) {
+    return this.http.get<QualificationsResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}/qualification`);
   }
 
-  getQualification(workerId: string, qualificationId: string) {
+  getQualification(workplaceUid: string, workerId: string, qualificationId: string) {
     return this.http.get<QualificationResponse>(
-      `/api/establishment/${
-        this.establishmentService.establishmentId
-      }/worker/${workerId}/qualification/${qualificationId}`
+      `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`
     );
   }
 
-  createTrainingRecord(workerId: string, record: TrainingRecordRequest) {
+  createTrainingRecord(workplaceUid: string, workerId: string, record: TrainingRecordRequest) {
     return this.http.post<TrainingRecordRequest>(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`,
+      `/api/establishment/${workplaceUid}/worker/${workerId}/training`,
       record
     );
   }
 
-  updateTrainingRecord(workerId: string, trainingRecordId: string, record: TrainingRecordRequest) {
+  updateTrainingRecord(
+    workplaceUid: string,
+    workerId: string,
+    trainingRecordId: string,
+    record: TrainingRecordRequest
+  ) {
     return this.http.put<TrainingRecordRequest>(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`,
+      `/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`,
       record
     );
   }
 
-  deleteTrainingRecord(workerId: string, trainingRecordId: string) {
-    return this.http.delete(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`
-    );
+  deleteTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {
+    return this.http.delete(`/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`);
   }
 
-  getTrainingRecords(workerId: string) {
-    return this.http.get<TrainingResponse>(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training`
-    );
+  getTrainingRecords(workplaceUid: string, workerId: string) {
+    return this.http.get<TrainingResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}/training`);
   }
 
-  getTrainingRecord(workerId: string, trainingRecordId: string) {
-    return this.http.get<any>(
-      `/api/establishment/${this.establishmentService.establishmentId}/worker/${workerId}/training/${trainingRecordId}`
-    );
+  getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {
+    return this.http.get<any>(`/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`);
   }
 
   setCreateStaffResponse(success: number) {

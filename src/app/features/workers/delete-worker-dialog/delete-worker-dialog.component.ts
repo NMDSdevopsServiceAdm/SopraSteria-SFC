@@ -85,7 +85,7 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
 
     this.subscriptions.add(
       this.workerService
-        .deleteWorker(this.data.worker.uid, deleteReason)
+        .deleteWorker(this.data.workplace.uid, this.data.worker.uid, deleteReason)
         .subscribe(() => this.onSuccess(), error => this.onError(error))
     );
   }

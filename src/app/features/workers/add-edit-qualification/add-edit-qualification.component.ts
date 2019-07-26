@@ -68,7 +68,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.workerService
-        .getAvailableQualifcations(this.worker.uid, QualificationType.Award)
+        .getAvailableQualifcations(this.workplace.uid, this.worker.uid, QualificationType.Award)
         .subscribe(qualifications => {
           this.qualifications = qualifications;
         })
@@ -76,22 +76,24 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
     if (this.qualificationId) {
       this.subscriptions.add(
-        this.workerService.getQualification(this.worker.uid, this.qualificationId).subscribe(record => {
-          this.record = record;
-          const typeKey = Object.keys(this.qualificationTypes).find(
-            key => this.qualificationTypes[key] === this.record.qualification.group
-          );
+        this.workerService
+          .getQualification(this.workplace.uid, this.worker.uid, this.qualificationId)
+          .subscribe(record => {
+            this.record = record;
+            const typeKey = Object.keys(this.qualificationTypes).find(
+              key => this.qualificationTypes[key] === this.record.qualification.group
+            );
 
-          this.form.patchValue({
-            type: record.qualification.group,
-          });
+            this.form.patchValue({
+              type: record.qualification.group,
+            });
 
-          this.form.get(typeKey).patchValue({
-            qualification: this.record.qualification.id,
-            year: this.record.year,
-            notes: this.record.notes,
-          });
-        })
+            this.form.get(typeKey).patchValue({
+              qualification: this.record.qualification.id,
+              year: this.record.year,
+              notes: this.record.notes,
+            });
+          })
       );
     }
 
@@ -215,13 +217,13 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     if (this.qualificationId) {
       this.subscriptions.add(
         this.workerService
-          .updateQualification(this.worker.uid, this.qualificationId, record)
+          .updateQualification(this.workplace.uid, this.worker.uid, this.qualificationId, record)
           .subscribe(() => this.onSuccess(), error => this.onError(error))
       );
     } else {
       this.subscriptions.add(
         this.workerService
-          .createQualification(this.worker.uid, record)
+          .createQualification(this.workplace.uid, this.worker.uid, record)
           .subscribe(() => this.onSuccess(), error => this.onError(error))
       );
     }

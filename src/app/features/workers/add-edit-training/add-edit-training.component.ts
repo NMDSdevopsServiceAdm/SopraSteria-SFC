@@ -83,33 +83,35 @@ export class AddEditTrainingComponent implements OnInit {
 
     if (this.trainingRecordId) {
       this.subscriptions.add(
-        this.workerService.getTrainingRecord(this.worker.uid, this.trainingRecordId).subscribe(trainingRecord => {
-          this.trainingRecord = trainingRecord;
+        this.workerService
+          .getTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId)
+          .subscribe(trainingRecord => {
+            this.trainingRecord = trainingRecord;
 
-          const completed = this.trainingRecord.completed ? moment(this.trainingRecord.completed) : null;
-          const expires = this.trainingRecord.expires ? moment(this.trainingRecord.expires) : null;
+            const completed = this.trainingRecord.completed ? moment(this.trainingRecord.completed) : null;
+            const expires = this.trainingRecord.expires ? moment(this.trainingRecord.expires) : null;
 
-          this.form.patchValue({
-            title: this.trainingRecord.title,
-            category: this.trainingRecord.trainingCategory.id,
-            accredited: this.trainingRecord.accredited,
-            ...(completed && {
-              completed: {
-                day: completed.date(),
-                month: completed.month() + 1,
-                year: completed.year(),
-              },
-            }),
-            ...(expires && {
-              expires: {
-                day: expires.date(),
-                month: expires.month() + 1,
-                year: expires.year(),
-              },
-            }),
-            notes: this.trainingRecord.notes,
-          });
-        })
+            this.form.patchValue({
+              title: this.trainingRecord.title,
+              category: this.trainingRecord.trainingCategory.id,
+              accredited: this.trainingRecord.accredited,
+              ...(completed && {
+                completed: {
+                  day: completed.date(),
+                  month: completed.month() + 1,
+                  year: completed.year(),
+                },
+              }),
+              ...(expires && {
+                expires: {
+                  day: expires.date(),
+                  month: expires.month() + 1,
+                  year: expires.year(),
+                },
+              }),
+              notes: this.trainingRecord.notes,
+            });
+          })
       );
     }
 
@@ -232,13 +234,13 @@ export class AddEditTrainingComponent implements OnInit {
     if (this.trainingRecordId) {
       this.subscriptions.add(
         this.workerService
-          .updateTrainingRecord(this.worker.uid, this.trainingRecordId, record)
+          .updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
           .subscribe(() => this.onSuccess(), error => this.onError(error))
       );
     } else {
       this.subscriptions.add(
         this.workerService
-          .createTrainingRecord(this.worker.uid, record)
+          .createTrainingRecord(this.workplace.uid, this.worker.uid, record)
           .subscribe(() => this.onSuccess(), error => this.onError(error))
       );
     }
