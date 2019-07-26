@@ -18,18 +18,19 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   public returnToDash = false;
   public submitted = false;
   public workplace: Establishment;
+  public return: { url: any[] };
   private totalStaffConstraints = { min: 0, max: 999 };
   private formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private establishmentService: EstablishmentService,
-    private workerService: WorkerService,
-    private route: ActivatedRoute
+    private workerService: WorkerService
   ) {
     this.form = this.formBuilder.group({
       totalStaff: [
@@ -46,6 +47,13 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.workplace = this.route.parent.snapshot.data.establishment;
+    const primaryWorkplaceUid = this.route.snapshot.data.primaryWorkplace.uid;
+
+    this.return =
+      this.workplace.uid === primaryWorkplaceUid
+        ? { url: ['/dashboard'] }
+        : { url: ['/workplace', this.workplace.uid] };
+
     this.subscriptions.add(
       this.establishmentService.getStaff(this.workplace.uid).subscribe(staff => {
         this.form.patchValue({ totalStaff: staff });
@@ -55,7 +63,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
     this.returnToDash = this.workerService.totalStaffReturn;
 
     if (this.returnToDash) {
-      this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
+      this.backService.setBackLink({ url: this.return.url, fragment: 'staff-records' });
     } else if (this.workerService.returnTo) {
       this.backService.setBackLink(this.workerService.returnTo);
     } else {
@@ -97,7 +105,7 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
   private onSuccess() {
     if (this.returnToDash) {
-      this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+      this.router.navigate(this.return.url, { fragment: 'staff-records' });
     } else if (this.workerService.returnTo) {
       this.router.navigate(this.workerService.returnTo.url);
     } else {

@@ -15,6 +15,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public worker: Worker;
   public workplace: Establishment;
+  public primaryWorkplace: Establishment;
   public submitted = false;
 
   public return: URLStructure;
@@ -40,6 +41,7 @@ export class QuestionComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.return = this.workerService.returnTo;
     this.workplace = this.route.parent.snapshot.data.establishment;
+    this.primaryWorkplace = this.route.parent.snapshot.data.primaryWorkplace;
 
     this.subscriptions.add(
       this.workerService.worker$.subscribe(worker => {
@@ -89,7 +91,9 @@ export class QuestionComponent implements OnInit, OnDestroy {
         break;
 
       case 'exit':
-        this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+        const url =
+          this.workplace.uid === this.primaryWorkplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
+        this.router.navigate(url, { fragment: 'staff-records' });
         break;
 
       case 'return':

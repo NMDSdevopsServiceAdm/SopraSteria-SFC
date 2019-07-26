@@ -64,7 +64,10 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     });
 
     this.selectedJobRole(this.worker.mainJob.jobId);
-    this.previous = ['/dashboard'];
+    // TODO: This is a race condition where this.previous is not getting
+    // picked up by the setBack function as it is done on init.
+    this.previous =
+      this.workplace.uid === this.primaryWorkplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
   }
 
   public setupFormErrorsMap(): void {

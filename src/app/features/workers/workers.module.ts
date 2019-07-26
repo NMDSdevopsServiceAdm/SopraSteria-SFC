@@ -29,7 +29,6 @@ import {
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
-import { DeleteSuccessComponent } from './delete-success/delete-success.component';
 import { DeleteTrainingDialogComponent } from './delete-training-dialog/delete-training-dialog.component';
 import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worker-dialog.component';
 import { DisabilityComponent } from './disability/disability.component';
@@ -85,7 +84,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DateOfBirthComponent,
     DaysOfSicknessComponent,
     DeleteQualificationDialogComponent,
-    DeleteSuccessComponent,
     DeleteTrainingDialogComponent,
     DeleteWorkerDialogComponent,
     DisabilityComponent,
