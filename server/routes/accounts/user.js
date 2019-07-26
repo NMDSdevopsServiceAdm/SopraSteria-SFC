@@ -552,17 +552,12 @@ router.route('/validateAddUser').post(async (req, res) => {
             ]
         });
 
-        if (passTokenResults && passTokenResults.id) {
+        if (passTokenResults && passTokenResults.id && !passTokenResults.completed) {
             // now check if the token has expired or already been consumed
             const now = new Date().getTime();
 
             if (passTokenResults.expires.getTime() < now) {
                 console.error(`/add/validateAddUser - reset token (${givenUuid}) expired`);
-                return res.status(403).send();
-            }
-
-            if (passTokenResults.completed) {
-                console.error(`/add/validateAddUser - reset token (${givenUuid}) has already been used`);
                 return res.status(403).send();
             }
 
@@ -589,7 +584,7 @@ router.route('/validateAddUser').post(async (req, res) => {
 
         } else {
             // token not found
-            console.error(`/add/validateAddUser - reset token (${givenUuid}) not found`);
+            console.error(`/add/validateAddUser - active reset token (${givenUuid}) not found`);
             return res.status(404).send();
         }
     } catch (err) {
