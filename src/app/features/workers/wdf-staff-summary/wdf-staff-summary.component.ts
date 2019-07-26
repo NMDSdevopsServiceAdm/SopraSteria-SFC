@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -30,10 +31,13 @@ export class WdfStaffSummaryComponent implements OnInit {
     private workerService: WorkerService,
     private establishmentService: EstablishmentService,
     private dialogService: DialogService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
+    this.breadcrumbService.show();
+
     this.workplace = this.establishmentService.establishment;
 
     this.workerService.getWorker(this.workplace.uid, this.route.snapshot.params.id).subscribe(worker => {
@@ -42,6 +46,10 @@ export class WdfStaffSummaryComponent implements OnInit {
     });
   }
 
+  /**
+   * TODO: If daysSick and pay are `upToDate' we should skip the modal
+   * Only display quesitons that need confirming on the modal itself.
+   */
   public onConfirmAndSubmit() {
     const dialog = this.dialogService.open(WdfWorkerConfirmationDialogComponent, {
       daysSick: this.worker.daysSick,
@@ -87,7 +95,8 @@ export class WdfStaffSummaryComponent implements OnInit {
   }
 
   /**
-   * TODO: Implement confirmation (confirmation not displayed until BE implemented)
+   * TODO: Functionality not implemented
+   * It should just be a case of uncommenting the return
    */
   get displayConfirmationPanel() {
     return false;

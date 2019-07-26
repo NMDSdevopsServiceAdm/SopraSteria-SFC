@@ -5,6 +5,7 @@ import { WDFReport } from '@core/model/reports.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
@@ -36,10 +37,12 @@ export class WdfComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private dialogService: DialogService,
     private alertService: AlertService,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
+    private breadcrumbService: BreadcrumbService
   ) {}
 
   ngOnInit() {
+    this.breadcrumbService.show();
     const workplaceUid = this.route.snapshot.params.establishmentuid;
 
     this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
@@ -65,6 +68,10 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
+  /**
+   * TODO: if totalVacancies & totalStarters & totalLeavers && numberOfStaff are 'upToDate' skip the modal
+   * Only display quesitons that need confirming on the modal itself.
+   */
   public onConfirmAndSubmit() {
     const dialog = this.dialogService.open(WdfWorkplaceConfirmationDialogComponent, { workplace: this.workplace });
     dialog.afterClosed.subscribe(confirmed => {
@@ -83,9 +90,11 @@ export class WdfComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * TODO: Functionality not implemented (confirmation button not displayed)
+   * TODO: Functionality not implemented
+   * It should just be a case of uncommenting the return
    */
   get displayConfirmationPanel() {
     return false;
+    // return this.worker.wdf.isEligible && !this.worker.wdf.currentEligibility;
   }
 }
