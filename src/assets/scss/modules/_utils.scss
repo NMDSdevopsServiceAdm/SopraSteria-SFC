@@ -23,6 +23,9 @@
 
 .govuk-util__bold {
   font-weight: bold;
+  .govuk-list {
+    font-weight: bold;
+  }
 }
 
 .govuk-util__normal {
@@ -64,4 +67,8 @@
 
 .govuk__justify-content-space-between {
   justify-content: space-between;
+}
+
+.govuk__nowrap {
+  white-space: nowrap;
 }

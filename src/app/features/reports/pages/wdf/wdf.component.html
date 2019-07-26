@@ -15,6 +15,11 @@
       [return]="returnUrl"
       [wdfView]="true"
     ></app-workplace-summary>
+    <app-wdf-confirmation-panel
+      *ngIf="displayConfirmationPanel"
+      (confirmed)="onConfirmAndSubmit()"
+      [exitUrl]="exitUrl"
+    ></app-wdf-confirmation-panel>
   </app-tab>
   <app-tab [title]="'Staff records'">
     <app-staff-summary
@@ -25,9 +30,3 @@
     ></app-staff-summary>
   </app-tab>
 </app-tabs>
-
-<app-wdf-confirmation-panel
-  *ngIf="displayConfirmationPanel"
-  (confirmed)="onConfirmAndSubmit()"
-  [exitable]="false"
-></app-wdf-confirmation-panel>
