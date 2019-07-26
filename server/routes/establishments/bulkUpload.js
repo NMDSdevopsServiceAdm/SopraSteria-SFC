@@ -708,14 +708,17 @@ async function uploadAsCSV(username, establishmentId, content, key) {
 }
 
 
-const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments) => {
-  const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber);   // +2 because the first row is CSV headers, and forEach counter is zero index
+const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments, myCurrentEstablishments) => {
+  const lineValidator = new CsvEstablishmentValidator(thisLine, currentLineNumber, myCurrentEstablishments);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   lineValidator.validate();
   lineValidator.transform();
 
   const thisEstablishmentAsAPI = lineValidator.toAPI();
+
+  console.log("WA DEBUG - establishment toAPI: ", thisEstablishmentAsAPI)
+
   const thisApiEstablishment = new EstablishmentEntity();
 
   try {
@@ -796,8 +799,8 @@ const _loadWorkerQualifications = async (lineValidator, thisQual, thisApiWorker,
   }
 };
 
-const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications) => {
-  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber);   // +2 because the first row is CSV headers, and forEach counter is zero index
+const _validateWorkerCsv = async (thisLine, currentLineNumber, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications, myCurrentEstablishments) => {
+  const lineValidator = new CsvWorkerValidator(thisLine, currentLineNumber, myCurrentEstablishments);   // +2 because the first row is CSV headers, and forEach counter is zero index
 
   // the parsing/validation needs to be forgiving in that it needs to return as many errors in one pass as possible
   lineValidator.validate();
@@ -896,7 +899,13 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   let status = true;
   const csvEstablishmentSchemaErrors = [], csvWorkerSchemaErrors = [], csvTrainingSchemaErrors = [];
   const myEstablishments = [], myWorkers = [], myTrainings = [];
-  const workersKeyed = []
+  const workersKeyed = [];
+
+  // restore the current known state this primary establishment (including all subs)
+  const RESTORE_ASSOCIATION_LEVEL=1;
+  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false);
+
+  console.log("WA DEBUG - have restored existing state as reference")
 
   // rather than an array of entities, entities will be known by their line number within the source, e.g:
   // establishments: {
@@ -913,7 +922,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   if (Array.isArray(establishments.imported) && establishments.imported.length > 0 && establishments.establishmentMetadata.fileType == "Establishment") {
     await Promise.all(
       establishments.imported.map((thisLine, currentLineNumber) => {
-        return _validateEstablishmentCsv(thisLine, currentLineNumber+2, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments);
+        return _validateEstablishmentCsv(thisLine, currentLineNumber+2, csvEstablishmentSchemaErrors, myEstablishments, myAPIEstablishments, myCurrentEstablishments);
       })
     );
 
@@ -943,7 +952,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   if (Array.isArray(workers.imported) && workers.imported.length > 0 && workers.workerMetadata.fileType == "Worker") {
     await Promise.all(
       workers.imported.map((thisLine, currentLineNumber) => {
-        return _validateWorkerCsv(thisLine, currentLineNumber+2, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications);
+        return _validateWorkerCsv(thisLine, currentLineNumber+2, csvWorkerSchemaErrors, myWorkers, myAPIWorkers, myAPIQualifications, myCurrentEstablishments);
       })
     );
 
@@ -1062,10 +1071,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const trainingAsArray = Object.values(myAPITrainings);
   const qualificationsAsArray = Object.values(myAPIQualifications);
 
-  // prepare the validation difference report which highlights all new, updated and deleted establishments and workers
-  const RESTORE_ASSOCIATION_LEVEL=1;
-  const myCurrentEstablishments = await restoreExistingEntities(username, establishmentId, isParent, RESTORE_ASSOCIATION_LEVEL, false);
-  // bulk upload specific validations - knowing the to load and current set of entities
+  // **** Cross Entity Validations ****
 
   // firstly, if the logged in account performing this validation is not a parent, then
   //  there should be just one establishment, and that establishment should the primary establishment
@@ -1110,9 +1116,8 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         });
 
         if (foundCurrentEstablishment && foundCurrentEstablishment.dataOwner !== 'Parent') {
-          const lineNumberByKey = allEstablishmentsByKey[foundCurrentEstablishment.key];
-          const establishmentLineValidator = myEstablishments[lineNumberByKey-2];
-          csvEstablishmentSchemaErrors.unshift(establishmentLineValidator.addNotOwner());
+          const lineValidator = myEstablishments.find(thisLineValidator => thisLineValidator.key === foundCurrentEstablishment.key);
+          csvEstablishmentSchemaErrors.unshift(lineValidator.addNotOwner());
         }
       }
     });
@@ -1290,7 +1295,6 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
   // determine new and updated establishments, by referencing the onload set against the current set
   onloadEntities.forEach(thisOnloadEstablishment => {
     // find a match for this establishment
-    // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
     const foundCurrentEstablishment = currentEntities.find(thisCurrentEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
 
     if (foundCurrentEstablishment) {
@@ -1337,7 +1341,6 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         }
       });
 
-      // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       updatedEntities.push({
         key: thisOnloadEstablishment.key,
         name: thisOnloadEstablishment.name,
@@ -1349,7 +1352,6 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
         }
       });
     } else {
-      // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
       newEntities.push({
         key: thisOnloadEstablishment.key,
         name: thisOnloadEstablishment.name,
@@ -1361,34 +1363,39 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
   // determine the delete establishments, by reference the current set against the onload set
   currentEntities.forEach(thisCurrentEstablishment => {
     if (thisCurrentEstablishment.id !== primaryEstablishmentId) {
-      // find a match for this establishment
-      // TODO - without LOCAL_IDENTIFIER, matches are performed using the name of the establishment
-      const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
 
-      // cannot delete self
-      if (!foundOnloadEstablishment) {
-        // when delete an establishment, we're deleting all workers too
-        const currentWorkers = thisCurrentEstablishment.associatedWorkers;
-        const deletedWorkers = [];
+      // ignore those establishments that the primary does not own
+      console.log("WA DEBUG - thisCurrentEstablishment - owner/parent uid: ", thisCurrentEstablishment.dataOwner, thisCurrentEstablishment.parentUid)
+      if (thisCurrentEstablishment.parentUid && thisCurrentEstablishment.dataOwner === 'Parent') {
+        // find a match for this establishment
+        const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
 
-        currentWorkers.forEach(thisCurrentWorker => {
-          const thisWorker = thisCurrentEstablishment.theWorker(thisCurrentWorker);
-          deletedWorkers.push({
-            key: thisCurrentWorker,
-            name: thisWorker.nameOrId,
-            localId: thisWorker.localIdentifier
-              });
-      });
+        // cannot delete self
+        if (!foundOnloadEstablishment) {
+          // when delete an establishment, we're deleting all workers too
+          const currentWorkers = thisCurrentEstablishment.associatedWorkers;
+          const deletedWorkers = [];
 
-        deletedEntities.push({
-          key: thisCurrentEstablishment.key,
-          name: thisCurrentEstablishment.name,
-          localId: thisCurrentEstablishment.localIdentifier,
-          workers: {
-            deleted: deletedWorkers,
-          }
+          currentWorkers.forEach(thisCurrentWorker => {
+            const thisWorker = thisCurrentEstablishment.theWorker(thisCurrentWorker);
+            deletedWorkers.push({
+              key: thisCurrentWorker,
+              name: thisWorker.nameOrId,
+              localId: thisWorker.localIdentifier
+                });
         });
+
+          deletedEntities.push({
+            key: thisCurrentEstablishment.key,
+            name: thisCurrentEstablishment.name,
+            localId: thisCurrentEstablishment.localIdentifier,
+            workers: {
+              deleted: deletedWorkers,
+            }
+          });
+        }
       }
+
     } else {
       // TODO
       // need to raise a validation error as a result of trying to delete self
