@@ -17,7 +17,7 @@ export class YourAccountComponent implements OnInit, OnDestroy {
   public userInfo: SummaryList[];
   public username: string;
 
-  constructor(private userService: UserService, private breadcrumbService: BreadcrumbService) { }
+  constructor(private userService: UserService, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit() {
     this.breadcrumbService.show();
