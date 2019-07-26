@@ -688,7 +688,7 @@ router.route('/add').post(async (req, res) => {
                     // this is a part user (register user) - so no audit
                     // Also, because this is a part user (register user) - must send a registration email which means adding
                     //  user tracking
-                    await thisUser.save(trackingResponse.by);
+                    await thisUser.save(trackingResponse.by,0,null,true);
 
                     return res.status(200).json(thisUser.toJSON(false, false, false, true));
                 } else {

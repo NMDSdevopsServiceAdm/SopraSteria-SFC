@@ -291,7 +291,7 @@ class User {
 
     // saves the User to DB. Returns true if saved; false if not.
     // Throws "UserSaveException" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, ttl=0, externalTransaction=null, firstSave=false) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -444,11 +444,7 @@ class User {
                     const thisTransaction = externalTransaction ? externalTransaction : t;
 
                     // Is this the intial update setup
-                    let loginCount = await models.login.count({ where: {
-                            registrationId: this._id
-                    }});
-                    
-                    if(loginCount == 0){
+                    if(firstSave){
 
                         const passwordHash = await bcrypt.hashSync(this._password, bcrypt.genSaltSync(10), null);
                         await models.login.create(
