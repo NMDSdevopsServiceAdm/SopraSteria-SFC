@@ -16,6 +16,11 @@ export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.total = this.workerService.getCreateStaffResponse();
 
+    this.return.url =
+      this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
+        ? ['/dashboard']
+        : ['/workplace', this.route.snapshot.data.establishment.uid];
+
     if (this.total === 0) {
       this.router.navigate(this.return.url, { fragment: 'staff-records', replaceUrl: true });
     }
@@ -35,10 +40,7 @@ export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
       };
     }
     return {
-      link:
-        this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
-          ? ['/dashboard']
-          : ['/workplace', this.route.snapshot.data.establishment.uid],
+      link: this.return.url,
       fragment: 'staff-records',
       label: 'Go to staff records',
     };

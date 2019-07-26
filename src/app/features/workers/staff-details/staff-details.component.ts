@@ -56,7 +56,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   renderInEditMode() {
-    console.log('edit mode');
     this.form.patchValue({
       nameOrId: this.worker.nameOrId,
       mainJob: this.worker.mainJob.jobId,
