@@ -2,9 +2,11 @@ const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 
 class Worker {
-  constructor(currentLine, lineNumber) {
+  constructor(currentLine, lineNumber, allCurrentEstablishments) {
     this._currentLine = currentLine;
     this._lineNumber = lineNumber;
+    this._allCurrentEstablishments = allCurrentEstablishments;
+
     this._validationErrors = [];
     this._headers_v1 = ["LOCALESTID","UNIQUEWORKERID","CHGUNIQUEWRKID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED","CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS","OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
     this._headers_v1_without_chgUnique = ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED","CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS","OTHERJOBROLE","OTHERJRDESC","NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
@@ -13,6 +15,9 @@ class Worker {
     this._localId = null;
     this._workerLocalID = null;
     this._changeUniqueWorkerId = null;
+    this._status = null;
+    this._key = null;
+    this._establishmentKey = null;
 
     this._NINumber = null;
     this._postCode = null;
@@ -74,6 +79,7 @@ class Worker {
   static get UNIQUE_WORKER_ID_ERROR() { return 1020; }
   static get CHANGE_UNIQUE_WORKER_ID_ERROR() { return 1030; }
   static get STATUS_ERROR() { return 1040; }
+  static get STATUS_WARNING() { return 1045; }
 
   static get DISPLAY_ID_ERROR() { return 1050; }
   static get NINUMBER_ERROR() { return 1060; }
@@ -198,6 +204,12 @@ class Worker {
   get status() {
     return this._status;
   }
+  get key() {
+    return this._key;
+  }
+  get establishmentKey() {
+    return this._establishmentKey;
+  }
   get dislpayID() {
     return this._displayId;
   }
@@ -318,6 +330,7 @@ class Worker {
       return false;
     } else {
       this._localId = myLocalId;
+      this._establishmentKey = myLocalId.replace(/\s/g, "");
       return true;
     }
 
@@ -353,6 +366,7 @@ class Worker {
       return false;
     } else {
       this._uniqueWorkerId = myUniqueWorkerId;
+      this._key = myUniqueWorkerId.replace(/\s/g, "");
       return true;
     }
   }
@@ -385,18 +399,7 @@ class Worker {
     const statusValues = ['DELETE', 'UPDATE', 'UNCHECKED', 'NOCHANGE', 'NEW','CHGSUB'];
     const myStatus = this._currentLine.STATUS ? this._currentLine.STATUS.toUpperCase() : this._currentLine.STATUS;
 
-    if (myStatus.length === 0) {
-      this._validationErrors.push({
-        worker: this._currentLine.UNIQUEWORKERID,
-        name: this._currentLine.LOCALESTID,
-        lineNumber: this._lineNumber,
-        errCode: Worker.STATUS_ERROR,
-        errType: `STATUS_ERROR`,
-        error: `You have not supplied a correct status`,
-        source: this._currentLine.STATUS,
-      });
-      return false;
-    } else if (!statusValues.includes(myStatus)) {
+   if (!statusValues.includes(myStatus)) {
       // must be present and must be one of the preset values (case insensitive)
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
@@ -409,6 +412,102 @@ class Worker {
       });
       return false;
     } else {
+      // helper which returns true if the given LOCALESTID
+      const thisWorkerExists = (establishmentKey, workerKey) => {
+        const foundEstablishment = this._allCurrentEstablishments.find(currentEstablishment => {
+          return currentEstablishment.key === establishmentKey;
+        });
+
+        // having found the establishment, find the worker within the establishment
+        if (foundEstablishment) {
+          const foundWorker = foundEstablishment.theWorker(workerKey);
+          return foundWorker ? true : false;
+        } else {
+          return false;
+        }
+      };
+
+      switch (myStatus) {
+        case 'NEW':
+          if (thisWorkerExists(this._establishmentKey, this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              worker: this._currentLine.UNIQUEWORKERID,
+              lineNumber: this._lineNumber,
+              errCode: Worker.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `STATUS is NEW but worker already exists`,
+              source: myStatus,
+            });
+          }
+          break;
+        case 'DELETE':
+          if (!thisWorkerExists(this._establishmentKey, this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              worker: this._currentLine.UNIQUEWORKERID,
+              lineNumber: this._lineNumber,
+              errCode: Worker.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `STATUS is DELETE but worker does not exist`,
+              source: myStatus,
+            });
+          }
+          break;
+        case 'UNCHECKED':
+          this._validationErrors.push({
+            name: this._currentLine.LOCALESTID,
+            worker: this._currentLine.UNIQUEWORKERID,
+            lineNumber: this._lineNumber,
+            warnCode: Worker.STATUS_WARNING,
+            warnType: `STATUS_WARNING`,
+            warning: `STATUS is UNCHECKED and will be ignored`,
+            source: myStatus,
+          });
+          break;
+        case 'NOCHANGE':
+          if (!thisWorkerExists(this._establishmentKey, this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              worker: this._currentLine.UNIQUEWORKERID,
+              lineNumber: this._lineNumber,
+              errCode: Worker.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `STATUS is NOCHANGE but worker does not exist`,
+              source: myStatus,
+            });
+          }
+          break;
+        case 'UPDATE':
+          if (!thisWorkerExists(this._establishmentKey, this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              worker: this._currentLine.UNIQUEWORKERID,
+              lineNumber: this._lineNumber,
+              errCode: Worker.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `STATUS is UPDATE but worker does not exist`,
+              source: myStatus,
+            });
+          }
+          break;
+        case 'CHGSUB':
+          // note - the LOCALESTID here is that of the target sub - not the current sub
+          if (thisWorkerExists(this._establishmentKey, this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              worker: this._currentLine.UNIQUEWORKERID,
+              lineNumber: this._lineNumber,
+              errCode: Worker.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `STATUS is CHGSUB but worker already exists in target Establishment`,
+              source: myStatus,
+            });
+          }
+          break;
+      }
+
+
       this._status = myStatus;
       return true;
     }
@@ -2351,67 +2450,78 @@ class Worker {
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateChangeUniqueWorkerId() ? false : status;
     status = !this._validateStatus() ? false : status;
-    status = !this._validateDisplayId() ? false : status;
-    status = !this._validateNINumber() ? false : status;
-    status = !this._validatePostCode() ? false : status;
-    status = !this._validateDOB() ? false : status;
-    status = !this._validateGender() ? false : status;
-    status = !this._validateEthnicity() ? false : status;
-    status = !this._validateNationality() ? false : status;
-    status = !this._validateCitizenShip() ? false : status;
-    status = !this._validateCountryOfBirth() ? false : status;
-    status = !this._validateYearOfEntry() ? false : status;
-    status = !this._validateDisabled() ? false : status;
-    status = !this._validateCareCert() ? false : status;
-    status = !this._validateRecSource() ? false : status;
-    status = !this._validateStartDate() ? false : status;
-    status = !this._validateStartInsect() ? false : status;
-    status = !this._validateApprentice() ? false : status;
-    status = !this._validateZeroHourContract() ? false : status;
-    status = !this._validateDaysSick() ? false : status;
-    status = !this._validateSalaryInt() ? false : status;
-    status = !this._validateSalary() ? false : status;
-    status = !this._validateHourlyRate() ? false : status;
-    status = !this._validateMainJobRole() ? false : status;
-    status = !this._validateMainJobDesc() ? false : status;
-    status = !this._validateContHours() ? false : status;
-    status = !this._validateAvgHours() ? false : status;
-    status = !this._validateOtherJobs() ? false : status;
-    status = !this._validateRegisteredNurse() ? false : status;
-    status = !this._validateNursingSpecialist() ? false : status;
-    status = !this._validationQualificationRecords() ? false : status;
-    status = !this._validateSocialCareQualification() ? false : status;
-    status = !this._validateNonSocialCareQualification() ? false : status;
-    status = !this._validateAmhp() ? false : status;
+
+    // only continue to process validation, if the status is UNCHECKED
+    if (this._status !== 'UNCHECKED') {
+      status = !this._validateDisplayId() ? false : status;
+      status = !this._validateNINumber() ? false : status;
+      status = !this._validatePostCode() ? false : status;
+      status = !this._validateDOB() ? false : status;
+      status = !this._validateGender() ? false : status;
+      status = !this._validateEthnicity() ? false : status;
+      status = !this._validateNationality() ? false : status;
+      status = !this._validateCitizenShip() ? false : status;
+      status = !this._validateCountryOfBirth() ? false : status;
+      status = !this._validateYearOfEntry() ? false : status;
+      status = !this._validateDisabled() ? false : status;
+      status = !this._validateCareCert() ? false : status;
+      status = !this._validateRecSource() ? false : status;
+      status = !this._validateStartDate() ? false : status;
+      status = !this._validateStartInsect() ? false : status;
+      status = !this._validateApprentice() ? false : status;
+      status = !this._validateZeroHourContract() ? false : status;
+      status = !this._validateDaysSick() ? false : status;
+      status = !this._validateSalaryInt() ? false : status;
+      status = !this._validateSalary() ? false : status;
+      status = !this._validateHourlyRate() ? false : status;
+      status = !this._validateMainJobRole() ? false : status;
+      status = !this._validateMainJobDesc() ? false : status;
+      status = !this._validateContHours() ? false : status;
+      status = !this._validateAvgHours() ? false : status;
+      status = !this._validateOtherJobs() ? false : status;
+      status = !this._validateRegisteredNurse() ? false : status;
+      status = !this._validateNursingSpecialist() ? false : status;
+      status = !this._validationQualificationRecords() ? false : status;
+      status = !this._validateSocialCareQualification() ? false : status;
+      status = !this._validateNonSocialCareQualification() ? false : status;
+      status = !this._validateAmhp() ? false : status;
+    }
 
     return status;
   };
 
   // returns true on success, false is any attribute of Worker fails
   transform() {
-    let status = true;
+    // if this Worker is unchecked, skip all transformations
+    if (this._status !== 'UNCHECKED') {
+      let status = true;
 
-    // status = !this._transformMainService() ? false : status;
-    status = !this._transformContractType() ? false : status;
-    status = !this._transformEthnicity() ? false : status;
-    status = !this._transformRecruitment() ? false : status;
-    status = !this._transformMainJobRole() ? false : status;
-    status = !this._transformOtherJobRoles() ? false : status;
-    status = !this._transformRegisteredNurse() ? false : status;
-    status = !this._transformNursingSpecialist() ? false : status;
-    status = !this._transformNationality() ? false : status;
-    status = !this._transformCountryOfBirth() ? false : status;
-    status = !this._transformSocialCareQualificationLevel() ? false : status;
-    status = !this._transformNonSocialCareQualificationLevel() ? false : status;
-    status = !this._transformQualificationRecords() ? false : status;
+      // status = !this._transformMainService() ? false : status;
+      status = !this._transformContractType() ? false : status;
+      status = !this._transformEthnicity() ? false : status;
+      status = !this._transformRecruitment() ? false : status;
+      status = !this._transformMainJobRole() ? false : status;
+      status = !this._transformOtherJobRoles() ? false : status;
+      status = !this._transformRegisteredNurse() ? false : status;
+      status = !this._transformNursingSpecialist() ? false : status;
+      status = !this._transformNationality() ? false : status;
+      status = !this._transformCountryOfBirth() ? false : status;
+      status = !this._transformSocialCareQualificationLevel() ? false : status;
+      status = !this._transformNonSocialCareQualificationLevel() ? false : status;
+      status = !this._transformQualificationRecords() ? false : status;
 
-    return status;
+      return status;
+
+    } else {
+      return true;
+    }
   };
 
   toJSON() {
     // force to undefined if not set, because 'undefined' when JSON stingified is not rendered
     return {
       localId: this._localId,
+      status: this._status,
       uniqueWorkerId: this._uniqueWorkerId,
       changeUniqueWorker: this._changeUniqueWorkerId ? this._changeUniqueWorkerId : undefined,
       status: this._status,
@@ -2483,6 +2593,7 @@ class Worker {
     const changeProperties = {
     // the minimum to create a new worker
       localIdentifier: this._uniqueWorkerId,
+      status: this._status,
       nameOrId : this._displayId,
       contract : this._contractType,
       mainJob : {

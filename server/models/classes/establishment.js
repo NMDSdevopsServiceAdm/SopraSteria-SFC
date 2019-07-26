@@ -109,6 +109,9 @@ class Establishment extends EntityValidator {
         this._workerEntities = {};
         this._readyForDeletionWorkers = null;
 
+        // bulk upload status - this is never stored in database
+        this._status = null;
+
         // default logging level - errors only
         // TODO: INFO logging on User; change to LOG_ERROR only
         this._logLevel = Establishment.LOG_INFO;
@@ -390,6 +393,11 @@ class Establishment extends EntityValidator {
               this._reasonsForLeaving = document.reasonsForLeaving;
             }
 
+            // bulk upload status
+            if (document.status) {
+              this._status = document.status;
+            }
+
             // allow for deep restoration of entities (associations - namely Worker here)
             if (associatedEntities) {
                 const promises = [];
@@ -444,6 +452,8 @@ class Establishment extends EntityValidator {
 
     // returns true if Establishment is valid, otherwise false
     isValid() {
+      // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
+      if (this._status === null || this._status !== 'UNCHECKED' ) {
         const thisEstablishmentIsValid = this._properties.isValid;
         if (this._properties.isValid === true) {
             return true;
@@ -464,6 +474,9 @@ class Establishment extends EntityValidator {
             this._log(Establishment.LOG_ERROR, `Establishment invalid properties: ${thisEstablishmentIsValid.toString()}`);
             return false;
         }
+      } else {
+        return true;
+      }
     }
 
     async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
@@ -1342,6 +1355,11 @@ class Establishment extends EntityValidator {
                 myDefaultJSON.reasonsForLeaving = this.reasonsForLeaving;
             }
 
+            // bulk upload status
+            if (this._status) {
+              myDefaultJSON.status = this._status;
+            }
+
             myDefaultJSON.created = this.created ? this.created.toJSON() : null;
             myDefaultJSON.updated = this.updated ? this.updated.toJSON() : null;
             myDefaultJSON.updatedBy = this.updatedBy ? this.updatedBy : null;
@@ -1378,104 +1396,107 @@ class Establishment extends EntityValidator {
 
     // returns true if all mandatory properties for an Establishment exist and are valid
     get hasMandatoryProperties() {
-        let allExistAndValid = true;    // assume all exist until proven otherwise
+      let allExistAndValid = true;    // assume all exist until proven otherwise
 
-       try {
-            const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i;
-            if (this._uid !== null && !(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    101,
-                    this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
-                    ['NMDSID']
-                ));
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
-            }
+      // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
+      if (this._status === null || this._status !== 'UNCHECKED' ) {
+        try {
+          const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i;
+          if (this._uid !== null && !(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  101,
+                  this._nmdsId ? `Invalid: ${this._nmdsId}` : 'Missing',
+                  ['NMDSID']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid NMDS ID');
+          }
 
-            if (!(this.name)) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    102,
-                    this.name ? `Invalid: ${this.name}` : 'Missing',
-                    ['Name']
-                ));
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
-            }
+          if (!(this.name)) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  102,
+                  this.name ? `Invalid: ${this.name}` : 'Missing',
+                  ['Name']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid name');
+          }
 
-            if (!(this.mainService)) {
-                allExistAndValid = false;
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid main service');
-            }
+          if (!(this.mainService)) {
+              allExistAndValid = false;
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid main service');
+          }
 
-            // must at least have the first line of address
-            if (!(this._address1)) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    103,
-                    this._address ? `Invalid: ${this._address}` : 'Missing',
-                    ['Address']
-                ));
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid first line of address');
-            }
+          // must at least have the first line of address
+          if (!(this._address1)) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  103,
+                  this._address ? `Invalid: ${this._address}` : 'Missing',
+                  ['Address']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid first line of address');
+          }
 
-            if (!(this._postcode)) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    104,
-                    this._postcode ? `Invalid: ${_postcode}` : 'Missing',
-                    ['Postcode']
-                ));
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
-            }
+          if (!(this._postcode)) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  104,
+                  this._postcode ? `Invalid: ${_postcode}` : 'Missing',
+                  ['Postcode']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid postcode');
+          }
 
-            if (this._isRegulated === null) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    105,
-                    'Missing',
-                    ['CQCRegistered']
-                ));
-                this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing regulated flag');
-            }
+          if (this._isRegulated === null) {
+              allExistAndValid = false;
+              this._validations.push(new ValidationMessage(
+                  ValidationMessage.ERROR,
+                  105,
+                  'Missing',
+                  ['CQCRegistered']
+              ));
+              this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing regulated flag');
+          }
 
-            // location id can be null for a Non-CQC site
-            // if a CQC site, and main service is head office (ID=16)
-            const MAIN_SERVICE_HEAD_OFFICE_ID=16;
-            if (this._isRegulated) {
-                if (this.mainService.id !== MAIN_SERVICE_HEAD_OFFICE_ID && this._locationId === null)  {
-                    allExistAndValid = false;
-                    this._validations.push(new ValidationMessage(
-                        ValidationMessage.ERROR,
-                        106,
-                        'Missing (mandatory) for a CQC Registered site',
-                        ['LocationID']
-                    ));
-                    this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
-                }
-            }
+          // location id can be null for a Non-CQC site
+          // if a CQC site, and main service is head office (ID=16)
+          const MAIN_SERVICE_HEAD_OFFICE_ID=16;
+          if (this._isRegulated) {
+              if (this.mainService.id !== MAIN_SERVICE_HEAD_OFFICE_ID && this._locationId === null)  {
+                  allExistAndValid = false;
+                  this._validations.push(new ValidationMessage(
+                      ValidationMessage.ERROR,
+                      106,
+                      'Missing (mandatory) for a CQC Registered site',
+                      ['LocationID']
+                  ));
+                  this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Location ID for a (CQC) Regulated workspace');
+              }
+          }
 
-            // prov id can be null for a Non-CQC site - CANNOT IMPOSE THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
-            // if (this._isRegulated && this._provId === null) {
-            //   allExistAndValid = false;
-            //   this._validations.push(new ValidationMessage(
-            //       ValidationMessage.ERROR,
-            //       106,
-            //       'Missing (mandatory) for a CQC Registered site',
-            //       ['ProvID']
-            //   ));
-            //   this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Prov ID for a (CQC) Regulated workspace');
-            // }
+          // prov id can be null for a Non-CQC site - CANNOT IMPOSE THIS PROPERTY AS IT IS NOT YET COMING FROM REGISTRATION
+          // if (this._isRegulated && this._provId === null) {
+          //   allExistAndValid = false;
+          //   this._validations.push(new ValidationMessage(
+          //       ValidationMessage.ERROR,
+          //       106,
+          //       'Missing (mandatory) for a CQC Registered site',
+          //       ['ProvID']
+          //   ));
+          //   this._log(Establishment.LOG_ERROR, 'Establishment::hasMandatoryProperties - missing or invalid Prov ID for a (CQC) Regulated workspace');
+          // }
 
         } catch (err) {
             console.error(err)
         }
+      }
 
-        return allExistAndValid;
+      return allExistAndValid;
     }
 
     // returns true if this establishment is WDF eligible as referenced from the
