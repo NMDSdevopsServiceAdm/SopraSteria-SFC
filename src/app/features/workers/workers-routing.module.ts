@@ -24,7 +24,6 @@ import {
 } from './create-staff-record-start-screen/create-staff-record-start-screen.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
-import { DeleteSuccessComponent } from './delete-success/delete-success.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
@@ -83,11 +82,6 @@ const routes: Routes = [
     path: 'create-staff-record',
     component: StaffDetailsComponent,
     data: { title: 'Create Staff Records' },
-  },
-  {
-    path: 'delete-success',
-    component: DeleteSuccessComponent,
-    data: { title: 'Delete Success' },
   },
   {
     path: ':id',
