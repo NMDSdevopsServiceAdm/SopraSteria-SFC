@@ -56,6 +56,8 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
 
     if (this.returnToDash) {
       this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
+    } else if (this.workerService.returnTo) {
+      this.backService.setBackLink(this.workerService.returnTo);
     } else {
       this.backService.setBackLink({
         url: ['/workplace', this.workplace.uid, 'staff-record', 'basic-records-start-screen'],
@@ -96,6 +98,8 @@ export class TotalStaffComponent implements OnInit, OnDestroy {
   private onSuccess() {
     if (this.returnToDash) {
       this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
+    } else if (this.workerService.returnTo) {
+      this.router.navigate(this.workerService.returnTo.url);
     } else {
       this.router.navigate(['create-basic-records'], { relativeTo: this.route.parent });
     }

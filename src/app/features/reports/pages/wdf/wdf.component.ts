@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
@@ -6,6 +6,7 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
 import {
@@ -19,9 +20,10 @@ import { take } from 'rxjs/operators';
   selector: 'app-wdf',
   templateUrl: './wdf.component.html',
 })
-export class WdfComponent implements OnInit {
+export class WdfComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public workers: Array<Worker>;
+  public workerCount: number;
   public report: WDFReport;
   public returnUrl: URLStructure;
 
@@ -33,22 +35,34 @@ export class WdfComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private dialogService: DialogService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private establishmentService: EstablishmentService
   ) {}
 
   ngOnInit() {
-    this.workplace = this.route.snapshot.parent.data.establishment;
-    this.returnUrl = { url: ['/workplace', this.workplace.uid, 'reports', 'wdf'] };
+    const workplaceUid = this.route.snapshot.params.establishmentuid;
 
-    combineLatest(
-      this.workerService.getAllWorkers(this.workplace.uid),
-      this.reportService.getWDFReport(this.workplace.uid)
-    )
-      .pipe(take(1))
-      .subscribe(([workers, report]) => {
-        this.workers = sortBy(workers, ['wdfEligible']);
-        this.report = report;
-      });
+    this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
+    this.workerService.setReturnTo(null);
+
+    this.subscriptions.add(
+      combineLatest(
+        this.establishmentService.getEstablishment(workplaceUid),
+        this.workerService.getAllWorkers(workplaceUid),
+        this.reportService.getWDFReport(workplaceUid)
+      )
+        .pipe(take(1))
+        .subscribe(([workplace, workers, report]) => {
+          this.workers = sortBy(workers, ['wdfEligible']);
+          this.report = report;
+          this.workerCount = workers.length;
+          this.workplace = workplace;
+        })
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   public onConfirmAndSubmit() {

@@ -12,13 +12,14 @@
     </ul>
     <div class="govuk-button-group">
       <a
+        *ngIf="returnTo"
+        [routerLink]="returnTo.link"
+        [fragment]="returnTo.fragment"
         role="button"
         draggable="false"
         class="govuk-button"
-        [routerLink]="['/dashboard']"
-        [fragment]="'staff-records'"
       >
-        Go to staff records
+        {{ returnTo.label }}
       </a>
     </div>
   </div>
