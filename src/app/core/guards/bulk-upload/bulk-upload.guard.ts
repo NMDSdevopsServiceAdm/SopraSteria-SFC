@@ -7,7 +7,7 @@ import { UserService } from '@core/services/user.service';
   providedIn: 'root',
 })
 export class BulkUploadGuard implements CanActivate {
-	constructor(private authService: AuthService, private userService: UserService, private router: Router) { }
+  constructor(private authService: AuthService, private userService: UserService, private router: Router) { }
 
 	canActivate() {
 		if (this.userService.loggedInUser && this.userService.loggedInUser.role === 'Admin') {
