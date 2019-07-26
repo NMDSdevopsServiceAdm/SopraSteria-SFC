@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 
@@ -83,11 +84,6 @@ const routes: Routes = [
     data: { title: 'Create Staff Records' },
   },
   {
-    path: 'save-success',
-    component: WorkerSaveSuccessComponent,
-    data: { title: 'Success' },
-  },
-  {
     path: 'delete-success',
     component: DeleteSuccessComponent,
     data: { title: 'Delete Success' },
@@ -95,7 +91,7 @@ const routes: Routes = [
   {
     path: ':id',
     component: EditWorkerComponent,
-    resolve: { worker: WorkerResolver },
+    resolve: { worker: WorkerResolver, primaryWorkplace: PrimaryWorkplaceResolver },
     children: [
       {
         path: '',
@@ -256,6 +252,11 @@ const routes: Routes = [
         path: 'check-answers',
         component: CheckStaffRecordComponent,
         data: { title: 'Check Answers' },
+      },
+      {
+        path: 'save-success',
+        component: WorkerSaveSuccessComponent,
+        data: { title: 'Success' },
       },
       {
         path: 'add-qualification',

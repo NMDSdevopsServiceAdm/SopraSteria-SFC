@@ -14,10 +14,10 @@
         class="govuk-button govuk-button--link govuk-!-margin-left-8"
         role="button"
         draggable="false"
-        [routerLink]="['/dashboard']"
+        [routerLink]="return.url"
         [fragment]="'staff-records'"
       >
-        Return to dashboard
+        Return to {{ return.label }}
       </a>
     </div>
   </div>
