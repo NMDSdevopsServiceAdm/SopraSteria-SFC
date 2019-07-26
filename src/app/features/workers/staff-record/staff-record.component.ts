@@ -64,6 +64,10 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
   deleteWorker(event) {
     event.preventDefault();
-    this.dialogService.open(DeleteWorkerDialogComponent, { worker: this.worker, workplace: this.workplace });
+    this.dialogService.open(DeleteWorkerDialogComponent, {
+      worker: this.worker,
+      workplace: this.workplace,
+      primaryWorkplaceUid: this.route.parent.snapshot.data.primaryWorkplace.uid,
+    });
   }
 }

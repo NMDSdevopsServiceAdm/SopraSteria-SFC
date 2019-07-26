@@ -32,7 +32,6 @@ interface LeaveReasonsResponse {
 export class WorkerService {
   private _worker$ = new BehaviorSubject<Worker>(null);
   public worker$ = this._worker$.asObservable();
-  private lastDeleted$ = new BehaviorSubject<string>(null);
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private totalStaffReturn$ = new BehaviorSubject<boolean>(false);
   private _alert$: BehaviorSubject<Alert> = new BehaviorSubject<Alert>(null);
@@ -72,14 +71,6 @@ export class WorkerService {
 
   public hasJobRole(worker: Worker, id: number) {
     return worker.mainJob.jobId === id || (worker.otherJobs && worker.otherJobs.some(j => j.jobId === id));
-  }
-
-  setLastDeleted(name: string) {
-    this.lastDeleted$.next(name);
-  }
-
-  clearLastDeleted() {
-    this.lastDeleted$.next(null);
   }
 
   setState(worker) {

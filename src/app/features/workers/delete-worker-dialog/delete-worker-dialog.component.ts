@@ -1,10 +1,11 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { DialogComponent } from '@core/components/dialog.component';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { Reason, WorkerService } from '@core/services/worker.service';
@@ -23,11 +24,11 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    @Inject(DIALOG_DATA) public data: { worker: Worker; workplace: Establishment },
+    @Inject(DIALOG_DATA) public data: { worker: Worker; workplace: Establishment; primaryWorkplaceUid: string },
     public dialog: Dialog<DeleteWorkerDialogComponent>,
     private router: Router,
-    private route: ActivatedRoute,
     private formBuilder: FormBuilder,
+    private alertService: AlertService,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService
   ) {
@@ -90,11 +91,12 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
   }
 
   private onSuccess(): void {
-    this.workerService.setLastDeleted(this.data.worker.nameOrId);
-    this.router.navigate(['/workplace', this.data.workplace.uid, 'staff-record', 'delete-success'], {
-      relativeTo: this.route,
-      replaceUrl: true,
-    });
+    const url =
+      this.data.workplace.uid === this.data.primaryWorkplaceUid
+        ? ['/dashboard']
+        : ['/workplace', this.data.workplace.uid];
+    this.router.navigate(url, { fragment: 'staff-records' });
+    this.alertService.addAlert({ type: 'success', message: `${this.data.worker.nameOrId} has been deleted` });
     this.close();
   }
 
