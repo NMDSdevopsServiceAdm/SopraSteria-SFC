@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 
 @Component({
@@ -6,9 +7,14 @@ import { BackService } from '@core/services/back.service';
   templateUrl: './create-staff-record-start-screen.component.html',
 })
 export class CreateStaffRecordStartScreenComponent implements OnInit {
-  constructor(private backService: BackService) {}
+  constructor(private route: ActivatedRoute, private backService: BackService) {}
 
   ngOnInit() {
-    this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
+    const url =
+      this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
+        ? ['/dashboard']
+        : ['/workplace', this.route.snapshot.data.establishment.uid];
+
+    this.backService.setBackLink({ url], fragment: 'staff-records' });
   }
 }
