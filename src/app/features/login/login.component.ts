@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private router: Router,
     private formBuilder: FormBuilder,
     private errorSummaryService: ErrorSummaryService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.form = this.formBuilder.group({
