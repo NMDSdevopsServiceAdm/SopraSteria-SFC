@@ -135,11 +135,15 @@ export class AuthService {
     this._session = data;
   }
 
+  public resetAuth(): void {
+    localStorage.clear();
+    this._session = null;
+    this.token = null;
+  }
+
   logout() {
     if (localStorage.getItem('auth-token')) {
-      localStorage.clear();
-      this._session = null;
-      this.token = null;
+      this.resetAuth();
       this.userService.loggedInUser = null;
       this.establishmentService.resetState();
       this.router.navigate(['/logged-out']);
@@ -148,9 +152,7 @@ export class AuthService {
 
   logoutWithoutRouting() {
     if (localStorage.getItem('auth-token')) {
-      localStorage.clear();
-      this._session = null;
-      this.token = null;
+      this.resetAuth();
     }
   }
 }
