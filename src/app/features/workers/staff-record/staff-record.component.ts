@@ -11,11 +11,9 @@ import { take } from 'rxjs/operators';
 
 import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 
-// TODO Remove CSS for delete button
 @Component({
   selector: 'app-staff-record',
   templateUrl: './staff-record.component.html',
-  styleUrls: ['./staff-record.component.scss'],
 })
 export class StaffRecordComponent implements OnInit, OnDestroy {
   public returnToRecord: URLStructure;

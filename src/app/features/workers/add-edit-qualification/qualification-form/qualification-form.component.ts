@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { INT_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { Qualification, QualificationType } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -15,6 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class QualificationFormComponent implements OnInit, OnDestroy {
   @Input() worker: Worker;
+  @Input() workplace: Establishment;
   @Input() form: FormGroup;
   @Input() type: { key: string; value: string };
   @Input() preselectedQualification: Qualification;
@@ -38,7 +40,7 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.add(
       this.workerService
-        .getAvailableQualifcations(this.worker.uid, this.type.value as QualificationType)
+        .getAvailableQualifcations(this.workplace.uid, this.worker.uid, this.type.value as QualificationType)
         .subscribe(qualifications => {
           this.qualifications = qualifications;
         })
