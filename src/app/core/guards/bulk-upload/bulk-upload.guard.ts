@@ -4,7 +4,7 @@ import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 
 @Injectable({
-	providedIn: 'root',
+  providedIn: 'root',
 })
 export class BulkUploadGuard implements CanActivate {
 	constructor(private authService: AuthService, private userService: UserService, private router: Router) { }
