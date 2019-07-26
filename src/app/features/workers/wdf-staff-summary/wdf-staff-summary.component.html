@@ -33,7 +33,7 @@
   <app-wdf-confirmation-panel
     *ngIf="displayConfirmationPanel"
     (confirmed)="onConfirmAndSubmit()"
-    (exited)="exit()"
+    [exitUrl]="exitUrl"
   ></app-wdf-confirmation-panel>
 
   <!-- TODO REMOVE DEV BUTTON -->

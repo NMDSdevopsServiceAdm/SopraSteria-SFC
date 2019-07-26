@@ -27,6 +27,7 @@ export class WdfComponent implements OnInit, OnDestroy {
   public workerCount: number;
   public report: WDFReport;
   public returnUrl: URLStructure;
+  public exitUrl: URLStructure;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -46,6 +47,7 @@ export class WdfComponent implements OnInit, OnDestroy {
     const workplaceUid = this.route.snapshot.params.establishmentuid;
 
     this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
+    this.exitUrl = { url: ['/workplace', workplaceUid, 'reports'] };
     this.workerService.setReturnTo(null);
 
     this.subscriptions.add(
