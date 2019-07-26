@@ -6,9 +6,11 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class WorkerSaveSuccessComponent {
   public return: { url: any[]; label: string };
+
   constructor(private route: ActivatedRoute) {
     const workplaceUid = this.route.snapshot.paramMap.get('establishmentuid');
     const primaryWorkplaceUid = this.route.parent.snapshot.data.primaryWorkplace.uid;
+
     this.return =
       workplaceUid === primaryWorkplaceUid
         ? { url: ['/dashboard'], label: 'dashboard' }
