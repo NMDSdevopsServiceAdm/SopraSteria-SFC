@@ -30,7 +30,7 @@ export class AuthService {
     private router: Router,
     private establishmentService: EstablishmentService,
     private userService: UserService
-  ) { }
+  ) {}
 
   public get isLoggedIn(): boolean {
     return !!this.token;

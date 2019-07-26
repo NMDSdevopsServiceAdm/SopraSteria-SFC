@@ -5,10 +5,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './files-upload-progress.component.html',
 })
 export class FilesUploadProgressComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }
