@@ -552,15 +552,8 @@ router.route('/validateAddUser').post(async (req, res) => {
             ]
         });
 
-        if (passTokenResults && passTokenResults.id && !passTokenResults.completed) {
-            // now check if the token has expired or already been consumed
-            const now = new Date().getTime();
-
-            if (passTokenResults.expires.getTime() < now) {
-                console.error(`/add/validateAddUser - reset token (${givenUuid}) expired`);
-                return res.status(403).send();
-            }
-
+        if (passTokenResults && passTokenResults.id && !passTokenResults.completed && !(passTokenResults.expires.getTime() < new Date().getTime())) {
+            
             // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User UUID.
             if (passTokenResults.user && passTokenResults.user.id) {
                 // generate JWT and attach it to the header (Authorization) - JWT username is the name of the User who registered the user (for audit purposes)
