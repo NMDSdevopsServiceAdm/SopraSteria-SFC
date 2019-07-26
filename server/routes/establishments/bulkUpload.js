@@ -716,9 +716,6 @@ const _validateEstablishmentCsv = async (thisLine, currentLineNumber, csvEstabli
   lineValidator.transform();
 
   const thisEstablishmentAsAPI = lineValidator.toAPI();
-
-  console.log("WA DEBUG - establishment toAPI: ", thisEstablishmentAsAPI)
-
   const thisApiEstablishment = new EstablishmentEntity();
 
   try {

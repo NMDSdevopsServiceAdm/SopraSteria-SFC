@@ -414,18 +414,13 @@ class Worker {
     } else {
       // helper which returns true if the given LOCALESTID
       const thisWorkerExists = (establishmentKey, workerKey) => {
-        console.log("WA DEBUG - thisWorkerExists - looking for: ", establishmentKey, workerKey)
         const foundEstablishment = this._allCurrentEstablishments.find(currentEstablishment => {
           return currentEstablishment.key === establishmentKey;
         });
 
         // having found the establishment, find the worker within the establishment
         if (foundEstablishment) {
-          console.log("WA DEBUG - thisWorkerExists - found establishment - LOCALSTID/establishment", this._localId, foundEstablishment.name)
           const foundWorker = foundEstablishment.theWorker(workerKey);
-
-          foundWorker ? console.log("WA DEBUG - thisWorkerExists - found worker - UNIQUEWORKERID/worker", this._uniqueWorkerId, foundWorker.nameOrId) : true;
-
           return foundWorker ? true : false;
         } else {
           return false;
