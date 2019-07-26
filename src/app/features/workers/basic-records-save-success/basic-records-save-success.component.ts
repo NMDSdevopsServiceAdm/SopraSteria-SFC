@@ -24,18 +24,18 @@ export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
     this.workerService.setReturnTo(null);
   }
 
-  public returnTo() {
+  get returnTo() {
     if (this.returnToWDF) {
-      this.router.navigate(this.workerService.returnTo.url, { fragment: this.workerService.returnTo.fragment });
-      return;
+      return {
+        link: this.workerService.returnTo.url,
+        fragment: this.workerService.returnTo.fragment,
+        label: 'Return to the WDF Report',
+      };
     }
-    this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
-  }
-
-  get returnToLabel() {
-    if (this.returnToWDF) {
-      return 'Return to the WDF Report';
-    }
-    return 'Go to staff records';
+    return {
+      link: ['/dashboard'],
+      fragment: 'staff-records',
+      label: 'Go to staff records',
+    };
   }
 }
