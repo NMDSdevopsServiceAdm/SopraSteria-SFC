@@ -1,11 +1,19 @@
 <app-error-summary *ngIf="serverError" [serverError]="serverError"></app-error-summary>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+  <div class="govuk-grid-column-full govuk__flex govuk__justify-content-space-between govuk__align-items-flex-end">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
       <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
       My workplaces ({{ workplacesCount }})
     </h1>
+    <a
+      class="govuk-button govuk-!-margin-bottom-0"
+      [routerLink]="['/add-workplace/start']"
+      role="button"
+      draggable="false"
+    >
+      Add a new workplace
+    </a>
   </div>
 </div>
 

@@ -66,6 +66,9 @@ class Worker extends EntityValidator {
         // associated entities
         this._qualificationsEntities = [];
         this._trainingEntities = [];
+
+        // bulk upload status - this is never stored in database
+        this._status = null;
     }
 
     // returns true if valid establishment id
@@ -273,6 +276,11 @@ class Worker extends EntityValidator {
                 this._changeLocalIdentifer = document.changeLocalIdentifer;
             }
 
+            // bulk upload status
+            if (document.status) {
+              this._status = document.status;
+            }
+
             // allow for deep restoration of entities (associations - namely Qualifications and Training here)
             if (associatedEntities) {
                 const promises = [];
@@ -322,6 +330,8 @@ class Worker extends EntityValidator {
 
     // returns true if Worker is valid, otherwise false
     isValid() {
+      // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
+      if (this._status === null || this._status !== 'UNCHECKED' ) {
         // the property manager returns a list of all properties that are invalid; or true
         const thisWorkerIsValid = this._properties.isValid;
 
@@ -347,6 +357,9 @@ class Worker extends EntityValidator {
             this._log(Worker.LOG_ERROR, `Worker invalid properties: ${thisWorkerIsValid.toString()}`);
             return false;
         }
+      } else {
+        return true;
+      }
     }
 
     async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
@@ -1035,6 +1048,11 @@ class Worker extends EntityValidator {
             myDefaultJSON.updated = this.updated ? this.updated.toJSON() : null;
             myDefaultJSON.updatedBy = this.updatedBy ? this.updatedBy : null;
 
+            // bulk upload status
+            if (this._status) {
+              myDefaultJSON.status = this._status;
+            }
+
             // TODO: JSON schema validation
             if (showHistory && !showPropertyHistoryOnly) {
                 return {
@@ -1111,47 +1129,49 @@ class Worker extends EntityValidator {
     get hasMandatoryProperties() {
         let allExistAndValid = true;    // assume all exist until proven otherwise
 
-        try {
-            const nameIdProperty = this._properties.get('NameOrId');
-            if (!(nameIdProperty && nameIdProperty.isInitialised && nameIdProperty.valid)) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    101,
-                    nameIdProperty ? 'Invalid' : 'Missing',
-                    ['WorkerNameOrId']
-                ));
-                this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid name or id property');
-            }
+        // in bulk upload, a worker entity, if UNCHECKED, will be nothing more than a status and a local identifier
+        if (this._status === null || this._status !== 'UNCHECKED' ) {
+          try {
+              const nameIdProperty = this._properties.get('NameOrId');
+              if (!(nameIdProperty && nameIdProperty.isInitialised && nameIdProperty.valid)) {
+                  allExistAndValid = false;
+                  this._validations.push(new ValidationMessage(
+                      ValidationMessage.ERROR,
+                      101,
+                      nameIdProperty ? 'Invalid' : 'Missing',
+                      ['WorkerNameOrId']
+                  ));
+                  this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid name or id property');
+              }
 
-            const mainJobProperty = this._properties.get('MainJob');
-            if (!(mainJobProperty && mainJobProperty.isInitialised && mainJobProperty.valid)) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    102,
-                    mainJobProperty ? 'Invalid' : 'Missing',
-                    ['WorkerMainJob']
-                ));
-                this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid main job property');
-            }
+              const mainJobProperty = this._properties.get('MainJob');
+              if (!(mainJobProperty && mainJobProperty.isInitialised && mainJobProperty.valid)) {
+                  allExistAndValid = false;
+                  this._validations.push(new ValidationMessage(
+                      ValidationMessage.ERROR,
+                      102,
+                      mainJobProperty ? 'Invalid' : 'Missing',
+                      ['WorkerMainJob']
+                  ));
+                  this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid main job property');
+              }
 
-            const contractProperty = this._properties.get('Contract');
-            if (!(contractProperty && contractProperty.isInitialised && contractProperty.valid)) {
-                allExistAndValid = false;
-                this._validations.push(new ValidationMessage(
-                    ValidationMessage.ERROR,
-                    103,
-                    contractProperty ? 'Invalid' : 'Missing',
-                    ['WorkerContract']
-                ));
-                this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid contract property');
-            }
+              const contractProperty = this._properties.get('Contract');
+              if (!(contractProperty && contractProperty.isInitialised && contractProperty.valid)) {
+                  allExistAndValid = false;
+                  this._validations.push(new ValidationMessage(
+                      ValidationMessage.ERROR,
+                      103,
+                      contractProperty ? 'Invalid' : 'Missing',
+                      ['WorkerContract']
+                  ));
+                  this._log(Worker.LOG_ERROR, 'Worker::hasMandatoryProperties - missing or invalid contract property');
+              }
 
-        } catch (err) {
-            console.error(err)
+          } catch (err) {
+              console.error(err)
+          }
         }
-
 
         return allExistAndValid;
     }

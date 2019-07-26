@@ -291,7 +291,7 @@ class User {
 
     // saves the User to DB. Returns true if saved; false if not.
     // Throws "UserSaveException" on error
-    async save(savedBy, ttl=0, externalTransaction=null) {
+    async save(savedBy, ttl=0, externalTransaction=null, firstSave=false) {
         let mustSave = this._initialise();
 
         if (!this.uid) {
@@ -442,6 +442,43 @@ class User {
                     // the saving of an User can be initiated within
                     //  an external transaction
                     const thisTransaction = externalTransaction ? externalTransaction : t;
+
+                    // Is this the intial update setup
+                    if(firstSave){
+
+                        const passwordHash = await bcrypt.hashSync(this._password, bcrypt.genSaltSync(10), null);
+                        await models.login.create(
+                            {
+                                registrationId: this._id,
+                                username: this._username,
+                                Hash: passwordHash,
+                                isActive: true,
+                                invalidAttempt: 0,
+                            },
+                            {transaction: thisTransaction}
+                        );
+
+                        // also need to complete on the originating add user tracking record
+                        const trackingResponse = await models.addUserTracking.update(
+                            {
+                                completed: this.created,        // use the very same timestamp as that which the User record was created!
+                            },
+                            {
+                                transaction: thisTransaction,
+                                where: {
+                                    uuid: this._trackingUUID,
+                                },
+                                returning: true,
+                                plain: false
+                            }
+                        );
+
+                        const allAuditEvents = [{
+                            userFk: this._id,
+                            username: savedBy.toLowerCase(),
+                            type: 'created'}];
+                        await models.userAudit.bulkCreate(allAuditEvents, {transaction: thisTransaction});
+                    }
 
                     if(this._isPrimary){
                         // Set the existing primary to not primary

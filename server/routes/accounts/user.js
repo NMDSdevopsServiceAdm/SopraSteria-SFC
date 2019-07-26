@@ -391,7 +391,7 @@ router.use('/add/establishment/:id', Authorization.hasAuthorisedEstablishment);
 router.route('/add/establishment/:id').post(async (req, res) => {
     // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
     const establishmentId = req.establishmentId;
-    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 3*60*60*24*1000; // 3 days
+    const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 2*60*60*24*1000; // 2 days
 
     // ensure only a user having the role of Edit can register a new user
     if (!(req.role && req.role === 'Edit')) {
@@ -552,20 +552,8 @@ router.route('/validateAddUser').post(async (req, res) => {
             ]
         });
 
-        if (passTokenResults && passTokenResults.id) {
-            // now check if the token has expired or already been consumed
-            const now = new Date().getTime();
-
-            if (passTokenResults.expires.getTime() < now) {
-                console.error(`/add/validateAddUser - reset token (${givenUuid}) expired`);
-                return res.status(403).send();
-            }
-
-            if (passTokenResults.completed) {
-                console.error(`/add/validateAddUser - reset token (${givenUuid}) has already been used`);
-                return res.status(403).send();
-            }
-
+        if (passTokenResults && passTokenResults.id && !passTokenResults.completed && !(passTokenResults.expires.getTime() < new Date().getTime())) {
+            
             // gets this far if the token is valid. Generate a JWT, which requires knowing the associated User UUID.
             if (passTokenResults.user && passTokenResults.user.id) {
                 // generate JWT and attach it to the header (Authorization) - JWT username is the name of the User who registered the user (for audit purposes)
@@ -589,7 +577,7 @@ router.route('/validateAddUser').post(async (req, res) => {
 
         } else {
             // token not found
-            console.error(`/add/validateAddUser - reset token (${givenUuid}) not found`);
+            console.error(`/add/validateAddUser - active reset token (${givenUuid}) not found`);
             return res.status(404).send();
         }
     } catch (err) {
@@ -613,6 +601,10 @@ router.route('/establishment/:id/:userid').delete(async (req, res) => {
         if (await thisUser.restore(userId, null, false)) {
             if(thisUser.username && thisUser.username == req.username){
                 return res.status(400).send('Cannot delete own user account');
+            }
+
+            if(thisUser._isPrimary){
+                return res.status(400).send('Cannot delete primary account');
             }
 
             console.log('restored about to delete');
@@ -688,7 +680,7 @@ router.route('/add').post(async (req, res) => {
                     // this is a part user (register user) - so no audit
                     // Also, because this is a part user (register user) - must send a registration email which means adding
                     //  user tracking
-                    await thisUser.save(trackingResponse.by);
+                    await thisUser.save(trackingResponse.by,0,null,true);
 
                     return res.status(200).json(thisUser.toJSON(false, false, false, true));
                 } else {
