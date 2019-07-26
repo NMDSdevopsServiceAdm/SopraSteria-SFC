@@ -15,6 +15,6 @@ export class CreateStaffRecordStartScreenComponent implements OnInit {
         ? ['/dashboard']
         : ['/workplace', this.route.snapshot.data.establishment.uid];
 
-    this.backService.setBackLink({ url], fragment: 'staff-records' });
+    this.backService.setBackLink({ url, fragment: 'staff-records' });
   }
 }
