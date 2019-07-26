@@ -473,20 +473,6 @@ class User {
                             }
                         );
 
-                        // if there was a tracking record, need also to delete (archive) the original User record used for the registration
-                        if (trackingResponse[1] && trackingResponse[1][0] && trackingResponse[1][0].dataValues)
-                        await models.user.update(
-                            {
-                                archived: true
-                            },
-                            {
-                                where: {
-                                    id: trackingResponse[1][0].dataValues.UserFK
-                                },
-                                transaction: thisTransaction
-                            }
-                        )
-
                         const allAuditEvents = [{
                             userFk: this._id,
                             username: savedBy.toLowerCase(),
