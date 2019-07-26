@@ -1201,7 +1201,8 @@ class Establishment extends EntityValidator {
                 const updateDocument = {
                     archived: true,
                     updated: updatedTimestamp,
-                    updatedBy: deletedBy
+                    updatedBy: deletedBy,
+                    LocalIdentifierValue: null,
                 };
 
                 let [updatedRecordCount, updatedRows] = await models.establishment.update(updateDocument,

@@ -424,9 +424,9 @@ class Establishment {
     if (myEstablishmentType == 8 && (!myOtherEstablishmentType || myOtherEstablishmentType.length == 0)) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: Establishment.ESTABLISHMENT_TYPE_ERROR,
-        errType: `ESTABLISHMENT_TYPE_ERROR`,
-        error: `Establishment Type (ESTTYPE) is 'Other (8)'; must define the Other (OTHERTYPE)`,
+        warnCode: Establishment.ESTABLISHMENT_TYPE_WARNING,
+        warnType: `ESTABLISHMENT_TYPE_WARNING`,
+        warning: `Establishment Type (ESTTYPE) is 'Other (8)'; missing description (OTHERTYPE)`,
         source: myOtherEstablishmentType,
         name: this._currentLine.LOCALESTID,
       });
