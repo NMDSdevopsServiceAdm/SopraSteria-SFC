@@ -55,6 +55,7 @@ const routes: Routes = [
   {
     path: 'start-screen',
     component: CreateStaffRecordStartScreenComponent,
+    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Create Staff Record Start' },
   },
   {
@@ -66,6 +67,7 @@ const routes: Routes = [
   {
     path: 'basic-records-start-screen',
     component: CreateBasicRecordsStartScreenComponent,
+    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Create Basic Records Start' },
   },
   {
@@ -76,6 +78,7 @@ const routes: Routes = [
   {
     path: 'basic-records-save-success',
     component: BasicRecordsSaveSuccessComponent,
+    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Basic Records Save Success' },
   },
   {

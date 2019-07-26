@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
@@ -9,13 +9,20 @@ import { WorkerService } from '@core/services/worker.service';
 })
 export class BasicRecordsSaveSuccessComponent implements OnInit {
   public total: number;
+  public return: { url: any[] };
 
-  constructor(private router: Router, private workerService: WorkerService) {}
+  constructor(private route: ActivatedRoute, private router: Router, private workerService: WorkerService) {}
 
   ngOnInit() {
     this.total = this.workerService.getCreateStaffResponse();
+
+    this.return.url =
+      this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
+        ? ['/dashboard']
+        : ['/workplace', this.route.snapshot.data.establishment.uid];
+
     if (this.total === 0) {
-      this.router.navigate(['/dashboard'], { fragment: 'staff-records', replaceUrl: true });
+      this.router.navigate(this.return.url, { fragment: 'staff-records', replaceUrl: true });
     }
   }
 }
