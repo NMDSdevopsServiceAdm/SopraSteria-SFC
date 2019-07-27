@@ -60,7 +60,7 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
 
   protected setBackLink(): void {}
 
-  private setupForm(): void {
+  protected setupForm(): void {
     this.form = this.formBuilder.group({
       regulatedByCQC: [null, Validators.required],
       group: this.formBuilder.group({
@@ -90,7 +90,7 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
     this.nonRegulatedPostcode.updateValueAndValidity();
   }
 
-  public setupFormErrorsMap(): void {
+  protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'regulatedByCQC',
@@ -148,7 +148,7 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
     ];
   }
 
-  public setupServerErrorsMap(): void {
+  protected setupServerErrorsMap(): void {
     this.serverErrorsMap = [
       {
         name: 404,
@@ -185,13 +185,8 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 

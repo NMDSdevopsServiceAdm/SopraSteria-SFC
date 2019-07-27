@@ -18,7 +18,7 @@
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && (form.invalid || serverError)">
           <span *ngIf="submitted && regulatedByCQC.errors" id="regulatedByCQC-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('regulatedByCQC', 'required') }}
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('regulatedByCQC') }}
           </span>
           <div class="govuk-radios govuk-radios--conditional">
             <!-- regulated -->
@@ -56,7 +56,7 @@
                     *ngIf="submitted && regulatedPostcode.errors"
                   >
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('group.regulatedPostcode', 'maxlength') }}
+                    {{ getFirstErrorMessage('group.regulatedPostcode') }}
                   </span>
                   <input
                     class="govuk-input govuk-!-width-one-third"
@@ -79,7 +79,7 @@
                   </label>
                   <span id="group-locationId-error" class="govuk-error-message" *ngIf="submitted && locationId.errors">
                     <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('group.locationId', 'maxlength') }}
+                    {{ getFirstErrorMessage('group.locationId') }}
                   </span>
                   <input
                     class="govuk-input govuk-!-width-one-third"
@@ -127,12 +127,7 @@
                   *ngIf="submitted && nonRegulatedPostcode.errors"
                 >
                   <span class="govuk-visually-hidden">Error:</span>
-                  <span *ngIf="nonRegulatedPostcode.hasError('required')">
-                    {{ getFormErrorMessage('nonRegulatedPostcode', 'required') }}
-                  </span>
-                  <span *ngIf="nonRegulatedPostcode.hasError('maxlength')">
-                    {{ getFormErrorMessage('nonRegulatedPostcode', 'maxlength') }}
-                  </span>
+                  {{ getFirstErrorMessage('nonRegulatedPostcode') }}
                 </span>
                 <input
                   class="govuk-input govuk-!-width-one-third"
