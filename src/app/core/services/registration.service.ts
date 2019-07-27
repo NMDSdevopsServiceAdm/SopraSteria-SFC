@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { LocationAddress, LocationSearchResponse } from '@core/model/location.model';
+import { LocationAddress } from '@core/model/location.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { RegistrationPayload } from '@core/model/registration.model';
 import { SecurityDetails } from '@core/model/security-details.model';
@@ -22,18 +22,6 @@ export class RegistrationService {
 
   public postRegistration(registrationPayload: Array<RegistrationPayload>): Observable<any> {
     return this.http.post<any>('/api/registration/', registrationPayload);
-  }
-
-  public getLocationByPostCode(id: string): Observable<LocationSearchResponse> {
-    return this.http.get<LocationSearchResponse>(`/api/locations/pc/${id}`);
-  }
-
-  public getLocationByLocationId(id: string): Observable<LocationSearchResponse> {
-    return this.http.get<LocationSearchResponse>(`/api/locations/lid/${id}`);
-  }
-
-  public getAddressesByPostCode(postcode: string): Observable<LocationSearchResponse> {
-    return this.http.get<LocationSearchResponse>(`/api/postcodes/${postcode}`);
   }
 
   public getUsernameDuplicate(id: string): Observable<any> {

@@ -9,7 +9,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
-import { RegistrationService } from '@core/services/registration.service';
+import { LocationService } from '@core/services/location.service';
 
 export class RegulatedByCQC implements OnInit, OnDestroy {
   protected serverErrorsMap: Array<ErrorDefinition>;
@@ -23,7 +23,7 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
+    protected locationService: LocationService,
     protected route: ActivatedRoute,
     protected router: Router
   ) {}
@@ -199,7 +199,7 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
     if (this.regulatedByCQC.value === 'yes') {
       if (this.regulatedPostcode.value.length) {
         this.subscriptions.add(
-          this.registrationService
+          this.locationService
             .getLocationByPostCode(this.regulatedPostcode.value)
             .subscribe(
               (data: LocationSearchResponse) => this.onSuccess(data),
@@ -208,7 +208,7 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
         );
       } else if (this.locationId.value.length) {
         this.subscriptions.add(
-          this.registrationService
+          this.locationService
             .getLocationByLocationId(this.locationId.value)
             .subscribe(
               (data: LocationSearchResponse) => this.onSuccess(data),
@@ -219,7 +219,7 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
     } else if (this.regulatedByCQC.value === 'no') {
       if (this.nonRegulatedPostcode.value.length) {
         this.subscriptions.add(
-          this.registrationService
+          this.locationService
             .getAddressesByPostCode(this.nonRegulatedPostcode.value)
             .subscribe(
               (data: LocationSearchResponse) => this.onSuccess(data),

@@ -6,6 +6,7 @@ import { FormBuilder } from '@angular/forms';
 import { RegistrationService } from '@core/services/registration.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocationSearchResponse } from '@core/model/location.model';
+import { LocationService } from '@core/services/location.service';
 
 @Component({
   selector: 'app-regulated-by-cqc',
@@ -13,14 +14,15 @@ import { LocationSearchResponse } from '@core/model/location.model';
 })
 export class RegulatedByCqcComponent extends RegulatedByCQC {
   constructor(
+    private registrationService: RegistrationService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
-    protected registrationService: RegistrationService,
+    protected locationService: LocationService,
     protected route: ActivatedRoute,
-    protected router: Router
+    protected router: Router,
   ) {
-    super(backService, errorSummaryService, formBuilder, registrationService, route, router);
+    super(backService, errorSummaryService, formBuilder, locationService, route, router);
   }
 
   protected init() {
