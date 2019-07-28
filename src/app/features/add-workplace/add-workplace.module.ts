@@ -5,9 +5,10 @@ import { AddWorkplaceRoutingModule } from '@features/add-workplace/add-workplace
 import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
 import { StartComponent } from '@features/add-workplace/start/start.component';
 import { SharedModule } from '@shared/shared.module';
+import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, SharedModule, AddWorkplaceRoutingModule],
-  declarations: [StartComponent, RegulatedByCqcComponent],
+  imports: [CommonModule, AddWorkplaceRoutingModule, ReactiveFormsModule, SharedModule],
+  declarations: [RegulatedByCqcComponent, SelectWorkplaceComponent, StartComponent],
 })
 export class AddWorkplaceModule {}
