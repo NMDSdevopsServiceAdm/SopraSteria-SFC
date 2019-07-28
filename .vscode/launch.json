@@ -22,6 +22,11 @@
             "request": "launch",
             "name": "Launch via npm version 10.15",
             "program": "${workspaceFolder}/server.js",
+            "env" : {
+              "DB_HOST": "TBC",
+              "DB_USER": "TBC",
+              "DB_PASS": "TBC"
+            },
             "runtimeExecutable": "${env:HOME}/.nvm/versions/node/v10.15.3/bin/node"
         }
     ]
