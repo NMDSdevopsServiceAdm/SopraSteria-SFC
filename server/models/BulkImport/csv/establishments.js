@@ -1664,11 +1664,12 @@ class Establishment {
     let status = true;
 
     status = !this._validateLocalisedId() ? false : status;
+    status = !this._validateEstablishmentName() ? false : status;
     status = !this._validateStatus() ? false : status;
 
-    // if the status is unchecked, then don't continue validation
-    if (this._status !== 'UNCHECKED') {
-      status = !this._validateEstablishmentName() ? false : status;
+    // if the status is unchecked or deleted, then don't continue validation
+    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+    if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateAddress() ? false : status;
       status = !this._validateEstablishmentType() ? false : status;
 

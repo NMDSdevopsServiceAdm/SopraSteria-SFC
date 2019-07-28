@@ -62,6 +62,8 @@ const responseErrors = {
     }
 };
 
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+
 class Establishment extends EntityValidator {
     constructor(username) {
         super();
@@ -258,8 +260,11 @@ class Establishment extends EntityValidator {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
     }
 
-    get key(){
+    get key() {
         return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.name).replace(/\s/g, "");
+    }
+    get status() {
+      return this._status;
     }
 
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -453,7 +458,7 @@ class Establishment extends EntityValidator {
     // returns true if Establishment is valid, otherwise false
     isValid() {
       // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
-      if (this._status === null || this._status !== 'UNCHECKED' ) {
+      if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
         const thisEstablishmentIsValid = this._properties.isValid;
         if (this._properties.isValid === true) {
             return true;
@@ -1398,7 +1403,7 @@ class Establishment extends EntityValidator {
       let allExistAndValid = true;    // assume all exist until proven otherwise
 
       // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
-      if (this._status === null || this._status !== 'UNCHECKED' ) {
+      if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
         try {
           const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i;
           if (this._uid !== null && !(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {

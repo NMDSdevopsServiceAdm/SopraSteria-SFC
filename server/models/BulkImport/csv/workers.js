@@ -2449,11 +2449,12 @@ class Worker {
     status = !this._validateLocalId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateChangeUniqueWorkerId() ? false : status;
+    status = !this._validateDisplayId() ? false : status;
     status = !this._validateStatus() ? false : status;
 
-    // only continue to process validation, if the status is UNCHECKED
-    if (this._status !== 'UNCHECKED') {
-      status = !this._validateDisplayId() ? false : status;
+    // only continue to process validation, if the status is not UNCHECKED or DELETED
+    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+    if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateNINumber() ? false : status;
       status = !this._validatePostCode() ? false : status;
       status = !this._validateDOB() ? false : status;

@@ -32,6 +32,8 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_D
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+
 class Worker extends EntityValidator {
     constructor(establishmentId) {
         super();
@@ -162,8 +164,11 @@ class Worker extends EntityValidator {
         }
     }
 
-    get key(){
+    get key() {
         return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.nameOrId).replace(/\s/g, "");
+    }
+    get status() {
+      return this._status;
     }
 
     get contract() {
@@ -331,7 +336,7 @@ class Worker extends EntityValidator {
     // returns true if Worker is valid, otherwise false
     isValid() {
       // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
-      if (this._status === null || this._status !== 'UNCHECKED' ) {
+      if (this._status === null || !STOP_VALIDATING_ON.includes(this._status) ) {
         // the property manager returns a list of all properties that are invalid; or true
         const thisWorkerIsValid = this._properties.isValid;
 
@@ -1130,7 +1135,7 @@ class Worker extends EntityValidator {
         let allExistAndValid = true;    // assume all exist until proven otherwise
 
         // in bulk upload, a worker entity, if UNCHECKED, will be nothing more than a status and a local identifier
-        if (this._status === null || this._status !== 'UNCHECKED' ) {
+        if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
           try {
               const nameIdProperty = this._properties.get('NameOrId');
               if (!(nameIdProperty && nameIdProperty.isInitialised && nameIdProperty.valid)) {
