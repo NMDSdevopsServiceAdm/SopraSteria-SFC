@@ -62,7 +62,7 @@ const responseErrors = {
     }
 };
 
-const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED'];
 
 class Establishment extends EntityValidator {
     constructor(username) {

@@ -1309,17 +1309,33 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
 
         if (foundWorker) {
           const theWorker = foundCurrentEstablishment.theWorker(foundWorker);
-          updatedWorkers.push({
-            key: thisOnloadWorker,
-            name: theWorker.nameOrId,
-            localId: theWorker.localIdentifier,
-          });
+          const theOnloadWorker = thisOnloadEstablishment.theWorker(thisOnloadWorker);
+
+          // note - even though a worker has been found - and therefore it is obvious to update it
+          //        it may be marked for deletion
+          if (theOnloadWorker.status === 'DELETE') {
+            deletedWorkers.push({
+              key: thisOnloadWorker,
+              name: theWorker.nameOrId,
+              localId: theWorker.localIdentifier,
+              status: theOnloadWorker.status,
+            });
+          } else {
+            updatedWorkers.push({
+              key: thisOnloadWorker,
+              name: theWorker.nameOrId,
+              localId: theWorker.localIdentifier,
+              status: theOnloadWorker.status,
+            });
+          }
+
         } else {
           const theWorker = thisOnloadEstablishment.theWorker(thisOnloadWorker);
           newWorkers.push({
             key: thisOnloadWorker,
             name: theWorker.nameOrId,
             localId: theWorker.localIdentifier,
+            status: theWorker.status,
           });
         }
       });
@@ -1334,35 +1350,54 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
             key: thisCurrentWorker,
             name: theWorker.nameOrId,
             localId: theWorker.localIdentifier,
+            status: 'DELETED',                      // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
           });
         }
       });
 
-      updatedEntities.push({
-        key: thisOnloadEstablishment.key,
-        name: thisOnloadEstablishment.name,
-        localId: thisOnloadEstablishment.localIdentifier,
-        workers: {
-          new: newWorkers,
-          updated: updatedWorkers,
-          deleted: deletedWorkers
-        }
-      });
+      // even though the establishment has found, it is obvious that it will be updated. But it could
+      //  instead be marked for deletion
+      if (thisOnloadEstablishment.status === 'DELETE') {
+        // now, when deleting an establishment, all the workers are also deleted, regardless of their declared status
+        const revisedSetOfDeletedWorkers = [...newWorkers, ...updatedWorkers, ...deletedWorkers];
+        deletedEntities.push({
+          key: thisOnloadEstablishment.key,
+          name: thisOnloadEstablishment.name,
+          localId: thisOnloadEstablishment.localIdentifier,
+          status: thisOnloadEstablishment.status,
+          workers: {
+            deleted: revisedSetOfDeletedWorkers
+          }
+        });
+      } else {
+        updatedEntities.push({
+          key: thisOnloadEstablishment.key,
+          name: thisOnloadEstablishment.name,
+          localId: thisOnloadEstablishment.localIdentifier,
+          status: thisOnloadEstablishment.status,
+          workers: {
+            new: newWorkers,
+            updated: updatedWorkers,
+            deleted: deletedWorkers
+          }
+        });
+      }
     } else {
       newEntities.push({
         key: thisOnloadEstablishment.key,
         name: thisOnloadEstablishment.name,
-        localId: thisOnloadEstablishment.localIdentifier
+        localId: thisOnloadEstablishment.localIdentifier,
+        status: thisOnloadEstablishment.status,
       });
     }
   });
+
 
   // determine the delete establishments, by reference the current set against the onload set
   currentEntities.forEach(thisCurrentEstablishment => {
     if (thisCurrentEstablishment.id !== primaryEstablishmentId) {
 
       // ignore those establishments that the primary does not own
-      console.log("WA DEBUG - thisCurrentEstablishment - owner/parent uid: ", thisCurrentEstablishment.dataOwner, thisCurrentEstablishment.parentUid)
       if (thisCurrentEstablishment.parentUid && thisCurrentEstablishment.dataOwner === 'Parent') {
         // find a match for this establishment
         const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
@@ -1378,14 +1413,16 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
             deletedWorkers.push({
               key: thisCurrentWorker,
               name: thisWorker.nameOrId,
-              localId: thisWorker.localIdentifier
-                });
-        });
+              localId: thisWorker.localIdentifier,
+              status: 'DELETED',          // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
+            });
+          });
 
           deletedEntities.push({
             key: thisCurrentEstablishment.key,
             name: thisCurrentEstablishment.name,
             localId: thisCurrentEstablishment.localIdentifier,
+            status: 'DELETED',          // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
             workers: {
               deleted: deletedWorkers,
             }
