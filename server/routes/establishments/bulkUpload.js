@@ -1688,11 +1688,12 @@ const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedIn
       // when updating existing entities, need to remove the local identifer!
       // but because the properties are not actual properties - but managed properties - we can't just delete the property
 
-      // simply work on the resulting full JSON presentation, whereby every property is a simply propery
+      // simply work on the resulting full JSON presentation, whereby every property is a simply property
       const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true);
       delete thisEstablishmentJSON.localIdentifier;
 
-      await foundCurrentEstablishment.load(thisEstablishmentJSON, true);
+      await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
+
       await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true)
       console.log("WA DEBUG - completed saving establishment: ", foundCurrentEstablishment.key);
     }
@@ -1742,7 +1743,7 @@ router.route('/complete').post(async (req, res) => {
       const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
 
       // sequential promise console logger
-      const log = result => console.log(`result: ${result}`);
+      const log = result => result=null;
 
       // could look to parallel the three above tasks as each is relatively intensive - but happy path first
       // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction

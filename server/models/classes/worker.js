@@ -266,61 +266,66 @@ class Worker extends EntityValidator {
 
     // takes the given JSON document and creates a Worker's set of extendable properties
     // Returns true if the resulting Worker is valid; otherwise false
-    async load(document, associatedEntities=false) {
+    async load(document, associatedEntities=false, bulkUploadCompletion=false) {
         try {
-            this.resetValidations();
-
-            await this._properties.restore(document, JSON_DOCUMENT_TYPE);
-
-            // reason is not a managed property, load it specifically
-            if (document.reason) {
-                this._reason = await this.validateReason(document.reason);
-            }
-
-            if(document.changeLocalIdentifer){
-                this._changeLocalIdentifer = document.changeLocalIdentifer;
-            }
-
             // bulk upload status
             if (document.status) {
               this._status = document.status;
             }
 
-            // allow for deep restoration of entities (associations - namely Qualifications and Training here)
-            if (associatedEntities) {
-                const promises = [];
+            if (bulkUploadCompletion && document.status === 'NOCHANGE') {
+              console.log("WA DEBUG - this worker is NOCHANGE; ignoring update of self: ", this._establishmentId, this._id, this.localIdentifier);
 
-                // training records and qualifications are no change managed
-                //  therefore, simply remove all existing associations
-                //  and create new ones
+            } else {
+              this.resetValidations();
 
-                // first training records
-                this._trainingEntities = [];
-                if (document.training && Array.isArray(document.training)) {
-                    //console.log("WA DEBUG - document.training: ", document.training)
-                    document.training.forEach(thisTraining => {
-                        const newTrainingRecord = new Training(null, null);
+              await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
-                        this.associateTraining(newTrainingRecord);
-                        promises.push(newTrainingRecord.load(thisTraining));
-                    });
-                }
+              // reason is not a managed property, load it specifically
+              if (document.reason) {
+                  this._reason = await this.validateReason(document.reason);
+              }
 
-                // and qualifications records
-                this._qualificationsEntities = [];
-                if (document.qualifications && Array.isArray(document.qualifications)) {
-                    //console.log("WA DEBUG - document.qualifications: ", document.qualifications)
-                    document.qualifications.forEach(thisQualificationRecord => {
-                        const newQualificationRecord = new Qualification(null, null);
+              if(document.changeLocalIdentifer){
+                  this._changeLocalIdentifer = document.changeLocalIdentifer;
+              }
 
-                        this.associateQualification(newQualificationRecord);
-                        promises.push(newQualificationRecord.load(thisQualificationRecord));
-                    });
-                }
+              // allow for deep restoration of entities (associations - namely Qualifications and Training here)
+              if (associatedEntities) {
+                  const promises = [];
 
-                // wait for loading of all training and qualification records
-                await Promise.all(promises);
-                //console.log("WA DEBUG - this qualifications/training: ", this._id, this._qualificationsEntities ? this._qualificationsEntities.length : 'undefined', this._trainingEntities ? this._trainingEntities.length : 'undefined');
+                  // training records and qualifications are no change managed
+                  //  therefore, simply remove all existing associations
+                  //  and create new ones
+
+                  // first training records
+                  this._trainingEntities = [];
+                  if (document.training && Array.isArray(document.training)) {
+                      //console.log("WA DEBUG - document.training: ", document.training)
+                      document.training.forEach(thisTraining => {
+                          const newTrainingRecord = new Training(null, null);
+
+                          this.associateTraining(newTrainingRecord);
+                          promises.push(newTrainingRecord.load(thisTraining));
+                      });
+                  }
+
+                  // and qualifications records
+                  this._qualificationsEntities = [];
+                  if (document.qualifications && Array.isArray(document.qualifications)) {
+                      //console.log("WA DEBUG - document.qualifications: ", document.qualifications)
+                      document.qualifications.forEach(thisQualificationRecord => {
+                          const newQualificationRecord = new Qualification(null, null);
+
+                          this.associateQualification(newQualificationRecord);
+                          promises.push(newQualificationRecord.load(thisQualificationRecord));
+                      });
+                  }
+
+                  // wait for loading of all training and qualification records
+                  await Promise.all(promises);
+                  //console.log("WA DEBUG - this qualifications/training: ", this._id, this._qualificationsEntities ? this._qualificationsEntities.length : 'undefined', this._trainingEntities ? this._trainingEntities.length : 'undefined');
+              }
             }
 
         } catch (err) {
@@ -428,6 +433,12 @@ class Worker extends EntityValidator {
     // Throws "WorkerSaveException" on error
     async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null, associatedEntities=false) {
         let mustSave = this._initialise();
+
+        // with bulk upload, if this entity's status is "UNCHECKED", do not save it
+        if (this._status === 'UNCHECKED') {
+          console.log("WA DEBUG - not saving Worker: ", this._establishmentId, this._id, this.localIdentifier);
+          return;
+        }
 
         console.log("WA DEBUG - saving Worker: est id/worker id - ", this._establishmentId, this.nameOrId)
 
