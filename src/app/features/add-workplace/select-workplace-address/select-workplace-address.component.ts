@@ -25,7 +25,6 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
   protected init(): void {
     this.flow = '/add-workplace';
     this.setupSubscriptions();
-    this.setBackLink();
   }
 
   protected setupSubscriptions(): void {
@@ -43,19 +42,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
     );
   }
 
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/add-workplace/regulated-by-cqc'] });
-  }
-
   public onLocationChange(addressLine1: string): void {
     this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation(addressLine1));
-  }
-
-  protected navigateToNextRoute(locationName: string): void {
-    if (!locationName.length) {
-      this.router.navigate(['/add-workplace/enter-workplace-address']);
-    } else {
-      this.router.navigate(['/add-workplace/select-main-service']);
-    }
   }
 }

@@ -25,7 +25,6 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
   protected init(): void {
     this.flow = '/registration';
     this.setupSubscriptions();
-    this.setBackLink();
   }
 
   protected setupSubscriptions(): void {
@@ -43,19 +42,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
     );
   }
 
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
-  }
-
   public onLocationChange(addressLine1: string): void {
     this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation(addressLine1));
-  }
-
-  protected navigateToNextRoute(locationName: string): void {
-    if (!locationName.length) {
-      this.router.navigate(['/registration/enter-workplace-address']);
-    } else {
-      this.router.navigate(['/registration/select-main-service']);
-    }
   }
 }

@@ -33,11 +33,14 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy {
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
+    this.setBackLink();
   }
 
   protected init(): void {}
 
-  protected setBackLink(): void {}
+  protected setBackLink(): void {
+    this.backService.setBackLink({ url: [this.flow, '/regulated-by-cqc'] });
+  }
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
@@ -76,7 +79,13 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy {
     }
   }
 
-  protected navigateToNextRoute(locationName: string): void {}
+  protected navigateToNextRoute(locationName: string): void {
+    if (!locationName.length) {
+      this.router.navigate([this.flow, '/enter-workplace-address']);
+    } else {
+      this.router.navigate([this.flow, '/add-workplace/select-main-service']);
+    }
+  }
 
   public getLocationName(location: LocationAddress): string {
     let name: string = location.locationName.length ? `${location.locationName}, ` : '';
