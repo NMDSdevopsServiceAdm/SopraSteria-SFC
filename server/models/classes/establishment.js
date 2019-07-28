@@ -407,6 +407,8 @@ class Establishment extends EntityValidator {
             if (associatedEntities) {
                 const promises = [];
                 if (document.workers && Array.isArray(document.workers)) {
+                    this._readyForDeletionWorkers = [];
+
                     document.workers.forEach(thisWorker => {
                       // we're loading from JSON, not entity, so there is no key property; so add it
                       thisWorker.key = thisWorker.localIdentifier ? thisWorker.localIdentifier.replace(/\s/g, "") : thisWorker.nameOrId.replace(/\s/g, "");
@@ -415,7 +417,7 @@ class Establishment extends EntityValidator {
                       if (this._workerEntities[thisWorker.key]) {
                         // this worker exists; if could be marked for deletion
                         if (thisWorker.status === 'DELETE') {
-                          this._readyForDeletionWorkers.push(thisWorker);
+                          this._readyForDeletionWorkers.push(this._workerEntities[thisWorker.key]);
                         } else {
                           // the local identifier is required during bulk upload for reasoning; but against the worker itself, it's immutable.
                           delete thisWorker.localIdentifier;
@@ -436,7 +438,6 @@ class Establishment extends EntityValidator {
 
                     // this has updated existing Worker associations and/or added new Worker associations
                     // however, how do we mark for deletion those no longer required
-                    this._readyForDeletionWorkers = [];
                     Object.values(this._workerEntities).forEach(thisWorker => {
                         const foundWorker = document.workers.find(givenWorker => {
                           return givenWorker.key === thisWorker.key
