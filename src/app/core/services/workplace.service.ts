@@ -10,6 +10,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class WorkplaceService {
   constructor(private http: HttpClient) {}
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
+  public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
 
   public isRegulated(location: LocationAddress): boolean {
     return location.isRegulated === true || location.locationId ? true : false;
