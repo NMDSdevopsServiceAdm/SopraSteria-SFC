@@ -1,4 +1,4 @@
-import { RegulatedByCQC } from '@features/regulated-by-cqc/regulated-by-cqc';
+import { RegulatedByCQC } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
 import { Component } from '@angular/core';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
