@@ -1698,8 +1698,9 @@ class Establishment {
 
   // returns true on success, false is any attribute of Establishment fails
   transform() {
-    // if this Worker is unchecked, skip all transformations
-    if (this._status !== 'UNCHECKED') {
+    // if the status is unchecked or deleted, then don't transform
+    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+    if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
 
       status = !this._transformMainService() ? false : status;

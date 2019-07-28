@@ -2493,8 +2493,9 @@ class Worker {
 
   // returns true on success, false is any attribute of Worker fails
   transform() {
-    // if this Worker is unchecked, skip all transformations
-    if (this._status !== 'UNCHECKED') {
+    // if this Worker is unchecked/deleted, skip all transformations
+    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+    if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
 
       // status = !this._transformMainService() ? false : status;
