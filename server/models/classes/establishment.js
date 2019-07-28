@@ -413,18 +413,23 @@ class Establishment extends EntityValidator {
 
                       // check if we already have the Worker associated, before associating a new worker
                       if (this._workerEntities[thisWorker.key]) {
+                        // this worker exists; if could be marked for deletion
+                        if (thisWorker.status === 'DELETE') {
+                          this._readyForDeletionWorkers.push(thisWorker);
+                        } else {
                           // the local identifier is required during bulk upload for reasoning; but against the worker itself, it's immutable.
                           delete thisWorker.localIdentifier;
 
                           // else we already have this worker, load changes against it
                           promises.push(this._workerEntities[thisWorker.key].load(thisWorker, true));
+                        }
 
                       } else {
-                          const newWorker = new Worker(null);
+                        const newWorker = new Worker(null);
 
-                          // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-                          this.associateWorker(thisWorker.key, newWorker);
-                          promises.push(newWorker.load(thisWorker, true));
+                        // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                        this.associateWorker(thisWorker.key, newWorker);
+                        promises.push(newWorker.load(thisWorker, true));
                       }
 
                     });
