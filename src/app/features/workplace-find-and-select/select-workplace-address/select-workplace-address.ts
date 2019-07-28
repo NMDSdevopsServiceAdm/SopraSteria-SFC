@@ -9,6 +9,7 @@ import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
 export class SelectWorkplaceAddress implements OnInit, OnDestroy {
+  protected flow: string;
   protected selectedLocationAddress: LocationAddress;
   protected subscriptions: Subscription = new Subscription();
   public enteredPostcode: string;

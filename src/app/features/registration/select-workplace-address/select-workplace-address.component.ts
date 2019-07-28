@@ -23,6 +23,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
   }
 
   protected init(): void {
+    this.flow = '/registration';
     this.setupSubscriptions();
     this.setBackLink();
   }

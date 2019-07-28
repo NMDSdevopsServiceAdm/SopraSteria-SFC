@@ -19,7 +19,7 @@
               {{ enteredPostcode }}
             </dd>
             <dd class="govuk-summary-list__actions">
-              <a [routerLink]="['/registration', 'find-workplace-address']">
+              <a [routerLink]="[flow, 'find-workplace-address']">
                 Change<span class="govuk-visually-hidden"> postcode</span>
               </a>
             </dd>
@@ -49,7 +49,7 @@
           </select>
         </div>
 
-        <p><a [routerLink]="['/registration', 'enter-workplace-address']">I can't find my address</a></p>
+        <p><a [routerLink]="[flow, 'enter-workplace-address']">I can't find my address</a></p>
       </fieldset>
 
       <button class="govuk-button" type="submit">Continue</button>
