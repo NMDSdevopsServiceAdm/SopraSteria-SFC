@@ -11,48 +11,72 @@ router.route('/').post(async function (req, res) {
   const postcodeSearchField = establishmentSearchFields.postcode ? establishmentSearchFields.postcode.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
   const nmdsIdSearchField = establishmentSearchFields.nmdsId ? establishmentSearchFields.nmdsId.replace(/[%_]/g, '').replace(/\*/g, '%').replace(/\?/g, '_') : null;
 
-
-  if (establishmentSearchFields && establishmentSearchFields.postcode) {
-    // search on postcode
-    searchFilter = {
-      postcode: {
-        [models.Sequelize.Op.iLike] : postcodeSearchField
-      },
-      archived: false,
-    };
-  } else if (establishmentSearchFields && establishmentSearchFields.nmdsId) {
-    // search on NDMS ID
-    searchFilter = {
-      nmdsId: {
-        [models.Sequelize.Op.iLike] : nmdsIdSearchField
-      },
-      archived: false,
-    };
-  } else {
-    // no search
-    return res.status(200).send({});
-  }
-
   try {
-    let results = await models.establishment.findAll({
-        attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address1', 'isParent', 'NameValue', 'updated'],
-        where:searchFilter,
-        order: [
-          ['NameValue', 'ASC']
-        ]
-      });
+    let results = null;
+    if (establishmentSearchFields && establishmentSearchFields.postcode) {
+      const sqlQuery = `select
+          e1."EstablishmentUID" AS "EstablishmentUID",
+          e1."LocationID" AS "LocationID",
+          e1."NmdsID" AS "NmdsID",
+          e1."PostCode" AS "PostCode",
+          e1."IsRegulated" AS "IsRegulated",
+          e1."Address1" AS "Address",
+          e1."IsParent" AS "IsParent",
+          e1."NameValue" AS "EstablishmentName",
+          e1.updated AS "EstablishmentUpdated",
+          e1."ParentID" AS "ParentID",
+          p1."NmdsID" AS "ParentNmdsID",
+          p1."PostCode" AS "ParentPostCode",
+          p1."NameValue" AS "ParentName"
+        from cqc."Establishment" e1
+          left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
+        where e1."Archived"=false
+          and e1."PostCode" ilike :searchPostcode
+        order by e1."NameValue" ASC`;
+      results = await models.sequelize.query(sqlQuery, { replacements: { searchPostcode: postcodeSearchField },type: models.sequelize.QueryTypes.SELECT });
+    } else if (establishmentSearchFields && establishmentSearchFields.nmdsId) {
+      const sqlQuery = `select
+          e1."EstablishmentUID" AS "EstablishmentUID",
+          e1."LocationID" AS "LocationID",
+          e1."NmdsID" AS "NmdsID",
+          e1."PostCode" AS "PostCode",
+          e1."IsRegulated" AS "IsRegulated",
+          e1."Address1" AS "Address",
+          e1."IsParent" AS "IsParent",
+          e1."NameValue" AS "EstablishmentName",
+          e1.updated AS "EstablishmentUpdated",
+          e1."ParentID" AS "ParentID",
+          p1."NmdsID" AS "ParentNmdsID",
+          p1."PostCode" AS "ParentPostCode",
+          p1."NameValue" AS "ParentName"
+        from cqc."Establishment" e1
+          left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
+        where e1."Archived"=false
+          and e1."NmdsID" ilike :searchNmdsID
+        order by e1."NameValue" ASC`;
+      results = await models.sequelize.query(sqlQuery, { replacements: { searchNmdsID: nmdsIdSearchField },type: models.sequelize.QueryTypes.SELECT });
+    } else {
+      // no search
+      return res.status(200).send({});
+    }
 
     res.status(200).send(results.map(thisEstablishment => {
+      const parent = thisEstablishment.ParentID ? {
+        nmdsId: thisEstablishment.ParentNmdsID,
+        name: thisEstablishment.ParentName,
+        postcode: thisEstablishment.ParentPostCode,
+      } : null;
       return {
-        uid: thisEstablishment.uid,
-        name: thisEstablishment.NameValue,
-        nmdsId: thisEstablishment.nmdsId,
-        postcode: thisEstablishment.postcode,
-        isRegulated: thisEstablishment.isRegulated,
-        address: thisEstablishment.address1,
-        isParent: thisEstablishment.isParent,
-        locationId: thisEstablishment.locationId,
-        lastUpdated: thisEstablishment.updated
+        uid: thisEstablishment.EstablishmentUID,
+        name: thisEstablishment.EstablishmentName,
+        nmdsId: thisEstablishment.NmdsID,
+        postcode: thisEstablishment.PostCode,
+        isRegulated: thisEstablishment.IsRegulated,
+        address: thisEstablishment.Address,
+        isParent: thisEstablishment.IsParent,
+        parent,
+        locationId: thisEstablishment.LocationID,
+        lastUpdated: thisEstablishment.EstablishmentUpdated
       };
     }));
 
