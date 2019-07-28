@@ -2287,8 +2287,6 @@ class Establishment {
       const reasonsCount = [];
       const myReasons = entity.reasonsForLeaving.split('|');
 
-      console.log("WA DEBUG - we have reasons on download: ", myReasons)
-
       myReasons.forEach(currentReason => {
         const [reasonId, reasonCount] = currentReason.split(':');
         reasons.push(reasonId);

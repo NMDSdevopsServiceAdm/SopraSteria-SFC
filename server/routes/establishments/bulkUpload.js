@@ -1521,7 +1521,6 @@ router.route('/report/:reportType').get(async (req, res) => {
       entities ? entities.map(item => readable.push(`${item}${NEWLINE}`)) : true;
 
       // list all establishments that are being deleted
-      console.log("WA DEBUG - difference report: ", differenceReportKey)
       if (differenceReport && differenceReport.deleted && Array.isArray(differenceReport.deleted) && differenceReport.deleted.length > 0) {
         const deletedTitle = '* Deleted (the following Workplaces will be deleted) *';
         const deletedPadding = '*'.padStart(deletedTitle.length, '*');
@@ -1668,7 +1667,6 @@ const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, t
       // as this new establishment is created from a parent, it automatically becomes a sub
       foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
       await foundOnloadEstablishment.save(theLoggedInUser, true, 0, transaction, true);
-      console.log("WA DEBUG - have created new establishment: ", thisNewEstablishment.key);
     }
 
   } catch (err) {
@@ -1695,7 +1693,6 @@ const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedIn
       await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
 
       await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true)
-      console.log("WA DEBUG - completed saving establishment: ", foundCurrentEstablishment.key);
     }
   } catch (err) {
     console.error("completeUpdateEstablishment: failed to complete upon existing establishment: ", thisUpdatedEstablishment.key);
@@ -1711,7 +1708,6 @@ const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedIn
     // current is already restored, so simply need to delete it
     if (foundCurrentEstablishment) {
       await foundCurrentEstablishment.delete(theLoggedInUser, transaction, true);
-      console.log("WA DEBUG - completed deleting establishment: ", thisDeletedEstablishment.key);
     }
   } catch (err) {
     console.error("completeDeleteEstablishment: failed to complete upon deleting establishment: ", thisDeletedEstablishment.key);
@@ -1764,18 +1760,14 @@ router.route('/complete').post(async (req, res) => {
           const starterDeletedPromise = Promise.resolve(null);
           await validationDiferenceReport.deleted.reduce((p, thisDeletedEstablishment) => p.then(() => completeDeleteEstablishment(thisDeletedEstablishment, theLoggedInUser, t, myCurrentEstablishments).then(log)), starterDeletedPromise);
 
-          console.log("WA DEBUG - completed - finished all establishments")
-
           // gets here having successfully completed upon the bulk upload
           //  clean up the S3 objects
           await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
-          console.log("WA DEBUG - completed - purged")
         });
 
         // confirm success against the primary establishment
         await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
 
-        console.log("WA DEBUG - completed")
         return res.status(200).send({});
 
       } catch (err) {

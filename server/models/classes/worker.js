@@ -273,10 +273,7 @@ class Worker extends EntityValidator {
               this._status = document.status;
             }
 
-            if (bulkUploadCompletion && document.status === 'NOCHANGE') {
-              console.log("WA DEBUG - this worker is NOCHANGE; ignoring update of self: ", this._establishmentId, this._id, this.localIdentifier);
-
-            } else {
+            if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
               this.resetValidations();
 
               await this._properties.restore(document, JSON_DOCUMENT_TYPE);
@@ -376,8 +373,6 @@ class Worker extends EntityValidator {
         const newQualificationsPromises = [];
         const newTrainingPromises = [];
 
-        console.log("WA DEBUG - saving worker's associated entities: ", this._establishmentId, this._id, this._trainingEntities ? this._trainingEntities.length : 0, this._qualificationsEntities ? this._qualificationsEntities.length : 0)
-
         try {
             // there is no change audit on training; simply delete all that is there and recreate
             if (this._trainingEntities && this._trainingEntities.length > 0) {
@@ -436,11 +431,8 @@ class Worker extends EntityValidator {
 
         // with bulk upload, if this entity's status is "UNCHECKED", do not save it
         if (this._status === 'UNCHECKED') {
-          console.log("WA DEBUG - not saving Worker: ", this._establishmentId, this._id, this.localIdentifier);
           return;
         }
-
-        console.log("WA DEBUG - saving Worker: est id/worker id - ", this._establishmentId, this.nameOrId)
 
         if (!this.uid) {
             this._log(Worker.LOG_ERROR, 'Not able to save an unknown uid');

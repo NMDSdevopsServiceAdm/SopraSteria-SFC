@@ -343,10 +343,7 @@ class Establishment extends EntityValidator {
               this._status = document.status;
             }
 
-            if (bulkUploadCompletion && document.status === 'NOCHANGE') {
-              console.log("WA DEBUG - this establishment is NOCHANGE; ignoring update of self: ", this._id, this.localIdentifier);
-
-            } else {
+            if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
               this.resetValidations();
 
               // inject all services against this establishment
@@ -537,8 +534,6 @@ class Establishment extends EntityValidator {
 
         // with bulk upload, if this entity's status is "UNCHECKED", do not save it
         if (this._status === 'UNCHECKED') {
-          console.log("WA DEBUG - not saving Establishment: ", this._id, this.localIdentifier);
-
           // if requested, propagate the saving of this establishment down to each of the associated entities
           if (associatedEntities) {
             await models.sequelize.transaction(async t => {
