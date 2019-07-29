@@ -39,7 +39,7 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy {
   protected init(): void {}
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, '/regulated-by-cqc'] });
+    this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
   }
 
   protected setupForm(): void {
@@ -81,9 +81,9 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy {
 
   protected navigateToNextRoute(locationName: string): void {
     if (!locationName.length) {
-      this.router.navigate([this.flow, '/enter-workplace-address']);
+      this.router.navigate([`${this.flow}/enter-workplace-address`]);
     } else {
-      this.router.navigate([this.flow, '/add-workplace/select-main-service']);
+      this.router.navigate([`${this.flow}/add-workplace/select-main-service`]);
     }
   }
 

@@ -5,7 +5,7 @@ import { LocationSearchResponse } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { FindWorkplaceAddress } from '@features/workplace-find-and-select/find-workplace-address/find-workplace-address';
 
 @Component({
@@ -14,7 +14,7 @@ import { FindWorkplaceAddress } from '@features/workplace-find-and-select/find-w
 })
 export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
   constructor(
-    private registrationService: RegistrationService,
+    private workplaceService: WorkplaceService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -25,10 +25,10 @@ export class FindWorkplaceAddressComponent extends FindWorkplaceAddress {
   }
 
   protected init(): void {
-    this.flow = '/registration';
+    this.flow = '/add-workplace';
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
-    this.registrationService.locationAddresses$.next(data.postcodedata);
+    this.workplaceService.locationAddresses$.next(data.postcodedata);
   }
 }

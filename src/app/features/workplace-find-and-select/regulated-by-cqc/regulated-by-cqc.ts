@@ -230,9 +230,9 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
 
   protected navigateToNextRoute(data: LocationSearchResponse): void {
     if (data.locationdata) {
-      this.router.navigate([this.flow, 'select-workplace']);
+      this.router.navigate([`${this.flow}/select-workplace`]);
     } else {
-      this.router.navigate([this.flow, 'select-workplace-address']);
+      this.router.navigate([`${this.flow}/select-workplace-address`]);
     }
   }
 

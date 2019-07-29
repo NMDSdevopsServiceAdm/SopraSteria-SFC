@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { EnterWorkplaceAddress } from '@features/workplace-find-and-select/enter-workplace-address/enter-workplace-address';
 
 @Component({
@@ -13,7 +13,7 @@ import { EnterWorkplaceAddress } from '@features/workplace-find-and-select/enter
 })
 export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
   constructor(
-    private registrationService: RegistrationService,
+    private workplaceService: WorkplaceService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -24,13 +24,13 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
   }
 
   protected init(): void {
-    this.flow = '/registration';
+    this.flow = '/add-workplace';
     this.setupSubscription();
   }
 
   private setupSubscription(): void {
     this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe((selectedLocation: LocationAddress) => {
+      this.workplaceService.selectedLocationAddress$.subscribe((selectedLocation: LocationAddress) => {
         if (selectedLocation) {
           this.preFillForm(selectedLocation);
         }
@@ -39,6 +39,6 @@ export class EnterWorkplaceAddressComponent extends EnterWorkplaceAddress {
   }
 
   protected setSelectedLocationAddress(): void {
-    this.registrationService.selectedLocationAddress$.next(this.getLocationAddress());
+    this.workplaceService.selectedLocationAddress$.next(this.getLocationAddress());
   }
 }
