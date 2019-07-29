@@ -12,6 +12,11 @@ export class CreateBasicRecordsStartScreenComponent implements OnInit {
   constructor(private backService: BackService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.backService.setBackLink({ url: ['/dashboard'], fragment: 'staff-records' });
+    const url =
+      this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
+        ? ['/dashboard']
+        : ['/workplace', this.route.snapshot.data.establishment.uid];
+
+    this.backService.setBackLink({ url, fragment: 'staff-records' });
   }
 }

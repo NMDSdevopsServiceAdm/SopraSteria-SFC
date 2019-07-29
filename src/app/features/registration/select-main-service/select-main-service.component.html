@@ -27,7 +27,7 @@
             id="workplaceService-error"
             class="govuk-error-message"
           >
-            <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('workplaceService', 'required') }}
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('workplaceService') }}
           </span>
 
           <fieldset
@@ -73,7 +73,7 @@
                       *ngIf="submitted && form.get('otherWorkplaceService' + service.id).errors"
                     >
                       <span class="govuk-visually-hidden">Error:</span>
-                      {{ getFormErrorMessage('otherWorkplaceService' + service.id, 'maxlength') }}
+                      {{ getFirstErrorMessage('otherWorkplaceService' + service.id) }}
                     </span>
                     <input
                       class="govuk-input govuk-!-width-one-third"

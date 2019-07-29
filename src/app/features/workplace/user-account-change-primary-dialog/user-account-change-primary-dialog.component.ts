@@ -72,12 +72,14 @@ export class UserAccountChangePrimaryDialogComponent extends DialogComponent imp
     };
 
     this.subscriptions.add(
-      this.userService.updateUserDetails(selectedUser.uid, { ...selectedUser, ...props }).subscribe(
-        data => {
-          this.close(selectedUser.fullname);
-        },
-        error => console.log(error)
-      )
+      this.userService
+        .updateUserDetails(this.data.workplaceUid, selectedUser.uid, { ...selectedUser, ...props })
+        .subscribe(
+          data => {
+            this.close(selectedUser.fullname);
+          },
+          error => console.log(error)
+        )
     );
   }
 

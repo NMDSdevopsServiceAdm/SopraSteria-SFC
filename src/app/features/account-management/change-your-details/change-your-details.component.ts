@@ -2,10 +2,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { AccountDetails } from '@features/account/account-details/account-details';
 
@@ -15,10 +17,12 @@ import { AccountDetails } from '@features/account/account-details/account-detail
 })
 export class ChangeYourDetailsComponent extends AccountDetails {
   public callToActionLabel = 'Save and return';
+  private primaryWorkplace: Establishment;
   protected userDetails: UserDetails;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
+    private establishmentService: EstablishmentService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected fb: FormBuilder,
@@ -31,6 +35,8 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   protected init() {
     this.breadcrumbService.show();
     this.setupSubscriptions();
+
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
   }
 
   protected setBackLink(): void {
@@ -65,7 +71,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(this.userDetails.username, userDetails).subscribe(
+      this.userService.updateUserDetails(this.primaryWorkplace.uid, this.userDetails.uid, userDetails).subscribe(
         data => {
           this.userService.loggedInUser = { ...this.userDetails, ...data };
           this.router.navigate(['/account-management']);

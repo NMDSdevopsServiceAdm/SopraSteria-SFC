@@ -15,116 +15,115 @@ router.route('/').post(async function (req, res) {
   try {
     if (userSearchFields && userSearchFields.username) {
       // search on username
-      let results = await models.login.findAll({
-        attributes: ['username', 'isActive', 'passwdLastChanged', 'lastLogin'],
-        include: [
-          {
-            model: models.user,
-            attributes: ['FullNameValue', 'isPrimary', 'SecurityQuestionValue', 'SecurityQuestionAnswerValue', 'EmailValue', 'PhoneValue'],
-            include: [
-              {
-                model: models.establishment,
-                attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address1', 'isParent', 'NameValue', 'updated'],
-              },
-            ],
-            where: {
-              archived: false,
-            }
-          }
-        ],
-        where: {
-          username: {
-            [models.Sequelize.Op.iLike] : usernameSearchField,
-          },
-        },
-        order: [
-          ['username', 'ASC']
-        ]
-      });
+      const sqlQuery = `select
+          e1."EstablishmentUID" AS "EstablishmentUID",
+          e1."LocationID" AS "LocationID",
+          e1."NmdsID" AS "NmdsID",
+          e1."PostCode" AS "PostCode",
+          e1."IsRegulated" AS "IsRegulated",
+          e1."Address1" AS "Address",
+          e1."IsParent" AS "IsParent",
+          e1."NameValue" AS "EstablishmentName",
+          e1.updated AS "EstablishmentUpdated",
+          e1."ParentID" AS "ParentID",
+          p1."NmdsID" AS "ParentNmdsID",
+          p1."PostCode" AS "ParentPostCode",
+          p1."NameValue" AS "ParentName",
+          "Login"."Username" AS "Username",
+          "Login"."Active" AS "UserIsActive",
+          "Login"."PasswdLastChanged" AS "UserPasswdLastChanged",
+          "Login"."LastLoggedIn" AS "UserLastLoggedIn",
+          "User"."FullNameValue" AS "UserFullname",
+          "User"."IsPrimary" AS "UserIsPrimary",
+          "User"."SecurityQuestionValue" AS "UserSecurityQuestion",
+          "User"."SecurityQuestionAnswerValue" AS "UserSecurityQuestionAnswer",
+          "User"."EmailValue" AS "UserEmail",
+          "User"."PhoneValue" AS "UserPhone"
+        from cqc."Establishment" e1
+          left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
+          inner join cqc."User"
+            inner join cqc."Login" on "Login"."RegistrationID" = "User"."RegistrationID"
+            on "User"."EstablishmentID" = e1."EstablishmentID"
+        where e1."Archived"=false
+          and "User"."Archived"=false
+          and "Login"."Username" ilike :searchUsername
+        order by "Login"."Username" ASC`;
+      results = await models.sequelize.query(sqlQuery, { replacements: { searchUsername: usernameSearchField },type: models.sequelize.QueryTypes.SELECT });
 
-      res.status(200).send(results.map(thisLogin => {
-        return {
-          name: thisLogin.user.FullNameValue,
-          username: thisLogin.username,
-          isPrimary: thisLogin.user.isPrimary,
-          securityQuestion: thisLogin.user.SecurityQuestionValue,
-          securityQuestionAnswer: thisLogin.user.SecurityQuestionAnswerValue,
-          email: thisLogin.user.EmailValue,
-          phone: thisLogin.user.PhoneValue,
-          isLocked: !thisLogin.isActive,
-          passwdLastChanged: thisLogin.passwdLastChanged,
-          lastLoggedIn: thisLogin.lastLogin,
-          establishment: {
-            uid: thisLogin.user.establishment.uid,
-            name: thisLogin.user.establishment.NameValue,
-            nmdsId: thisLogin.user.establishment.nmdsId,
-            postcode: thisLogin.user.establishment.postcode,
-            isRegulated: thisLogin.user.establishment.isRegulated,
-            address: thisLogin.user.establishment.address1,
-            isParent: thisLogin.user.establishment.isParent,
-            locationId: thisLogin.user.establishment.locationId,
-            }
-        };
-      }));
+
     } else if (userSearchFields && userSearchFields.name) {
-      // search on NDMS ID
-      let results = await models.user.findAll({
-        attributes: ['FullNameValue', 'isPrimary', 'SecurityQuestionValue', 'SecurityQuestionAnswerValue', 'EmailValue', 'PhoneValue'],
-        include: [
-          {
-            model: models.establishment,
-            attributes: ['uid', 'locationId', 'nmdsId', 'postcode', 'isRegulated', 'address1', 'isParent', 'NameValue', 'updated'],
-          },
-          {
-            model: models.login,
-            attributes: ['username', 'isActive', 'passwdLastChanged', 'lastLogin'],
-            where: {
-              username: {
-                [models.Sequelize.Op.ne] : null,
-              },
-            }
-          }
-        ],
-        where: {
-          FullNameValue: {
-            [models.Sequelize.Op.iLike] : nameSearchField
-          },
-          archived: false,
-        },
-        order: [
-          ['FullNameValue', 'ASC']
-        ]
-      });
-
-      res.status(200).send(results.map(thisUser => {
-        return {
-          name: thisUser.FullNameValue,
-          username: thisUser.login.username,
-          isPrimary: thisUser.isPrimary,
-          securityQuestion: thisUser.SecurityQuestionValue,
-          securityQuestionAnswer: thisUser.SecurityQuestionAnswerValue,
-          email: thisUser.EmailValue,
-          phone: thisUser.PhoneValue,
-          isLocked: !thisUser.login.isActive,
-          passwdLastChanged: thisUser.login.passwdLastChanged,
-          lastLoggedIn: thisUser.login.lastLogin,
-          establishment: {
-            uid: thisUser.establishment.uid,
-            name: thisUser.establishment.NameValue,
-            nmdsId: thisUser.establishment.nmdsId,
-            postcode: thisUser.establishment.postcode,
-            isRegulated: thisUser.establishment.isRegulated,
-            address: thisUser.establishment.address1,
-            isParent: thisUser.establishment.isParent,
-            locationId: thisUser.establishment.locationId,
-            }
-        };
-      }));
+      // search on User's name
+      const sqlQuery = `select
+          e1."EstablishmentUID" AS "EstablishmentUID",
+          e1."LocationID" AS "LocationID",
+          e1."NmdsID" AS "NmdsID",
+          e1."PostCode" AS "PostCode",
+          e1."IsRegulated" AS "IsRegulated",
+          e1."Address1" AS "Address",
+          e1."IsParent" AS "IsParent",
+          e1."NameValue" AS "EstablishmentName",
+          e1.updated AS "EstablishmentUpdated",
+          e1."ParentID" AS "ParentID",
+          p1."NmdsID" AS "ParentNmdsID",
+          p1."PostCode" AS "ParentPostCode",
+          p1."NameValue" AS "ParentName",
+          "Login"."Username" AS "Username",
+          "Login"."Active" AS "UserIsActive",
+          "Login"."PasswdLastChanged" AS "UserPasswdLastChanged",
+          "Login"."LastLoggedIn" AS "UserLastLoggedIn",
+          "User"."FullNameValue" AS "UserFullname",
+          "User"."IsPrimary" AS "UserIsPrimary",
+          "User"."SecurityQuestionValue" AS "UserSecurityQuestion",
+          "User"."SecurityQuestionAnswerValue" AS "UserSecurityQuestionAnswer",
+          "User"."EmailValue" AS "UserEmail",
+          "User"."PhoneValue" AS "UserPhone"
+        from cqc."Establishment" e1
+          left join cqc."Establishment" p1 on e1."ParentID" = p1."EstablishmentID"
+          inner join cqc."User"
+            inner join cqc."Login" on "Login"."RegistrationID" = "User"."RegistrationID"
+            on "User"."EstablishmentID" = e1."EstablishmentID"
+        where e1."Archived"=false
+          and "User"."Archived"=false
+          and "User"."FullNameValue" ilike :searchFullname
+        order by "User"."FullNameValue" ASC`;
+      results = await models.sequelize.query(sqlQuery, { replacements: { searchFullname: nameSearchField },type: models.sequelize.QueryTypes.SELECT });
 
     } else {
       // no search
       return res.status(200).send({});
     }
+
+    res.status(200).send(results.map(thisLogin => {
+      const parent = thisLogin.ParentID ? {
+        nmdsId: thisLogin.ParentNmdsID,
+        name: thisLogin.ParentPostCode,
+        postcode: thisLogin.ParentName,
+      } : null;
+
+      return {
+        name: thisLogin.UserFullname,
+        username: thisLogin.Username,
+        isPrimary: thisLogin.UserIsPrimary,
+        securityQuestion: thisLogin.UserSecurityQuestion,
+        securityQuestionAnswer: thisLogin.UserSecurityQuestionAnswer,
+        email: thisLogin.UserEmail,
+        phone: thisLogin.UserPhone,
+        isLocked: !thisLogin.UserIsActive,
+        passwdLastChanged: thisLogin.UserPasswdLastChanged,
+        lastLoggedIn: thisLogin.UserLastLoggedIn,
+        establishment: {
+          uid: thisLogin.EstablishmentUID,
+          name: thisLogin.EstablishmentName,
+          nmdsId: thisLogin.NmdsID,
+          postcode: thisLogin.PostCode,
+          isRegulated: thisLogin.IsRegulated,
+          address: thisLogin.Address,
+          isParent: thisLogin.IsParent,
+          parent,
+          locationId: thisLogin.LocationID,
+          }
+      };
+    }));
 
   } catch (err) {
     console.error(err);

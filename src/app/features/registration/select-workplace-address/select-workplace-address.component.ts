@@ -1,53 +1,33 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { filter } from 'lodash';
-import { Subscription } from 'rxjs';
+import { SelectWorkplaceAddress } from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address';
 
 @Component({
   selector: 'app-select-workplace-address',
   templateUrl: './select-workplace-address.component.html',
 })
-export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
-  public enteredPostcode: string;
-  public locationAddresses: Array<LocationAddress>;
-  public form: FormGroup;
-  public submitted = false;
-  private formErrorsMap: Array<ErrorDetails>;
-  private selectedLocationAddress: LocationAddress;
-  private subscriptions: Subscription = new Subscription();
-
+export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
   constructor(
-    private backService: BackService,
-    private errorSummaryService: ErrorSummaryService,
     private registrationService: RegistrationService,
-    private router: Router,
-    private fb: FormBuilder
-  ) {}
-
-  get getAddress() {
-    return this.form.get('address');
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder,
+    protected router: Router
+  ) {
+    super(backService, errorSummaryService, formBuilder, router);
   }
 
-  ngOnInit() {
-    this.setupForm();
+  protected init(): void {
+    this.flow = '/registration';
     this.setupSubscriptions();
-    this.setupFormErrorsMap();
-    this.setBackLink();
   }
 
-  private setupForm(): void {
-    this.form = this.fb.group({
-      address: ['', [Validators.required]],
-    });
-  }
-
-  private setupSubscriptions(): void {
+  protected setupSubscriptions(): void {
     this.subscriptions.add(
       this.registrationService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
         this.enteredPostcode = locationAddresses[0].postalCode;
@@ -62,65 +42,7 @@ export class SelectWorkplaceAddressComponent implements OnInit, OnDestroy {
     );
   }
 
-  private setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'address',
-        type: [
-          {
-            name: 'required',
-            message: 'Please select an address.',
-          },
-        ],
-      },
-    ];
-  }
-
-  private setBackLink(): void {
-    this.backService.setBackLink({ url: ['/registration/regulated-by-cqc'] });
-  }
-
   public onLocationChange(addressLine1: string): void {
-    const selectedLocation: LocationAddress = filter(this.locationAddresses, ['addressLine1', addressLine1])[0];
-    this.registrationService.selectedLocationAddress$.next(selectedLocation);
-  }
-
-  public onSubmit(): void {
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (this.form.valid) {
-      this.navigateToNextRoute(this.selectedLocationAddress.locationName);
-    } else {
-      this.errorSummaryService.scrollToErrorSummary();
-    }
-  }
-
-  private navigateToNextRoute(locationName: string): void {
-    if (!locationName.length) {
-      this.router.navigate(['/registration/enter-workplace-address']);
-    } else {
-      this.router.navigate(['/registration/select-main-service']);
-    }
-  }
-
-  private getLocationName(location: LocationAddress): string {
-    let name: string = location.locationName.length ? `${location.locationName}, ` : '';
-    name += `${location.addressLine1}, ${location.addressLine2} - ${location.townCity} ${location.postalCode}`;
-    return name;
-  }
-
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+    this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation(addressLine1));
   }
 }

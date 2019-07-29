@@ -455,15 +455,15 @@ class Worker {
           }
           break;
         case 'UNCHECKED':
-          this._validationErrors.push({
-            name: this._currentLine.LOCALESTID,
-            worker: this._currentLine.UNIQUEWORKERID,
-            lineNumber: this._lineNumber,
-            warnCode: Worker.STATUS_WARNING,
-            warnType: `STATUS_WARNING`,
-            warning: `STATUS is UNCHECKED and will be ignored`,
-            source: myStatus,
-          });
+          // this._validationErrors.push({
+          //   name: this._currentLine.LOCALESTID,
+          //   worker: this._currentLine.UNIQUEWORKERID,
+          //   lineNumber: this._lineNumber,
+          //   warnCode: Worker.STATUS_WARNING,
+          //   warnType: `STATUS_WARNING`,
+          //   warning: `STATUS is UNCHECKED and will be ignored`,
+          //   source: myStatus,
+          // });
           break;
         case 'NOCHANGE':
           if (!thisWorkerExists(this._establishmentKey, this._key)) {
@@ -2449,11 +2449,12 @@ class Worker {
     status = !this._validateLocalId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateChangeUniqueWorkerId() ? false : status;
+    status = !this._validateDisplayId() ? false : status;
     status = !this._validateStatus() ? false : status;
 
-    // only continue to process validation, if the status is UNCHECKED
-    if (this._status !== 'UNCHECKED') {
-      status = !this._validateDisplayId() ? false : status;
+    // only continue to process validation, if the status is not UNCHECKED or DELETED
+    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+    if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateNINumber() ? false : status;
       status = !this._validatePostCode() ? false : status;
       status = !this._validateDOB() ? false : status;
@@ -2492,8 +2493,9 @@ class Worker {
 
   // returns true on success, false is any attribute of Worker fails
   transform() {
-    // if this Worker is unchecked, skip all transformations
-    if (this._status !== 'UNCHECKED') {
+    // if this Worker is unchecked/deleted, skip all transformations
+    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+    if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
 
       // status = !this._transformMainService() ? false : status;

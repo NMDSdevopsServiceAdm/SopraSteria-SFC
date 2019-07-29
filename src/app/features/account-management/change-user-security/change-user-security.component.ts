@@ -3,10 +3,12 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
 import { SecurityQuestion } from '@features/account/security-question/security-question';
 
@@ -17,11 +19,13 @@ import { SecurityQuestion } from '@features/account/security-question/security-q
 export class ChangeUserSecurityComponent extends SecurityQuestion {
   private serverErrorsMap: Array<ErrorDefinition>;
   private userDetails: UserDetails;
+  private primaryWorkplace: Establishment;
   public serverError: string;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
+    private establishmentService: EstablishmentService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -34,6 +38,8 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
     this.breadcrumbService.show();
     this.setupSubscription();
     this.setupServerErrorsMap();
+
+    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
   }
 
   protected setupSubscription(): void {
@@ -59,7 +65,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
 
   private changeUserDetails(userDetails: UserDetails): void {
     this.subscriptions.add(
-      this.userService.updateUserDetails(this.userDetails.username, userDetails).subscribe(
+      this.userService.updateUserDetails(this.primaryWorkplace.uid, this.userDetails.uid, userDetails).subscribe(
         data => {
           this.userService.loggedInUser = { ...this.userDetails, ...data };
           this.router.navigate(['/account-management']);

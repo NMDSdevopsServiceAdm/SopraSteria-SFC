@@ -351,8 +351,12 @@
         </p>
       </dd>
       <dd class="govuk-summary-list__actions">
-        <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']" (click)="setReturn()">
-          Add basic staff records
+        <a
+          class="govuk-visually-hidden"
+          [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']"
+          (click)="setReturn()"
+        >
+          Amend basic staff records
         </a>
       </dd>
     </div>

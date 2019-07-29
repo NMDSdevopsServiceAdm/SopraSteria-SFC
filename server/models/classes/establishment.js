@@ -62,6 +62,8 @@ const responseErrors = {
     }
 };
 
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED'];
+
 class Establishment extends EntityValidator {
     constructor(username) {
         super();
@@ -258,8 +260,11 @@ class Establishment extends EntityValidator {
         return this._properties.get('NumberOfStaff') ? this._properties.get('NumberOfStaff').property : 0;
     }
 
-    get key(){
+    get key() {
         return ((this._properties.get('LocalIdentifier') && this._properties.get('LocalIdentifier').property) ? this.localIdentifier.replace(/\s/g, "") : this.name).replace(/\s/g, "");
+    }
+    get status() {
+      return this._status;
     }
 
     // used by save to initialise a new Establishment; returns true if having initialised this Establishment
@@ -331,102 +336,110 @@ class Establishment extends EntityValidator {
 
     // takes the given JSON document and creates an Establishment's set of extendable properties
     // Returns true if the resulting Establishment is valid; otherwise false
-    async load(document, associatedEntities=false) {
+    async load(document, associatedEntities=false, bulkUploadCompletion=false) {
         try {
-            this.resetValidations();
-
-            // inject all services against this establishment
-            const isRegulated = document.IsCQCRegulated || document.isRegulated;
-            document.allMyServices = ServiceCache.allMyServices(isRegulated);
-
-            // inject all capacities against this establishment - note, "other services" can be represented by the JSON document attribute "services" or "otherServices"
-            const allAssociatedServiceIndices = [];
-            if (document.mainService) {
-                allAssociatedServiceIndices.push(document.mainService.id);
-            }
-            if (document && document.otherServices && Array.isArray(document.otherServices)) {
-                document.otherServices.forEach(thisService => {
-                  if (thisService.id) {
-                    allAssociatedServiceIndices.push(thisService.id);
-                  } else if (thisService.services && Array.isArray(thisService.services)) {
-                    thisService.services.forEach(innerService => {
-                      allAssociatedServiceIndices.push(innerService.id)
-                    });
-                  }
-                });
-            }
-            if (document && document.services && Array.isArray(document.services)) {
-                document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
-            }
-            document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
-
-            await this._properties.restore(document, JSON_DOCUMENT_TYPE);
-
-            // CQC reugulated/location ID
-            if (document.hasOwnProperty('isRegulated')) {
-                this._isRegulated = document.isRegulated;
-            }
-            if (document.locationId) {
-                // Note - there is more validation to do on location ID - so this really should be a managed property
-                this._locationId = document.locationId;
-            }
-            if (document.provId) {
-              // Note - there is more validation to do on location ID - so this really should be a managed property
-              this._provId = document.provId;
-            }
-            if (document.address1) {
-              // if address is given, allow reset on all address components
-              this._address1 = document.address1;
-              this._address2 = document.address2 ? document.address2 : '';
-              this._address3 = document.address3 ? document.address3 : '';
-              this._town = document.town ? document.town : '';
-              this._county = document.county ? document.county : '';
-            }
-            if (document.postcode) {
-              this._postcode = document.postcode;
-            }
-            if (document.name) {
-                this._name = document.name;
-            }
-
-            if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
-              this._reasonsForLeaving = document.reasonsForLeaving;
-            }
-
             // bulk upload status
             if (document.status) {
               this._status = document.status;
+            }
+
+            if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
+              this.resetValidations();
+
+              // inject all services against this establishment
+              const isRegulated = document.IsCQCRegulated || document.isRegulated;
+              document.allMyServices = ServiceCache.allMyServices(isRegulated);
+
+              // inject all capacities against this establishment - note, "other services" can be represented by the JSON document attribute "services" or "otherServices"
+              const allAssociatedServiceIndices = [];
+              if (document.mainService) {
+                  allAssociatedServiceIndices.push(document.mainService.id);
+              }
+              if (document && document.otherServices && Array.isArray(document.otherServices)) {
+                  document.otherServices.forEach(thisService => {
+                    if (thisService.id) {
+                      allAssociatedServiceIndices.push(thisService.id);
+                    } else if (thisService.services && Array.isArray(thisService.services)) {
+                      thisService.services.forEach(innerService => {
+                        allAssociatedServiceIndices.push(innerService.id)
+                      });
+                    }
+                  });
+              }
+              if (document && document.services && Array.isArray(document.services)) {
+                  document.services.forEach(thisService => allAssociatedServiceIndices.push(thisService.id));
+              }
+              document.allServiceCapacityQuestions = CapacitiesCache.allMyCapacities(allAssociatedServiceIndices);
+
+              await this._properties.restore(document, JSON_DOCUMENT_TYPE);
+
+              // CQC reugulated/location ID
+              if (document.hasOwnProperty('isRegulated')) {
+                  this._isRegulated = document.isRegulated;
+              }
+              if (document.locationId) {
+                  // Note - there is more validation to do on location ID - so this really should be a managed property
+                  this._locationId = document.locationId;
+              }
+              if (document.provId) {
+                // Note - there is more validation to do on location ID - so this really should be a managed property
+                this._provId = document.provId;
+              }
+              if (document.address1) {
+                // if address is given, allow reset on all address components
+                this._address1 = document.address1;
+                this._address2 = document.address2 ? document.address2 : '';
+                this._address3 = document.address3 ? document.address3 : '';
+                this._town = document.town ? document.town : '';
+                this._county = document.county ? document.county : '';
+              }
+              if (document.postcode) {
+                this._postcode = document.postcode;
+              }
+              if (document.name) {
+                  this._name = document.name;
+              }
+
+              if (document.reasonsForLeaving || document.reasonsForLeaving === '') {
+                this._reasonsForLeaving = document.reasonsForLeaving;
+              }
             }
 
             // allow for deep restoration of entities (associations - namely Worker here)
             if (associatedEntities) {
                 const promises = [];
                 if (document.workers && Array.isArray(document.workers)) {
+                    this._readyForDeletionWorkers = [];
+
                     document.workers.forEach(thisWorker => {
                       // we're loading from JSON, not entity, so there is no key property; so add it
                       thisWorker.key = thisWorker.localIdentifier ? thisWorker.localIdentifier.replace(/\s/g, "") : thisWorker.nameOrId.replace(/\s/g, "");
 
                       // check if we already have the Worker associated, before associating a new worker
                       if (this._workerEntities[thisWorker.key]) {
+                        // this worker exists; if could be marked for deletion
+                        if (thisWorker.status === 'DELETE') {
+                          this._readyForDeletionWorkers.push(this._workerEntities[thisWorker.key]);
+                        } else {
                           // the local identifier is required during bulk upload for reasoning; but against the worker itself, it's immutable.
                           delete thisWorker.localIdentifier;
 
                           // else we already have this worker, load changes against it
-                          promises.push(this._workerEntities[thisWorker.key].load(thisWorker, true));
+                          promises.push(this._workerEntities[thisWorker.key].load(thisWorker, true, bulkUploadCompletion));
+                        }
 
                       } else {
-                          const newWorker = new Worker(null);
+                        const newWorker = new Worker(null);
 
-                          // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-                          this.associateWorker(thisWorker.key, newWorker);
-                          promises.push(newWorker.load(thisWorker, true));
+                        // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                        this.associateWorker(thisWorker.key, newWorker);
+                        promises.push(newWorker.load(thisWorker, true));
                       }
 
                     });
 
                     // this has updated existing Worker associations and/or added new Worker associations
                     // however, how do we mark for deletion those no longer required
-                    this._readyForDeletionWorkers = [];
                     Object.values(this._workerEntities).forEach(thisWorker => {
                         const foundWorker = document.workers.find(givenWorker => {
                           return givenWorker.key === thisWorker.key
@@ -453,7 +466,7 @@ class Establishment extends EntityValidator {
     // returns true if Establishment is valid, otherwise false
     isValid() {
       // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
-      if (this._status === null || this._status !== 'UNCHECKED' ) {
+      if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
         const thisEstablishmentIsValid = this._properties.isValid;
         if (this._properties.isValid === true) {
             return true;
@@ -481,7 +494,7 @@ class Establishment extends EntityValidator {
 
     async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
         if (this._workerEntities) {
-            const log = result => console.log(`result: ${result}`);
+            const log = result => result=null;
 
             try {
                 const workersAsArray = Object.values(this._workerEntities).map(thisWorker => {
@@ -517,6 +530,19 @@ class Establishment extends EntityValidator {
                 this.name,
                 'Not able to save an unknown uid',
                 'Establishment does not exist');
+        }
+
+        // with bulk upload, if this entity's status is "UNCHECKED", do not save it
+        if (this._status === 'UNCHECKED') {
+          // if requested, propagate the saving of this establishment down to each of the associated entities
+          if (associatedEntities) {
+            await models.sequelize.transaction(async t => {
+              const thisTransaction = externalTransaction ? externalTransaction : t;
+              await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
+            });
+          }
+
+          return;
         }
 
         if (mustSave && this._isNew) {
@@ -1399,7 +1425,7 @@ class Establishment extends EntityValidator {
       let allExistAndValid = true;    // assume all exist until proven otherwise
 
       // in bulk upload, an establishment entity, if UNCHECKED, will be nothing more than a status and a local identifier
-      if (this._status === null || this._status !== 'UNCHECKED' ) {
+      if (this._status === null || !STOP_VALIDATING_ON.includes(this._status)) {
         try {
           const nmdsIdRegex = /^[A-Z]1[\d]{6}$/i;
           if (this._uid !== null && !(this._nmdsId && nmdsIdRegex.test(this._nmdsId))) {

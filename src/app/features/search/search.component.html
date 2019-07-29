@@ -119,6 +119,7 @@
             <th class="govuk-table__header" scope="col">Postcode</th>
             <th class="govuk-table__header" scope="col">Security Question</th>
             <th class="govuk-table__header" scope="col">Security Answer</th>
+            <th class="govuk-table__header" scope="col">Parent ID</th>
           </tr>
         </thead>
         <tbody class="govuk-table__body">
@@ -132,6 +133,11 @@
             <td class="govuk-table__cell">{{ item.establishment.postcode }}</td>
             <td class="govuk-table__cell">{{ item.securityQuestion }}</td>
             <td class="govuk-table__cell">{{ item.securityQuestionAnswer }}</td>
+            <td class="govuk-table__cell">
+              {{
+                item.establishment.parent && item.establishment.parent.nmdsId ? item.establishment.parent.nmdsId : ''
+              }}
+            </td>
           </tr>
         </tbody>
       </table>
@@ -145,8 +151,9 @@
             <th class="govuk-table__header" scope="col">NMDS ID</th>
             <th class="govuk-table__header" scope="col">Postcode</th>
             <th class="govuk-table__header" scope="col">Location ID</th>
-            <th class="govuk-table__header" scope="col">Is regulated</th>
-            <th class="govuk-table__header" scope="col">Is Parent</th>
+            <th class="govuk-table__header" scope="col">Regulated</th>
+            <th class="govuk-table__header" scope="col">Parent</th>
+            <th class="govuk-table__header" scope="col">Parent ID</th>
             <th class="govuk-table__header" scope="col">Address</th>
           </tr>
         </thead>
@@ -160,6 +167,9 @@
             <td class="govuk-table__cell">{{ item.locationId }}</td>
             <td class="govuk-table__cell">{{ item.isRegulated ? 'Yes' : 'No' }}</td>
             <td class="govuk-table__cell">{{ item.isParent ? 'Yes' : 'No' }}</td>
+            <td class="govuk-table__cell">
+              {{ item.parent && item.parent.nmdsId ? item.parent.nmdsId : '' }}
+            </td>
             <td class="govuk-table__cell">{{ item.address }}</td>
           </tr>
         </tbody>

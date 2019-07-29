@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <h1 class="govuk-heading-l">
-      <span *ngIf="primaryEstablishment.isParent" class="govuk-caption-xl">{{ primaryEstablishment.name }}</span>
+      <span *ngIf="workplace?.parentName" class="govuk-caption-xl">{{ workplace.parentName }}</span>
       {{ workplace.name }}
     </h1>
   </div>
@@ -27,7 +27,7 @@
         <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
       </app-tab>
 
-      <app-tab [title]="'Staff records'" *ngIf="checkPermission(staffPermission)">
+      <app-tab [title]="'Staff records'">
         <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
       </app-tab>
 

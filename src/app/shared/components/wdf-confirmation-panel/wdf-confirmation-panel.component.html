@@ -7,9 +7,9 @@
       <button type="button" (click)="onConfirm($event)" class="govuk-button govuk-!-margin-right-8">
         Confirm and submit
       </button>
-      <button *ngIf="exitable" type="button" (click)="onExit($event)" class="govuk-button govuk-button--secondary">
+      <a [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment" class="govuk-button govuk-button--secondary">
         Exit without submitting
-      </button>
+      </a>
     </div>
   </div>
 </div>

@@ -21,11 +21,14 @@ export class CreateUserGuard implements CanActivate {
       uuid: route.params.activationToken,
     };
 
+    // Clear localstorage, session and auth token in case user is already logged in
+    this.authService.resetAuth();
+
     return this.createAccountService.validateAccountActivationToken(requestPayload).pipe(
       map(response => {
         this.createAccountService.userDetails$.next(response.body);
         const token = response.headers.get('authorization');
-        this.authService.authorise(token);
+        this.createAccountService.token = token;
         return true;
       }),
       catchError(() => {

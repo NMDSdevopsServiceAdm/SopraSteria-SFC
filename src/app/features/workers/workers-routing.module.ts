@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { WdfStaffSummaryComponent } from '@features/workers/wdf-staff-summary/wdf-staff-summary.component';
 
@@ -23,7 +24,6 @@ import {
 } from './create-staff-record-start-screen/create-staff-record-start-screen.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
-import { DeleteSuccessComponent } from './delete-success/delete-success.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
@@ -55,16 +55,19 @@ const routes: Routes = [
   {
     path: 'start-screen',
     component: CreateStaffRecordStartScreenComponent,
+    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Create Staff Record Start' },
   },
   {
     path: 'total-staff',
     component: TotalStaffComponent,
+    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Total Staff' },
   },
   {
     path: 'basic-records-start-screen',
     component: CreateBasicRecordsStartScreenComponent,
+    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Create Basic Records Start' },
   },
   {
@@ -75,6 +78,7 @@ const routes: Routes = [
   {
     path: 'basic-records-save-success',
     component: BasicRecordsSaveSuccessComponent,
+    resolve: { primaryWorkplace: PrimaryWorkplaceResolver },
     data: { title: 'Basic Records Save Success' },
   },
   {
@@ -83,19 +87,9 @@ const routes: Routes = [
     data: { title: 'Create Staff Records' },
   },
   {
-    path: 'save-success',
-    component: WorkerSaveSuccessComponent,
-    data: { title: 'Success' },
-  },
-  {
-    path: 'delete-success',
-    component: DeleteSuccessComponent,
-    data: { title: 'Delete Success' },
-  },
-  {
     path: ':id',
     component: EditWorkerComponent,
-    resolve: { worker: WorkerResolver },
+    resolve: { worker: WorkerResolver, primaryWorkplace: PrimaryWorkplaceResolver },
     children: [
       {
         path: '',
@@ -256,6 +250,11 @@ const routes: Routes = [
         path: 'check-answers',
         component: CheckStaffRecordComponent,
         data: { title: 'Check Answers' },
+      },
+      {
+        path: 'save-success',
+        component: WorkerSaveSuccessComponent,
+        data: { title: 'Success' },
       },
       {
         path: 'add-qualification',

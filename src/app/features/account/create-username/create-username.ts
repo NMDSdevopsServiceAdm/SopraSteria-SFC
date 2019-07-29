@@ -60,7 +60,6 @@ export class CreateUsername implements OnInit, OnDestroy {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
     this.setCallToActionLabel();
-    this.setBackLink();
     this.init();
   }
 
