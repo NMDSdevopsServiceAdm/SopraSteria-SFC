@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectWorkplace } from '@features/workplace-find-and-select/select-workplace/select-workplace';
 
 @Component({
@@ -13,7 +13,7 @@ import { SelectWorkplace } from '@features/workplace-find-and-select/select-work
 })
 export class SelectWorkplaceComponent extends SelectWorkplace {
   constructor(
-    private registrationService: RegistrationService,
+    private workplaceService: WorkplaceService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -23,19 +23,19 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
   }
 
   protected init(): void {
-    this.flow = '/registration';
+    this.flow = '/add-workplace';
     this.setupSubscription();
   }
 
   protected setupSubscription(): void {
     this.subscriptions.add(
-      this.registrationService.locationAddresses$.subscribe(
+      this.workplaceService.locationAddresses$.subscribe(
         (locationAddresses: Array<LocationAddress>) => (this.locationAddresses = locationAddresses)
       )
     );
   }
 
   protected save(): void {
-    this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation());
+    this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation());
   }
 }

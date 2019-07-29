@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectWorkplaceAddress } from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address';
 
 @Component({
@@ -13,7 +13,7 @@ import { SelectWorkplaceAddress } from '@features/workplace-find-and-select/sele
 })
 export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
   constructor(
-    private registrationService: RegistrationService,
+    private workplaceService: WorkplaceService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected formBuilder: FormBuilder,
@@ -23,26 +23,26 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
   }
 
   protected init(): void {
-    this.flow = '/registration';
+    this.flow = '/add-workplace';
     this.setupSubscriptions();
   }
 
   protected setupSubscriptions(): void {
     this.subscriptions.add(
-      this.registrationService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
+      this.workplaceService.locationAddresses$.subscribe((locationAddresses: Array<LocationAddress>) => {
         this.enteredPostcode = locationAddresses[0].postalCode;
         this.locationAddresses = locationAddresses;
       })
     );
 
     this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe(
+      this.workplaceService.selectedLocationAddress$.subscribe(
         (locationAddress: LocationAddress) => (this.selectedLocationAddress = locationAddress)
       )
     );
   }
 
   public onLocationChange(addressLine1: string): void {
-    this.registrationService.selectedLocationAddress$.next(this.getSelectedLocation(addressLine1));
+    this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation(addressLine1));
   }
 }

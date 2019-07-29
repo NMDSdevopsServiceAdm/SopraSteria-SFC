@@ -8,6 +8,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { Subscription } from 'rxjs';
+import { LocationService } from '@core/services/location.service';
 
 @Component({
   selector: 'app-find-workplace-address',
@@ -25,6 +26,7 @@ export class FindWorkplaceAddressComponent implements OnInit, OnDestroy {
     private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
     private fb: FormBuilder,
+    private locationService: LocationService,
     private registrationService: RegistrationService,
     private router: Router
   ) {}
@@ -83,7 +85,7 @@ export class FindWorkplaceAddressComponent implements OnInit, OnDestroy {
 
   private getAddressesByPostCode(): void {
     this.subscriptions.add(
-      this.registrationService.getAddressesByPostCode(this.getPostcode.value).subscribe(
+      this.locationService.getAddressesByPostCode(this.getPostcode.value).subscribe(
         (data: LocationSearchResponse) => {
           this.registrationService.locationAddresses$.next(data.postcodedata);
           this.router.navigate(['/registration/select-workplace-address']);
