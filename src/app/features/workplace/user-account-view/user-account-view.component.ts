@@ -105,7 +105,10 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     if (this.user.isPrimary) {
       this.subscriptions.add(
         this.userService
-          .updateUserDetails(this.loggedInUser.uid, { ...this.loggedInUser, ...{ isPrimary: true } })
+          .updateUserDetails(this.establishment.uid, this.loggedInUser.uid, {
+            ...this.loggedInUser,
+            ...{ isPrimary: true },
+          })
           .subscribe(data => (this.userService.loggedInUser = data))
       );
     }
