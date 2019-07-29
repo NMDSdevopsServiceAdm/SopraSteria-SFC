@@ -266,61 +266,63 @@ class Worker extends EntityValidator {
 
     // takes the given JSON document and creates a Worker's set of extendable properties
     // Returns true if the resulting Worker is valid; otherwise false
-    async load(document, associatedEntities=false) {
+    async load(document, associatedEntities=false, bulkUploadCompletion=false) {
         try {
-            this.resetValidations();
-
-            await this._properties.restore(document, JSON_DOCUMENT_TYPE);
-
-            // reason is not a managed property, load it specifically
-            if (document.reason) {
-                this._reason = await this.validateReason(document.reason);
-            }
-
-            if(document.changeLocalIdentifer){
-                this._changeLocalIdentifer = document.changeLocalIdentifer;
-            }
-
             // bulk upload status
             if (document.status) {
               this._status = document.status;
             }
 
-            // allow for deep restoration of entities (associations - namely Qualifications and Training here)
-            if (associatedEntities) {
-                const promises = [];
+            if (!(bulkUploadCompletion && document.status === 'NOCHANGE')) {
+              this.resetValidations();
 
-                // training records and qualifications are no change managed
-                //  therefore, simply remove all existing associations
-                //  and create new ones
+              await this._properties.restore(document, JSON_DOCUMENT_TYPE);
 
-                // first training records
-                this._trainingEntities = [];
-                if (document.training && Array.isArray(document.training)) {
-                    //console.log("WA DEBUG - document.training: ", document.training)
-                    document.training.forEach(thisTraining => {
-                        const newTrainingRecord = new Training(null, null);
+              // reason is not a managed property, load it specifically
+              if (document.reason) {
+                  this._reason = await this.validateReason(document.reason);
+              }
 
-                        this.associateTraining(newTrainingRecord);
-                        promises.push(newTrainingRecord.load(thisTraining));
-                    });
-                }
+              if(document.changeLocalIdentifer){
+                  this._changeLocalIdentifer = document.changeLocalIdentifer;
+              }
 
-                // and qualifications records
-                this._qualificationsEntities = [];
-                if (document.qualifications && Array.isArray(document.qualifications)) {
-                    //console.log("WA DEBUG - document.qualifications: ", document.qualifications)
-                    document.qualifications.forEach(thisQualificationRecord => {
-                        const newQualificationRecord = new Qualification(null, null);
+              // allow for deep restoration of entities (associations - namely Qualifications and Training here)
+              if (associatedEntities) {
+                  const promises = [];
 
-                        this.associateQualification(newQualificationRecord);
-                        promises.push(newQualificationRecord.load(thisQualificationRecord));
-                    });
-                }
+                  // training records and qualifications are no change managed
+                  //  therefore, simply remove all existing associations
+                  //  and create new ones
 
-                // wait for loading of all training and qualification records
-                await Promise.all(promises);
-                //console.log("WA DEBUG - this qualifications/training: ", this._id, this._qualificationsEntities ? this._qualificationsEntities.length : 'undefined', this._trainingEntities ? this._trainingEntities.length : 'undefined');
+                  // first training records
+                  this._trainingEntities = [];
+                  if (document.training && Array.isArray(document.training)) {
+                      //console.log("WA DEBUG - document.training: ", document.training)
+                      document.training.forEach(thisTraining => {
+                          const newTrainingRecord = new Training(null, null);
+
+                          this.associateTraining(newTrainingRecord);
+                          promises.push(newTrainingRecord.load(thisTraining));
+                      });
+                  }
+
+                  // and qualifications records
+                  this._qualificationsEntities = [];
+                  if (document.qualifications && Array.isArray(document.qualifications)) {
+                      //console.log("WA DEBUG - document.qualifications: ", document.qualifications)
+                      document.qualifications.forEach(thisQualificationRecord => {
+                          const newQualificationRecord = new Qualification(null, null);
+
+                          this.associateQualification(newQualificationRecord);
+                          promises.push(newQualificationRecord.load(thisQualificationRecord));
+                      });
+                  }
+
+                  // wait for loading of all training and qualification records
+                  await Promise.all(promises);
+                  //console.log("WA DEBUG - this qualifications/training: ", this._id, this._qualificationsEntities ? this._qualificationsEntities.length : 'undefined', this._trainingEntities ? this._trainingEntities.length : 'undefined');
+              }
             }
 
         } catch (err) {
@@ -370,8 +372,6 @@ class Worker extends EntityValidator {
     async saveAssociatedEntities(savedBy, bulkUploaded=false, externalTransaction)  {
         const newQualificationsPromises = [];
         const newTrainingPromises = [];
-
-        console.log("WA DEBUG - saving worker's associated entities: ", this._establishmentId, this._id, this._trainingEntities ? this._trainingEntities.length : 0, this._qualificationsEntities ? this._qualificationsEntities.length : 0)
 
         try {
             // there is no change audit on training; simply delete all that is there and recreate
@@ -429,7 +429,10 @@ class Worker extends EntityValidator {
     async save(savedBy, bulkUploaded=false, ttl=0, externalTransaction=null, associatedEntities=false) {
         let mustSave = this._initialise();
 
-        console.log("WA DEBUG - saving Worker: est id/worker id - ", this._establishmentId, this.nameOrId)
+        // with bulk upload, if this entity's status is "UNCHECKED", do not save it
+        if (this._status === 'UNCHECKED') {
+          return;
+        }
 
         if (!this.uid) {
             this._log(Worker.LOG_ERROR, 'Not able to save an unknown uid');

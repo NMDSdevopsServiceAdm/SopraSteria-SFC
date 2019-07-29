@@ -84,7 +84,6 @@ router.route('/').post(async (req, res) => {
 
 // a helper function that updates the establishment and adds the necessary audit events
 const updateLocalIdOnEstablishment = async (thisGivenEstablishment, transaction, updatedTimestamp, username, allAuditEvents) => {
-console.log("WA DEBUG - updateLocalIdOnEstablishment - ", thisGivenEstablishment)
 
   const updatedEstablishment = await models.establishment.update(
     {
@@ -108,7 +107,6 @@ console.log("WA DEBUG - updateLocalIdOnEstablishment - ", thisGivenEstablishment
 
   if (updatedEstablishment[0] === 1) {
     const updatedRecord = updatedEstablishment[1][0].get({plain: true});
-    console.log("WA DEBUG - updated establishment: ", updatedRecord.EstablishmentID);
     // and now the audit events - one for the establishment entity
     allAuditEvents.push({
       establishmentFk: updatedRecord.EstablishmentID,

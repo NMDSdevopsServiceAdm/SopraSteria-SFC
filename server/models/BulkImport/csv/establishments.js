@@ -287,14 +287,14 @@ class Establishment {
           }
           break;
         case 'UNCHECKED':
-          this._validationErrors.push({
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            warnCode: Establishment.STATUS_WARNING,
-            warnType: `STATUS_WARNING`,
-            warning: `STATUS is UNCHECKED and will be ignored`,
-            source: myStatus,
-          });
+          // this._validationErrors.push({
+          //   name: this._currentLine.LOCALESTID,
+          //   lineNumber: this._lineNumber,
+          //   warnCode: Establishment.STATUS_WARNING,
+          //   warnType: `STATUS_WARNING`,
+          //   warning: `STATUS is UNCHECKED and will be ignored`,
+          //   source: myStatus,
+          // });
           break;
         case 'NOCHANGE':
           if (!thisEstablishmentExists(this._key)) {
@@ -2286,8 +2286,6 @@ class Establishment {
       const reasons = [];
       const reasonsCount = [];
       const myReasons = entity.reasonsForLeaving.split('|');
-
-      console.log("WA DEBUG - we have reasons on download: ", myReasons)
 
       myReasons.forEach(currentReason => {
         const [reasonId, reasonCount] = currentReason.split(':');

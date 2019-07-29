@@ -455,15 +455,15 @@ class Worker {
           }
           break;
         case 'UNCHECKED':
-          this._validationErrors.push({
-            name: this._currentLine.LOCALESTID,
-            worker: this._currentLine.UNIQUEWORKERID,
-            lineNumber: this._lineNumber,
-            warnCode: Worker.STATUS_WARNING,
-            warnType: `STATUS_WARNING`,
-            warning: `STATUS is UNCHECKED and will be ignored`,
-            source: myStatus,
-          });
+          // this._validationErrors.push({
+          //   name: this._currentLine.LOCALESTID,
+          //   worker: this._currentLine.UNIQUEWORKERID,
+          //   lineNumber: this._lineNumber,
+          //   warnCode: Worker.STATUS_WARNING,
+          //   warnType: `STATUS_WARNING`,
+          //   warning: `STATUS is UNCHECKED and will be ignored`,
+          //   source: myStatus,
+          // });
           break;
         case 'NOCHANGE':
           if (!thisWorkerExists(this._establishmentKey, this._key)) {
