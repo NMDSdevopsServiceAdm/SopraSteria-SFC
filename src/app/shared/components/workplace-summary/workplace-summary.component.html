@@ -6,7 +6,7 @@
     <dd class="govuk-summary-list__value">
       {{ workplace.name }}
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <!--
       TODO uncomment once workplace name question section is created
       <a [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
@@ -32,7 +32,7 @@
         {{ !!workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value || '-' }}
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.id, 'type-of-employer']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.employerType?.value">
           Provide information
@@ -55,7 +55,7 @@
         {{ workplace.mainService?.name || '-' }}
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <!-- <a [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
         <ng-container *ngIf="!workplace.mainService">
           Provide information
@@ -90,7 +90,7 @@
         </app-summary-record-value>
       </ng-template>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.id, 'other-services']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.otherServices?.length">
           Provide information
@@ -120,7 +120,7 @@
         </ng-template>
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.id, 'capacity-of-services']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.capacities?.length">
           Provide information
@@ -153,7 +153,7 @@
         </ng-template>
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.id, 'service-users']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.serviceUsers?.length">
           Provide information
@@ -188,7 +188,7 @@
         </ul>
       </ng-template>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.id, 'sharing-data']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.share?.enabled">
           Provide information
@@ -223,7 +223,7 @@
         </ng-template>
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.id, 'vacancies']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.vacancies?.length">
           Provide information
@@ -265,7 +265,7 @@
         </app-summary-record-value>
       </ng-container>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.id, 'starters']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.starters?.length">
           Provide information
@@ -300,7 +300,7 @@
         </ng-template>
       </app-summary-record-value>
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
       <a [routerLink]="['/workplace', workplace.id, 'leavers']" (click)="setReturn()">
         <ng-container *ngIf="!workplace.leavers?.length">
           Provide information
@@ -327,7 +327,7 @@
         -->
         {{ workplace.numberOfStaff | numericAnswer }}
       </dd>
-      <dd class="govuk-summary-list__actions">
+      <dd *ngIf="canEdit" class="govuk-summary-list__actions">
         <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']" (click)="setReturn()">
           <ng-container *ngIf="!workplace.numberOfStaff">
             Provide information
@@ -350,7 +350,7 @@
           {{ workplace.numberOfStaff ? '(' + workplace.numberOfStaff + ')' : '' }}
         </p>
       </dd>
-      <dd class="govuk-summary-list__actions">
+      <dd *ngIf="canEdit" class="govuk-summary-list__actions">
         <a
           class="govuk-visually-hidden"
           [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']"
@@ -373,7 +373,7 @@
         -->
         {{ workerCount }}
       </dd>
-      <dd class="govuk-summary-list__actions">
+      <dd *ngIf="canEdit" class="govuk-summary-list__actions">
         <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']" (click)="setReturn()">
           <ng-container *ngIf="!workerCount === 0">
             Provide information
@@ -396,7 +396,7 @@
     <dd class="govuk-summary-list__value">
       {{ workplace.volunteers || '-' }}
     </dd>
-    <dd class="govuk-summary-list__actions">
+    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
 
       <a [routerLink]="['/workplace', workplace.id]" (click)="setReturn()">
         <ng-container *ngIf="!workplace.volunteers">
