@@ -11,167 +11,26 @@
         </legend>
 
         <ng-container *ngFor="let item of formControlsMap">
-          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPostcode.errors">
-            <label class="govuk-label" for="postcode">
-              Postcode
-            </label>
-            <span *ngIf="submitted && getPostcode.errors" id="postcode-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-              {{ getFirstErrorMessage('postcode') }}
-          </span>
+          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(item.name).errors">
+            <label class="govuk-label" for="{{ item.name }}" [innerHTML]="item.label"></label>
+            <span
+              *ngIf="submitted && form.get(item.name).errors"
+              id="{{ item.name }}-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(item.name) }}
+            </span>
             <input
-                    class="govuk-input govuk-input--width-10"
-                    [formControlName]="'postcode'"
-                    id="postcode"
-                    name="postcode"
-                    [class.govuk-input--error]="submitted && getPostcode.errors"
-                    type="text"
+              class="govuk-input govuk-input--width-{{ item.width }}"
+              [formControlName]="item.name"
+              id="{{ item.name }}"
+              name="{{ item.name }}"
+              [class.govuk-input--error]="submitted && form.get(item.name).errors"
+              type="text"
             />
           </div>
         </ng-container>
-
-
-        <!--
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPostcode.errors">
-          <label class="govuk-label" for="postcode">
-            Postcode
-          </label>
-          <span *ngIf="submitted && getPostcode.errors" id="postcode-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            <ng-container *ngIf="getPostcode.hasError('required')">
-              {{ getFormErrorMessage('postcode', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="getPostcode.hasError('maxlength')">
-              {{ getFormErrorMessage('postcode', 'maxlength') }}
-            </ng-container>
-          </span>
-          <input
-            class="govuk-input govuk-input--width-10"
-            [formControlName]="'postcode'"
-            id="postcode"
-            name="postcode"
-            [class.govuk-input--error]="submitted && getPostcode.errors"
-            type="text"
-          />
-        </div>
-
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress1.errors">
-          <label class="govuk-label" for="address1">
-            Building and street <span class="govuk-visually-hidden">line 1 of 2</span>
-          </label>
-          <span *ngIf="submitted && getAddress1.errors" id="address1-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            <ng-container *ngIf="getAddress1.hasError('required')">
-              {{ getFormErrorMessage('address1', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="getAddress1.hasError('maxlength')">
-              {{ getFormErrorMessage('address1', 'maxlength') }}
-            </ng-container>
-          </span>
-          <input
-            class="govuk-input govuk-input--width-20"
-            [formControlName]="'address1'"
-            id="address1"
-            name="address1"
-            [class.govuk-input--error]="submitted && getAddress1.errors"
-            type="text"
-          />
-        </div>
-
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getAddress2.errors">
-          <label class="govuk-label" for="address2">
-            <span class="govuk-visually-hidden">Building and street line 2 of 2</span>
-          </label>
-          <span *ngIf="submitted && getAddress2.errors" id="address2-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            <ng-container *ngIf="getAddress2.hasError('required')">
-              {{ getFormErrorMessage('address2', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="getAddress2.hasError('maxlength')">
-              {{ getFormErrorMessage('address2', 'maxlength') }}
-            </ng-container>
-          </span>
-          <input
-            class="govuk-input govuk-input--width-20"
-            [formControlName]="'address2'"
-            id="address2"
-            name="address2"
-            [class.govuk-input--error]="submitted && getAddress2.errors"
-            type="text"
-          />
-        </div>
-
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getTownCity.errors">
-          <label class="govuk-label" for="townOrCity">
-            Town or City
-          </label>
-          <span *ngIf="submitted && getTownCity.errors" id="townOrCity-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            <ng-container *ngIf="getTownCity.hasError('required')">
-              {{ getFormErrorMessage('townOrCity', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="getTownCity.hasError('maxlength')">
-              {{ getFormErrorMessage('townOrCity', 'maxlength') }}
-            </ng-container>
-          </span>
-          <input
-            class="govuk-input govuk-input--width-10"
-            [formControlName]="'townOrCity'"
-            id="townOrCity"
-            name="townOrCity"
-            [class.govuk-input--error]="submitted && getTownCity.errors"
-            type="text"
-          />
-        </div>
-
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getCounty.errors">
-          <label class="govuk-label" for="county">
-            County
-          </label>
-          <span *ngIf="submitted && getCounty.errors" id="county-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            <ng-container *ngIf="getCounty.hasError('required')">
-              {{ getFormErrorMessage('county', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="getCounty.hasError('maxlength')">
-              {{ getFormErrorMessage('county', 'maxlength') }}
-            </ng-container>
-          </span>
-          <input
-            class="govuk-input govuk-input--width-10"
-            [formControlName]="'county'"
-            id="county"
-            name="county"
-            [class.govuk-input--error]="submitted && getCounty.errors"
-            type="text"
-          />
-        </div>
-
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getWorkplaceName.errors">
-          <label class="govuk-label" for="workplaceName">
-            Workplace name
-          </label>
-          <span *ngIf="submitted && getWorkplaceName.errors" id="workplaceName-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            <ng-container *ngIf="getWorkplaceName.hasError('required')">
-              {{ getFormErrorMessage('workplaceName', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="getWorkplaceName.hasError('maxlength')">
-              {{ getFormErrorMessage('workplaceName', 'maxlength') }}
-            </ng-container>
-          </span>
-          <input
-            class="govuk-input govuk-input--width-20"
-            [formControlName]="'workplaceName'"
-            id="workplaceName"
-            name="workplaceName"
-            [class.govuk-input--error]="submitted && getWorkplaceName.errors"
-            type="text"
-          />
-        </div>
       </fieldset>
-      -->
-
       <button class="govuk-button" type="submit">Continue</button>
     </form>
   </div>

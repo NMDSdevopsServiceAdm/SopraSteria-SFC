@@ -24,26 +24,32 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
     {
       label: 'Postcode',
       name: 'postcode',
+      width: 10,
     },
     {
       label: 'Building and street <span class="govuk-visually-hidden">line 1 of 2</span>',
       name: 'address1',
+      width: 20,
     },
     {
       label: '<span class="govuk-visually-hidden">Building and street line 2 of 2</span>',
       name: 'address2',
+      width: 20,
     },
     {
       label: 'Town or City',
       name: 'townOrCity',
+      width: 10,
     },
     {
       label: 'County',
       name: 'county',
+      width: 10,
     },
     {
       label: 'Workplace name',
       name: 'workplaceName',
+      width: 20,
     },
   ];
 
