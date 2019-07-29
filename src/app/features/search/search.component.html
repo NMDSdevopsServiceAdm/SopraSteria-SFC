@@ -135,9 +135,7 @@
             <td class="govuk-table__cell">{{ item.securityQuestionAnswer }}</td>
             <td class="govuk-table__cell">
               {{
-                item.establishment.parent && item.establishment.parent.ndmsId
-                  ? item.establishment.parent.ndmsId + ' / ' + item.establishment.parent.name
-                  : 'No'
+                item.establishment.parent && item.establishment.parent.nmdsId ? item.establishment.parent.nmdsId : ''
               }}
             </td>
           </tr>
@@ -170,7 +168,7 @@
             <td class="govuk-table__cell">{{ item.isRegulated ? 'Yes' : 'No' }}</td>
             <td class="govuk-table__cell">{{ item.isParent ? 'Yes' : 'No' }}</td>
             <td class="govuk-table__cell">
-              {{ item.parent && item.parent.ndmsId ? item.parent.ndmsId + ' / ' + item.parent.ndmsId : 'No' }}
+              {{ item.parent && item.parent.nmdsId ? item.parent.nmdsId : '' }}
             </td>
             <td class="govuk-table__cell">{{ item.address }}</td>
           </tr>
