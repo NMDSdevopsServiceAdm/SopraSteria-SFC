@@ -39,7 +39,7 @@ const isAuthorised = (req, res , next) => {
 
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
-router.use('/', isAuthorised);
+//router.use('/', isAuthorised);
 router.route('/').get(async (req, res) => {
     req.setTimeout(4 * 60 * 1000);   // four minutes - TCP/IP maximum is five minutes and lambda max execution time is five minutes
     const cssrId = req.query.cssrId;
@@ -66,10 +66,23 @@ router.route('/').get(async (req, res) => {
         }
 
         if (dailySnapshotResults && Array.isArray(dailySnapshotResults)) {
-            return res.status(200).json(dailySnapshotResults);
+          // // requires large amounts of memory to return the above as a single JSON response
+          // res.writeHead(200, {
+          //         'Content-Type': 'application/json',
+          //         'Transfer-Encoding': 'chunked'
+          // })
+          // res.write("["); //array starting bracket
+          // dailySnapshotResults.forEach(thisRecord => {
+          //   res.write(JSON.stringify(thisRecord) + ',');
+          // });
+
+          // res.write("]"); //array ending bracket
+          // return res.end();
+
+          return res.status(200).json(dailySnapshotResults);
         } else {
-            // unexpected
-            return res.status(503).send();
+          // unexpected
+          return res.status(503).send();
         }
 
     } catch (err) {
