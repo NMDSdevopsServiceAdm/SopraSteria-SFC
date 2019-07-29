@@ -1,10 +1,12 @@
+import { Roles } from './roles.enum';
+
 export interface UserDetails {
   created?: string;
   email: string;
   fullname: string;
   jobTitle: string;
   phone: string;
-  role?: string;
+  role?: Roles;
   securityQuestion?: string;
   securityQuestionAnswer?: string;
   uid?: string;
