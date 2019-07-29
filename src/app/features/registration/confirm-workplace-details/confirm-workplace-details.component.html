@@ -12,7 +12,7 @@
           {{ locationAddress.locationId }}
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/regulated-by-cqc']">
+          <a [routerLink]="[flow, '/regulated-by-cqc']">
             Change
             <span class="govuk-visually-hidden"> location ID</span>
           </a>
@@ -53,7 +53,7 @@
           </ng-template>
         </dd>
         <dd class="govuk-summary-list__actions">
-          <a [routerLink]="['/registration/select-main-service']">
+          <a [routerLink]="[flow, '/select-main-service']">
             Change
             <span class="govuk-visually-hidden"> main service</span>
           </a>
@@ -62,10 +62,10 @@
     </dl>
 
     <p class="govuk-!-margin-bottom-6">
-      <a [routerLink]="['/registration/select-workplace-address']">
+      <a [routerLink]="[flow, '/select-workplace-address']">
         This is not my workplace
       </a>
     </p>
-    <a class="govuk-button" role="button" draggable="false" [routerLink]="['/registration/your-details']">Continue</a>
+    <a class="govuk-button" role="button" draggable="false" [routerLink]="[flow, '/your-details']">Continue</a>
   </div>
 </div>
