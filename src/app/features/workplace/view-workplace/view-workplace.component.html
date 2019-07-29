@@ -6,9 +6,9 @@
     </h1>
   </div>
 
-  <div class="govuk-grid-column-one-third-from-desktop">
+  <div class="govuk-grid-column-one-third-from-desktop govuk-util__align-right">
     <button
-      *ngIf="primaryEstablishment.isParent"
+      *ngIf="canDelete"
       class="govuk-button govuk-button--link govuk__flex govuk__align-items-center"
       (click)="onDeleteWorkplace($event)"
     >
@@ -27,7 +27,7 @@
         <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
       </app-tab>
 
-      <app-tab [title]="'Staff records'">
+      <app-tab *ngIf="canViewStaffRecords" [title]="'Staff records'">
         <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
       </app-tab>
 
