@@ -50,7 +50,7 @@ router.route('/').get(async (req, res) => {
         let dailySnapshotResults;
         if (cssrId) {
           dailySnapshotResults = await models.sequelize.query(
-            'select * from cqc."AllEstablishmentAndWorkersVW" where substring("NmdsID" from 1 for 1) = :CSSR_ID',
+            `set work_mem to '1 GB'; select * from cqc."AllEstablishmentAndWorkersVW" where substring("NmdsID" from 1 for 1) = :CSSR_ID`,
             {
               type: models.sequelize.QueryTypes.SELECT,
               replacements: { CSSR_ID: cssrId },
