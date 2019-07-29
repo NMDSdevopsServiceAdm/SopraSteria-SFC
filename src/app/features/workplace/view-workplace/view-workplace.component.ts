@@ -23,6 +23,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public summaryReturnUrl: URLStructure;
   public staffPermission = ParentPermissions.WorkplaceAndStaff;
   public canDelete: boolean;
+  public canViewStaffRecords: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -48,6 +49,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     });
 
     this.canDelete = this.primaryEstablishment.isParent && this.userService.loggedInUser.role !== Roles.Read;
+    this.canViewStaffRecords = this.userService.loggedInUser.role !== Roles.Read;
   }
 
   public checkPermission(permission: ParentPermissions) {

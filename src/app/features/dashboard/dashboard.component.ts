@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -12,6 +13,7 @@ import { Subscription } from 'rxjs';
 })
 export class DashboardComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
+  public canViewStaffRecords: boolean;
   public workplace: Establishment;
   public lastLoggedIn: string;
 
@@ -23,6 +25,8 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.canViewStaffRecords = this.userService.loggedInUser.role !== Roles.Read;
+
     this.subscriptions.add(
       this.establishmentService.primaryWorkplace$.subscribe(workplace => (this.workplace = workplace))
     );
