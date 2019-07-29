@@ -8,7 +8,7 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
   protected flow: string;
   protected subscriptions: Subscription = new Subscription();
   public locationAddress: LocationAddress;
-  public workplaceService: Service;
+  public workplace: Service;
 
   constructor(protected backService: BackService) {}
 
@@ -22,7 +22,7 @@ export class ConfirmWorkplaceDetails implements OnInit, OnDestroy {
   protected getWorkplaceData(): void {}
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/registration/select-main-service`] });
+    this.backService.setBackLink({ url: [`${this.flow}/select-main-service`] });
   }
 
   ngOnDestroy() {

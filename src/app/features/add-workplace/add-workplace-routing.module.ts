@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddWorkplaceCompleteComponent } from '@features/add-workplace/add-workplace-complete/add-workplace-complete.component';
+import { ConfirmWorkplaceDetailsComponent } from '@features/add-workplace/confirm-workplace-details/confirm-workplace-details.component';
 import { EnterWorkplaceAddressComponent } from '@features/add-workplace/enter-workplace-address/enter-workplace-address.component';
 import { FindWorkplaceAddressComponent } from '@features/add-workplace/find-workplace-address/find-workplace-address.component';
 import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cqc/regulated-by-cqc.component';
@@ -39,6 +40,11 @@ const routes: Routes = [
     path: 'find-workplace-address',
     component: FindWorkplaceAddressComponent,
     data: { title: 'Find Workplace Address' },
+  },
+  {
+    path: 'confirm-workplace-details',
+    component: ConfirmWorkplaceDetailsComponent,
+    data: { title: 'Confirm Workplace Details' },
   },
   {
     path: 'select-main-service',
