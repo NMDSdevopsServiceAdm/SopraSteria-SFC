@@ -938,6 +938,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
       }
     });
+    console.log("WA DEBUG -  checkpoint - have validated establishments")
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no establishment records");
     status = false;
@@ -996,6 +997,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         }
       }
     });
+    console.log("WA DEBUG -  checkpoint - have validated workers and qualifications")
 
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no workers records");
@@ -1055,6 +1057,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
       }
     });
+    console.log("WA DEBUG -  checkpoint - have validated establishments")
 
   } else {
       console.info("API bulkupload - validateBulkUploadFiles: no training records");
@@ -1143,7 +1146,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
   workers.workerMetadata.deleted = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
-  console.log("WA DEBUG - checkpoint - have completed validation, uploading artifacts to S3");
+  console.log("WA DEBUG -  checkpoint- have completed validation, uploading artifacts to S3");
 
   // upload intermediary/validation S3 objects
   if (commit) {
@@ -1732,11 +1735,13 @@ router.route('/complete').post(async (req, res) => {
     //  on any aspect of the current entities at the time of validation; there may be minutes/hours
     //  validating a bulk upload and completing it.
     const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1);    // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
+    console.log("WA DEBUG - checkpoint - have restored current state of establishments/workers")
 
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
       const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null);
       const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
+      console.log("WA DEBUG - checkpoint - have restored onloaded state from validation stage")
 
       // sequential promise console logger
       const log = result => result=null;
