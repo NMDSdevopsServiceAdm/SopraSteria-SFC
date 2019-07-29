@@ -65,19 +65,22 @@ router.use('/:id/localIdentifier', LocalIdentifier);
 
 router.route('/:id').post(async (req, res) => {
 
-    if (!req.body[0].isRegulated) {
-        delete req.body[0].locationId;
+    if (!req.body.isRegulated) {
+        delete req.body.locationId;
     }
 
     const establishmentData = {
-        Name : req.body[0].locationName,
-        Address : concatenateAddress(req.body[0].addressLine1, req.body[0].addressLine2, req.body[0].townCity, req.body[0].county),
-        LocationID: req.body[0].locationId,
-        PostCode: req.body[0].postalCode,
-        MainService: req.body[0].mainService,
+        Name : req.body.locationName,
+        Address1 : req.body.addressLine1,
+        Address2: req.body.addressLine2,
+        Town: req.body.townCity,
+        County: req.body.county,
+        LocationID: req.body.locationId,
+        PostCode: req.body.postalCode,
+        MainService: req.body.mainService,
         MainServiceId : null,
-        MainServiceOther: req.body[0].mainServiceOther,
-        IsRegulated: req.body[0].isRegulated
+        MainServiceOther: req.body.mainServiceOther,
+        IsRegulated: req.body.isRegulated
     };
 
     try {
@@ -122,8 +125,13 @@ router.route('/:id').post(async (req, res) => {
 
           const newEstablishment = new Establishment.Establishment();
           newEstablishment.initialise(
-            establishmentData.Address,
+            establishmentData.Address1,
+            establishmentData.Address2,
+            null,
+            establishmentData.Town,
+            establishmentData.County,
             establishmentData.LocationID,
+            null,                               // PROV ID is not captured yet on registration
             establishmentData.PostCode,
             establishmentData.IsRegulated
           );
@@ -158,7 +166,7 @@ router.route('/:id').post(async (req, res) => {
             "message" : "Establishment successfully created",
             "establishmentId" : establishmentData.id,
             "establishmentUid" : establishmentData.eUID,
-            "nmdsId": newEstablishment.NmdsId ? newEstablishment.NmdsId : 'undefined'
+            "nmdsId": newEstablishment.nmdsId ? newEstablishment.nmdsId : 'undefined'
           });
 
 
@@ -172,7 +180,7 @@ router.route('/:id').post(async (req, res) => {
 
         if (err.errCode > -99) {
            // we have an unexpected error
-            res.status(500);
+            res.status(503);
         } else {
             // we have an expected error owing to given establishment data
             res.status(400);
