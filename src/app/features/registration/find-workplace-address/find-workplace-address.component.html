@@ -22,12 +22,7 @@
           </label>
           <span *ngIf="submitted && getPostcode.errors" id="postcode-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
-            <ng-container *ngIf="getPostcode.hasError('required')">
-              {{ getFormErrorMessage('postcode', 'required') }}
-            </ng-container>
-            <ng-container *ngIf="getPostcode.hasError('maxlength')">
-              {{ getFormErrorMessage('postcode', 'maxlength') }}
-            </ng-container>
+            {{ getFirstErrorMessage('postcode') }}
           </span>
           <input
             class="govuk-input govuk-input--width-10"
