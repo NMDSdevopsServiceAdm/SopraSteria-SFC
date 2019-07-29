@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { AddWorkplaceCompleteGuard } from '@core/guards/add-workplace-complete/add-workplace-complete.guard';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
@@ -68,6 +69,7 @@ const routes: Routes = [
         path: 'add-workplace',
         loadChildren: '@features/add-workplace/add-workplace.module#AddWorkplaceModule',
         canActivate: [AuthGuard, ParentGuard],
+        canActivateChild: [AddWorkplaceCompleteGuard],
         data: { title: 'Add Workplace' },
       },
       {
