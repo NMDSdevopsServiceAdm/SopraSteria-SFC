@@ -119,7 +119,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     };
 
     this.subscriptions.add(
-      this.userService.updateUserDetails(this.user.uid, { ...this.user, ...props }).subscribe(
+      this.userService.updateUserDetails(this.workplace.uid, this.user.uid, { ...this.user, ...props }).subscribe(
         data => {
           this.router.navigate(['/workplace', this.workplace.uid, 'user', this.user.uid], {
             fragment: 'user-accounts',

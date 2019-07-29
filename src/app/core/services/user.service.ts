@@ -38,8 +38,8 @@ export class UserService {
   /*
    * GET /api/user/establishment/:establishmentId
    */
-  public getUsernameFromEstbId() {
-    return this.http.get<any>(`/api/user/establishment/${this.establishmentService.establishmentId}`);
+  public getUsernameFromEstbId(workplaceUid: string) {
+    return this.http.get<any>(`/api/user/establishment/${workplaceUid}`);
   }
 
   /*
@@ -49,18 +49,15 @@ export class UserService {
     return this.http.get<any>(`/api/user/establishment/${establishmentUid}/${userUid}`);
   }
 
-  public getMyDetails(username: string): Observable<UserDetails> {
-    return this.http.get<any>(`/api/user/establishment/${this.establishmentService.establishmentId}/${username}`);
+  public getMyDetails(workplaceUid: string, username: string): Observable<UserDetails> {
+    return this.http.get<any>(`/api/user/establishment/${workplaceUid}/${username}`);
   }
 
   /*
    * PUT /api/user/establishment/:establishmentId/:username
    */
-  public updateUserDetails(username: string, userDetails: UserDetails): Observable<UserDetails> {
-    return this.http.put<UserDetails>(
-      `/api/user/establishment/${this.establishmentService.establishmentId}/${username}`,
-      userDetails
-    );
+  public updateUserDetails(workplaceUid: string, userUid: string, userDetails: UserDetails): Observable<UserDetails> {
+    return this.http.put<UserDetails>(`/api/user/establishment/${workplaceUid}/${userUid}`, userDetails);
   }
 
   public deleteUser(establishmentUid: string, userUid: string) {
