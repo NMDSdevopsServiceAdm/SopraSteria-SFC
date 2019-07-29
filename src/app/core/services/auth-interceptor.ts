@@ -1,6 +1,6 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { API_PATTERN, VALIDATE_ADD_USER_API } from '@core/constants/constants';
+import { API_PATTERN, ADD_USER_API } from '@core/constants/constants';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { Observable } from 'rxjs/Observable';
 import { AuthService } from './auth.service';
@@ -26,7 +26,7 @@ export class AuthInterceptor implements HttpInterceptor {
   private getToken(requestUrl: string): string | null {
     let token;
 
-    if (requestUrl === VALIDATE_ADD_USER_API) {
+    if (requestUrl === ADD_USER_API) {
       token = this.createAccountService.token;
     } else if (API_PATTERN.test(requestUrl)) {
       token = this.authService.token;

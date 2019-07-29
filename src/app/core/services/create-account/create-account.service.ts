@@ -11,7 +11,7 @@ import { LoginCredentials } from '@core/model/login-credentials.model';
 import { SecurityDetails } from '@core/model/security-details.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { URLStructure } from '@core/model/url.model';
-import { VALIDATE_ADD_USER_API } from '@core/constants/constants';
+import { ADD_USER_API } from '@core/constants/constants';
 
 @Injectable({
   providedIn: 'root',
@@ -31,13 +31,13 @@ export class CreateAccountService {
   }
 
   public activateAccount(requestPayload: ActivateAccountRequest) {
-    return this.http.post(`/api/user/add`, requestPayload);
+    return this.http.post(ADD_USER_API, requestPayload);
   }
 
   public validateAccountActivationToken(
     requestPayload: ValidateAccountActivationTokenRequest
   ): Observable<HttpResponse<ValidateAccountActivationTokenResponse>> {
-    return this.http.post<ValidateAccountActivationTokenResponse>(VALIDATE_ADD_USER_API, requestPayload, {
+    return this.http.post<ValidateAccountActivationTokenResponse>('/api/user/validateAddUser', requestPayload, {
       observe: 'response',
     });
   }
