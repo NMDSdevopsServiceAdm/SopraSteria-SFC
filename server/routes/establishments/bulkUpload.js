@@ -938,6 +938,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         allEstablishmentsByKey[keyNoWhitespace] = thisEstablishment.lineNumber;
       }
     });
+    console.log("WA DEBUG -  checkpoint - have validated establishments")
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no establishment records");
     status = false;
@@ -996,6 +997,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
         }
       }
     });
+    console.log("WA DEBUG -  checkpoint - have validated workers and qualifications")
 
   } else {
     console.info("API bulkupload - validateBulkUploadFiles: no workers records");
@@ -1055,6 +1057,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
 
       }
     });
+    console.log("WA DEBUG -  checkpoint - have validated establishments")
 
   } else {
       console.info("API bulkupload - validateBulkUploadFiles: no training records");
@@ -1143,7 +1146,7 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
   const numberOfDeletedWorkersFromDeletedEstablishments = report.deleted.reduce((total, current) => total += current.workers.deleted.length, 0);
   workers.workerMetadata.deleted = numberOfDeletedWorkersFromUpdatedEstablishments + numberOfDeletedWorkersFromDeletedEstablishments;
 
-  console.log("WA DEBUG - checkpoint - have completed validation, uploading artifacts to S3");
+  console.log("WA DEBUG -  checkpoint- have completed validation, uploading artifacts to S3");
 
   // upload intermediary/validation S3 objects
   if (commit) {
@@ -1309,17 +1312,33 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
 
         if (foundWorker) {
           const theWorker = foundCurrentEstablishment.theWorker(foundWorker);
-          updatedWorkers.push({
-            key: thisOnloadWorker,
-            name: theWorker.nameOrId,
-            localId: theWorker.localIdentifier,
-          });
+          const theOnloadWorker = thisOnloadEstablishment.theWorker(thisOnloadWorker);
+
+          // note - even though a worker has been found - and therefore it is obvious to update it
+          //        it may be marked for deletion
+          if (theOnloadWorker.status === 'DELETE') {
+            deletedWorkers.push({
+              key: thisOnloadWorker,
+              name: theWorker.nameOrId,
+              localId: theWorker.localIdentifier,
+              status: theOnloadWorker.status,
+            });
+          } else {
+            updatedWorkers.push({
+              key: thisOnloadWorker,
+              name: theWorker.nameOrId,
+              localId: theWorker.localIdentifier,
+              status: theOnloadWorker.status,
+            });
+          }
+
         } else {
           const theWorker = thisOnloadEstablishment.theWorker(thisOnloadWorker);
           newWorkers.push({
             key: thisOnloadWorker,
             name: theWorker.nameOrId,
             localId: theWorker.localIdentifier,
+            status: theWorker.status,
           });
         }
       });
@@ -1334,35 +1353,54 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
             key: thisCurrentWorker,
             name: theWorker.nameOrId,
             localId: theWorker.localIdentifier,
+            status: 'DELETED',                      // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
           });
         }
       });
 
-      updatedEntities.push({
-        key: thisOnloadEstablishment.key,
-        name: thisOnloadEstablishment.name,
-        localId: thisOnloadEstablishment.localIdentifier,
-        workers: {
-          new: newWorkers,
-          updated: updatedWorkers,
-          deleted: deletedWorkers
-        }
-      });
+      // even though the establishment has found, it is obvious that it will be updated. But it could
+      //  instead be marked for deletion
+      if (thisOnloadEstablishment.status === 'DELETE') {
+        // now, when deleting an establishment, all the workers are also deleted, regardless of their declared status
+        const revisedSetOfDeletedWorkers = [...newWorkers, ...updatedWorkers, ...deletedWorkers];
+        deletedEntities.push({
+          key: thisOnloadEstablishment.key,
+          name: thisOnloadEstablishment.name,
+          localId: thisOnloadEstablishment.localIdentifier,
+          status: thisOnloadEstablishment.status,
+          workers: {
+            deleted: revisedSetOfDeletedWorkers
+          }
+        });
+      } else {
+        updatedEntities.push({
+          key: thisOnloadEstablishment.key,
+          name: thisOnloadEstablishment.name,
+          localId: thisOnloadEstablishment.localIdentifier,
+          status: thisOnloadEstablishment.status,
+          workers: {
+            new: newWorkers,
+            updated: updatedWorkers,
+            deleted: deletedWorkers
+          }
+        });
+      }
     } else {
       newEntities.push({
         key: thisOnloadEstablishment.key,
         name: thisOnloadEstablishment.name,
-        localId: thisOnloadEstablishment.localIdentifier
+        localId: thisOnloadEstablishment.localIdentifier,
+        status: thisOnloadEstablishment.status,
       });
     }
   });
+
 
   // determine the delete establishments, by reference the current set against the onload set
   currentEntities.forEach(thisCurrentEstablishment => {
     if (thisCurrentEstablishment.id !== primaryEstablishmentId) {
 
       // ignore those establishments that the primary does not own
-      console.log("WA DEBUG - thisCurrentEstablishment - owner/parent uid: ", thisCurrentEstablishment.dataOwner, thisCurrentEstablishment.parentUid)
       if (thisCurrentEstablishment.parentUid && thisCurrentEstablishment.dataOwner === 'Parent') {
         // find a match for this establishment
         const foundOnloadEstablishment = onloadEntities.find(thisOnloadEstablishment => thisCurrentEstablishment.key === thisOnloadEstablishment.key);
@@ -1378,14 +1416,16 @@ const validationDifferenceReport = (primaryEstablishmentId, onloadEntities, curr
             deletedWorkers.push({
               key: thisCurrentWorker,
               name: thisWorker.nameOrId,
-              localId: thisWorker.localIdentifier
-                });
-        });
+              localId: thisWorker.localIdentifier,
+              status: 'DELETED',          // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
+            });
+          });
 
           deletedEntities.push({
             key: thisCurrentEstablishment.key,
             name: thisCurrentEstablishment.name,
             localId: thisCurrentEstablishment.localIdentifier,
+            status: 'DELETED',          // NOTE - the expected value in the uploaded file is DELETE, but using DELETED here to highlight this has been automatically detected
             workers: {
               deleted: deletedWorkers,
             }
@@ -1484,7 +1524,6 @@ router.route('/report/:reportType').get(async (req, res) => {
       entities ? entities.map(item => readable.push(`${item}${NEWLINE}`)) : true;
 
       // list all establishments that are being deleted
-      console.log("WA DEBUG - difference report: ", differenceReportKey)
       if (differenceReport && differenceReport.deleted && Array.isArray(differenceReport.deleted) && differenceReport.deleted.length > 0) {
         const deletedTitle = '* Deleted (the following Workplaces will be deleted) *';
         const deletedPadding = '*'.padStart(deletedTitle.length, '*');
@@ -1631,7 +1670,6 @@ const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, t
       // as this new establishment is created from a parent, it automatically becomes a sub
       foundOnloadEstablishment.initialiseSub(primaryEstablishmentId, primaryEstablishmentUid);
       await foundOnloadEstablishment.save(theLoggedInUser, true, 0, transaction, true);
-      console.log("WA DEBUG - have created new establishment: ", thisNewEstablishment.key);
     }
 
   } catch (err) {
@@ -1651,13 +1689,13 @@ const completeUpdateEstablishment = async (thisUpdatedEstablishment, theLoggedIn
       // when updating existing entities, need to remove the local identifer!
       // but because the properties are not actual properties - but managed properties - we can't just delete the property
 
-      // simply work on the resulting full JSON presentation, whereby every property is a simply propery
+      // simply work on the resulting full JSON presentation, whereby every property is a simply property
       const thisEstablishmentJSON = foundOnloadEstablishment.toJSON(false,false,false,false,true,null,true);
       delete thisEstablishmentJSON.localIdentifier;
 
-      await foundCurrentEstablishment.load(thisEstablishmentJSON, true);
+      await foundCurrentEstablishment.load(thisEstablishmentJSON, true, true);
+
       await foundCurrentEstablishment.save(theLoggedInUser, true, 0, transaction, true)
-      console.log("WA DEBUG - completed saving establishment: ", foundCurrentEstablishment.key);
     }
   } catch (err) {
     console.error("completeUpdateEstablishment: failed to complete upon existing establishment: ", thisUpdatedEstablishment.key);
@@ -1673,7 +1711,6 @@ const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedIn
     // current is already restored, so simply need to delete it
     if (foundCurrentEstablishment) {
       await foundCurrentEstablishment.delete(theLoggedInUser, transaction, true);
-      console.log("WA DEBUG - completed deleting establishment: ", thisDeletedEstablishment.key);
     }
   } catch (err) {
     console.error("completeDeleteEstablishment: failed to complete upon deleting establishment: ", thisDeletedEstablishment.key);
@@ -1698,14 +1735,16 @@ router.route('/complete').post(async (req, res) => {
     //  on any aspect of the current entities at the time of validation; there may be minutes/hours
     //  validating a bulk upload and completing it.
     const myCurrentEstablishments = await restoreExistingEntities(theLoggedInUser, primaryEstablishmentId, isParent, 1);    // association level is just 1 (we need Establishment's workers for completion, but not the Worker's associated training and qualification)
+    console.log("WA DEBUG - checkpoint - have restored current state of establishments/workers")
 
     try {
       const onloadEstablishments = await restoreOnloadEntities(theLoggedInUser, primaryEstablishmentId);
       const validationDiferenceReportDownloaded = await downloadContent(`${primaryEstablishmentId}/validation/difference.report.json`, null, null);
       const validationDiferenceReport = JSON.parse(validationDiferenceReportDownloaded.data);
+      console.log("WA DEBUG - checkpoint - have restored onloaded state from validation stage")
 
       // sequential promise console logger
-      const log = result => console.log(`result: ${result}`);
+      const log = result => result=null;
 
       // could look to parallel the three above tasks as each is relatively intensive - but happy path first
       // process the set of new, updated and deleted entities for bulk upload completion, within a single transaction
@@ -1726,18 +1765,14 @@ router.route('/complete').post(async (req, res) => {
           const starterDeletedPromise = Promise.resolve(null);
           await validationDiferenceReport.deleted.reduce((p, thisDeletedEstablishment) => p.then(() => completeDeleteEstablishment(thisDeletedEstablishment, theLoggedInUser, t, myCurrentEstablishments).then(log)), starterDeletedPromise);
 
-          console.log("WA DEBUG - completed - finished all establishments")
-
           // gets here having successfully completed upon the bulk upload
           //  clean up the S3 objects
           await purgeBulkUploadS3Obbejcts(primaryEstablishmentId);
-          console.log("WA DEBUG - completed - purged")
         });
 
         // confirm success against the primary establishment
         await EstablishmentEntity.bulkUploadSuccess(primaryEstablishmentId);
 
-        console.log("WA DEBUG - completed")
         return res.status(200).send({});
 
       } catch (err) {

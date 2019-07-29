@@ -287,14 +287,14 @@ class Establishment {
           }
           break;
         case 'UNCHECKED':
-          this._validationErrors.push({
-            name: this._currentLine.LOCALESTID,
-            lineNumber: this._lineNumber,
-            warnCode: Establishment.STATUS_WARNING,
-            warnType: `STATUS_WARNING`,
-            warning: `STATUS is UNCHECKED and will be ignored`,
-            source: myStatus,
-          });
+          // this._validationErrors.push({
+          //   name: this._currentLine.LOCALESTID,
+          //   lineNumber: this._lineNumber,
+          //   warnCode: Establishment.STATUS_WARNING,
+          //   warnType: `STATUS_WARNING`,
+          //   warning: `STATUS is UNCHECKED and will be ignored`,
+          //   source: myStatus,
+          // });
           break;
         case 'NOCHANGE':
           if (!thisEstablishmentExists(this._key)) {
@@ -1664,11 +1664,12 @@ class Establishment {
     let status = true;
 
     status = !this._validateLocalisedId() ? false : status;
+    status = !this._validateEstablishmentName() ? false : status;
     status = !this._validateStatus() ? false : status;
 
-    // if the status is unchecked, then don't continue validation
-    if (this._status !== 'UNCHECKED') {
-      status = !this._validateEstablishmentName() ? false : status;
+    // if the status is unchecked or deleted, then don't continue validation
+    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+    if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateAddress() ? false : status;
       status = !this._validateEstablishmentType() ? false : status;
 
@@ -1697,8 +1698,9 @@ class Establishment {
 
   // returns true on success, false is any attribute of Establishment fails
   transform() {
-    // if this Worker is unchecked, skip all transformations
-    if (this._status !== 'UNCHECKED') {
+    // if the status is unchecked or deleted, then don't transform
+    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
+    if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
 
       status = !this._transformMainService() ? false : status;
@@ -2284,8 +2286,6 @@ class Establishment {
       const reasons = [];
       const reasonsCount = [];
       const myReasons = entity.reasonsForLeaving.split('|');
-
-      console.log("WA DEBUG - we have reasons on download: ", myReasons)
 
       myReasons.forEach(currentReason => {
         const [reasonId, reasonCount] = currentReason.split(':');
