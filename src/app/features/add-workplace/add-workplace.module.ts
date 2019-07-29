@@ -6,6 +6,7 @@ import { RegulatedByCqcComponent } from '@features/add-workplace/regulated-by-cq
 import { StartComponent } from '@features/add-workplace/start/start.component';
 import { SharedModule } from '@shared/shared.module';
 import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
+import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 
@@ -13,6 +14,7 @@ import { SelectWorkplaceComponent } from './select-workplace/select-workplace.co
   imports: [CommonModule, AddWorkplaceRoutingModule, ReactiveFormsModule, SharedModule],
   declarations: [
     EnterWorkplaceAddressComponent,
+    FindWorkplaceAddressComponent,
     RegulatedByCqcComponent,
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
