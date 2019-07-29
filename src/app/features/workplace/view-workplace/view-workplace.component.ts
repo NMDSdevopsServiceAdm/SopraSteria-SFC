@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { ParentPermissions } from '@core/model/my-workplaces.model';
+import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -21,6 +22,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public summaryReturnUrl: URLStructure;
   public staffPermission = ParentPermissions.WorkplaceAndStaff;
+  public canDelete: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -44,6 +46,8 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.userService.updateReturnUrl({
       url: ['/workplace', this.workplace.uid],
     });
+
+    this.canDelete = this.primaryEstablishment.isParent && this.userService.loggedInUser.role !== Roles.Read;
   }
 
   public checkPermission(permission: ParentPermissions) {
@@ -52,6 +56,10 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
 
   public onDeleteWorkplace(event: Event): void {
     event.preventDefault();
+    if (!this.canDelete) {
+      return;
+    }
+
     this.dialogService
       .open(DeleteWorkplaceDialogComponent, { workplaceName: this.workplace.name })
       .afterClosed.subscribe(deleteConfirmed => {
@@ -62,6 +70,10 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   }
 
   private deleteWorkplace(): void {
+    if (!this.canDelete) {
+      return;
+    }
+
     this.subscriptions.add(
       this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
         () => {
