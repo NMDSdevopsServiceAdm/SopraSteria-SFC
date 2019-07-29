@@ -7,6 +7,7 @@ import { StartComponent } from '@features/add-workplace/start/start.component';
 import { SharedModule } from '@shared/shared.module';
 import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
 import { FindWorkplaceAddressComponent } from './find-workplace-address/find-workplace-address.component';
+import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectWorkplaceAddressComponent } from './select-workplace-address/select-workplace-address.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 
@@ -16,6 +17,7 @@ import { SelectWorkplaceComponent } from './select-workplace/select-workplace.co
     EnterWorkplaceAddressComponent,
     FindWorkplaceAddressComponent,
     RegulatedByCqcComponent,
+    SelectMainServiceComponent,
     SelectWorkplaceAddressComponent,
     SelectWorkplaceComponent,
     StartComponent,
