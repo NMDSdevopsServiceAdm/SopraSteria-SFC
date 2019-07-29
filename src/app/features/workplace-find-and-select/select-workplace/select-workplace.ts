@@ -9,6 +9,7 @@ import { filter } from 'lodash';
 import { Subscription } from 'rxjs';
 
 export class SelectWorkplace implements OnInit, OnDestroy {
+  protected flow: string;
   protected locationAddresses: Array<LocationAddress>;
   protected subscriptions: Subscription = new Subscription();
   public form: FormGroup;
@@ -26,13 +27,16 @@ export class SelectWorkplace implements OnInit, OnDestroy {
     this.setupForm();
     this.setupFormErrorsMap();
     this.init();
+    this.setBackLink();
   }
 
   protected init(): void {}
 
   protected save(): void {}
 
-  protected setBackLink(): void {}
+  protected setBackLink(): void {
+    this.backService.setBackLink({ url: [this.flow, 'regulated-by-cqc'] });
+  }
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
@@ -65,6 +69,7 @@ export class SelectWorkplace implements OnInit, OnDestroy {
 
     if (this.form.valid) {
       this.save();
+      this.router.navigate([this.flow, 'select-main-service']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

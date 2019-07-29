@@ -23,7 +23,7 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
   }
 
   protected init(): void {
-    this.setBackLink();
+    this.flow = '/add-workplace';
     this.setupSubscription();
   }
 
@@ -37,10 +37,5 @@ export class SelectWorkplaceComponent extends SelectWorkplace {
 
   protected save(): void {
     this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation());
-    this.router.navigate(['/add-workplace/select-main-service']);
-  }
-
-  protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/add-workplace/regulated-by-cqc'] });
   }
 }
