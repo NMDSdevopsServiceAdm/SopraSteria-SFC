@@ -14,33 +14,30 @@ import { LocationService } from '@core/services/location.service';
 })
 export class RegulatedByCqcComponent extends RegulatedByCQC {
   constructor(
-      private workplaceService: WorkplaceService,
-      protected backService: BackService,
-      protected errorSummaryService: ErrorSummaryService,
-      protected formBuilder: FormBuilder,
-      protected locationService: LocationService,
-      protected route: ActivatedRoute,
-      protected router: Router,
+    private workplaceService: WorkplaceService,
+    protected backService: BackService,
+    protected errorSummaryService: ErrorSummaryService,
+    protected formBuilder: FormBuilder,
+    protected locationService: LocationService,
+    protected route: ActivatedRoute,
+    protected router: Router
   ) {
     super(backService, errorSummaryService, formBuilder, locationService, route, router);
   }
 
   protected init() {
+    this.flow = '/add-workplace';
     this.setBackLink();
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/add-workplace/start'] });
+    this.backService.setBackLink({ url: [this.flow, 'regulated-by-cqc'] });
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
     if (data.success === 1) {
       this.workplaceService.locationAddresses$.next(data.locationdata || data.postcodedata);
-      if (data.locationdata) {
-        this.router.navigate(['/add-workplace/select-workplace']);
-      } else {
-        this.router.navigate(['/add-workplace/select-workplace-address']);
-      }
+      this.navigateToNextRoute(data);
     }
   }
 }

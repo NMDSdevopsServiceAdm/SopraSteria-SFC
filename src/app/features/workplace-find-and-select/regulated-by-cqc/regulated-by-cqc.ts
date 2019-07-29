@@ -12,6 +12,7 @@ import { skip } from 'rxjs/operators';
 import { LocationService } from '@core/services/location.service';
 
 export class RegulatedByCQC implements OnInit, OnDestroy {
+  protected flow: string;
   protected serverErrorsMap: Array<ErrorDefinition>;
   protected subscriptions: Subscription = new Subscription();
   public form: FormGroup;
@@ -226,6 +227,14 @@ export class RegulatedByCQC implements OnInit, OnDestroy {
   }
 
   protected onSuccess(data: LocationSearchResponse): void {}
+
+  protected navigateToNextRoute(data: LocationSearchResponse): void {
+    if (data.locationdata) {
+      this.router.navigate([this.flow, 'select-workplace']);
+    } else {
+      this.router.navigate([this.flow, 'select-workplace-address']);
+    }
+  }
 
   private onError(error: HttpErrorResponse): void {
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

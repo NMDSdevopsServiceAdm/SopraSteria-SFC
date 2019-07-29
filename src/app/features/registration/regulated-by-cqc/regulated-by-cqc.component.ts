@@ -26,6 +26,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
   }
 
   protected init() {
+    this.flow = '/registration';
     this.setBackLink();
   }
 
@@ -38,11 +39,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
 
     if (data.success === 1) {
       this.registrationService.locationAddresses$.next(data.locationdata || data.postcodedata);
-      if (data.locationdata) {
-        this.router.navigate(['/registration/select-workplace']);
-      } else {
-        this.router.navigate(['/registration/select-workplace-address']);
-      }
+      this.navigateToNextRoute(data);
     }
   }
 }
