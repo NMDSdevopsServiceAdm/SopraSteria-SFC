@@ -75,11 +75,7 @@ export class FindWorkplaceAddressComponent implements OnInit, OnDestroy {
       {
         name: 404,
         message: 'Invalid postcode.',
-      },
-      {
-        name: 503,
-        message: 'Database error.',
-      },
+      }
     ];
   }
 
