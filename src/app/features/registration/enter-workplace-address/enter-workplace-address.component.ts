@@ -20,6 +20,32 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
   private workplaceNameMaxLength = 120;
   public form: FormGroup;
   public submitted = false;
+  public formControlsMap: any[] = [
+    {
+      label: 'Postcode',
+      name: 'postcode',
+    },
+    {
+      label: 'Building and street <span class="govuk-visually-hidden">line 1 of 2</span>',
+      name: 'address1',
+    },
+    {
+      label: '<span class="govuk-visually-hidden">Building and street line 2 of 2</span>',
+      name: 'address2',
+    },
+    {
+      label: 'Town or City',
+      name: 'townOrCity',
+    },
+    {
+      label: 'County',
+      name: 'county',
+    },
+    {
+      label: 'Workplace name',
+      name: 'workplaceName',
+    },
+  ];
 
   constructor(
     private backService: BackService,
@@ -205,13 +231,8 @@ export class EnterWorkplaceAddressComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
