@@ -9,6 +9,6 @@ export class AddWorkplaceCompleteComponent implements OnInit {
   constructor(private workplaceService: WorkplaceService) {}
 
   ngOnInit(): void {
-    this.workplaceService.addWorkplaceComplete$.next(true);
+    this.workplaceService.addWorkplaceInProgress$.next(false);
   }
 }

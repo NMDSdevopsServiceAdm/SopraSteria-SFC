@@ -5,11 +5,11 @@ import { WorkplaceService } from '@core/services/workplace.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AddWorkplaceCompleteGuard implements CanActivateChild {
+export class AddWorkplaceInProgressGuard implements CanActivateChild {
   constructor(private router: Router, private workplaceService: WorkplaceService) {}
 
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (!this.workplaceService.addWorkplaceComplete$.value) {
+    if (this.workplaceService.addWorkplaceInProgress$.value) {
       return true;
     } else {
       this.router.navigate(['/workplace/view-my-workplaces']);

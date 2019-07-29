@@ -9,7 +9,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class WorkplaceService {
   constructor(private http: HttpClient) {}
-  public addWorkplaceComplete$: BehaviorSubject<boolean> = new BehaviorSubject(null);
+  public addWorkplaceInProgress$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
