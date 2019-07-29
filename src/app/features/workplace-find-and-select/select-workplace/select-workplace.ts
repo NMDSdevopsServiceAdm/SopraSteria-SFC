@@ -35,7 +35,7 @@ export class SelectWorkplace implements OnInit, OnDestroy {
   protected save(): void {}
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [this.flow, 'regulated-by-cqc'] });
+    this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
   }
 
   protected setupForm(): void {
@@ -69,7 +69,7 @@ export class SelectWorkplace implements OnInit, OnDestroy {
 
     if (this.form.valid) {
       this.save();
-      this.router.navigate([this.flow, 'select-main-service']);
+      this.router.navigate([`${this.flow}/select-main-service`]);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
