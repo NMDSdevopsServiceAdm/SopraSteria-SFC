@@ -50,7 +50,7 @@ router.route('/').get(async (req, res) => {
         let dailySnapshotResults;
         if (cssrId) {
           dailySnapshotResults = await models.sequelize.query(
-            `set work_mem to '1 GB'; select * from cqc."AllEstablishmentAndWorkersVW" where substring("NmdsID" from 1 for 1) = :CSSR_ID`,
+            `select * from cqc."AllEstablishmentAndWorkers" where substring("NmdsID" from 1 for 1) = :CSSR_ID`,
             {
               type: models.sequelize.QueryTypes.SELECT,
               replacements: { CSSR_ID: cssrId },
@@ -58,7 +58,7 @@ router.route('/').get(async (req, res) => {
           );
         } else {
           dailySnapshotResults = await models.sequelize.query(
-            'select * from cqc."AllEstablishmentAndWorkersVW"',
+            'select * from cqc."Analysis_B"',
             {
               type: models.sequelize.QueryTypes.SELECT
             }
