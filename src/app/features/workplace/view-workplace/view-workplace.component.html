@@ -27,7 +27,7 @@
         <app-workplace-summary [workplace]="workplace" [return]="summaryReturnUrl"> </app-workplace-summary>
       </app-tab>
 
-      <app-tab [title]="'Staff records'" *ngIf="checkPermission(staffPermission)">
+      <app-tab [title]="'Staff records'">
         <app-staff-records-tab [workplace]="workplace"></app-staff-records-tab>
       </app-tab>
 
