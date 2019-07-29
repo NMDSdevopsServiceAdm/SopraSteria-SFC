@@ -23,12 +23,8 @@ const isAuthorised = (req, res , next) => {
     const token = getToken(req.headers[AUTH_HEADER]);
     const Token_Secret = config.get('jwt.secret');
 
-    console.log("WA DEBUG - isAuthorised::Token_Secret", Token_Secret)
-
     if (token) {
       jwt.verify(token, Token_Secret, function (err, claim) {
-        console.log("WA DEBUG - isAuthorised::claim", claim, err)
-
         if (err || claim.aud !== 'ADS-WDS-on-demand-reporting' || claim.iss !== thisIss) {
           return res.status(403).send('Invalid Token');
         } else {
@@ -45,16 +41,31 @@ const isAuthorised = (req, res , next) => {
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
 router.use('/', isAuthorised);
 router.route('/').get(async (req, res) => {
-    req.setTimeout(15 * 60 * 1000);   // fifteen minutes
+    req.setTimeout(4 * 60 * 1000);   // four minutes - TCP/IP maximum is five minutes and lambda max execution time is five minutes
+    const cssrId = req.query.cssrId;
+
+    if (cssrId) console.log("WA DEBUG - running report with CSSR ID: ", cssrId);
+
     try {
         // rather than define a sequelize model, instead, simply query directly upon a view
         // NOTE - the order of the records is defined by the view
-        const dailySnapshotResults = await models.sequelize.query(
+        let dailySnapshotResults;
+        if (cssrId) {
+          dailySnapshotResults = await models.sequelize.query(
+            'select * from cqc."AllEstablishmentAndWorkersVW" where substring("NmdsID" from 1 for 1) = :CSSR_ID',
+            {
+              type: models.sequelize.QueryTypes.SELECT,
+              replacements: { CSSR_ID: cssrId },
+            }
+          );
+        } else {
+          dailySnapshotResults = await models.sequelize.query(
             'select * from cqc."AllEstablishmentAndWorkersVW"',
             {
               type: models.sequelize.QueryTypes.SELECT
             }
-        );
+          );
+        }
 
         if (dailySnapshotResults && Array.isArray(dailySnapshotResults)) {
             return res.status(200).json(dailySnapshotResults);
