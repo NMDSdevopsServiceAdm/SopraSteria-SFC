@@ -44,8 +44,6 @@ router.route('/').get(async (req, res) => {
     req.setTimeout(4 * 60 * 1000);   // four minutes - TCP/IP maximum is five minutes and lambda max execution time is five minutes
     const cssrId = req.query.cssrId;
 
-    if (cssrId) console.log("WA DEBUG - running report with CSSR ID: ", cssrId);
-
     try {
         // rather than define a sequelize model, instead, simply query directly upon a view
         // NOTE - the order of the records is defined by the view
