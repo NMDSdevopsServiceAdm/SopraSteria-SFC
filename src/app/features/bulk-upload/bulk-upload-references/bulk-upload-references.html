@@ -20,7 +20,7 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <h2 class="govuk-heading-m govuk__reference-subsidiary-name govuk-!-margin-0">{{ establishmentName }}</h2>
     </div>
-    <div class="govuk-grid-column-one-third-from-desktop">
+    <div *ngIf="remainingEstablishments > 0" class="govuk-grid-column-one-third-from-desktop">
       <p class="govuk-!-margin-0 govuk-util__align-right">
         <strong>{{ remainingEstablishments }}</strong>
         {{ remainingEstablishments | i18nPlural: { '=1': 'workplace', other: 'workplaces' } }} remaining
