@@ -91,7 +91,7 @@ router.route('/:id').post(async (req, res) => {
           if (establishmentData.IsRegulated) {
             serviceResults = await models.services.findOne({
               where: {
-                name: estabslishmentData.MainService,
+                name: establishmentData.MainService,
                 isMain: true
               }
             });
