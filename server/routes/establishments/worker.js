@@ -40,6 +40,10 @@ const validateWorker = async (req, res, next) => {
       }
     }
 
+    if(req.role == 'Read'){
+        return res.status(403).send({message: `Not permitted`});
+    }
+
     if (workerId && workerId !== 'localIdentifier') {
         // validating worker id - must be a V4 UUID
         const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;

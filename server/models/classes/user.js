@@ -1108,7 +1108,7 @@ class User {
             // now, if the primary establishment is a parent
             //  and if the user's role against their primary parent is Edit
             //  fetch all other establishments associated with this parent
-            if ((myRole === 'Edit' || myRole === 'Admin') && isParent) {
+            if (isParent) {
                 // get all subsidaries associated with this parent
                 allSubResults = await models.establishment.findAll({
                     attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
