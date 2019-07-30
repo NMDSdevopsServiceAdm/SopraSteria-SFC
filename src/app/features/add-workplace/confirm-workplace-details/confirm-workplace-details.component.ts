@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { LocationAddress } from '@core/model/location.model';
 import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
-import { RegistrationService } from '@core/services/registration.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { ConfirmWorkplaceDetails } from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
 
 @Component({
@@ -10,7 +10,7 @@ import { ConfirmWorkplaceDetails } from '@features/workplace-find-and-select/con
   templateUrl: './confirm-workplace-details.component.html',
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
-  constructor(private registrationService: RegistrationService, protected backService: BackService) {
+  constructor(private workplaceService: WorkplaceService, protected backService: BackService) {
     super(backService);
   }
 
@@ -21,15 +21,13 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
 
   protected getWorkplaceData(): void {
     this.subscriptions.add(
-      this.registrationService.selectedLocationAddress$.subscribe(
+      this.workplaceService.selectedLocationAddress$.subscribe(
         (locationAddress: LocationAddress) => (this.locationAddress = locationAddress)
       )
     );
 
     this.subscriptions.add(
-      this.registrationService.selectedWorkplaceService$.subscribe(
-        (workplace: Service) => (this.workplace = workplace)
-      )
+      this.workplaceService.selectedWorkplaceService$.subscribe((workplace: Service) => (this.workplace = workplace))
     );
   }
 }
