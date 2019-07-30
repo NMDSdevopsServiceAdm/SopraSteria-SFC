@@ -1840,8 +1840,8 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.SOCIALCARE_QUAL_WANRING,
-        warnType: 'SOCIALCARE_QUAL_WANRING',
+        warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+        warnType: 'SOCIALCARE_QUAL_WARNING',
         warning: "SCQUAL is blank",
         source: this._currentLine.SCQUAL,
       });
@@ -1959,6 +1959,7 @@ class Worker {
 
         return false;
       } else {
+        this._nonSocialCareQualification = myNonSocialCareIndicator;
         return true;
       }
     }
