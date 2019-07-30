@@ -233,7 +233,7 @@ const routes: Routes = [
             path: 'permissions',
             component: UserAccountEditPermissionsComponent,
             canActivate: [RoleGuard, EditUserPermissionsGuard],
-            resolve: { user: UserAccountResolver },
+            resolve: { user: UserAccountResolver, primaryWorkplace: PrimaryWorkplaceResolver },
             data: {
               roles: [Roles.Admin, Roles.Edit],
               title: 'Edit Permissions',
