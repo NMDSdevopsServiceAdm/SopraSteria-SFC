@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AddWorkplaceInProgressGuard } from '@core/guards/add-workplace-in-progress/add-workplace-in-progress.guard';
 import { AddWorkplaceCompleteComponent } from '@features/add-workplace/add-workplace-complete/add-workplace-complete.component';
 import { ConfirmWorkplaceDetailsComponent } from '@features/add-workplace/confirm-workplace-details/confirm-workplace-details.component';
 import { EnterWorkplaceAddressComponent } from '@features/add-workplace/enter-workplace-address/enter-workplace-address.component';
@@ -20,41 +21,49 @@ const routes: Routes = [
     path: 'regulated-by-cqc',
     component: RegulatedByCqcComponent,
     data: { title: 'Regulated by CQC' },
+    canActivate: [AddWorkplaceInProgressGuard]
   },
   {
     path: 'select-workplace',
     component: SelectWorkplaceComponent,
     data: { title: 'Select Workplace' },
+    canActivate: [AddWorkplaceInProgressGuard]
   },
   {
     path: 'select-workplace-address',
     component: SelectWorkplaceAddressComponent,
     data: { title: 'Select Workplace Address' },
+    canActivate: [AddWorkplaceInProgressGuard]
   },
   {
     path: 'enter-workplace-address',
     component: EnterWorkplaceAddressComponent,
     data: { title: 'Enter Workplace Address' },
+    canActivate: [AddWorkplaceInProgressGuard]
   },
   {
     path: 'find-workplace-address',
     component: FindWorkplaceAddressComponent,
     data: { title: 'Find Workplace Address' },
+    canActivate: [AddWorkplaceInProgressGuard]
   },
   {
     path: 'confirm-workplace-details',
     component: ConfirmWorkplaceDetailsComponent,
     data: { title: 'Confirm Workplace Details' },
+    canActivate: [AddWorkplaceInProgressGuard]
   },
   {
     path: 'select-main-service',
     component: SelectMainServiceComponent,
     data: { title: 'Select Main Service' },
+    canActivate: [AddWorkplaceInProgressGuard]
   },
   {
     path: 'complete',
     component: AddWorkplaceCompleteComponent,
     data: { title: 'Complete' },
+    canActivate: [AddWorkplaceInProgressGuard]
   },
 ];
 

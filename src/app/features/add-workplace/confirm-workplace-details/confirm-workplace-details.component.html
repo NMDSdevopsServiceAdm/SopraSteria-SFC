@@ -1,4 +1,10 @@
-<div class="govuk-grid-row">
+<app-error-summary
+  *ngIf="serverError"
+  [serverError]="serverError"
+  [formErrorsMap]="serverErrorsMap"
+></app-error-summary>
+
+<div class="govuk-grid-row" id="server-error">
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <h1 class="govuk-heading-l">Confirm your workplace details</h1>
     <p class="govuk-heading-m">Are these details correct?</p>
@@ -44,6 +50,7 @@
           </address>
         </dd>
         <dd class="govuk-summary-list__actions">&nbsp;</dd>
+        <!-- TODO remove this -->
       </div>
       <div class="govuk-summary-list__row">
         <dt class="govuk-summary-list__key">
@@ -71,6 +78,6 @@
         This is not my workplace
       </a>
     </p>
-    <a class="govuk-button" role="button" draggable="false" [routerLink]="[flow, 'your-details']">Continue</a>
+    <a class="govuk-button" role="button" draggable="false" href="#" (click)="addWorkplace($event)">Continue</a>
   </div>
 </div>
