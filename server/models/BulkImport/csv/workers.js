@@ -1629,6 +1629,9 @@ class Worker {
   _validateRegisteredNurse() {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
     const NURSING_ROLE = 16;
+    const otherJobRoleIsNurse = this._otherJobs && this._otherJobs.includes(NURSING_ROLE) ? true : false;
+    const mainJobRoleIsNurse = this._mainJobRole && this._mainJobRole === NURSING_ROLE ? true : false;
+    const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
     if (((this._mainJobRole && this._mainJobRole === NURSING_ROLE) ||
         (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) &&
@@ -1643,16 +1646,14 @@ class Worker {
         source: this._currentLine.NMCREG,
       });
       return false;
-    } else if (((this._mainJobRole && this._mainJobRole !== NURSING_ROLE) &&
-                (this._otherJobs && !this._otherJobs.includes(NURSING_ROLE))) &&
-                (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0)) {
+    } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         warnCode: Worker.NMCREG_WARNING,
         warnType: 'NMCREG_WARNING',
-        warning: "NMCREG will be ignored as this is not required for the MAINJOBROLE",
+        warning: "NMCREG will be ignored as this is not required for the MAINJOBROLE/OTHERJOBROLE",
         source: this._currentLine.NMCREG,
       });
       return false;
@@ -1665,6 +1666,9 @@ class Worker {
   _validateNursingSpecialist() {
     const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
     const NURSING_ROLE = 16;
+    const otherJobRoleIsNurse = this._otherJobs && this._otherJobs.includes(NURSING_ROLE) ? true : false;
+    const mainJobRoleIsNurse = this._mainJobRole && this._mainJobRole === NURSING_ROLE ? true : false;
+    const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
     if (((this._mainJobRole && this._mainJobRole === NURSING_ROLE) ||
     (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) &&
@@ -1679,16 +1683,14 @@ class Worker {
         source: this._currentLine.NURSESPEC,
       });
       return false;
-    } else if (((this._mainJobRole && this._mainJobRole !== NURSING_ROLE) &&
-      (this._otherJobs && !this._otherJobs.includes(NURSING_ROLE))) &&
-      (this._currentLine.NURSESPEC  && this._currentLine.NURSESPEC.length !== 0)) {
+    } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         warnCode: Worker.NURSE_SPEC_WARNING,
         warnType: 'NURSE_SPEC_WARNING',
-        warning: "NURSESPEC will be ignored as this is not required for the MAINJOBROLE",
+        warning: "NURSESPEC will be ignored as this is not required for the MAINJOBROLE/OTHERJOBROLE",
         source: this._currentLine.NURSESPEC,
       });
       return false;
@@ -1704,6 +1706,10 @@ class Worker {
     const myAmhp = parseInt(this._currentLine.AMHP);
     const SOCIAL_WORKER_ROLE = 6;
 
+    const otherJobRoleIsSocialWorker = this._otherJobs && this._otherJobs.includes(SOCIAL_WORKER_ROLE) ? true : false;
+    const mainJobRoleIsSocialWorker = this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE ? true : false;
+    const notSocialWorkerRole = !(otherJobRoleIsSocialWorker || mainJobRoleIsSocialWorker);
+
     if (((this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE) ||
       (this._otherJobs && this._otherJobs.includes(SOCIAL_WORKER_ROLE))) &&
       ( isNaN(myAmhp) )) {
@@ -1718,16 +1724,14 @@ class Worker {
       });
       return false;
     }
-    else if (((this._mainJobRole && this._mainJobRole !== SOCIAL_WORKER_ROLE) &&
-      (this._otherJobs && !this._otherJobs.includes(SOCIAL_WORKER_ROLE))) &&
-      (this._currentLine.AMHP)) {
+    else if (this._currentLine.AMHP && this._currentLine.AMHP.length > 0 && notSocialWorkerRole) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         warnCode: Worker.AMHP_WARNING,
         warnType: 'AMHP_WARNING',
-        warning: "The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE",
+        warning: "The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE/OTHERJOBROLE",
         source: this._currentLine.AMHP,
       });
       return false;
