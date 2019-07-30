@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { PasswordResetService } from '@core/services/password-reset.service';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { PasswordResetService } from '@core/services/password-reset.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-rp-edit',
@@ -15,7 +15,6 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   @Input() validatePasswordResetResponse;
   @Input() headerToken: string;
-  public name: string;
   public submitted: boolean;
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
@@ -53,10 +52,6 @@ export class ResetPasswordEditComponent implements OnInit, OnDestroy {
         { validator: CustomValidators.matchInputValues }
       ),
     });
-
-    if (this.validatePasswordResetResponse && this.validatePasswordResetResponse.body) {
-      this.name = this.validatePasswordResetResponse.body.username;
-    }
 
     this.submitted = false;
     this.setupFormErrorsMap();
