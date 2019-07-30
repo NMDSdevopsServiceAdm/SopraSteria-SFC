@@ -55,7 +55,13 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.user = this.route.snapshot.data.user;
     this.workplace = this.route.parent.snapshot.data.establishment;
 
-    this.return = { url: ['/dashboard'], fragment: 'user-accounts' };
+    this.return = {
+      url:
+        this.workplace.uid === this.route.snapshot.data.primaryWorkplace.uid
+          ? ['/dashboard']
+          : ['/workplace', this.workplace.uid],
+      fragment: 'user-accounts',
+    };
   }
 
   ngOnInit() {
