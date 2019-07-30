@@ -524,10 +524,10 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.DISPLAY_ID_WARNING,
-        warnType: `WORKER_DISPLAY_ID_WARNING`,
-        warning: `DISPLAYID is blank`,
-        source: this._currentLine.DISPLAYID,
+        errCode: Worker.DISPLAY_ID_ERROR,
+        errType: `DISPLAY_ID_ERROR`,
+        error: `DISPLAYID is blank`,
+        erro: this._currentLine.DISPLAYID,
       });
       return false;
     } else if (myDisplayId.length >= MAX_LENGTH) {
