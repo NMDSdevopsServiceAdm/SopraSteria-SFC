@@ -16,8 +16,6 @@
           </h1>
         </legend>
 
-        <p class="govuk-!-margin-bottom-6">Enter a new password for account {{ name }}</p>
-
         <div [formGroupName]="'passwordGroup'">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPasswordInput.errors">
             <label class="govuk-label" for="createPasswordInput">
