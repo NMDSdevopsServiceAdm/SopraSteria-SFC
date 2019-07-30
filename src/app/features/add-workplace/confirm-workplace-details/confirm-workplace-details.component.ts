@@ -69,9 +69,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     };
   }
 
-  public addWorkplace(event: Event): void {
-    event.preventDefault();
-
+  public addWorkplace(): void {
     this.subscriptions.add(
       this.workplaceService
         .addWorkplace(this.establishmentService.primaryWorkplace.uid, this.generateRequest())
