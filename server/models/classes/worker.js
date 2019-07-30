@@ -32,7 +32,7 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_D
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
-const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED'];
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
 class Worker extends EntityValidator {
     constructor(establishmentId) {

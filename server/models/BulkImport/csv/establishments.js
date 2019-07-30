@@ -1,5 +1,7 @@
 const BUDI = require('../BUDI').BUDI;
 
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
+
 class Establishment {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
     this._currentLine = currentLine;
@@ -1668,7 +1670,6 @@ class Establishment {
     status = !this._validateStatus() ? false : status;
 
     // if the status is unchecked or deleted, then don't continue validation
-    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateAddress() ? false : status;
       status = !this._validateEstablishmentType() ? false : status;
@@ -1699,7 +1700,6 @@ class Establishment {
   // returns true on success, false is any attribute of Establishment fails
   transform() {
     // if the status is unchecked or deleted, then don't transform
-    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
 

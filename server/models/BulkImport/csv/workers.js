@@ -1,6 +1,8 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
+
 class Worker {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
     this._currentLine = currentLine;
@@ -2457,7 +2459,6 @@ class Worker {
     status = !this._validateStatus() ? false : status;
 
     // only continue to process validation, if the status is not UNCHECKED or DELETED
-    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateNINumber() ? false : status;
       status = !this._validatePostCode() ? false : status;
@@ -2498,7 +2499,6 @@ class Worker {
   // returns true on success, false is any attribute of Worker fails
   transform() {
     // if this Worker is unchecked/deleted, skip all transformations
-    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
 
