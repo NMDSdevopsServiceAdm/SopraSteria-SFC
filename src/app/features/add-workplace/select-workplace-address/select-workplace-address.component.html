@@ -43,7 +43,7 @@
             (change)="onLocationChange($event.target.value)"
           >
             <option [value]="">{{ locationAddresses.length }} addresses found</option>
-            <option *ngFor="let location of locationAddresses" [value]="location.addressLine1">
+            <option *ngFor="let location of locationAddresses; let i = index" [value]="i">
               {{ getLocationName(location) }}
             </option>
           </select>

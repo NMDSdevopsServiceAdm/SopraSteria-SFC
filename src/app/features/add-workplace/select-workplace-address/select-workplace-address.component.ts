@@ -5,7 +5,9 @@ import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { SelectWorkplaceAddress } from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address';
+import {
+  SelectWorkplaceAddress,
+} from '@features/workplace-find-and-select/select-workplace-address/select-workplace-address';
 
 @Component({
   selector: 'app-select-workplace-address',
@@ -42,7 +44,7 @@ export class SelectWorkplaceAddressComponent extends SelectWorkplaceAddress {
     );
   }
 
-  public onLocationChange(addressLine1: string): void {
-    this.workplaceService.selectedLocationAddress$.next(this.getSelectedLocation(addressLine1));
+  public onLocationChange(index): void {
+    this.workplaceService.selectedLocationAddress$.next(this.locationAddresses[index]);
   }
 }
