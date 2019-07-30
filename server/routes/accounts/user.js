@@ -140,7 +140,7 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
 
             if (!req.role || (req.role === 'Read' && thisUser.username !== req.username)) {
                 console.error('/add/establishment/:id - given user does not have sufficient permission')
-                return res.status(403).send();
+                return res.status(401).send();
             }
         
             if(req.body.role && thisUser.userRole !== req.body.role){
@@ -396,7 +396,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
     // ensure only a user having the role of Edit can register a new user
     if (!req.role || req.role === 'Read') {
         console.error('/add/establishment/:id - given user does not have sufficient permission')
-        return res.status(403).send();
+        return res.status(401).send();
     }
 
     if(!req.body.role || !(req.body.role == 'Edit' || req.body.role == 'Read')){

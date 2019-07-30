@@ -41,7 +41,7 @@ const validateWorker = async (req, res, next) => {
     }
 
     if(req.role == 'Read'){
-        //return res.status(403).send({message: `Not permitted`});
+        return res.status(401).send({message: `Not permitted`});
     }
 
     if (workerId && workerId !== 'localIdentifier') {
