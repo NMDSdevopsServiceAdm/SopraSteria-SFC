@@ -1331,7 +1331,7 @@ class Worker {
     const myMainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
 
     // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
-    if (!this._currentLine.MAINJOBROLE || this._currentLine.MAINJOBROLE.length == 0 || !myMainJobRole || isNaN(myMainJobRole) || myMainJobRole === 0) {
+    if (!this._currentLine.MAINJOBROLE || this._currentLine.MAINJOBROLE.length == 0 || isNaN(myMainJobRole)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
