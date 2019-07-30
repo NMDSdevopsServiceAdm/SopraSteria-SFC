@@ -10,7 +10,7 @@ export class StartComponent implements OnInit {
   constructor(private backService: BackService, private workplaceService: WorkplaceService) {}
 
   ngOnInit() {
-    this.workplaceService.addWorkplaceInProgress$.next(false);
+    this.workplaceService.addWorkplaceInProgress$.next(true);
     this.setBackLink();
   }
 

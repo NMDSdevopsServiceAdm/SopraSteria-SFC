@@ -69,7 +69,6 @@ const routes: Routes = [
         path: 'add-workplace',
         loadChildren: '@features/add-workplace/add-workplace.module#AddWorkplaceModule',
         canActivate: [AuthGuard, ParentGuard],
-        canActivateChild: [AddWorkplaceInProgressGuard],
         data: { title: 'Add Workplace' },
       },
       {
