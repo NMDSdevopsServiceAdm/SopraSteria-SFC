@@ -31,7 +31,7 @@ const responseErrors = {
 };
 
 // returns a list of all users for the given establishment
-router.use('/establishment/:id', Authorization.hasAuthorisedEstablishment);
+router.get('/establishment/:id', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id').get(async (req, res) => {
     // although the establishment id is passed as a parameter, get the authenticated  establishment id from the req
     const establishmentId = req.establishmentId;
@@ -108,13 +108,13 @@ router.route('/me').get(async (req, res) => {
 
 // gets requested user id or username - using the establishment id extracted for authorised token
 // optional parameter - "history" must equal 1
-router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
+router.get('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id/:userId').get(async (req, res) => {
     getUser(req, res);
 });
 
 // updates a user with given uid or username
-router.use('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishment);
+router.put('/establishment/:id/:userId', Authorization.hasAuthorisedEstablishmentAllowAllRoles);
 router.route('/establishment/:id/:userId').put(async (req, res) => {
     const userId = req.params.userId;
     const establishmentId = req.establishmentId;
@@ -129,11 +129,6 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         byUsername = escape(userId.toLowerCase());
     }
 
-    // ensure only a user having the role of Edit can update a user
-    if (!(req.role && req.role === 'Edit')) {
-        return res.status(403).send();
-    }
-
     const thisUser = new User.User(establishmentId);
 
     try {
@@ -143,6 +138,11 @@ router.route('/establishment/:id/:userId').put(async (req, res) => {
         if (await thisUser.restore(byUUID, byUsername, null)) {
             // TODO: JSON validation
 
+            if (!req.role || (req.role === 'Read' && thisUser.username !== req.username)) {
+                console.error('/add/establishment/:id - given user does not have sufficient permission')
+                return res.status(403).send();
+            }
+        
             if(req.body.role && thisUser.userRole !== req.body.role){
                 if(!(req.body.role == 'Edit' || req.body.role == 'Read')){
                     return res.status(400).send("Invalid request");
@@ -394,7 +394,7 @@ router.route('/add/establishment/:id').post(async (req, res) => {
     const expiresTTLms = isLocal(req) && req.body.ttl ? parseInt(req.body.ttl)*1000 : 2*60*60*24*1000; // 2 days
 
     // ensure only a user having the role of Edit can register a new user
-    if (!(req.role && req.role === 'Edit')) {
+    if (!req.role || req.role === 'Read') {
         console.error('/add/establishment/:id - given user does not have sufficient permission')
         return res.status(403).send();
     }
@@ -586,7 +586,7 @@ router.route('/validateAddUser').post(async (req, res) => {
     }
 });
 
-router.use('/establishment/:id/:userid', Authorization.hasAuthorisedEstablishment);
+router.delete('/establishment/:id/:userid', Authorization.hasAuthorisedEstablishment);
 router.route('/establishment/:id/:userid').delete(async (req, res) => {
     const userId = req.params.userid;
 
