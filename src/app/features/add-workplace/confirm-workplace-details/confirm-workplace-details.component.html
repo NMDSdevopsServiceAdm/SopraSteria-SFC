@@ -32,11 +32,16 @@
           Address
         </dt>
         <dd class="govuk-summary-list__value">
-          <div *ngIf="locationAddress.addressLine1">{{ locationAddress.addressLine1 }}</div>
-          <div *ngIf="locationAddress.addressLine2">{{ locationAddress.addressLine2 }}</div>
-          <div *ngIf="locationAddress.townCity">{{ locationAddress.townCity }}</div>
-          <div *ngIf="locationAddress.county">{{ locationAddress.county }}</div>
-          <div *ngIf="locationAddress.postalCode">{{ locationAddress.postalCode }}</div>
+          <address
+            *ngIf="locationAddress.addressLine1 || locationAddress.addressLine2"
+            class="govuk-util__font-style-normal"
+          >
+            <div *ngIf="locationAddress.addressLine1">{{ locationAddress.addressLine1 }}</div>
+            <div *ngIf="locationAddress.addressLine2">{{ locationAddress.addressLine2 }}</div>
+            <div *ngIf="locationAddress.townCity">{{ locationAddress.townCity }}</div>
+            <div *ngIf="locationAddress.county">{{ locationAddress.county }}</div>
+            <div *ngIf="locationAddress.postalCode">{{ locationAddress.postalCode }}</div>
+          </address>
         </dd>
         <dd class="govuk-summary-list__actions">&nbsp;</dd>
       </div>
