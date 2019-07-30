@@ -83,7 +83,7 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy {
     if (!locationName.length) {
       this.router.navigate([`${this.flow}/enter-workplace-address`]);
     } else {
-      this.router.navigate([`${this.flow}/add-workplace/select-main-service`]);
+      this.router.navigate([`${this.flow}/select-main-service`]);
     }
   }
 
