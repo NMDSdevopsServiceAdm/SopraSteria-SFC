@@ -63,7 +63,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.userService.returnUrl$.pipe(take(1)).subscribe(returnUrl => {
-        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid] };
+        this.return = returnUrl ? returnUrl : { url: ['/workplace', this.establishment.uid], fragment: 'user-accounts' };
       })
     );
   }
@@ -76,7 +76,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.resendActivationLink(this.user.uid).subscribe(
         () => {
-          this.router.navigate(this.return.url, { fragment: 'user-accounts' });
+          this.router.navigate(this.return.url, { fragment: this.return.fragment });
           this.alertService.addAlert({
             type: 'success',
             message: 'Account set up link has been resent.',
