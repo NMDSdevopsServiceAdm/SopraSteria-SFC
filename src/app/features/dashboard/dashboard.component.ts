@@ -5,6 +5,7 @@ import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
+import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -16,11 +17,13 @@ export class DashboardComponent implements OnInit {
   public canViewStaffRecords: boolean;
   public workplace: Establishment;
   public lastLoggedIn: string;
+  public totalStaffRecords: number;
 
   constructor(
     private establishmentService: EstablishmentService,
     private authService: AuthService,
     private userService: UserService,
+    private workerService: WorkerService,
     private router: Router
   ) {}
 
@@ -40,6 +43,10 @@ export class DashboardComponent implements OnInit {
           }
         }
       })
+    );
+
+    this.subscriptions.add(
+      this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(total => (this.totalStaffRecords = total))
     );
 
     // TODO: Use user object to get last logged in date
