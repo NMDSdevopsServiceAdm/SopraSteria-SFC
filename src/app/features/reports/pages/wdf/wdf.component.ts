@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { WDFReport } from '@core/model/reports.model';
+import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -9,6 +10,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
+import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import {
   WdfWorkplaceConfirmationDialogComponent,
@@ -28,6 +30,7 @@ export class WdfComponent implements OnInit, OnDestroy {
   public report: WDFReport;
   public returnUrl: URLStructure;
   public exitUrl: URLStructure;
+  public canViewStaffRecords: boolean;
 
   private subscriptions: Subscription = new Subscription();
 
@@ -39,13 +42,15 @@ export class WdfComponent implements OnInit, OnDestroy {
     private dialogService: DialogService,
     private alertService: AlertService,
     private establishmentService: EstablishmentService,
-    private breadcrumbService: BreadcrumbService
+    private breadcrumbService: BreadcrumbService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {
     this.breadcrumbService.show();
     const workplaceUid = this.route.snapshot.params.establishmentuid;
 
+    this.canViewStaffRecords = this.userService.loggedInUser.role === (Roles.Edit || Roles.Admin);
     this.returnUrl = { url: ['/workplace', workplaceUid, 'reports', 'wdf'] };
     this.exitUrl = { url: ['/workplace', workplaceUid, 'reports'] };
     this.workerService.setReturnTo(null);
@@ -53,17 +58,26 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       combineLatest(
         this.establishmentService.getEstablishment(workplaceUid),
-        this.workerService.getAllWorkers(workplaceUid),
         this.reportService.getWDFReport(workplaceUid)
       )
         .pipe(take(1))
-        .subscribe(([workplace, workers, report]) => {
-          this.workers = sortBy(workers, ['wdfEligible']);
+        .subscribe(([workplace, report]) => {
           this.report = report;
-          this.workerCount = workers.length;
           this.workplace = workplace;
         })
     );
+
+    if (this.canViewStaffRecords) {
+      this.subscriptions.add(
+        this.workerService
+          .getAllWorkers(workplaceUid)
+          .pipe(take(1))
+          .subscribe(workers => {
+            this.workers = sortBy(workers, ['wdfEligible']);
+            this.workerCount = workers.length;
+          })
+      );
+    }
   }
 
   ngOnDestroy() {
