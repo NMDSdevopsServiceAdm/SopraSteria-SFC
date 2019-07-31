@@ -6,6 +6,7 @@
       id="tab_{{ tab.slug }}"
       class="govuk-tabs__tab"
       [class.govuk-tabs__tab--selected]="tab.active"
+      [class.govuk-tabs__tab--alert]="tab.alert"
       href="#{{ tab.slug }}"
       role="tab"
       [attr.aria-controls]="tab.slug"
