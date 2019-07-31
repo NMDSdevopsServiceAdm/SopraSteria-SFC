@@ -2452,7 +2452,6 @@ class Worker {
   validate() {
     let status = true;
 
-    status = !this._validateContractType() ? false : status;
     status = !this._validateLocalId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateChangeUniqueWorkerId() ? false : status;
@@ -2461,6 +2460,7 @@ class Worker {
 
     // only continue to process validation, if the status is not UNCHECKED or DELETED
     if (!STOP_VALIDATING_ON.includes(this._status)) {
+      status = !this._validateContractType() ? false : status;
       status = !this._validateNINumber() ? false : status;
       status = !this._validatePostCode() ? false : status;
       status = !this._validateDOB() ? false : status;
