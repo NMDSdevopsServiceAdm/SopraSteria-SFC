@@ -58,12 +58,14 @@ export class WdfComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       combineLatest(
         this.establishmentService.getEstablishment(workplaceUid),
-        this.reportService.getWDFReport(workplaceUid)
+        this.reportService.getWDFReport(workplaceUid),
+        this.workerService.getTotalStaffRecords(workplaceUid)
       )
         .pipe(take(1))
-        .subscribe(([workplace, report]) => {
+        .subscribe(([workplace, report, totalStaffRecords]) => {
           this.report = report;
           this.workplace = workplace;
+          this.workerCount = totalStaffRecords;
         })
     );
 
@@ -74,7 +76,6 @@ export class WdfComponent implements OnInit, OnDestroy {
           .pipe(take(1))
           .subscribe(workers => {
             this.workers = sortBy(workers, ['wdfEligible']);
-            this.workerCount = workers.length;
           })
       );
     }
