@@ -67,7 +67,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
       this.workplaceService
         .addWorkplace(
           this.establishmentService.primaryWorkplace.uid,
-          this.workplaceService.addWorkplaceRequest(this.locationAddress, this.workplace)
+          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace)
         )
         .subscribe(
           () => this.router.navigate([`${this.flow}/complete`]),

@@ -27,7 +27,7 @@ export class WorkplaceService {
     return this.http.post<AddWorkplaceResponse>(`/api/establishment/${establishmentuid}`, request);
   }
 
-  public addWorkplaceRequest(locationAddress: LocationAddress, workplace: Service): AddWorkplaceRequest {
+  public generateAddWorkplaceRequest(locationAddress: LocationAddress, workplace: Service): AddWorkplaceRequest {
     return {
       addressLine1: locationAddress.addressLine1,
       addressLine2: locationAddress.addressLine2,
