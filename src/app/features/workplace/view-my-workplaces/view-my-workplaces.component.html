@@ -7,6 +7,7 @@
       My workplaces ({{ workplacesCount }})
     </h1>
     <a
+      *ngIf="canAddWorkplace"
       class="govuk-button govuk-!-margin-bottom-0"
       [routerLink]="['/add-workplace/start']"
       role="button"
