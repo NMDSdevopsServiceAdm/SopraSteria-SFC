@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
-import { AddWorkplaceInProgressGuard } from '@core/guards/add-workplace-in-progress/add-workplace-in-progress.guard';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
