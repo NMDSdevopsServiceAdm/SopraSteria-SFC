@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
-import { AddWorkplaceRequest } from '@core/model/workplace.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -63,27 +62,15 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
     }
   }
 
-  private generateRequest(): AddWorkplaceRequest {
-    return {
-      addressLine1: this.locationAddress.addressLine1,
-      addressLine2: this.locationAddress.addressLine2,
-      county: this.locationAddress.county,
-      isRegulated: this.workplace.isCQC,
-      locationName: this.locationAddress.locationName,
-      mainService: this.workplace.name,
-      postalCode: this.locationAddress.postalCode,
-      townCity: this.locationAddress.townCity,
-    };
-  }
-
   private addWorkplace(): void {
     this.subscriptions.add(
       this.workplaceService
-        .addWorkplace(this.establishmentService.primaryWorkplace.uid, this.generateRequest())
+        .addWorkplace(
+          this.establishmentService.primaryWorkplace.uid,
+          this.workplaceService.addWorkplaceRequest(this.locationAddress, this.workplace)
+        )
         .subscribe(
-          () => {
-            this.router.navigate(['/add-workplace/complete']);
-          },
+          () => this.router.navigate(['/add-workplace/complete']),
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
             this.errorSummaryService.scrollToErrorSummary();
