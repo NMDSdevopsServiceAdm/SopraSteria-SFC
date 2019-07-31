@@ -29,7 +29,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.canAddWorkplace = this.userService.loggedInUser.role !== Roles.Read;
+    this.canAddWorkplace = this.userService.loggedInUser.role !== (Roles.Edit || Roles.Admin);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.getEstablishments();
     this.setupServerErrorsMap();
