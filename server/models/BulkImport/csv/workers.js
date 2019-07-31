@@ -1971,6 +1971,9 @@ class Worker {
 
     // optional
     if (qualification && qualification.length > 0) {
+
+      console.log("WA DEBUG - validation qualification: ", myQualification)
+
       const localValidationErrors = [];
 
       const qualificationId = parseInt(myQualification[0], 10);
@@ -1988,8 +1991,9 @@ class Worker {
       }
 
       // if the social care indicator is "1" (yes) - then get the next value which must be the level
-      const qualificationYear = parseInt(myQualification[1]);
-      if (myQualification[1] === null || myQualification[1].length === 0) {
+      const qualificationYear = parseInt(myQualification[1], 10);
+      const qualificationYearIsValid = Number.isInteger(myQualification[1]);
+      if (myQualification[1] === null || myQualification[1] === undefined || myQualification[1].length === 0) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1999,7 +2003,17 @@ class Worker {
           warning: `Year achieved for ${qualificationName} is blank`,
           source: qualification,
         });
-      } else if (myQualification[1] !== null && isNaN(qualificationYear)) {
+      } else if (myQualification[1] === null) {
+        localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: qualificationError,
+          warnType: qualificationErrorName,
+          warning: `Year achieved for(${qualificationName}) is blank`,
+          source: qualification,
+        });
+      } else if (myQualification[1] !== null && (isNaN(qualificationYear) || !qualificationYearIsValid)) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
