@@ -661,7 +661,7 @@ class Establishment {
         name: this._currentLine.LOCALESTID,
       });
       return false;
-    } else if (this._regType !== null && this._regType == 1) {
+    } else if (this._regType !== null && this._regType == 2) {
       this._provID = myprovID;
       return true;
     } else if (this._regType !== null && this._regType == 0 && myprovID && myprovID.length > 0) {
