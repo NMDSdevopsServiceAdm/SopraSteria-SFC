@@ -8,6 +8,7 @@ import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
+import { WorkerService } from '@core/services/worker.service';
 import {
   DeleteWorkplaceDialogComponent,
 } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
@@ -24,20 +25,26 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public staffPermission = ParentPermissions.WorkplaceAndStaff;
   public canDelete: boolean;
   public canViewStaffRecords: boolean;
+  public totalStaffRecords: number;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     private alertService: AlertService,
     private dialogService: DialogService,
     private establishmentService: EstablishmentService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private workerService: WorkerService
   ) {}
 
   ngOnInit() {
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     this.workplace = this.route.snapshot.data.establishment;
+
+    this.subscriptions.add(
+      this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(total => (this.totalStaffRecords = total))
+    );
 
     this.summaryReturnUrl = {
       url: ['/workplace', this.workplace.uid],
