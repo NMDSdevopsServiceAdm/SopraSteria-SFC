@@ -42,6 +42,7 @@ export class Question implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(establishment => {
         this.establishment = establishment;
+        this.primaryWorkplace = this.establishmentService.primaryWorkplace;
 
         if (!this.initiated) {
           this._init();
@@ -49,12 +50,6 @@ export class Question implements OnInit, OnDestroy {
           this.setBackLink();
         }
       })
-    );
-
-    this.subscriptions.add(
-      this.establishmentService.primaryWorkplace$.subscribe(
-        primaryWorkplace => (this.primaryWorkplace = primaryWorkplace)
-      )
     );
 
     this.setupFormErrorsMap();
