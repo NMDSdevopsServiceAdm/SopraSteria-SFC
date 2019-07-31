@@ -31,14 +31,17 @@ export class HomeTabComponent implements OnInit {
 
   ngOnInit() {
     this.subscriptions.add(this.userService.loggedInUser$.subscribe(user => (this.user = user)));
-    this.subscriptions.add(
-      this.workerService
-        .getAllWorkers(this.workplace.uid)
-        .pipe(take(1))
-        .subscribe(workers => {
-          this.updateStaffRecords = !(workers.length > 0);
-        })
-    );
+
+    if (this.userService.loggedInUser.role === (Roles.Edit || Roles.Admin)) {
+      this.subscriptions.add(
+        this.workerService
+          .getAllWorkers(this.workplace.uid)
+          .pipe(take(1))
+          .subscribe(workers => {
+            this.updateStaffRecords = !(workers.length > 0);
+          })
+      );
+    }
   }
 
   public setReturn(): void {

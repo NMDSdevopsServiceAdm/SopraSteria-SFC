@@ -158,7 +158,7 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   }
 
   private setPermissions(users: Array<UserDetails>, loggedInUser: UserDetails) {
-    const canEdit = loggedInUser.role === Roles.Edit;
+    const canEdit = loggedInUser.role === (Roles.Edit || Roles.Admin);
     const isPending = this.user.username === null;
     const editUsersList = users.filter(user => user.role === Roles.Edit);
 
