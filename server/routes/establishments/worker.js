@@ -68,6 +68,23 @@ const validateWorker = async (req, res, next) => {
     }
 };
 
+const allowAll = (req,res,next) => { next(); }
+router.use('/total', allowAll);
+router.route('/total').get(async (req, res) => {
+    const establishmentId = req.establishmentId;
+
+    try {
+        const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+        return res.status(200).json({
+            total: allTheseWorkers.length
+        });
+    } catch (err) {
+        console.error('worker::GET:total - failed', err);
+        return res.status(503).send('Failed to get total workers for establishment having id: '+establishmentId);
+    }
+});
+
+
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
 router.use('/:workerId', validateWorker);
@@ -87,6 +104,7 @@ router.route('/').get(async (req, res) => {
         return res.status(503).send('Failed to get workers for establishment having id: '+establishmentId);
     }
 });
+
 
 // Update all worker ids in one transaction
 router.route('/localIdentifier').put(async (req, res) => {
