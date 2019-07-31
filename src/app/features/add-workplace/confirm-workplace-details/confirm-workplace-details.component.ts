@@ -28,7 +28,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   }
 
   protected init(): void {
-    this.flow = '/registration';
+    this.flow = '/add-workplace';
     this.setupServerErrorsMap();
     this.getWorkplaceData();
   }
@@ -56,7 +56,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
 
   public continue(): void {
     if (this.workplace.isCQC) {
-      this.router.navigate(['/add-workplace/create-user-account']);
+      this.router.navigate([`${this.flow}/create-user-account`]);
     } else {
       this.addWorkplace();
     }
@@ -70,7 +70,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
           this.workplaceService.addWorkplaceRequest(this.locationAddress, this.workplace)
         )
         .subscribe(
-          () => this.router.navigate(['/add-workplace/complete']),
+          () => this.router.navigate([`${this.flow}/complete`]),
           (response: HttpErrorResponse) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
             this.errorSummaryService.scrollToErrorSummary();
