@@ -15,7 +15,7 @@ router.route('/').get(async (req, res) => {
 
       const missingLocalIds = await thisEstablishment.missingLocalIdentifiers();
       return res.status(200).json({
-        status: missingLocalIds
+        status: !missingLocalIds
       });
     } else {
       return res.status(404).send('Not Found');
