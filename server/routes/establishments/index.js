@@ -25,6 +25,7 @@ const LA = require('./la');
 const Worker = require('./worker');
 const BulkUpload = require('./bulkUpload');
 const LocalIdentifier = require('./localIdentifier');
+const LocalIdentifiers = require('./localIdentifiers');
 
 const Approve = require('./approve');
 const Reject = require('./reject');
@@ -61,6 +62,7 @@ router.use('/:id/localAuthorities', LA);
 router.use('/:id/worker', Worker);
 router.use('/:id/bulkupload', BulkUpload);
 router.use('/:id/localIdentifier', LocalIdentifier);
+router.use('/:id/localIdentifiers', LocalIdentifiers);
 
 
 router.route('/:id').post(async (req, res) => {
