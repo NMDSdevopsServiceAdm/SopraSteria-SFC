@@ -8,8 +8,8 @@ import { WdfUpdateWarningComponent } from '@features/reports/components/wdf-upda
 import { WdfComponent } from '@features/reports/pages/wdf/wdf.component';
 import { SharedModule } from '@shared/shared.module';
 
+import { ReportsComponent } from './pages/reports/reports.component';
 import { ReportsRoutingModule } from './reports-routing.module';
-import { ReportsComponent } from './reports.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, ReportsRoutingModule],

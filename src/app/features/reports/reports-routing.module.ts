@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { WdfComponent } from '@features/reports/pages/wdf/wdf.component';
 
-import { ReportsComponent } from './reports.component';
+import { ReportsComponent } from './pages/reports/reports.component';
+import { WdfComponent } from './pages/wdf/wdf.component';
 
 const routes: Routes = [
   {
