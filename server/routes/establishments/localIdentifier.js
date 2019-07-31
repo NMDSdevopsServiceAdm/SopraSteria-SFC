@@ -98,7 +98,7 @@ router.route('/').put(async (req, res) => {
   try {
     // as a minimum for security purposes, we restore the user's primary establishment
     if (await thisEstablishment.restore(establishmentId)) {
-      const updatedUids = await thisEstablishment.bulkUpdateLocalIdentifier(username, givenLocalIdentifiers);
+      const updatedUids = await thisEstablishment.bulkUpdateLocalIdentifiers(username, givenLocalIdentifiers);
 
       const updatedTimestamp = new Date();
       return res.status(200).json({

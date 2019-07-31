@@ -1803,7 +1803,7 @@ class Establishment extends EntityValidator {
     //   - can only update the local identifier on subs "owned" by this given primary establishment
     //  - When updating the local identifier, the local identifier property itself is audited, but the establishment's own
     //    "updated" status is not updated
-    async bulkUpdateLocalIdentifier(username, givenLocalIdentifiers) {
+    async bulkUpdateLocalIdentifiers(username, givenLocalIdentifiers) {
       try {
 
         const myEstablishments = await Establishment.fetchMyEstablishments(this.isParent, this.id);
@@ -1862,7 +1862,7 @@ class Establishment extends EntityValidator {
         return updatedUids;
 
       } catch (err) {
-        console.error('Establishment::bulkUpdateLocalIdentifier error: ', err);
+        console.error('Establishment::bulkUpdateLocalIdentifiers error: ', err);
         throw err;
       }
 
