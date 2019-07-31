@@ -2,14 +2,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
-import { LocationAddress } from '@core/model/location.model';
-import { Service } from '@core/model/services.model';
-import { AddWorkplaceRequest } from '@core/model/workplace.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { ConfirmWorkplaceDetails } from '@features/workplace-find-and-select/confirm-workplace-details/confirm-workplace-details';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-confirm-workplace-details',
@@ -30,7 +28,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   }
 
   protected init(): void {
-    this.flow = '/registration';
+    this.flow = '/add-workplace';
     this.setupServerErrorsMap();
     this.getWorkplaceData();
   }
@@ -46,39 +44,38 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
 
   protected getWorkplaceData(): void {
     this.subscriptions.add(
-      this.workplaceService.selectedLocationAddress$.subscribe(
-        (locationAddress: LocationAddress) => (this.locationAddress = locationAddress)
-      )
-    );
-
-    this.subscriptions.add(
-      this.workplaceService.selectedWorkplaceService$.subscribe((workplace: Service) => (this.workplace = workplace))
+      combineLatest(
+        this.workplaceService.selectedLocationAddress$,
+        this.workplaceService.selectedWorkplaceService$
+      ).subscribe(([locationAddress, workplace]) => {
+        this.locationAddress = locationAddress;
+        this.workplace = workplace;
+      })
     );
   }
 
-  private generateRequest(): AddWorkplaceRequest {
-    return {
-      addressLine1: this.locationAddress.addressLine1,
-      addressLine2: this.locationAddress.addressLine2,
-      county: this.locationAddress.county,
-      isRegulated: this.workplace.isCQC,
-      locationName: this.locationAddress.locationName,
-      mainService: this.workplace.name,
-      postalCode: this.locationAddress.postalCode,
-      townCity: this.locationAddress.townCity,
-    };
+  public continue(): void {
+    if (this.workplace.isCQC) {
+      this.router.navigate([`${this.flow}/create-user-account`]);
+    } else {
+      this.addWorkplace();
+    }
   }
 
-  public addWorkplace(): void {
+  private addWorkplace(): void {
     this.subscriptions.add(
       this.workplaceService
-        .addWorkplace(this.establishmentService.primaryWorkplace.uid, this.generateRequest())
-        .subscribe(() => {
-          this.router.navigate(['/add-workplace/complete']);
-        }, (response: HttpErrorResponse) => {
-          this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
-          this.errorSummaryService.scrollToErrorSummary();
-        })
+        .addWorkplace(
+          this.establishmentService.primaryWorkplace.uid,
+          this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.workplace)
+        )
+        .subscribe(
+          () => this.router.navigate([`${this.flow}/complete`]),
+          (response: HttpErrorResponse) => {
+            this.serverError = this.errorSummaryService.getServerErrorMessage(response.status, this.serverErrorsMap);
+            this.errorSummaryService.scrollToErrorSummary();
+          }
+        )
     );
   }
 }
