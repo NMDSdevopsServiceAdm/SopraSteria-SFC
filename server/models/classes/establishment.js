@@ -607,7 +607,7 @@ class Establishment extends EntityValidator {
                     parentPermissions: this._parentPermissions,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
-                    proviId: this._provId,
+                    provId: this._provId,
                     MainServiceFKValue: this.mainService.id,
                     nmdsId: this._nmdsId,
                     updatedBy: savedBy.toLowerCase(),
