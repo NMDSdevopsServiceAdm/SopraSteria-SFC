@@ -1361,6 +1361,95 @@ class Worker extends EntityValidator {
         };
     }
 
+    static async _updateLocalIdOnWorker(thisGivenWorker, transaction, updatedTimestamp, username, allAuditEvents) {
+      const updatedWorker = await models.worker.update(
+        {
+            LocalIdentifierValue: thisGivenWorker.value,
+            LocalIdentifierSavedBy: username,
+            LocalIdentifierChangedBy: username,
+            LocalIdentifierSavedAt: updatedTimestamp,
+            LocalIdentifierChangedAt: updatedTimestamp,
+        },
+        {
+            returning: true,
+            where: {
+                uid: thisGivenWorker.uid
+            },
+            attributes: ['id', 'updated'],
+            transaction,
+        }
+      );
+
+      if (updatedWorker[0] === 1) {
+        const updatedRecord = updatedWorker[1][0].get({plain: true});
+        allAuditEvents.push({
+            workerFk: updatedRecord.ID,
+            username,
+            type: 'saved',
+            property: 'LocalIdentifier',
+        });
+        allAuditEvents.push({
+            workerFk: updatedRecord.ID,
+            username,
+            type: 'changed',
+            property: 'LocalIdentifier',
+            event: {
+            new: thisGivenWorker.value
+            }
+        });
+      }
+    };
+
+    // update the local identifiers across all workers associated with the given establishment
+    //  - When updating the local identifier, the local identifier property itself is audited, but the workers's own
+    //    "updated" status is not updated
+    static async bulkUpdateLocalIdentifiers(username, establishmentId, givenLocalIdentifiers)
+    {
+      try {
+        const myWorkers = await Worker.fetch(establishmentId);
+        const myWorkersUIDs = myWorkers.map(worker => {
+          return {
+            uid: worker.uid,
+            localIdentifier: worker.localIdentifier
+          };
+        });
+
+        const updatedTimestamp = new Date();
+        const updatedUids = [];
+        await models.sequelize.transaction(async t => {
+          const dbUpdatePromises = [];
+          const allAuditEvents = [];
+
+          givenLocalIdentifiers.forEach(thisGivenWorker => {
+            if (thisGivenWorker && thisGivenWorker.uid) {
+              const foundWorker = myWorkersUIDs.find(currentWorker => currentWorker.uid === thisGivenWorker.uid);
+
+              if (foundWorker && foundWorker.localIdentifier !== thisGivenWorker.value) {
+                const updateThisWorker = Worker._updateLocalIdOnWorker(thisGivenWorker, t, updatedTimestamp, username, allAuditEvents);
+                dbUpdatePromises.push(updateThisWorker);
+                updatedUids.push(thisGivenWorker);
+
+              } else if (foundWorker) {
+                updatedUids.push(thisGivenWorker);
+              } else {
+                // not found this worker; silently ignore it
+              }
+            }
+          });
+
+          await Promise.all(dbUpdatePromises);
+          await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
+        });
+
+        return updatedUids;
+
+      } catch (err) {
+        console.error('Worker::bulkUpdateLocalIdentifiers error: ', err);
+        throw err;
+      }
+
+    }
+
 };
 
 module.exports.Worker = Worker;

@@ -1650,6 +1650,223 @@ class Establishment extends EntityValidator {
         this._log(Establishment.LOG_ERROR, `bulkUploadSuccess - failed: ${err}`);
       }
     }
+
+
+    // encapsulated method to fetch a list of all establishments (primary and any subs if a parent) for the given primary establishment
+    static async fetchMyEstablishments(isParent, primaryEstablishmentId) {
+        // for each establishment, need:
+        //  1. Name
+        //  2. Main Service (by title)
+        //  3. Data Owner
+        //  4. Data Owner Permissions
+        //  5. Updated
+        //  6. UID (significantly to be able to navigate to the specific establishment)
+        //  7. ParentUID
+        let allSubResults = null;
+        let primaryEstablishmentRecord = null;
+
+        // first - get the user's primary establishment (every user will have a primary establishment)
+        const fetchResults = await models.establishment.findOne({
+            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
+            include: [
+                {
+                    model: models.services,
+                    as: 'mainService',
+                    attributes: ['id', 'name']
+                }
+            ],
+            where: {
+                "id": primaryEstablishmentId
+            }
+        });
+
+        if (fetchResults) {
+            // this is the primary establishemnt
+            primaryEstablishmentRecord = fetchResults;
+
+            // now, if the primary establishment is a parent
+            //  and if the user's role against their primary parent is Edit
+            //  fetch all other establishments associated with this parent
+            if (isParent) {
+                // get all subsidaries associated with this parent
+                allSubResults = await models.establishment.findAll({
+                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
+                    include: [
+                        {
+                            model: models.services,
+                            as: 'mainService',
+                            attributes: ['id', 'name']
+                        }
+                    ],
+                    where: {
+                        "parentUid": primaryEstablishmentRecord.uid
+                    },
+                    order: [
+                        ['updated','DESC']
+                    ]
+                });
+
+                // note - there is no error is there are no subs; an establishment can exist as a parent but with no subs
+            }
+            // else - do nothing - there is no error
+
+            // before returning, need to format the response
+            // explicit casting of local identifier to null if not yet set
+            const myEstablishments = {
+              primary: {
+                  uid: primaryEstablishmentRecord.uid,
+                  updated: primaryEstablishmentRecord.updated,
+                  isParent: primaryEstablishmentRecord.isParent,
+                  parentUid: primaryEstablishmentRecord.parentUid,
+                  name: primaryEstablishmentRecord.NameValue,
+                  localIdentifier: primaryEstablishmentRecord.LocalIdentifierValue ? primaryEstablishmentRecord.LocalIdentifierValue : null,
+                  mainService: primaryEstablishmentRecord.mainService.name,
+                  dataOwner: primaryEstablishmentRecord.dataOwner,
+                  parentPermissions: isParent ? undefined : primaryEstablishmentRecord.parentPermissions,
+              }
+            };
+
+            if (allSubResults && allSubResults.length > 0) {
+              myEstablishments.subsidaries = {
+                count: allSubResults.length,
+                establishments: allSubResults.map(thisSub => {
+                  return {
+                      uid: thisSub.uid,
+                      updated: thisSub.updated,
+                      parentUid: thisSub.parentUid,
+                      name: thisSub.NameValue,
+                      localIdentifier: thisSub.LocalIdentifierValue ? thisSub.LocalIdentifierValue : null,
+                      mainService: thisSub.mainService.name,
+                      dataOwner: thisSub.dataOwner,
+                      parentPermissions: thisSub.parentPermissions,
+                  };
+                })
+              };
+            }
+
+            return myEstablishments;
+
+
+        } else {
+            return false;
+        }
+    }
+
+    // a helper function that updates the establishment and adds the necessary audit events
+    //  https://trello.com/c/Z93EZqyB - requires that when updating local identifier, the
+    //                                  establishment's own `updated` timestamp is not is to
+    //                                  be updated
+    async _updateLocalIdOnEstablishment(thisGivenEstablishment, transaction, updatedTimestamp, username, allAuditEvents) {
+
+      const updatedEstablishment = await models.establishment.update(
+        {
+          LocalIdentifierValue: thisGivenEstablishment.value,
+          LocalIdentifierSavedBy: username,
+          LocalIdentifierChangedBy: username,
+          LocalIdentifierSavedAt: updatedTimestamp,
+          LocalIdentifierChangedAt: updatedTimestamp,
+        },
+        {
+          returning: true,
+          where: {
+              uid: thisGivenEstablishment.uid
+          },
+          attributes: ['id', 'updated'],
+          transaction,
+        }
+      );
+
+      if (updatedEstablishment[0] === 1) {
+        const updatedRecord = updatedEstablishment[1][0].get({plain: true});
+
+        // two for the LocalIdentifier property (saved and changed)
+        allAuditEvents.push({
+          establishmentFk: updatedRecord.EstablishmentID,
+          username,
+          type: 'saved',
+          property: 'LocalIdentifier',
+        });
+        allAuditEvents.push({
+          establishmentFk: updatedRecord.EstablishmentID,
+          username,
+          type: 'changed',
+          property: 'LocalIdentifier',
+          event: {
+            new: thisGivenEstablishment.value
+          }
+        });
+      }
+    };
+
+
+    // update the local identifiers across multiple establishments; this establishment being the primary with 0 or more subs
+    //   - can only update the local identifier on subs "owned" by this given primary establishment
+    //  - When updating the local identifier, the local identifier property itself is audited, but the establishment's own
+    //    "updated" status is not updated
+    async bulkUpdateLocalIdentifiers(username, givenLocalIdentifiers) {
+      try {
+
+        const myEstablishments = await Establishment.fetchMyEstablishments(this.isParent, this.id);
+
+        // create a list of those establishment UIDs - the user will only be able to update the local identifier for which they own
+        const myEstablishmentUIDs = [];
+        myEstablishmentUIDs.push({
+          uid: myEstablishments.primary.uid,
+          localIdentifier: myEstablishments.primary.localIdentifier,
+        });
+
+        if (myEstablishments.subsidaries) {
+          myEstablishments.subsidaries.establishments.forEach(thisEst => {
+            // only those subs "owned" by this parent
+            thisEst.dataOwner === 'Parent' ? myEstablishmentUIDs.push({
+              uid: thisEst.uid,
+              localIdentifier: thisEst.localIdentifier,
+            }) : true;
+          });
+        }
+
+
+        // within one transaction
+        const updatedTimestamp = new Date();
+        const updatedUids = [];
+
+        // now note - there is no such thing as a bulk update (except when joing data between two tables on the database)
+        //   so when iterating through the local identifiers, check if the local identifier has changed before issuing
+        //   any update!
+
+        await models.sequelize.transaction(async t => {
+          const dbUpdatePromises = [];
+          const allAuditEvents = [];
+          givenLocalIdentifiers.forEach(thisGivenEstablishment => {
+            if (thisGivenEstablishment && thisGivenEstablishment.uid) {
+              const foundEstablishment = myEstablishmentUIDs.find(thisEst => thisEst.uid === thisGivenEstablishment.uid);
+
+              // only if the found and given local identifiers are not equal, then update the record
+              if (foundEstablishment && foundEstablishment.localIdentifier !== thisGivenEstablishment.value) {
+                const updateThisEstablishment = this._updateLocalIdOnEstablishment(thisGivenEstablishment, t, updatedTimestamp, username, allAuditEvents);
+                dbUpdatePromises.push(updateThisEstablishment);
+                updatedUids.push(thisGivenEstablishment);
+              } else if (foundEstablishment) {
+                updatedUids.push(thisGivenEstablishment);
+              } else {
+                // no found - just silently ignore
+              }
+            }
+          });
+
+          // wait for all updates to finish
+          await Promise.all(dbUpdatePromises);
+          await models.establishmentAudit.bulkCreate(allAuditEvents, {transaction: t});
+        });
+
+        return updatedUids;
+
+      } catch (err) {
+        console.error('Establishment::bulkUpdateLocalIdentifiers error: ', err);
+        throw err;
+      }
+
+    };
 };
 
 module.exports.Establishment = Establishment;
