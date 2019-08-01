@@ -1,9 +1,11 @@
+import { Roles } from '@core/model/roles.enum';
+
 export interface CreateAccountRequest {
   email: string;
   fullname: string;
   jobTitle: string;
   phone: string;
-  role: string;
+  role: Roles;
 }
 
 export interface ActivateAccountRequest {
