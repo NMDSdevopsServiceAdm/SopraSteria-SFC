@@ -4,6 +4,7 @@ import { LocationAddress } from '@core/model/location.model';
 import { Service, ServiceGroup } from '@core/model/services.model';
 import { AddWorkplaceRequest, AddWorkplaceResponse } from '@core/model/workplace.model';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,12 @@ export class WorkplaceService {
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(null);
   public selectedLocationAddress$: BehaviorSubject<LocationAddress> = new BehaviorSubject(null);
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
+  public serverErrorsMap: ErrorDefinition[] = [
+    {
+      name: 400,
+      message: 'Data validation error.',
+    },
+  ];
 
   public isRegulated(location: LocationAddress): boolean {
     return location.isRegulated === true || location.locationId ? true : false;
