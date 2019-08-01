@@ -1,5 +1,10 @@
 <div class="govuk-button-group">
-  <button type="submit" class="govuk-button">Save and {{ return ? 'return' : 'continue' }}</button>
+  <button type="submit" class="govuk-button">
+    <ng-container *ngIf="cta; else default">
+      {{ cta }}
+    </ng-container>
+    <ng-template #default> Save and {{ return ? 'return' : 'continue' }} </ng-template>
+  </button>
   <ng-container *ngIf="return">
     <span class="govuk-visually-hidden">or</span>
     <a

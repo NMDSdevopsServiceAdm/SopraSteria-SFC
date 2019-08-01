@@ -35,6 +35,7 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
   }
 
   protected init(): void {
+    this.return = { url: ['/account-management'] };
     this.breadcrumbService.show();
     this.setupSubscription();
     this.setupServerErrorsMap();
@@ -82,9 +83,5 @@ export class ChangeUserSecurityComponent extends SecurityQuestion {
     this.userDetails.securityQuestion = this.getSecurityQuestion.value;
     this.userDetails.securityQuestionAnswer = this.getSecurityQuestionAnswer.value;
     this.changeUserDetails(this.userDetails);
-  }
-
-  protected setCallToActionLabel(): void {
-    this.callToActionLabel = 'Save and return';
   }
 }

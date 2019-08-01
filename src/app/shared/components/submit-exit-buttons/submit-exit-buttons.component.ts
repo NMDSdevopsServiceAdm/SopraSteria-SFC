@@ -6,5 +6,6 @@ import { URLStructure } from '@core/model/url.model';
   templateUrl: './submit-exit-buttons.component.html',
 })
 export class SubmitExitButtonsComponent {
+  @Input() public cta?: string;
   @Input() public return?: URLStructure;
 }
