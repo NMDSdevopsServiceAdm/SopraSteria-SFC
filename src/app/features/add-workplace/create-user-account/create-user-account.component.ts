@@ -90,7 +90,11 @@ export class CreateUserAccountComponent implements OnInit, OnDestroy {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.addWorkplace();
+      if (this.form.get('createUserAccount').value === 'yes') {
+        this.router.navigate([`${this.flow}/change-your-details`]);
+      } else {
+        this.addWorkplace();
+      }
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
