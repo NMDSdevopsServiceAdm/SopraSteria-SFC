@@ -76,12 +76,9 @@ export class Question implements OnInit, OnDestroy {
 
   protected navigate(): void {
     const action = this.submitAction.action;
-    console.log(action);
     if (!action) {
       return;
     }
-
-    console.log('here');
 
     switch (action) {
       case 'continue':
