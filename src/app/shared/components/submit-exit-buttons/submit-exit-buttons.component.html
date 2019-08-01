@@ -3,7 +3,7 @@
     <ng-container *ngIf="cta; else default">
       {{ cta }}
     </ng-container>
-    <ng-template> Save and {{ return ? 'return' : 'continue' }} </ng-template>
+    <ng-template #default> Save and {{ return ? 'return' : 'continue' }} </ng-template>
   </button>
   <ng-container *ngIf="return">
     <span class="govuk-visually-hidden">or</span>
