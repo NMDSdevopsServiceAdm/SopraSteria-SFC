@@ -1867,6 +1867,68 @@ class Establishment extends EntityValidator {
       }
 
     };
+
+    // returns all true if establishments (subs only owned by this parent) and workers associated to them
+    //  local identifier is not null (has been set), otherwise returns false
+    async missingLocalIdentifiers() {
+      try {
+        // NOTE - req.establishmentId is an assured integer from authorisation middleware
+        //        and consequently the value is assured and thus the queries below not at risk
+        //        from SQL injection
+
+        const missingEstablishmentsQuery = `
+          select "EstablishmentID", "EstablishmentUID", "NameValue", "LocalIdentifierValue"
+          from cqc."Establishment"
+          where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+            and "Archived" = false
+            and "LocalIdentifierValue" is null"
+          order by "EstablishmentID"`;
+
+        const missingWorkersQuery = `
+            select
+                "EstablishmentID",
+                "EstablishmentUID",
+                "NameValue",
+                "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
+                "Worker"."ID" AS "WorkerID",
+                "WorkerUID",
+                "NameOrIdValue",
+                "Worker"."LocalIdentifierValue" AS "WorkerLocal"
+              from cqc."Establishment"
+                inner join cqc."Worker" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
+              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+                and "Establishment"."Archived" = false
+                and "Worker"."Archived" = false
+                and "Worker"."LocalIdentifierValue" is null
+              order by "EstablishmentID", "NameOrIdValue"`;
+
+        const query = `
+          select count(0) as "Total"
+          from cqc."Establishment"
+            inner join cqc."Worker" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
+          where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+            and "Establishment"."Archived" = false
+            and "Worker"."Archived" = false
+            and ("Establishment"."LocalIdentifierValue" is null OR "Worker"."LocalIdentifierValue" is null)`;
+
+        const results = await models.sequelize.query(
+            query,
+            {
+              type: models.sequelize.QueryTypes.SELECT
+            }
+          );
+
+          // note - postgres returns the Total as a string not an integer
+        if (results && results[0] && parseInt(results[0].Total,10) === 0) {
+          return false;
+        } else {
+          return true;
+        }
+      } catch (err) {
+        console.error('Establishment::missingLocalIdentifiers error: ', err);
+        throw err;
+      }
+    }
 };
 
 module.exports.Establishment = Establishment;
