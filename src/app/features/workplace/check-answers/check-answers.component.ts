@@ -22,7 +22,7 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
       this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
         this.establishment = establishment;
 
-        this.summaryReturnUrl = { url: ['/workplace', establishment.id, 'check-answers'] };
+        this.summaryReturnUrl = { url: ['/workplace', establishment.uid, 'check-answers'] };
       })
     );
   }

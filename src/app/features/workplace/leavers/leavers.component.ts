@@ -94,7 +94,7 @@ export class LeaversComponent extends Question implements OnInit, OnDestroy {
   }
 
   private setPreviousRoute(): void {
-    this.previous = ['/workplace', `${this.establishment.id}`, 'starters'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'starters'];
   }
 
   private getJobs(): void {

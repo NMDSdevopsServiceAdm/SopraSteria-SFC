@@ -39,7 +39,7 @@ export class DataSharingComponent extends Question {
       });
     }
 
-    this.previous = ['/workplace', `${this.establishment.id}`, 'service-users'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'service-users'];
   }
 
   protected setupServerErrorsMap(): void {
@@ -74,7 +74,7 @@ export class DataSharingComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .updateDataSharing(this.establishment.id, props)
+        .updateDataSharing(this.establishment.uid, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
@@ -83,7 +83,7 @@ export class DataSharingComponent extends Question {
     const { localAuthorities } = this.form.get('shareWith').value;
 
     this.next = localAuthorities
-      ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.id}`, 'vacancies'];
+      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
+      : ['/workplace', `${this.establishment.uid}`, 'vacancies'];
   }
 }

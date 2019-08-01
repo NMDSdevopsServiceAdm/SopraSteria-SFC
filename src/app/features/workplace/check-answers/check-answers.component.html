@@ -10,7 +10,7 @@
 
   <app-workplace-summary [workplace]="establishment" [return]="summaryReturnUrl"></app-workplace-summary>
 
-  <a class="govuk-button" role="button" draggable="false" [routerLink]="['/workplace', establishment.id, 'success']">
+  <a class="govuk-button" role="button" draggable="false" [routerLink]="['/workplace', establishment.uid, 'success']">
     Save and complete
   </a>
 </ng-container>

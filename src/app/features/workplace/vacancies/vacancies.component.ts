@@ -96,8 +96,8 @@ export class VacanciesComponent extends Question implements OnInit, OnDestroy {
 
   private setPreviousRoute(): void {
     this.previous = this.establishment.share.with.includes(DataSharingOptions.LOCAL)
-      ? ['/workplace', `${this.establishment.id}`, 'sharing-data-with-local-authorities']
-      : ['/workplace', `${this.establishment.id}`, 'sharing-data'];
+      ? ['/workplace', `${this.establishment.uid}`, 'sharing-data-with-local-authorities']
+      : ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 
   private getJobs(): void {

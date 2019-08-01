@@ -97,7 +97,7 @@ export class StartersComponent extends Question {
   }
 
   private setPreviousRoute(): void {
-    this.previous = ['/workplace', `${this.establishment.id}`, 'vacancies'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
   }
 
   private getJobs(): void {

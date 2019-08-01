@@ -44,8 +44,8 @@ export class TypeOfEmployerComponent extends Question {
       });
     }
 
-    this.next = ['/workplace', `${this.establishment.id}`, 'other-services'];
-    this.previous = ['/workplace', `${this.establishment.id}`, 'start'];
+    this.next = ['/workplace', `${this.establishment.uid}`, 'other-services'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'start'];
   }
 
   protected setupFormErrorsMap(): void {
@@ -89,7 +89,7 @@ export class TypeOfEmployerComponent extends Question {
   updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .updateTypeOfEmployer(this.establishment.id, props)
+        .updateTypeOfEmployer(this.establishment.uid, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }

@@ -12,7 +12,7 @@
         class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
         role="button"
         draggable="false"
-        [routerLink]="['/workplace', this.establishment.id, 'check-answers']"
+        [routerLink]="['/workplace', this.establishment.uid, 'check-answers']"
       >
         Save and {{ return ? 'return' : 'continue' }}
       </a>
@@ -21,7 +21,7 @@
         class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
         role="button"
         draggable="false"
-        [routerLink]="['/workplace', this.establishment.id, 'leavers']"
+        [routerLink]="['/workplace', this.establishment.uid, 'leavers']"
       >
         Make a change <span class="govuk-visually-hidden">to the number of staff who left in the last 12 months</span>
       </a>
