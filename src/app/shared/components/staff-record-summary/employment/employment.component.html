@@ -74,7 +74,7 @@
         -
       </ng-container>
       <ng-template #otherJobs>
-        <ul class="govuk-list">
+        <ul class="govuk-list govuk-!-margin-bottom-0">
           <li *ngFor="let otherJob of worker.otherJobs">
             <ng-container *ngIf="otherJob.other; else title">
               <span>{{ otherJob.other }}</span>
