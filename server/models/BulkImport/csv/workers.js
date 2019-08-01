@@ -1971,9 +1971,6 @@ class Worker {
 
     // optional
     if (qualification && qualification.length > 0) {
-
-      console.log("WA DEBUG - validation qualification: ", myQualification)
-
       const localValidationErrors = [];
 
       const qualificationId = parseInt(myQualification[0], 10);
@@ -1992,7 +1989,8 @@ class Worker {
 
       // if the social care indicator is "1" (yes) - then get the next value which must be the level
       const qualificationYear = parseInt(myQualification[1], 10);
-      const qualificationYearIsValid = Number.isInteger(myQualification[1]);
+      const qualificationYearIsValid = myQualification[1] ? parseInt(myQualification[1], 10).toString() === myQualification[1] : true;
+
       if (myQualification[1] === null || myQualification[1] === undefined || myQualification[1].length === 0) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
