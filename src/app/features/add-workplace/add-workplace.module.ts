@@ -7,6 +7,7 @@ import { StartComponent } from '@features/add-workplace/start/start.component';
 import { SharedModule } from '@shared/shared.module';
 import { AddWorkplaceCompleteComponent } from './add-workplace-complete/add-workplace-complete.component';
 import { ChangeYourDetailsComponent } from './change-your-details/change-your-details.component';
+import { ConfirmAccountDetailsComponent } from './confirm-account-details/confirm-account-details.component';
 import { ConfirmWorkplaceDetailsComponent } from './confirm-workplace-details/confirm-workplace-details.component';
 import { CreateUserAccountComponent } from './create-user-account/create-user-account.component';
 import { EnterWorkplaceAddressComponent } from './enter-workplace-address/enter-workplace-address.component';
@@ -20,6 +21,7 @@ import { SelectWorkplaceComponent } from './select-workplace/select-workplace.co
   declarations: [
     AddWorkplaceCompleteComponent,
     ChangeYourDetailsComponent,
+    ConfirmAccountDetailsComponent,
     ConfirmWorkplaceDetailsComponent,
     CreateUserAccountComponent,
     EnterWorkplaceAddressComponent,
