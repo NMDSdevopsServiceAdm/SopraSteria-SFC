@@ -1,3 +1,24 @@
-<p>
-  confirm-account-details works!
-</p>
+<app-error-summary
+  *ngIf="serverError"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row" id="server-error">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l">Check the user account details</h1>
+
+    <app-summary-list
+      class="govuk-util__block govuk-!-margin-bottom-6"
+      [topBorder]="true"
+      [summaryList]="userInfo"
+      (setReturn)="onSetReturn()"
+    ></app-summary-list>
+
+    <div class="govuk-button-group">
+      <button type="button" class="govuk-button" (click)="addWorkplace()">
+        Submit
+      </button>
+    </div>
+  </div>
+</div>
