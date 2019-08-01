@@ -1,19 +1,19 @@
-import { AccountDetails } from '@features/account/account-details/account-details';
-import { BackService } from '@core/services/back.service';
 import { Component } from '@angular/core';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
+import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { AccountDetails } from '@features/account/account-details/account-details';
 
 @Component({
   selector: 'app-change-your-details',
   templateUrl: './change-your-details.component.html',
 })
 export class ChangeYourDetailsComponent extends AccountDetails {
-  public callToActionLabel = 'Save and return';
   private activationToken: string;
+  public callToActionLabel = 'Save and return';
 
   constructor(
     private createAccountService: CreateAccountService,

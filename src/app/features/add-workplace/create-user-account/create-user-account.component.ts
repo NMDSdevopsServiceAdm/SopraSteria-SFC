@@ -1,15 +1,15 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { combineLatest, Subscription } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { LocationAddress } from '@core/model/location.model';
+import { Service } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { Router } from '@angular/router';
-import { WorkplaceService } from '@core/services/workplace.service';
-import { Service } from '@core/model/services.model';
-import { HttpErrorResponse } from '@angular/common/http';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { LocationAddress } from '@core/model/location.model';
+import { WorkplaceService } from '@core/services/workplace.service';
+import { combineLatest, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-create-user-account',
@@ -17,12 +17,12 @@ import { LocationAddress } from '@core/model/location.model';
 })
 export class CreateUserAccountComponent implements OnInit, OnDestroy {
   private flow: string;
-  private locationAddress: LocationAddress;
   private serverErrorsMap: ErrorDefinition[] = this.workplaceService.serverErrorsMap;
   private subscriptions: Subscription = new Subscription();
   public form: FormGroup;
   public formControlsMap: string[] = ['Yes', 'No'];
   public formErrorsMap: Array<ErrorDetails>;
+  public locationAddress: LocationAddress;
   public serverError: string;
   public submitted = false;
   public workplace: Service;
