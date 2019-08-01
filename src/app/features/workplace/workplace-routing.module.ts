@@ -62,95 +62,163 @@ const routes: Routes = [
       {
         path: 'start',
         component: StartComponent,
-        data: { title: 'Start' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Start',
+        },
       },
       {
         path: 'type-of-employer',
         component: TypeOfEmployerComponent,
-        data: { title: 'Type of Employer' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Type of Employer',
+        },
       },
       {
         path: 'other-services',
         component: OtherServicesComponent,
-        data: { title: 'Other Services' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Other Services',
+        },
       },
       {
         path: 'capacity-of-services',
         component: ServicesCapacityComponent,
-        data: { title: 'Capacity of Services' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Capacity of Services',
+        },
       },
       {
         path: 'service-users',
         component: ServiceUsersComponent,
-        data: { title: 'Service Users' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Service Users',
+        },
       },
       {
         path: 'sharing-data',
         component: DataSharingComponent,
-        data: { title: 'Share Data' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Share Data',
+        },
       },
       {
         path: 'sharing-data-with-local-authorities',
         component: DataSharingWithLocalAuthoritiesComponent,
-        data: { title: 'Share Data With Local Authorities' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Share Data With Local Authorities',
+        },
       },
       {
         path: 'vacancies',
         component: VacanciesComponent,
-        data: { title: 'Vacancies' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Vacancies',
+        },
       },
       {
         path: 'confirm-vacancies',
         component: ConfirmVacanciesComponent,
-        data: { title: 'Confirm Vacancies' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Confirm Vacancies',
+        },
       },
       {
         path: 'starters',
         component: StartersComponent,
-        data: { title: 'Starters' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Starters',
+        },
       },
       {
         path: 'confirm-starters',
         component: ConfirmStartersComponent,
-        data: { title: 'Confirm Starters' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Confirm Starters',
+        },
       },
       {
         path: 'leavers',
         component: LeaversComponent,
-        data: { title: 'Leavers' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Leavers',
+        },
       },
       {
         path: 'confirm-leavers',
         component: ConfirmLeaversComponent,
-        data: { title: 'Confirm Leavers' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Confirm Leavers',
+        },
       },
       {
         path: 'volunteers',
-        data: { title: 'Volunteers' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Volunteers',
+        },
       },
       {
         path: 'check-answers',
         component: CheckAnswersComponent,
-        data: { title: 'Check Answers' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Check Answers',
+        },
       },
       {
         path: 'success',
         component: SuccessComponent,
-        data: { title: 'Success' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Success',
+        },
       },
       {
         path: 'user/create',
         component: CreateUserAccountComponent,
         canActivate: [RoleGuard],
         data: {
-          roles: [Roles.Edit],
+          roles: [Roles.Admin, Roles.Edit],
           title: 'Create User Account',
         },
       },
       {
         path: 'user/saved',
         component: UserAccountSavedComponent,
-        data: { title: 'User Account Saved' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'User Account Saved',
+        },
       },
       {
         path: 'user/:useruid',
@@ -165,9 +233,9 @@ const routes: Routes = [
             path: 'permissions',
             component: UserAccountEditPermissionsComponent,
             canActivate: [RoleGuard, EditUserPermissionsGuard],
-            resolve: { user: UserAccountResolver },
+            resolve: { user: UserAccountResolver, primaryWorkplace: PrimaryWorkplaceResolver },
             data: {
-              roles: [Roles.Edit],
+              roles: [Roles.Admin, Roles.Edit],
               title: 'Edit Permissions',
             },
           },
@@ -176,7 +244,11 @@ const routes: Routes = [
       {
         path: 'staff-record',
         loadChildren: '@features/workers/workers.module#WorkersModule',
-        data: { title: 'Staff Records' },
+        canActivate: [RoleGuard],
+        data: {
+          roles: [Roles.Admin, Roles.Edit],
+          title: 'Staff Records',
+        },
       },
       {
         path: 'reports',

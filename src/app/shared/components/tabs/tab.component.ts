@@ -18,6 +18,7 @@ import * as slugify from 'slugify';
 export class TabComponent implements OnInit {
   @Input() title;
   @Input() active = false;
+  @Input() alert = false;
   public slug: string;
 
   ngOnInit() {

@@ -9,20 +9,20 @@ import { WorkerService } from '@core/services/worker.service';
 export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
   public total: number;
   public returnToWDF = false;
-  public return: { url: any[] };
+  public returnUrl;
 
   constructor(private route: ActivatedRoute, private router: Router, private workerService: WorkerService) {}
 
   ngOnInit() {
     this.total = this.workerService.getCreateStaffResponse();
 
-    this.return.url =
+    this.returnUrl =
       this.route.snapshot.data.establishment.uid === this.route.snapshot.data.primaryWorkplace.uid
         ? ['/dashboard']
         : ['/workplace', this.route.snapshot.data.establishment.uid];
 
     if (this.total === 0) {
-      this.router.navigate(this.return.url, { fragment: 'staff-records', replaceUrl: true });
+      this.router.navigate(this.returnUrl, { fragment: 'staff-records', replaceUrl: true });
     }
     this.returnToWDF = this.workerService.returnTo && [...this.workerService.returnTo.url].pop() === 'wdf';
   }
@@ -40,7 +40,7 @@ export class BasicRecordsSaveSuccessComponent implements OnInit, OnDestroy {
       };
     }
     return {
-      link: this.return.url,
+      link: this.returnUrl,
       fragment: 'staff-records',
       label: 'Go to staff records',
     };

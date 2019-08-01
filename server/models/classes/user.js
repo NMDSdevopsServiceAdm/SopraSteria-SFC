@@ -26,6 +26,9 @@ const SEQUELIZE_DOCUMENT_TYPE = require('./user/userProperties').SEQUELIZE_DOCUM
 const bcrypt = require('bcrypt-nodejs');
 const passwordValidator = require('../../utils/security/passwordValidation').isPasswordValid;
 
+// establishment entity
+const Establishment = require('./establishment').Establishment;
+
 class User {
     constructor(establishmentId, trackingUUID=null) {
         this._establishmentId = establishmentId;           // NOTE - a User has a direct link to an Establishment; this is likely to change with parent/sub
@@ -434,7 +437,7 @@ class User {
             // we are updating an existing User
             try {
                 const updatedTimestamp = new Date();
-                
+
                 // need to update the existing User record and add an
                 //  updated audit event within a single transaction
                 await models.sequelize.transaction(async t => {
@@ -705,7 +708,7 @@ class User {
     };
 
     async delete(deletedBy, externalTransaction=null, associatedEntities=false) {
-    
+
         try {
             const updatedTimestamp = new Date();
 
@@ -748,7 +751,7 @@ class User {
                         registrationId: this._id
                     },
                     transaction: thisTransaction
-                    });     
+                    });
 
                     await models.addUserTracking.update(
                         {
@@ -770,11 +773,11 @@ class User {
                         event: {}
                     };
                     await models.userAudit.create(auditEvent, {transaction: thisTransaction});
-        
+
                     await models.sequelize.query('UPDATE  cqc."EstablishmentAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: oldUsername, usernameNew: randomNewUsername },type: models.sequelize.QueryTypes.UPDATE, transaction: thisTransaction });
                     await models.sequelize.query('UPDATE cqc."UserAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: oldUsername, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: thisTransaction });
                     await models.sequelize.query('UPDATE cqc."WorkerAudit" SET "Username" = :usernameNew WHERE "Username" = :username', { replacements: { username: oldUsername, usernameNew: randomNewUsername }, type: models.sequelize.QueryTypes.UPDATE, transaction: thisTransaction });
-    
+
                     AWSKinesis.userPump(AWSKinesis.DELETED, this.toJSON());
 
                     this._log(User.LOG_INFO, `Archived User with uid (${this._uid}) and id (${this._id})`);
@@ -835,7 +838,7 @@ class User {
                 {
                     model: models.login,
                     attributes: ['username', 'lastLogin']
-                } 
+                }
             ],
             attributes: ['uid', 'FullNameValue', 'EmailValue', 'UserRoleValue', 'created', 'updated', 'updatedBy','isPrimary'],
             order: [
@@ -862,9 +865,9 @@ class User {
             allUsers = allUsers.map((user) => {
                 return Object.assign(user, { status: user.username == null ? 'Pending' : 'Active'});
             });
-            
-            allUsers.sort((a, b) => { 
-                if((a.status > b.status)) return -1; 
+
+            allUsers.sort((a, b) => {
+                if((a.status > b.status)) return -1;
                 return (new Date(b.updated) - new Date(a.updated))
             });
         }
@@ -1072,104 +1075,8 @@ class User {
         if (filters) throw new Error("Filters not implemented");
 
         const primaryEstablishmentId = this._establishmentId;
-        //const myRole =  this._properties.get('UserRole');
-        const myRole = this._properties.get('UserRole') ? this._properties.get('UserRole').property : null;
 
-        // for each establishment, need:
-        //  1. Name
-        //  2. Main Service (by title)
-        //  3. Data Owner
-        //  4. Data Owner Permissions
-        //  5. Updated
-        //  6. UID (significantly to be able to navigate to the specific establishment)
-        //  7. ParentUID
-        let allSubResults = null;
-        let primaryEstablishmentRecord = null;
-
-        // first - get the user's primary establishment (every user will have a primary establishment)
-        const fetchResults = await models.establishment.findOne({
-            attributes: ['uid', 'isParent', 'parentUid', 'dataOwner', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
-            include: [
-                {
-                    model: models.services,
-                    as: 'mainService',
-                    attributes: ['id', 'name']
-                }
-            ],
-            where: {
-                "id": primaryEstablishmentId
-            }
-        });
-
-        if (fetchResults) {
-            // this is the primary establishemnt
-            primaryEstablishmentRecord = fetchResults;
-
-            // now, if the primary establishment is a parent
-            //  and if the user's role against their primary parent is Edit
-            //  fetch all other establishments associated with this parent
-            if ((myRole === 'Edit' || myRole === 'Admin') && isParent) {
-                // get all subsidaries associated with this parent
-                allSubResults = await models.establishment.findAll({
-                    attributes: ['uid', 'isParent', 'dataOwner', 'parentUid', 'LocalIdentifierValue', 'parentPermissions', 'NameValue', 'updated'],
-                    include: [
-                        {
-                            model: models.services,
-                            as: 'mainService',
-                            attributes: ['id', 'name']
-                        }
-                    ],
-                    where: {
-                        "parentUid": primaryEstablishmentRecord.uid
-                    },
-                    order: [
-                        ['updated','DESC']
-                    ]
-                });
-
-                // note - there is no error is there are no subs; an establishment can exist as a parent but with no subs
-            }
-            // else - do nothing - there is no error
-
-        } else {
-            return false;
-        }
-
-        // before returning, need to format the response
-        // explicit casting of local identifier to null if not yet set
-        const myEstablishments = {
-            primary: {
-                uid: primaryEstablishmentRecord.uid,
-                updated: primaryEstablishmentRecord.updated,
-                isParent: primaryEstablishmentRecord.isParent,
-                parentUid: primaryEstablishmentRecord.parentUid,
-                name: primaryEstablishmentRecord.NameValue,
-                localIdentifier: primaryEstablishmentRecord.LocalIdentifierValue ? primaryEstablishmentRecord.LocalIdentifierValue : null,
-                mainService: primaryEstablishmentRecord.mainService.name,
-                dataOwner: primaryEstablishmentRecord.dataOwner,
-                parentPermissions: isParent ? undefined : primaryEstablishmentRecord.parentPermissions,
-            }
-        };
-
-        if (allSubResults && allSubResults.length > 0) {
-            myEstablishments.subsidaries = {
-                count: allSubResults.length,
-                establishments: allSubResults.map(thisSub => {
-                    return {
-                        uid: thisSub.uid,
-                        updated: thisSub.updated,
-                        parentUid: thisSub.parentUid,
-                        name: thisSub.NameValue,
-                        localIdentifier: thisSub.LocalIdentifierValue ? thisSub.LocalIdentifierValue : null,
-                        mainService: thisSub.mainService.name,
-                        dataOwner: thisSub.dataOwner,
-                        parentPermissions: thisSub.parentPermissions,
-                    };
-                })
-            };
-        }
-
-        return myEstablishments;
+        return await Establishment.fetchMyEstablishments(isParent, primaryEstablishmentId);
     };
 
 };

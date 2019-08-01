@@ -5,7 +5,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { LocationAddress } from '@core/model/location.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { filter } from 'lodash';
+import { compact } from 'lodash';
 import { Subscription } from 'rxjs';
 
 export class SelectWorkplaceAddress implements OnInit, OnDestroy {
@@ -62,10 +62,6 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy {
     ];
   }
 
-  protected getSelectedLocation(addressLine1: string): LocationAddress {
-    return filter(this.locationAddresses, ['addressLine1', addressLine1])[0];
-  }
-
   public onLocationChange(addressLine1: string): void {}
 
   public onSubmit(): void {
@@ -83,14 +79,19 @@ export class SelectWorkplaceAddress implements OnInit, OnDestroy {
     if (!locationName.length) {
       this.router.navigate([`${this.flow}/enter-workplace-address`]);
     } else {
-      this.router.navigate([`${this.flow}/add-workplace/select-main-service`]);
+      this.router.navigate([`${this.flow}/select-main-service`]);
     }
   }
 
   public getLocationName(location: LocationAddress): string {
-    let name: string = location.locationName.length ? `${location.locationName}, ` : '';
-    name += `${location.addressLine1}, ${location.addressLine2} - ${location.townCity} ${location.postalCode}`;
-    return name;
+    const address = [
+      location.locationName,
+      location.addressLine1,
+      location.addressLine2,
+      location.townCity,
+      location.postalCode,
+    ];
+    return compact(address).join(', ');
   }
 
   /**

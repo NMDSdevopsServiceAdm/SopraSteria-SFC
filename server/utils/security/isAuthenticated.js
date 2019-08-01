@@ -36,9 +36,7 @@ exports.isAuthorised = (req, res , next) => {
   }
 };
 
-// this util middleware will block if the given request is not authorised but will also extract
-//  the EstablishmentID token, and make it available on the request
-exports.hasAuthorisedEstablishment = async (req, res, next) => {
+authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck) => {
   try {
     const token = getToken(req.headers[AUTH_HEADER]);
     const Token_Secret = config.get('jwt.secret');
@@ -123,6 +121,10 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
               }
             }
 
+            if(roleCheck && (req.method !== 'GET' && claim.role == 'Read')){
+              return res.status(403).send({message: `Not permitted`});
+            }
+
             req.establishmentId = referencedEstablishment.id;
             req.parentIsOwner = referencedEstablishment.dataOwner === 'Parent' ? true : false;
             req.parentPermissions = referencedEstablishment.parentPermissions;    // this will be required for Worker level access tests .../server/routes/establishments/worker.js::validateWorker
@@ -152,6 +154,11 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
           return res.status(403).send(`Not permitted to access Establishment with id: ${req.params.id}`);
         } else {
           // gets here and all is authorised
+
+          if(roleCheck && (req.method !== 'GET' && claim.role == 'Read')){
+            return res.status(403).send({message: `Not permitted`});
+          }
+        
           req.username= claim.sub;
           req.isParent = claim.isParent;
           req.role = claim.role;
@@ -196,6 +203,15 @@ exports.hasAuthorisedEstablishment = async (req, res, next) => {
     }
   }
 }
+
+exports.hasAuthorisedEstablishmentAllowAllRoles = async (req, res, next) => {
+  authorisedEstablishmentPermissionCheck(req, res, next, false);
+}
+
+exports.hasAuthorisedEstablishment = async (req, res, next) => {
+  authorisedEstablishmentPermissionCheck(req, res, next, true);
+}
+
 
 getToken = function (headers) {
   if (headers) {

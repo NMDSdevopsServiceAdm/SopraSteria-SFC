@@ -1,15 +1,14 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-import { CustomValidators } from '@shared/validators/custom-form-validators';
-
-import { PasswordResetService } from '@core/services/password-reset.service';
-import { UserService } from '@core/services/user.service';
-import { Subscription } from 'rxjs';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { HttpErrorResponse } from '@angular/common/http';
+import { PasswordResetService } from '@core/services/password-reset.service';
+import { UserService } from '@core/services/user.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-edit',
@@ -24,6 +23,7 @@ export class ChangePasswordEditComponent implements OnInit, OnDestroy {
   public serverErrorsMap: Array<ErrorDefinition>;
   public formErrorsMap: Array<ErrorDetails>;
   public serverError: string;
+  public return: URLStructure = { url: ['/account-management'] };
 
   constructor(
     private fb: FormBuilder,

@@ -1,6 +1,8 @@
 const BUDI = require('../BUDI').BUDI;
 const moment = require('moment');
 
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
+
 class Worker {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
     this._currentLine = currentLine;
@@ -449,7 +451,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is DELETE but worker does not exist`,
+              error: 'Staff has a status of delete but does not exist.  This will be ignored.',
               source: myStatus,
             });
           }
@@ -522,10 +524,10 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.DISPLAY_ID_WARNING,
-        warnType: `WORKER_DISPLAY_ID_WARNING`,
-        warning: `DISPLAYID is blank`,
-        source: this._currentLine.DISPLAYID,
+        errCode: Worker.DISPLAY_ID_ERROR,
+        errType: `DISPLAY_ID_ERROR`,
+        error: `DISPLAYID is blank`,
+        erro: this._currentLine.DISPLAYID,
       });
       return false;
     } else if (myDisplayId.length >= MAX_LENGTH) {
@@ -1331,7 +1333,7 @@ class Worker {
     const myMainJobRole = parseInt(this._currentLine.MAINJOBROLE, 10);
 
     // note - optional in bulk import spec, but mandatory in ASC WDS frontend and backend
-    if (!this._currentLine.MAINJOBROLE || this._currentLine.MAINJOBROLE.length == 0 || !myMainJobRole || isNaN(myMainJobRole) || myMainJobRole === 0) {
+    if (!this._currentLine.MAINJOBROLE || this._currentLine.MAINJOBROLE.length == 0 || isNaN(myMainJobRole)) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
@@ -1629,6 +1631,9 @@ class Worker {
   _validateRegisteredNurse() {
     const myRegisteredNurse = parseInt(this._currentLine.NMCREG, 10);
     const NURSING_ROLE = 16;
+    const otherJobRoleIsNurse = this._otherJobs && this._otherJobs.includes(NURSING_ROLE) ? true : false;
+    const mainJobRoleIsNurse = this._mainJobRole && this._mainJobRole === NURSING_ROLE ? true : false;
+    const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
     if (((this._mainJobRole && this._mainJobRole === NURSING_ROLE) ||
         (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) &&
@@ -1643,16 +1648,14 @@ class Worker {
         source: this._currentLine.NMCREG,
       });
       return false;
-    } else if (((this._mainJobRole && this._mainJobRole !== NURSING_ROLE) &&
-                (this._otherJobs && !this._otherJobs.includes(NURSING_ROLE))) &&
-                (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0)) {
+    } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         warnCode: Worker.NMCREG_WARNING,
         warnType: 'NMCREG_WARNING',
-        warning: "NMCREG will be ignored as this is not required for the MAINJOBROLE",
+        warning: "NMCREG will be ignored as this is not required for the MAINJOBROLE/OTHERJOBROLE",
         source: this._currentLine.NMCREG,
       });
       return false;
@@ -1665,6 +1668,9 @@ class Worker {
   _validateNursingSpecialist() {
     const myNursingSpecialist = parseFloat(this._currentLine.NURSESPEC);
     const NURSING_ROLE = 16;
+    const otherJobRoleIsNurse = this._otherJobs && this._otherJobs.includes(NURSING_ROLE) ? true : false;
+    const mainJobRoleIsNurse = this._mainJobRole && this._mainJobRole === NURSING_ROLE ? true : false;
+    const notNurseRole = !(otherJobRoleIsNurse || mainJobRoleIsNurse);
 
     if (((this._mainJobRole && this._mainJobRole === NURSING_ROLE) ||
     (this._otherJobs && this._otherJobs.includes(NURSING_ROLE))) &&
@@ -1679,16 +1685,14 @@ class Worker {
         source: this._currentLine.NURSESPEC,
       });
       return false;
-    } else if (((this._mainJobRole && this._mainJobRole !== NURSING_ROLE) &&
-      (this._otherJobs && !this._otherJobs.includes(NURSING_ROLE))) &&
-      (this._currentLine.NURSESPEC  && this._currentLine.NURSESPEC.length !== 0)) {
+    } else if (this._currentLine.NMCREG && this._currentLine.NMCREG.length !== 0 && notNurseRole) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         warnCode: Worker.NURSE_SPEC_WARNING,
         warnType: 'NURSE_SPEC_WARNING',
-        warning: "NURSESPEC will be ignored as this is not required for the MAINJOBROLE",
+        warning: "NURSESPEC will be ignored as this is not required for the MAINJOBROLE/OTHERJOBROLE",
         source: this._currentLine.NURSESPEC,
       });
       return false;
@@ -1704,6 +1708,10 @@ class Worker {
     const myAmhp = parseInt(this._currentLine.AMHP);
     const SOCIAL_WORKER_ROLE = 6;
 
+    const otherJobRoleIsSocialWorker = this._otherJobs && this._otherJobs.includes(SOCIAL_WORKER_ROLE) ? true : false;
+    const mainJobRoleIsSocialWorker = this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE ? true : false;
+    const notSocialWorkerRole = !(otherJobRoleIsSocialWorker || mainJobRoleIsSocialWorker);
+
     if (((this._mainJobRole && this._mainJobRole === SOCIAL_WORKER_ROLE) ||
       (this._otherJobs && this._otherJobs.includes(SOCIAL_WORKER_ROLE))) &&
       ( isNaN(myAmhp) )) {
@@ -1718,16 +1726,14 @@ class Worker {
       });
       return false;
     }
-    else if (((this._mainJobRole && this._mainJobRole !== SOCIAL_WORKER_ROLE) &&
-      (this._otherJobs && !this._otherJobs.includes(SOCIAL_WORKER_ROLE))) &&
-      (this._currentLine.AMHP)) {
+    else if (this._currentLine.AMHP && this._currentLine.AMHP.length > 0 && notSocialWorkerRole) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
         warnCode: Worker.AMHP_WARNING,
         warnType: 'AMHP_WARNING',
-        warning: "The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE",
+        warning: "The code you have entered for AMHP will be ignored as not required for this MAINJOBROLE/OTHERJOBROLE",
         source: this._currentLine.AMHP,
       });
       return false;
@@ -1834,8 +1840,8 @@ class Worker {
         worker: this._currentLine.UNIQUEWORKERID,
         name: this._currentLine.LOCALESTID,
         lineNumber: this._lineNumber,
-        warnCode: Worker.SOCIALCARE_QUAL_WANRING,
-        warnType: 'SOCIALCARE_QUAL_WANRING',
+        warnCode: Worker.SOCIALCARE_QUAL_WARNING,
+        warnType: 'SOCIALCARE_QUAL_WARNING',
         warning: "SCQUAL is blank",
         source: this._currentLine.SCQUAL,
       });
@@ -1953,6 +1959,7 @@ class Worker {
 
         return false;
       } else {
+        this._nonSocialCareQualification = myNonSocialCareIndicator;
         return true;
       }
     }
@@ -1964,6 +1971,9 @@ class Worker {
 
     // optional
     if (qualification && qualification.length > 0) {
+
+      console.log("WA DEBUG - validation qualification: ", myQualification)
+
       const localValidationErrors = [];
 
       const qualificationId = parseInt(myQualification[0], 10);
@@ -1981,8 +1991,9 @@ class Worker {
       }
 
       // if the social care indicator is "1" (yes) - then get the next value which must be the level
-      const qualificationYear = parseInt(myQualification[1]);
-      if (myQualification[1] === null || myQualification[1].length === 0) {
+      const qualificationYear = parseInt(myQualification[1], 10);
+      const qualificationYearIsValid = Number.isInteger(myQualification[1]);
+      if (myQualification[1] === null || myQualification[1] === undefined || myQualification[1].length === 0) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1992,7 +2003,17 @@ class Worker {
           warning: `Year achieved for ${qualificationName} is blank`,
           source: qualification,
         });
-      } else if (myQualification[1] !== null && isNaN(qualificationYear)) {
+      } else if (myQualification[1] === null) {
+        localValidationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: qualificationError,
+          warnType: qualificationErrorName,
+          warning: `Year achieved for(${qualificationName}) is blank`,
+          source: qualification,
+        });
+      } else if (myQualification[1] !== null && (isNaN(qualificationYear) || !qualificationYearIsValid)) {
         localValidationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -2445,7 +2466,6 @@ class Worker {
   validate() {
     let status = true;
 
-    status = !this._validateContractType() ? false : status;
     status = !this._validateLocalId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateChangeUniqueWorkerId() ? false : status;
@@ -2453,8 +2473,8 @@ class Worker {
     status = !this._validateStatus() ? false : status;
 
     // only continue to process validation, if the status is not UNCHECKED or DELETED
-    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
     if (!STOP_VALIDATING_ON.includes(this._status)) {
+      status = !this._validateContractType() ? false : status;
       status = !this._validateNINumber() ? false : status;
       status = !this._validatePostCode() ? false : status;
       status = !this._validateDOB() ? false : status;
@@ -2494,7 +2514,6 @@ class Worker {
   // returns true on success, false is any attribute of Worker fails
   transform() {
     // if this Worker is unchecked/deleted, skip all transformations
-    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
 

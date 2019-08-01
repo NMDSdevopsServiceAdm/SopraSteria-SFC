@@ -13,6 +13,7 @@ import { isNull } from 'util';
 export class Question implements OnInit, OnDestroy {
   public form: FormGroup;
   public establishment: Establishment;
+  public primaryWorkplace: Establishment;
   public submitted = false;
 
   public return: URLStructure;
@@ -41,6 +42,7 @@ export class Question implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe(establishment => {
         this.establishment = establishment;
+        this.primaryWorkplace = this.establishmentService.primaryWorkplace;
 
         if (!this.initiated) {
           this._init();
@@ -84,7 +86,11 @@ export class Question implements OnInit, OnDestroy {
         break;
 
       case 'exit':
-        this.router.navigate(['/dashboard'], { fragment: 'workplace' });
+        const url =
+          this.establishment.uid === this.primaryWorkplace.uid
+            ? ['/dashboard']
+            : ['/workplace', this.establishment.uid];
+        this.router.navigate(url, { fragment: 'workplace' });
         break;
 
       case 'return':

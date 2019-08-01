@@ -1,0 +1,85 @@
+<app-error-summary
+  *ngIf="serverError"
+  [serverError]="serverError"
+  [formErrorsMap]="serverErrorsMap"
+></app-error-summary>
+
+<div class="govuk-grid-row" id="server-error">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <h1 class="govuk-heading-l">Confirm your workplace details</h1>
+    <p class="govuk-heading-m">Are these details correct?</p>
+
+    <dl class="govuk-summary-list">
+      <div class="govuk-summary-list__row" *ngIf="locationAddress.locationId">
+        <dt class="govuk-summary-list__key">
+          CQC Location ID
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ locationAddress.locationId }}
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="[flow, 'regulated-by-cqc']">
+            Change
+            <span class="govuk-visually-hidden"> location ID</span>
+          </a>
+        </dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Workplace name
+        </dt>
+        <dd class="govuk-summary-list__value">
+          {{ locationAddress.locationName }}
+        </dd>
+        <dd class="govuk-summary-list__actions">&nbsp;</dd>
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Address
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <address
+            *ngIf="locationAddress.addressLine1 || locationAddress.addressLine2"
+            class="govuk-util__font-style-normal"
+          >
+            <div *ngIf="locationAddress.addressLine1">{{ locationAddress.addressLine1 }}</div>
+            <div *ngIf="locationAddress.addressLine2">{{ locationAddress.addressLine2 }}</div>
+            <div *ngIf="locationAddress.townCity">{{ locationAddress.townCity }}</div>
+            <div *ngIf="locationAddress.county">{{ locationAddress.county }}</div>
+            <div *ngIf="locationAddress.postalCode">{{ locationAddress.postalCode }}</div>
+          </address>
+        </dd>
+        <dd class="govuk-summary-list__actions">&nbsp;</dd>
+        <!-- TODO remove this -->
+      </div>
+      <div class="govuk-summary-list__row">
+        <dt class="govuk-summary-list__key">
+          Main service provided
+        </dt>
+        <dd class="govuk-summary-list__value">
+          <ng-container *ngIf="workplace.otherName; else showName">
+            {{ workplace.otherName }}
+          </ng-container>
+          <ng-template #showName>
+            {{ workplace.name }}
+          </ng-template>
+        </dd>
+        <dd class="govuk-summary-list__actions">
+          <a [routerLink]="[flow, 'select-main-service']">
+            Change
+            <span class="govuk-visually-hidden"> main service</span>
+          </a>
+        </dd>
+      </div>
+    </dl>
+
+    <p class="govuk-!-margin-bottom-6">
+      <a [routerLink]="[flow, 'select-workplace-address']">
+        This is not my workplace
+      </a>
+    </p>
+    <button type="button" class="govuk-button" (click)="continue()">
+      Continue
+    </button>
+  </div>
+</div>

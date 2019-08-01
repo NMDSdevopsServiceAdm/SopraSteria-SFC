@@ -1,7 +1,9 @@
 import { I18nPluralPipe } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { Roles } from '@core/model/roles.enum';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { isArray } from 'util';
 
@@ -13,6 +15,7 @@ import { isArray } from 'util';
 export class WorkplaceSummaryComponent {
   public capacityMessages = [];
   public pluralMap = [];
+  public canEdit: boolean;
   private _workplace: any;
   @Input() wdfView = false;
   @Input() workerCount?: number;
@@ -48,9 +51,14 @@ export class WorkplaceSummaryComponent {
     return this._workplace;
   }
 
+  get totalStaffWarning() {
+    return this.workplace.numberOfStaff !== this.workerCount;
+  }
+
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
     private establishmentService: EstablishmentService,
+    private userService: UserService,
     private workerService: WorkerService
   ) {
     this.pluralMap['How many beds do you currently have?'] = {
@@ -73,6 +81,8 @@ export class WorkplaceSummaryComponent {
       '=1': '# person using the service',
       other: '# people using the service',
     };
+
+    this.canEdit = this.userService.loggedInUser.role !== Roles.Read;
   }
 
   public isArray(variable): boolean {
@@ -82,9 +92,5 @@ export class WorkplaceSummaryComponent {
   public setReturn(): void {
     this.establishmentService.setReturnTo(this.return);
     this.workerService.setReturnTo(this.return);
-  }
-
-  get totalStaffWarning() {
-    return this.workplace.numberOfStaff !== this.workerCount;
   }
 }

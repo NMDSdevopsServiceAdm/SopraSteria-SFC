@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
+import { Roles } from '@core/model/roles.enum';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
@@ -14,6 +15,7 @@ import { Subscription } from 'rxjs';
 })
 export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
+  public canAddWorkplace: boolean;
   public primaryWorkplace: Establishment;
   public serverError: string;
   public serverErrorsMap: ErrorDefinition[] = [];
@@ -27,6 +29,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.canAddWorkplace = this.userService.loggedInUser.role === (Roles.Edit || Roles.Admin);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.getEstablishments();
     this.setupServerErrorsMap();

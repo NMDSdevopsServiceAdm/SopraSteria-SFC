@@ -35,6 +35,7 @@ export class ChangeYourDetailsComponent extends AccountDetails {
   protected init() {
     this.breadcrumbService.show();
     this.setupSubscriptions();
+    this.return = { url: ['/account-management'] };
 
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
   }

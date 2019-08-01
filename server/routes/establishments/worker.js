@@ -40,6 +40,10 @@ const validateWorker = async (req, res, next) => {
       }
     }
 
+    if(req.role == 'Read'){
+        return res.status(401).send({message: `Not permitted`});
+    }
+
     if (workerId && workerId !== 'localIdentifier') {
         // validating worker id - must be a V4 UUID
         const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
@@ -64,54 +68,22 @@ const validateWorker = async (req, res, next) => {
     }
 };
 
+const allowAll = (req,res,next) => { next(); }
+router.use('/total', allowAll);
+router.route('/total').get(async (req, res) => {
+    const establishmentId = req.establishmentId;
 
-const updateLocalIdOnWorker = async (thisGivenWorker, transaction, updatedTimestamp, username, allAuditEvents) => {
-    const updatedWorker = await models.worker.update(
-    {
-        LocalIdentifierValue: thisGivenWorker.value,
-        LocalIdentifierSavedBy: username,
-        LocalIdentifierChangedBy: username,
-        LocalIdentifierSavedAt: updatedTimestamp,
-        LocalIdentifierChangedAt: updatedTimestamp,
-        updated: updatedTimestamp,
-        updatedBy: username,
-    },
-    {
-        returning: true,
-        where: {
-            uid: thisGivenWorker.uid
-        },
-        attributes: ['id', 'updated'],
-        transaction,
+    try {
+        const allTheseWorkers = await Workers.Worker.fetch(establishmentId);
+        return res.status(200).json({
+            total: allTheseWorkers.length
+        });
+    } catch (err) {
+        console.error('worker::GET:total - failed', err);
+        return res.status(503).send('Failed to get total workers for establishment having id: '+establishmentId);
     }
-    );
+});
 
-    if (thisGivenWorker[0] === 1) {
-    const updatedRecord = thisGivenWorker[1][0].get({plain: true});
-
-    allAuditEvents.push({
-        workerFk: updatedRecord._id,
-        username,
-        type: 'updated'
-    });
-
-    allAuditEvents.push({
-        workerFk: updatedRecord._id,
-        username,
-        type: 'saved',
-        property: 'LocalIdentifier',
-    });
-    allAuditEvents.push({
-        workerFk: updatedRecord._id,
-        username,
-        type: 'changed',
-        property: 'LocalIdentifier',
-        event: {
-        new: thisGivenWorker.value
-        }
-    });
-    }
-}
 
 router.use('/:workerId/training', [validateWorker, TrainingRoutes]);
 router.use('/:workerId/qualification', [validateWorker, QualificationRoutes]);
@@ -133,6 +105,7 @@ router.route('/').get(async (req, res) => {
     }
 });
 
+
 // Update all worker ids in one transaction
 router.route('/localIdentifier').put(async (req, res) => {
     const establishmentId = req.establishmentId;
@@ -149,29 +122,9 @@ router.route('/localIdentifier').put(async (req, res) => {
     try {
       // as a minimum for security purposes, we restore the user's primary establishment
       if (await thisEstablishment.restore(establishmentId)) {
-
-        const myWorkers = await Workers.Worker.fetch(establishmentId);
-
-        const myWorkersUIDs = myWorkers.map(worker => worker.uid);
+        const updatedUids = await Workers.Worker.bulkUpdateLocalIdentifiers(username, establishmentId, givenLocalIdentifiers);
 
         const updatedTimestamp = new Date();
-        const updatedUids = [];
-        await models.sequelize.transaction(async t => {
-          const dbUpdatePromises = [];
-          const allAuditEvents = [];
-
-          givenLocalIdentifiers.forEach(thisGivenWorker => {
-            if (thisGivenWorker && thisGivenWorker.uid && myWorkersUIDs.includes(thisGivenWorker.uid)) {
-              const updateThisWorker = updateLocalIdOnWorker(thisGivenWorker, t, updatedTimestamp, username, allAuditEvents);
-              dbUpdatePromises.push(updateThisWorker);
-              updatedUids.push(thisGivenWorker);
-            }
-          });
-
-          await Promise.all(dbUpdatePromises);
-          await models.workerAudit.bulkCreate(allAuditEvents, {transaction: t});
-        });
-
         return res.status(200).json({
           id: thisEstablishment.id,
           uid: thisEstablishment.uid,

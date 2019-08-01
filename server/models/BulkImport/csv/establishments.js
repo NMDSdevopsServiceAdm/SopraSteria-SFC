@@ -1,5 +1,7 @@
 const BUDI = require('../BUDI').BUDI;
 
+const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
+
 class Establishment {
   constructor(currentLine, lineNumber, allCurrentEstablishments) {
     this._currentLine = currentLine;
@@ -281,7 +283,7 @@ class Establishment {
               lineNumber: this._lineNumber,
               errCode: Establishment.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is DELETE but establishment does not exist`,
+              error: 'Workplace has a status of delete but does not exist.  This will be ignored.',
               source: myStatus,
             });
           }
@@ -659,7 +661,7 @@ class Establishment {
         name: this._currentLine.LOCALESTID,
       });
       return false;
-    } else if (this._regType !== null && this._regType == 1) {
+    } else if (this._regType !== null && this._regType == 2) {
       this._provID = myprovID;
       return true;
     } else if (this._regType !== null && this._regType == 0 && myprovID && myprovID.length > 0) {
@@ -1668,7 +1670,6 @@ class Establishment {
     status = !this._validateStatus() ? false : status;
 
     // if the status is unchecked or deleted, then don't continue validation
-    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       status = !this._validateAddress() ? false : status;
       status = !this._validateEstablishmentType() ? false : status;
@@ -1699,7 +1700,6 @@ class Establishment {
   // returns true on success, false is any attribute of Establishment fails
   transform() {
     // if the status is unchecked or deleted, then don't transform
-    const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE'];
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
 

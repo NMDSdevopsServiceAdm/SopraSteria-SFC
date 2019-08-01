@@ -24,6 +24,10 @@ interface LeaveReasonsResponse {
   reasons: Array<Reason>;
 }
 
+interface TotalStaffRecordsResponse {
+  total: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -85,6 +89,12 @@ export class WorkerService {
 
   public getAllWorkers(establishmentuid: string): Observable<Worker[]> {
     return this.http.get<WorkersResponse>(`/api/establishment/${establishmentuid}/worker`).pipe(map(w => w.workers));
+  }
+
+  public getTotalStaffRecords(establishmentuid: string): Observable<number> {
+    return this.http
+      .get<TotalStaffRecordsResponse>(`/api/establishment/${establishmentuid}/worker/total`)
+      .pipe(map(response => response.total));
   }
 
   getLeaveReasons() {
