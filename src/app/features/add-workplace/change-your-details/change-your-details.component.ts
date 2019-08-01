@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LocationAddress } from '@core/model/location.model';
-import { UserDetails } from '@core/model/userDetails.model';
 import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { WorkplaceService } from '@core/services/workplace.service';
 import { AccountDetails } from '@features/account/account-details/account-details';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-change-your-details',
@@ -19,12 +20,13 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   constructor(
     private createAccountService: CreateAccountService,
+    private workplaceService: WorkplaceService,
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
-    protected fb: FormBuilder,
+    protected formBuilder: FormBuilder,
     protected router: Router
   ) {
-    super(backService, errorSummaryService, fb, router);
+    super(backService, errorSummaryService, formBuilder, router);
   }
 
   protected init() {
@@ -36,11 +38,15 @@ export class ChangeYourDetailsComponent extends AccountDetails {
 
   private setupSubscription(): void {
     this.subscriptions.add(
-      this.createAccountService.userDetails$.subscribe((userDetails: UserDetails) => {
-        if (userDetails) {
-          this.prefillForm(userDetails);
+      combineLatest(this.workplaceService.selectedLocationAddress$, this.createAccountService.userDetails$).subscribe(
+        ([locationAddress, userDetails]) => {
+          this.locationAddress = locationAddress;
+
+          if (userDetails) {
+            this.prefillForm(userDetails);
+          }
         }
-      })
+      )
     );
   }
 
