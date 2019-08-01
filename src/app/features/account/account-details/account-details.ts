@@ -168,6 +168,17 @@ export class AccountDetails implements OnInit, OnDestroy {
     }
   }
 
+  protected prefillForm(userDetails: UserDetails): void {
+    if (userDetails) {
+      this.form.setValue({
+        email: userDetails.email,
+        fullname: userDetails.fullname,
+        jobTitle: userDetails.jobTitle,
+        phone: userDetails.phone,
+      });
+    }
+  }
+
   protected onError(response: HttpErrorResponse): void {
     if (response.status === 400) {
       this.serverErrorsMap[1].message = response.error;
