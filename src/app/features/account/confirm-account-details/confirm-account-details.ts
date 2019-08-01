@@ -74,10 +74,6 @@ export class ConfirmAccountDetails implements OnInit, OnDestroy {
         name: 401,
         message: 'Unauthorized.',
       },
-      {
-        name: 404,
-        message: 'User not found or does not belong to the given establishment.',
-      },
     ];
   }
 
