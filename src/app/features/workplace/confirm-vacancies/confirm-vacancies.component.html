@@ -12,7 +12,7 @@
         class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
         role="button"
         draggable="false"
-        [routerLink]="['/workplace', this.establishment.id, 'starters']"
+        [routerLink]="['/workplace', this.establishment.uid, 'starters']"
       >
         Save and {{ return ? 'return' : 'continue' }}
       </a>
@@ -21,7 +21,7 @@
         class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
         role="button"
         draggable="false"
-        [routerLink]="['/workplace', this.establishment.id, 'vacancies']"
+        [routerLink]="['/workplace', this.establishment.uid, 'vacancies']"
       >
         Make a change <span class="govuk-visually-hidden">to the number of current staff vacancies</span>
       </a>

@@ -53,8 +53,8 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
       this.router.navigate(this.previous, { replaceUrl: true });
     }
 
-    this.next = ['/workplace', `${this.establishment.id}`, 'vacancies'];
-    this.previous = ['/workplace', `${this.establishment.id}`, 'sharing-data'];
+    this.next = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
+    this.previous = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
 
     this.subscriptions.add(
       this.localAuthorityService.getAuthorities().subscribe(authorities => (this.authorities = authorities))
@@ -117,7 +117,7 @@ export class DataSharingWithLocalAuthoritiesComponent extends Question {
   protected updateEstablishment(props) {
     this.subscriptions.add(
       this.establishmentService
-        .updateLocalAuthorities(this.establishment.id, props)
+        .updateLocalAuthorities(this.establishment.uid, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }

@@ -1,14 +1,14 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavigationExtras, Router } from '@angular/router';
+import { Router } from '@angular/router';
+import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { LoginCredentials } from '@core/model/login-credentials.model';
 import { AuthService } from '@core/services/auth.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { IdleService } from '@core/services/idle.service';
 import { Subscription } from 'rxjs';
-import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { HttpErrorResponse } from '@angular/common/http';
 
 const PING_INTERVAL = 240;
 const TIMEOUT_INTERVAL = 1800;
@@ -122,11 +122,11 @@ export class LoginComponent implements OnInit, OnDestroy {
         response => {
           this.authService.updateState(response.body);
 
-          if (response.body.establishment && response.body.establishment.id) {
-            this.establishmentService.checkIfSameLoggedInUser(response.body.establishment.id);
+          if (response.body.establishment && response.body.establishment.uid) {
+            this.establishmentService.checkIfSameLoggedInUser(response.body.establishment.uid);
 
             // update the establishment service state with the given establishment id
-            this.establishmentService.establishmentId = response.body.establishment.id;
+            this.establishmentService.establishmentId = response.body.establishment.uid;
           }
 
           const token = response.headers.get('authorization');

@@ -86,7 +86,7 @@ export class Question implements OnInit, OnDestroy {
         break;
 
       case 'summary':
-        this.router.navigate(['/workplace', this.establishment.id, 'check-answers']);
+        this.router.navigate(['/workplace', this.establishment.uid, 'check-answers']);
         break;
 
       case 'exit':
