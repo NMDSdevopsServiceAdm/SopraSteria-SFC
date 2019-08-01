@@ -104,8 +104,6 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
   }
 
   private createAccount(establishmentUid: string) {
-    console.log('response', establishmentUid);
-
     return this.createAccountService
       .createAccount(establishmentUid, this.generateCreateAccountRequest())
       .pipe(take(1))
