@@ -15,7 +15,7 @@ import { combineLatest } from 'rxjs';
 })
 export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
   public serverError: string;
-  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverErrorsMap: ErrorDefinition[] = this.workplaceService.serverErrorsMap;
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
@@ -29,17 +29,7 @@ export class ConfirmWorkplaceDetailsComponent extends ConfirmWorkplaceDetails {
 
   protected init(): void {
     this.flow = '/add-workplace';
-    this.setupServerErrorsMap();
     this.getWorkplaceData();
-  }
-
-  public setupServerErrorsMap(): void {
-    this.serverErrorsMap = [
-      {
-        name: 400,
-        message: 'Data validation error.',
-      },
-    ];
   }
 
   protected getWorkplaceData(): void {
