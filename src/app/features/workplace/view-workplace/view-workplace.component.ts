@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { ParentPermissions } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
@@ -29,7 +29,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
     private alertService: AlertService,
     private dialogService: DialogService,
@@ -40,7 +39,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
-    this.workplace = this.route.snapshot.data.establishment;
+    this.workplace = this.establishmentService.establishment;
 
     this.subscriptions.add(
       this.workerService.getTotalStaffRecords(this.workplace.uid).subscribe(total => (this.totalStaffRecords = total))
