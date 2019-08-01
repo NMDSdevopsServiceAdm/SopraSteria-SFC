@@ -429,11 +429,11 @@ class Establishment extends EntityValidator {
                         }
 
                       } else {
-                        const newWorker = new Worker(null);
+                            const newWorker = new Worker(null);
 
-                        // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-                        this.associateWorker(thisWorker.key, newWorker);
-                        promises.push(newWorker.load(thisWorker, true));
+                            // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                            this.associateWorker(thisWorker.key, newWorker);
+                            promises.push(newWorker.load(thisWorker, true));
                       }
 
                     });
@@ -607,7 +607,7 @@ class Establishment extends EntityValidator {
                     parentPermissions: this._parentPermissions,
                     isRegulated: this._isRegulated,
                     locationId: this._locationId,
-                    proviId: this._provId,
+                    provId: this._provId,
                     MainServiceFKValue: this.mainService.id,
                     nmdsId: this._nmdsId,
                     updatedBy: savedBy.toLowerCase(),

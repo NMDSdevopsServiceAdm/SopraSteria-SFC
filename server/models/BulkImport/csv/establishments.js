@@ -281,9 +281,9 @@ class Establishment {
             this._validationErrors.push({
               name: this._currentLine.LOCALESTID,
               lineNumber: this._lineNumber,
-              warnCode: Establishment.STATUS_WARNING,
-              warnType: `STATUS_WARNING`,
-              warning: 'Workplace has a status of delete but does not exist.  This will be ignored.',
+              errCode: Establishment.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: 'Workplace has a status of delete but does not exist.  This will be ignored.',
               source: myStatus,
             });
           }
