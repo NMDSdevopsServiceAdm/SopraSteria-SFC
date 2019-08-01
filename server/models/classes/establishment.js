@@ -1911,19 +1911,67 @@ class Establishment extends EntityValidator {
             and "Worker"."Archived" = false
             and ("Establishment"."LocalIdentifierValue" is null OR "Worker"."LocalIdentifierValue" is null)`;
 
+        const missingEstablishmentsWithWorkerCountQuery = `
+            select
+                "EstablishmentID",
+                "EstablishmentUID",
+                "NameValue",
+                "EstablishmentLocal",
+                CASE WHEN "EstablishmentLocal" IS NULL THEN 0 ELSE count(0) END AS TotalWorkers
+            from (
+                select
+                    "EstablishmentID",
+                    "EstablishmentUID",
+                    "NameValue",
+                    "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
+                    "Worker"."ID" AS "WorkerID",
+                    "WorkerUID",
+                    "NameOrIdValue",
+                    "Worker"."LocalIdentifierValue" AS "WorkerLocal"
+                from cqc."Establishment"
+                    inner join cqc."Worker" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
+                where (("EstablishmentID" = 30) OR ("ParentID" = 30 AND "Owner" = 'Parent'))
+                and "Establishment"."Archived" = false
+                and "Worker"."Archived" = false
+                and ("Establishment"."LocalIdentifierValue" is null OR "Worker"."LocalIdentifierValue" is null)
+            ) ByEstablishment
+            group by "EstablishmentID", "EstablishmentUID", "NameValue", "EstablishmentLocal"
+            order by "EstablishmentID"`;
+
         const results = await models.sequelize.query(
-            query,
+            missingEstablishmentsWithWorkerCountQuery,
             {
               type: models.sequelize.QueryTypes.SELECT
             }
           );
 
-          // note - postgres returns the Total as a string not an integer
-        if (results && results[0] && parseInt(results[0].Total,10) === 0) {
-          return false;
-        } else {
-          return true;
+        // note - postgres returns the Total as a string not an integer
+        // eg.:
+        // [ { EstablishmentID: 30,
+        //     EstablishmentUID: '2d3fcc78-c9e8-4723-8927-a9c11988ba51',
+        //     NameValue: 'WOZiTech Rest Home for IT Professionals',
+        //     EstablishmentLocal: null,
+        //     totalworkers: '0' },
+        //   { EstablishmentID: 104,
+        //     EstablishmentUID: 'defefda6-9730-4c72-a505-6807ded10c21',
+        //     NameValue: 'WOZiTech Cares Sub 2',
+        //     EstablishmentLocal: 'BOB2',
+        //     totalworkers: '1' } ]
+        //
+        const missingEstablishments = [];
+        if (results && Array.isArray(results)) {
+            results.forEach(thisEstablishment => {
+                const totalWorkers = parseInt(thisEstablishment.totalworkers);
+                missingEstablishments.push({
+                    uid: thisEstablishment.EstablishmentUID,
+                    name: thisEstablishment.NameValue,
+                    missing: thisEstablishment.EstablishmentLocal === null ? true : undefined,
+                    workers: totalWorkers,
+                });
+            })
         }
+
+        return missingEstablishments;
       } catch (err) {
         console.error('Establishment::missingLocalIdentifiers error: ', err);
         throw err;
