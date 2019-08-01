@@ -429,18 +429,11 @@ class Establishment extends EntityValidator {
                         }
 
                       } else {
-                        // only if create the Worker if new
-                        if (thisWorker.status === 'NEW') {
-                          const newWorker = new Worker(null);
+                            const newWorker = new Worker(null);
 
-                          // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
-                          this.associateWorker(thisWorker.key, newWorker);
-                          promises.push(newWorker.load(thisWorker, true));
-                        }
-                        // else ignore it
-                        else {
-                          console.log("WA DEBUG - ignoring: ", thisWorker)
-                        }
+                            // TODO - until we have Worker.localIdentifier we only have Worker.nameOrId to use as key
+                            this.associateWorker(thisWorker.key, newWorker);
+                            promises.push(newWorker.load(thisWorker, true));
                       }
 
                     });

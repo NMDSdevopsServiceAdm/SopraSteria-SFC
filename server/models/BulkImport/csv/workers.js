@@ -449,9 +449,9 @@ class Worker {
               name: this._currentLine.LOCALESTID,
               worker: this._currentLine.UNIQUEWORKERID,
               lineNumber: this._lineNumber,
-              warnCode: Worker.STATUS_WARNING,
-              warnType: `STATUS_WARNING`,
-              warning: 'Staff has a status of delete but does not exist.  This will be ignored.',
+              errCode: Worker.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: 'Staff has a status of delete but does not exist.  This will be ignored.',
               source: myStatus,
             });
           }
