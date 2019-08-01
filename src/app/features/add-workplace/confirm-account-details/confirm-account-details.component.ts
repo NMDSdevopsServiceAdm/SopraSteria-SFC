@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CreateAccountRequest } from '@core/model/account.model';
+import { CreateAccountRequest, CreateAccountResponse } from '@core/model/account.model';
 import { Roles } from '@core/model/roles.enum';
 import { BackService } from '@core/services/back.service';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
@@ -40,13 +40,16 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
 
   protected setupSubscriptions(): void {
     this.subscriptions.add(
-      combineLatest(this.createAccountService.userDetails$, this.workplaceService.selectedWorkplaceService$).subscribe(
-        ([userDetails, workplaceService]) => {
-          this.userDetails = userDetails;
-          this.service = workplaceService;
-          this.setAccountDetails();
-        }
-      )
+      combineLatest(
+        this.createAccountService.userDetails$,
+        this.workplaceService.selectedLocationAddress$,
+        this.workplaceService.selectedWorkplaceService$
+      ).subscribe(([userDetails, locationAddress, workplaceService]) => {
+        this.userDetails = userDetails;
+        this.locationAddress = locationAddress;
+        this.service = workplaceService;
+        this.setAccountDetails();
+      })
     );
   }
 
@@ -83,7 +86,10 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetails {
           this.establishmentService.primaryWorkplace.uid,
           this.workplaceService.generateAddWorkplaceRequest(this.locationAddress, this.service)
         )
-        .subscribe((response: any) => this.createAccount(response), (error: HttpErrorResponse) => this.onError(error))
+        .subscribe(
+          (response: CreateAccountResponse) => this.createAccount(response.establishmentUid),
+          (error: HttpErrorResponse) => this.onError(error)
+        )
     );
   }
 

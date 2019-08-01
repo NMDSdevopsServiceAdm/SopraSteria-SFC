@@ -8,6 +8,14 @@ export interface CreateAccountRequest {
   role: Roles;
 }
 
+export interface CreateAccountResponse {
+  establishmentId: number;
+  establishmentUid: string;
+  message: string;
+  nmdsId: string;
+  status: number;
+}
+
 export interface ActivateAccountRequest {
   addUserUUID: string;
   email: string;
