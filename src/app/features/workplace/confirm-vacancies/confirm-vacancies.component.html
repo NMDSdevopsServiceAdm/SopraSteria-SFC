@@ -14,7 +14,7 @@
         draggable="false"
         [routerLink]="['/workplace', this.establishment.id, 'starters']"
       >
-        Save and continue
+        Save and {{ return ? 'return' : 'continue' }}
       </a>
       <span class="govuk-visually-hidden">or</span>
       <a

@@ -216,16 +216,17 @@ export class StartersComponent extends Question {
   protected updateEstablishment(props: UpdateJobsRequest): void {
     this.subscriptions.add(
       this.establishmentService
-        .updateJobs(this.establishment.id, props)
+        .updateJobs(this.establishment.uid, props)
         .subscribe(data => this._onSuccess(data), error => this.onError(error))
     );
   }
 
   protected onSuccess(): void {
     if (this.establishment.starters && Array.isArray(this.establishment.starters)) {
-      this.next = ['/workplace', `${this.establishment.id}`, 'confirm-starters'];
+      this.router.navigate(['/workplace', this.establishment.uid, 'confirm-starters']);
+      this.submitAction.action = null;
     } else {
-      this.next = ['/workplace', `${this.establishment.id}`, 'leavers'];
+      this.next = ['/workplace', `${this.establishment.uid}`, 'leavers'];
     }
   }
 
