@@ -1,8 +1,10 @@
 <div class="govuk-grid-row" *ngIf="validationComplete">
   <div class="govuk-grid-column-two-thirds govuk-!-margin-top-2">
     <app-inset-text *ngIf="!hasErrors" [color]="hasWarnings ? 'warning' : 'success'">
-      The files have passed validation with <strong>{{ totalWarnings }}</strong>
-      {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}.
+      <div role="status">
+        The files have passed validation with <strong>{{ totalWarnings }}</strong>
+        {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }}.
+      </div>
     </app-inset-text>
   </div>
 </div>
@@ -57,7 +59,7 @@
 </table>
 
 <ng-container *ngIf="!preValidationError && !validationComplete">
-  <p>The files must be validated before completing the upload.</p>
+  <p role="status">The files must be validated before completing the upload.</p>
 
   <button type="button" class="govuk-button govuk-button--tertiary govuk-!-margin-top-2" (click)="validateFiles()">
     Validate files
@@ -65,16 +67,16 @@
 </ng-container>
 
 <ng-container *ngIf="validationComplete">
-  <p *ngIf="hasErrors">
+  <p *ngIf="hasErrors" role="status">
     Review the <strong>{{ totalErrors }}</strong> errors.
   </p>
 
-  <p *ngIf="hasWarnings && !hasErrors">
+  <p *ngIf="hasWarnings && !hasErrors" role="status">
     Review the <strong>{{ totalWarnings }}</strong>
     {{ totalWarnings | i18nPlural: { '=1': 'warning', other: 'warnings' } }} or complete the upload to import the data.
   </p>
 
-  <p *ngIf="!hasWarnings && !hasErrors">
+  <p *ngIf="!hasWarnings && !hasErrors" role="status">
     You need to complete the upload to import the data.
   </p>
 
