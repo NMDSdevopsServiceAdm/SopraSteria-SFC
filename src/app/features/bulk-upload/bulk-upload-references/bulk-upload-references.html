@@ -69,7 +69,9 @@
             *ngIf="referenceType === referenceTypeEnum.Establishment && reference.localIdentifier"
           >
             <a [routerLink]="['/bulk-upload/staff-references', reference.uid]" (click)="setReturn()">
-              Staff references
+              Staff references<span class="govuk-visually-hidden">
+                {{ reference.name ? reference.name : reference.nameOrId }}</span
+              >
             </a>
           </p>
         </div>
@@ -79,13 +81,14 @@
     <div class="govuk-grid-row" *ngIf="!references.length">
       <div class="govuk-grid-column-two-thirds-from-desktop">
         <p class="govuk-!-margin-top-4">
-          {{ referenceType }} records need to be added for this workplace before you can create
-          {{ referenceType.toLowerCase() }} references.
+          {{ referenceType }} records need to be added for this workplace before you can create {{
+          referenceType.toLowerCase() }} references.
         </p>
         <h3 class="govuk-heading-m">What you can do next?</h3>
         <ul class="govuk-list govuk-list--bullet">
           <li>
-            <a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">Add staff records</a>.
+            <a [routerLink]="['/workplace/', establishmentUid]" [fragment]="'staff-records'">Add staff records<span class="govuk-visually-hidden">
+                {{ reference.name ? reference.name : reference.nameOrId }}</span</a>.
           </li>
           <li>Continue without adding staff records.</li>
         </ul>
