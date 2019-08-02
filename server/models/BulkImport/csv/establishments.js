@@ -217,7 +217,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
-        error: "Local Identifier must be defined",
+        error: "LOCALESTID has not been supplied",
         source: this._currentLine.LOCALESTID,
       });
       return false;
@@ -226,7 +226,7 @@ class Establishment {
         lineNumber: this._lineNumber,
         errCode: Establishment.LOCAL_ID_ERROR,
         errType: `LOCAL_ID_ERROR`,
-        error: `Local Identifier (LOCALESTID) must be no more than ${MAX_LENGTH} characters`,
+        error: `LOCALESTID is longer than ${MAX_LENGTH} characters`,
         source: myLocalId,
       });
       return false;
@@ -1620,7 +1620,7 @@ class Establishment {
       lineNumber: this._lineNumber,
       errCode: Establishment.DUPLICATE_ERROR,
       errType: `DUPLICATE_ERROR`,
-      error: `Duplicate of line ${originalLineNumber}`,
+      error: `LOCALESTID is not unique`,
       source: this._currentLine.LOCALESTID,
       name: this._currentLine.LOCALESTID,
     };

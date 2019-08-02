@@ -959,12 +959,22 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
     myWorkers.forEach(thisWorker => {
       // uniquness for a worker is across both the establishment and the worker
       const keyNoWhitespace = (thisWorker.local + thisWorker.uniqueWorker).replace(/\s/g, "");
+      const changeKeyNoWhitespace = thisWorker.changeUniqueWorker ? (thisWorker.local + thisWorker.changeUniqueWorker).replace(/\s/g, "") : null;
+
       if (allWorkersByKey[keyNoWhitespace]) {
         // this worker is a duplicate
         csvWorkerSchemaErrors.push(thisWorker.addDuplicate(allWorkersByKey[keyNoWhitespace]));
 
         // remove the entity
         delete myAPIWorkers[thisWorker.lineNumber];
+
+      // the worker will be known by LOCALSTID and UNIQUEWORKERID, but if CHGUNIQUEWORKERID is given, then it's combination of LOCALESTID and CHGUNIQUEWORKERID must be unique
+      } else if (changeKeyNoWhitespace && allWorkersByKey[changeKeyNoWhitespace]) {
+          // this worker is a duplicate
+          csvWorkerSchemaErrors.push(thisWorker.addChgDuplicate(allWorkersByKey[keyNoWhitespace]));
+
+          // remove the entity
+          delete myAPIWorkers[thisWorker.lineNumber];
       } else {
         // does not yet exist - check this worker can be associated with a known establishment
         const establishmentKeyNoWhitespace = thisWorker.local ? thisWorker.local.replace(/\s/g, "") : '';
@@ -979,9 +989,10 @@ const validateBulkUploadFiles = async (commit, username , establishmentId, isPar
           // this worker is unique and can be associated to establishment
           allWorkersByKey[keyNoWhitespace] = thisWorker.lineNumber;
 
+          // to prevent subsequent Worker duplicates, add also the change worker id if CHGUNIQUEWORKERID is given
+          changeKeyNoWhitespace ? allWorkersByKey[changeKeyNoWhitespace] = thisWorker.lineNumber : true;
+
           // associate this worker to the known establishment
-          const workerKey = thisWorker.uniqueWorker ? thisWorker.uniqueWorker.replace(/\s/g, "") : null;
-          const foundEstablishmentByLineNumber = allEstablishmentsByKey[establishmentKeyNoWhitespace];
           const knownEstablishment = myAPIEstablishments[establishmentKeyNoWhitespace] ? myAPIEstablishments[establishmentKeyNoWhitespace] : null;
 
           //key workers, to be used in training
