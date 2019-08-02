@@ -10,5 +10,7 @@ export class ActivationCompleteComponent implements OnInit {
 
   ngOnInit(): void {
     this.createAccountService.activationComplete$.next(true);
+    this.createAccountService.setReturnTo(null);
+    this.createAccountService.userDetails$.next(null);
   }
 }

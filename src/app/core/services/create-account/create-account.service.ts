@@ -1,6 +1,7 @@
 import {
   ActivateAccountRequest,
   CreateAccountRequest,
+  CreateAccountResponse,
   ValidateAccountActivationTokenRequest,
   ValidateAccountActivationTokenResponse,
 } from '@core/model/account.model';
@@ -26,8 +27,11 @@ export class CreateAccountService {
 
   constructor(private http: HttpClient) {}
 
-  public createAccount(establishmentUid: string, requestPayload: CreateAccountRequest) {
-    return this.http.post(`/api/user/add/establishment/${establishmentUid}`, requestPayload);
+  public createAccount(
+    establishmentUid: string,
+    requestPayload: CreateAccountRequest
+  ): Observable<CreateAccountResponse> {
+    return this.http.post<CreateAccountResponse>(`/api/user/add/establishment/${establishmentUid}`, requestPayload);
   }
 
   public activateAccount(requestPayload: ActivateAccountRequest) {

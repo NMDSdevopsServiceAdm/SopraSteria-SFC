@@ -53,17 +53,6 @@ export class ChangeYourDetailsComponent extends AccountDetails {
     );
   }
 
-  private prefillForm(userDetails: UserDetails): void {
-    if (userDetails) {
-      this.form.setValue({
-        email: userDetails.email,
-        fullname: userDetails.fullname,
-        jobTitle: userDetails.jobTitle,
-        phone: userDetails.phone,
-      });
-    }
-  }
-
   protected save(): void {
     const details = this.setUserDetails();
     this.userService.updateState(details);
