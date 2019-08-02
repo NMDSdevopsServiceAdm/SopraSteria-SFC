@@ -438,7 +438,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is NEW but worker already exists`,
+              error: `Staff record has a STATUS of NEW but already exists, please change to one of the other statues available`,
               source: myStatus,
             });
           }
@@ -451,21 +451,23 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: 'Staff has a status of delete but does not exist.  This will be ignored.',
+              error: 'Staff has a status of DELETE but does not exist.',
               source: myStatus,
             });
           }
           break;
         case 'UNCHECKED':
-          // this._validationErrors.push({
-          //   name: this._currentLine.LOCALESTID,
-          //   worker: this._currentLine.UNIQUEWORKERID,
-          //   lineNumber: this._lineNumber,
-          //   warnCode: Worker.STATUS_WARNING,
-          //   warnType: `STATUS_WARNING`,
-          //   warning: `STATUS is UNCHECKED and will be ignored`,
-          //   source: myStatus,
-          // });
+          if (!thisWorkerExists(this._establishmentKey, this._key)) {
+            this._validationErrors.push({
+              name: this._currentLine.LOCALESTID,
+              worker: this._currentLine.UNIQUEWORKERID,
+              lineNumber: this._lineNumber,
+              errCode: Worker.STATUS_ERROR,
+              errType: `STATUS_ERROR`,
+              error: `Staff record has a status of UNCHECKED but doens't exist, please change to NEW if you want to add this staff record`,
+              source: myStatus,
+            });
+          }
           break;
         case 'NOCHANGE':
           if (!thisWorkerExists(this._establishmentKey, this._key)) {
@@ -475,7 +477,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is NOCHANGE but worker does not exist`,
+              error: `Staff record has a status of NOCHANGE but doens't exist, please change to NEW if you want to add this staff record`,
               source: myStatus,
             });
           }
@@ -488,7 +490,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is UPDATE but worker does not exist`,
+              error: `Staff record has a status of UPDATE but doens't exist, please change to NEW if you want to add this staff record`,
               source: myStatus,
             });
           }
@@ -502,7 +504,7 @@ class Worker {
               lineNumber: this._lineNumber,
               errCode: Worker.STATUS_ERROR,
               errType: `STATUS_ERROR`,
-              error: `STATUS is CHGSUB but worker already exists in target Establishment`,
+              error: `STATUS is CHGSUB but staff already exists in the new workplace`,
               source: myStatus,
             });
           }
