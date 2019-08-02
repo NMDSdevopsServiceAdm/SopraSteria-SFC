@@ -73,7 +73,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
   private preValidateFiles(): void {
     this.subscriptions.add(
       this.bulkUploadService
-        .preValidateFiles(this.establishmentService.establishmentId)
+        .preValidateFiles(this.establishmentService.primaryWorkplace.uid)
         .pipe(take(1))
         .subscribe(
           (response: ValidatedFile[]) => {
@@ -129,7 +129,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     this.uploadedFiles.map((file: ValidatedFile) => (file.status = FileValidateStatus.Validating));
 
     this.subscriptions.add(
-      this.bulkUploadService.validateFiles(this.establishmentService.establishmentId).subscribe(
+      this.bulkUploadService.validateFiles(this.establishmentService.primaryWorkplace.uid).subscribe(
         (response: ValidatedFilesResponse) => {
           this.onValidateComplete(response);
         },
@@ -166,7 +166,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
 
   public completeUpload() {
     this.bulkUploadService
-      .complete(this.establishmentService.establishmentId)
+      .complete(this.establishmentService.primaryWorkplace.uid)
       .pipe(take(1))
       .subscribe(
         () => {
@@ -199,7 +199,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     this.bulkUploadService
-      .getUploadedFileSignedURL(this.establishmentService.establishmentId, key)
+      .getUploadedFileSignedURL(this.establishmentService.primaryWorkplace.uid, key)
       .subscribe(signedURL => {
         window.open(signedURL);
       });

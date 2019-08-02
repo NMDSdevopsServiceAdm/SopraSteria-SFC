@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { RoleGuard } from '@core/guards/role/role.guard';
@@ -56,7 +58,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    resolve: { loggedInUser: LoggedInUserResolver },
+    resolve: { loggedInUser: LoggedInUserResolver, primaryWorkplace: PrimaryWorkplaceResolver },
     children: [
       {
         path: 'workplace',
@@ -80,14 +82,12 @@ const routes: Routes = [
         path: 'dashboard',
         component: DashboardComponent,
         canActivate: [AuthGuard],
-        resolve: { workplace: PrimaryWorkplaceResolver },
         data: { title: 'Dashboard' },
       },
       {
         path: 'bulk-upload',
         loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
         canActivate: [AuthGuard, RoleGuard],
-        resolve: { workplace: PrimaryWorkplaceResolver },
         data: {
           roles: [Roles.Edit, Roles.Admin],
           title: 'Bulk Upload',
