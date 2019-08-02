@@ -33,7 +33,7 @@ bulkupload:
     region: eu-west-2
     bucketname: sfcbulkuploadfiles
     validation:
-        timeout: 300
+        timeout: 600
         storeIntermediaries: true
     completion:
-        timeout: 120
+        timeout: 600
