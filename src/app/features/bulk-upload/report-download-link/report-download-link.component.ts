@@ -17,7 +17,7 @@ export class ReportDownloadLinkComponent {
   public downloadReport(event: Event) {
     event.preventDefault();
     this.bulkUploadService
-      .getReport(this.establishmentService.establishmentId, this.reportType)
+      .getReport(this.establishmentService.primaryWorkplace.uid, this.reportType)
       .pipe(take(1))
       .subscribe(
         response => {

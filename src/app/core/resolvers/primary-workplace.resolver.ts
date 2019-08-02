@@ -9,10 +9,10 @@ export class PrimaryWorkplaceResolver implements Resolve<any> {
   constructor(private establishmentService: EstablishmentService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    const workplaceid = localStorage.getItem('establishmentId');
-    if (workplaceid) {
+    const workplaceUid = localStorage.getItem('establishmentId');
+    if (workplaceUid) {
       return this.establishmentService
-        .getEstablishment(workplaceid)
+        .getEstablishment(workplaceUid)
         .pipe(tap(workplace => this.establishmentService.setPrimaryWorkplace(workplace)));
     }
 

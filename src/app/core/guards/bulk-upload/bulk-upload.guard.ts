@@ -1,23 +1,29 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
-import { UserService } from '@core/services/user.service';
+import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BulkUploadGuard implements CanActivate {
-  constructor(private authService: AuthService, private userService: UserService, private router: Router) { }
+  constructor(
+    private bulkUploadService: BulkUploadService,
+    private establishmentService: EstablishmentService,
+    private router: Router
+  ) {}
 
-	canActivate() {
-		if (this.userService.loggedInUser && this.userService.loggedInUser.role === 'Admin') {
-			return true;
-		} else {
-			if (this.authService.isFirstBulkUpload) {
-				this.router.navigate(['bulk-upload', 'start']);
-				return false;
-			}
-		}
-		return true;
-	}
+  canActivate(): Observable<boolean> {
+    return this.bulkUploadService.getNullLocalIdentifiers(this.establishmentService.primaryWorkplace.uid).pipe(
+      map(response => {
+        if (response.establishments.length > 0) {
+          this.router.navigate(['bulk-upload', 'start']);
+          return false;
+        }
+        return true;
+      })
+    );
+  }
 }

@@ -20,6 +20,15 @@ import { map, tap } from 'rxjs/operators';
 
 import { UserService } from './user.service';
 
+export interface NullLocalIdentifiersResponse {
+  establishments: Array<{
+    uid: string;
+    name: string;
+    missing: boolean;
+    workers: number;
+  }>;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -87,34 +96,38 @@ export class BulkUploadService {
     return parts[parts.length - 1].toUpperCase();
   }
 
-  public preValidateFiles(establishmentId: number): Observable<ValidatedFile[]> {
-    return this.http.put<ValidatedFile[]>(`/api/establishment/${establishmentId}/bulkupload/uploaded`, null);
+  public preValidateFiles(workplaceUid: string): Observable<ValidatedFile[]> {
+    return this.http.put<ValidatedFile[]>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`, null);
   }
 
-  public getUploadedFiles(establishmentId: number): Observable<ValidatedFile[]> {
+  public getUploadedFiles(workplaceUid: string): Observable<ValidatedFile[]> {
     return this.http
-      .get<UploadedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/uploaded`)
+      .get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded`)
       .pipe(map(response => response.files));
   }
 
-  public getUploadedFileSignedURL(establishmentId: number, key: string): Observable<string> {
+  public getUploadedFileSignedURL(workplaceUid: string, key: string): Observable<string> {
     return this.http
-      .get<UploadedFilesRequestToDownloadResponse>(`/api/establishment/${establishmentId}/bulkupload/uploaded/${key}`)
+      .get<UploadedFilesRequestToDownloadResponse>(`/api/establishment/${workplaceUid}/bulkupload/uploaded/${key}`)
       .pipe(map(response => response.file.signedUrl));
   }
 
-  public validateFiles(establishmentId: number): Observable<ValidatedFilesResponse> {
-    return this.http.put<ValidatedFilesResponse>(`/api/establishment/${establishmentId}/bulkupload/validate`, null);
+  public validateFiles(workplaceUid: string): Observable<ValidatedFilesResponse> {
+    return this.http.put<ValidatedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/validate`, null);
   }
 
-  public getReport(establishmentId: number, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/report/${reportType}`, {
+  public getReport(workplaceUid: string, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
+    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/report/${reportType}`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
   }
 
-  public getDataCSV(establishmentId: number, type: BulkUploadFileType): Observable<any> {
+  public getNullLocalIdentifiers(workplaceUid: string): Observable<NullLocalIdentifiersResponse> {
+    return this.http.get<NullLocalIdentifiersResponse>(`/api/establishment/${workplaceUid}/localIdentifiers`);
+  }
+
+  public getDataCSV(workplaceUid: string, type: BulkUploadFileType): Observable<any> {
     let url: string;
     // TODO: Would love for this ENUM to be consistent across BE endpoints,
     //       we currently have Establishment, establishments, Workplace,
@@ -130,14 +143,14 @@ export class BulkUploadService {
         url = 'training';
         break;
     }
-    return this.http.get<Blob>(`/api/establishment/${establishmentId}/bulkupload/download/${url}`, {
+    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/download/${url}`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
   }
 
-  public complete(establishmentId: number) {
-    return this.http.post(`/api/establishment/${establishmentId}/bulkupload/complete`, null);
+  public complete(workplaceUid: string) {
+    return this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`, null);
   }
 
   public resetBulkUpload(): void {

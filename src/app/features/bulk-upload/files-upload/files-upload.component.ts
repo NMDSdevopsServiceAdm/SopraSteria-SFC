@@ -58,7 +58,7 @@ export class FilesUploadComponent implements OnInit {
   private checkForUploadedFiles(): void {
     this.subscriptions.add(
       this.bulkUploadService
-        .getUploadedFiles(this.establishmentService.establishmentId)
+        .getUploadedFiles(this.establishmentService.primaryWorkplace.uid)
         .subscribe((response: ValidatedFile[]) => {
           if (response.length) {
             this.filesUploaded = true;
