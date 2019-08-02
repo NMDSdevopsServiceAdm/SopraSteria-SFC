@@ -3,7 +3,6 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-confirm-leavers',
@@ -17,13 +16,11 @@ export class ConfirmLeaversComponent implements OnInit, OnDestroy {
   constructor(private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
-    this.return = this.establishmentService.returnTo;
+    this.establishment = this.establishmentService.establishment;
 
-    this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe(establishment => {
-        this.establishment = establishment;
-      })
-    );
+    this.return = this.establishmentService.returnTo
+      ? this.establishmentService.returnTo
+      : { url: ['/workplace', this.establishment.uid, 'check-answers'] };
   }
 
   ngOnDestroy() {

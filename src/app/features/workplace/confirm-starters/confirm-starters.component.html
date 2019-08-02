@@ -12,9 +12,10 @@
         class="govuk-button govuk-!-margin-right-8 govuk-!-margin-bottom-0"
         role="button"
         draggable="false"
-        [routerLink]="['/workplace', this.establishment.uid, 'leavers']"
+        [routerLink]="return.url"
+        [fragment]="return.fragment"
       >
-        Save and {{ return ? 'return' : 'continue' }}
+        {{ return ? 'Return' : 'Continue' }}
       </a>
       <span class="govuk-visually-hidden">or</span>
       <a
