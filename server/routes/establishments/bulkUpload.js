@@ -1700,8 +1700,8 @@ const completeNewEstablishment = async (thisNewEstablishment, theLoggedInUser, t
     }
 
     const endTime = new Date();
-    const numberOfWorkers = foundCurrentEstablishment.workers.length;
-    timerLog("CHECKPOINT - BU COMPLETE - new establishment", startTime, endTime);
+    const numberOfWorkers = foundOnloadEstablishment.workers.length;
+    timerLog("CHECKPOINT - BU COMPLETE - new establishment", startTime, endTime, numberOfWorkers);
 
   } catch (err) {
     console.error("completeNewEstablishment: failed to complete upon new establishment: ", thisNewEstablishment.key);
@@ -1753,7 +1753,7 @@ const completeDeleteEstablishment = async (thisDeletedEstablishment, theLoggedIn
 
     const endTime = new Date();
     const numberOfWorkers = foundCurrentEstablishment.workers.length;
-    timerLog("CHECKPOINT - BU COMPLETE - delete establishment", startTime, endTime);
+    timerLog("CHECKPOINT - BU COMPLETE - delete establishment", startTime, endTime, numberOfWorkers);
   } catch (err) {
     console.error("completeDeleteEstablishment: failed to complete upon deleting establishment: ", thisDeletedEstablishment.key);
     throw err;
