@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 })
 export class ConfirmLeaversComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
+  public next: URLStructure;
   public return: URLStructure;
   private subscriptions: Subscription = new Subscription();
 
@@ -18,9 +19,9 @@ export class ConfirmLeaversComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.establishment = this.establishmentService.establishment;
 
-    this.return = this.establishmentService.returnTo
-      ? this.establishmentService.returnTo
-      : { url: ['/workplace', this.establishment.uid, 'check-answers'] };
+    this.return = this.establishmentService.returnTo;
+
+    this.next = this.return ? this.return : { url: ['/workplace', this.establishment.uid, 'check-answers'] };
   }
 
   ngOnDestroy() {
