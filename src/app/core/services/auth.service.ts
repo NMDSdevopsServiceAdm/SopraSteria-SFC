@@ -22,7 +22,7 @@ export class AuthService {
   ) {}
 
   public isAuthenticated(): boolean {
-    return !this.helper.isTokenExpired(this.token);
+    return this.token ? !this.helper.isTokenExpired(this.token) : false;
   }
 
   public get token() {
