@@ -1,12 +1,12 @@
-import { RegulatedByCQC } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
 import { Component } from '@angular/core';
-import { BackService } from '@core/services/back.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { FormBuilder } from '@angular/forms';
-import { RegistrationService } from '@core/services/registration.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LocationSearchResponse } from '@core/model/location.model';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { LocationService } from '@core/services/location.service';
+import { RegistrationService } from '@core/services/registration.service';
+import { RegulatedByCQC } from '@features/workplace-find-and-select/regulated-by-cqc/regulated-by-cqc';
 
 @Component({
   selector: 'app-regulated-by-cqc',
@@ -20,7 +20,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
     protected formBuilder: FormBuilder,
     protected locationService: LocationService,
     protected route: ActivatedRoute,
-    protected router: Router,
+    protected router: Router
   ) {
     super(backService, errorSummaryService, formBuilder, locationService, route, router);
   }
@@ -31,7 +31,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: ['/login'] });
+    this.backService.setBackLink({ url: [this.flow, '/start'] });
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
