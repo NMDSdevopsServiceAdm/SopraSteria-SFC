@@ -102,7 +102,6 @@ export interface Establishment {
   wdf: WDF;
   isParent?: boolean;
   parentName?: string;
-  isFirstBulkUpload?: boolean;
 }
 
 export interface UpdateJobsRequest {
