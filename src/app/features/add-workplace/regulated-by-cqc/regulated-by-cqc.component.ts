@@ -31,7 +31,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQC {
   }
 
   protected setBackLink(): void {
-    this.backService.setBackLink({ url: [`${this.flow}/regulated-by-cqc`] });
+    this.backService.setBackLink({ url: [`${this.flow}/start`] });
   }
 
   protected onSuccess(data: LocationSearchResponse): void {
