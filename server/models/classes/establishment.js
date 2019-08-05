@@ -1913,30 +1913,27 @@ class Establishment extends EntityValidator {
 
         const missingEstablishmentsWithWorkerCountQuery = `
             select
+            "Establishment"."EstablishmentID",
+            "EstablishmentUID",
+            "NameValue",
+            "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
+            CASE WHEN "WorkerTotals"."TotalWorkers" IS NULL THEN 0 ELSE "WorkerTotals"."TotalWorkers" END AS "TotalWorkers"
+          from cqc."Establishment"
+            left join
+            (
+              select
                 "EstablishmentID",
-                "EstablishmentUID",
-                "NameValue",
-                "EstablishmentLocal",
-                CASE WHEN "EstablishmentLocal" IS NULL THEN 0 ELSE count(0) END AS TotalWorkers
-            from (
-                select
-                    "EstablishmentID",
-                    "EstablishmentUID",
-                    "NameValue",
-                    "Establishment"."LocalIdentifierValue" AS "EstablishmentLocal",
-                    "Worker"."ID" AS "WorkerID",
-                    "WorkerUID",
-                    "NameOrIdValue",
-                    "Worker"."LocalIdentifierValue" AS "WorkerLocal"
-                from cqc."Establishment"
-                    inner join cqc."Worker" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
-                where (("EstablishmentID" = 30) OR ("ParentID" = 30 AND "Owner" = 'Parent'))
-                and "Establishment"."Archived" = false
-                and "Worker"."Archived" = false
-                and ("Establishment"."LocalIdentifierValue" is null OR "Worker"."LocalIdentifierValue" is null)
-            ) ByEstablishment
-            group by "EstablishmentID", "EstablishmentUID", "NameValue", "EstablishmentLocal"
-            order by "EstablishmentID"`;
+                count(0) AS "TotalWorkers"
+              from cqc."Worker"
+                inner join cqc."Establishment" on "Establishment"."EstablishmentID" = "Worker"."EstablishmentFK"
+              where (("EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+              and "Worker"."Archived" = false
+              and "Worker"."LocalIdentifierValue" is null
+              group by "EstablishmentID"
+            ) "WorkerTotals" on "WorkerTotals"."EstablishmentID" = "Establishment"."EstablishmentID"
+          where (("Establishment"."EstablishmentID" = ${this._id}) OR ("ParentID" = ${this._id} AND "Owner" = 'Parent'))
+            and "Establishment"."Archived" = false
+            and ("Establishment"."LocalIdentifierValue" is null)`;
 
         const results = await models.sequelize.query(
             missingEstablishmentsWithWorkerCountQuery,
@@ -1951,17 +1948,17 @@ class Establishment extends EntityValidator {
         //     EstablishmentUID: '2d3fcc78-c9e8-4723-8927-a9c11988ba51',
         //     NameValue: 'WOZiTech Rest Home for IT Professionals',
         //     EstablishmentLocal: null,
-        //     totalworkers: '0' },
+        //     TotalWorkers: '0' },
         //   { EstablishmentID: 104,
         //     EstablishmentUID: 'defefda6-9730-4c72-a505-6807ded10c21',
         //     NameValue: 'WOZiTech Cares Sub 2',
         //     EstablishmentLocal: 'BOB2',
-        //     totalworkers: '1' } ]
+        //     TotalWorkers: '1' } ]
         //
         const missingEstablishments = [];
         if (results && Array.isArray(results)) {
             results.forEach(thisEstablishment => {
-                const totalWorkers = parseInt(thisEstablishment.totalworkers);
+                const totalWorkers = parseInt(thisEstablishment.TotalWorkers);
                 missingEstablishments.push({
                     uid: thisEstablishment.EstablishmentUID,
                     name: thisEstablishment.NameValue,
