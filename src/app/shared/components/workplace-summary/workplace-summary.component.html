@@ -335,19 +335,16 @@
       </a>
     </dd>
   </div>
+
   <ng-container *ngIf="wdfView">
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">
         Total number of staff
       </dt>
       <dd class="govuk-summary-list__value">
-        <!-- TODO: uncomment workplace.wdf?.numberOfStaff available in in model  -->
-        <!--
         <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.numberOfStaff" [item]="workplace">
           {{ workplace.numberOfStaff | numericAnswer }}
         </app-summary-record-value>
-        -->
-        {{ workplace.numberOfStaff | numericAnswer }}
       </dd>
       <dd *ngIf="canEdit" class="govuk-summary-list__actions">
         <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'total-staff']" (click)="setReturn()">
@@ -362,13 +359,14 @@
         </a>
       </dd>
     </div>
+
     <div *ngIf="totalStaffWarning" class="govuk-summary-list__row govuk-summary-list__row--warning">
       <dt class="govuk-summary-list__key">
         <span class="govuk-visually-hidden">Total number of staff warning</span>
       </dt>
       <dd class="govuk-summary-list__value">
         <p>
-          Basic staff records ({{ workerCount }}) must match the total number of staff
+          Basic staff records ({{ workplace.totalWorkers }}) must match the total number of staff
           {{ workplace.numberOfStaff ? '(' + workplace.numberOfStaff + ')' : '' }}
         </p>
       </dd>
@@ -382,26 +380,23 @@
         </a>
       </dd>
     </div>
+
     <div class="govuk-summary-list__row">
       <dt class="govuk-summary-list__key">
         Basic staff records
       </dt>
       <dd class="govuk-summary-list__value">
-        <!-- TODO: uncomment once workplace.wdf?.basicStaffRecords available in in model  -->
-        <!--
-        <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.basicStaffRecords" [item]="workplace">
-          {{ workerCount }}
+        <app-summary-record-value [wdfView]="wdfView" [wdfValue]="workplace.wdf?.numberOfStaff" [item]="workplace">
+          {{ workplace.totalWorkers }}
         </app-summary-record-value>
-        -->
-        {{ workerCount }}
       </dd>
       <dd *ngIf="canEdit" class="govuk-summary-list__actions">
         <a [routerLink]="['/workplace', workplace.uid, 'staff-record', 'create-basic-records']" (click)="setReturn()">
-          <ng-container *ngIf="!workerCount === 0">
+          <ng-container *ngIf="!workplace.totalWorkers === 0">
             Provide information
             <span class="govuk-visually-hidden"> for</span>
           </ng-container>
-          <ng-container *ngIf="workerCount > 0">
+          <ng-container *ngIf="workplace.totalWorkers > 0">
             Change
           </ng-container>
           <span class="govuk-visually-hidden"> total number of staff</span>
@@ -409,29 +404,4 @@
       </dd>
     </div>
   </ng-container>
-  <!--
-      TODO uncomment once volunteers section is created
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key">
-      Number of volunteers
-    </dt>
-    <dd class="govuk-summary-list__value">
-      {{ workplace.volunteers || '-' }}
-    </dd>
-    <dd *ngIf="canEdit" class="govuk-summary-list__actions">
-
-      <a [routerLink]="['/workplace', workplace.uid]" (click)="setReturn()">
-        <ng-container *ngIf="!workplace.volunteers">
-          Provide information
-          <span class="govuk-visually-hidden"> for</span>
-        </ng-container>
-        <ng-container *ngIf="workplace.volunteers">
-          Change
-        </ng-container>
-        <span class="govuk-visually-hidden"> number of volunteers</span>
-      </a>
-
-    </dd>
-  </div>
-  -->
 </dl>
