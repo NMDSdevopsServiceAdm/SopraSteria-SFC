@@ -107,12 +107,7 @@ exports.ServiceUsersProperty = class ServiceUsersProperty extends ChangeProperty
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {       
         if (wdfEffectiveDate) {
-            return {
-                serviceUsers: {
-                    value: this.formatServiceUsersResponse(this.property),
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
         }
 
         if (!this.property) return null;

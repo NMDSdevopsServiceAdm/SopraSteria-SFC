@@ -165,12 +165,7 @@ exports.ServicesProperty = class ServicesProperty extends ChangePropertyPrototyp
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false) {       
         if (wdfEffectiveDate) {
-            return {
-                otherServices: {
-                    value: ServiceFormatters.createServicesByCategoryJSON(this.property, false, false, false),
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
         }
 
         if (!withHistory) {

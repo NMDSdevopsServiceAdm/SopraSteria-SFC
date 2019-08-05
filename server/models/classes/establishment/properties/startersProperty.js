@@ -6,12 +6,13 @@ const JobHelpers = require('./jobHelper');
 exports.StartersProperty = class StartersProperty extends ChangePropertyPrototype {
     constructor() {
         super('Starters');
+
+        this._wdfTemporal = true;
+
     }
 
     static clone() {
         return new StartersProperty();
-
-        this._wdfTemporal = false;
     }
 
     // concrete implementations
@@ -119,12 +120,7 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
         const jsonPresentation = JobHelpers.formatJSON(this.property, 'Starters', 'TotalStarters');
 
         if (wdfEffectiveDate) {
-            return {
-                starters: {
-                    value: jsonPresentation.Starters,
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
         }
 
         if (!withHistory) {

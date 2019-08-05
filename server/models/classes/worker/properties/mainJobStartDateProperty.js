@@ -69,12 +69,7 @@ exports.WorkerMainJobStartDateProperty = class WorkerMainJobStartDateProperty ex
 
     toJSON(withHistory=false, showPropertyHistoryOnly=true, wdfEffectiveDate = false ) {
         if (wdfEffectiveDate) {
-            return {
-                mainJobStartDate: {
-                    value: this.property ? this.property : null,
-                    updatedSinceWDFEffectiveDate: this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false
-                }
-            };
+            return this._wdfTemporal ? this._savedAt > wdfEffectiveDate ? true : false : false;
         }
 
         if (!withHistory) {
