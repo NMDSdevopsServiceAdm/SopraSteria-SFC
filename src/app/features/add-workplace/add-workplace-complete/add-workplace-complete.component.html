@@ -72,8 +72,10 @@
           <a [routerLink]="['/dashboard']">go to your dashboard</a>
         </li>
         <li>
-          <a [routerLink]="['/public/contact-us']" target="_blank">Contact us</a> if you have any questions about your
-          application.
+          <a [routerLink]="['/contact-us']" target="_blank">
+            Contact us<span class="govuk-visually-hidden">, (opens in a new window)</span>
+          </a>
+          if you have any questions about your application.
         </li>
       </ul>
     </ng-container>
