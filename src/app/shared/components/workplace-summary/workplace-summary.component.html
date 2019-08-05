@@ -146,8 +146,7 @@
         <ng-template #serviceUsers>
           <ul class="govuk-list govuk-!-margin-bottom-0">
             <li *ngFor="let users of workplace.serviceUsers">
-              <ng-container *ngIf="users.other">{{ users.other }}</ng-container>
-              <ng-container *ngIf="!users.other">{{ users.service }}</ng-container>
+              {{ users.service }}<ng-container *ngIf="users.other"> - {{ users.other }}</ng-container>
             </li>
           </ul>
         </ng-template>
