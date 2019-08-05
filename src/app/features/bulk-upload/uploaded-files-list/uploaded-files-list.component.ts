@@ -170,9 +170,7 @@ export class UploadedFilesListComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe(
         () => {
-          this.authService.isFirstBulkUpload = false;
           this.router.navigate(['/dashboard']);
-          this.authService.isFirstBulkUpload = false;
           this.alertService.addAlert({ type: 'success', message: 'Bulk upload complete.' });
         },
         response => {

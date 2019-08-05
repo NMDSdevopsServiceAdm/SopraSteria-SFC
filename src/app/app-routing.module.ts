@@ -18,6 +18,11 @@ import { ResetPasswordComponent } from '@features/reset-password/reset-password.
 
 const routes: Routes = [
   {
+    path: '',
+    redirectTo: '/dashboard',
+    pathMatch: 'full',
+  },
+  {
     path: 'login',
     component: LoginComponent,
     data: { title: 'Login' },
@@ -58,36 +63,34 @@ const routes: Routes = [
   },
   {
     path: '',
+    canActivateChild: [AuthGuard],
     resolve: { loggedInUser: LoggedInUserResolver, primaryWorkplace: PrimaryWorkplaceResolver },
     children: [
       {
         path: 'workplace',
         loadChildren: '@features/workplace/workplace.module#WorkplaceModule',
-        canActivate: [AuthGuard],
         data: { title: 'Workplace' },
       },
       {
         path: 'add-workplace',
         loadChildren: '@features/add-workplace/add-workplace.module#AddWorkplaceModule',
-        canActivate: [AuthGuard, ParentGuard],
+        canActivate: [ParentGuard],
         data: { title: 'Add Workplace' },
       },
       {
         path: 'account-management',
         loadChildren: '@features/account-management/account-management.module#AccountManagementModule',
-        canActivate: [AuthGuard],
         data: { title: 'User Account' },
       },
       {
         path: 'dashboard',
         component: DashboardComponent,
-        canActivate: [AuthGuard],
         data: { title: 'Dashboard' },
       },
       {
         path: 'bulk-upload',
         loadChildren: '@features/bulk-upload/bulk-upload.module#BulkUploadModule',
-        canActivate: [AuthGuard, RoleGuard],
+        canActivate: [RoleGuard],
         data: {
           roles: [Roles.Edit, Roles.Admin],
           title: 'Bulk Upload',
@@ -96,7 +99,7 @@ const routes: Routes = [
       {
         path: 'search-users',
         loadChildren: '@features/search/search.module#SearchModule',
-        canActivate: [AuthGuard, RoleGuard],
+        canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
           title: 'Search Users',
@@ -105,18 +108,13 @@ const routes: Routes = [
       {
         path: 'search-establishments',
         loadChildren: '@features/search/search.module#SearchModule',
-        canActivate: [AuthGuard, RoleGuard],
+        canActivate: [RoleGuard],
         data: {
           roles: [Roles.Admin],
           title: 'Search Establishments',
         },
       },
     ],
-  },
-  {
-    path: '',
-    redirectTo: 'dashboard',
-    pathMatch: 'full',
   },
   {
     path: '**',

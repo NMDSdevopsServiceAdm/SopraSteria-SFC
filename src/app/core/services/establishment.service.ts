@@ -95,6 +95,7 @@ export class EstablishmentService {
 
   public resetState() {
     this._establishment$.next(null);
+    this.setPrimaryWorkplace(null);
   }
 
   public set establishmentId(value: string) {

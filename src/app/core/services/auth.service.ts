@@ -1,11 +1,9 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoggedInEstablishment, LoggedInMainService, LoggedInSession } from '@core/model/logged-in.model';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { ErrorObservable } from 'rxjs-compat/observable/ErrorObservable';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { tap } from 'rxjs/operators';
 
-import { RegistrationTrackerError } from '../model/registrationTrackerError.model';
 import { EstablishmentService } from './establishment.service';
 import { UserService } from './user.service';
 
@@ -13,17 +11,8 @@ import { UserService } from './user.service';
   providedIn: 'root',
 })
 export class AuthService {
-  // Observable login source
-  private _auth$: BehaviorSubject<LoggedInSession> = new BehaviorSubject<LoggedInSession>(null);
-
-  // hold the response from login
-  private _session: LoggedInSession = null;
-  private _token: string = null;
-
+  private jwt = new JwtHelperService();
   public redirect: string;
-
-  // Observable login stream
-  public auth$: Observable<LoggedInSession> = this._auth$.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -32,127 +21,42 @@ export class AuthService {
     private userService: UserService
   ) {}
 
-  public get isLoggedIn(): boolean {
-    return !!this.token;
+  public isAuthenticated(): boolean {
+    return this.token ? !this.jwt.isTokenExpired(this.token) : false;
   }
 
-  public get establishment(): LoggedInEstablishment | null {
-    if (this._session) {
-      return this._session.establishment;
-    } else {
-      return null;
-    }
-  }
-  public get mainService(): LoggedInMainService | null {
-    if (this._session) {
-      return this._session.mainService;
-    } else {
-      return null;
-    }
-  }
-  public get fullname(): string | null {
-    if (this._session) {
-      return this._session.fullname;
-    } else {
-      return null;
-    }
-  }
-  public get isFirstLogin(): boolean {
-    if (this._session) {
-      return this._session.isFirstLogin;
-    } else {
-      return false;
-    }
-  }
-  public get isFirstBulkUpload(): boolean {
-    if (this._session && this._session.establishment) {
-      return this._session.establishment.isFirstBulkUpload;
-    } else {
-      return true;
-    }
+  public get token() {
+    return localStorage.getItem('auth-token');
   }
 
-  public set isFirstBulkUpload(isFirstBulkUpload) {
-    this._session.establishment.isFirstBulkUpload = isFirstBulkUpload;
+  public set token(token: string) {
+    localStorage.setItem('auth-token', token);
   }
 
-  public get lastLoggedIn() {
-    return this._session ? this._session.lastLoggedIn : null;
+  public authenticate(username: string, password: string) {
+    return this.http
+      .post<any>('/api/login/', { username, password }, { observe: 'response' })
+      .pipe(tap(response => (this.token = response.headers.get('authorization'))));
   }
 
-  public resetFirstLogin(): boolean {
-    if (this._session) {
-      this._session.isFirstLogin = false;
-
-      // successfully reset
-      return true;
-    } else {
-      return false;
-    }
+  public refreshToken() {
+    return this.http
+      .get<any>(`/api/login/refresh`, { observe: 'response' })
+      .pipe(tap(response => (this.token = response.headers.get('authorization'))));
   }
 
-  set token(token: string) {
-    this._token = token;
-
-    if (token) {
-      localStorage.setItem('auth-token', token);
-    } else {
-      localStorage.removeItem('auth-token');
-    }
+  public logout(): void {
+    this.unauthenticate();
+    this.router.navigate(['/logged-out']);
   }
 
-  get token() {
-    if (!this._token) {
-      this._token = localStorage.getItem('auth-token');
-    }
-
-    return this._token;
+  public logoutWithoutRouting(): void {
+    this.unauthenticate();
   }
 
-  authorise(token) {
-    this.token = token;
-  }
-
-  postLogin(id: any) {
-    const $value = id;
-    return this.http.post<any>('/api/login/', $value, { observe: 'response' });
-  }
-
-  refreshToken() {
-    return this.http.get<any>(`/api/login/refresh`, { observe: 'response' });
-  }
-
-  private handleHttpError(error: HttpErrorResponse): Observable<RegistrationTrackerError> {
-    const dataError = new RegistrationTrackerError();
-    dataError.message = error.message;
-    dataError.success = error.error.success;
-    dataError.friendlyMessage = error.error.message;
-    return ErrorObservable.create(dataError);
-  }
-
-  updateState(data) {
-    this._auth$.next(data);
-    this._session = data;
-  }
-
-  public resetAuth(): void {
+  private unauthenticate(): void {
     localStorage.clear();
-    this._session = null;
-    this.token = null;
-  }
-
-  logout() {
-    if (localStorage.getItem('auth-token')) {
-      this.resetAuth();
-      this.userService.loggedInUser = null;
-      this.establishmentService.resetState();
-      this.router.navigate(['/logged-out']);
-    }
-  }
-
-  logoutWithoutRouting() {
-    if (localStorage.getItem('auth-token')) {
-      this.resetAuth();
-    }
+    this.userService.loggedInUser = null;
+    this.establishmentService.resetState();
   }
 }

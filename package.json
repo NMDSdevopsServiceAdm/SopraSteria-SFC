@@ -31,6 +31,7 @@
     "@angular/platform-browser": "~7.0.0",
     "@angular/platform-browser-dynamic": "~7.0.0",
     "@angular/router": "~7.0.0",
+    "@auth0/angular-jwt": "^3.0.0",
     "angulartics2": "^7.4.1",
     "aws-sdk": "^2.407.0",
     "axios": "^0.19.0",
